@@ -1,0 +1,74 @@
+{
+  "version": 2,
+  "brand": { "name": "Akihabara", "sub": "Fuji Studio" },
+  "theme": { "preset": "lavender", "custom": {}, "font": "anton", "radius": 22, "aurora": true, "grain": true },
+  "visitor": { "on": true, "presets": ["lavender", "midnight", "violet", "sunset"] },
+  "seo": { "description": "Portofolio dan toko produk digital Akihabara Fuji Studio: web, bot, tools kreator, preset, dan layanan akademik." },
+  "imgs": { "person": "", "about": "", "before": "", "after": "" },
+  "sections": [
+    { "id": "cover", "on": true }, { "id": "about", "on": true }, { "id": "services", "on": true },
+    { "id": "process", "on": true }, { "id": "work", "on": true }, { "id": "products", "on": true },
+    { "id": "preset", "on": true }, { "id": "contact", "on": true }
+  ],
+  "text": {
+    "coverEyebrow": "Jakarta Barat · 2026",
+    "coverTitle": "Portfolio",
+    "coverSub": "Web · Bot · Tools Kreator · Produk Digital",
+    "coverLead": "Supervisor operasional yang membangun layanan digital sendiri: pendamping tugas mahasiswa, alat analisa akun TikTok, bot otomatis, sampai produk digital. Aturannya satu: data harus valid, nggak boleh ngarang.",
+    "coverCta": "Lihat produk",
+    "aboutTitle": "About Me",
+    "aboutText": "Sekitar 8 tahun di lapangan: operasional, facility management, housekeeping. Terbiasa ngatur tim, jadwal, dan standar kerja yang rapi. Sekarang sambil kuliah Manajemen di Universitas Terbuka, gw bangun layanan digital yang bantu mahasiswa dan kreator.",
+    "servicesTitle": "What I Do",
+    "servicesSub": "Layanan dan produk yang bisa lo pakai sekarang.",
+    "processTitle": "Design With Purpose",
+    "processText": "Asisten yang gw pakai diatur supaya nggak bikin referensi palsu. Kalau datanya belum ada, ditulis jujur sebagai \"data belum tersedia\", bukan diisi asal.",
+    "workTitle": "Selected Work",
+    "workSub": "Project yang lagi dan udah gw bangun.",
+    "productsTitle": "Digital Products",
+    "productsSub": "Siap pakai. Bayar QRIS, dikirim lewat WhatsApp.",
+    "presetTitle": "Photo Preset",
+    "presetSub": "Geser garis buat lihat sebelum dan sesudah preset.",
+    "contactTitle": "Contact",
+    "contactSub": "Let's work together",
+    "contactText": "Mau dibantu tugas, penelitian, analisa akun, atau beli produk? Chat langsung."
+  },
+  "chips": ["Bot WhatsApp", "Bot Telegram", "Gemini", "OpenAI", "VPS Hostinger", "QRIS"],
+  "experience": [
+    { "when": "Sekarang", "title": "Operations / Facility Supervisor", "place": "PT Horizon Internusa Persada" },
+    { "when": "Sebelumnya", "title": "Operasional & facility", "place": "Angkasa Pura Support" },
+    { "when": "Sebelumnya", "title": "Facility services", "place": "ISS Indonesia" },
+    { "when": "2023–kini", "title": "S1 Manajemen", "place": "Universitas Terbuka" }
+  ],
+  "services": [
+    { "icon": "BookOpen", "title": "Sahabat Nugas", "desc": "Web pendamping akademik UT: skripsi, tugas & diskusi, audit dokumen." },
+    { "icon": "MessageCircle", "title": "Akademik Service", "desc": "Bimbingan penelitian & Metopen, tugas, tuton. Lewat WhatsApp." },
+    { "icon": "BarChart3", "title": "Analisa Akun TikTok", "desc": "Skor 0–100, kelebihan, kekurangan, dan langkah yang harus dilakukan." },
+    { "icon": "Scissors", "title": "Klipin", "desc": "Video panjang dipotong otomatis jadi klip pendek yang menarik." },
+    { "icon": "ShoppingBag", "title": "Produk Digital", "desc": "Preset Lightroom, template Instagram, bot Telegram, bot foto." },
+    { "icon": "GraduationCap", "title": "Media Belajar Guru", "desc": "Bot WhatsApp pembuat media belajar untuk guru TK, SD, dan ABK." }
+  ],
+  "process": [
+    { "title": "Analisis", "desc": "Baca dulu soal, ketentuan, dan file yang dikirim." },
+    { "title": "Rencana", "desc": "Susun kerangka sesuai struktur yang diminta." },
+    { "title": "Kerjakan", "desc": "Referensi diambil dari jurnal resmi yang bisa dicek." },
+    { "title": "Audit", "desc": "Periksa ulang klaim, sitasi, dan konsistensi sebelum dikirim." }
+  ],
+  "stats": [{ "v": 8, "suffix": "+", "l": "Tahun pengalaman" }],
+  "works": [
+    { "id": "w1", "nama": "Sahabat Nugas", "tag": "Web Akademik", "sub": "Pendamping tugas & skripsi UT", "img": "", "link": "" },
+    { "id": "w2", "nama": "Klipin", "tag": "Video Engine", "sub": "AI pemotong video otomatis", "img": "", "link": "" },
+    { "id": "w3", "nama": "Analisa Akun", "tag": "Social Tool", "sub": "Skor & saran akun TikTok", "img": "", "link": "" },
+    { "id": "w4", "nama": "Akademik Service", "tag": "AI Automation", "sub": "Bot WhatsApp bimbingan", "img": "", "link": "" },
+    { "id": "w5", "nama": "Media Belajar", "tag": "AI Automation", "sub": "Bot media ajar untuk guru", "img": "", "link": "" },
+    { "id": "w6", "nama": "Bot Video Tele", "tag": "Telegram", "sub": "Toko video lewat Telegram", "img": "", "link": "" }
+  ],
+  "products": [
+    { "id": "preset", "nama": "Lightroom Preset Pack", "tag": "Preset", "desk": "Preset foto aesthetic untuk segala kondisi.", "harga": null, "satuan": "", "status": "aktif", "imgs": [], "fitur": [] },
+    { "id": "template", "nama": "Instagram Template", "tag": "Template", "desk": "Template feed dan story siap pakai dengan desain modern.", "harga": null, "satuan": "", "status": "aktif", "imgs": [], "fitur": [] },
+    { "id": "bottele", "nama": "Telegram Bot", "tag": "Bot", "desk": "Bot serbaguna untuk toko dan layanan otomatis.", "harga": null, "satuan": "", "status": "aktif", "imgs": [], "fitur": [] },
+    { "id": "botfoto", "nama": "Photo Bot", "tag": "Bot", "desk": "Olah foto langsung lewat chat, tanpa install aplikasi.", "harga": null, "satuan": "", "status": "aktif", "imgs": [], "fitur": [] },
+    { "id": "analisa", "nama": "Analisa Akun TikTok", "tag": "Tool", "desk": "Skor 0–100, kelebihan, kekurangan, dan langkah perbaikan.", "harga": 1000, "satuan": "/analisa", "status": "aktif", "imgs": [], "fitur": ["Gratis 1x per hari", "Skor 0–100", "Saran konten, caption, dan hashtag"] },
+    { "id": "klipin", "nama": "Klipin", "tag": "Tool", "desk": "Video panjang dipotong otomatis jadi klip pendek siap upload.", "harga": null, "satuan": "", "status": "segera", "imgs": [], "fitur": [] }
+  ],
+  "pay": { "wa": "", "qrisOn": true, "qris": "", "bankOn": false, "bank": "", "ewOn": false, "ew": "" }
+}

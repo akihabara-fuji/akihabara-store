@@ -1,0 +1,9 @@
+node_modules/
+.env
+data/site.json
+data/site.json.tmp
+data/backups/
+uploads/*
+!uploads/.gitkeep
+web/node_modules/
+web/.vite/
