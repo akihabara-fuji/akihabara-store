@@ -1,0 +1,321 @@
+{
+  "settings": {
+    "waNumber": "6285722227544",
+    "analisaUrl": "https://analisa.sahabatanalisis.tech",
+    "nugasUrl": "https://sahabatanalisis.tech/app",
+    "analisaFree": "1x gratis per hari",
+    "analisaPrice": "Rp1.000",
+    "heroEyebrow": "Buka setiap hari · Order via WhatsApp",
+    "heroTitle": "Konten makin *estetik*, akun makin *naik*, ruangan makin *bersih*.",
+    "heroLead": "Preset Lightroom, template Canva Instagram, analisa akun & affiliate TikTok, sampai jasa kebersihan profesional — semua di satu tempat.",
+    "marquee": [
+      "Preset Lightroom",
+      "Template Canva",
+      "Analisa TikTok",
+      "Cek Affiliate",
+      "Deep Cleaning",
+      "Cold Fogging",
+      "Anti Rayap",
+      "Anti Nyamuk",
+      "Sahabat Nugas"
+    ],
+    "categories": [
+      {
+        "id": "preset",
+        "label": "Preset Lightroom"
+      },
+      {
+        "id": "canva",
+        "label": "Template Canva"
+      },
+      {
+        "id": "bot",
+        "label": "Bot"
+      },
+      {
+        "id": "tool",
+        "label": "Tools"
+      }
+    ],
+    "theme": {
+      "preset": "violet",
+      "a1": "",
+      "a2": ""
+    },
+    "mascot": true
+  },
+  "products": [
+    {
+      "id": "p1",
+      "type": "preset",
+      "name": "Preset Film Tone",
+      "desc": "Warna film analog, hangat dan sedikit grain.",
+      "price": 15000,
+      "old": 35000,
+      "badge": "Terlaris",
+      "items": [
+        "10 preset mobile (DNG) + desktop (XMP)",
+        "Cocok foto outdoor & street",
+        "Panduan cara pasang"
+      ],
+      "image": "",
+      "c1": "#3b2f2a",
+      "c2": "#c58b5a",
+      "title": "",
+      "active": true
+    },
+    {
+      "id": "p2",
+      "type": "preset",
+      "name": "Preset Clean Bright",
+      "desc": "Terang, bersih, cocok buat feed jualan & lifestyle.",
+      "price": 15000,
+      "old": 0,
+      "badge": "",
+      "items": [
+        "10 preset mobile + desktop",
+        "Kulit tetap natural",
+        "Panduan cara pasang"
+      ],
+      "image": "",
+      "c1": "#cfd8dc",
+      "c2": "#f4e7d7",
+      "title": "",
+      "active": true
+    },
+    {
+      "id": "p3",
+      "type": "preset",
+      "name": "Preset Moody Dark",
+      "desc": "Gelap, kontras, nuansa sinematik.",
+      "price": 15000,
+      "old": 0,
+      "badge": "",
+      "items": [
+        "10 preset mobile + desktop",
+        "Cocok foto malam & indoor",
+        "Panduan cara pasang"
+      ],
+      "image": "",
+      "c1": "#0f172a",
+      "c2": "#3f5b68",
+      "title": "",
+      "active": true
+    },
+    {
+      "id": "p4",
+      "type": "preset",
+      "name": "Bundle Semua Preset",
+      "desc": "Ketiga paket preset sekaligus, lebih hemat.",
+      "price": 35000,
+      "old": 45000,
+      "badge": "Hemat",
+      "items": [
+        "30 preset mobile + desktop",
+        "Update gratis",
+        "Panduan cara pasang"
+      ],
+      "image": "",
+      "c1": "#5b21b6",
+      "c2": "#f97316",
+      "title": "",
+      "active": true
+    },
+    {
+      "id": "c1",
+      "type": "canva",
+      "name": "Template Feed Aesthetic",
+      "desc": "Feed Instagram rapi satu tema, tinggal ganti foto & teks.",
+      "price": 20000,
+      "old": 40000,
+      "badge": "Baru",
+      "items": [
+        "30 desain post feed",
+        "Link Canva siap edit",
+        "Font & warna senada"
+      ],
+      "image": "",
+      "c1": "#f5e6da",
+      "c2": "#e8c4b0",
+      "title": "soft\nmorning",
+      "active": true
+    },
+    {
+      "id": "c2",
+      "type": "canva",
+      "name": "Template Story Jualan",
+      "desc": "Story promo, testimoni, dan pengumuman buat olshop.",
+      "price": 20000,
+      "old": 0,
+      "badge": "",
+      "items": [
+        "25 desain story",
+        "Slot testimoni & harga",
+        "Link Canva siap edit"
+      ],
+      "image": "",
+      "c1": "#e9f0e4",
+      "c2": "#b9cdb0",
+      "title": "new\ndrop",
+      "active": true
+    },
+    {
+      "id": "c3",
+      "type": "canva",
+      "name": "Template Carousel Edukasi",
+      "desc": "Carousel untuk konten tips & edukasi yang enak di-swipe.",
+      "price": 25000,
+      "old": 0,
+      "badge": "",
+      "items": [
+        "15 set carousel (5 slide)",
+        "Cover yang menarik klik",
+        "Link Canva siap edit"
+      ],
+      "image": "",
+      "c1": "#efe7f7",
+      "c2": "#cdb8e6",
+      "title": "5 tips\nbiar fyp",
+      "active": true
+    }
+  ],
+  "services": [
+    {
+      "id": "apt",
+      "name": "Bersih Apartemen",
+      "desc": "Unit studio sampai 3BR.",
+      "icon": "apt",
+      "g": [
+        "#67e8f9",
+        "#0891b2"
+      ],
+      "active": true
+    },
+    {
+      "id": "kamar",
+      "name": "Bersih Kamar / Kos",
+      "desc": "Kamar tidur, kamar kos, kamar mandi.",
+      "icon": "kamar",
+      "g": [
+        "#a78bfa",
+        "#7c3aed"
+      ],
+      "active": true
+    },
+    {
+      "id": "rumah",
+      "name": "Bersih Rumah",
+      "desc": "Seluruh rumah, rutin atau sekali.",
+      "icon": "rumah",
+      "g": [
+        "#fda4af",
+        "#e11d48"
+      ],
+      "active": true
+    },
+    {
+      "id": "deep",
+      "name": "Deep Cleaning",
+      "desc": "Pindahan, habis renovasi, kotor berat.",
+      "icon": "deep",
+      "g": [
+        "#fde68a",
+        "#d97706"
+      ],
+      "active": true
+    },
+    {
+      "id": "ruang",
+      "name": "Ruangan & Kantor",
+      "desc": "Ruko, kantor kecil, ruang usaha.",
+      "icon": "ruang",
+      "g": [
+        "#93c5fd",
+        "#2563eb"
+      ],
+      "active": true
+    },
+    {
+      "id": "taman",
+      "name": "Taman & Halaman",
+      "desc": "Potong rumput, rapikan tanaman, sapu halaman.",
+      "icon": "taman",
+      "g": [
+        "#86efac",
+        "#16a34a"
+      ],
+      "active": true
+    },
+    {
+      "id": "fog",
+      "name": "Cold Fogging",
+      "desc": "Disinfeksi ruangan menyeluruh.",
+      "icon": "fog",
+      "g": [
+        "#e2e8f0",
+        "#64748b"
+      ],
+      "active": true
+    },
+    {
+      "id": "nyamuk",
+      "name": "Anti Nyamuk",
+      "desc": "Fogging & treatment sarang nyamuk.",
+      "icon": "nyamuk",
+      "g": [
+        "#fca5a5",
+        "#dc2626"
+      ],
+      "active": true
+    },
+    {
+      "id": "rayap",
+      "name": "Anti Rayap",
+      "desc": "Pengecekan & penanganan rayap.",
+      "icon": "rayap",
+      "g": [
+        "#d6b48a",
+        "#92400e"
+      ],
+      "active": true
+    },
+    {
+      "id": "sofa",
+      "name": "Sofa & Kasur",
+      "desc": "Cuci sofa, kasur, karpet.",
+      "icon": "sofa",
+      "g": [
+        "#f0abfc",
+        "#c026d3"
+      ],
+      "active": true
+    }
+  ],
+  "faq": [
+    {
+      "id": "f1",
+      "q": "Preset Lightroom bisa dipakai di HP?",
+      "a": "Bisa. Paket berisi file DNG untuk Lightroom Mobile (gratis) dan XMP untuk Lightroom desktop."
+    },
+    {
+      "id": "f2",
+      "q": "Template Canva perlu Canva Pro?",
+      "a": "Template dikirim sebagai link Canva yang bisa langsung lo salin dan edit. Sebagian elemen bisa saja Pro; detailnya disebutkan di deskripsi tiap paket."
+    },
+    {
+      "id": "f3",
+      "q": "Analisa akun aman? Perlu password?",
+      "a": "Tidak perlu password sama sekali. Cukup username, karena yang dianalisa hanya data profil publik."
+    },
+    {
+      "id": "f4",
+      "q": "Area jasa kebersihan di mana saja?",
+      "a": "Utamanya Jakarta Barat dan sekitarnya. Untuk area lain, tanyakan dulu ke admin lewat WhatsApp."
+    },
+    {
+      "id": "f5",
+      "q": "Cold fogging aman untuk anak & hewan peliharaan?",
+      "a": "Ruangan dikosongkan saat penyemprotan dan baru boleh dimasuki setelah waktu tunggu yang disarankan. Detail persiapannya dijelaskan admin sebelum hari kerja."
+    }
+  ]
+}

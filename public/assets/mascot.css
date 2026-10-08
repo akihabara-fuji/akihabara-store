@@ -1,0 +1,105 @@
+/* ============================================================
+   MAHYRA SERV — MASCOT + MOTION SYSTEM
+   Satu sumber untuk semua animasi mascot. Jangan duplikasi per section.
+   Pakai: <img class="mascot mascot-float" src="assets/mascot/halo.webp" alt="" aria-hidden="true">
+   ============================================================ */
+:root{
+  --motion-fast:180ms;
+  --motion-normal:360ms;
+  --motion-slow:700ms;
+  --motion-loop:3.6s;
+  --ease-standard:cubic-bezier(.2,.8,.2,1);
+  --ease-spring:cubic-bezier(.34,1.56,.64,1);
+  --ease-exit:cubic-bezier(.4,0,1,1);
+  --mascot-size:120px;
+}
+
+.mascot{
+  display:block;width:var(--mascot-size);height:auto;aspect-ratio:1;
+  user-select:none;-webkit-user-drag:none;pointer-events:none;
+  transform-origin:50% 85%;
+  filter:drop-shadow(0 10px 18px rgba(0,0,0,.45));
+}
+.mascot-sm{--mascot-size:56px}
+.mascot-md{--mascot-size:96px}
+.mascot-lg{--mascot-size:160px}
+
+/* 01 FADE IN — muncul sekali */
+.mascot-fade{animation:m-fade var(--motion-slow) var(--ease-standard) both}
+@keyframes m-fade{from{opacity:0;transform:translateY(10px) scale(.96)}to{opacity:1;transform:none}}
+
+/* 02 FLOAT — melayang pelan, loop */
+.mascot-float{animation:m-float var(--motion-loop) ease-in-out infinite}
+@keyframes m-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+/* 03 BLINK — kedip (squash vertikal halus di area kepala) */
+.mascot-blink{animation:m-blink 4.2s ease-in-out infinite}
+@keyframes m-blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.94)}}
+
+/* 04 BOUNCE — satu kali pantul kecil */
+.mascot-bounce{animation:m-bounce var(--motion-slow) var(--ease-spring) both}
+@keyframes m-bounce{0%{transform:translateY(0)}35%{transform:translateY(-10px) scale(1.02)}65%{transform:translateY(0) scale(.99,1.01)}100%{transform:none}}
+
+/* 05 POINT — condong ke arah CTA (pakai --point-dir: 1 = kanan, -1 = kiri) */
+.mascot-point{--point-dir:1;animation:m-point 1.6s var(--ease-standard) infinite}
+@keyframes m-point{0%,100%{transform:translateX(0) rotate(0)}50%{transform:translateX(calc(5px * var(--point-dir))) rotate(calc(3deg * var(--point-dir)))}}
+
+/* 06 WAVE — goyang kecil 2x lalu diam */
+.mascot-wave{animation:m-wave 1.2s ease-in-out 2 both}
+@keyframes m-wave{0%,100%{transform:rotate(0)}25%{transform:rotate(-5deg)}75%{transform:rotate(5deg)}}
+
+/* 07 SHAKE — "bingung / error", sekali */
+.mascot-shake{animation:m-shake .5s ease-in-out both}
+@keyframes m-shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-4px)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
+
+/* 08 SUCCESS — scale + bounce + partikel kecil (bukan confetti) */
+.mascot-success{animation:m-success var(--motion-slow) var(--ease-spring) both}
+@keyframes m-success{0%{transform:scale(.85);opacity:0}60%{transform:scale(1.06);opacity:1}100%{transform:scale(1)}}
+.mascot-burst{position:relative;display:inline-block}
+.mascot-burst i{position:absolute;left:50%;top:40%;width:6px;height:6px;border-radius:50%;background:var(--burst,#c4b5fd);opacity:0;animation:m-particle 900ms var(--ease-standard) 200ms both}
+.mascot-burst i:nth-child(1){--dx:-48px;--dy:-30px}
+.mascot-burst i:nth-child(2){--dx:46px;--dy:-34px;--burst:#f9a8d4}
+.mascot-burst i:nth-child(3){--dx:-36px;--dy:20px;--burst:#86efac}
+.mascot-burst i:nth-child(4){--dx:40px;--dy:16px}
+.mascot-burst i:nth-child(5){--dx:0;--dy:-52px;--burst:#fde68a}
+@keyframes m-particle{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}30%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1)}}
+
+/* 09 LOADING — indeterminate (TIDAK pura-pura progres) */
+.mascot-loading{animation:m-float 2.4s ease-in-out infinite}
+.m-loader{display:inline-flex;flex-direction:column;align-items:center;gap:10px}
+.m-dots{display:inline-flex;gap:5px;font-size:13px;color:var(--muted,#a6a2bd);align-items:center}
+.m-dots b{width:6px;height:6px;border-radius:50%;background:currentColor;animation:m-dot 1.2s ease-in-out infinite}
+.m-dots b:nth-child(2){animation-delay:.15s}.m-dots b:nth-child(3){animation-delay:.3s}
+@keyframes m-dot{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
+.m-bar{width:140px;height:4px;border-radius:9px;background:rgba(255,255,255,.08);overflow:hidden;position:relative}
+.m-bar::after{content:"";position:absolute;inset:0;width:40%;border-radius:inherit;background:linear-gradient(90deg,#8b5cf6,#ec4899);animation:m-indet 1.4s var(--ease-standard) infinite}
+@keyframes m-indet{from{transform:translateX(-100%)}to{transform:translateX(250%)}}
+
+/* 10 EXIT — keluar sekali */
+.mascot-exit{animation:m-exit var(--motion-normal) var(--ease-exit) both}
+@keyframes m-exit{to{opacity:0;transform:translateY(8px) scale(.94)}}
+
+/* Peek dari pojok kartu produk (hover desktop saja) */
+.mascot-peek{position:absolute;right:10px;bottom:-14px;--mascot-size:64px;opacity:0;transform:translateY(16px);transition:opacity var(--motion-normal) var(--ease-standard),transform var(--motion-normal) var(--ease-standard)}
+@media (hover:hover) and (pointer:fine){
+  :hover > .mascot-peek, :focus-within > .mascot-peek{opacity:1;transform:translateY(0)}
+}
+
+/* Empty state & success state reusable */
+.m-state{display:grid;justify-items:center;text-align:center;gap:10px;padding:36px 20px}
+.m-state h4{font-family:"Space Grotesk",sans-serif;font-size:20px;letter-spacing:-.01em}
+.m-state p{color:var(--muted,#a6a2bd);font-size:14px;max-width:320px}
+
+/* Bubble "Butuh bantuan?" dekat FAB WA */
+.m-help{position:fixed;right:86px;bottom:22px;z-index:59;display:flex;align-items:center;gap:8px;padding:6px 14px 6px 6px;border-radius:999px;background:rgba(19,17,31,.92);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(10px);font-size:13px;font-weight:600;color:#f4f2ff;box-shadow:0 14px 30px -14px #000}
+.m-help .mascot{--mascot-size:38px}
+.m-help.is-hidden{display:none}
+
+@media (prefers-reduced-motion:reduce){
+  .mascot,.mascot *,.m-dots b,.m-bar::after,.mascot-burst i{animation:none!important;transition:none!important}
+  .mascot-burst i{display:none}
+  .m-bar::after{width:100%;opacity:.5}
+}
+
+/* sembunyikan mascot kalau dimatikan di panel admin */
+html.no-mascot .mascot, html.no-mascot .m-help{display:none!important}
