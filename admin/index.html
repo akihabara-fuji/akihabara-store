@@ -51,6 +51,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc);box
 header.top{position:sticky;top:0;z-index:20;background:rgba(10,9,14,.88);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
 header.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0}
 .brand{font-family:"Space Grotesk";font-weight:700;font-size:17px;display:flex;align-items:center;gap:8px}
+.brand img{border-radius:7px;display:block}
 .brand i{width:10px;height:10px;border-radius:3px;background:linear-gradient(120deg,var(--acc),var(--acc2));transform:rotate(45deg)}
 .status{font-size:12px;font-weight:600;color:var(--dim);display:flex;align-items:center;gap:6px}
 .status b{width:8px;height:8px;border-radius:50%;background:var(--dim)}
@@ -114,7 +115,7 @@ dialog::backdrop{background:rgba(0,0,0,.7);backdrop-filter:blur(4px)}
 
 <section id="login" hidden>
   <form class="login-card" id="loginForm">
-    <div class="brand"><i></i>Mahyra Serv</div>
+    <div class="brand"><img src="/icon-192.png" width="26" height="26" alt="">Mahyra Serv</div>
     <h1>Masuk panel admin</h1>
     <p>Atur harga, produk, foto, jasa, FAQ, dan tampilan web tanpa buka VPS.</p>
     <label>Password<input type="password" name="password" autocomplete="current-password" required></label>
@@ -126,7 +127,7 @@ dialog::backdrop{background:rgba(0,0,0,.7);backdrop-filter:blur(4px)}
 <div id="app" hidden>
   <header class="top">
     <div class="wrap">
-      <div class="brand"><i></i>Admin Mahyra Serv</div>
+      <div class="brand"><img src="/icon-192.png" width="26" height="26" alt="">Admin Mahyra Serv</div>
       <div style="display:flex;gap:10px;align-items:center">
         <span class="status ok" id="status" role="status" aria-live="polite"><b></b><span>Tersimpan</span></span>
         <a class="btn btn-sm" href="/" target="_blank" rel="noopener">Lihat web ↗</a>
