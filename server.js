@@ -58,12 +58,21 @@ function luminance(hex) {
   const c = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255).map(v => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
   return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
 }
+// logo M aslinya biru (hue ~220); diputar supaya ikut warna aksen tema, abu-abu kalau aksennya netral
+function logoFilter(hex) {
+  const [r, g, b] = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255);
+  const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+  if (d < 0.08) return "grayscale(1)";
+  let h = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+  h = Math.round(((h * 60 + 360) % 360) - 220);
+  return `hue-rotate(${h}deg)`;
+}
 function themeCss(t = {}) {
   const base = THEMES[t.preset] || THEMES.violet;
   const a1 = t.a1 || base.a1, a2 = t.a2 || base.a2;
   // teks tombol otomatis gelap/terang supaya tetap kebaca
   const on = (t.a1 || t.a2) ? ((luminance(a1) + luminance(a2)) / 2 > 0.4 ? "#0a0a0a" : "#ffffff") : base.on;
-  return `:root{--bg:${base.bg};--bg2:${base.bg2};--card:${base.card};--card2:${base.card2};--input:${base.input};--violet:${a1};--pink:${a2};--on-accent:${on}}`;
+  return `:root{--bg:${base.bg};--bg2:${base.bg2};--card:${base.card};--card2:${base.card2};--input:${base.input};--violet:${a1};--pink:${a2};--on-accent:${on};--logo-filter:${logoFilter(a1)}}`;
 }
 
 /* ---------------- data store ---------------- */
