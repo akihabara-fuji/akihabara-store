@@ -2,7 +2,7 @@
    MAHYRA SERV — server web + panel admin
    - Web publik  : /            (public/index.html, data diisi dari data/store.json)
    - Panel admin : /admin       (login pakai ADMIN_PASSWORD di file .env)
-   - API publik  : /api/store
+   - API publik  : /ms/store
    ================================================================= */
 "use strict";
 const fs = require("fs");
@@ -185,7 +185,7 @@ function safeEqual(a, b) {
   return crypto.timingSafeEqual(x, y);
 }
 
-app.post("/api/admin/login", express.json({ limit: "4kb" }), (req, res) => {
+app.post("/ms/admin/login", express.json({ limit: "4kb" }), (req, res) => {
   const ip = req.ip;
   const f = fails.get(ip);
   if (f && f.until > Date.now()) return res.status(429).json({ error: "Terlalu banyak percobaan. Coba lagi 15 menit lagi." });
@@ -202,18 +202,18 @@ app.post("/api/admin/login", express.json({ limit: "4kb" }), (req, res) => {
   res.setHeader("Set-Cookie", `ms_admin=${token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${SESSION_MS / 1000}${SECURE_COOKIE ? "; Secure" : ""}`);
   res.json({ ok: true });
 });
-app.post("/api/admin/logout", (req, res) => {
+app.post("/ms/admin/logout", (req, res) => {
   sessions.delete(getCookie(req, "ms_admin"));
   res.setHeader("Set-Cookie", "ms_admin=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0");
   res.json({ ok: true });
 });
 
 /* ---------------- API ---------------- */
-app.get("/api/store", (req, res) => { res.set("Cache-Control", "no-store"); res.json(publicStore()); });
+app.get("/ms/store", (req, res) => { res.set("Cache-Control", "no-store"); res.json(publicStore()); });
 
-app.get("/api/admin/me", (req, res) => res.json({ authed: isAuthed(req) }));
-app.get("/api/admin/store", requireAdmin, (req, res) => res.json({ store, icons: ICONS, themes: THEMES }));
-app.put("/api/admin/store", requireAdmin, express.json({ limit: "1mb" }), async (req, res) => {
+app.get("/ms/admin/me", (req, res) => res.json({ authed: isAuthed(req) }));
+app.get("/ms/admin/store", requireAdmin, (req, res) => res.json({ store, icons: ICONS, themes: THEMES }));
+app.put("/ms/admin/store", requireAdmin, express.json({ limit: "1mb" }), async (req, res) => {
   try { const next = clean(req.body || {}); await saveStore(next); res.json({ ok: true, store: next }); }
   catch (e) { console.error(e); res.status(500).json({ error: "Gagal menyimpan." }); }
 });
@@ -223,7 +223,7 @@ const upload = multer({
   limits: { fileSize: 8 * 1024 * 1024, files: 1 },
   fileFilter: (req, file, cb) => cb(null, /^image\/(jpeg|png|webp|gif|avif)$/.test(file.mimetype)),
 });
-app.post("/api/admin/upload", requireAdmin, upload.single("file"), async (req, res) => {
+app.post("/ms/admin/upload", requireAdmin, upload.single("file"), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: "File harus berupa gambar (JPG/PNG/WebP), maks 8MB." });
   const name = `${Date.now().toString(36)}-${crypto.randomBytes(4).toString("hex")}`;
   try {
@@ -239,11 +239,11 @@ app.post("/api/admin/upload", requireAdmin, upload.single("file"), async (req, r
   } catch (e) { res.status(400).json({ error: "Gambar tidak bisa dibaca. Coba file lain." }); }
 });
 
-app.get("/api/admin/backups", requireAdmin, async (req, res) => {
+app.get("/ms/admin/backups", requireAdmin, async (req, res) => {
   const files = (await fsp.readdir(BACKUPS)).filter(f => f.endsWith(".json")).sort().reverse();
   res.json({ backups: files });
 });
-app.post("/api/admin/restore", requireAdmin, express.json({ limit: "4kb" }), async (req, res) => {
+app.post("/ms/admin/restore", requireAdmin, express.json({ limit: "4kb" }), async (req, res) => {
   const f = String(req.body?.file || "");
   if (!/^store-[\w-]+\.json$/.test(f)) return res.status(400).json({ error: "File cadangan tidak valid." });
   try {
@@ -261,14 +261,23 @@ function publicStore() {
     faq: store.faq,
   };
 }
+const SITE = (process.env.SITE_URL || "https://sahabatanalisis.tech").replace(/\/+$/, "");
 const TEMPLATE = path.join(PUB, "index.html");
+const today = () => new Date().toISOString().slice(0, 10);
+app.get("/robots.txt", (req, res) => {
+  res.type("text/plain").send(`User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /ms/\n\nSitemap: ${SITE}/sitemap.xml\n`);
+});
+app.get("/sitemap.xml", (req, res) => {
+  const urls = [{ loc: `${SITE}/`, pri: "1.0" }, { loc: `${SITE}/nugas`, pri: "0.8" }];
+  res.type("application/xml").send(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(u => `  <url><loc>${u.loc}</loc><lastmod>${today()}</lastmod><priority>${u.pri}</priority></url>`).join("\n")}\n</urlset>\n`);
+});
 app.get(["/", "/index.html"], async (req, res) => {
   const html = await fsp.readFile(TEMPLATE, "utf8");
   const json = JSON.stringify(publicStore()).replace(/</g, "\\u003c").replace(/\u2028|\u2029/g, "");
   res.set("Cache-Control", "no-cache");
   const st = store.settings || {};
   const bg = (THEMES[(st.theme || {}).preset] || THEMES.violet).bg;
-  res.type("html").send(html
+  res.type("html").send(html.replaceAll("{{SITE}}", SITE)
     .replace('<style id="theme-vars"></style>', `<style id="theme-vars">${themeCss(st.theme)}</style>`)
     .replace('<meta name="theme-color" content="#07060d">', `<meta name="theme-color" content="${bg}">`)
     .replace('<html lang="id">', st.mascot === false ? '<html lang="id" class="no-mascot">' : '<html lang="id">')

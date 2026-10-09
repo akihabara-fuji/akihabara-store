@@ -102,3 +102,24 @@ Timpa `server.js`, `public/index.html`, `admin/index.html` saja, lalu `pm2 resta
 ```bash
 cd /var/www/mahyra-serv && tar czf ~/backup-mahyra-$(date +%F).tgz data public/uploads
 ```
+
+---
+
+## Portal di domain utama (sahabatanalisis.tech)
+
+Mahyra Serv = halaman utama. Sahabat Nugas tetap jalan di domain yang sama:
+
+| Alamat | Menuju |
+|---|---|
+| `/`, `/admin`, `/blog`, `/ms/…`, `/uploads`, `/assets`, `/robots.txt`, `/sitemap.xml` | Mahyra Serv (port 3200) |
+| `/nugas` | halaman depan Sahabat Nugas (dulu di `/`) |
+| `/app`, `/login`, `/api/…` dan lainnya | Sahabat Nugas (port 3000) |
+| `toko.sahabatanalisis.tech` | redirect 301 ke domain utama |
+
+Pasang / pasang ulang (aman, ada backup + tes otomatis, balik sendiri kalau gagal):
+```bash
+cd /var/www/mahyra-serv && git pull origin mahyra-serv && pm2 restart mahyra-serv
+bash deploy/apply-main-domain.sh
+```
+Alamat situs untuk SEO (canonical, sitemap) diatur lewat `SITE_URL` di `.env` (default `https://sahabatanalisis.tech`).
+API admin sekarang di prefix `/ms/admin/…` supaya tidak bentrok dengan `/api/admin/…` milik Sahabat Nugas.

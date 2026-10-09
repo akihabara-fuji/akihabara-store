@@ -295,7 +295,7 @@ let ST=null, ICONS={}, THEMES={};
 async function api(path,opt={}){
   const r=await fetch(path,{credentials:"same-origin",...opt,headers:{...(opt.body&&!(opt.body instanceof FormData)?{"Content-Type":"application/json"}:{}),...(opt.headers||{})}});
   const d=await r.json().catch(()=>({}));
-  if(r.status===401&&path!=="/api/admin/login"){showLogin();throw new Error(d.error||"Sesi habis");}
+  if(r.status===401&&path!=="/ms/admin/login"){showLogin();throw new Error(d.error||"Sesi habis");}
   if(!r.ok) throw new Error(d.error||"Gagal ("+r.status+")");
   return d;
 }
@@ -306,7 +306,7 @@ let saveTimer=0, dirty=false;
 function save(delay=0){
   dirty=true; status("busy","Menyimpan…"); clearTimeout(saveTimer);
   saveTimer=setTimeout(async()=>{
-    try{ const d=await api("/api/admin/store",{method:"PUT",body:JSON.stringify(ST)}); ST=d.store; dirty=false; status("ok","Tersimpan"); }
+    try{ const d=await api("/ms/admin/store",{method:"PUT",body:JSON.stringify(ST)}); ST=d.store; dirty=false; status("ok","Tersimpan"); }
     catch(e){ status("bad","Gagal simpan"); toast(e.message); }
   },delay);
 }
@@ -316,14 +316,14 @@ addEventListener("beforeunload",e=>{if(dirty){e.preventDefault();e.returnValue="
 function showLogin(){$("#app").hidden=true;$("#login").hidden=false;$("#loginForm").password.focus();}
 $("#loginForm").addEventListener("submit",async e=>{
   e.preventDefault(); $("#loginErr").textContent="";
-  try{ await api("/api/admin/login",{method:"POST",body:JSON.stringify({password:e.target.password.value})}); e.target.reset(); boot(); }
+  try{ await api("/ms/admin/login",{method:"POST",body:JSON.stringify({password:e.target.password.value})}); e.target.reset(); boot(); }
   catch(err){ $("#loginErr").textContent=err.message; }
 });
-$("#logout").onclick=async()=>{await api("/api/admin/logout",{method:"POST"}).catch(()=>{});location.reload();};
+$("#logout").onclick=async()=>{await api("/ms/admin/logout",{method:"POST"}).catch(()=>{});location.reload();};
 
 async function boot(){
-  const me=await api("/api/admin/me"); if(!me.authed) return showLogin();
-  const d=await api("/api/admin/store"); ST=d.store; ICONS=d.icons; THEMES=d.themes;
+  const me=await api("/ms/admin/me"); if(!me.authed) return showLogin();
+  const d=await api("/ms/admin/store"); ST=d.store; ICONS=d.icons; THEMES=d.themes;
   $("#login").hidden=true; $("#app").hidden=false; renderAll();
 }
 
@@ -380,7 +380,7 @@ $("#pFile").addEventListener("change",async e=>{
   if(file.size>8*1024*1024) return toast("Foto kebesaran, maks 8MB");
   const b=$("#pImg"); b.textContent="Mengupload…"; b.style.backgroundImage="";
   const fd=new FormData(); fd.append("file",file);
-  try{ const d=await api("/api/admin/upload",{method:"POST",body:fd}); editImg=d.url; showImg(); toast("Foto terupload"); }
+  try{ const d=await api("/ms/admin/upload",{method:"POST",body:fd}); editImg=d.url; showImg(); toast("Foto terupload"); }
   catch(err){ showImg(); toast(err.message); }
 });
 $("#pForm").addEventListener("submit",e=>{
@@ -489,7 +489,7 @@ $("#addCat").onclick=()=>{ST.settings.categories.push({id:uid("k"),label:"Katego
 
 async function loadBackups(){
   try{
-    const d=await api("/api/admin/backups");
+    const d=await api("/ms/admin/backups");
     const fmt=f=>{const m=f.match(/store-(\d{4})-(\d\d)-(\d\d)T(\d\d)-(\d\d)-(\d\d)/); if(!m) return f; return new Date(Date.UTC(+m[1],m[2]-1,+m[3],+m[4],+m[5],+m[6])).toLocaleString("id-ID",{dateStyle:"medium",timeStyle:"short"});};
     $("#backupList").innerHTML=d.backups.length?d.backups.slice(0,15).map(f=>`<div class="item"><div class="info"><b>${esc(fmt(f))}</b><span>Versi sebelum perubahan</span></div><div class="acts"><button class="btn btn-sm" data-restore="${esc(f)}">Pulihkan</button></div></div>`).join(""):`<div class="empty">Belum ada cadangan. Akan muncul setelah lo simpan perubahan pertama.</div>`;
   }catch(e){ $("#backupList").innerHTML=`<div class="empty">${esc(e.message)}</div>`; }
@@ -497,7 +497,7 @@ async function loadBackups(){
 $("#backupList").addEventListener("click",async e=>{
   const b=e.target.closest("[data-restore]"); if(!b) return;
   if(!confirm("Pulihkan data ke versi ini? Data sekarang ikut dicadangkan dulu.")) return;
-  try{ const d=await api("/api/admin/restore",{method:"POST",body:JSON.stringify({file:b.dataset.restore})}); ST=d.store; renderAll(); loadBackups(); toast("Data dipulihkan"); }
+  try{ const d=await api("/ms/admin/restore",{method:"POST",body:JSON.stringify({file:b.dataset.restore})}); ST=d.store; renderAll(); loadBackups(); toast("Data dipulihkan"); }
   catch(err){ toast(err.message); }
 });
 
