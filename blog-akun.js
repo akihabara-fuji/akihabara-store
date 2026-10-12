@@ -291,7 +291,7 @@ ${extra}
   </div>
 </div></header>
 <main>${body}</main>
-<footer><div class="wrap"><div><b>${brand}</b> · Jakarta Barat<br>© ${new Date().getFullYear()} Semua hak dilindungi.</div><nav><a href="/blog">Blog</a><a href="/#akademik">Akademik</a><a href="/#jasa">Housekeeping</a><a href="/ms/masuk">Masuk</a></nav></div></footer>
+<footer><div class="wrap"><div><b>${brand}</b> · Jakarta Barat<br>© ${new Date().getFullYear()} Semua hak dilindungi.</div><nav><a href="/blog">Blog</a><a href="/#akademik">Akademik</a><a href="/#jasa">Housekeeping</a><a href="/ms/masuk">Masuk</a><a href="/ms/privasi">Privasi</a><a href="/ms/ketentuan">Ketentuan</a></nav></div></footer>
 <script>
 (function(){
 function setMode(m){document.documentElement.dataset.theme=m;try{localStorage.setItem("nx-theme",m)}catch(e){}var tc=document.querySelector('meta[name=theme-color]');if(tc)tc.content=m==="light"?"#fbfbff":"#1f1e1d";}
@@ -335,6 +335,37 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
     </div></article>`;
     res.set("Cache-Control", "no-cache").type("html").send(layout({ title: `${p.title} — nextaja`, desc: p.excerpt || p.title, path: `/blog/${p.slug}`, body, extra: `<script type="application/ld+json">${ld}</script>` }));
   });
+
+  /* ---- kebijakan privasi & ketentuan ---- */
+  const legalPage = (title, desc, pth, html) => (req, res) => {
+    const wa = String((SOCIAL().waNumber) || "6285722227544");
+    const body = `<section class="pg"><div class="wrap narrow"><article class="card" style="padding:28px;line-height:1.75">${html.replace(/\{WA\}/g, `<a href="https://wa.me/${wa}" rel="noopener">WhatsApp admin</a>`)}</article></div></section>`;
+    res.type("html").send(layout({ title, desc, path: pth, body }));
+  };
+  app.get("/ms/privasi", legalPage("Kebijakan Privasi — nextaja", "Data apa yang nextaja kumpulkan dan bagaimana dipakai.", "/ms/privasi", `
+    <h1>Kebijakan Privasi</h1>
+    <p>Terakhir diperbarui: Oktober 2026. Situs ini dikelola oleh nextaja, Jakarta Barat.</p>
+    <h2>Data yang kami simpan</h2>
+    <p>Kalau kamu membuat akun atau masuk dengan Google, kami menyimpan nama dan alamat email kamu. Kalau kamu memesan jasa, kami menyimpan nama pesanan, statusnya, dan catatan yang diperlukan untuk mengerjakannya. Sandi akun email-sandi disimpan dalam bentuk acak (hash), bukan teks asli.</p>
+    <h2>Masuk dengan Google</h2>
+    <p>Kami hanya menerima nama dan alamat email dari akun Google kamu untuk membuat dan mengenali akunmu. Kami tidak mengakses Gmail, kontak, Drive, atau data Google lainnya.</p>
+    <h2>Untuk apa data dipakai</h2>
+    <p>Hanya untuk menjalankan akun dan pesananmu, serta menghubungi kamu terkait pesanan. Kami tidak menjual atau menyewakan data kamu kepada pihak lain.</p>
+    <h2>Cookie</h2>
+    <p>Kami memakai cookie sesi agar kamu tetap masuk, dan penyimpanan lokal untuk mengingat pilihan tampilan terang atau gelap. Tidak ada cookie iklan.</p>
+    <h2>Hapus data kamu</h2>
+    <p>Minta penghapusan akun dan datamu kapan saja lewat {WA}.</p>`));
+  app.get("/ms/ketentuan", legalPage("Ketentuan Layanan — nextaja", "Aturan pemakaian situs dan layanan nextaja.", "/ms/ketentuan", `
+    <h1>Ketentuan Layanan</h1>
+    <p>Terakhir diperbarui: Oktober 2026. Dengan memakai situs ini, kamu setuju dengan ketentuan berikut.</p>
+    <h2>Layanan</h2>
+    <p>nextaja menyediakan analisa akun, preset dan template, bantuan akademik, serta jasa housekeeping. Detail, harga, dan jadwal disepakati lewat WhatsApp sebelum pengerjaan.</p>
+    <h2>Bantuan akademik</h2>
+    <p>Bantuan akademik berupa pendampingan dan referensi untuk membantu kamu belajar. Kami tidak menjamin nilai atau kelulusan. Kamu bertanggung jawab atas karya yang kamu kumpulkan dan atas kepatuhan pada aturan kampusmu.</p>
+    <h2>Akun</h2>
+    <p>Jaga kerahasiaan akunmu. Kami bisa menonaktifkan akun yang dipakai untuk menyalahgunakan layanan.</p>
+    <h2>Perubahan</h2>
+    <p>Ketentuan dan layanan bisa berubah. Pertanyaan: {WA}.</p>`));
 
   /* ---- login & akun ---- */
   app.get("/ms/masuk", (req, res) => {
