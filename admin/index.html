@@ -8,7 +8,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<title>Admin · Mahyra Serv</title>
+<title>Admin · nextaja</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
@@ -115,7 +115,7 @@ dialog::backdrop{background:rgba(0,0,0,.7);backdrop-filter:blur(4px)}
 
 <section id="login" hidden>
   <form class="login-card" id="loginForm">
-    <div class="brand"><img src="/icon-192.png" width="26" height="26" alt="">Mahyra Serv</div>
+    <div class="brand"><img src="/icon-192.png" width="26" height="26" alt="">nextaja</div>
     <h1>Masuk panel admin</h1>
     <p>Atur harga, produk, foto, jasa, FAQ, dan tampilan web tanpa buka VPS.</p>
     <label>Password<input type="password" name="password" autocomplete="current-password" required></label>
@@ -127,7 +127,7 @@ dialog::backdrop{background:rgba(0,0,0,.7);backdrop-filter:blur(4px)}
 <div id="app" hidden>
   <header class="top">
     <div class="wrap">
-      <div class="brand"><img src="/icon-192.png" width="26" height="26" alt="">Admin Mahyra Serv</div>
+      <div class="brand"><img src="/icon-192.png" width="26" height="26" alt="">Admin nextaja</div>
       <div style="display:flex;gap:10px;align-items:center">
         <span class="status ok" id="status" role="status" aria-live="polite"><b></b><span>Tersimpan</span></span>
         <a class="btn btn-sm" href="/" target="_blank" rel="noopener">Lihat web ↗</a>
@@ -172,7 +172,7 @@ dialog::backdrop{background:rgba(0,0,0,.7);backdrop-filter:blur(4px)}
 
     <!-- TAMPILAN -->
     <section data-panel="tampilan" hidden>
-      <div class="panel-head"><div><h2>Tampilan</h2><p>Tema, mascot, dan teks hero. Buka "Lihat web" buat cek hasilnya.</p></div></div>
+      <div class="panel-head"><div><h2>Tampilan</h2><p>Warna aksen, harga, dan teks hero. Mode gelap/terang dipilih pengunjung di web. Buka "Lihat web" buat cek hasilnya.</p></div></div>
       <div class="card">
         <h3>Tema warna</h3>
         <div class="themes" id="themeList"></div>
@@ -188,8 +188,12 @@ dialog::backdrop{background:rgba(0,0,0,.7);backdrop-filter:blur(4px)}
       </div>
       <div class="card">
         <div class="row">
-          <div><h3>Mascot</h3><div class="hint">Tampilkan mascot bayi di hero, kartu produk, FAQ, notifikasi sukses & bubble WhatsApp.</div></div>
-          <label class="switch"><input type="checkbox" id="mascotOn" aria-label="Tampilkan mascot"><span></span></label>
+          <div><h3>Tampilkan harga di web</h3><div class="hint">Mati = semua harga disembunyikan dan web menulis "Harga menyusul". Harga tidak ikut terkirim ke pengunjung selama mati.</div></div>
+          <label class="switch"><input type="checkbox" id="showPrices" aria-label="Tampilkan harga di web"><span></span></label>
+        </div>
+        <div class="row">
+          <div><h3>Studio Konten "segera"</h3><div class="hint">Tampilkan bagian Studio Konten sebagai pratinjau "segera" di web.</div></div>
+          <label class="switch"><input type="checkbox" id="studioSoon" aria-label="Tampilkan Studio Konten"><span></span></label>
         </div>
       </div>
       <div class="card">
@@ -207,6 +211,18 @@ dialog::backdrop{background:rgba(0,0,0,.7);backdrop-filter:blur(4px)}
       <div class="card">
         <h3>WhatsApp admin</h3>
         <label>Nomor WA <small>— format 62xxx tanpa + dan spasi</small><input id="waNumber" inputmode="numeric" maxlength="20" placeholder="6285722227544"></label>
+      </div>
+      <div class="card">
+        <h3>Nama & sosial media</h3>
+        <label>Nama brand<input id="brand" maxlength="30" placeholder="nextaja"></label>
+        <div class="grid2">
+          <label>TikTok<input id="tiktok" maxlength="40" placeholder="@akihabara.fuzi"></label>
+          <label>Instagram<input id="instagram" maxlength="40" placeholder="@deikaru.dz"></label>
+        </div>
+        <div class="grid2">
+          <label>Facebook (nama halaman)<input id="facebook" maxlength="60" placeholder="Next Aja"></label>
+          <label>Link halaman Facebook<input id="facebookUrl" type="url" placeholder="https://facebook.com/..."></label>
+        </div>
       </div>
       <div class="card">
         <h3>Analisa akun & Sahabat Nugas</h3>
@@ -452,15 +468,15 @@ $("#addFaq").onclick=()=>{ST.faq.push({id:uid("f"),q:"Pertanyaan baru?",a:""});r
 
 /* ---------- tampilan ---------- */
 function renderLook(){
-  const s=ST.settings, t=s.theme||{preset:"violet"};
+  const s=ST.settings, t=s.theme||{preset:"terra"};
   $("#themeList").innerHTML=Object.entries(THEMES).map(([k,v])=>`
     <button class="theme" data-theme="${esc(k)}" aria-pressed="${k===t.preset}">
       <div class="sw" style="background:${v.bg};border:1px solid rgba(255,255,255,.08)"><i style="background:linear-gradient(120deg,${v.a1},${v.a2})"></i></div>
       <b>${esc(v.name)}</b></button>`).join("");
-  const custom=!!(t.a1||t.a2), base=THEMES[t.preset]||THEMES.violet;
+  const custom=!!(t.a1||t.a2), base=THEMES[t.preset]||THEMES.terra;
   $("#customOn").checked=custom; $("#customRow").hidden=!custom;
   $("#a1").value=t.a1||base.a1; $("#a2").value=t.a2||base.a2; gradPrev();
-  $("#mascotOn").checked=s.mascot!==false;
+  $("#showPrices").checked=s.showPrices===true; $("#studioSoon").checked=s.studioSoon!==false;
   $("#heroEyebrow").value=s.heroEyebrow||""; $("#heroTitle").value=s.heroTitle||""; $("#heroLead").value=s.heroLead||"";
   $("#marquee").value=(s.marquee||[]).join("\n");
 }
@@ -469,12 +485,13 @@ $("#themeList").addEventListener("click",e=>{const b=e.target.closest("[data-the
   ST.settings.theme={preset:b.dataset.theme,a1:"",a2:""}; renderLook(); save(); toast("Tema: "+THEMES[b.dataset.theme].name);});
 $("#customOn").addEventListener("change",e=>{const t=ST.settings.theme; if(e.target.checked){t.a1=$("#a1").value;t.a2=$("#a2").value;}else{t.a1="";t.a2="";} renderLook(); save();});
 ["a1","a2"].forEach(id=>$("#"+id).addEventListener("input",e=>{ST.settings.theme[id]=e.target.value; gradPrev(); save(600);}));
-$("#mascotOn").addEventListener("change",e=>{ST.settings.mascot=e.target.checked; save(); toast(e.target.checked?"Mascot ditampilkan":"Mascot disembunyikan");});
+$("#showPrices").addEventListener("change",e=>{ST.settings.showPrices=e.target.checked; save(); toast(e.target.checked?"Harga ditampilkan di web":"Harga disembunyikan: web menulis Harga menyusul");});
+$("#studioSoon").addEventListener("change",e=>{ST.settings.studioSoon=e.target.checked; save(); toast(e.target.checked?"Studio Konten ditampilkan":"Studio Konten disembunyikan");});
 ["heroEyebrow","heroTitle","heroLead"].forEach(id=>$("#"+id).addEventListener("input",e=>{ST.settings[id]=e.target.value; save(800);}));
 $("#marquee").addEventListener("input",e=>{ST.settings.marquee=e.target.value.split("\n").map(x=>x.trim()).filter(Boolean); save(800);});
 
 /* ---------- pengaturan ---------- */
-const FIELDS=["waNumber","analisaUrl","analisaFree","analisaPrice","nugasUrl"];
+const FIELDS=["waNumber","analisaUrl","analisaFree","analisaPrice","nugasUrl","brand","tiktok","instagram","facebook","facebookUrl"];
 function renderSettings(){
   FIELDS.forEach(id=>$("#"+id).value=ST.settings[id]||"");
   const C=ST.settings.categories;

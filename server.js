@@ -1,5 +1,5 @@
 /* =================================================================
-   MAHYRA SERV — server web + panel admin
+   nextaja — server web + panel admin
    - Web publik  : /            (public/index.html, data diisi dari data/store.json)
    - Panel admin : /admin       (login pakai ADMIN_PASSWORD di file .env)
    - API publik  : /ms/store
@@ -45,34 +45,27 @@ app.use((req, res, next) => {
 });
 
 /* ---------------- tema UI ---------------- */
-// Semua tema berbasis gelap (desain web memang dark). Warna aksen bisa di-custom dari admin.
+// Mode gelap/terang diatur di halaman (tombol Gelap|Terang). Di sini cuma pilihan warna aksen.
 const THEMES = {
-  violet: { name: "Violet Night (default)", bg: "#07060d", bg2: "#0e0c18", card: "#13111f", card2: "#1a1729", input: "#0d0b16", a1: "#8b5cf6", a2: "#ec4899", on: "#ffffff" },
-  sakura: { name: "Sakura", bg: "#0b0709", bg2: "#140c10", card: "#181014", card2: "#21161b", input: "#100a0d", a1: "#f472b6", a2: "#fb7185", on: "#ffffff" },
-  ocean:  { name: "Ocean", bg: "#050a0d", bg2: "#0a1217", card: "#0f171c", card2: "#142027", input: "#0a1115", a1: "#22d3ee", a2: "#3b82f6", on: "#04121a" },
-  matcha: { name: "Matcha", bg: "#070a07", bg2: "#0d120d", card: "#111711", card2: "#182018", input: "#0b100b", a1: "#4ade80", a2: "#a3e635", on: "#06140a" },
-  sunset: { name: "Sunset", bg: "#0c0806", bg2: "#140e0a", card: "#19120e", card2: "#221812", input: "#110c09", a1: "#f97316", a2: "#f43f5e", on: "#ffffff" },
-  mono:   { name: "Monokrom", bg: "#0a0a0a", bg2: "#111111", card: "#151515", card2: "#1d1d1d", input: "#0f0f0f", a1: "#f5f5f5", a2: "#a3a3a3", on: "#0a0a0a" },
+  terra:  { name: "Terakota (default)", bg: "#1f1e1d", a1: "#d97757", a2: "#e8a87c", on: "#1f1e1d" },
+  indigo: { name: "Indigo", bg: "#fbfbff", a1: "#4a3aff", a2: "#ff8a3d", on: "#ffffff" },
+  ocean:  { name: "Ocean", bg: "#0a1217", a1: "#22d3ee", a2: "#3b82f6", on: "#04121a" },
+  matcha: { name: "Matcha", bg: "#0d120d", a1: "#4ade80", a2: "#a3e635", on: "#06140a" },
+  sakura: { name: "Sakura", bg: "#140c10", a1: "#f472b6", a2: "#fb7185", on: "#ffffff" },
+  mono:   { name: "Monokrom", bg: "#111111", a1: "#f5f5f5", a2: "#a3a3a3", on: "#0a0a0a" },
 };
 function luminance(hex) {
   const c = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255).map(v => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
   return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
 }
-// logo M aslinya biru (hue ~220); diputar supaya ikut warna aksen tema, abu-abu kalau aksennya netral
-function logoFilter(hex) {
-  const [r, g, b] = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255);
-  const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
-  if (d < 0.08) return "grayscale(1)";
-  let h = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
-  h = Math.round(((h * 60 + 360) % 360) - 220);
-  return `hue-rotate(${h}deg)`;
-}
 function themeCss(t = {}) {
-  const base = THEMES[t.preset] || THEMES.violet;
+  const base = THEMES[t.preset] || THEMES.terra;
   const a1 = t.a1 || base.a1, a2 = t.a2 || base.a2;
   // teks tombol otomatis gelap/terang supaya tetap kebaca
-  const on = (t.a1 || t.a2) ? ((luminance(a1) + luminance(a2)) / 2 > 0.4 ? "#0a0a0a" : "#ffffff") : base.on;
-  return `:root{--bg:${base.bg};--bg2:${base.bg2};--card:${base.card};--card2:${base.card2};--input:${base.input};--violet:${a1};--pink:${a2};--on-accent:${on};--logo-filter:${logoFilter(a1)}}`;
+  const on = luminance(a1) > 0.4 ? "#14141a" : "#ffffff";
+  // tema bawaan: halaman memakai warna aksen sendiri per mode (gelap = terakota, terang = indigo)
+  if (!t.a1 && !t.a2 && (!t.preset || t.preset === "terra")) return "";
+  return `:root{--acc:${a1};--acc2:${a2};--on-accent:${on}}`;
 }
 
 /* ---------------- data store ---------------- */
@@ -116,17 +109,24 @@ function clean(input) {
       nugasUrl: url(s.nugasUrl),
       analisaFree: str(s.analisaFree, 60),
       analisaPrice: str(s.analisaPrice, 30),
+      showPrices: s.showPrices === true,           // harga disembunyikan sampai admin menyalakan
+      brand: str(s.brand, 30) || "nextaja",
+      tiktok: str(s.tiktok, 40),
+      instagram: str(s.instagram, 40),
+      facebook: str(s.facebook, 60),
+      facebookUrl: url(s.facebookUrl),
+      studioSoon: s.studioSoon !== false,
       heroEyebrow: str(s.heroEyebrow, 80),
       heroTitle: str(s.heroTitle, 160),
       heroLead: str(s.heroLead, 300),
       marquee: arr(s.marquee, 20).map(x => str(x, 40)).filter(Boolean),
       categories: cats.length ? cats : [{ id: "preset", label: "Preset Lightroom" }],
       theme: {
-        preset: THEMES[(s.theme || {}).preset] ? s.theme.preset : "violet",
+        preset: THEMES[(s.theme || {}).preset] ? s.theme.preset : "terra",
         a1: /^#[0-9a-f]{6}$/i.test((s.theme || {}).a1) ? s.theme.a1 : "",
         a2: /^#[0-9a-f]{6}$/i.test((s.theme || {}).a2) ? s.theme.a2 : "",
       },
-      mascot: s.mascot !== false,
+      nx: true,
     },
     products: arr(input.products, 200).map(p => ({
       id: uid(p.id, "p"),
@@ -254,14 +254,16 @@ app.post("/ms/admin/restore", requireAdmin, express.json({ limit: "4kb" }), asyn
 
 /* ---------------- halaman ---------------- */
 function publicStore() {
+  const st = store.settings || {};
+  const show = st.showPrices === true;
   return {
-    settings: store.settings,
-    products: store.products.filter(p => p.active),
+    settings: show ? st : { ...st, analisaPrice: "" },
+    products: store.products.filter(p => p.active).map(p => (show ? p : { ...p, price: 0, old: 0 })),
     services: store.services.filter(s => s.active).map(s => ({ ...s, icon: ICONS[s.icon] || ICONS.sparkle })),
     faq: store.faq,
   };
 }
-const SITE = (process.env.SITE_URL || "https://sahabatanalisis.tech").replace(/\/+$/, "");
+const SITE = (process.env.SITE_URL || "https://nextaja.com").replace(/\/+$/, "");
 const TEMPLATE = path.join(PUB, "index.html");
 const today = () => new Date().toISOString().slice(0, 10);
 app.get("/robots.txt", (req, res) => {
@@ -276,18 +278,46 @@ app.get(["/", "/index.html"], async (req, res) => {
   const json = JSON.stringify(publicStore()).replace(/</g, "\\u003c").replace(/\u2028|\u2029/g, "");
   res.set("Cache-Control", "no-cache");
   const st = store.settings || {};
-  const bg = (THEMES[(st.theme || {}).preset] || THEMES.violet).bg;
-  res.type("html").send(html.replaceAll("{{SITE}}", SITE)
+    res.type("html").send(html.replaceAll("{{SITE}}", SITE)
     .replace('<style id="theme-vars"></style>', `<style id="theme-vars">${themeCss(st.theme)}</style>`)
-    .replace('<meta name="theme-color" content="#07060d">', `<meta name="theme-color" content="${bg}">`)
-    .replace('<html lang="id">', st.mascot === false ? '<html lang="id" class="no-mascot">' : '<html lang="id">')
     .replace('<script id="store-data" type="application/json">null</script>', `<script id="store-data" type="application/json">${json}</script>`));
 });
 app.use("/admin", express.static(path.join(ROOT, "admin"), { index: "index.html" }));
 app.use("/uploads", express.static(UPLOADS, { maxAge: "30d", immutable: true }));
 app.use(express.static(PUB, { maxAge: "1h", index: false }));
 
-app.listen(PORT, "127.0.0.1", () => console.log(`Mahyra Serv jalan di http://127.0.0.1:${PORT}  (admin: /admin)`));
+/* ---------------- migrasi satu kali ke desain nextaja ----------------
+   Jalan sekali saja (ditandai settings.nx). Cadangan otomatis dibuat sebelum menyimpan.
+   Hanya mengganti teks/layanan yang MASIH berupa data bawaan lama; yang sudah diubah admin tidak disentuh. */
+(async () => {
+  try {
+    if (store.settings && store.settings.nx) return;
+    const next = JSON.parse(JSON.stringify(store));
+    const s = next.settings = next.settings || {};
+    s.showPrices = false;
+    s.brand = "nextaja"; s.tiktok = "@akihabara.fuzi"; s.instagram = "@deikaru.dz"; s.facebook = "Next Aja"; s.studioSoon = true;
+    s.theme = { preset: "terra", a1: "", a2: "" };
+    if (/\*estetik\*/.test(s.heroTitle || "")) {
+      s.heroEyebrow = "Operasional 8+ tahun, sekarang membangun jasa analisa social media";
+      s.heroTitle = "Naik kelas pelan-pelan, dengan *data* yang jujur.";
+      s.heroLead = "Analisa akun TikTok dan Instagram, preset dan template IG, bantuan akademik, serta service housekeeping, dari satu tempat.";
+    }
+    if ((s.marquee || []).includes("Deep Cleaning")) s.marquee = ["Analisa TikTok", "Analisa Instagram", "Akun Affiliator", "Preset IG", "Template IG", "Bantu Akademik", "Service Housekeeping"];
+    const oldIds = new Set(["apt", "kamar", "rumah", "deep", "ruang", "taman", "fog", "nyamuk", "rayap", "sofa"]);
+    if ((next.services || []).every(x => oldIds.has(x.id))) {
+      next.services = [
+        { id: "pest", name: "Pest control", desc: "Inspeksi, pengendalian, dan pencegahan. Dikerjakan mitra berizin.", icon: "rayap", g: ["#d97757", "#92400e"], active: true },
+        { id: "fog", name: "Cold fogging", desc: "Disinfeksi ruangan menyeluruh.", icon: "fog", g: ["#e2e8f0", "#64748b"], active: true },
+        { id: "clean", name: "Cleaning service", desc: "Apartemen, rumah, kantor, dan gedung.", icon: "rumah", g: ["#e8a87c", "#d97757"], active: true },
+        { id: "general", name: "General cleaning", desc: "Pembersihan menyeluruh untuk pindahan atau habis renovasi.", icon: "deep", g: ["#fde68a", "#d97706"], active: true },
+      ];
+    }
+    await saveStore(clean(next));
+    console.log("[nextaja] migrasi data selesai (cadangan ada di data/backups).");
+  } catch (e) { console.error("[nextaja] migrasi gagal, data lama tidak diubah:", e.message); }
+})();
+
+app.listen(PORT, "127.0.0.1", () => console.log(`nextaja jalan di http://127.0.0.1:${PORT}  (admin: /admin)`));
 
 /* ---------------- util ---------------- */
 function loadEnv(file) {
