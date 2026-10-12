@@ -115,7 +115,7 @@ module.exports = function mount(ctx) {
   }
   const setSession = (res, uid) => res.setHeader("Set-Cookie", `nx_user=${makeToken(uid)}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${SESSION_MS / 1000}${SECURE_COOKIE ? "; Secure" : ""}`);
   const hashPw = (pw, salt) => crypto.scryptSync(pw, salt, 64).toString("hex");
-  const checkPw = (pw, u) => { const a = Buffer.from(hashPw(pw, u.salt), "hex"), b = Buffer.from(u.hash, "hex"); return a.length === b.length && crypto.timingSafeEqual(a, b); };
+  const checkPw = (pw, u) => { if (!u.hash || !u.salt) return false; const a = Buffer.from(hashPw(pw, u.salt), "hex"), b = Buffer.from(u.hash, "hex"); return a.length === b.length && crypto.timingSafeEqual(a, b); };
   const EMAIL = /^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{2,}$/;
   const pubUser = u => ({ id: u.id, name: u.name, email: u.email });
   const fails = new Map();
@@ -148,11 +148,33 @@ module.exports = function mount(ctx) {
     fails.delete(key); setSession(res, u.id);
     res.json({ ok: true, user: pubUser(u) });
   });
+  const GOOGLE_ID = String(process.env.GOOGLE_CLIENT_ID || "").trim();
+  app.post("/ms/auth/google", json, needOrigin, async (req, res) => {
+    if (!GOOGLE_ID) return res.status(503).json({ error: "Masuk dengan Google belum aktif." });
+    const key = "g:" + req.ip;
+    if (limited(req, key)) return res.status(429).json({ error: "Terlalu banyak percobaan. Coba lagi 15 menit lagi." });
+    const cred = String(req.body?.credential || "");
+    if (cred.length < 20 || cred.length > 4000) { fail(key); return res.status(400).json({ error: "Token tidak valid." }); }
+    try {
+      const r = await fetch("https://oauth2.googleapis.com/tokeninfo?id_token=" + encodeURIComponent(cred), { signal: AbortSignal.timeout(8000) });
+      const t = await r.json();
+      const okIss = t.iss === "accounts.google.com" || t.iss === "https://accounts.google.com";
+      if (!r.ok || t.aud !== GOOGLE_ID || !okIss || String(t.email_verified) !== "true" || !t.email || Number(t.exp) * 1000 < Date.now()) { fail(key); return res.status(401).json({ error: "Login Google ditolak. Coba lagi." }); }
+      const email = String(t.email).toLowerCase();
+      let u = db.users.find(x => x.email === email);
+      if (!u) {
+        u = { id: crypto.randomBytes(8).toString("hex"), name: str(t.name || email.split("@")[0], 60), email, google: true, createdAt: new Date().toISOString() };
+        db.users.push(u); await saveDb();
+      }
+      fails.delete(key); setSession(res, u.id);
+      res.json({ ok: true, user: pubUser(u) });
+    } catch { res.status(502).json({ error: "Tidak bisa menghubungi Google. Coba lagi." }); }
+  });
   app.post("/ms/auth/logout", (req, res) => { res.setHeader("Set-Cookie", "nx_user=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0"); res.json({ ok: true }); });
   app.post("/ms/auth/password", json, needOrigin, async (req, res) => {
     const u = userFrom(req); if (!u) return res.status(401).json({ error: "Silakan masuk dulu." });
     const old = String(req.body?.old || ""), nw = String(req.body?.new || "");
-    if (!checkPw(old, u)) return res.status(401).json({ error: "Sandi lama salah." });
+    if (u.hash && !checkPw(old, u)) return res.status(401).json({ error: "Sandi lama salah." });
     if (nw.length < 8 || nw.length > 100) return res.status(400).json({ error: "Sandi baru minimal 8 karakter." });
     u.salt = crypto.randomBytes(16).toString("hex"); u.hash = hashPw(nw, u.salt); await saveDb();
     res.json({ ok: true });
@@ -253,7 +275,7 @@ module.exports = function mount(ctx) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 <script>try{var t=localStorage.getItem("nx-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
-<link rel="stylesheet" href="/assets/blog.css?v=2">
+<link rel="stylesheet" href="/assets/blog.css?v=3">
 ${extra}
 </head>
 <body>
@@ -327,6 +349,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
           <p class="err" id="err" role="alert"></p>
           <button class="btn btn-pri" id="go" type="submit">Masuk</button>
         </form>
+        <div id="gWrap" hidden><div class="or"><span>atau</span></div><div id="gBtn" style="display:flex;justify-content:center"></div></div>
         <p class="small">Lupa sandi? <a id="wa" href="#" target="_blank" rel="noopener">Hubungi admin lewat WhatsApp</a> dan minta sandi sementara.</p>
       </div></div></section>
       <script>
@@ -336,6 +359,14 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
         document.querySelectorAll(".tabs2 button").forEach(function(x){x.setAttribute("aria-pressed",x===b)});
         document.getElementById("lName").hidden=mode!=="up";document.getElementById("hint").hidden=mode!=="up";
         document.getElementById("go").textContent=mode==="up"?"Buat akun":"Masuk";f.password.autocomplete=mode==="up"?"new-password":"current-password";err.textContent="";});});
+      var GID=${JSON.stringify(GOOGLE_ID)};
+      if(GID){var sc=document.createElement("script");sc.src="https://accounts.google.com/gsi/client";sc.async=true;sc.onload=function(){
+        google.accounts.id.initialize({client_id:GID,callback:function(r){err.textContent="";
+          fetch("/ms/auth/google",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({credential:r.credential})})
+          .then(function(x){return x.json().then(function(j){return {ok:x.ok,j:j}})}).then(function(x){if(x.ok)location.href="/ms/akun";else err.textContent=x.j.error||"Gagal. Coba lagi.";})
+          .catch(function(){err.textContent="Tidak bisa terhubung. Coba lagi.";});}});
+        google.accounts.id.renderButton(document.getElementById("gBtn"),{theme:"outline",size:"large",text:"continue_with",shape:"pill",width:300,locale:"id"});
+        document.getElementById("gWrap").hidden=false;};document.head.appendChild(sc);}
       f.addEventListener("submit",function(e){e.preventDefault();err.textContent="";
         var d={email:f.email.value,password:f.password.value};if(mode==="up")d.name=f.name.value;
         fetch("/ms/auth/"+(mode==="up"?"register":"login"),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)})
