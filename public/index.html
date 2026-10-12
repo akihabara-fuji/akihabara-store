@@ -62,8 +62,9 @@ img{max-width:100%;display:block}
 .mode{display:flex;border:1px solid var(--border);border-radius:999px;padding:3px;font-size:12px;font-weight:700;background:var(--surface)}
 .mode button{border:0;background:none;color:var(--muted);padding:6px 12px;border-radius:999px;font:inherit;cursor:pointer}
 [data-theme=dark] .mode [data-m=dark],[data-theme=light] .mode [data-m=light]{background:var(--acc);color:var(--on-accent)}
+.links .only-m{display:none}
 .burger{display:none;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:12px;width:42px;height:42px;font-size:18px;cursor:pointer}
-@media(max-width:980px){.links{display:none;position:absolute;left:0;right:0;top:70px;flex-direction:column;background:var(--bg);border-bottom:1px solid var(--border);padding:16px 24px;gap:16px}.links.open{display:flex}.burger{display:block}.nav-r .btn-ghost{display:none}}
+@media(max-width:980px){.links .only-m{display:block}.links{display:none;position:absolute;left:0;right:0;top:70px;flex-direction:column;background:var(--bg);border-bottom:1px solid var(--border);padding:16px 24px;gap:16px}.links.open{display:flex}.burger{display:block}.nav-r .btn-ghost{display:none}}
 
 /* hero */
 .hero{position:relative;overflow:hidden;padding:64px 0 40px}
@@ -101,7 +102,8 @@ img{max-width:100%;display:block}
 .orb{position:absolute;left:-14px;bottom:8px;width:84px;height:84px;border-radius:50%;background:radial-gradient(circle at 32% 28%,#fff,var(--acc2) 42%,var(--acc) 88%);box-shadow:inset -14px -16px 28px rgba(0,0,0,.28),0 22px 40px var(--glow);animation:fl 7s ease-in-out infinite;opacity:.95}
 .cube{position:absolute;left:46%;top:-26px;width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--acc2),var(--acc));transform:rotate(24deg);box-shadow:0 14px 24px var(--glow);animation:fl 6s ease-in-out infinite}
 @media(max-width:900px){.hero-grid{grid-template-columns:1fr}.mock{height:400px;margin-top:20px}.rows{grid-template-columns:1fr}.f1{display:none}}
-@media(max-width:640px){.nav-r .btn-pri{display:none}.hero{padding-top:36px}.panel{grid-template-columns:1fr;inset:0;padding:16px}.rail{display:none}.kpi{padding:10px}.kpi b{font-size:18px}.f2{right:4px;bottom:-30px}.orb{left:-8px;bottom:-6px;width:64px;height:64px}.cube{display:none}.banner{padding:28px}}
+@media(max-width:640px){.nav-r .btn-pri,.nav-r .btn-ghost{display:none}.hero{padding-top:36px}.panel{grid-template-columns:1fr;inset:0;padding:16px}.rail{display:none}.kpi{padding:10px}.kpi b{font-size:18px}.f2{right:4px;bottom:-30px}.orb{left:-8px;bottom:-6px;width:64px;height:64px}.cube{display:none}.bp{overflow:hidden;display:flex;flex-direction:column;transition:transform .2s}.bp:hover{transform:translateY(-3px)}.bp .cv{aspect-ratio:16/9;background:linear-gradient(135deg,var(--acc),var(--acc2));display:flex;align-items:center;justify-content:center;color:var(--on-accent);font-family:'Space Grotesk',sans-serif;font-weight:700;padding:12px;text-align:center}.bp .cv img{width:100%;height:100%;object-fit:cover}.bp .pb{padding:18px;display:flex;flex-direction:column;gap:6px}.bp h3{margin:0;font-size:18px}.bp p{margin:0;color:var(--muted);font-size:14px}
+.banner{padding:28px}}
 
 /* strip */
 .strip{background:var(--surface2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:20px 0}
@@ -201,15 +203,17 @@ footer nav{display:flex;flex-wrap:wrap;gap:20px}
   <div class="wrap">
     <a href="#top" class="logo" aria-label="nextaja, ke atas"><b>N</b><span id="brand">nextaja</span></a>
     <nav class="links" id="links" aria-label="Menu utama">
+      <a href="/blog">Blog</a>
       <a href="#produk">Preset &amp; Template</a>
       <a href="#analisa">Analisa</a>
       <a href="#studio" id="navStudio">Studio Konten<span class="soon">segera</span></a>
       <a href="#akademik">Akademik</a>
       <a href="#jasa">Housekeeping</a>
-      <a href="#portofolio">Portofolio</a>
+      <a href="/ms/masuk" class="only-m">Masuk</a>
     </nav>
     <div class="nav-r">
       <div class="mode" role="group" aria-label="Mode tampilan"><button type="button" data-m="dark">Gelap</button><button type="button" data-m="light">Terang</button></div>
+      <a class="btn btn-ghost btn-sm" id="navAcc" href="/ms/masuk">Masuk</a>
       <a class="btn btn-pri btn-sm" data-wa="Halo admin nextaja, saya mau tanya-tanya dulu." href="#">Chat Admin</a>
       <button class="burger" id="burger" aria-label="Buka menu" aria-expanded="false">☰</button>
     </div>
@@ -224,7 +228,7 @@ footer nav{display:flex;flex-wrap:wrap;gap:20px}
       <span class="tag" id="heroEyebrow">Analisa TikTok, Instagram, dan Affiliator</span>
       <h1 id="heroTitle">Naik kelas pelan-pelan, dengan <em>data</em> yang jujur.</h1>
       <p class="lead" id="heroLead">Analisa akun, preset dan template IG, bantuan akademik, dan service housekeeping dari satu tempat.</p>
-      <div class="cta"><a class="btn btn-pri" id="ctaAnalisa" href="#analisa">Cek akun</a><a class="btn btn-ghost" href="#portofolio">Lihat portofolio</a></div>
+      <div class="cta"><a class="btn btn-pri" id="ctaAnalisa" href="#analisa">Cek akun</a><a class="btn btn-ghost" href="#produk">Lihat produk</a></div>
       <div class="follow" id="follow"></div>
     </div>
     <div class="mock" aria-hidden="true">
@@ -332,14 +336,10 @@ footer nav{display:flex;flex-wrap:wrap;gap:20px}
   </div>
 </section>
 
-<section class="s" id="portofolio">
+<section class="s" id="viral" hidden>
   <div class="wrap">
-    <div class="sh"><div><span class="eyebrow">Portofolio</span><h2>Bukti kerja, bukan sekadar janji</h2><p>Dika Priyadi: supervisor operasional dengan pengalaman lebih dari 8 tahun, sekarang membangun jasa analisa social media. Yang tampil di sini nyata. Yang belum ada ditandai.</p></div></div>
-    <div class="card stats rv"><div><b>8+</b><span>Tahun pengalaman lapangan</span></div><div><b id="statSvc">4</b><span>Layanan housekeeping</span></div><div><b>5</b><span>Platform dianalisa</span></div><div><b>Day 1</b><span>Jurnal terbuka dimulai</span></div></div>
-    <div class="g2" style="margin-top:18px">
-      <div class="card journal rv"><b style="color:var(--text)">Jurnal perjalanan</b><div><b>Day 1</b><span>Cerita awal: kenapa mulai dan apa yang dibangun.</span></div><div><b>Day N</b><span>Progres, kegagalan, dan pelajaran dicatat tiap hari.</span></div><div><b>Bulan 1</b><span>Rekap angka nyata. DATA BELUM TERSEDIA.</span></div></div>
-      <div class="card chan rv" id="chan"><b style="color:var(--text)">Ikuti perjalanannya</b></div>
-    </div>
+    <div class="sh"><div><span class="eyebrow">Blog</span><h2>Berita viral apa hari ini?</h2><p>Yang lagi ramai, dirangkum singkat.</p></div><a class="btn btn-ghost btn-sm" href="/blog?f=viral">Lihat semua</a></div>
+    <div class="g3" id="viralList"></div>
   </div>
 </section>
 
@@ -355,7 +355,7 @@ footer nav{display:flex;flex-wrap:wrap;gap:20px}
 <footer>
   <div class="wrap">
     <div><b id="brand2">nextaja</b> · Jakarta Barat<br>© <span id="yr"></span> Semua hak dilindungi.<div id="footSocial" style="margin-top:6px"></div></div>
-    <nav aria-label="Footer"><a href="#produk">Preset &amp; Template</a><a href="#analisa">Analisa</a><a href="#akademik">Akademik</a><a href="#jasa">Housekeeping</a><a href="#portofolio">Portofolio</a></nav>
+    <nav aria-label="Footer"><a href="/blog">Blog</a><a href="#produk">Preset &amp; Template</a><a href="#analisa">Analisa</a><a href="#akademik">Akademik</a><a href="#jasa">Housekeeping</a></nav>
   </div>
 </footer>
 
@@ -400,9 +400,6 @@ if(S.instagram)soc.push({n:"Instagram",h:S.instagram,u:"https://www.instagram.co
 if(S.facebook)soc.push({n:"Facebook",h:S.facebook,u:S.facebookUrl||""});
 $("#follow").innerHTML="Ikuti perjalanannya: "+soc.map(function(x){return esc(x.n)+" "+esc(x.h)}).join(" · ");
 $("#footSocial").innerHTML=soc.map(function(x){return x.u?'<a href="'+esc(x.u)+'" target="_blank" rel="noopener">'+esc(x.n)+" "+esc(x.h)+"</a>":esc(x.n)+" "+esc(x.h)}).join(" · ");
-var chan=$("#chan");
-soc.forEach(function(x){var el=document.createElement(x.u?"a":"div");if(x.u){el.href=x.u;el.target="_blank";el.rel="noopener";}el.innerHTML=esc(x.n)+"<span>"+esc(x.h)+"</span>";chan.appendChild(el);});
-var site=document.createElement("div");site.innerHTML="Website<span>nextaja.com</span>";chan.appendChild(site);
 
 /* analisa: satu pintu, tiga pilihan */
 var chips=$("#chips");
@@ -447,7 +444,6 @@ drawProducts();
 
 /* housekeeping dari data admin */
 var svcs=ST.services||[];
-$("#statSvc").textContent=svcs.length||4;
 $("#services").innerHTML=svcs.length?svcs.map(function(s){
   var g=s.g||["#d97757","#92400e"];
   return '<article class="card svc rv"><div class="ico" style="background:linear-gradient(135deg,'+esc(g[0])+','+esc(g[1])+')"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(s.icon||"")+'</svg></div><h3>'+esc(s.name)+'</h3><p>'+esc(s.desc)+'</p><div class="price soon-p" style="margin-top:auto">Harga menyusul</div></article>';
@@ -474,6 +470,14 @@ function reveal(){
   els.forEach(function(e){io.observe(e)});
 }
 reveal();
+
+/* akun + blog terbaru */
+fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(function(d){if(d.user){var a=$("#navAcc");a.textContent="Akun saya";a.href="/ms/akun";var m=document.querySelector(".only-m");if(m){m.textContent="Akun saya";m.href="/ms/akun";}}}).catch(function(){});
+fetch("/ms/blog/latest?f=viral",{cache:"no-cache"}).then(function(r){return r.json()}).then(function(d){
+  var l=d.posts||[];if(!l.length)return;
+  $("#viralList").innerHTML=l.map(function(p){return '<a class="card bp rv" href="/blog/'+esc(p.slug)+'"><div class="cv">'+(p.cover?'<img src="'+esc(p.cover)+'" alt="" loading="lazy">':esc(p.topic))+'</div><div class="pb"><h3>'+esc(p.title)+'</h3><p>'+esc(p.excerpt)+'</p></div></a>'}).join("");
+  $("#viral").hidden=false;reveal();
+}).catch(function(){});
 requestAnimationFrame(function(){$("#heroSec").classList.add("in")});
 })();
 </script>

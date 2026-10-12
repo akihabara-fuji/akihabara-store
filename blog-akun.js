@@ -1,0 +1,374 @@
+/* =================================================================
+   nextaja — Blog + Akun customer
+   Dipasang dari server.js:  require("./blog-akun")({ ...helpers })
+   Data: data/blog.json, data/users.json (dibuat otomatis, tidak masuk git)
+   ================================================================= */
+"use strict";
+const fs = require("fs");
+const fsp = fs.promises;
+const path = require("path");
+const crypto = require("crypto");
+
+module.exports = function mount(ctx) {
+  const { app, express, requireAdmin, sameOrigin, getCookie, SECURE_COOKIE, ROOT, SITE } = ctx;
+  const DATA_DIR = path.join(ROOT, "data");
+  const BLOG = path.join(DATA_DIR, "blog.json");
+  const USERS = path.join(DATA_DIR, "users.json");
+  const BLOG_BAK = path.join(DATA_DIR, "backups-blog");
+  const SECRET_FILE = path.join(DATA_DIR, ".secret");
+  fs.mkdirSync(BLOG_BAK, { recursive: true });
+
+  /* ---------- util ---------- */
+  const esc = v => String(v == null ? "" : v).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const str = (v, max = 300) => String(v ?? "").replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "").trim().slice(0, max);
+  const img = v => { const s = str(v, 200); return /^\/uploads\/[a-z0-9._-]+$/i.test(s) ? s : ""; };
+  const readJson = (file, fallback) => { try { return JSON.parse(fs.readFileSync(file, "utf8")); } catch { return fallback; } };
+  const writeJson = async (file, obj) => {
+    const tmp = file + ".tmp";
+    await fsp.writeFile(tmp, JSON.stringify(obj, null, 2));
+    await fsp.rename(tmp, file);
+  };
+  const fmtDate = iso => new Date(iso).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Jakarta" });
+
+  /* ============================== BLOG ============================== */
+  const TOPICS = {
+    study: { label: "Study", ask: "Belajar, kuliah, dan tugas" },
+    social: { label: "Social Media Update", ask: "Kabar dan tips social media" },
+    ai: { label: "AI & Info Lain", ask: "AI, teknologi, dan info lain" },
+    viral: { label: "Berita viral hari ini", ask: "Berita viral hari ini" },
+  };
+  let blog = readJson(BLOG, { posts: [] });
+  if (!Array.isArray(blog.posts)) blog.posts = [];
+  const TRASH_MS = 30 * 24 * 3600 * 1000;
+  let blogWrite = Promise.resolve();
+  function saveBlog() {
+    blogWrite = blogWrite.then(async () => {
+      if (fs.existsSync(BLOG)) {
+        const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+        await fsp.copyFile(BLOG, path.join(BLOG_BAK, `blog-${stamp}.json`)).catch(() => {});
+        const files = (await fsp.readdir(BLOG_BAK)).filter(f => f.endsWith(".json")).sort();
+        for (const f of files.slice(0, Math.max(0, files.length - 40))) await fsp.unlink(path.join(BLOG_BAK, f)).catch(() => {});
+      }
+      await writeJson(BLOG, blog);
+    });
+    return blogWrite;
+  }
+  // buang isi sampah yang sudah lewat 30 hari
+  const before = blog.posts.length;
+  blog.posts = blog.posts.filter(p => !(p.trashedAt && Date.now() - new Date(p.trashedAt).getTime() > TRASH_MS));
+  if (blog.posts.length !== before) saveBlog();
+
+  const slugify = t => str(t, 90).toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 70) || "tulisan";
+  function uniqueSlug(base, selfId) {
+    let s = base, n = 2;
+    while (blog.posts.some(p => p.slug === s && p.id !== selfId)) s = `${base}-${n++}`;
+    return s;
+  }
+  const published = () => blog.posts.filter(p => p.status === "published" && !p.trashedAt).sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+
+  function inline(t) {
+    return esc(t)
+      .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+      .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" rel="nofollow noopener" target="_blank">$1</a>');
+  }
+  function renderBody(txt) {
+    let html = "", list = false, para = [];
+    const flush = () => { if (para.length) { html += `<p>${inline(para.join(" "))}</p>`; para = []; } };
+    const endList = () => { if (list) { html += "</ul>"; list = false; } };
+    for (const raw of String(txt || "").replace(/\r/g, "").split("\n")) {
+      const l = raw.trim();
+      if (!l) { flush(); endList(); continue; }
+      if (/^##\s+/.test(l)) { flush(); endList(); html += `<h2>${inline(l.replace(/^##\s+/, ""))}</h2>`; continue; }
+      if (/^###\s+/.test(l)) { flush(); endList(); html += `<h3>${inline(l.replace(/^###\s+/, ""))}</h3>`; continue; }
+      if (/^[-*]\s+/.test(l)) { flush(); if (!list) { html += "<ul>"; list = true; } html += `<li>${inline(l.replace(/^[-*]\s+/, ""))}</li>`; continue; }
+      endList(); para.push(l);
+    }
+    flush(); endList();
+    return html;
+  }
+
+  /* ============================== AKUN ============================== */
+  let secret;
+  try { secret = fs.readFileSync(SECRET_FILE, "utf8").trim(); } catch {}
+  if (!secret || secret.length < 32) { secret = crypto.randomBytes(32).toString("hex"); fs.writeFileSync(SECRET_FILE, secret, { mode: 0o600 }); }
+  let db = readJson(USERS, { users: [], orders: [] });
+  if (!Array.isArray(db.users)) db.users = [];
+  if (!Array.isArray(db.orders)) db.orders = [];
+  let dbWrite = Promise.resolve();
+  const saveDb = () => (dbWrite = dbWrite.then(() => writeJson(USERS, db)));
+
+  const b64 = o => Buffer.from(JSON.stringify(o)).toString("base64url");
+  const mac = s => crypto.createHmac("sha256", secret).update(s).digest("base64url");
+  const SESSION_MS = 30 * 24 * 3600 * 1000;
+  function makeToken(uid) { const p = b64({ u: uid, e: Date.now() + SESSION_MS }); return `${p}.${mac(p)}`; }
+  function userFrom(req) {
+    const t = getCookie(req, "nx_user");
+    const [p, m] = String(t || "").split(".");
+    if (!p || !m) return null;
+    const good = Buffer.from(mac(p)), got = Buffer.from(m);
+    if (good.length !== got.length || !crypto.timingSafeEqual(good, got)) return null;
+    try {
+      const d = JSON.parse(Buffer.from(p, "base64url").toString());
+      if (!d.e || d.e < Date.now()) return null;
+      return db.users.find(u => u.id === d.u) || null;
+    } catch { return null; }
+  }
+  const setSession = (res, uid) => res.setHeader("Set-Cookie", `nx_user=${makeToken(uid)}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${SESSION_MS / 1000}${SECURE_COOKIE ? "; Secure" : ""}`);
+  const hashPw = (pw, salt) => crypto.scryptSync(pw, salt, 64).toString("hex");
+  const checkPw = (pw, u) => { const a = Buffer.from(hashPw(pw, u.salt), "hex"), b = Buffer.from(u.hash, "hex"); return a.length === b.length && crypto.timingSafeEqual(a, b); };
+  const EMAIL = /^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{2,}$/;
+  const pubUser = u => ({ id: u.id, name: u.name, email: u.email });
+  const fails = new Map();
+  function limited(req, key) { const f = fails.get(key); return f && f.until > Date.now(); }
+  function fail(key) { const f = fails.get(key) || { n: 0 }; f.n++; f.until = f.n >= 6 ? Date.now() + 15 * 60 * 1000 : 0; fails.set(key, f); }
+  const STATUSES = ["Diterima", "Dikerjakan", "Review", "Selesai", "Dibatalkan"];
+  const json = express.json({ limit: "8kb" });
+  const needOrigin = (req, res, next) => (sameOrigin(req) ? next() : res.status(403).json({ error: "Permintaan ditolak." }));
+
+  app.get("/ms/auth/me", (req, res) => { res.set("Cache-Control", "no-store"); const u = userFrom(req); res.json({ user: u ? pubUser(u) : null }); });
+  app.post("/ms/auth/register", json, needOrigin, async (req, res) => {
+    const key = "r:" + req.ip;
+    if (limited(req, key)) return res.status(429).json({ error: "Terlalu banyak percobaan. Coba lagi 15 menit lagi." });
+    const name = str(req.body?.name, 60), email = str(req.body?.email, 254).toLowerCase(), pw = String(req.body?.password || "");
+    if (!name) return res.status(400).json({ error: "Nama wajib diisi." });
+    if (!EMAIL.test(email)) return res.status(400).json({ error: "Email tidak valid." });
+    if (pw.length < 8 || pw.length > 100) return res.status(400).json({ error: "Sandi minimal 8 karakter." });
+    if (db.users.some(u => u.email === email)) { fail(key); return res.status(409).json({ error: "Email ini sudah terdaftar. Coba masuk." }); }
+    const salt = crypto.randomBytes(16).toString("hex");
+    const u = { id: crypto.randomBytes(8).toString("hex"), name, email, salt, hash: hashPw(pw, salt), createdAt: new Date().toISOString() };
+    db.users.push(u); await saveDb(); setSession(res, u.id);
+    res.json({ ok: true, user: pubUser(u) });
+  });
+  app.post("/ms/auth/login", json, needOrigin, (req, res) => {
+    const email = str(req.body?.email, 254).toLowerCase(), pw = String(req.body?.password || "");
+    const key = "l:" + req.ip + ":" + email;
+    if (limited(req, key)) return res.status(429).json({ error: "Terlalu banyak percobaan. Coba lagi 15 menit lagi." });
+    const u = db.users.find(x => x.email === email);
+    if (!u || !checkPw(pw, u)) { fail(key); return res.status(401).json({ error: "Email atau sandi salah." }); }
+    fails.delete(key); setSession(res, u.id);
+    res.json({ ok: true, user: pubUser(u) });
+  });
+  app.post("/ms/auth/logout", (req, res) => { res.setHeader("Set-Cookie", "nx_user=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0"); res.json({ ok: true }); });
+  app.post("/ms/auth/password", json, needOrigin, async (req, res) => {
+    const u = userFrom(req); if (!u) return res.status(401).json({ error: "Silakan masuk dulu." });
+    const old = String(req.body?.old || ""), nw = String(req.body?.new || "");
+    if (!checkPw(old, u)) return res.status(401).json({ error: "Sandi lama salah." });
+    if (nw.length < 8 || nw.length > 100) return res.status(400).json({ error: "Sandi baru minimal 8 karakter." });
+    u.salt = crypto.randomBytes(16).toString("hex"); u.hash = hashPw(nw, u.salt); await saveDb();
+    res.json({ ok: true });
+  });
+  app.get("/ms/auth/orders", (req, res) => {
+    const u = userFrom(req); if (!u) return res.status(401).json({ error: "Silakan masuk dulu." });
+    res.set("Cache-Control", "no-store");
+    res.json({ orders: db.orders.filter(o => o.userId === u.id).sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)).map(o => ({ id: o.id, title: o.title, status: o.status, note: o.note, updatedAt: o.updatedAt })) });
+  });
+
+  /* ---------------- API admin: blog ---------------- */
+  const adminJson = express.json({ limit: "400kb" });
+  app.get("/ms/admin/posts", requireAdmin, (req, res) => {
+    const all = blog.posts.slice().sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+    res.json({ topics: TOPICS, posts: all.filter(p => !p.trashedAt), trash: all.filter(p => p.trashedAt) });
+  });
+  app.post("/ms/admin/posts", requireAdmin, adminJson, async (req, res) => {
+    const b = req.body || {};
+    const title = str(b.title, 140);
+    if (!title) return res.status(400).json({ error: "Judul wajib diisi." });
+    const topic = TOPICS[b.topic] ? b.topic : "social";
+    const status = b.status === "published" ? "published" : "draft";
+    const now = new Date().toISOString();
+    let p = b.id ? blog.posts.find(x => x.id === b.id) : null;
+    if (!p) { p = { id: crypto.randomBytes(6).toString("hex"), slug: uniqueSlug(slugify(title)), createdAt: now }; blog.posts.push(p); }
+    Object.assign(p, { title, topic, excerpt: str(b.excerpt, 260), body: String(b.body || "").slice(0, 60000), cover: img(b.cover), status, updatedAt: now });
+    if (status === "published" && !p.publishedAt) p.publishedAt = now;
+    await saveBlog(); res.json({ ok: true, post: p });
+  });
+  app.post("/ms/admin/posts/:id/trash", requireAdmin, async (req, res) => {
+    const p = blog.posts.find(x => x.id === req.params.id); if (!p) return res.status(404).json({ error: "Tulisan tidak ditemukan." });
+    p.trashedAt = new Date().toISOString(); await saveBlog(); res.json({ ok: true });
+  });
+  app.post("/ms/admin/posts/:id/restore", requireAdmin, async (req, res) => {
+    const p = blog.posts.find(x => x.id === req.params.id); if (!p) return res.status(404).json({ error: "Tulisan tidak ditemukan." });
+    delete p.trashedAt; await saveBlog(); res.json({ ok: true });
+  });
+  app.delete("/ms/admin/posts/:id", requireAdmin, async (req, res) => {
+    const i = blog.posts.findIndex(x => x.id === req.params.id && x.trashedAt); if (i < 0) return res.status(400).json({ error: "Hanya tulisan di sampah yang bisa dihapus permanen." });
+    blog.posts.splice(i, 1); await saveBlog(); res.json({ ok: true });
+  });
+
+  /* ---------------- API admin: pelanggan & pesanan ---------------- */
+  app.get("/ms/admin/users", requireAdmin, (req, res) => {
+    res.json({ statuses: STATUSES, users: db.users.map(u => ({ id: u.id, name: u.name, email: u.email, createdAt: u.createdAt, orders: db.orders.filter(o => o.userId === u.id).sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)) })) });
+  });
+  app.post("/ms/admin/orders", requireAdmin, express.json({ limit: "8kb" }), async (req, res) => {
+    const b = req.body || {};
+    const u = db.users.find(x => x.id === b.userId); if (!u) return res.status(404).json({ error: "Pelanggan tidak ditemukan." });
+    const title = str(b.title, 120); if (!title) return res.status(400).json({ error: "Nama pesanan wajib diisi." });
+    const o = { id: crypto.randomBytes(6).toString("hex"), userId: u.id, title, status: STATUSES.includes(b.status) ? b.status : "Diterima", note: str(b.note, 300), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+    db.orders.push(o); await saveDb(); res.json({ ok: true, order: o });
+  });
+  app.put("/ms/admin/orders/:id", requireAdmin, express.json({ limit: "8kb" }), async (req, res) => {
+    const o = db.orders.find(x => x.id === req.params.id); if (!o) return res.status(404).json({ error: "Pesanan tidak ditemukan." });
+    const b = req.body || {};
+    if (b.title !== undefined) o.title = str(b.title, 120) || o.title;
+    if (STATUSES.includes(b.status)) o.status = b.status;
+    if (b.note !== undefined) o.note = str(b.note, 300);
+    o.updatedAt = new Date().toISOString(); await saveDb(); res.json({ ok: true, order: o });
+  });
+  app.delete("/ms/admin/orders/:id", requireAdmin, async (req, res) => {
+    const i = db.orders.findIndex(x => x.id === req.params.id); if (i < 0) return res.status(404).json({ error: "Pesanan tidak ditemukan." });
+    db.orders.splice(i, 1); await saveDb(); res.json({ ok: true });
+  });
+  // sandi sementara untuk pelanggan yang lupa sandi (tidak ada email otomatis)
+  app.post("/ms/admin/users/:id/reset", requireAdmin, async (req, res) => {
+    const u = db.users.find(x => x.id === req.params.id); if (!u) return res.status(404).json({ error: "Pelanggan tidak ditemukan." });
+    const temp = crypto.randomBytes(6).toString("base64url");
+    u.salt = crypto.randomBytes(16).toString("hex"); u.hash = hashPw(temp, u.salt); await saveDb();
+    res.json({ ok: true, tempPassword: temp });
+  });
+
+  /* ---------------- API publik blog (untuk beranda) ---------------- */
+  app.get("/ms/blog/latest", (req, res) => {
+    res.set("Cache-Control", "no-cache");
+    const f = TOPICS[req.query.f] ? req.query.f : "";
+    const list = published().filter(p => !f || p.topic === f).slice(0, 3);
+    res.json({ posts: list.map(p => ({ slug: p.slug, title: p.title, excerpt: p.excerpt, topic: TOPICS[p.topic].label, cover: p.cover, date: p.publishedAt })) });
+  });
+
+  /* ============================ HALAMAN ============================ */
+  const SOCIAL = () => (ctx.getSettings ? ctx.getSettings() : {}) || {};
+  function layout({ title, desc, path: pth, body, extra = "" }) {
+    const st = SOCIAL();
+    const brand = esc(st.brand || "nextaja");
+    const canon = `${SITE}${pth}`;
+    return `<!doctype html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${esc(title)}</title>
+<meta name="description" content="${esc(desc)}">
+<meta name="theme-color" content="#1f1e1d">
+<link rel="canonical" href="${esc(canon)}">
+<meta property="og:type" content="website"><meta property="og:site_name" content="${brand}"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${esc(canon)}">
+<link rel="icon" href="/favicon.ico" sizes="any"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<script>try{var t=localStorage.getItem("nx-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
+<link rel="stylesheet" href="/assets/blog.css?v=1">
+${extra}
+</head>
+<body>
+<header class="nav"><div class="wrap">
+  <a href="/" class="logo" aria-label="${brand}, beranda"><b>N</b><span>${brand}</span></a>
+  <nav class="links" id="links" aria-label="Menu utama">
+    <a href="/blog">Blog</a><a href="/#produk">Preset &amp; Template</a><a href="/#analisa">Analisa</a><a href="/#akademik">Akademik</a><a href="/#jasa">Housekeeping</a>
+  </nav>
+  <div class="nav-r">
+    <div class="mode" role="group" aria-label="Mode tampilan"><button type="button" data-m="dark">Gelap</button><button type="button" data-m="light">Terang</button></div>
+    <a class="btn btn-pri btn-sm" id="navAcc" href="/ms/masuk">Masuk</a>
+    <button class="burger" id="burger" aria-label="Buka menu" aria-expanded="false">☰</button>
+  </div>
+</div></header>
+<main>${body}</main>
+<footer><div class="wrap"><div><b>${brand}</b> · Jakarta Barat<br>© ${new Date().getFullYear()} Semua hak dilindungi.</div><nav><a href="/blog">Blog</a><a href="/#akademik">Akademik</a><a href="/#jasa">Housekeeping</a><a href="/ms/masuk">Masuk</a></nav></div></footer>
+<script>
+(function(){
+function setMode(m){document.documentElement.dataset.theme=m;try{localStorage.setItem("nx-theme",m)}catch(e){}var tc=document.querySelector('meta[name=theme-color]');if(tc)tc.content=m==="light"?"#fbfbff":"#1f1e1d";}
+document.querySelectorAll(".mode button").forEach(function(b){b.addEventListener("click",function(){setMode(b.dataset.m)})});
+setMode(document.documentElement.dataset.theme||"dark");
+var bg=document.getElementById("burger"),ln=document.getElementById("links");
+bg.addEventListener("click",function(){var o=ln.classList.toggle("open");bg.setAttribute("aria-expanded",o)});
+fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(function(d){if(d.user){var a=document.getElementById("navAcc");a.textContent="Akun saya";a.href="/ms/akun";}}).catch(function(){});
+})();
+</script>
+</body></html>`;
+  }
+
+  const topicChip = (key, active) => `<a class="chip${active ? " on" : ""}" href="${key ? "/blog?f=" + key : "/blog"}">${key ? esc(TOPICS[key].label) : "Semua"}</a>`;
+  const coverHtml = p => p.cover ? `<img src="${esc(p.cover)}" alt="" loading="lazy">` : `<span class="ph-t">${esc(TOPICS[p.topic].label)}</span>`;
+
+  app.get("/blog", (req, res) => {
+    const f = TOPICS[req.query.f] ? req.query.f : "";
+    const list = published().filter(p => !f || p.topic === f).slice(0, 60);
+    const heading = f ? TOPICS[f].label : "Tulisan terbaru";
+    const body = `<section class="pg"><div class="wrap">
+      <span class="eyebrow">Blog</span><h1>${esc(f === "viral" ? "Berita viral apa hari ini?" : heading)}</h1>
+      <p class="lead">Catatan tentang belajar, social media, AI, dan hal-hal yang lagi ramai. Ditulis apa adanya.</p>
+      <div class="chips">${topicChip("", !f)}${Object.keys(TOPICS).map(k => topicChip(k, f === k)).join("")}</div>
+      ${list.length ? `<div class="grid">${list.map(p => `<a class="card post" href="/blog/${esc(p.slug)}"><div class="cv">${coverHtml(p)}</div><div class="pb"><span class="tag">${esc(TOPICS[p.topic].label)}</span><h3>${esc(p.title)}</h3><p>${esc(p.excerpt)}</p><small>${esc(fmtDate(p.publishedAt))}</small></div></a>`).join("")}</div>`
+        : `<div class="empty">Belum ada tulisan di sini. Tulisan pertama segera terbit.</div>`}
+    </div></section>`;
+    res.set("Cache-Control", "no-cache").type("html").send(layout({ title: `${heading} — Blog nextaja`, desc: "Catatan tentang belajar, social media, AI, dan berita viral hari ini dari nextaja.", path: f ? `/blog?f=${f}` : "/blog", body }));
+  });
+  app.get("/blog/:slug", (req, res, next) => {
+    const p = published().find(x => x.slug === req.params.slug);
+    if (!p) return next();
+    const ld = JSON.stringify({ "@context": "https://schema.org", "@type": "BlogPosting", headline: p.title, datePublished: p.publishedAt, dateModified: p.updatedAt, description: p.excerpt, image: p.cover ? SITE + p.cover : undefined, author: { "@type": "Person", name: "Dika Priyadi" }, mainEntityOfPage: `${SITE}/blog/${p.slug}` }).replace(/</g, "\\u003c");
+    const body = `<article class="pg art"><div class="wrap narrow">
+      <a class="back" href="/blog?f=${esc(p.topic)}">← ${esc(TOPICS[p.topic].label)}</a>
+      <h1>${esc(p.title)}</h1>
+      <div class="meta">${esc(fmtDate(p.publishedAt))} · Dika Priyadi</div>
+      ${p.cover ? `<img class="hero-img" src="${esc(p.cover)}" alt="">` : ""}
+      <div class="prose">${renderBody(p.body)}</div>
+      <div class="cta-box"><b>Butuh bantuan?</b><span>Analisa akun, template IG, bantuan akademik, atau housekeeping.</span><a class="btn btn-pri btn-sm" href="/#analisa">Lihat layanan</a></div>
+    </div></article>`;
+    res.set("Cache-Control", "no-cache").type("html").send(layout({ title: `${p.title} — nextaja`, desc: p.excerpt || p.title, path: `/blog/${p.slug}`, body, extra: `<script type="application/ld+json">${ld}</script>` }));
+  });
+
+  /* ---- login & akun ---- */
+  app.get("/ms/masuk", (req, res) => {
+    if (userFrom(req)) return res.redirect("/ms/akun");
+    const body = `<section class="pg"><div class="wrap narrow">
+      <div class="card form">
+        <div class="tabs2" role="tablist"><button type="button" data-t="in" aria-pressed="true">Masuk</button><button type="button" data-t="up" aria-pressed="false">Daftar</button></div>
+        <form id="f" novalidate>
+          <label id="lName" hidden>Nama<input name="name" autocomplete="name" maxlength="60"></label>
+          <label>Email<input name="email" type="email" autocomplete="email" required maxlength="254"></label>
+          <label>Sandi<input name="password" type="password" autocomplete="current-password" required minlength="8" maxlength="100"><small id="hint" hidden>Minimal 8 karakter.</small></label>
+          <p class="err" id="err" role="alert"></p>
+          <button class="btn btn-pri" id="go" type="submit">Masuk</button>
+        </form>
+        <p class="small">Lupa sandi? <a id="wa" href="#" target="_blank" rel="noopener">Hubungi admin lewat WhatsApp</a> dan minta sandi sementara.</p>
+      </div></div></section>
+      <script>
+      (function(){var mode="in",f=document.getElementById("f"),err=document.getElementById("err");
+      var w=${JSON.stringify(String((SOCIAL().waNumber) || "6285722227544"))};document.getElementById("wa").href="https://wa.me/"+w+"?text="+encodeURIComponent("Halo admin nextaja, saya lupa sandi akun saya.");
+      document.querySelectorAll(".tabs2 button").forEach(function(b){b.addEventListener("click",function(){mode=b.dataset.t;
+        document.querySelectorAll(".tabs2 button").forEach(function(x){x.setAttribute("aria-pressed",x===b)});
+        document.getElementById("lName").hidden=mode!=="up";document.getElementById("hint").hidden=mode!=="up";
+        document.getElementById("go").textContent=mode==="up"?"Buat akun":"Masuk";f.password.autocomplete=mode==="up"?"new-password":"current-password";err.textContent="";});});
+      f.addEventListener("submit",function(e){e.preventDefault();err.textContent="";
+        var d={email:f.email.value,password:f.password.value};if(mode==="up")d.name=f.name.value;
+        fetch("/ms/auth/"+(mode==="up"?"register":"login"),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)})
+        .then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j}})}).then(function(x){if(x.ok)location.href="/ms/akun";else err.textContent=x.j.error||"Gagal. Coba lagi.";})
+        .catch(function(){err.textContent="Tidak bisa terhubung. Coba lagi.";});});})();
+      </script>`;
+    res.set("Cache-Control", "no-store").type("html").send(layout({ title: "Masuk atau daftar — nextaja", desc: "Masuk ke akun nextaja untuk melihat pesanan kamu.", path: "/ms/masuk", body }));
+  });
+  app.get("/ms/akun", (req, res) => {
+    const u = userFrom(req);
+    if (!u) return res.redirect("/ms/masuk");
+    const body = `<section class="pg"><div class="wrap narrow">
+      <span class="eyebrow">Akun saya</span><h1>Halo, ${esc(u.name)}</h1><p class="lead">${esc(u.email)}</p>
+      <div class="card form"><h3>Pesanan saya</h3><div id="orders" class="orders"><div class="empty">Memuat…</div></div></div>
+      <div class="card form"><h3>Ganti sandi</h3>
+        <form id="pw" novalidate><label>Sandi lama<input name="old" type="password" autocomplete="current-password"></label><label>Sandi baru<input name="new" type="password" autocomplete="new-password" minlength="8"></label><p class="err" id="pe" role="alert"></p><button class="btn btn-pri btn-sm" type="submit">Simpan sandi</button></form></div>
+      <button class="btn btn-ghost btn-sm" id="out" type="button" style="margin-top:18px">Keluar</button>
+      </div></section>
+      <script>
+      (function(){var box=document.getElementById("orders");
+      function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+      fetch("/ms/auth/orders",{cache:"no-store"}).then(function(r){return r.json()}).then(function(d){
+        var o=d.orders||[];box.innerHTML=o.length?o.map(function(x){return '<div class="ord"><div><b>'+esc(x.title)+'</b>'+(x.note?'<small>'+esc(x.note)+'</small>':'')+'</div><span class="st st-'+esc(x.status)+'">'+esc(x.status)+'</span></div>'}).join(""):'<div class="empty">Belum ada pesanan. Pesanan yang kamu buat lewat WhatsApp akan muncul di sini setelah admin mencatatnya.</div>';
+      }).catch(function(){box.innerHTML='<div class="empty">Gagal memuat pesanan.</div>'});
+      document.getElementById("out").addEventListener("click",function(){fetch("/ms/auth/logout",{method:"POST"}).then(function(){location.href="/"})});
+      var f=document.getElementById("pw"),pe=document.getElementById("pe");
+      f.addEventListener("submit",function(e){e.preventDefault();pe.textContent="";pe.style.color="";
+        fetch("/ms/auth/password",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({old:f.old.value,new:f.new.value})})
+        .then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j}})}).then(function(x){if(x.ok){pe.style.color="var(--acc)";pe.textContent="Sandi sudah diganti.";f.reset();}else pe.textContent=x.j.error||"Gagal.";});});})();
+      </script>`;
+    res.set("Cache-Control", "no-store").type("html").send(layout({ title: "Akun saya — nextaja", desc: "Pesanan dan pengaturan akun nextaja.", path: "/ms/akun", body }));
+  });
+
+  // untuk sitemap
+  return { blogUrls: () => published().map(p => ({ loc: `${SITE}/blog/${p.slug}`, lastmod: (p.updatedAt || p.publishedAt || "").slice(0, 10), pri: "0.6" })) };
+};

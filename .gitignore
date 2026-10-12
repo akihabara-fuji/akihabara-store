@@ -1,3 +1,7 @@
 node_modules/
 .env
 data/backups/
+data/blog.json
+data/users.json
+data/.secret
+data/backups-blog/
