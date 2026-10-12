@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#1f1e1d;--card:#2a2926;--card2:#33312d;--line:rgba(255,255,255,.08);--line2:rgba(255,255,255,.15);--text:#f3f1f8;--muted:#a19dad;--dim:#75717f;--acc:#d97757;--acc2:#e8a87c;--ok:#22c55e;--bad:#f87171;--r:16px}
+:root{--bg:#1f1e1d;--card:#2a2926;--card2:#33312d;--line:rgba(255,255,255,.08);--line2:rgba(255,255,255,.15);--text:#f3f1f8;--muted:#a19dad;--dim:#75717f;--acc:#ff6a1a;--acc2:#ffa43a;--ok:#22c55e;--bad:#f87171;--r:16px}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:"Plus Jakarta Sans",system-ui,sans-serif;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
 button,input,select,textarea{font:inherit;color:inherit}
@@ -36,7 +36,7 @@ label small{font-weight:500;color:var(--dim)}
 input,select,textarea{width:100%;font-size:16px;background:#1a1918;border:1px solid var(--line2);border-radius:12px;padding:11px 13px;min-height:46px;color:var(--text)}
 textarea{min-height:96px;resize:vertical}
 input[type=color]{padding:4px;width:56px;height:46px;cursor:pointer}
-input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(217,119,87,.25)}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(255,106,26,.25)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media(max-width:620px){.grid2{grid-template-columns:1fr}}
 
@@ -105,7 +105,7 @@ dialog::backdrop{background:rgba(0,0,0,.7);backdrop-filter:blur(4px)}
 .img-prev{width:110px;aspect-ratio:4/5;border-radius:14px;background:#1d1b25 center/cover no-repeat;border:1px solid var(--line2);display:grid;place-items:center;color:var(--dim);font-size:12px;text-align:center;padding:6px}
 .icon-pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(48px,1fr));gap:8px}
 .icon-pick button{height:48px;border-radius:12px;border:1px solid var(--line2);display:grid;place-items:center;color:var(--muted)}
-.icon-pick button[aria-pressed=true]{border-color:var(--acc);color:#fff;background:rgba(217,119,87,.18)}
+.icon-pick button[aria-pressed=true]{border-color:var(--acc);color:#fff;background:rgba(255,106,26,.18)}
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%) translateY(20px);opacity:0;background:#1f1c29;border:1px solid var(--line2);padding:12px 16px;border-radius:12px;font-size:14px;font-weight:600;transition:.25s;z-index:100;max-width:calc(100% - 24px)}
 .toast.show{opacity:1;transform:translateX(-50%)}
 [hidden]{display:none!important}
@@ -432,11 +432,11 @@ $("#productList").addEventListener("change",e=>{const i=e.target.dataset.pAct; i
 let editIdx=-1, editImg="";
 function openProduct(i){
   editIdx=i; const f=$("#pForm");
-  const p=i>=0?ST.products[i]:{name:"",type:(ST.settings.categories[0]||{}).id,badge:"",price:"",old:"",desc:"",items:[],image:"",c1:"#5b21b6",c2:"#e8a87c",title:""};
+  const p=i>=0?ST.products[i]:{name:"",type:(ST.settings.categories[0]||{}).id,badge:"",price:"",old:"",desc:"",items:[],image:"",c1:"#5b21b6",c2:"#ffa43a",title:""};
   $("#pDlgTitle").textContent=i>=0?"Edit produk":"Tambah produk";
   $("#pType").innerHTML=ST.settings.categories.map(c=>`<option value="${esc(c.id)}">${esc(c.label)}</option>`).join("");
   f.name.value=p.name; f.type.value=p.type; f.badge.value=p.badge||""; f.price.value=p.price||""; f.old.value=p.old||"";
-  f.desc.value=p.desc||""; f.items.value=(p.items||[]).join("\n"); f.c1.value=p.c1||"#5b21b6"; f.c2.value=p.c2||"#e8a87c"; f.title.value=p.title||"";
+  f.desc.value=p.desc||""; f.items.value=(p.items||[]).join("\n"); f.c1.value=p.c1||"#5b21b6"; f.c2.value=p.c2||"#ffa43a"; f.title.value=p.title||"";
   editImg=p.image||""; showImg(); $("#pDlg").showModal();
 }
 function showImg(){const b=$("#pImg"); if(editImg){b.style.backgroundImage=`url('${editImg}')`;b.textContent="";}else{b.style.backgroundImage="";b.textContent="Belum ada foto — pakai mockup warna";} $("#pImgDel").hidden=!editImg;}
@@ -484,7 +484,7 @@ $("#serviceList").addEventListener("click",e=>{
 $("#serviceList").addEventListener("change",e=>{const i=e.target.dataset.sAct; if(i==null) return; ST.services[+i].active=e.target.checked; renderServices(); save();});
 let sIdx=-1, sIcon="sparkle";
 function openService(i){
-  sIdx=i; const f=$("#sForm"); const s=i>=0?ST.services[i]:{name:"",desc:"",icon:"sparkle",g:["#e8a87c","#d97757"]};
+  sIdx=i; const f=$("#sForm"); const s=i>=0?ST.services[i]:{name:"",desc:"",icon:"sparkle",g:["#ffa43a","#ff6a1a"]};
   $("#sDlgTitle").textContent=i>=0?"Edit jasa":"Tambah jasa";
   f.name.value=s.name; f.desc.value=s.desc; f.g0.value=s.g[0]; f.g1.value=s.g[1]; sIcon=s.icon; drawIcons(); $("#sDlg").showModal();
 }

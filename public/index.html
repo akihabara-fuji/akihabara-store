@@ -25,12 +25,12 @@
 <style>
 :root,[data-theme=dark]{
   --bg:#1f1e1d;--surface:#2a2926;--surface2:#33312d;--border:#3a3835;--dash:#4a4742;
-  --text:#f0eee6;--muted:#a8a29a;--acc:#d97757;--acc2:#e8a87c;--on-accent:#1f1e1d;
-  --tint1:rgba(217,119,87,.10);--tint2:rgba(232,168,124,.08);--shadow:0 18px 50px rgba(0,0,0,.35);--glow:rgba(217,119,87,.28);
+  --text:#f0eee6;--muted:#a8a29a;--acc:#ff6a1a;--acc2:#ffa43a;--on-accent:#1f1e1d;
+  --tint1:rgba(255,106,26,.10);--tint2:rgba(255,164,58,.08);--shadow:0 18px 50px rgba(0,0,0,.35);--glow:rgba(255,106,26,.28);
 }
 [data-theme=light]{
   --bg:#fbfbff;--surface:#ffffff;--surface2:#f5f5ff;--border:#e6e8f5;--dash:#c9cdea;
-  --text:#14183a;--muted:#5b6288;--acc:#4a3aff;--acc2:#ff8a3d;--on-accent:#ffffff;
+  --text:#14183a;--muted:#5b6288;--acc:#4a3aff;--acc2:#ff6a1a;--on-accent:#ffffff;
   --tint1:#f1efff;--tint2:#fff1e6;--shadow:0 14px 40px rgba(40,50,120,.10);--glow:rgba(74,58,255,.22);
 }
 *{box-sizing:border-box}
@@ -95,7 +95,7 @@ img{max-width:100%;display:block}
 .bar:nth-child(3) i u{background:var(--acc2)}
 .in .bar i u{width:var(--w)}
 .float{position:absolute;padding:14px;border-radius:16px;animation:fl 6s ease-in-out infinite}
-.f1{right:18px;top:-34px;width:170px}.f2{right:-8px;bottom:-26px;width:132px;text-align:center;animation-duration:7s;animation-direction:reverse}
+.f1{right:22px;top:-64px;width:170px}.f2{right:-8px;bottom:-26px;width:132px;text-align:center;animation-duration:7s;animation-direction:reverse}
 @keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
 .ring{width:72px;height:72px;margin:0 auto;border-radius:50%;background:conic-gradient(var(--acc) 0 62%,var(--border) 62% 100%);display:flex;align-items:center;justify-content:center}
 .ring span{width:54px;height:54px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center;font-weight:700}
@@ -445,7 +445,7 @@ drawProducts();
 /* housekeeping dari data admin */
 var svcs=ST.services||[];
 $("#services").innerHTML=svcs.length?svcs.map(function(s){
-  var g=s.g||["#d97757","#92400e"];
+  var g=s.g||["#ff6a1a","#92400e"];
   return '<article class="card svc rv"><div class="ico" style="background:linear-gradient(135deg,'+esc(g[0])+','+esc(g[1])+')"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(s.icon||"")+'</svg></div><h3>'+esc(s.name)+'</h3><p>'+esc(s.desc)+'</p><div class="price soon-p" style="margin-top:auto">Harga menyusul</div></article>';
 }).join(""):'<div class="empty" style="grid-column:1/-1">Layanan menyusul.</div>';
 

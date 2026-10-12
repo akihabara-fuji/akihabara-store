@@ -47,8 +47,8 @@ app.use((req, res, next) => {
 /* ---------------- tema UI ---------------- */
 // Mode gelap/terang diatur di halaman (tombol Gelap|Terang). Di sini cuma pilihan warna aksen.
 const THEMES = {
-  terra:  { name: "Terakota (default)", bg: "#1f1e1d", a1: "#d97757", a2: "#e8a87c", on: "#1f1e1d" },
-  indigo: { name: "Indigo", bg: "#fbfbff", a1: "#4a3aff", a2: "#ff8a3d", on: "#ffffff" },
+  terra:  { name: "Terakota (default)", bg: "#1f1e1d", a1: "#ff6a1a", a2: "#ffa43a", on: "#1f1e1d" },
+  indigo: { name: "Indigo", bg: "#fbfbff", a1: "#4a3aff", a2: "#ff6a1a", on: "#ffffff" },
   ocean:  { name: "Ocean", bg: "#0a1217", a1: "#22d3ee", a2: "#3b82f6", on: "#04121a" },
   matcha: { name: "Matcha", bg: "#0d120d", a1: "#4ade80", a2: "#a3e635", on: "#06140a" },
   sakura: { name: "Sakura", bg: "#140c10", a1: "#f472b6", a2: "#fb7185", on: "#ffffff" },
@@ -309,15 +309,26 @@ app.use(express.static(PUB, { maxAge: "1h", index: false }));
     const oldIds = new Set(["apt", "kamar", "rumah", "deep", "ruang", "taman", "fog", "nyamuk", "rayap", "sofa"]);
     if ((next.services || []).every(x => oldIds.has(x.id))) {
       next.services = [
-        { id: "pest", name: "Pest control", desc: "Inspeksi, pengendalian, dan pencegahan. Dikerjakan mitra berizin.", icon: "rayap", g: ["#d97757", "#92400e"], active: true },
+        { id: "pest", name: "Pest control", desc: "Inspeksi, pengendalian, dan pencegahan. Dikerjakan mitra berizin.", icon: "rayap", g: ["#ff6a1a", "#92400e"], active: true },
         { id: "fog", name: "Cold fogging", desc: "Disinfeksi ruangan menyeluruh.", icon: "fog", g: ["#e2e8f0", "#64748b"], active: true },
-        { id: "clean", name: "Cleaning service", desc: "Apartemen, rumah, kantor, dan gedung.", icon: "rumah", g: ["#e8a87c", "#d97757"], active: true },
+        { id: "clean", name: "Cleaning service", desc: "Apartemen, rumah, kantor, dan gedung.", icon: "rumah", g: ["#ffa43a", "#ff6a1a"], active: true },
         { id: "general", name: "General cleaning", desc: "Pembersihan menyeluruh untuk pindahan atau habis renovasi.", icon: "deep", g: ["#fde68a", "#d97706"], active: true },
       ];
     }
     await saveStore(clean(next));
     console.log("[nextaja] migrasi data selesai (cadangan ada di data/backups).");
   } catch (e) { console.error("[nextaja] migrasi gagal, data lama tidak diubah:", e.message); }
+})();
+
+/* penyegaran warna oranye (satu kali, hanya kartu layanan yang masih memakai warna lama) */
+(async () => {
+  try {
+    const OLD = { "#d97757": "#ff6a1a", "#e8a87c": "#ffa43a" };
+    const next = JSON.parse(JSON.stringify(store));
+    let changed = false;
+    for (const sv of next.services || []) for (let i = 0; i < (sv.g || []).length; i++) if (OLD[String(sv.g[i]).toLowerCase()]) { sv.g[i] = OLD[String(sv.g[i]).toLowerCase()]; changed = true; }
+    if (changed) { await saveStore(clean(next)); console.log("[nextaja] warna kartu layanan diperbarui."); }
+  } catch (e) { console.error("[nextaja] penyegaran warna gagal:", e.message); }
 })();
 
 app.listen(PORT, "127.0.0.1", () => console.log(`nextaja jalan di http://127.0.0.1:${PORT}  (admin: /admin)`));
