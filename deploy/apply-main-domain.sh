@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Pindahkan portal Mahyra Serv ke domain utama (sahabatanalisis.tech).
-#  - /, /admin, /blog, /ms/, /uploads, /assets, robots.txt, sitemap.xml  -> Mahyra Serv (port 3200)
+# Pindahkan portal nextaja ke domain utama (sahabatanalisis.tech).
+#  - /, /admin, /blog, /ms/, /uploads, /assets, robots.txt, sitemap.xml  -> nextaja (port 3200)
 #  - /nugas  -> halaman depan Sahabat Nugas (dulu di "/")
 #  - semua jalur lain (/app, /login, /api/..., dst) tetap ke Sahabat Nugas (port 3000)
 #  - toko.sahabatanalisis.tech -> redirect 301 ke domain utama

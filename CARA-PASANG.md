@@ -1,4 +1,4 @@
-# Cara pasang Mahyra Serv + Panel Admin di VPS Hostinger
+# Cara pasang nextaja + Panel Admin di VPS Hostinger
 
 Cukup **sekali** dipasang. Setelah itu semua perubahan (harga, produk, foto, jasa, FAQ, tema, mascot, nomor WA) dilakukan dari **https://domainlo/admin**. Nggak perlu buka VPS lagi.
 
@@ -88,14 +88,14 @@ Indikator di pojok kanan atas: 🟢 *Tersimpan*, 🟡 *Menyimpan…*, 🔴 *Gaga
 
 | Gejala | Solusi |
 |---|---|
-| Admin bilang "ADMIN_PASSWORD belum diatur" | Isi `.env`, lalu `pm2 restart mahyra-serv` |
+| Admin bilang "ADMIN_PASSWORD belum diatur" | Isi `.env`, lalu `pm2 restart nextaja` |
 | Upload foto gagal "413" | `client_max_body_size 10m;` belum ada di Nginx |
 | Login terus mental | Web harus https. Untuk tes di laptop pakai `SECURE_COOKIE=false` |
-| Salah password 5x | Terkunci 15 menit (keamanan). Tunggu, atau `pm2 restart mahyra-serv` |
-| Lihat log error | `pm2 logs mahyra-serv` |
+| Salah password 5x | Terkunci 15 menit (keamanan). Tunggu, atau `pm2 restart nextaja` |
+| Lihat log error | `pm2 logs nextaja` |
 
 ## Update kode di kemudian hari
-Timpa `server.js`, `public/index.html`, `admin/index.html` saja, lalu `pm2 restart mahyra-serv`.
+Timpa `server.js`, `public/index.html`, `admin/index.html` saja, lalu `pm2 restart nextaja`.
 **Jangan timpa folder `data/` dan `public/uploads/`**, karena di situ data dan foto lo.
 
 ## Backup manual (opsional, disarankan seminggu sekali)
@@ -107,18 +107,18 @@ cd /var/www/mahyra-serv && tar czf ~/backup-mahyra-$(date +%F).tgz data public/u
 
 ## Portal di domain utama (sahabatanalisis.tech)
 
-Mahyra Serv = halaman utama. Sahabat Nugas tetap jalan di domain yang sama:
+nextaja = halaman utama. Sahabat Nugas tetap jalan di domain yang sama:
 
 | Alamat | Menuju |
 |---|---|
-| `/`, `/admin`, `/blog`, `/ms/…`, `/uploads`, `/assets`, `/robots.txt`, `/sitemap.xml` | Mahyra Serv (port 3200) |
+| `/`, `/admin`, `/blog`, `/ms/…`, `/uploads`, `/assets`, `/robots.txt`, `/sitemap.xml` | nextaja (port 3200) |
 | `/nugas` | halaman depan Sahabat Nugas (dulu di `/`) |
 | `/app`, `/login`, `/api/…` dan lainnya | Sahabat Nugas (port 3000) |
 | `toko.sahabatanalisis.tech` | redirect 301 ke domain utama |
 
 Pasang / pasang ulang (aman, ada backup + tes otomatis, balik sendiri kalau gagal):
 ```bash
-cd /var/www/mahyra-serv && git pull origin mahyra-serv && pm2 restart mahyra-serv
+cd /var/www/mahyra-serv && git pull --ff-only origin nextaja-baru && pm2 restart nextaja
 bash deploy/apply-main-domain.sh
 ```
 Alamat situs untuk SEO (canonical, sitemap) diatur lewat `SITE_URL` di `.env` (default `https://sahabatanalisis.tech`).

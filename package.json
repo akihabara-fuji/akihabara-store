@@ -1,8 +1,8 @@
 {
-  "name": "mahyra-serv",
+  "name": "nextaja",
   "version": "1.0.0",
   "private": true,
-  "description": "Web Mahyra Serv + panel admin",
+  "description": "Web nextaja + panel admin",
   "main": "server.js",
   "scripts": { "start": "node server.js" },
   "engines": { "node": ">=18" },
