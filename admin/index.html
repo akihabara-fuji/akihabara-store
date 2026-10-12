@@ -137,6 +137,7 @@ dialog::backdrop{background:rgba(0,0,0,.7);backdrop-filter:blur(4px)}
       <button role="tab" aria-selected="true" data-tab="produk">Produk</button>
       <button role="tab" aria-selected="false" data-tab="jasa">Jasa</button>
       <button role="tab" aria-selected="false" data-tab="faq">FAQ</button>
+      <button role="tab" aria-selected="false" data-tab="ulasan">Foto &amp; Ulasan</button>
       <button role="tab" aria-selected="false" data-tab="blog">Blog</button>
       <button role="tab" aria-selected="false" data-tab="pelanggan">Pelanggan</button>
       <button role="tab" aria-selected="false" data-tab="tampilan">Tampilan</button>
@@ -247,6 +248,18 @@ dialog::backdrop{background:rgba(0,0,0,.7);backdrop-filter:blur(4px)}
       </div>
       <button class="btn btn-bad" id="logout">Keluar</button>
     </section>
+    <!-- FOTO & ULASAN -->
+    <section data-panel="ulasan" hidden>
+      <div class="panel-head"><div><h2>Foto &amp; Ulasan</h2><p>Foto kerja asli dan ulasan pelanggan yang asli. Hanya unggah ulasan yang benar-benar dikirim pelanggan, dengan izin mereka.</p></div></div>
+      <div class="card">
+        <h3>Foto kerja</h3><div class="hint">Tampil di bagian "Alur". Pakai foto tim housekeeping atau proses analisa yang asli.</div>
+        <div class="img-prev" id="wImg">Belum ada foto</div>
+        <div style="display:flex;gap:8px;margin-top:10px"><label class="btn btn-sm" style="cursor:pointer;color:var(--text)">Upload foto<input type="file" id="wFile" accept="image/jpeg,image/png,image/webp" hidden></label><button type="button" class="btn btn-sm btn-bad" id="wDel">Hapus foto</button></div>
+      </div>
+      <div class="panel-head" style="margin-top:22px"><div><h3 style="margin:0">Ulasan pelanggan</h3><p>Tangkapan layar atau kutipan. Matikan saklar untuk menyembunyikan tanpa menghapus.</p></div><button class="btn btn-pri" id="addRev">+ Tambah ulasan</button></div>
+      <div class="list" id="revList"></div>
+    </section>
+
     <!-- BLOG -->
     <section data-panel="blog" hidden>
       <div class="panel-head">
@@ -313,6 +326,19 @@ dialog::backdrop{background:rgba(0,0,0,.7);backdrop-filter:blur(4px)}
     <div><div style="font-size:13px;font-weight:600;color:var(--muted);margin-bottom:6px">Ikon</div><div class="icon-pick" id="iconPick"></div></div>
     <div class="row" style="justify-content:flex-start;gap:16px"><label>Warna 1<input type="color" name="g0"></label><label>Warna 2<input type="color" name="g1"></label></div>
     <div class="dlg-foot"><button type="button" class="btn" data-close>Batal</button><button class="btn btn-pri" type="submit">Simpan jasa</button></div>
+  </form>
+</dialog>
+
+<dialog id="rDlg" aria-labelledby="rDlgTitle">
+  <form class="dlg" id="rForm" method="dialog">
+    <div class="dlg-head"><h3 id="rDlgTitle">Ulasan</h3><button type="button" class="icon-btn" data-close aria-label="Tutup">✕</button></div>
+    <div><div style="font-size:13px;font-weight:600;color:var(--muted);margin-bottom:6px">Tangkapan layar ulasan <small>(opsional kalau ada kutipan)</small></div>
+      <div class="img-prev" id="rImg">Belum ada foto</div>
+      <div style="display:flex;gap:8px;margin-top:8px"><label class="btn btn-sm" style="cursor:pointer;color:var(--text)">Upload gambar<input type="file" id="rFile" accept="image/jpeg,image/png,image/webp" hidden></label><button type="button" class="btn btn-sm btn-bad" id="rImgDel">Hapus gambar</button></div></div>
+    <label>Nama pelanggan <small>— inisial atau nama, sesuai izin</small><input name="name" maxlength="40"></label>
+    <label>Kutipan <small>— tulis persis seperti aslinya, jangan diubah</small><textarea name="text" rows="3" maxlength="280"></textarea></label>
+    <label>Untuk layanan<select name="area"><option value="akademik">Bantu Akademik</option><option value="housekeeping">Housekeeping</option><option value="umum">Umum</option></select></label>
+    <div class="dlg-foot"><button type="button" class="btn" data-close>Batal</button><button class="btn btn-pri" type="submit">Simpan ulasan</button></div>
   </form>
 </dialog>
 
@@ -637,6 +663,33 @@ $("#oForm").addEventListener("submit",async e=>{
   try{ if(orderCtx.id) await api(`/ms/admin/orders/${orderCtx.id}`,{method:"PUT",body:JSON.stringify(body)}); else await api("/ms/admin/orders",{method:"POST",body:JSON.stringify({...body,userId:orderCtx.userId})});
     $("#oDlg").close(); toast("Pesanan tersimpan"); loadUsers(); }catch(err){ toast(err.message); }
 });
+
+/* ---------- Foto & Ulasan ---------- */
+let editRev=-1, revImg="";
+function showBg(el,url,empty){ if(url){el.style.backgroundImage=`url('${url}')`;el.textContent="";}else{el.style.backgroundImage="";el.textContent=empty;} }
+function renderMedia(){
+  ST.reviews=ST.reviews||[];
+  showBg($("#wImg"),ST.settings.workPhoto,"Belum ada foto");
+  $("#revList").innerHTML=ST.reviews.length?ST.reviews.map((r,i)=>`<div class="item"><div class="info"><b>${esc(r.name||"Pelanggan")}</b><div class="hint">${esc(r.text||"(hanya gambar)")}</div></div><div class="acts"><span class="pill">${esc(r.area)}</span><label class="switch" title="Tampilkan di web"><input type="checkbox" ${r.active!==false?"checked":""} data-ract="${i}" aria-label="Tampilkan di web"><span></span></label><button class="btn btn-sm" data-redit="${i}">Edit</button><button class="icon-btn" data-rdel="${i}" aria-label="Hapus ulasan">🗑</button></div></div>`).join(""):'<div class="empty">Belum ada ulasan. Tambahkan hanya ulasan asli dari pelanggan.</div>';
+}
+async function uploadTo(file){ const fd=new FormData(); fd.append("file",file); const d=await api("/ms/admin/upload",{method:"POST",body:fd}); return d.url; }
+$("#wFile").onchange=async e=>{const f=e.target.files[0]; if(!f) return; try{ ST.settings.workPhoto=await uploadTo(f); renderMedia(); save(); toast("Foto kerja diganti"); }catch(err){ toast(err.message); } e.target.value="";};
+$("#wDel").onclick=()=>{ST.settings.workPhoto=""; renderMedia(); save(); toast("Foto dihapus");};
+function openRev(i){ editRev=i; const r=i>=0?ST.reviews[i]:{name:"",text:"",area:"akademik",image:""}; const f=$("#rForm"); f.name.value=r.name||""; f.text.value=r.text||""; f.area.value=r.area||"akademik"; revImg=r.image||""; showBg($("#rImg"),revImg,"Belum ada gambar"); $("#rDlgTitle").textContent=i>=0?"Edit ulasan":"Ulasan baru"; $("#rDlg").showModal(); }
+$("#addRev").onclick=()=>openRev(-1);
+$("#rImgDel").onclick=()=>{revImg=""; showBg($("#rImg"),"","Belum ada gambar");};
+$("#rFile").onchange=async e=>{const f=e.target.files[0]; if(!f) return; try{ revImg=await uploadTo(f); showBg($("#rImg"),revImg,""); toast("Gambar terunggah"); }catch(err){ toast(err.message); } e.target.value="";};
+$("#rForm").addEventListener("submit",e=>{
+  e.preventDefault(); const f=e.target; if(!revImg && !f.text.value.trim()){ toast("Isi gambar atau kutipan dulu"); return; }
+  const r={id:editRev>=0?ST.reviews[editRev].id:uid("r"),image:revImg,name:f.name.value,text:f.text.value,area:f.area.value,active:editRev>=0?ST.reviews[editRev].active!==false:true};
+  if(editRev>=0) ST.reviews[editRev]=r; else ST.reviews.push(r);
+  $("#rDlg").close(); renderMedia(); save(); toast("Ulasan tersimpan");
+});
+$("#revList").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return;
+  if(b.dataset.redit!=null) return openRev(+b.dataset.redit);
+  if(b.dataset.rdel!=null){ if(!confirm("Hapus ulasan ini?")) return; ST.reviews.splice(+b.dataset.rdel,1); renderMedia(); save(); toast("Ulasan dihapus"); } });
+$("#revList").addEventListener("change",e=>{ const c=e.target.closest("[data-ract]"); if(!c) return; ST.reviews[+c.dataset.ract].active=c.checked; save(); toast(c.checked?"Ulasan ditampilkan":"Ulasan disembunyikan"); });
+$$("[data-tab]").forEach(b=>b.addEventListener("click",()=>{ if(b.dataset.tab==="ulasan") renderMedia(); }));
 $$("[data-close]").forEach(b=>b.onclick=()=>b.closest("dialog").close());
 $$("[data-tab]").forEach(b=>b.addEventListener("click",()=>{ if(b.dataset.tab==="blog") loadPosts(); if(b.dataset.tab==="pelanggan") loadUsers(); }));
 </script>

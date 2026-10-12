@@ -103,6 +103,8 @@ img{max-width:100%;display:block}
 .cube{position:absolute;left:46%;top:-26px;width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--acc2),var(--acc));transform:rotate(24deg);box-shadow:0 14px 24px var(--glow);animation:fl 6s ease-in-out infinite}
 @media(max-width:900px){.hero-grid{grid-template-columns:1fr}.mock{height:400px;margin-top:20px}.rows{grid-template-columns:1fr}.f1{display:none}}
 @media(max-width:640px){.nav-r .btn-pri,.nav-r .btn-ghost{display:none}.hero{padding-top:36px}.panel{grid-template-columns:1fr;inset:0;padding:16px}.rail{display:none}.kpi{padding:10px}.kpi b{font-size:18px}.f2{right:4px;bottom:-30px}.orb{left:-8px;bottom:-6px;width:64px;height:64px}.cube{display:none}.bp{overflow:hidden;display:flex;flex-direction:column;transition:transform .2s}.bp:hover{transform:translateY(-3px)}.bp .cv{aspect-ratio:16/9;background:linear-gradient(135deg,var(--acc),var(--acc2));display:flex;align-items:center;justify-content:center;color:var(--on-accent);font-family:'Space Grotesk',sans-serif;font-weight:700;padding:12px;text-align:center}.bp .cv img{width:100%;height:100%;object-fit:cover}.bp .pb{padding:18px;display:flex;flex-direction:column;gap:6px}.bp h3{margin:0;font-size:18px}.bp p{margin:0;color:var(--muted);font-size:14px}
+.rev{padding:18px;display:flex;flex-direction:column;gap:12px}.rev img{width:100%;border-radius:14px;border:1px solid var(--border);max-height:420px;object-fit:cover;object-position:top}.rev q{font-size:15px;line-height:1.6;quotes:"“" "”"}.rev .who{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:13px;color:var(--muted)}
+#workPh img{width:100%;height:100%;object-fit:cover}#workPh.has{padding:0;overflow:hidden}
 .banner{padding:28px}}
 
 /* strip */
@@ -330,9 +332,16 @@ footer nav{display:flex;flex-wrap:wrap;gap:20px}
 
 <section class="s" id="alur">
   <div class="wrap flow">
-    <div class="card ph rv" style="height:300px">[Foto kerja asli: tim housekeeping atau proses analisa. Diunggah admin]</div>
+    <div class="card ph rv" id="workPh" style="height:300px">[Foto kerja asli: tim housekeeping atau proses analisa. Diunggah admin]</div>
     <div class="rv"><span class="eyebrow">Alur</span><h2 style="margin:8px 0 0;font-size:32px;line-height:1.12">Dari pesan sampai hasil, jelas tiap langkahnya</h2>
       <ol class="steps"><li>Kirim kebutuhan lewat WhatsApp</li><li>Admin konfirmasi harga dan estimasi</li><li>Review hasil sebelum final</li><li>Terima hasil dan revisi sesuai kesepakatan</li></ol></div>
+  </div>
+</section>
+
+<section class="s" id="ulasan" hidden>
+  <div class="wrap">
+    <div class="sh"><div><span class="eyebrow">Kata mereka</span><h2>Ulasan asli, bukan karangan</h2><p>Ditampilkan hanya dengan izin pelanggan.</p></div></div>
+    <div class="g3" id="reviewList"></div>
   </div>
 </section>
 
@@ -470,6 +479,14 @@ function reveal(){
   els.forEach(function(e){io.observe(e)});
 }
 reveal();
+
+/* foto kerja + ulasan asli (diunggah admin) */
+if(S.workPhoto){var wp=$("#workPh");wp.classList.add("has");wp.innerHTML='<img src="'+esc(S.workPhoto)+'" alt="Foto kerja nextaja" loading="lazy">';}
+var AREA={akademik:"Bantu Akademik",housekeeping:"Housekeeping",umum:"Layanan nextaja"};
+if((ST.reviews||[]).length){
+  $("#reviewList").innerHTML=ST.reviews.map(function(r){return '<figure class="card rev rv" style="margin:0">'+(r.image?'<img src="'+esc(r.image)+'" alt="Ulasan pelanggan" loading="lazy">':'')+(r.text?'<q>'+esc(r.text)+'</q>':'')+'<div class="who"><b style="color:var(--text)">'+esc(r.name||"Pelanggan")+'</b><span>'+esc(AREA[r.area]||"")+'</span></div></figure>'}).join("");
+  $("#ulasan").hidden=false;
+}
 
 /* akun + blog terbaru */
 fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(function(d){if(d.user){var a=$("#navAcc");a.textContent="Akun saya";a.href="/ms/akun";var m=document.querySelector(".only-m");if(m){m.textContent="Akun saya";m.href="/ms/akun";}}}).catch(function(){});

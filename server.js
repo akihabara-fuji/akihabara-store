@@ -116,6 +116,7 @@ function clean(input) {
       facebook: str(s.facebook, 60),
       facebookUrl: url(s.facebookUrl),
       studioSoon: s.studioSoon !== false,
+      workPhoto: img(s.workPhoto),
       heroEyebrow: str(s.heroEyebrow, 80),
       heroTitle: str(s.heroTitle, 160),
       heroLead: str(s.heroLead, 300),
@@ -150,6 +151,14 @@ function clean(input) {
       g: [color((x.g || [])[0]), color((x.g || [])[1])],
       active: x.active !== false,
     })),
+    reviews: arr(input.reviews, 60).map(r => ({
+      id: uid(r.id, "r"),
+      image: img(r.image),
+      name: str(r.name, 40),
+      text: str(r.text, 280),
+      area: ["akademik", "umum", "housekeeping"].includes(r.area) ? r.area : "umum",
+      active: r.active !== false,
+    })).filter(r => r.image || r.text),
     faq: arr(input.faq, 40).map(f => ({ id: uid(f.id, "f"), q: str(f.q, 160), a: str(f.a, 800) })).filter(f => f.q),
   };
 }
@@ -260,6 +269,7 @@ function publicStore() {
     settings: show ? st : { ...st, analisaPrice: "" },
     products: store.products.filter(p => p.active).map(p => (show ? p : { ...p, price: 0, old: 0 })),
     services: store.services.filter(s => s.active).map(s => ({ ...s, icon: ICONS[s.icon] || ICONS.sparkle })),
+    reviews: (store.reviews || []).filter(r => r.active),
     faq: store.faq,
   };
 }
