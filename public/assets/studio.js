@@ -177,7 +177,7 @@
     ["Dulu aku salah soal {t}. Ini koreksinya.", 1],
     ["Cara aku beresin {t} dalam 7 hari.", 1]
   ];
-  function fill(t, topic, aud) { return t.replace(/\{t\}/g, topic).replace(/\{a\}/g, aud); }
+  function fill(t, topic, aud) { var r = t.replace(/\{t\}/g, topic).replace(/\{a\}/g, aud); return r.charAt(0).toUpperCase() + r.slice(1); }
   function copy(text, done) {
     function fb() { var ta = document.createElement("textarea"); ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0"; document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); } catch (e) {} ta.remove(); done(); }
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fb); else fb();
