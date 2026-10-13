@@ -1,5 +1,5 @@
-:root,[data-theme=dark]{--bg:#1f1e1d;--surface:#2a2926;--surface2:#33312d;--border:#3a3835;--dash:#4a4742;--text:#f0eee6;--muted:#a8a29a;--acc:#ff6a1a;--acc2:#ffa43a;--on-accent:#1f1e1d;--shadow:0 18px 50px rgba(0,0,0,.35);--glow:rgba(255,106,26,.28);--bad:#ef6b6b}
-[data-theme=light]{--bg:#fbfbff;--surface:#ffffff;--surface2:#f5f5ff;--border:#e6e8f5;--dash:#c9cdea;--text:#14183a;--muted:#5b6288;--acc:#4a3aff;--acc2:#ff6a1a;--on-accent:#ffffff;--shadow:0 14px 40px rgba(40,50,120,.10);--glow:rgba(74,58,255,.22);--bad:#d63a3a}
+:root,[data-theme=light]{--bg:#f6f6f8;--surface:#ffffff;--surface2:#efeff2;--border:#e2e2e8;--dash:#c8c8d0;--text:#0b0b0f;--muted:#5a5a66;--acc:#c8102e;--acc2:#7d0c1f;--on-accent:#ffffff;--shadow:0 14px 40px rgba(11,11,15,.08);--glow:rgba(200,16,46,.26);--bad:#c8102e}
+[data-theme=dark]{--bg:#0b0b0f;--surface:#14141a;--surface2:#1b1b22;--border:#2a2a33;--dash:#3a3a46;--text:#f4f4f6;--muted:#a2a2ae;--acc:#e11d38;--acc2:#9f1239;--on-accent:#ffffff;--shadow:0 18px 50px rgba(0,0,0,.5);--glow:rgba(225,29,56,.34);--bad:#ff6b7a}
 *{box-sizing:border-box}html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',system-ui,sans-serif;line-height:1.65;transition:background .25s,color .25s}
 h1,h2,h3{font-family:'Space Grotesk','Plus Jakarta Sans',sans-serif;letter-spacing:-.01em;line-height:1.15}
@@ -56,3 +56,9 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:24px}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 .or{display:flex;align-items:center;gap:10px;margin:18px 0 12px;color:var(--muted);font-size:13px}.or:before,.or:after{content:"";flex:1;height:1px;background:var(--border)}
 [hidden]{display:none!important}
+
+/* penyelarasan dengan halaman depan */
+.btn:hover{box-shadow:0 0 0 1px color-mix(in srgb,var(--acc) 38%,transparent),0 8px 26px var(--glow)}.btn:active{transform:translateY(1px) scale(.98)}
+.nav{background:color-mix(in srgb,var(--bg) 84%,transparent)}
+.post .cv img{transition:transform .8s cubic-bezier(.2,.8,.2,1)}.post:hover .cv img{transform:scale(1.06)}.post .pb h3{transition:translate .3s}.post:hover .pb h3{translate:4px 0}
+.pg h1{font-weight:300;letter-spacing:-.03em}

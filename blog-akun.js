@@ -263,19 +263,19 @@ module.exports = function mount(ctx) {
     const brand = esc(st.brand || "nextaja");
     const canon = `${SITE}${pth}`;
     return `<!doctype html>
-<html lang="id" data-theme="dark">
+<html lang="id" data-theme="light">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
-<meta name="theme-color" content="#1f1e1d">
+<meta name="theme-color" content="#f6f6f8">
 <link rel="canonical" href="${esc(canon)}">
 <meta property="og:type" content="website"><meta property="og:site_name" content="${brand}"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${esc(canon)}">
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 <script>try{var t=localStorage.getItem("nx-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
-<link rel="stylesheet" href="/assets/blog.css?v=3">
+<link rel="stylesheet" href="/assets/blog.css?v=4">
 ${extra}
 </head>
 <body>
@@ -294,9 +294,9 @@ ${extra}
 <footer><div class="wrap"><div><b>${brand}</b> · Jakarta Barat<br>© ${new Date().getFullYear()} Semua hak dilindungi.</div><nav><a href="/blog">Blog</a><a href="/#akademik">Akademik</a><a href="/#jasa">Housekeeping</a><a href="/ms/masuk">Masuk</a><a href="/ms/privasi">Privasi</a><a href="/ms/ketentuan">Ketentuan</a></nav></div></footer>
 <script>
 (function(){
-function setMode(m){document.documentElement.dataset.theme=m;try{localStorage.setItem("nx-theme",m)}catch(e){}var tc=document.querySelector('meta[name=theme-color]');if(tc)tc.content=m==="light"?"#fbfbff":"#1f1e1d";}
+function setMode(m){document.documentElement.dataset.theme=m;try{localStorage.setItem("nx-theme",m)}catch(e){}var tc=document.querySelector('meta[name=theme-color]');if(tc)tc.content=m==="light"?"#f6f6f8":"#0b0b0f";}
 document.querySelectorAll(".mode button").forEach(function(b){b.addEventListener("click",function(){setMode(b.dataset.m)})});
-setMode(document.documentElement.dataset.theme||"dark");
+setMode(document.documentElement.dataset.theme||"light");
 var bg=document.getElementById("burger"),ln=document.getElementById("links");
 bg.addEventListener("click",function(){var o=ln.classList.toggle("open");bg.setAttribute("aria-expanded",o)});
 fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(function(d){if(d.user){var a=document.getElementById("navAcc");a.textContent="Akun saya";a.href="/ms/akun";}}).catch(function(){});
