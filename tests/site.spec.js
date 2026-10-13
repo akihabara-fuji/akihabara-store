@@ -71,3 +71,12 @@ test("screenshot beranda 3 ukuran", async ({ page }) => {
     await page.screenshot({ path: `test-artifacts/home-${n}.png` });
   }
 });
+
+test("akademik: grid 2 kolom tidak tertimpa kelas dekorasi hero", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/", { waitUntil: "networkidle" });
+  const box = await page.locator("#akademik .g2").boundingBox();
+  expect(box.width).toBeGreaterThan(900);
+  const cards = await page.locator("#akademik .g2 > .card").evaluateAll((a) => a.map((e) => e.getBoundingClientRect().width));
+  for (const w of cards) expect(w).toBeGreaterThan(400);
+});
