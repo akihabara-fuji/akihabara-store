@@ -64,7 +64,8 @@ function themeCss(t = {}) {
   // teks tombol otomatis gelap/terang supaya tetap kebaca
   const on = luminance(a1) > 0.4 ? "#14141a" : "#ffffff";
   // tema bawaan: halaman memakai warna aksen sendiri per mode (gelap = terakota, terang = indigo)
-  if (!t.a1 && !t.a2 && (!t.preset || t.preset === "terra")) return "";
+  // identitas nextaja (putih, hitam, merah) dikunci di halaman; hanya warna kustom (a1/a2) yang dihormati
+  if (!t.a1 && !t.a2) return "";
   return `:root{--acc:${a1};--acc2:${a2};--on-accent:${on}}`;
 }
 
