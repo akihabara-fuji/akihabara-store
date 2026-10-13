@@ -7,3 +7,4 @@ data/.secret
 data/backups-blog/
 test-artifacts/
 playwright-report/
+package-lock.json
