@@ -336,6 +336,51 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
     res.set("Cache-Control", "no-cache").type("html").send(layout({ title: `${p.title} — nextaja`, desc: p.excerpt || p.title, path: `/blog/${p.slug}`, body, extra: `<script type="application/ld+json">${ld}</script>` }));
   });
 
+  /* ---- Studio Konten Fase 0: desain tipografi + kerangka caption, semua di browser ---- */
+  app.get("/ms/studio", (req, res) => {
+    const body = `<section class="pg"><div class="wrap">
+  <span class="eyebrow">Studio Konten · Fase 0</span>
+  <h1>Foto jadi konten siap posting</h1>
+  <p class="lead">Unggah foto, pilih gaya, atur teksnya, lalu unduh gambarnya. Semua diproses di browser kamu dan fotonya tidak dikirim ke server kami. Posting otomatis ke TikTok dan Instagram belum tersedia.</p>
+  <div class="stu stu-wrap">
+    <div class="stu-card card">
+      <h3>1. Foto dan ukuran</h3>
+      <label>Foto (JPG, PNG, atau WebP, maksimal 15 MB)<input type="file" id="file" accept="image/*"></label>
+      <div class="row"><button type="button" class="pill" id="clear">Hapus foto</button></div>
+      <div class="row" id="fmt" role="group" aria-label="Ukuran"><button type="button" class="pill" data-f="4:5" aria-pressed="true">4:5 Feed</button><button type="button" class="pill" data-f="1:1" aria-pressed="false">1:1 Kotak</button><button type="button" class="pill" data-f="9:16" aria-pressed="false">9:16 Story/Reels</button></div>
+      <label>Zoom foto<input type="range" id="zoom" min="1" max="3" step="0.01" value="1"></label>
+      <p class="small" id="msg" aria-live="polite" style="margin:0"></p>
+      <h3>2. Gaya tipografi</h3>
+      <div class="row" id="tpl" role="group" aria-label="Gaya"><button type="button" class="pill" data-t="bold" aria-pressed="true">Bold bawah</button><button type="button" class="pill" data-t="center" aria-pressed="false">Tengah</button><button type="button" class="pill" data-t="editorial" aria-pressed="false">Editorial</button><button type="button" class="pill" data-t="poster" aria-pressed="false">Poster merah</button><button type="button" class="pill" data-t="quote" aria-pressed="false">Kutipan</button><button type="button" class="pill" data-t="minimal" aria-pressed="false">Minimal</button></div>
+      <h3>3. Teks</h3>
+      <label>Headline<textarea id="head" maxlength="180">Judul kontenmu di sini</textarea></label>
+      <label>Subteks<input type="text" id="sub" maxlength="120" value="Subteks singkat yang menjelaskan isinya"></label>
+      <div class="two"><label>Nama akun<input type="text" id="handle" maxlength="40" value="@akunmu"></label><label>Warna aksen<input type="color" id="acc" value="#c8102e"></label></div>
+      <label>Ukuran headline<input type="range" id="size" min="60" max="140" step="1" value="100"></label>
+      <button type="button" class="btn btn-pri" id="dl">Unduh PNG</button>
+      <p class="stu-note">Cek lagi teks dan hak pakai fotonya sebelum diposting. Kamu yang bertanggung jawab atas isi kontenmu.</p>
+    </div>
+    <div class="stu-prev"><canvas id="cv" width="1080" height="1350" aria-label="Pratinjau desain. Geser untuk mengatur posisi foto."></canvas><p class="small">Geser foto di pratinjau untuk mengatur posisi.</p></div>
+  </div>
+
+  <div class="stu-card card" style="margin-top:24px">
+    <h3>Ide hook dan kerangka caption</h3>
+    <p class="small" style="margin:0">Dibuat dari templat kalimat, bukan AI. Selalu edit supaya cocok dengan isi kontenmu.</p>
+    <div class="two"><label>Topik<input type="text" id="topic" maxlength="60" placeholder="contoh: analisa TikTok"></label><label>Untuk siapa<input type="text" id="aud" maxlength="40" placeholder="contoh: Kreator pemula"></label></div>
+    <div class="row"><button type="button" class="btn btn-pri btn-sm" id="hookGo">Buat ide hook</button></div>
+    <div id="hooks" style="display:grid;gap:10px"></div>
+    <h3>Kerangka caption</h3>
+    <label>Hook<input type="text" id="cHook" maxlength="200" placeholder="tempel atau ketik hook"></label>
+    <label>Poin isi (satu baris satu poin)<textarea id="cPts" placeholder="Poin 1&#10;Poin 2&#10;Poin 3"></textarea></label>
+    <label>Tujuan<select id="cGoal"><option value="edukasi">Edukasi</option><option value="jualan">Jualan</option><option value="cerita">Cerita</option></select></label>
+    <div class="row"><button type="button" class="btn btn-ghost btn-sm" id="capGo">Susun caption</button><button type="button" class="btn btn-ghost btn-sm" id="capCopy">Salin caption</button></div>
+    <label>Hasil caption (boleh diedit)<textarea id="cOut" style="min-height:160px"></textarea></label>
+  </div>
+</div></section>
+<script src="/assets/studio.js?v=1" defer></script>`;
+    res.set("Cache-Control", "no-cache").type("html").send(layout({ title: "Studio Konten — nextaja", desc: "Ubah fotomu jadi desain tipografi siap posting dan susun kerangka caption, langsung di browser.", path: "/ms/studio", body, extra: '<link rel="stylesheet" href="/assets/studio.css?v=1">' }));
+  });
+
   /* ---- kebijakan privasi & ketentuan ---- */
   const legalPage = (title, desc, pth, html) => (req, res) => {
     const wa = String((SOCIAL().waNumber) || "6285722227544");
