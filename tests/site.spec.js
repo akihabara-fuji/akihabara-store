@@ -106,3 +106,22 @@ test("analisa: Instagram dan Affiliator berlabel segera hadir (bukan tautan)", a
   await expect(page.locator("#chips .chip-soon").first()).toContainText("segera hadir");
   await expect(page.locator("#chips a")).toHaveCount(1);
 });
+
+test("admin: upload foto jasa (file besar) tampil di beranda", async ({ page, browser }) => {
+  const fs = require("fs");
+  // gambar ~12MB tak terkompres agar menguji pengecilan di browser
+  const { execSync } = require("child_process");
+  execSync(`python3 -c "import os;from PIL import Image;import numpy as n;Image.fromarray((n.random.rand(2600,3600,3)*255).astype('uint8')).save('test-artifacts/big.png')"`);
+  expect(fs.statSync("test-artifacts/big.png").size).toBeGreaterThan(8 * 1024 * 1024);
+  await page.goto("/admin", { waitUntil: "networkidle" });
+  await page.fill("#loginForm input[name=password]", "tes-lokal-1234567");
+  await page.click("#loginForm button[type=submit]");
+  await page.click("[data-tab=jasa]");
+  await page.click("[data-s-edit='0']");
+  await page.setInputFiles("#sFile", "test-artifacts/big.png");
+  await expect.poll(() => page.evaluate(() => document.querySelector("#sImg").style.backgroundImage), { timeout: 20000 }).toContain("/uploads/");
+  await page.click("#sForm button[type=submit]");
+  await page.waitForTimeout(1200);
+  await page.goto("/", { waitUntil: "networkidle" });
+  await expect(page.locator("#services img.svc-img")).toHaveCount(1);
+});

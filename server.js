@@ -149,6 +149,7 @@ function clean(input) {
       name: str(x.name, 60) || "Layanan",
       desc: str(x.desc, 140),
       icon: ICONS[x.icon] ? x.icon : "sparkle",
+      image: img(x.image),
       g: [color((x.g || [])[0]), color((x.g || [])[1])],
       active: x.active !== false,
     })),
@@ -230,16 +231,20 @@ app.put("/ms/admin/store", requireAdmin, express.json({ limit: "1mb" }), async (
 
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 8 * 1024 * 1024, files: 1 },
-  fileFilter: (req, file, cb) => cb(null, /^image\/(jpeg|png|webp|gif|avif)$/.test(file.mimetype)),
+  limits: { fileSize: 30 * 1024 * 1024, files: 1 },
+  fileFilter: (req, file, cb) => cb(null, /^image\/(jpe?g|png|webp|gif|avif|tiff|bmp)$/.test(file.mimetype)),
 });
-app.post("/ms/admin/upload", requireAdmin, upload.single("file"), async (req, res) => {
-  if (!req.file) return res.status(400).json({ error: "File harus berupa gambar (JPG/PNG/WebP), maks 8MB." });
+const uploadOne = (req, res, next) => upload.single("file")(req, res, err => {
+  if (err) return res.status(err.code === "LIMIT_FILE_SIZE" ? 413 : 400).json({ error: err.code === "LIMIT_FILE_SIZE" ? "Foto terlalu besar (maks 30MB)." : "Upload gagal. Coba lagi." });
+  next();
+});
+app.post("/ms/admin/upload", requireAdmin, uploadOne, async (req, res) => {
+  if (!req.file) return res.status(400).json({ error: "File harus berupa gambar (JPG, PNG, WebP, GIF, AVIF), maks 30MB." });
   const name = `${Date.now().toString(36)}-${crypto.randomBytes(4).toString("hex")}`;
   try {
     let out, ext;
     if (sharp) {
-      out = await sharp(req.file.buffer, { failOn: "error" }).rotate().resize({ width: 1000, height: 1250, fit: "inside", withoutEnlargement: true }).webp({ quality: 80 }).toBuffer();
+      out = await sharp(req.file.buffer, { failOn: "error" }).rotate().resize({ width: 2400, height: 2400, fit: "inside", withoutEnlargement: true }).webp({ quality: 85 }).toBuffer();
       ext = "webp";
     } else {
       out = req.file.buffer; ext = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "image/gif": "gif", "image/avif": "avif" }[req.file.mimetype];

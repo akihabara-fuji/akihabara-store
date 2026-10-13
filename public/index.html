@@ -180,7 +180,8 @@ section.s{padding:80px 0 0}
 @media(max-width:900px){.studio{grid-template-columns:1fr}}
 .rule{padding:22px;color:var(--muted);font-size:14.5px;display:grid;gap:10px}
 .rule b{color:var(--text)}
-.svc{padding:24px;display:flex;flex-direction:column;gap:10px}
+.svc-img{align-self:stretch;width:auto;max-width:none;margin:-24px -24px 6px;aspect-ratio:16/10;object-fit:cover;border-radius:inherit;border-bottom-left-radius:0;border-bottom-right-radius:0}
+.svc{padding:24px;overflow:hidden;display:flex;flex-direction:column;gap:10px}
 .ico{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 10px 22px rgba(0,0,0,.25)}
 .svc h3{margin:0;font-size:18px}.svc p{margin:0;color:var(--muted);font-size:14px}
 .note{margin-top:18px;border:1px dashed var(--dash);border-radius:14px;padding:14px 18px;color:var(--muted);font-size:13.5px}
@@ -581,7 +582,7 @@ drawProducts();
 var svcs=ST.services||[];
 $("#services").innerHTML=svcs.length?svcs.map(function(s){
   var g=["#c8102e","#0b0b0f"];
-  return '<article class="card svc rv"><div class="ico" style="background:linear-gradient(135deg,'+esc(g[0])+','+esc(g[1])+')"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(s.icon||"")+'</svg></div><h3>'+esc(s.name)+'</h3><p>'+esc(s.desc)+'</p><div class="price soon-p" style="margin-top:auto">Harga menyusul</div></article>';
+  return '<article class="card svc rv">'+(s.image?'<img class="svc-img" src="'+esc(s.image)+'" alt="" loading="lazy" decoding="async">':'')+'<div class="ico" style="background:linear-gradient(135deg,'+esc(g[0])+','+esc(g[1])+')"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(s.icon||"")+'</svg></div><h3>'+esc(s.name)+'</h3><p>'+esc(s.desc)+'</p><div class="price soon-p" style="margin-top:auto">Harga menyusul</div></article>';
 }).join(""):'<div class="empty" style="grid-column:1/-1">Layanan menyusul.</div>';
 
 /* nugas */
