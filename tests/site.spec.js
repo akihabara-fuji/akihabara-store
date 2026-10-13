@@ -125,3 +125,40 @@ test("admin: upload foto jasa (file besar) tampil di beranda", async ({ page, br
   await page.goto("/", { waitUntil: "networkidle" });
   await expect(page.locator("#services img.svc-img")).toHaveCount(1);
 });
+
+test("produk: gambar mengikuti mouse, kembali saat keluar, ripple saat klik, CTA WA tetap", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/", { waitUntil: "networkidle" });
+  const card = page.locator("#products .pc").first();
+  await card.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(1200);
+  const b = await card.boundingBox();
+  await page.mouse.move(b.x + b.width * 0.8, b.y + b.height * 0.2, { steps: 4 });
+  const ix = await card.evaluate((e) => e.style.getPropertyValue("--ix"));
+  expect(parseFloat(ix)).toBeLessThan(0); // pointer di kanan -> gambar bergeser ke kiri
+  expect(Math.abs(parseFloat(ix))).toBeLessThanOrEqual(8);
+  await page.mouse.down();
+  await expect(card.locator(".pt .rip")).toHaveCount(1);
+  await page.mouse.up();
+  await page.mouse.move(5, 5, { steps: 3 });
+  expect(await card.evaluate((e) => e.style.getPropertyValue("--ix"))).toBe("");
+  expect(await card.locator("a.btn-pri").getAttribute("href")).toMatch(/^https:\/\/wa\.me\/\d+\?text=/);
+});
+
+test("produk: ukuran kartu konsisten di tiap viewport (audit)", async ({ page }) => {
+  const fs = require("fs");
+  const out = [];
+  for (const [n, w, h] of sizes) {
+    await page.setViewportSize({ width: w, height: h });
+    await page.goto("/", { waitUntil: "networkidle" });
+    const m = await page.evaluate(() => {
+      const cs = [...document.querySelectorAll("#products .pc")].map((c) => { const r = c.getBoundingClientRect(), t = c.querySelector(".pt").getBoundingClientRect(); return { w: Math.round(r.width), h: Math.round(r.height), iw: Math.round(t.width), ih: Math.round(t.height) }; });
+      const cols = new Set([...document.querySelectorAll("#products .pc")].map((c) => Math.round(c.getBoundingClientRect().left))).size;
+      return { cols, first: cs[0], widths: [...new Set(cs.map((c) => c.w))] };
+    });
+    out.push({ viewport: n, ...m });
+    expect(m.widths.length).toBeLessThanOrEqual(2);
+  }
+  fs.mkdirSync("test-artifacts", { recursive: true });
+  fs.writeFileSync("test-artifacts/product-sizing.json", JSON.stringify(out, null, 2));
+});

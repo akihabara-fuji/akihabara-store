@@ -144,6 +144,9 @@ section.s{padding:80px 0 0}
 .g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
 .g4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
 @media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+#products{grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px}
+@media(max-width:560px){#products{grid-template-columns:1fr}}
+#products .pb{padding:16px}#products .pb h3{font-size:17px}
 @media(min-width:901px) and (max-width:1100px){.g4{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .feat{padding:28px;display:flex;flex-direction:column;gap:12px}
 .feat h3{margin:0;font-size:24px;line-height:1.15}
@@ -252,7 +255,16 @@ details.q[open] p{animation:dn .35s ease}
 .banner .btn:hover{box-shadow:0 0 0 1px rgba(255,255,255,.4),0 8px 26px rgba(0,0,0,.25)}
 /* kartu fitur: gambar zoom, judul bergeser, panah bergeser */
 .pt img,.bp .cv img{transition:transform .8s cubic-bezier(.2,.8,.2,1)}
-.pc:hover .pt img,.bp:hover .cv img{transform:scale(1.07)}
+.bp:hover .cv img{transform:scale(1.07)}
+.pt{overflow:hidden}
+.pt img{transform:translate(var(--ix,0px),var(--iy,0px)) scale(1);will-change:transform}
+.pt:after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .35s;background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(225,29,56,.28),transparent 55%);mix-blend-mode:soft-light}
+.pc:hover .pt:after{opacity:1}
+.pc:hover .pt img{transform:translate(var(--ix,0px),var(--iy,0px)) scale(1.04)}
+.pt .rip{position:absolute;left:var(--cx);top:var(--cy);width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:rgba(225,29,56,.45);pointer-events:none;animation:ripple .5s ease-out forwards}
+@keyframes ripple{to{transform:scale(18);opacity:0}}
+.pc:active{transition:transform .12s}.js .pc.in:active{transform:perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) scale(.985)}
+@media(prefers-reduced-motion:reduce){.pt img{transform:none!important}.pt .rip{display:none}}
 .mini h3,.feat h3,.svc h3{transition:translate .3s cubic-bezier(.2,.8,.2,1)}
 .mini:hover h3,.feat:hover h3,.svc:hover h3{translate:5px 0}
 a.mini{position:relative}
@@ -700,13 +712,19 @@ if(FINE&&!RM){
     mb.style.translate=Math.hypot(dx,dy)<110?clamp(dx*.12)+"px "+clamp(dy*.12)+"px":""},{passive:true});
   hero.addEventListener("pointerleave",function(){mb.style.translate=""});
   var tl=null,TS=".mini,.feat,.pc,.svc";
-  var untilt=function(){if(tl){tl.style.removeProperty("--rx");tl.style.removeProperty("--ry");tl=null}};
+  var untilt=function(){if(tl){["--rx","--ry","--ix","--iy","--mx","--my"].forEach(function(k){tl.style.removeProperty(k)});tl=null}};
   document.addEventListener("pointermove",function(e){var c=e.target.closest&&e.target.closest(TS);
     if(tl&&tl!==c)untilt();if(!c)return;tl=c;var r=c.getBoundingClientRect();
     c.style.setProperty("--ry",(((e.clientX-r.left)/r.width-.5)*6).toFixed(2)+"deg");
-    c.style.setProperty("--rx",((-((e.clientY-r.top)/r.height-.5))*6).toFixed(2)+"deg")},{passive:true});
+    c.style.setProperty("--rx",((-((e.clientY-r.top)/r.height-.5))*6).toFixed(2)+"deg");
+    if(c.classList.contains("pc")){var nx=(e.clientX-r.left)/r.width-.5,ny=(e.clientY-r.top)/r.height-.5;
+      c.style.setProperty("--ix",(-nx*8).toFixed(1)+"px");c.style.setProperty("--iy",(-ny*8).toFixed(1)+"px");
+      c.style.setProperty("--mx",((nx+.5)*100).toFixed(0)+"%");c.style.setProperty("--my",((ny+.5)*100).toFixed(0)+"%")}},{passive:true});
   document.addEventListener("mouseleave",untilt);
 }
+if(!RM)document.addEventListener("pointerdown",function(e){var t=e.target.closest&&e.target.closest(".pc .pt");if(!t)return;
+  var r=t.getBoundingClientRect(),d=document.createElement("i");d.className="rip";d.style.setProperty("--cx",(e.clientX-r.left)+"px");d.style.setProperty("--cy",(e.clientY-r.top)+"px");
+  t.appendChild(d);setTimeout(function(){d.remove()},550)},{passive:true});
 
 requestAnimationFrame(function(){hero.classList.add("in")});
 })();
