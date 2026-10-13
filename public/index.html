@@ -107,25 +107,9 @@ img{max-width:100%;display:block}
 .go .w>span,.go .fx{transform:none!important;opacity:1!important}
 /* pusat visual 3D: artefak langit (CSS 3D, tanpa library) */
 .cele{position:relative;height:500px;perspective:1100px;--px:0;--py:0;translate:0 calc(var(--p,0)*-24px)}
-.stage{position:absolute;left:50%;top:50%;width:min(100%,480px);aspect-ratio:1;translate:-50% -50%;transform-style:preserve-3d;transform:rotateY(calc(var(--px)*10deg)) rotateX(calc(var(--py)*-8deg))}
 .geo{position:absolute;left:50%;top:50%;width:min(118%,560px);aspect-ratio:1;translate:-50% -50%;color:var(--muted);opacity:.38;animation:spinz 140s linear infinite;transform:translate(calc(var(--px)*-14px),calc(var(--py)*-14px))}
-.halo{position:absolute;left:50%;top:50%;width:min(96%,470px);aspect-ratio:1;translate:-50% -50%;border-radius:50%;background:conic-gradient(from 0deg,transparent,var(--glow),transparent 40%,var(--glow),transparent);-webkit-mask:radial-gradient(circle,#000 22%,transparent 66%);mask:radial-gradient(circle,#000 22%,transparent 66%);opacity:.9;animation:spinz 22s linear infinite}
 @keyframes spinz{to{rotate:360deg}}
-.orbit{position:absolute;inset:0;transform-style:preserve-3d;transform:rotateX(var(--tx)) rotateY(var(--ty))}
-.orbit i{position:absolute;inset:var(--in);border-radius:50%;border:var(--bw) solid var(--c);animation:spinz var(--t) linear infinite}
-.orbit i:after{content:"";position:absolute;left:50%;top:0;width:13px;height:13px;margin:-6.5px 0 0 -6.5px;border-radius:50%;background:var(--sat,var(--acc));box-shadow:0 0 18px var(--glow)}
-.o1{--tx:72deg;--ty:0deg;--in:1%;--bw:1.5px;--c:var(--text);--t:34s;--sat:var(--text)}
-.o2{--tx:72deg;--ty:58deg;--in:9%;--bw:3px;--c:var(--acc);--t:24s}
-.o3{--tx:72deg;--ty:-58deg;--in:17%;--bw:1px;--c:var(--muted);--t:42s;--sat:var(--muted)}
-.core{position:absolute;left:50%;top:50%;width:40%;aspect-ratio:1;translate:-50% -50%;border-radius:50%;background:radial-gradient(circle at 32% 26%,var(--stone1) 0,var(--stone2) 34%,var(--stone3) 68%,var(--stone4) 100%);box-shadow:inset -22px -28px 54px rgba(0,0,0,.42)}
-.core:before{content:"";position:absolute;inset:7%;border-radius:50%;border:1px solid rgba(127,127,140,.35)}
-.core:after{content:"";position:absolute;inset:33%;border-radius:50%;background:radial-gradient(circle at 50% 42%,#ff7a88 0,var(--acc) 36%,#14141a 74%);box-shadow:0 0 44px var(--glow);animation:pulse 5s ease-in-out infinite}
 @keyframes pulse{50%{scale:1.1;opacity:.86}}
-.frag{position:absolute;width:var(--s);aspect-ratio:1;background:linear-gradient(135deg,var(--stone1),var(--stone3));clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);animation:fl 7s ease-in-out infinite;translate:calc(var(--px)*var(--k)*1px) calc(var(--py)*var(--k)*1px);filter:drop-shadow(0 12px 18px rgba(0,0,0,.25))}
-.fa{--s:46px;--k:-26;left:46%;top:-1%;background:linear-gradient(135deg,var(--acc),var(--acc2))}
-.fb{--s:30px;--k:20;right:8%;top:28%;animation-delay:-3s}
-.fc{--s:38px;--k:-16;left:14%;bottom:12%;clip-path:polygon(50% 0,100% 100%,0 100%);animation-delay:-5s}
-.fd{--s:22px;--k:30;right:16%;bottom:18%;background:linear-gradient(135deg,var(--acc),var(--acc2));animation-delay:-1.5s}
 .float{position:absolute;padding:14px 16px;border-radius:16px;animation:fl 6s ease-in-out infinite;background:color-mix(in srgb,var(--surface) 80%,transparent);backdrop-filter:blur(10px);translate:calc(var(--px)*var(--k)*1px) calc(var(--py)*var(--k)*1px)}
 .f1{--k:18;right:2%;top:6%;width:190px}.f3{--k:-14;left:0;top:46%;width:178px;animation-duration:8s}
 .f2{--k:24;right:2%;bottom:4%;width:132px;text-align:center;animation-duration:7s;animation-direction:reverse}
@@ -275,11 +259,38 @@ a.mini:hover:after{transform:translateX(6px)}
 .band{transform:scale(calc(.94 + var(--bp,1)*.06));transform-origin:50% 0;border-radius:calc(56px - var(--bp,1)*24px);will-change:transform}
 .band.paused *,.band.paused:before{animation-play-state:paused!important}
 .god{position:relative;height:260px;border-style:solid;border-color:var(--border);background:radial-gradient(circle at 50% 40%,rgba(225,29,56,.16),transparent 64%),var(--surface2);overflow:hidden;flex-direction:column;gap:6px;padding:12px}
-.god .tp{position:relative;width:min(82%,300px);z-index:2;animation:fl 10s ease-in-out infinite}
 .god small{position:relative;z-index:2;font-size:11.5px;color:var(--muted)}
 .en,.en2{position:absolute;left:50%;top:44%;border-radius:50%;translate:-50% -50%}
 .en{width:230px;height:230px;border:1px dashed color-mix(in srgb,var(--acc) 70%,transparent);animation:spinz 40s linear infinite}
 .en2{width:150px;height:150px;background:radial-gradient(circle,var(--glow),transparent 70%);animation:pulse 6s ease-in-out infinite}
+
+/* ===== patung marmer: layer terpisah (spot, halo, patung, kilau, pecahan, kartu) ===== */
+.cele{height:540px}
+.spot{position:absolute;left:50%;top:46%;width:min(104%,560px);aspect-ratio:1;translate:-50% -50%;border-radius:50%;background:radial-gradient(circle,var(--glow),transparent 62%);opacity:.6;transform:translate(calc(var(--px)*-10px),calc(var(--py)*-8px))}
+.fig{position:absolute;left:50%;bottom:0;width:min(100%,560px);aspect-ratio:1000/833;translate:-50% 0}
+.statue{position:absolute;inset:0;width:100%;height:100%;z-index:3;transform:translate(calc(var(--px)*9px),calc(var(--py)*6px));filter:drop-shadow(0 36px 34px rgba(11,11,15,.30));animation:br 9s ease-in-out infinite;transform-origin:50% 100%}
+@keyframes br{50%{scale:1.014}}
+.hl{position:absolute;left:51%;top:33%;border-radius:50%;translate:-50% -50%;pointer-events:none}
+.hl1{width:84%;aspect-ratio:1;z-index:1;background:conic-gradient(from 0deg,#4a040f,var(--acc) 10%,#ff9aa5 18%,var(--acc) 26%,#4a040f 44%,#240308 54%,var(--acc) 70%,#ff9aa5 79%,#4a040f);-webkit-mask:radial-gradient(circle,transparent 70.5%,#000 71.5%,#000 74%,transparent 75%);mask:radial-gradient(circle,transparent 70.5%,#000 71.5%,#000 74%,transparent 75%);animation:spinz 38s linear infinite;filter:drop-shadow(0 0 16px var(--glow));transform:translate(calc(var(--px)*-14px),calc(var(--py)*-10px))}
+.hl2{width:96%;aspect-ratio:1;z-index:1;background:conic-gradient(from 90deg,transparent,#c9a15a 14%,transparent 32%,#c9a15a 60%,transparent 78%);-webkit-mask:radial-gradient(circle,transparent 71%,#000 72%,#000 73%,transparent 74%);mask:radial-gradient(circle,transparent 71%,#000 72%,#000 73%,transparent 74%);opacity:.8;animation:spinz 64s linear infinite reverse;transform:translate(calc(var(--px)*-20px),calc(var(--py)*-14px))}
+.sheen{position:absolute;inset:0;z-index:4;overflow:hidden;mix-blend-mode:soft-light;-webkit-mask:url(/assets/hero/statue-640.webp) center/100% 100% no-repeat;mask:url(/assets/hero/statue-640.webp) center/100% 100% no-repeat;pointer-events:none}
+.sheen i{position:absolute;top:-10%;bottom:-10%;left:-40%;width:60%;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.95) 50%,transparent 70%);animation:sweep 10s ease-in-out infinite}
+@keyframes sweep{0%,18%{translate:0 0}100%{translate:300% 0}}
+.shd{position:absolute;z-index:5;height:auto;width:var(--w);left:var(--x);top:var(--y);translate:calc(var(--px)*var(--k)*1px) calc(var(--py)*var(--k)*1px);animation:fl var(--t) ease-in-out infinite,sw calc(var(--t)*1.3) ease-in-out infinite;filter:drop-shadow(0 14px 12px rgba(11,11,15,.35))}
+@keyframes sw{0%,100%{rotate:-5deg}50%{rotate:6deg}}
+.sh1{--w:8.4%;--x:7%;--y:21%;--k:-34;--t:7.5s}.sh2{--w:7.3%;--x:12%;--y:52%;--k:-26;--t:9s;animation-delay:-3s}
+.sh3{--w:9.7%;--x:81.5%;--y:22%;--k:38;--t:8.5s;animation-delay:-2s}.sh4{--w:3.4%;--x:12.8%;--y:41%;--k:-44;--t:6s}
+.sh5{--w:4%;--x:94.5%;--y:63%;--k:46;--t:10s;animation-delay:-5s}.sh6{--w:2.9%;--x:86.4%;--y:37%;--k:30;--t:6.5s;animation-delay:-1s}
+.f4{left:-2%;top:2%}.f1{right:-3%;top:9%}.f3{left:-4%;top:52%}.f2{right:-2%;bottom:5%}
+.float{z-index:6}.spk{z-index:6}
+.k1{left:22%;top:6%}.k2{right:6%;top:40%}.k3{left:10%;bottom:12%}
+/* panel gelap: patung + energi merah */
+.god{height:300px}
+.god .gs{position:relative;z-index:2;width:min(78%,300px);height:auto;animation:fl 11s ease-in-out infinite;filter:drop-shadow(0 18px 18px rgba(0,0,0,.5))}
+.gsh{position:absolute;z-index:3;height:auto;filter:drop-shadow(0 10px 10px rgba(0,0,0,.5));animation:fl 7s ease-in-out infinite,sw 9s ease-in-out infinite}
+.g1{width:42px;right:7%;top:14%}.g2{width:36px;left:8%;top:30%;animation-delay:-3s}
+.en{top:46%}.en2{top:46%}
+@media(max-width:900px){.cele{height:400px}.fig{width:min(100%,420px)}.sheen,.hl2,.sh4,.sh5,.sh6{display:none}.hl1{animation-duration:80s}.statue{filter:none;animation:none;transform:none}.shd{translate:none;filter:none}.spot{transform:none}.god{height:270px}}
 /* angka */
 .stats{padding:26px 8px}
 .stats>div{border-right:1px solid var(--border)}.stats>div:last-child{border:0}
@@ -329,14 +340,18 @@ a.mini:hover:after{transform:translateX(6px)}
       <div class="follow fx" id="follow" style="--d:.8s"></div>
     </div>
     <div class="cele" id="cele" aria-hidden="true">
+      <div class="spot"></div>
       <svg class="geo" viewBox="0 0 400 400" fill="none" stroke="currentColor" stroke-width="1"><circle cx="200" cy="200" r="190"/><circle cx="200" cy="200" r="150"/><circle cx="200" cy="200" r="104"/><polygon points="200,10 365,295 35,295"/><polygon points="200,390 35,105 365,105"/></svg>
-      <div class="halo"></div>
-      <div class="stage">
-        <div class="orbit o3"><i></i></div>
-        <div class="orbit o2"><i></i></div>
-        <div class="core"></div>
-        <div class="orbit o1"><i></i></div>
-        <span class="frag fa"></span><span class="frag fb"></span><span class="frag fc"></span><span class="frag fd"></span>
+      <div class="fig">
+        <div class="hl hl2"></div><div class="hl hl1"></div>
+        <img class="statue" src="/assets/hero/statue-1000.webp" srcset="/assets/hero/statue-640.webp 640w, /assets/hero/statue-1000.webp 1000w" sizes="(max-width:900px) 92vw, 560px" width="1000" height="833" alt="" fetchpriority="high" decoding="async">
+        <div class="sheen"><i></i></div>
+        <img class="shd sh1" src="/assets/hero/shard-1.webp" width="112" height="145" alt="" loading="lazy" decoding="async">
+        <img class="shd sh2" src="/assets/hero/shard-2.webp" width="98" height="118" alt="" loading="lazy" decoding="async">
+        <img class="shd sh3" src="/assets/hero/shard-3.webp" width="130" height="180" alt="" loading="lazy" decoding="async">
+        <img class="shd sh4" src="/assets/hero/shard-4.webp" width="45" height="61" alt="" loading="lazy" decoding="async">
+        <img class="shd sh5" src="/assets/hero/shard-5.webp" width="53" height="71" alt="" loading="lazy" decoding="async">
+        <img class="shd sh6" src="/assets/hero/shard-6.webp" width="38" height="45" alt="" loading="lazy" decoding="async">
       </div>
       <svg class="spk k1" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0l2.6 9.4L24 12l-9.4 2.6L12 24l-2.6-9.4L0 12l9.4-2.6z" fill="currentColor"/></svg>
       <svg class="spk k2" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0l2.6 9.4L24 12l-9.4 2.6L12 24l-2.6-9.4L0 12l9.4-2.6z" fill="currentColor"/></svg>
@@ -401,13 +416,9 @@ a.mini:hover:after{transform:translateX(6px)}
       </div>
       <div class="ph god" aria-hidden="true">
         <div class="en"></div><div class="en2"></div>
-        <svg class="tp" viewBox="0 0 320 240" fill="none"><defs><linearGradient id="st" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4f4f6"/><stop offset="1" stop-color="#6c6c78"/></linearGradient></defs>
-          <polygon points="30,92 160,22 290,92" fill="url(#st)"/><polygon points="52,88 160,32 268,88" fill="#14141a" opacity=".35"/>
-          <rect x="30" y="94" width="260" height="14" fill="url(#st)"/>
-          <g fill="url(#st)"><rect x="46" y="112" width="26" height="92"/><rect x="104" y="112" width="26" height="92"/><rect x="190" y="112" width="26" height="92"/><rect x="248" y="112" width="26" height="92"/></g>
-          <g stroke="#14141a" stroke-opacity=".28" stroke-width="1.2"><path d="M54 114v90M62 114v90M112 114v90M120 114v90M198 114v90M206 114v90M256 114v90M264 114v90"/></g>
-          <rect x="36" y="204" width="248" height="10" fill="url(#st)"/><rect x="24" y="214" width="272" height="12" fill="url(#st)" opacity=".85"/>
-          <circle cx="160" cy="68" r="9" fill="var(--acc)"/></svg>
+        <img class="gs" src="/assets/hero/statue-640.webp" width="640" height="533" alt="" loading="lazy" decoding="async">
+        <img class="gsh g1" src="/assets/hero/shard-3.webp" width="130" height="180" alt="" loading="lazy" decoding="async">
+        <img class="gsh g2" src="/assets/hero/shard-1.webp" width="112" height="145" alt="" loading="lazy" decoding="async">
         <small>Pratinjau Studio Konten menyusul</small>
       </div>
     </div>
