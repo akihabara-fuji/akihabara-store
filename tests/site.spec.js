@@ -142,7 +142,12 @@ test("produk: gambar mengikuti mouse, kembali saat keluar, ripple saat klik, CTA
   await page.mouse.up();
   await page.mouse.move(5, 5, { steps: 3 });
   expect(await card.evaluate((e) => e.style.getPropertyValue("--ix"))).toBe("");
-  expect(await card.locator("a.btn-pri").getAttribute("href")).toMatch(/^https:\/\/wa\.me\/\d+\?text=/);
+  // detail hanya muncul setelah gambar diklik
+  await expect(page.locator("#pdlg[open]")).toHaveCount(1);
+  await expect(page.locator("#pdlg #pdWa")).toHaveAttribute("href", /^https:\/\/wa\.me\/\d+\?text=/);
+  await expect(page.locator("#pdlg .price")).toHaveCount(1);
+  await page.keyboard.press("Escape");
+  await expect(page.locator("#pdlg[open]")).toHaveCount(0);
 });
 
 test("produk: ukuran kartu konsisten di tiap viewport (audit)", async ({ page }) => {
@@ -161,4 +166,17 @@ test("produk: ukuran kartu konsisten di tiap viewport (audit)", async ({ page })
   }
   fs.mkdirSync("test-artifacts", { recursive: true });
   fs.writeFileSync("test-artifacts/product-sizing.json", JSON.stringify(out, null, 2));
+});
+
+test("produk: harga dan tombol WA tersembunyi sebelum gambar diklik", async ({ page }) => {
+  await page.goto("/", { waitUntil: "networkidle" });
+  await expect(page.locator("#products .pc .price")).toHaveCount(0);
+  await expect(page.locator("#products .pc a.btn")).toHaveCount(0);
+  await expect(page.locator("#pdlg[open]")).toHaveCount(0);
+  const first = page.locator("#products .pc .pt").first();
+  await first.focus();
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#pdlg[open]")).toHaveCount(1);
+  await page.click("#pdX");
+  await expect(page.locator("#pdlg[open]")).toHaveCount(0);
 });
