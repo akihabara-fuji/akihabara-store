@@ -1,6 +1,6 @@
 const { test, expect } = require("@playwright/test");
 const fs = require("fs");
-const sizes = [["1440x900", 1440, 900], ["1366x768", 1366, 768], ["390x844", 390, 844]];
+const sizes = [["1440x900", 1440, 900], ["1366x768", 1366, 768], ["768x1024", 768, 1024], ["390x844", 390, 844], ["360x800", 360, 800]];
 const routes = ["/", "/blog", "/ms/masuk", "/ms/privasi", "/ms/ketentuan", "/ms/studio", "/admin"];
 // Error jaringan font/CDN di sandbox tanpa internet tidak dihitung.
 const ignorable = (t) => /ERR_TUNNEL|ERR_NAME_NOT_RESOLVED|ERR_INTERNET|Failed to load resource/.test(t);
@@ -32,7 +32,7 @@ test("beranda: heading, nav, CTA, gambar penting", async ({ page }) => {
 
 test("beranda: link Studio Konten membuka /ms/studio", async ({ page }) => {
   await page.goto("/", { waitUntil: "networkidle" });
-  await page.locator('a[href="/ms/studio"]').first().click();
+  await page.locator('a.btn[href="/ms/studio"]').click();
   await expect(page).toHaveURL(/\/ms\/studio$/);
   await expect(page.locator("h1")).toContainText("konten");
 });
@@ -79,4 +79,23 @@ test("akademik: grid 2 kolom tidak tertimpa kelas dekorasi hero", async ({ page 
   expect(box.width).toBeGreaterThan(900);
   const cards = await page.locator("#akademik .g2 > .card").evaluateAll((a) => a.map((e) => e.getBoundingClientRect().width));
   for (const w of cards) expect(w).toBeGreaterThan(400);
+});
+
+test("kartu melayang di hero menuju fitur nyata", async ({ page }) => {
+  await page.goto("/", { waitUntil: "networkidle" });
+  const hrefs = await page.locator("#heroSec a.float").evaluateAll((a) => a.map((e) => e.getAttribute("href")));
+  expect(hrefs.sort()).toEqual(["#analisa", "#produk", "/ms/studio"].sort());
+  for (const h of hrefs.filter((x) => x.startsWith("#"))) await expect(page.locator(h)).toHaveCount(1);
+});
+
+test("reduced-motion: konten tampil dan tanpa animasi", async ({ browser }) => {
+  const ctx = await browser.newContext({ reducedMotion: "reduce", viewport: { width: 1440, height: 900 } });
+  const page = await ctx.newPage();
+  await page.goto("/", { waitUntil: "networkidle" });
+  await expect(page.locator("h1").first()).toBeVisible();
+  const anim = await page.evaluate(() => getComputedStyle(document.querySelector(".float")).animationName);
+  expect(anim).toBe("none");
+  const op = await page.evaluate(() => getComputedStyle(document.querySelector("h1")).opacity);
+  expect(Number(op)).toBe(1);
+  await ctx.close();
 });
