@@ -4,11 +4,20 @@
   "private": true,
   "description": "Web nextaja + panel admin",
   "main": "server.js",
-  "scripts": { "start": "node server.js" },
-  "engines": { "node": ">=18" },
+  "scripts": {
+    "start": "node server.js",
+    "test:e2e": "playwright test",
+    "check": "node --check server.js && node --check blog-akun.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "express": "4.22.3",
     "multer": "2.0.2",
     "sharp": "0.34.4"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.1"
   }
 }

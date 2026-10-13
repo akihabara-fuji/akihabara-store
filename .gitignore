@@ -5,3 +5,5 @@ data/blog.json
 data/users.json
 data/.secret
 data/backups-blog/
+test-artifacts/
+playwright-report/
