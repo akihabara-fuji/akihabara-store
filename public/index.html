@@ -59,6 +59,7 @@ img{max-width:100%;display:block}
 .btn-sm{padding:9px 18px;font-size:14px}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:22px;box-shadow:var(--shadow)}
 .tag{display:inline-block;border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:6px 14px;font-size:12.5px;font-weight:700}
+.chip-soon{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1px dashed var(--dash);border-radius:999px;color:var(--muted);font-weight:700;font-size:13px;cursor:default}.chip-soon em{font-style:normal;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
 .soon{font-size:11px;font-weight:700;letter-spacing:.06em;border:1px dashed var(--dash);border-radius:99px;padding:2px 7px;color:var(--muted);margin-left:6px;text-transform:uppercase}
 :focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:8px}
 
@@ -537,10 +538,11 @@ $("#footSocial").innerHTML=soc.map(function(x){return x.u?'<a href="'+esc(x.u)+'
 /* analisa: satu pintu, tiga pilihan */
 var chips=$("#chips");
 [{n:"TikTok",u:S.analisaUrl,m:"Halo admin nextaja, saya mau analisa akun TikTok."},
- {n:"Instagram",m:"Halo admin nextaja, saya mau analisa akun Instagram."},
- {n:"Affiliator: Shopee, TikTok Shop, Facebook",m:"Halo admin nextaja, saya mau analisa akun Affiliator (Shopee / TikTok Shop / Facebook)."}
-].forEach(function(c){var a=document.createElement("a");a.textContent=c.n;
-  if(c.u){a.href=c.u;a.target="_blank";a.rel="noopener";}else{a.href=wa(c.m);a.target="_blank";a.rel="noopener";}
+ {n:"Instagram",soon:1},
+ {n:"Affiliator: Shopee, TikTok Shop, Facebook",soon:1}
+].forEach(function(c){var a=document.createElement(c.soon?"span":"a");a.textContent=c.n;
+  if(c.soon){a.className="chip-soon";a.setAttribute("aria-disabled","true");var b=document.createElement("em");b.textContent="segera hadir";a.appendChild(b);}
+  else if(c.u){a.href=c.u;a.target="_blank";a.rel="noopener";}else{a.href=wa(c.m);a.target="_blank";a.rel="noopener";}
   chips.appendChild(a);});
 var an=[];
 if(S.analisaFree)an.push(esc(S.analisaFree));

@@ -99,3 +99,10 @@ test("reduced-motion: konten tampil dan tanpa animasi", async ({ browser }) => {
   expect(Number(op)).toBe(1);
   await ctx.close();
 });
+
+test("analisa: Instagram dan Affiliator berlabel segera hadir (bukan tautan)", async ({ page }) => {
+  await page.goto("/", { waitUntil: "networkidle" });
+  await expect(page.locator("#chips .chip-soon")).toHaveCount(2);
+  await expect(page.locator("#chips .chip-soon").first()).toContainText("segera hadir");
+  await expect(page.locator("#chips a")).toHaveCount(1);
+});
