@@ -263,12 +263,12 @@ module.exports = function mount(ctx) {
     const brand = esc(st.brand || "nextaja");
     const canon = `${SITE}${pth}`;
     return `<!doctype html>
-<html lang="id" data-theme="light">
+<html lang="id" data-theme="dark">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
-<meta name="theme-color" content="#f6f6f8">
+<meta name="theme-color" content="#f6f3ff">
 <link rel="canonical" href="${esc(canon)}">
 <meta property="og:type" content="website"><meta property="og:site_name" content="${brand}"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${esc(canon)}">
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -294,7 +294,7 @@ ${extra}
 <footer><div class="wrap"><div><b>${brand}</b> · Jakarta Barat<br>© ${new Date().getFullYear()} Semua hak dilindungi.</div><nav><a href="/blog">Blog</a><a href="/#akademik">Akademik</a><a href="/#jasa">Housekeeping</a><a href="/ms/masuk">Masuk</a><a href="/ms/privasi">Privasi</a><a href="/ms/ketentuan">Ketentuan</a></nav></div></footer>
 <script>
 (function(){
-function setMode(m){document.documentElement.dataset.theme=m;try{localStorage.setItem("nx-theme",m)}catch(e){}var tc=document.querySelector('meta[name=theme-color]');if(tc)tc.content=m==="light"?"#f6f6f8":"#0b0b0f";}
+function setMode(m){document.documentElement.dataset.theme=m;try{localStorage.setItem("nx-theme",m)}catch(e){}var tc=document.querySelector('meta[name=theme-color]');if(tc)tc.content=m==="light"?"#f6f3ff":"#0a0a1c";}
 document.querySelectorAll(".mode button").forEach(function(b){b.addEventListener("click",function(){setMode(b.dataset.m)})});
 setMode(document.documentElement.dataset.theme||"light");
 var bg=document.getElementById("burger"),ln=document.getElementById("links");
@@ -355,7 +355,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
       <h3>3. Teks</h3>
       <label>Headline<textarea id="head" maxlength="180">Judul kontenmu di sini</textarea></label>
       <label>Subteks<input type="text" id="sub" maxlength="120" value="Subteks singkat yang menjelaskan isinya"></label>
-      <div class="two"><label>Nama akun<input type="text" id="handle" maxlength="40" value="@akunmu"></label><label>Warna aksen<input type="color" id="acc" value="#c8102e"></label></div>
+      <div class="two"><label>Nama akun<input type="text" id="handle" maxlength="40" value="@akunmu"></label><label>Warna aksen<input type="color" id="acc" value="#7c3aed"></label></div>
       <label>Ukuran headline<input type="range" id="size" min="60" max="140" step="1" value="100"></label>
       <button type="button" class="btn btn-pri" id="dl">Unduh PNG</button>
       <p class="stu-note">Cek lagi teks dan hak pakai fotonya sebelum diposting. Kamu yang bertanggung jawab atas isi kontenmu.</p>
