@@ -263,6 +263,7 @@ details.q[open] p{animation:dn .35s ease}
 .pc:hover .pt img{transform:translate(var(--ix,0px),var(--iy,0px)) scale(1.04)}
 .pt .rip{position:absolute;left:var(--cx);top:var(--cy);width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:rgba(225,29,56,.45);pointer-events:none;animation:ripple .5s ease-out forwards}
 @keyframes ripple{to{transform:scale(18);opacity:0}}
+.pc{translate:0 0;transition:translate .25s ease,border-color .2s}.pc:hover{translate:0 -3px}
 .pc:active{transition:transform .12s}.js .pc.in:active{transform:perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) scale(.985)}
 @media(prefers-reduced-motion:reduce){.pt img{transform:none!important}.pt .rip{display:none}}
 .mini h3,.feat h3,.svc h3{transition:translate .3s cubic-bezier(.2,.8,.2,1)}
