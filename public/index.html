@@ -293,8 +293,8 @@ a.mini:hover:after{transform:translateX(6px)}
 .spot{position:absolute;left:50%;top:46%;width:min(104%,560px);aspect-ratio:1;translate:-50% -50%;border-radius:50%;background:radial-gradient(circle,var(--glow),transparent 62%);opacity:.6;transform:translate(calc(var(--px)*-10px),calc(var(--py)*-8px))}
 .fig{position:absolute;left:50%;bottom:0;width:min(100%,540px);aspect-ratio:1/1;translate:-50% 0}
 .statue{position:absolute;inset:0;width:100%;height:100%;z-index:3;transform:translate(calc(var(--px)*9px),calc(var(--py)*6px));filter:hue-rotate(-85deg) drop-shadow(0 36px 34px rgba(11,11,15,.30));animation:br 9s ease-in-out infinite;transform-origin:50% 100%}
-.statue.chibi{inset:13%;width:74%;height:74%;border-radius:30px;object-fit:cover;filter:none;box-shadow:0 34px 70px rgba(124,58,237,.42),0 0 0 1px rgba(168,85,247,.5)}
-.god .gs.scene{width:min(70%,260px);aspect-ratio:1;object-fit:cover;border-radius:24px;filter:none;box-shadow:0 20px 50px rgba(124,58,237,.45),0 0 0 1px rgba(168,85,247,.5)}
+.statue.chibi{inset:auto;left:50%;top:1%;width:auto;height:98%;aspect-ratio:815/1020;translate:-50% 0;object-fit:contain;filter:drop-shadow(0 0 28px rgba(168,85,247,.55)) drop-shadow(0 30px 30px rgba(10,10,28,.5))}
+.god .gs.scene{width:auto;height:112%;max-width:none;object-fit:contain;filter:drop-shadow(0 0 22px rgba(168,85,247,.5)) drop-shadow(0 18px 18px rgba(0,0,0,.5))}
 @keyframes br{50%{scale:1.014}}
 .hl{position:absolute;left:50%;top:50%;border-radius:50%;translate:-50% -50%;pointer-events:none}
 .hl1{width:108%;aspect-ratio:1;z-index:1;background:conic-gradient(from 0deg,#2e1065,var(--acc) 10%,#e9d5ff 18%,#d946ef 26%,#2e1065 44%,#1a0b3a 54%,var(--acc) 70%,#e9d5ff 79%,#2e1065);-webkit-mask:radial-gradient(circle,transparent 70.5%,#000 71.5%,#000 74%,transparent 75%);mask:radial-gradient(circle,transparent 70.5%,#000 71.5%,#000 74%,transparent 75%);animation:spinz 38s linear infinite;filter:drop-shadow(0 0 16px var(--glow));transform:translate(calc(var(--px)*-14px),calc(var(--py)*-10px))}
@@ -316,7 +316,7 @@ a.mini:hover:after{transform:translateX(6px)}
 .gsh{position:absolute;z-index:3;height:auto;filter:hue-rotate(-85deg) drop-shadow(0 10px 10px rgba(0,0,0,.5));animation:fl 7s ease-in-out infinite,sw 9s ease-in-out infinite}
 .gsa{width:42px;right:7%;top:14%}.gsb{width:36px;left:8%;top:30%;animation-delay:-3s}
 .en{top:46%}.en2{top:46%}
-@media(max-width:900px){.cele{height:400px}.fig{width:min(100%,420px)}.sheen,.hl2,.sh4,.sh5,.sh6{display:none}.hl1{animation-duration:80s}.statue{filter:hue-rotate(-85deg);animation:none;transform:none}.shd{translate:none;filter:hue-rotate(-85deg)}.spot{transform:none}.god{height:270px}}
+@media(max-width:900px){.cele{height:400px}.fig{width:min(100%,420px)}.sheen,.hl2,.sh4,.sh5,.sh6{display:none}.hl1{animation-duration:80s}.statue{animation:none;transform:none}.shd{translate:none;filter:hue-rotate(-85deg)}.spot{transform:none}.god{height:270px}}
 /* angka */
 .stats{padding:26px 8px}
 .stats>div{border-right:1px solid var(--border)}.stats>div:last-child{border:0}
@@ -370,7 +370,7 @@ a.mini:hover:after{transform:translateX(6px)}
       <svg class="geo" viewBox="0 0 400 400" fill="none" stroke="currentColor" stroke-width="1"><circle cx="200" cy="200" r="190"/><circle cx="200" cy="200" r="150"/><circle cx="200" cy="200" r="104"/><polygon points="200,10 365,295 35,295"/><polygon points="200,390 35,105 365,105"/></svg>
       <div class="fig">
         <div class="hl hl2"></div><div class="hl hl1"></div>
-        <img class="statue chibi" src="/assets/hero/chibi-940.webp" srcset="/assets/hero/chibi-470.webp 470w, /assets/hero/chibi-940.webp 940w" sizes="(max-width:900px) 80vw, 440px" width="940" height="940" alt="Maskot nextaja: penyihir chibi dengan kucing hitam" fetchpriority="high" decoding="async">
+        <img class="statue chibi" src="/assets/hero/mascot-hero.webp" srcset="/assets/hero/mascot-hero-s.webp 520w, /assets/hero/mascot-hero.webp 900w" sizes="(max-width:900px) 70vw, 440px" width="900" height="1126" alt="Maskot nextaja: penyihir chibi bersama kucing hitam" fetchpriority="high" decoding="async">
       </div>
       <svg class="spk k1" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0l2.6 9.4L24 12l-9.4 2.6L12 24l-2.6-9.4L0 12l9.4-2.6z" fill="currentColor"/></svg>
       <svg class="spk k2" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0l2.6 9.4L24 12l-9.4 2.6L12 24l-2.6-9.4L0 12l9.4-2.6z" fill="currentColor"/></svg>
@@ -435,7 +435,7 @@ a.mini:hover:after{transform:translateX(6px)}
       </div>
       <div class="ph god" aria-hidden="true">
         <div class="en"></div><div class="en2"></div>
-        <img class="gs scene" src="/assets/hero/chibi-studio.webp" width="705" height="705" alt="" loading="lazy" decoding="async">
+        <img class="gs scene" src="/assets/hero/mascot-studio.webp" width="720" height="894" alt="" loading="lazy" decoding="async">
         <small>Gambar ilustrasi, bukan hasil Studio</small>
       </div>
     </div>
