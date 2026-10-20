@@ -7,8 +7,8 @@
   "scripts": {
     "start": "node server.js",
     "test:e2e": "playwright test",
-    "check": "node --check server.js && node --check blog-akun.js && node --check parafrase/index.js && node --check parafrase/docx.js && node --check parafrase/uploads.js",
-    "test:unit": "node --test tests/parafrase-settings.test.js tests/parafrase-docx.test.js"
+    "check": "node --check server.js && node --check blog-akun.js && node --check parafrase/index.js && node --check parafrase/docx.js && node --check parafrase/uploads.js && node --check parafrase/rules.js",
+    "test:unit": "node --test tests/parafrase-settings.test.js tests/parafrase-docx.test.js tests/parafrase-rules.test.js"
   },
   "engines": {
     "node": ">=18"

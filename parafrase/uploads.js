@@ -7,6 +7,7 @@ const crypto = require("crypto");
 const multer = require("multer");
 const { analyze, summary, DocxError } = require("./docx");
 const { quote } = require("./pricing");
+const { analyzeFindings, countByCode } = require("./rules");
 
 const UPLOAD_TTL_MS = 2 * 3600 * 1000;       // unggahan yang tidak jadi pesanan dihapus setelah 2 jam
 const RATE = { max: 10, windowMs: 3600 * 1000 };
@@ -48,11 +49,13 @@ module.exports = function mountUploads({ app, db, settings, root, sameOrigin, se
         await fsp.writeFile(path.join(root, "data", "private", rel), f.buffer, { mode: 0o600 });
         const sha = crypto.createHash("sha256").update(f.buffer).digest("hex");
         const det = summary(a);
+        const notes = countByCode(analyzeFindings(a.paragraphs, a.bibliographyParagraphIndex, cfg));
         insert.run(id, rel, name, f.size, sha, JSON.stringify(det), ipHash, now, now + UPLOAD_TTL_MS);
         res.json({
           uploadId: id,
           file: { name, size: f.size },
           detected: det,
+          notes,
           quote: quote(det.wordsWithoutBibliography, false, cfg),
           fastLane: settings.publicConfig(now).fast_lane,
           expiresInMinutes: UPLOAD_TTL_MS / 60000,
