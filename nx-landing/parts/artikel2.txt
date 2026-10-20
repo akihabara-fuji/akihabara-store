@@ -1,0 +1,34 @@
+Sitasi sering jadi bagian yang paling bikin pusing di tugas UT. Padahal kalau dikerjakan dengan urutan yang benar dan dibantu aplikasi referensi seperti Mendeley, sitasi jadi rapi dan konsisten. Berikut langkah praktisnya.
+
+Kenapa sitasi penting
+
+Sitasi menunjukkan dari mana ide dan data yang kamu pakai berasal. Tutor bisa memeriksa sumbernya, dan kamu terhindar dari masalah plagiarisme. Sitasi yang rapi juga memberi kesan tugas dikerjakan dengan serius.
+
+Bentuk dasar sitasi APA
+
+Dalam gaya APA, sitasi di dalam teks memakai nama belakang penulis dan tahun, misalnya (Nama Belakang, 2020). Di akhir tugas, daftar pustaka memuat rincian lengkap setiap sumber dan diurutkan menurut abjad nama penulis. Detail penulisan bisa berbeda untuk buku, artikel jurnal, dan laman web, jadi selalu cocokkan dengan panduan gaya yang diminta dalam tugasmu.
+
+Langkah memakai Mendeley
+
+1. Pasang Mendeley Reference Manager, lalu buat akun.
+2. Simpan sumber yang kamu baca: unggah berkas PDF atau tambahkan lewat DOI.
+3. Periksa data setiap sumber (penulis, tahun, judul, nama jurnal). Data yang terbaca otomatis tidak selalu benar.
+4. Pasang plugin Mendeley untuk Word, lalu pilih gaya APA saat menyisipkan sitasi.
+5. Buat daftar pustaka dari menu plugin, setelah seluruh sitasi di teks selesai.
+
+Kesalahan yang paling sering terjadi
+
+- Sitasi di teks tidak ada di daftar pustaka, atau sebaliknya.
+- Data sumber salah karena langsung percaya hasil impor otomatis.
+- Tahun, huruf kapital, atau tanda baca tidak seragam.
+- Mencantumkan sumber yang belum pernah dibaca.
+
+Cek akhir sebelum kirim
+
+Cocokkan satu per satu: setiap sitasi di teks harus ada di daftar pustaka, dan setiap sumber di daftar pustaka harus dipakai di teks. Buka ulang sumber yang kamu ragukan.
+
+Kalau butuh bantuan
+
+Kalau waktumu terbatas, nextaja bisa membantu merapikan sitasi dan daftar pustaka. Sumber yang tidak ditemukan ditandai, tidak dikarang. Chat admin lewat WhatsApp di 085722227544.
+
+nextaja bukan situs resmi Universitas Terbuka. Selalu pegang ketentuan tugas dari tutor.
