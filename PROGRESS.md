@@ -43,3 +43,6 @@ Cabang: `feature/cek-parafrase-mandiri` (dari `nextaja-baru`). Jangan deploy seb
 - Halaman /ruangakademikut/pesanan/:token (QRIS, kode unik, hitung mundur, unggah bukti, status otomatis, catatan terbuka setelah dikonfirmasi). Tombol Bayar di halaman unggah sudah membuat pesanan.
 - 41 tes lulus + uji alur penuh di browser.
 - Berikutnya: 6b (nomor antrean, urutan, jalur cepat vs biasa, "Dikerjakan" tidak tergeser), lalu 7 (Cek Pesanan, WhatsApp, retensi 24 jam), 8a-c (panel admin, Word berwarna, cek ulang).
+
+## Tahap 6b-10 selesai
+6b antrean, 7 Cek Pesanan/WA/retensi, 8a panel admin, 8b Word berwarna, 8c cek ulang + ekspor bersih, 9 keamanan, 10 installer + LAPORAN-AKHIR.md. Sisa: setel aturan 4a dengan dokumen asli, sambungkan bot WA, pasang setelah ACC.
