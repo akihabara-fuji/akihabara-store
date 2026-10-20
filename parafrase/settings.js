@@ -46,7 +46,7 @@ function coerce(key, raw) {
     if (u.protocol !== "https:") throw new Error(`${key}: harus diawali https://`);
     return u.toString();
   }
-  if (!d.re.test(s)) throw new Error(`${key}: format tidak valid`);
+  if (!d.re.test(s) || (key === "qris_image_path" && (s.includes("..") || s.startsWith("/")))) throw new Error(`${key}: format tidak valid`);
   return s;
 }
 

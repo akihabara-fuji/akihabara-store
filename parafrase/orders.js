@@ -23,6 +23,7 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
   const hashIp = ip => crypto.createHmac("sha256", secret).update(String(ip || "")).digest("hex").slice(0, 32);
   const buckets = new Map();
   const limited = (key, max, now = Date.now()) => {
+    if (buckets.size > 20000) for (const [k, v] of buckets) if (!v.length || now - v[v.length - 1] > 3600e3) buckets.delete(k); // cegah memori membengkak
     const arr = (buckets.get(key) || []).filter(t => now - t < 3600e3);
     if (arr.length >= max) { buckets.set(key, arr); return true; }
     arr.push(now); buckets.set(key, arr); return false;
@@ -46,6 +47,9 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
     const excl = body.excludeBib !== false && det.hasBibliography;
     const words = excl ? det.wordsWithoutBibliography : det.words;
     const wantFast = body.fast === true;
+    const unpaid = db.prepare("SELECT lane FROM orders WHERE wa_number=? AND status='menunggu_bayar' AND pay_expires_at>?").all(wa, now);
+    if (unpaid.length >= 3) throw Object.assign(new Error("Kamu masih punya 3 pesanan yang belum dibayar. Selesaikan atau tunggu kedaluwarsa dulu."), { status: 429 });
+    if (wantFast && unpaid.some(u => u.lane === "cepat")) throw Object.assign(new Error("Kamu masih punya pesanan jalur cepat yang belum dibayar. Selesaikan dulu atau pilih jalur biasa."), { status: 409 });
     if (wantFast && !(cfg.fast_lane_enabled && cfg.fast_lane_daily_cap > 0)) throw Object.assign(new Error("Jalur cepat sedang tidak tersedia."), { status: 409 });
     const q = quote(words, wantFast, cfg);
     const title = String(body.title || det.title || "").trim().slice(0, 200);
@@ -197,7 +201,9 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
 
   /* Pesanan yang tidak dibayar sampai batas waktu: kedaluwarsa, slot jalur cepat dilepas, dokumen dihapus. */
   async function expireUnpaid(now = Date.now()) {
-    const rows = db.prepare("SELECT id, original_file FROM orders WHERE status='menunggu_bayar' AND pay_expires_at<?").all(now);
+    // Bukti yang tidak pernah diverifikasi lebih dari 7 hari juga dilepas agar tidak menggantung selamanya.
+    db.prepare("UPDATE orders SET pay_expires_at=?, status='menunggu_bayar' WHERE status='menunggu_verifikasi' AND proof_uploaded_at<?").run(now - 1, now - 7 * 86400e3);
+    const rows = db.prepare("SELECT id, original_file, proof_path FROM orders WHERE status='menunggu_bayar' AND pay_expires_at<?").all(now);
     for (const r of rows) {
       db.transaction(() => {
         db.prepare("UPDATE orders SET status='kedaluwarsa', updated_at=? WHERE id=?").run(now, r.id);
@@ -205,7 +211,7 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
         event(r.id, "kedaluwarsa", null, now);
         notifier.send("kedaluwarsa", db.prepare("SELECT * FROM orders WHERE id=?").get(r.id), now);
       })();
-      try { await fsp.unlink(priv(r.original_file)); } catch {}
+      for (const f of [r.original_file, r.proof_path]) if (f) { try { await fsp.unlink(priv(f)); } catch {} }
       db.prepare("DELETE FROM uploads WHERE order_id=?").run(r.id);
     }
     return rows.length;

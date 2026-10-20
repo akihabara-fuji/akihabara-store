@@ -12,7 +12,7 @@ test("pesanan: harga dari server, kode unik, WA dinormalkan, validasi", async ()
     let r = await t.order(id, { total: 1, wa: "123" }); assert.strictEqual(r.status, 400);
     r = await t.order(id, { agree: false }); assert.strictEqual(r.status, 400);
     r = await t.order(id, { deadline: Date.now() - 1000 }); assert.strictEqual(r.status, 400);
-    r = await t.order(id, { total: 1, price: 1 }); assert.strictEqual(r.status, 200);
+    r = await t.order(id, { total: 1, price: 1, wa: "081234567890" }); assert.strictEqual(r.status, 200);
     const j = await r.json();
     assert.ok(/^NA-\d+$/.test(j.orderId) && j.token.length === 48);
     assert.strictEqual(j.total, 30000 + j.uniqueCode); // kata sedikit -> minimum; klien tidak bisa menentukan total

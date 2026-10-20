@@ -31,7 +31,8 @@ async function boot(set = {}) {
   const srv = app.listen(0), base = "http://127.0.0.1:" + srv.address().port, H = { origin: "http://x" };
   const J = { ...H, "content-type": "application/json" };
   const upload = async (extra) => { const fd = new FormData(); fd.append("file", new Blob([await docx(extra)]), "t.docx"); return (await (await fetch(base + "/ms/parafrase/upload", { method: "POST", body: fd, headers: H })).json()).uploadId; };
-  const order = async (uploadId, o = {}) => fetch(base + "/ms/parafrase/order", { method: "POST", headers: J, body: JSON.stringify({ uploadId, wa: "081234567890", agree: true, deadline: Date.now() + 3 * 86400e3, ...o }) });
+  let n = 0; // nomor WA berbeda tiap pesanan (kecuali ditentukan), agar pembatasan per nomor tidak mengganggu tes lain
+  const order = async (uploadId, o = {}) => fetch(base + "/ms/parafrase/order", { method: "POST", headers: J, body: JSON.stringify({ uploadId, wa: "0812345678" + String(90 + n++), agree: true, deadline: Date.now() + 3 * 86400e3, ...o }) });
   const proof = async (token, buf) => { const fd = new FormData(); fd.append("proof", new Blob([buf]), "b.jpg"); return fetch(base + "/ms/parafrase/order/" + token + "/proof", { method: "POST", body: fd, headers: H }); };
   return { m, root, srv, base, H, J, upload, order, proof, setAdmin: v => { admin = v; } };
 }

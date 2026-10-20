@@ -18,6 +18,10 @@ test("halaman: hub, unggah, pesanan, aset; alamat lama dialihkan; berkas html ti
     }
     for (const f of ["site.css", "hub.css", "common.js", "cek.js", "pesanan.js"]) assert.strictEqual((await fetch(base + "/ruangakademikut/assets/" + f)).status, 200, f);
     for (const f of ["hub.html", "cek.html", "../uploads.js", "..%2Fuploads.js", "nope.js"]) assert.strictEqual((await fetch(base + "/ruangakademikut/assets/" + f)).status, 404, f);
+    const pr = await fetch(base + "/admin/parafrase"); assert.strictEqual(pr.status, 200);
+    assert.ok((await pr.text()).includes("noindex")); assert.ok(pr.headers.get("x-robots-tag"));
+    const hr = await fetch(base + "/ruangakademikut/pesanan/" + "a".repeat(48));
+    assert.strictEqual(hr.headers.get("referrer-policy"), "no-referrer"); assert.strictEqual(hr.headers.get("x-frame-options"), "DENY");
     const r = await fetch(base + "/akademik", { redirect: "manual" });
     assert.strictEqual(r.status, 301); assert.strictEqual(r.headers.get("location"), "/ruangakademikut");
   } finally { srv.close(); }
