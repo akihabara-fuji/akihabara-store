@@ -10,7 +10,18 @@ cands=[f for f in glob.glob(P('public','assets','blog.css'))+glob.glob(P('assets
 if not cands: print('DILEWATI: blog.css tidak ketemu'); sys.exit(0)
 F=cands[0]; css=open(F,'rb').read().decode('utf-8')
 MARK='/* nx-soft-cover */'
-if MARK in css: print('sudah terpasang'); sys.exit(0)
+HERE=os.path.dirname(os.path.abspath(__file__))
+# ganti sampul UT dengan versi soft (selalu, aman diulang)
+cv=0
+for ud in (P('public','uploads'),P('uploads'),P('data','uploads')):
+    if os.path.exists(os.path.join(ud,'nx-cover-ut1.jpg')):
+        for i in range(1,11):
+            src=os.path.join(HERE,'assets','cover','cover-ut%d.jpg'%i)
+            if os.path.exists(src): shutil.copy2(src,os.path.join(ud,'nx-cover-ut%d.jpg'%i)); cv+=1
+        break
+print('sampul UT diganti:',cv)
+if MARK in css:
+    print('css sudah terpasang'); subprocess.run('pm2 restart nextaja --update-env >/dev/null 2>&1',shell=True); sys.exit(0)
 shutil.copy2(F,bk)
 css+='\n'+MARK+'\n.cv{padding:0 !important;background:#14142e !important}\n.post{border-radius:14px}\n.post .cv{border-radius:14px 14px 0 0;overflow:hidden}\n'
 open(F,'wb').write(css.encode('utf-8'))
