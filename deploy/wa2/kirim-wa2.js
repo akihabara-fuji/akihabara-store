@@ -1,11 +1,18 @@
-// Endpoint lokal (127.0.0.1) untuk kirim WA lewat WA2. Dipakai nextaja (Cek & Parafrase).
-const http = require('http'), fs = require('fs'), path = require('path'), crypto = require('crypto');
+// Endpoint lokal (127.0.0.1) untuk kirim WA lewat WA2. Dipakai nextaja (Cek & Parafrase). Versi ES module.
+import http from 'http';
+import fs from 'fs';
+import path from 'path';
+import crypto from 'crypto';
+import { fileURLToPath } from 'url';
+
+const dir = path.dirname(fileURLToPath(import.meta.url));
 let started = false;
-module.exports = function (getSock) {
+
+export default function kirimWa2(getSock) {
   if (started) return;
   started = true;
   let secret = '';
-  try { secret = fs.readFileSync(path.join(__dirname, '..', '.kirim-secret'), 'utf8').trim(); } catch (e) {}
+  try { secret = fs.readFileSync(path.join(dir, '..', '.kirim-secret'), 'utf8').trim(); } catch (e) {}
   if (!secret) { console.error('kirim-wa2: .kirim-secret tidak ada, endpoint nonaktif'); return; }
   const out = (res, code, obj) => { res.writeHead(code, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(obj)); };
   http.createServer((req, res) => {
@@ -24,5 +31,5 @@ module.exports = function (getSock) {
         out(res, 200, { ok: true });
       } catch (e) { out(res, 500, { ok: false }); }
     });
-  }).listen(3399, '127.0.0.1');
-};
+  }).on('error', e => console.error('kirim-wa2:', e.message)).listen(3399, '127.0.0.1');
+}
