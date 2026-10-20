@@ -4,7 +4,7 @@
 <meta name="description" content="Semua progres kuliah UT di satu tempat: Cek dan Parafrase Mandiri, paket semester, dan pendampingan metopen.">
 <link rel="canonical" href="{{SITE}}/ruangakademikut">
 <link rel="icon" href="/favicon.ico">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Bricolage+Grotesque:wght@500;700&display=swap" rel="stylesheet"><script>try{var t=localStorage.getItem("nx-theme");document.documentElement.dataset.theme=(t==="light"||t==="dark")?t:"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Bricolage+Grotesque:wght@500;700&display=swap" rel="stylesheet"><script>document.documentElement.classList.add("js");try{var t=localStorage.getItem("nx-theme");document.documentElement.dataset.theme=(t==="light"||t==="dark")?t:"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script>
 <link rel="stylesheet" href="/ruangakademikut/assets/site.css"><link rel="stylesheet" href="/ruangakademikut/assets/hub.css">
 </head><body class="hub">
 <header class="nav"><div class="wrap">
@@ -22,35 +22,40 @@
     <div class="pills"><a class="pill" data-chat href="#">Chat admin</a><a class="pill y" data-group href="#" rel="noopener">Gabung grup Update UT</a></div>
   </div>
   <div class="cards">
-<article class="pc main" data-slug="cek"><div class="pc-media" hidden><img alt=""></div><div class="pc-body"><span class="tag">Baru</span><h2>Cek dan Parafrase Mandiri</h2>
+    <article class="card pc rv main" data-slug="cek"><div class="pt" style="--g:linear-gradient(135deg,#4c1d95,#a855f7)"><span class="badge">Baru</span><span class="pl">Cek dan
+Parafrase</span><img alt=""></div><div class="pb"><h2>Cek dan Parafrase Mandiri</h2>
       <p>Unggah dokumen, lihat bagian yang perlu diperbaiki dengan 8 warna, lalu tim NextAja yang merevisinya. Hasil Word bersih dikirim ke WhatsApp.</p>
-      <div class="big">Rp <span data-ppw>17</span> <small>per kata</small></div>
+      <div class="price">Rp <span data-ppw>17</span> <small>per kata</small></div>
       <div class="muted">Minimum Rp <span data-min>30.000</span> · tanpa batas kata · jalur cepat +Rp <span data-fast>30.000</span></div>
-      <a class="cta" href="/ruangakademikut/cek-parafrase-mandiri">Unggah dokumen</a>
+      <a class="btn btn-sm cta" href="/ruangakademikut/cek-parafrase-mandiri">Unggah dokumen</a>
       <a class="sublink" href="/ruangakademikut/pesanan">Cek pesanan</a></div></article>
-<article class="pc" data-slug="semester"><div class="pc-media" hidden><img alt=""></div><div class="pc-body"><span class="tag o">Paling hemat</span><h2>Paket Semester Lengkap</h2>
+    <article class="card pc rv" data-slug="semester"><div class="pt" style="--g:linear-gradient(135deg,#7c2d12,#f59e0b)"><span class="badge o">Paling hemat</span><span class="pl">Paket
+Semester</span><img alt=""></div><div class="pb"><h2>Paket Semester Lengkap</h2>
       <p>Handle 1 semester lebih murah, semua beres. Update nilai tiap minggu. Diskusi, absensi, dan tugas dengan free revisi selama sesi aktif.</p>
-      <div class="big soft">Harga via chat admin</div>
-      <a class="cta o" data-chat data-msg="Halo admin nextaja, saya mau tanya Paket Semester Lengkap." href="#">Tanya admin</a></div></article>
-<article class="pc" data-slug="metopen"><div class="pc-media" hidden><img alt=""></div><div class="pc-body"><h2>Paket Metopen</h2>
+      <div class="price soon-p">Konsultasikan semua dengan admin, klik di bawah ini</div>
+      <a class="btn btn-sm cta o" data-chat data-msg="Halo admin nextaja, saya mau konsultasi Paket Semester Lengkap." href="#">Chat admin</a></div></article>
+    <article class="card pc rv" data-slug="metopen"><div class="pt" style="--g:linear-gradient(135deg,#0c4a6e,#38bdf8)"><span class="pl">Paket
+Metopen</span><img alt=""></div><div class="pb"><h2>Paket Metopen</h2>
       <p>Pendampingan metopen satu semester, termasuk data simulasi presentasi.</p>
-      <div class="big" data-pk="priceMetopen">Rp850.000</div>
-      <a class="cta o" data-chat data-msg="Halo admin nextaja, saya mau pesan Paket Metopen." href="#">Pesan lewat WhatsApp</a></div></article>
-<article class="pc" data-slug="tugas"><div class="pc-media" hidden><img alt=""></div><div class="pc-body"><h2>Tugas</h2>
+      <div class="price" data-pk="priceMetopen">Rp850.000</div>
+      <a class="btn btn-sm cta o" data-chat data-msg="Halo admin nextaja, saya mau pesan Paket Metopen." href="#">Pesan lewat WhatsApp</a></div></article>
+    <article class="card pc rv" data-slug="tugas"><div class="pt" style="--g:linear-gradient(135deg,#14532d,#4ade80)"><span class="pl">Tugas</span><img alt=""></div><div class="pb"><h2>Tugas</h2>
       <p>Pendampingan tugas tutorial, per tugas.</p>
-      <div class="big" data-pk="priceTugas">Rp40.000 <small>/ tugas</small></div>
-      <a class="cta o" data-chat data-msg="Halo admin nextaja, saya mau pesan pendampingan tugas." href="#">Pesan lewat WhatsApp</a></div></article>
-<article class="pc" data-slug="diskusi"><div class="pc-media" hidden><img alt=""></div><div class="pc-body"><h2>Diskusi</h2>
+      <div class="price" data-pk="priceTugas">Rp40.000 <small>/ tugas</small></div>
+      <a class="btn btn-sm cta o" data-chat data-msg="Halo admin nextaja, saya mau pesan pendampingan tugas." href="#">Pesan lewat WhatsApp</a></div></article>
+    <article class="card pc rv" data-slug="diskusi"><div class="pt" style="--g:linear-gradient(135deg,#831843,#f472b6)"><span class="pl">Diskusi</span><img alt=""></div><div class="pb"><h2>Diskusi</h2>
       <p>Pendampingan diskusi, per mata kuliah.</p>
-      <div class="big" data-pk="priceDiskusi">Rp20.000 <small>/ diskusi per mata kuliah</small></div>
-      <a class="cta o" data-chat data-msg="Halo admin nextaja, saya mau pesan pendampingan diskusi." href="#">Pesan lewat WhatsApp</a></div></article>
-<article class="pc" data-slug="makalah"><div class="pc-media" hidden><img alt=""></div><div class="pc-body"><h2>Makalah</h2>
+      <div class="price" data-pk="priceDiskusi">Rp20.000 <small>/ diskusi per mata kuliah</small></div>
+      <a class="btn btn-sm cta o" data-chat data-msg="Halo admin nextaja, saya mau pesan pendampingan diskusi." href="#">Pesan lewat WhatsApp</a></div></article>
+    <article class="card pc rv" data-slug="makalah"><div class="pt" style="--g:linear-gradient(135deg,#134e4a,#2dd4bf)"><span class="pl">Makalah</span><img alt=""></div><div class="pb"><h2>Makalah</h2>
       <p>Penyusunan makalah dengan sitasi dan format rapi.</p>
-      <div class="big" data-pk="priceMakalah">Rp45.000</div>
-      <a class="cta o" data-chat data-msg="Halo admin nextaja, saya mau pesan makalah." href="#">Pesan lewat WhatsApp</a></div></article>
+      <div class="price" data-pk="priceMakalah">Rp45.000</div>
+      <a class="btn btn-sm cta o" data-chat data-msg="Halo admin nextaja, saya mau pesan makalah." href="#">Pesan lewat WhatsApp</a></div></article>
+    <article class="card pc rv wide" data-slug="info"><div class="pt" style="--g:linear-gradient(135deg,#1e1b4b,#6366f1)"><span class="pl">Info UT</span><img alt=""></div><div class="pb"><h2>Info UT</h2>
+      <p>Jadwal, kabar penting, dan panduan terbaru seputar UT. Semua info dikumpulkan di blog nextaja, jadi kamu tidak perlu mencari ke mana-mana.</p>
+      <a class="btn btn-sm cta" href="/blog">Baca info UT</a></div></article>
   </div>
   <p class="note">Butuh yang lain? Tulis kebutuhanmu lewat chat admin, harga final dikonfirmasi admin sebelum mulai. Tips menulis jawaban yang disukai tutor ada di <a href="/blog">blog nextaja</a>.</p>
-  <a class="nugas" id="nugasLink" href="https://nextaja.com/app">Buka Sahabat Nugas →</a>
 </main>
 <script src="/ruangakademikut/assets/common.js"></script>
 </body></html>

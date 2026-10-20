@@ -148,7 +148,7 @@
       s.appendChild(lg);
     }).catch(function (e) { s.textContent = e.message; });
   }
-  var CARDNAME = { cek: "Cek dan Parafrase Mandiri", semester: "Paket Semester Lengkap", metopen: "Paket Metopen", tugas: "Tugas", diskusi: "Diskusi", makalah: "Makalah" };
+  var CARDNAME = { cek: "Cek dan Parafrase Mandiri", semester: "Paket Semester Lengkap", metopen: "Paket Metopen", tugas: "Tugas", diskusi: "Diskusi", makalah: "Makalah", info: "Info UT (menuju blog)" };
   function renderImg() {
     var s = $("t-img"); s.textContent = "Memuat…";
     api("/ms/admin/parafrase/card-images").then(function (j) {
