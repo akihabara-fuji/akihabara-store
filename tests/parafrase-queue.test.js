@@ -100,3 +100,38 @@ test("retensi: pengingat 3 jam sebelum, file dihapus tepat waktu, unduhan ditola
     assert.strictEqual((await (await fetch(t.base + `/ms/parafrase/order/${j.token}`)).json()).filesDeleted, true);
   } finally { t.srv.close(); }
 });
+
+test("alur admin: Word berwarna -> unggah revisi -> cek ulang -> kirim bersih -> unduh murid", async () => {
+  const t = await boot();
+  const JSZip = require("jszip");
+  try {
+    const j = await paid(t, "alur");
+    assert.strictEqual((await fetch(t.base + `/ms/admin/parafrase/orders/${j.orderId}/colored`)).status, 401);
+    t.setAdmin(true);
+    t.m.orders.startWork(j.orderId);
+    let r = await fetch(t.base + `/ms/admin/parafrase/orders/${j.orderId}/colored`); assert.strictEqual(r.status, 200);
+    const colored = Buffer.from(await r.arrayBuffer());
+    const z = await JSZip.loadAsync(colored); assert.ok(z.file("word/comments.xml"));
+    // admin "merevisi": ganti kalimat bertanda
+    let doc = await z.file("word/document.xml").async("string");
+    doc = doc.replace("Menurut para ahli, koordinasi antardivisi selalu menentukan keberhasilan implementasi strategi perusahaan.", "Menurut Rahman (2020), koordinasi antardivisi berperan besar bagi strategi perusahaan.");
+    z.file("word/document.xml", doc);
+    const revised = await z.generateAsync({ type: "nodebuffer" });
+    const up = async buf => { const fd = new FormData(); fd.append("file", new Blob([buf]), "revisi.docx"); return fetch(t.base + `/ms/admin/parafrase/orders/${j.orderId}/revised`, { method: "POST", body: fd, headers: t.H }); };
+    const bad = new FormData(); bad.append("file", new Blob(["x"]), "revisi.pdf");
+    assert.strictEqual((await fetch(t.base + `/ms/admin/parafrase/orders/${j.orderId}/revised`, { method: "POST", body: bad, headers: t.H })).status, 400);
+    r = await up(revised); assert.strictEqual(r.status, 200);
+    const rep = (await r.json()).report; assert.ok(rep.unchangedSentences >= 0 && rep.note);
+    assert.strictEqual(t.m.orders.byToken(j.token).status, "cek_ulang");
+    r = await fetch(t.base + `/ms/admin/parafrase/orders/${j.orderId}/finalize`, { method: "POST", headers: t.J, body: "{}" }); assert.strictEqual(r.status, 200);
+    const v = await (await fetch(t.base + "/ms/parafrase/order/" + j.token)).json();
+    assert.deepStrictEqual([v.status, v.resultReady], ["terkirim", true]);
+    const dl = await fetch(t.base + `/ms/parafrase/order/${j.token}/result`); assert.strictEqual(dl.status, 200);
+    const out = await JSZip.loadAsync(Buffer.from(await dl.arrayBuffer()));
+    const cd = await out.file("word/document.xml").async("string");
+    assert.ok(cd.includes("Rahman (2020)") && !cd.includes("commentRange") && !cd.includes("0A0B0C") && !out.file("word/comments.xml"));
+    const msg = t.m.db.prepare("SELECT text FROM wa_outbox WHERE kind='selesai'").get();
+    assert.ok(msg && msg.text.includes(j.token));
+    assert.ok(t.m.db.prepare("SELECT delete_at-sent_at d FROM orders WHERE id=?").get(j.orderId).d === 24 * 3600e3);
+  } finally { t.srv.close(); }
+});

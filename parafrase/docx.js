@@ -71,19 +71,27 @@ function paraStyle(p) {
   return "";
 }
 
-function extractParagraphs(xml) {
+/* Daftar simpul paragraf <w:p> dalam urutan yang SAMA dengan extractParagraphs (dipakai pembuat Word berwarna). */
+function parseBody(xml) {
   const doc = new DOMParser({ onError: () => {} }).parseFromString(xml, "text/xml");
   const body = doc.getElementsByTagNameNS(W, "body")[0];
   if (!body) throw new DocxError("bukan_word", "Isi dokumen Word tidak bisa dibaca.");
-  const paras = [];
+  return { doc, body };
+}
+function paragraphNodes(body) {
+  const out = [];
   (function walk(n, inTable) {
     for (const c of elementChildren(n)) {
-      if (isW(c, "p")) paras.push({ idx: paras.length, text: paraText(c), style: paraStyle(c), inTable });
+      if (isW(c, "p")) out.push({ node: c, inTable });
       else if (isW(c, "tbl") || isW(c, "tr") || isW(c, "tc") || isW(c, "sdt") || isW(c, "sdtContent") || isW(c, "ins"))
         walk(c, inTable || isW(c, "tbl"));
     }
   })(body, false);
-  return paras;
+  return out;
+}
+function extractParagraphs(xml) {
+  const { body } = parseBody(xml);
+  return paragraphNodes(body).map(({ node, inTable }, idx) => ({ idx, text: paraText(node), style: paraStyle(node), inTable }));
 }
 
 /* ---------- kalimat ---------- */
@@ -188,4 +196,4 @@ const summary = a => ({
   paragraphs: a.paragraphCount,
 });
 
-module.exports = { analyze, summary, splitSentences, countWords, DocxError, openDocx };
+module.exports = { analyze, summary, splitSentences, countWords, DocxError, openDocx, parseBody, paragraphNodes, paraText, readText, W };

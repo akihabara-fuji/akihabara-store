@@ -12,6 +12,7 @@ const { analyzeFindings, saveFindings, countByCode } = require("./rules");
 const { quote } = require("./pricing");
 const { buildPreview } = require("./preview");
 const queue = require("./queue");
+const wordtools = require("./wordtools");
 
 const PAID = new Set(["baru_dibayar", "dianalisis", "dikerjakan", "cek_ulang", "terkirim"]);
 const PROOF_MAX = 5 * 1024 * 1024;
@@ -323,6 +324,64 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
     }
     return deleted;
   }
+
+  /* ---------- admin: Word berwarna, unggah revisi, cek ulang, kirim hasil bersih ---------- */
+  const rowById = id => db.prepare("SELECT * FROM orders WHERE id=?").get(String(id));
+  const dbFindings = id => db.prepare("SELECT seq, code, para_idx, sent_idx, text, reason FROM findings WHERE order_id=? ORDER BY seq").all(id);
+  const slug = t => String(t || "dokumen").normalize("NFKD").replace(/[^\w ()-]/g, "").trim().replace(/\s+/g, " ").slice(0, 60) || "dokumen";
+  const fail = (res, e) => res.status(e.status || 500).json({ error: e.status ? e.message : "Terjadi kesalahan." });
+
+  app.get("/ms/admin/parafrase/orders/:id/colored", requireAdmin, async (req, res) => {
+    const o = rowById(req.params.id);
+    if (!o || o.files_deleted_at || !PAID.has(o.status)) return res.status(404).json({ error: "Pesanan tidak ditemukan, belum dibayar, atau file sudah dihapus." });
+    try {
+      const buf = await wordtools.buildColored(await fsp.readFile(priv(o.original_file)), dbFindings(o.id));
+      res.set({ "Cache-Control": "no-store", "Content-Disposition": `attachment; filename="${o.id} berwarna.docx"` })
+        .type("application/vnd.openxmlformats-officedocument.wordprocessingml.document").send(buf);
+      event(o.id, "word_berwarna_diunduh", null);
+    } catch (e) { console.error("[parafrase] berwarna gagal:", e && e.message); res.status(500).json({ error: "Word berwarna gagal dibuat." }); }
+  });
+
+  const revUp = () => multer({ storage: multer.memoryStorage(), limits: { fileSize: settings.get("file_max_mb") * 1048576, files: 1 } }).single("file");
+  app.post("/ms/admin/parafrase/orders/:id/revised", requireAdmin, (req, res) => {
+    revUp()(req, res, async err => {
+      const o = rowById(req.params.id);
+      if (!o || o.files_deleted_at) return res.status(404).json({ error: "Pesanan tidak ditemukan atau file sudah dihapus." });
+      if (!["baru_dibayar", "dianalisis", "dikerjakan", "cek_ulang", "terkirim"].includes(o.status)) return res.status(409).json({ error: "Status pesanan belum bisa menerima revisi: " + o.status });
+      if (err || !req.file || !/\.docx$/i.test(req.file.originalname || "")) return res.status(400).json({ error: "Pilih file Word (.docx) hasil revisi." });
+      try {
+        await analyze(req.file.buffer); // validasi: DOCX sah dan berisi teks
+        const rel = `revised/${o.id}.docx`; fs.mkdirSync(priv("revised"), { recursive: true });
+        await fsp.writeFile(priv(rel), req.file.buffer, { mode: 0o600 });
+        const now = Date.now();
+        db.prepare("UPDATE orders SET revised_path=?, status=CASE WHEN status='terkirim' THEN status ELSE 'cek_ulang' END, updated_at=? WHERE id=?").run(rel, now, o.id);
+        event(o.id, "revisi_diunggah", req.file.size, now);
+        res.json({ ok: true, report: await wordtools.recheck(req.file.buffer, dbFindings(o.id), settings.getAll()) });
+      } catch (e) { res.status(422).json({ error: e && e.code ? e.message : "File revisi tidak bisa dibaca." }); }
+    });
+  });
+  app.get("/ms/admin/parafrase/orders/:id/recheck", requireAdmin, async (req, res) => {
+    const o = rowById(req.params.id);
+    if (!o || !o.revised_path || o.files_deleted_at) return res.status(404).json({ error: "Belum ada file revisi." });
+    try { res.set("Cache-Control", "no-store").json({ report: await wordtools.recheck(await fsp.readFile(priv(o.revised_path)), dbFindings(o.id), settings.getAll()) }); } catch (e) { fail(res, e); }
+  });
+  app.post("/ms/admin/parafrase/orders/:id/finalize", requireAdmin, async (req, res) => {
+    const o = rowById(req.params.id);
+    if (!o || !o.revised_path || o.files_deleted_at) return res.status(404).json({ error: "Belum ada file revisi untuk dikirim." });
+    if (!["cek_ulang", "dikerjakan", "terkirim"].includes(o.status)) return res.status(409).json({ error: "Status tidak bisa dikirim: " + o.status });
+    try {
+      const clean = await wordtools.acceptAndClean(await fsp.readFile(priv(o.revised_path)));
+      await analyze(clean); // pastikan hasil bersih masih DOCX sah
+      const rel = `results/${o.id}.docx`; fs.mkdirSync(priv("results"), { recursive: true });
+      await fsp.writeFile(priv(rel), clean, { mode: 0o600 });
+      const cfg = settings.getAll(), now = Date.now(), resend = o.status === "terkirim";
+      db.prepare("UPDATE orders SET status='terkirim', result_path=?, result_name=?, sent_at=?, delete_at=?, reminder_sent_at=NULL, revision_no=revision_no+?, updated_at=? WHERE id=?")
+        .run(rel, `${slug(o.title)} - NextAja.docx`, now, now + cfg.retention_hours * 3600e3, resend ? 1 : 0, now, o.id);
+      event(o.id, resend ? "hasil_dikirim_ulang" : "hasil_dikirim", null, now);
+      notifier.send("selesai", rowById(o.id), now);
+      res.json({ ok: true, order: view(rowById(o.id)) });
+    } catch (e) { console.error("[parafrase] finalisasi gagal:", e && e.message); res.status(500).json({ error: "Gagal membuat file bersih." }); }
+  });
 
   return { createOrder, confirmPayment, rejectPayment, expireUnpaid, startWork, sweepRetention, byToken, event, view, priv };
 
