@@ -8,3 +8,8 @@ data/backups-blog/
 test-artifacts/
 playwright-report/
 package-lock.json
+
+data/parafrase.db
+data/parafrase.db-wal
+data/parafrase.db-shm
+data/private/

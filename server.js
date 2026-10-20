@@ -301,6 +301,9 @@ app.get(["/", "/index.html"], async (req, res) => {
 /* ---------------- blog + akun customer ---------------- */
 const extra = require("./blog-akun")({ app, express, requireAdmin, sameOrigin, getCookie, SECURE_COOKIE, ROOT, SITE: (process.env.SITE_URL || "https://nextaja.com").replace(/\/+$/, ""), getSettings: () => store.settings });
 
+/* ---------------- Cek dan Parafrase Mandiri (modul terpisah, lihat parafrase/) ---------------- */
+require("./parafrase")({ app, express, requireAdmin, ROOT });
+
 app.use("/admin", express.static(path.join(ROOT, "admin"), { index: "index.html" }));
 app.use("/uploads", express.static(UPLOADS, { maxAge: "30d", immutable: true }));
 app.use(express.static(PUB, { maxAge: "1h", index: false }));
