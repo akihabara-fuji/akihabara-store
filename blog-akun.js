@@ -284,7 +284,7 @@ ${extra}
 <header class="nav"><div class="wrap">
   <a href="/" class="logo" aria-label="${brand}, beranda"><b>N</b><span>${brand}</span></a>
   <nav class="links" id="links" aria-label="Menu utama">
-    <a href="/ruangakademikut">Ruang Akademik UT</a><a href="/#harga">Harga</a><a href="/#produk">Lab Studio</a><a href="/#analisa">Analisa</a><a href="/blog" class="on">Blog</a>
+    <a href="/ruangakademikut">Ruang Akademik UT</a><a href="/#harga">Harga</a><a href="/ms/labstudio">Lab Studio</a><a href="/#analisa">Analisa</a><a href="/blog" class="on">Blog</a>
   </nav>
   <div class="nav-r">
     <div class="mode" role="group" aria-label="Mode tampilan"><button type="button" data-m="dark">Gelap</button><button type="button" data-m="light">Terang</button></div>
@@ -293,7 +293,7 @@ ${extra}
   </div>
 </div></header>
 <main>${body}</main>
-<footer class="ft"><div class="wrap ft-in"><div class="ft-b"><b>${brand}</b><span>Jakarta Barat. Ruang Akademik UT, Lab Studio, Analisa, dan Blog.</span><small>© ${new Date().getFullYear()} Semua hak dilindungi.</small></div><nav class="ft-n" aria-label="Footer"><a href="/ruangakademikut">Ruang Akademik UT</a><a href="/#produk">Lab Studio</a><a href="/#analisa">Analisa</a><a href="/blog">Blog</a><a href="/ms/masuk">Masuk</a><a href="/ms/privasi">Privasi</a><a href="/ms/ketentuan">Ketentuan</a></nav></div></footer>
+<footer class="ft"><div class="wrap ft-in"><div class="ft-b"><b>${brand}</b><span>Jakarta Barat. Ruang Akademik UT, Lab Studio, Analisa, dan Blog.</span><small>© ${new Date().getFullYear()} Semua hak dilindungi.</small></div><nav class="ft-n" aria-label="Footer"><a href="/ruangakademikut">Ruang Akademik UT</a><a href="/ms/labstudio">Lab Studio</a><a href="/#analisa">Analisa</a><a href="/blog">Blog</a><a href="/ms/masuk">Masuk</a><a href="/ms/privasi">Privasi</a><a href="/ms/ketentuan">Ketentuan</a></nav></div></footer>
 <script>
 (function(){
 function setMode(m){document.documentElement.dataset.theme=m;try{localStorage.setItem("nx-theme",m)}catch(e){}var tc=document.querySelector('meta[name=theme-color]');if(tc)tc.content=m==="light"?"#f6f3ff":"#0a0a1c";}
@@ -436,6 +436,47 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
       })();
       </script>
     </section>`;
+
+
+  /* ============================== LAB STUDIO (satu kesatuan) ============================== */
+  app.get("/ms/labstudio", (req, res) => {
+    const wa = String(SOCIAL().waNumber || "6285722227544").replace(/\D/g, "");
+    const body = `<section class="pg"><div class="wrap">
+      <span class="eyebrow">Lab Studio</span>
+      <h1>Preset, template, dan Studio Konten. Satu tempat.</h1>
+      <p class="lead">Semua alat untuk bikin feed Instagram yang satu vibe. Lihat dulu semuanya, coba Studio Konten langsung di browser, lalu pilih yang cocok.</p>
+      <div class="card ls-studio" id="studio">
+        <div><h2>Studio Konten <span class="soon">beta</span></h2>
+        <p>Unggah foto, pilih gaya tipografi, atur teksnya, lalu unduh gambarnya. Ada juga ide hook dan kerangka caption. Semua diproses di browser kamu.</p>
+        <a class="btn btn-pri" href="/ms/studio">Coba Studio Konten</a></div>
+      </div>
+      <h2 class="ls-h" id="produk">Preset &amp; Template</h2>
+      <div class="chips" id="lt" role="tablist"></div>
+      <div class="grid" id="lp"><p class="small">Memuat produk…</p></div>
+    </div></section>
+    <script>
+    (function(){var WA=${JSON.stringify(wa)},cat="all",D=null,T=document.getElementById("lt"),P=document.getElementById("lp");
+    function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+    function rp(n){return n?"Rp"+Number(n).toLocaleString("id-ID"):""}
+    function draw(){P.textContent="";var items=D.products.filter(function(p){return p.active!==false&&(cat==="all"||p.type===cat)});
+      if(!items.length){P.appendChild(el("p","small","Belum ada produk di kategori ini."));return}
+      items.forEach(function(p){var c=el("article","card post ls-p");var cv=el("div","cv");
+        if(/^\\/uploads\\/[a-z0-9._-]+$/i.test(p.image||"")){var im=el("img");im.src=p.image;im.alt="";im.loading="lazy";cv.appendChild(im)}else{cv.style.background="linear-gradient(135deg,"+(p.c1||"#7c3aed")+","+(p.c2||"#0a0a1c")+")";cv.appendChild(el("span","ph-t",p.title||p.name))}
+        if(p.badge)cv.appendChild(el("span","ls-bd",p.badge));
+        var b=el("div","pb");b.appendChild(el("h3",null,p.name));b.appendChild(el("p","small",p.desc||""));
+        if(p.items&&p.items.length){var u=el("ul","ls-it");p.items.forEach(function(x){u.appendChild(el("li",null,x))});b.appendChild(u)}
+        var pr=el("div","ls-pr");pr.appendChild(el("b",null,rp(p.price)));if(p.old&&p.old>p.price)pr.appendChild(el("s",null,rp(p.old)));b.appendChild(pr);
+        var a=el("a","btn btn-pri btn-sm","Pesan via WhatsApp");a.target="_blank";a.rel="noopener";a.href="https://wa.me/"+WA+"?text="+encodeURIComponent("Halo admin nextaja, saya mau pesan: "+p.name);b.appendChild(a);
+        c.appendChild(cv);c.appendChild(b);P.appendChild(c)})}
+    fetch("/ms/store",{cache:"no-store"}).then(function(r){return r.json()}).then(function(d){D=d;
+      var cats=(d.settings&&d.settings.categories||[]).filter(function(c){return d.products.some(function(p){return p.type===c.id&&p.active!==false})});
+      var all=[{id:"all",label:"Semua"}].concat(cats);
+      all.forEach(function(c){var b=el("button","chip"+(c.id==="all"?" on":""),c.label);b.type="button";b.onclick=function(){cat=c.id;T.querySelectorAll(".chip").forEach(function(x){x.classList.toggle("on",x===b)});draw()};T.appendChild(b)});
+      if(all.length<3)T.hidden=true;draw()}).catch(function(){P.textContent="Produk gagal dimuat. Muat ulang halaman."});
+    })();
+    </script>`;
+    res.set("Cache-Control", "no-cache").type("html").send(layout({ title: "Lab Studio: preset, template, dan Studio Konten — nextaja", desc: "Preset Lightroom, template Canva, dan Studio Konten untuk feed Instagram yang satu vibe.", path: "/ms/labstudio", body }));
+  });
 
   /* ---- Studio Konten Fase 0: desain tipografi + kerangka caption, semua di browser ---- */
   app.get("/ms/studio", (req, res) => {

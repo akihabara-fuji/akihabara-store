@@ -90,3 +90,8 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:24px}
 .ft-b{display:grid;gap:4px;max-width:420px}.ft-b b{color:var(--text);font-size:16px}.ft-b small{font-size:12.5px}
 .ft-n{display:flex;flex-wrap:wrap;gap:12px 22px}.ft-n a{color:var(--muted);text-decoration:none}.ft-n a:hover{color:var(--text)}
 .pw{position:relative;display:block}.pw input{width:100%;padding-right:84px}.pw button{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:0;background:none;color:var(--acc);font:inherit;font-size:13px;font-weight:700;cursor:pointer;padding:6px 10px}
+
+.ls-studio{padding:26px;margin:28px 0 8px;border-radius:22px}.ls-studio h2{margin:0 0 8px;font-size:24px}.ls-studio p{color:var(--muted);margin:0 0 16px;max-width:640px}
+.ls-h{margin:40px 0 12px;font-size:26px}.soon{font-size:11px;font-weight:700;border:1px solid var(--border);border-radius:999px;padding:2px 8px;color:var(--muted);vertical-align:middle}
+.ls-p .cv{position:relative}.ls-bd{position:absolute;top:10px;left:10px;background:#facc15;color:#1a1a1a;font-size:11px;font-weight:700;border-radius:999px;padding:3px 10px}
+.ls-p h3{margin:0 0 6px;font-size:18px}.ls-it{margin:8px 0;padding-left:18px;font-size:13.5px;color:var(--muted)}.ls-pr{display:flex;gap:10px;align-items:baseline;margin:10px 0}.ls-pr b{font-size:18px}.ls-pr s{color:var(--muted);font-size:13px}

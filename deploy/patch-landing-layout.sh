@@ -20,7 +20,7 @@ CSS=M+""".nav .wrap{max-width:none!important;justify-content:flex-start!importan
 .ft-b{display:grid;gap:4px;max-width:420px}.ft-b b{color:var(--text,#f3f0ff);font-size:16px}.ft-b small{font-size:12.5px}
 .ft-n{display:flex;flex-wrap:wrap;gap:12px 22px}.ft-n a{color:var(--muted,#b9b3dd);text-decoration:none}.ft-n a:hover{color:var(--text,#f3f0ff)}
 """
-FT='<footer class="ft"><div class="ft-in"><div class="ft-b"><b id="brand2">nextaja</b><span>Jakarta Barat. Ruang Akademik UT, Lab Studio, Analisa, dan Blog.</span><small>© <span id="yr"></span> nextaja. Semua hak dilindungi.</small><div id="footSocial" class="ft-s"></div></div><nav class="ft-n" aria-label="Footer"><a href="/ruangakademikut">Ruang Akademik UT</a><a href="/#produk">Lab Studio</a><a href="/#analisa">Analisa</a><a href="/blog">Blog</a><a href="/ms/masuk">Masuk</a><a href="/ms/privasi">Privasi</a><a href="/ms/ketentuan">Ketentuan</a></nav></div></footer>'
+FT='<footer class="ft"><div class="ft-in"><div class="ft-b"><b id="brand2">nextaja</b><span>Jakarta Barat. Ruang Akademik UT, Lab Studio, Analisa, dan Blog.</span><small>© <span id="yr"></span> nextaja. Semua hak dilindungi.</small><div id="footSocial" class="ft-s"></div></div><nav class="ft-n" aria-label="Footer"><a href="/ruangakademikut">Ruang Akademik UT</a><a href="/ms/labstudio">Lab Studio</a><a href="/#analisa">Analisa</a><a href="/blog">Blog</a><a href="/ms/masuk">Masuk</a><a href="/ms/privasi">Privasi</a><a href="/ms/ketentuan">Ketentuan</a></nav></div></footer>'
 s=open(f,encoding='utf8').read()
 if M not in s:
     s=s.replace('</head>','<style>'+CSS+'</style></head>',1)
