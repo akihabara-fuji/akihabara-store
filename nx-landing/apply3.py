@@ -8,7 +8,7 @@ BASE=args[0] if args else '/var/www/mahyra-serv'
 RESTART='--no-restart' not in sys.argv
 P=lambda *a: os.path.join(BASE,*a)
 rd=lambda f: open(f,'rb').read().decode('utf-8')
-bk='/root/backups/nx-stage3-'+time.strftime('%Y%m%d-%H%M%S'); os.makedirs(bk)
+bk='/root/backups/nx-stage3-'+time.strftime('%Y%m%d-%H%M%S'); os.makedirs(bk,exist_ok=True)
 changed=[]
 # (a) trust proxy
 srv=rd(P('server.js'))
@@ -31,7 +31,19 @@ if any(p.get('slug')==SLUG for p in posts): print('[b] artikel sudah ada: dilewa
 else:
     code=rd(P('blog-akun.js'))
     tops={p.get('topic') for p in posts}|set(re.findall(r'["\']([a-z0-9-]{2,20})["\']',code))
-    pick=next((t for t in ('study','ut','akademik','update-ut','updateut','tutorial','kuliah') if re.search(r'["\']%s["\']'%t,code) or t in {p.get('topic') for p in posts}),None)
+    pick=None
+    for pat in (r'["\']?([A-Za-z0-9_-]{2,20})["\']?\s*:\s*["\'](?:Study|study)["\']',            # id: "Study"
+                r'(?:id|key|value|slug)\s*:\s*["\']([A-Za-z0-9_-]{2,20})["\'][^{}]{0,80}(?:label|name|title)\s*:\s*["\']Study["\']',
+                r'\[\s*["\']([A-Za-z0-9_-]{2,20})["\']\s*,\s*["\']Study["\']'):
+        m=re.search(pat,code)
+        if m and m.group(1) not in ('label','name','title','id'): pick=m.group(1); break
+    if not pick:
+        for t in ('study','ut','akademik','update-ut','updateut','tutorial','kuliah'):
+            if re.search(r'["\']%s["\']'%t,code) or t in {p.get('topic') for p in posts}: pick=t; break
+    if not pick:
+        print('[b] baris "Study" di blog-akun.js:')
+        for n,l in enumerate(code.splitlines(),1):
+            if re.search(r'Study|study',l): print('   ',n,l.strip()[:160])
     print('[b] topik di data blog:',sorted({p.get('topic') for p in posts if p.get('topic')}),'| dipilih:',pick)
     if not pick: print('[b] DILEWATI: belum ada topik UT/akademik. Kirim daftar topik di atas ke Claude.')
     else:
