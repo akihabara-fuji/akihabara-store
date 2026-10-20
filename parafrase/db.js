@@ -96,6 +96,22 @@ const MIGRATIONS = [
   );
   CREATE INDEX fast_res_day ON fast_reservations(day, status);
   `,
+  /* 2: unggahan dokumen murid (sebelum jadi pesanan) */
+  `
+  CREATE TABLE uploads (
+    id            TEXT PRIMARY KEY,             -- acak 32 hex
+    path          TEXT NOT NULL,                -- relatif ke data/private
+    original_name TEXT,
+    size          INTEGER NOT NULL,
+    sha256        TEXT NOT NULL,
+    detected      TEXT NOT NULL,                -- JSON ringkasan deteksi otomatis
+    ip_hash       TEXT,
+    order_id      TEXT,                         -- terisi saat jadi pesanan
+    created_at    INTEGER NOT NULL,
+    expires_at    INTEGER NOT NULL
+  );
+  CREATE INDEX uploads_exp ON uploads(expires_at);
+  `,
 ];
 
 function open(file) {

@@ -9,10 +9,10 @@ const mk = () => { const db = open(":memory:"); return { db, s: create(db) }; };
 
 test("migrasi: user_version naik dan bisa diulang", () => {
   const { db } = mk();
-  assert.strictEqual(db.pragma("user_version", { simple: true }), 1);
+  assert.strictEqual(db.pragma("user_version", { simple: true }), 2);
   require("../parafrase/db").migrate(db);
-  assert.strictEqual(db.pragma("user_version", { simple: true }), 1);
-  for (const t of ["settings", "settings_log", "orders", "findings", "order_events", "fast_reservations"])
+  assert.strictEqual(db.pragma("user_version", { simple: true }), 2);
+  for (const t of ["settings", "settings_log", "orders", "findings", "order_events", "fast_reservations", "uploads"])
     assert.ok(db.prepare("SELECT name FROM sqlite_master WHERE name=?").get(t), t);
 });
 
@@ -87,7 +87,8 @@ test("HTTP: publik terbuka, admin wajib login, perubahan terlihat murid", async 
   const app = express();
   let authed = false;
   const requireAdmin = (req, res, next) => authed ? next() : res.status(401).json({ error: "x" });
-  require("../parafrase")({ app, express, requireAdmin, ROOT: __dirname });
+  const tmp = require("fs").mkdtempSync(require("path").join(require("os").tmpdir(), "pf-"));
+  require("../parafrase")({ app, express, requireAdmin, ROOT: tmp });
   const srv = app.listen(0); const base = "http://127.0.0.1:" + srv.address().port;
   try {
     let r = await fetch(base + "/ms/public-config"); assert.strictEqual(r.status, 200);
