@@ -282,7 +282,7 @@ ${extra}
 <header class="nav"><div class="wrap">
   <a href="/" class="logo" aria-label="${brand}, beranda"><b>N</b><span>${brand}</span></a>
   <nav class="links" id="links" aria-label="Menu utama">
-    <a href="/blog">Blog</a><a href="/#produk">Preset &amp; Template</a><a href="/#analisa">Analisa</a><a href="/#akademik">Akademik</a><a href="/#jasa">Housekeeping</a>
+    <a href="/ruangakademikut">Ruang Akademik UT</a><a href="/#harga">Harga</a><a href="/#produk">Lab Studio</a><a href="/#analisa">Analisa</a><a href="/blog" class="on">Blog</a>
   </nav>
   <div class="nav-r">
     <div class="mode" role="group" aria-label="Mode tampilan"><button type="button" data-m="dark">Gelap</button><button type="button" data-m="light">Terang</button></div>
@@ -291,7 +291,7 @@ ${extra}
   </div>
 </div></header>
 <main>${body}</main>
-<footer><div class="wrap"><div><b>${brand}</b> · Jakarta Barat<br>© ${new Date().getFullYear()} Semua hak dilindungi.</div><nav><a href="/blog">Blog</a><a href="/#akademik">Akademik</a><a href="/#jasa">Housekeeping</a><a href="/ms/masuk">Masuk</a><a href="/ms/privasi">Privasi</a><a href="/ms/ketentuan">Ketentuan</a></nav></div></footer>
+<footer><div class="wrap"><div><b>${brand}</b> · Jakarta Barat<br>© ${new Date().getFullYear()} Semua hak dilindungi.</div><nav><a href="/ruangakademikut">Ruang Akademik UT</a><a href="/#produk">Lab Studio</a><a href="/#analisa">Analisa</a><a href="/blog">Blog</a><a href="/ms/masuk">Masuk</a><a href="/ms/privasi">Privasi</a><a href="/ms/ketentuan">Ketentuan</a></nav></div></footer>
 <script>
 (function(){
 function setMode(m){document.documentElement.dataset.theme=m;try{localStorage.setItem("nx-theme",m)}catch(e){}var tc=document.querySelector('meta[name=theme-color]');if(tc)tc.content=m==="light"?"#f6f3ff":"#0a0a1c";}

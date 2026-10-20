@@ -89,3 +89,8 @@ a.btn,a.cta,.sublink,.nugas{text-decoration:none}
 a.btn{display:inline-flex;align-items:center;justify-content:center;line-height:1}
 .nav-r .btn-sm{min-height:40px}
 .hook{background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent;display:inline-block}
+
+/* header: logo rata kiri, menu rata kanan (sama dengan landing) */
+.nav .wrap{max-width:none;padding-left:clamp(16px,2.2vw,32px);padding-right:clamp(16px,2.2vw,32px)}
+.nav .links{margin-left:auto;margin-right:22px}
+@media(max-width:980px){.nav .links{margin:0}}
