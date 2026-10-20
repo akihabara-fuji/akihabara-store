@@ -5,7 +5,17 @@
   if (!m) { // tanpa token: coba pesanan terakhir di perangkat ini
     var last = ""; try { last = localStorage.getItem("pf_last") || ""; } catch (e) {}
     if (/^[a-f0-9]{48}$/.test(last)) { location.replace("/ruangakademikut/pesanan/" + last); return; }
-    $("load").classList.add("hidden"); $("nf").classList.remove("hidden"); return;
+    $("load").classList.add("hidden"); $("lk").classList.remove("hidden"); bindLookup(); return;
+  }
+  function bindLookup() {
+    $("lkgo").onclick = function () {
+      var e = $("lkerr"); e.classList.add("hidden"); $("lkgo").disabled = true;
+      fetch("/ms/parafrase/lookup", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ orderId: $("lkid").value, wa: $("lkwa").value }) })
+        .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+        .then(function (x) { if (x.ok) location.href = x.j.url; else { e.textContent = x.j.error || "Tidak ditemukan."; e.classList.remove("hidden"); } })
+        .catch(function () { e.textContent = "Koneksi terputus."; e.classList.remove("hidden"); })
+        .then(function () { $("lkgo").disabled = false; });
+    };
   }
   var token = m[1], o = null, page = 1, timer = null, previewFor = "";
   var NAMES = { M: "Tulis ulang", O: "Beri kutip", K: "Tambah sumber", B: "Lengkapi sitasi", U: "Singkat", H: "Tambah kalimat", P: "Tambah analisis", A: "Variasikan" };
@@ -29,11 +39,18 @@
     else if (pay && o.rejectReason) box("b-bad", "<strong>Bukti bayar belum bisa diverifikasi:</strong> " + esc(o.rejectReason) + "<br>Unggah bukti yang benar sebelum waktu habis.");
     else if (pay) box("b-info", "<strong>Status: menunggu bukti bayar.</strong><br>Setelah bukti diunggah, admin memverifikasi. Catatan berwarna terbuka dan pesananmu masuk antrean setelah diverifikasi. Antrean mengikuti waktu bukti bayar diunggah.");
     else if (o.status === "menunggu_verifikasi") box("b-warn", "<strong>Bukti bayar diterima, menunggu verifikasi admin.</strong><br>Halaman ini diperbarui otomatis. Kamu juga bisa menutupnya dan kembali lewat tautan ini.");
-    else if (o.paid) box("b-ok", "<strong>Pembayaran terkonfirmasi.</strong><br>Pesananmu masuk antrean. Hasil dikirim ke WhatsApp setelah selesai.");
+    else if (o.status === "terkirim") {
+      if (o.resultReady) box("b-ok", "<strong>Pesanan selesai.</strong><br>Unduh hasil Word-mu di bawah. File dihapus otomatis pada " + dt(o.deleteAt) + ". Unduh sebelum itu.");
+      else box("b-bad", "<strong>File sudah dihapus.</strong><br>Sesuai ketentuan, file dihapus " + "setelah masa unduh berakhir. Hubungi admin jika perlu bantuan.");
+    }
+    else if (o.paid) { var q = o.queue; box("b-ok", "<strong>" + (o.status === "dikerjakan" ? "Pesananmu sedang dikerjakan." : "Pembayaran terkonfirmasi, pesananmu dalam antrean.") + "</strong>" + (q ? "<br>Posisi antrean: <strong>" + q.position + "</strong> dari " + q.total + (q.ahead ? " (" + q.ahead + " pesanan di depan)" : "") + ". Perkiraan sekitar " + q.etaHours + " jam, ini perkiraan, bukan jaminan." + (o.lane === "cepat" ? " Jalur cepat aktif." : "") : "") + "<br>Hasil dikirim ke WhatsApp setelah selesai."); }
     else box("b-info", "<strong>Status: " + esc(o.status) + "</strong>");
     if (pay || o.status === "menunggu_verifikasi") fillPay();
-    $("docv").classList.toggle("hidden", !(o.paid)); $("docv").style.display = o.paid ? "flex" : "none";
-    if (o.paid && previewFor !== o.status) { previewFor = o.status; loadDoc(); }
+    $("dlv").classList.toggle("hidden", !o.resultReady);
+    if (o.resultReady) { $("dla").href = "/ms/parafrase/order/" + token + "/result"; $("dlname").textContent = o.resultName || "Hasil.docx"; }
+    var showDoc = o.paid && !o.filesDeleted;
+    $("docv").classList.toggle("hidden", !showDoc); $("docv").style.display = showDoc ? "flex" : "none";
+    if (showDoc && previewFor !== o.status) { previewFor = o.status; loadDoc(); }
     clearInterval(timer); timer = setInterval(function () { if (pay) tick(); }, 1000);
     schedulePoll();
   }
@@ -54,7 +71,7 @@
     $("cd").textContent = "Selesaikan dalam " + String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
   }
   var poll = null;
-  function schedulePoll() { clearTimeout(poll); if (o && (o.status === "menunggu_verifikasi" || o.status === "menunggu_bayar")) poll = setTimeout(function () { fetch("/ms/parafrase/order/" + token, { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) { var ch = j.status !== o.status || j.rejectReason !== o.rejectReason; o = j; if (ch) render(); else schedulePoll(); }).catch(schedulePoll); }, 10000); }
+  function schedulePoll() { clearTimeout(poll); if (o && ["menunggu_verifikasi", "menunggu_bayar", "baru_dibayar", "dianalisis", "dikerjakan", "cek_ulang"].includes(o.status)) poll = setTimeout(function () { fetch("/ms/parafrase/order/" + token, { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) { var ch = j.status !== o.status || j.rejectReason !== o.rejectReason || JSON.stringify(j.queue) !== JSON.stringify(o.queue); o = j; if (ch) render(); else schedulePoll(); }).catch(schedulePoll); }, 10000); }
 
   $("pb").onclick = function () { $("pf").click(); };
   $("pf").onchange = function () {

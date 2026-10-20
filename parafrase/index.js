@@ -10,6 +10,7 @@ const { create } = require("./settings");
 const mountUploads = require("./uploads");
 const mountPages = require("./pages");
 const mountOrders = require("./orders");
+const createNotifier = require("./notify");
 
 module.exports = function mount(ctx) {
   const { app, express, requireAdmin, ROOT, sameOrigin } = ctx;
@@ -41,8 +42,10 @@ module.exports = function mount(ctx) {
 
   mountPages({ app, express });
   const uploads = mountUploads({ app, db, settings, root: ROOT, sameOrigin: sameOrigin || (() => true), secret });
-  const orders = mountOrders({ app, express, db, settings, root: ROOT, sameOrigin: sameOrigin || (() => true), requireAdmin, secret });
-  const t = setInterval(() => { uploads.purgeExpired().catch(() => {}); orders.expireUnpaid().catch(() => {}); }, 10 * 60 * 1000); t.unref();
+  const notifier = createNotifier({ db, settings });
+  const orders = mountOrders({ app, express, db, settings, notifier, root: ROOT, sameOrigin: sameOrigin || (() => true), requireAdmin, secret });
+  const t = setInterval(() => { uploads.purgeExpired().catch(() => {}); orders.expireUnpaid().catch(() => {}); orders.sweepRetention().catch(() => {}); }, 10 * 60 * 1000); t.unref();
+  const t2 = setInterval(() => notifier.flush().catch(() => {}), 30 * 1000); t2.unref();
 
-  return { db, settings, uploads, orders };
+  return { db, settings, uploads, orders, notifier };
 };

@@ -112,7 +112,30 @@ const MIGRATIONS = [
   );
   CREATE INDEX uploads_exp ON uploads(expires_at);
   `,
+  /* 3: hasil, retensi, dan kotak keluar WhatsApp */
+  `
+  ALTER TABLE orders ADD COLUMN result_path TEXT;
+  ALTER TABLE orders ADD COLUMN result_name TEXT;
+  ALTER TABLE orders ADD COLUMN revised_path TEXT;
+  ALTER TABLE orders ADD COLUMN reminder_sent_at INTEGER;
+  ALTER TABLE orders ADD COLUMN files_deleted_at INTEGER;
+  CREATE TABLE wa_outbox (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    order_id   TEXT,
+    to_number  TEXT NOT NULL,
+    kind       TEXT NOT NULL,
+    text       TEXT NOT NULL,
+    status     TEXT NOT NULL DEFAULT 'queued',   -- queued | sent | failed | manual
+    attempts   INTEGER NOT NULL DEFAULT 0,
+    last_error TEXT,
+    dedupe_key TEXT UNIQUE,
+    created_at INTEGER NOT NULL,
+    sent_at    INTEGER
+  );
+  CREATE INDEX wa_outbox_status ON wa_outbox(status, created_at);
+  `,
 ];
+
 
 function open(file) {
   if (file !== ":memory:") fs.mkdirSync(path.dirname(file), { recursive: true });

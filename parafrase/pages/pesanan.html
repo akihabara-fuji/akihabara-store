@@ -11,6 +11,12 @@
 <main class="wrap" style="max-width:940px;padding-top:36px;padding-bottom:56px">
   <div id="load" class="muted">Memuat pesanan…</div>
   <div id="nf" class="hidden"><h1 style="margin-top:0">Pesanan tidak ditemukan</h1><p class="lead" style="margin-left:0">Periksa kembali tautannya, atau hubungi admin dengan menyebut ID pesananmu.</p><a class="pill" data-chat href="#">Chat admin</a></div>
+  <div id="lk" class="hidden"><h1 style="margin-top:0">Cek Pesanan</h1><p class="lead" style="margin-left:0;text-align:left">Masukkan ID pesanan dan nomor WhatsApp yang kamu pakai saat memesan.</p>
+    <div class="card" style="max-width:460px;display:flex;flex-direction:column;gap:14px">
+      <div class="fld"><label for="lkid">ID pesanan</label><input id="lkid" class="req" type="text" placeholder="NA-1001" autocomplete="off"></div>
+      <div class="fld"><label for="lkwa">Nomor WhatsApp</label><input id="lkwa" class="req" type="text" inputmode="tel" placeholder="08xxxxxxxxxx"></div>
+      <div id="lkerr" class="err hidden" style="margin:0"></div><button class="btn" id="lkgo" type="button">Cek pesanan</button>
+      <div class="muted">Lupa ID pesanan? <a data-chat href="#">Chat admin</a>.</div></div></div>
   <div id="ord" class="hidden">
     <div class="muted" id="oid"></div>
     <h1 id="ttl" style="margin:4px 0 6px;font-size:30px"></h1>
@@ -34,6 +40,7 @@
         <div class="muted">Belum diverifikasi lebih dari 30 menit? <a data-chat href="#">Chat admin</a> dengan menyebut ID pesananmu. Jika pembayaran tidak bisa diverifikasi karena kendala dari pihak kami, dananya dikembalikan.</div>
       </div>
     </div>
+    <div id="dlv" class="hidden card" style="margin-top:20px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between"><div><div style="font-weight:700">Hasil siap diunduh</div><div class="muted" id="dlname"></div></div><a class="btn" id="dla" style="display:inline-flex;align-items:center;text-decoration:none" href="#">Unduh Word</a></div>
     <div id="docv" class="hidden card" style="margin-top:20px;display:flex;flex-direction:column;gap:12px">
       <div style="font-size:18px;font-weight:700">Catatan dokumenmu</div>
       <div id="docnote" class="muted"></div>

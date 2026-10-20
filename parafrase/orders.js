@@ -11,11 +11,12 @@ const { analyze } = require("./docx");
 const { analyzeFindings, saveFindings, countByCode } = require("./rules");
 const { quote } = require("./pricing");
 const { buildPreview } = require("./preview");
+const queue = require("./queue");
 
 const PAID = new Set(["baru_dibayar", "dianalisis", "dikerjakan", "cek_ulang", "terkirim"]);
 const PROOF_MAX = 5 * 1024 * 1024;
 
-module.exports = function mountOrders({ app, express, db, settings, root, sameOrigin, requireAdmin, secret }) {
+module.exports = function mountOrders({ app, express, db, settings, root, sameOrigin, requireAdmin, secret, notifier }) {
   const priv = p => path.join(root, "data", "private", p);
   for (const d of ["proofs", "qris"]) fs.mkdirSync(priv(d), { recursive: true });
   const hashIp = ip => crypto.createHmac("sha256", secret).update(String(ip || "")).digest("hex").slice(0, 32);
@@ -108,6 +109,9 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
       proofUploaded: !!o.proof_uploaded_at, rejectReason: o.status === "menunggu_bayar" ? o.reject_reason : null,
       paid: PAID.has(o.status), hasQris: !!cfg.qris_image_path, merchantName: cfg.qris_merchant_name,
       adminWa: cfg.admin_wa_number, paymentWindowMinutes: cfg.payment_window_minutes,
+      queue: ["baru_dibayar", "dianalisis", "dikerjakan"].includes(o.status) ? queue.info(db, o.id, cfg) : null,
+      resultReady: o.status === "terkirim" && !!o.result_path && !o.files_deleted_at && (!o.delete_at || o.delete_at > now),
+      resultName: o.result_name || null, deleteAt: o.delete_at || null, filesDeleted: !!o.files_deleted_at,
     };
   };
   app.get("/ms/parafrase/order/:token", (req, res) => {
@@ -169,7 +173,9 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
         if (!r.changes) db.prepare("INSERT INTO fast_reservations(order_id,day,status,expires_at,created_at) VALUES(?,?,?,?,?)").run(orderId, settings.wibDay(now), "confirmed", now, now);
       }
       event(orderId, "dikonfirmasi", source, now);
-      return db.prepare("SELECT * FROM orders WHERE id=?").get(orderId);
+      const done = db.prepare("SELECT * FROM orders WHERE id=?").get(orderId);
+      notifier.send("dikonfirmasi", done, now);
+      return done;
     })();
   }
   function rejectPayment(orderId, reason, now = Date.now()) {
@@ -184,6 +190,7 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
       db.prepare("UPDATE fast_reservations SET expires_at=? WHERE order_id=? AND status='reserved'").run(exp, orderId);
       if (o.proof_path) fsp.unlink(priv(o.proof_path)).catch(() => {});
       event(orderId, "ditolak", why, now);
+      notifier.send("ditolak", { ...db.prepare("SELECT * FROM orders WHERE id=?").get(orderId), revision_no: now }, now);
     })();
   }
 
@@ -195,6 +202,7 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
         db.prepare("UPDATE orders SET status='kedaluwarsa', updated_at=? WHERE id=?").run(now, r.id);
         db.prepare("UPDATE fast_reservations SET status='released' WHERE order_id=? AND status='reserved'").run(r.id);
         event(r.id, "kedaluwarsa", null, now);
+        notifier.send("kedaluwarsa", db.prepare("SELECT * FROM orders WHERE id=?").get(r.id), now);
       })();
       try { await fsp.unlink(priv(r.original_file)); } catch {}
       db.prepare("DELETE FROM uploads WHERE order_id=?").run(r.id);
@@ -242,5 +250,80 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
     });
   });
 
-  return { createOrder, confirmPayment, rejectPayment, expireUnpaid, byToken };
+  /* ---------- Cek Pesanan: ID + nomor WhatsApp ---------- */
+  app.post("/ms/parafrase/lookup", J, (req, res) => {
+    res.set("Cache-Control", "no-store");
+    if (!sameOrigin(req)) return res.status(403).json({ error: "Permintaan ditolak." });
+    const ipk = "l:" + hashIp(req.ip);
+    if (limited(ipk, 12)) return res.status(429).json({ error: "Terlalu banyak percobaan. Coba lagi nanti." });
+    const id = String((req.body && req.body.orderId) || "").trim().toUpperCase(), wa = wa62(req.body && req.body.wa);
+    if (limited("lo:" + id, 12)) return res.status(429).json({ error: "Terlalu banyak percobaan untuk pesanan ini. Hubungi admin." });
+    const o = /^NA-\d{3,9}$/.test(id) && wa ? db.prepare("SELECT public_token FROM orders WHERE id=? AND wa_number=?").get(id, wa) : null;
+    if (!o) return res.status(404).json({ error: "ID pesanan dan nomor WhatsApp tidak cocok." });
+    res.json({ url: "/ruangakademikut/pesanan/" + o.public_token });
+  });
+
+  /* ---------- unduh hasil (hanya setelah terkirim dan sebelum dihapus) ---------- */
+  app.get("/ms/parafrase/order/:token/result", async (req, res) => {
+    const o = byToken(req.params.token); if (!o) return res.status(404).end();
+    if (limited("d:" + o.id, 60)) return res.status(429).end();
+    const now = Date.now();
+    if (o.status !== "terkirim" || !o.result_path || o.files_deleted_at || (o.delete_at && o.delete_at <= now)) return res.status(410).json({ error: "File hasil tidak tersedia (belum selesai atau sudah dihapus)." });
+    try {
+      const buf = await fsp.readFile(priv(o.result_path));
+      const name = (o.result_name || o.id + ".docx").replace(/[^\w.\- ()]/g, "_");
+      res.set({ "Cache-Control": "no-store", "Content-Disposition": `attachment; filename="${name}"`, "X-Content-Type-Options": "nosniff" })
+        .type("application/vnd.openxmlformats-officedocument.wordprocessingml.document").send(buf);
+      event(o.id, "diunduh", null, now);
+    } catch { res.status(410).json({ error: "File hasil tidak tersedia." }); }
+  });
+
+  /* ---------- admin: antrean, mulai kerja, kotak keluar WA ---------- */
+  app.get("/ms/admin/parafrase/queue", requireAdmin, (req, res) => {
+    res.set("Cache-Control", "no-store");
+    const cfg = settings.getAll();
+    const full = id => db.prepare("SELECT * FROM orders WHERE id=?").get(id);
+    res.json({ queue: queue.rows(db).map(q => { const o = full(q.id); return { ...view(o), wa: o.wa_number, position: q.position, queueTime: o.queue_time, workStartedAt: o.work_started_at, hasRevised: !!o.revised_path }; }), avgWordsPerHour: cfg.avg_words_per_hour });
+  });
+  function startWork(orderId, now = Date.now()) {
+    return db.transaction(() => {
+      const o = db.prepare("SELECT * FROM orders WHERE id=?").get(orderId);
+      if (!o) throw Object.assign(new Error("Pesanan tidak ditemukan."), { status: 404 });
+      if (!["baru_dibayar", "dianalisis"].includes(o.status)) throw Object.assign(new Error("Pesanan ini tidak bisa dimulai: " + o.status), { status: 409 });
+      db.prepare("UPDATE orders SET status='dikerjakan', work_started_at=?, updated_at=? WHERE id=?").run(now, now, orderId);
+      event(orderId, "dikerjakan", null, now);
+      notifier.send("dikerjakan", db.prepare("SELECT * FROM orders WHERE id=?").get(orderId), now);
+      return db.prepare("SELECT * FROM orders WHERE id=?").get(orderId);
+    })();
+  }
+  app.post("/ms/admin/parafrase/orders/:id/start", requireAdmin, wrap(req => startWork(String(req.params.id))));
+  app.get("/ms/admin/parafrase/outbox", requireAdmin, (req, res) => {
+    res.set("Cache-Control", "no-store");
+    res.json({ webhook: notifier.hookConfigured(), rows: db.prepare("SELECT id, order_id, to_number, kind, text, status, attempts, last_error, created_at, sent_at FROM wa_outbox ORDER BY id DESC LIMIT 100").all() });
+  });
+  app.post("/ms/admin/parafrase/outbox/:id/sent", requireAdmin, (req, res) => {
+    const r = db.prepare("UPDATE wa_outbox SET status='sent', sent_at=? WHERE id=? AND status IN ('manual','queued','failed')").run(Date.now(), parseInt(req.params.id, 10) || 0);
+    res.status(r.changes ? 200 : 404).json({ ok: !!r.changes });
+  });
+
+  /* ---------- retensi: pengingat dan penghapusan file ---------- */
+  async function sweepRetention(now = Date.now()) {
+    const cfg = settings.getAll(); let deleted = 0;
+    for (const o of db.prepare("SELECT * FROM orders WHERE status='terkirim' AND delete_at IS NOT NULL AND files_deleted_at IS NULL").all()) {
+      if (o.delete_at <= now) {
+        for (const f of [o.original_file, o.result_path, o.revised_path, o.proof_path]) if (f) { try { await fsp.unlink(priv(f)); } catch {} }
+        db.prepare("UPDATE orders SET files_deleted_at=?, updated_at=? WHERE id=?").run(now, now, o.id);
+        db.prepare("DELETE FROM uploads WHERE order_id=?").run(o.id);
+        db.prepare("UPDATE findings SET text='' WHERE order_id=?").run(o.id);
+        event(o.id, "file_dihapus", null, now); deleted++;
+      } else if (cfg.reminder_before_delete_hours > 0 && !o.reminder_sent_at && o.delete_at - cfg.reminder_before_delete_hours * 3600e3 <= now) {
+        notifier.send("pengingat", o, now);
+        db.prepare("UPDATE orders SET reminder_sent_at=? WHERE id=?").run(now, o.id);
+      }
+    }
+    return deleted;
+  }
+
+  return { createOrder, confirmPayment, rejectPayment, expireUnpaid, startWork, sweepRetention, byToken, event, view, priv };
+
 };
