@@ -88,3 +88,4 @@ input::placeholder{color:var(--muted)}
 a.btn,a.cta,.sublink,.nugas{text-decoration:none}
 a.btn{display:inline-flex;align-items:center;justify-content:center;line-height:1}
 .nav-r .btn-sm{min-height:40px}
+.hook{background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent;display:inline-block}

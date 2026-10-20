@@ -331,10 +331,108 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
       <div class="meta">${esc(fmtDate(p.publishedAt))} · Dika Priyadi</div>
       ${p.cover ? `<img class="hero-img" src="${esc(p.cover)}" alt="">` : ""}
       <div class="prose">${renderBody(p.body)}</div>
+      ${commentsBlock(p.slug)}
       <div class="cta-box"><b>Butuh bantuan?</b><span>Analisa akun, template IG, bantuan akademik, atau housekeeping.</span><a class="btn btn-pri btn-sm" href="/#analisa">Lihat layanan</a></div>
     </div></article>`;
     res.set("Cache-Control", "no-cache").type("html").send(layout({ title: `${p.title} — nextaja`, desc: p.excerpt || p.title, path: `/blog/${p.slug}`, body, extra: `<script type="application/ld+json">${ld}</script>` }));
   });
+
+
+  /* ============================== KOMENTAR ============================== */
+  const CMT = path.join(DATA_DIR, "comments.json");
+  let cm = readJson(CMT, { items: [] });
+  if (!Array.isArray(cm.items)) cm.items = [];
+  let cmWrite = Promise.resolve();
+  const saveCm = () => (cmWrite = cmWrite.then(() => writeJson(CMT, cm)));
+  const cmRate = new Map();
+  function cmLimited(ip) {
+    const now = Date.now();
+    const arr = (cmRate.get(ip) || []).filter(t => now - t < 10 * 60 * 1000);
+    cmRate.set(ip, arr);
+    if (arr.length >= 3) return true;
+    arr.push(now); return false;
+  }
+  const pubCm = c => ({ id: c.id, name: c.name, text: c.text, at: c.at, reply: c.reply || null });
+  app.get("/ms/blog/:slug/comments", (req, res) => {
+    res.set("Cache-Control", "no-store");
+    res.json({ items: cm.items.filter(c => c.slug === req.params.slug && !c.hidden).sort((a, b) => new Date(a.at) - new Date(b.at)).map(pubCm) });
+  });
+  app.post("/ms/blog/:slug/comments", express.json({ limit: "4kb" }), needOrigin, async (req, res) => {
+    const post = published().find(x => x.slug === req.params.slug);
+    if (!post) return res.status(404).json({ error: "Tulisan tidak ditemukan." });
+    const b = req.body || {};
+    if (b.website) return res.json({ ok: true });
+    const u = userFrom(req);
+    const name = str(b.name || (u && u.name) || "", 40);
+    const text = str(b.text, 1000);
+    if (name.length < 2) return res.status(400).json({ error: "Nama minimal 2 huruf." });
+    if (text.length < 3) return res.status(400).json({ error: "Komentar terlalu pendek." });
+    if ((text.match(/https?:\/\/|www\./gi) || []).length > 1) return res.status(400).json({ error: "Maksimal satu tautan per komentar." });
+    if (cm.items.some(c => c.slug === post.slug && c.name === name && c.text === text)) return res.status(409).json({ error: "Komentar yang sama sudah ada." });
+    if (cmLimited(req.ip)) return res.status(429).json({ error: "Terlalu cepat. Coba lagi beberapa menit lagi." });
+    const c = { id: crypto.randomBytes(6).toString("hex"), slug: post.slug, name, text, at: new Date().toISOString(), hidden: false, uid: u ? u.id : null };
+    cm.items.push(c);
+    if (cm.items.length > 5000) cm.items = cm.items.slice(-5000);
+    await saveCm();
+    res.json({ ok: true, item: pubCm(c) });
+  });
+  app.get("/ms/admin/comments", requireAdmin, (req, res) => {
+    res.json({ items: cm.items.slice().sort((a, b) => new Date(b.at) - new Date(a.at)).slice(0, 300) });
+  });
+  app.post("/ms/admin/comments/:id/reply", requireAdmin, express.json({ limit: "4kb" }), async (req, res) => {
+    const c = cm.items.find(x => x.id === req.params.id);
+    if (!c) return res.status(404).json({ error: "Komentar tidak ditemukan." });
+    const text = str((req.body || {}).text, 1000);
+    c.reply = text ? { text, at: new Date().toISOString() } : null;
+    await saveCm(); res.json({ ok: true });
+  });
+  app.post("/ms/admin/comments/:id/hide", requireAdmin, async (req, res) => {
+    const c = cm.items.find(x => x.id === req.params.id);
+    if (!c) return res.status(404).json({ error: "Komentar tidak ditemukan." });
+    c.hidden = !c.hidden; await saveCm(); res.json({ ok: true, hidden: c.hidden });
+  });
+  app.delete("/ms/admin/comments/:id", requireAdmin, async (req, res) => {
+    const n = cm.items.length;
+    cm.items = cm.items.filter(x => x.id !== req.params.id);
+    if (cm.items.length === n) return res.status(404).json({ error: "Komentar tidak ditemukan." });
+    await saveCm(); res.json({ ok: true });
+  });
+  const commentsBlock = slug => `<section class="cmts" id="komentar" aria-labelledby="cmH">
+      <h2 id="cmH">Komentar <span id="cmN"></span></h2>
+      <div id="cmList" aria-live="polite"><p class="small">Memuat komentar…</p></div>
+      <form id="cmF" class="cmf" novalidate>
+        <label>Nama<input name="name" maxlength="40" autocomplete="name" required></label>
+        <label>Komentar<textarea name="text" rows="4" maxlength="1000" required placeholder="Tulis pertanyaan atau tanggapan kamu…"></textarea></label>
+        <input name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0;height:0">
+        <p class="err" id="cmE" role="alert"></p>
+        <button class="btn btn-pri" type="submit">Kirim komentar</button>
+        <p class="small">Tidak perlu login. Admin akan membalas langsung di bawah komentar kamu.</p>
+      </form>
+      <script>
+      (function(){var slug=${JSON.stringify(slug)},L=document.getElementById("cmList"),F=document.getElementById("cmF"),E=document.getElementById("cmE"),isAdmin=false;
+      function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+      function fd(i){return new Date(i).toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"})}
+      function api(m,u,b){return fetch(u,{method:m,headers:{"Content-Type":"application/json"},body:b?JSON.stringify(b):undefined}).then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j}})})}
+      function render(items){L.textContent="";document.getElementById("cmN").textContent=items.length?"("+items.length+")":"";
+        if(!items.length){L.appendChild(el("p","small","Belum ada komentar. Jadi yang pertama."));return}
+        items.forEach(function(c){var d=el("div","cm"+(c.hidden?" cm-hid":""));var h=el("div","cm-h");h.appendChild(el("b",null,c.name+(c.hidden?" (disembunyikan)":"")));h.appendChild(el("span","small",fd(c.at)));d.appendChild(h);d.appendChild(el("p",null,c.text));
+          if(c.reply){var r=el("div","cm-r");var rh=el("div","cm-h");rh.appendChild(el("b",null,"Admin nextaja"));rh.appendChild(el("span","small",fd(c.reply.at)));r.appendChild(rh);r.appendChild(el("p",null,c.reply.text));d.appendChild(r)}
+          if(isAdmin){var a=el("div","cm-a");
+            var br=el("button",null,c.reply?"Ubah balasan":"Balas");br.type="button";br.onclick=function(){var t=prompt("Balasan admin:",c.reply?c.reply.text:"");if(t===null)return;api("POST","/ms/admin/comments/"+c.id+"/reply",{text:t}).then(load)};
+            var bh=el("button",null,c.hidden?"Tampilkan":"Sembunyikan");bh.type="button";bh.onclick=function(){api("POST","/ms/admin/comments/"+c.id+"/hide").then(load)};
+            var bd=el("button",null,"Hapus");bd.type="button";bd.onclick=function(){if(confirm("Hapus komentar ini?"))api("DELETE","/ms/admin/comments/"+c.id).then(load)};
+            a.appendChild(br);a.appendChild(bh);a.appendChild(bd);d.appendChild(a)}
+          L.appendChild(d)})}
+      function load(){var u=isAdmin?"/ms/admin/comments":"/ms/blog/"+encodeURIComponent(slug)+"/comments";
+        fetch(u,{cache:"no-store"}).then(function(r){return r.json()}).then(function(j){var it=j.items||[];if(isAdmin)it=it.filter(function(c){return c.slug===slug}).reverse();render(it)}).catch(function(){L.textContent="Komentar gagal dimuat."})}
+      fetch("/ms/admin/comments",{cache:"no-store"}).then(function(r){isAdmin=r.ok;load()}).catch(load);
+      fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(function(d){if(d.user&&!F.name.value)F.name.value=d.user.name||""}).catch(function(){});
+      F.addEventListener("submit",function(e){e.preventDefault();E.textContent="";var b=F.querySelector("button");b.disabled=true;
+        api("POST","/ms/blog/"+encodeURIComponent(slug)+"/comments",{name:F.name.value,text:F.text.value,website:F.website.value}).then(function(x){b.disabled=false;
+          if(x.ok){F.text.value="";load()}else E.textContent=x.j.error||"Gagal mengirim."}).catch(function(){b.disabled=false;E.textContent="Tidak bisa terhubung."})});
+      })();
+      </script>
+    </section>`;
 
   /* ---- Studio Konten Fase 0: desain tipografi + kerangka caption, semua di browser ---- */
   app.get("/ms/studio", (req, res) => {
