@@ -36,7 +36,9 @@ module.exports = function mount(ctx) {
     social: { label: "Social Media Update", ask: "Kabar dan tips social media" },
     ai: { label: "AI & Info Lain", ask: "AI, teknologi, dan info lain" },
     viral: { label: "Berita viral hari ini", ask: "Berita viral hari ini" },
+    updateut: { label: "Info UT", ask: "Info terbaru seputar UT" },
   };
+  const tl = k => (TOPICS[k] || { label: "Lainnya" }).label;
   let blog = readJson(BLOG, { posts: [] });
   if (!Array.isArray(blog.posts)) blog.posts = [];
   const TRASH_MS = 30 * 24 * 3600 * 1000;
@@ -253,7 +255,7 @@ module.exports = function mount(ctx) {
     res.set("Cache-Control", "no-cache");
     const f = TOPICS[req.query.f] ? req.query.f : "";
     const list = published().filter(p => !f || p.topic === f).slice(0, 3);
-    res.json({ posts: list.map(p => ({ slug: p.slug, title: p.title, excerpt: p.excerpt, topic: TOPICS[p.topic].label, cover: p.cover, date: p.publishedAt })) });
+    res.json({ posts: list.map(p => ({ slug: p.slug, title: p.title, excerpt: p.excerpt, topic: tl(p.topic), cover: p.cover, date: p.publishedAt })) });
   });
 
   /* ============================ HALAMAN ============================ */
@@ -306,7 +308,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
   }
 
   const topicChip = (key, active) => `<a class="chip${active ? " on" : ""}" href="${key ? "/blog?f=" + key : "/blog"}">${key ? esc(TOPICS[key].label) : "Semua"}</a>`;
-  const coverHtml = p => p.cover ? `<img src="${esc(p.cover)}" alt="" loading="lazy">` : `<span class="ph-t">${esc(TOPICS[p.topic].label)}</span>`;
+  const coverHtml = p => p.cover ? `<img src="${esc(p.cover)}" alt="" loading="lazy">` : `<span class="ph-t">${esc(tl(p.topic))}</span>`;
 
   app.get("/blog", (req, res) => {
     const f = TOPICS[req.query.f] ? req.query.f : "";
@@ -316,7 +318,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
       <span class="eyebrow">Blog</span><h1>${esc(f === "viral" ? "Berita viral apa hari ini?" : heading)}</h1>
       <p class="lead">Catatan tentang belajar, social media, AI, dan hal-hal yang lagi ramai. Ditulis apa adanya.</p>
       <div class="chips">${topicChip("", !f)}${Object.keys(TOPICS).map(k => topicChip(k, f === k)).join("")}</div>
-      ${list.length ? `<div class="grid">${list.map(p => `<a class="card post" href="/blog/${esc(p.slug)}"><div class="cv">${coverHtml(p)}</div><div class="pb"><span class="tag">${esc(TOPICS[p.topic].label)}</span><h3>${esc(p.title)}</h3><p>${esc(p.excerpt)}</p><small>${esc(fmtDate(p.publishedAt))}</small></div></a>`).join("")}</div>`
+      ${list.length ? `<div class="grid">${list.map(p => `<a class="card post" href="/blog/${esc(p.slug)}"><div class="cv">${coverHtml(p)}</div><div class="pb"><span class="tag">${esc(tl(p.topic))}</span><h3>${esc(p.title)}</h3><p>${esc(p.excerpt)}</p><small>${esc(fmtDate(p.publishedAt))}</small></div></a>`).join("")}</div>`
         : `<div class="empty">Belum ada tulisan di sini. Tulisan pertama segera terbit.</div>`}
     </div></section>`;
     res.set("Cache-Control", "no-cache").type("html").send(layout({ title: `${heading} — Blog nextaja`, desc: "Catatan tentang belajar, social media, AI, dan berita viral hari ini dari nextaja.", path: f ? `/blog?f=${f}` : "/blog", body }));
@@ -326,7 +328,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
     if (!p) return next();
     const ld = JSON.stringify({ "@context": "https://schema.org", "@type": "BlogPosting", headline: p.title, datePublished: p.publishedAt, dateModified: p.updatedAt, description: p.excerpt, image: p.cover ? SITE + p.cover : undefined, author: { "@type": "Person", name: "Dika Priyadi" }, mainEntityOfPage: `${SITE}/blog/${p.slug}` }).replace(/</g, "\\u003c");
     const body = `<article class="pg art"><div class="wrap narrow">
-      <a class="back" href="/blog?f=${esc(p.topic)}">← ${esc(TOPICS[p.topic].label)}</a>
+      <a class="back" href="/blog?f=${esc(p.topic)}">← ${esc(tl(p.topic))}</a>
       <h1>${esc(p.title)}</h1>
       <div class="meta">${esc(fmtDate(p.publishedAt))} · Dika Priyadi</div>
       ${p.cover ? `<img class="hero-img" src="${esc(p.cover)}" alt="">` : ""}

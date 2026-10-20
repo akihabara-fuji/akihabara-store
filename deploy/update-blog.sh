@@ -21,6 +21,7 @@ sleep 4
 B=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3200/blog)
 C=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3200/ms/blog/tes/comments)
 echo "blog HTTP $B (harus 200), komentar HTTP $C (harus 200)"
-[ "$B" = 200 ] && [ "$C" = 200 ]
+[ "$B" = 200 ]
+[ "$C" = 200 ]
 trap - ERR
 echo "SELESAI. Rollback: tar xzf $BK -C $APP && pm2 restart nextaja"
