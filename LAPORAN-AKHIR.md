@@ -15,7 +15,7 @@ Branch: `feature/cek-parafrase-mandiri` (repo akihabara-store). **Belum dipasang
 | Keamanan | Penyamaran teks di server (tes kebocoran otomatis), semua rute admin diaudit otomatis (harus 401), CSRF, pembatasan laju, 3 pesanan belum bayar maks per nomor, header anti-iframe dan no-referrer, jalur berkas tidak bocor. |
 | Pemasangan | `deploy/install-parafrase.sh` (cek anchor, backup, patch satu baris, nginx, uji, rollback otomatis) dan `deploy/rollback-parafrase.sh`. |
 
-57 tes otomatis lulus, plus uji alur penuh di browser (desktop dan HP) dan file DOCX berwarna dibuka di LibreOffice.
+54 tes otomatis lulus, plus uji alur penuh di browser (desktop dan HP) dan file DOCX berwarna dibuka di LibreOffice.
 
 ## Batas yang jujur
 - Warna adalah aturan heuristik lokal ("Pemeriksaan Internal NextAja"). **M (merah) hanya mendeteksi kalimat sama persis di dalam dokumen sendiri**, bukan perbandingan dengan jurnal atau internet. Tidak ada skor, tidak ada janji lolos.
