@@ -83,3 +83,9 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:24px}
 .nav .wrap{max-width:none;padding-left:clamp(16px,2.2vw,32px);padding-right:clamp(16px,2.2vw,32px)}
 .nav .links{margin-left:auto;margin-right:22px}
 @media(max-width:980px){.nav .links{margin:0}}
+
+/* footer seragam di semua halaman */
+.ft{margin-top:80px;border-top:1px solid var(--border);padding:40px 0 32px;color:var(--muted);font-size:13.5px;clear:both;position:relative}
+.ft .ft-in{max-width:none;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:24px;padding-left:clamp(16px,2.2vw,32px);padding-right:clamp(16px,2.2vw,32px)}
+.ft-b{display:grid;gap:4px;max-width:420px}.ft-b b{color:var(--text);font-size:16px}.ft-b small{font-size:12.5px}
+.ft-n{display:flex;flex-wrap:wrap;gap:12px 22px}.ft-n a{color:var(--muted);text-decoration:none}.ft-n a:hover{color:var(--text)}
