@@ -50,9 +50,11 @@ test("terkunci: hanya kalimat pertama dokumen terbuka, sisanya tidak mengandung 
   assert.strictEqual(pv.locked, true);
   const segs = pv.paragraphs.flatMap(p => p.segments);
   assert.strictEqual(segs.filter(s => !s.locked).length, 1);
-  assert.strictEqual(segs[0].text, splitSentences(a.paragraphs[0].text)[0]);
+  const openSeg = segs.find(s => !s.locked);
+  assert.ok(openSeg.primary, "contoh terbuka harus kalimat bercatatan");
+  assert.ok(openSeg.reasons && openSeg.reasons.length);
   const json = JSON.stringify(pv);
-  const open = new Set(longWords(segs[0].text));
+  const open = new Set(longWords(openSeg.text));
   const secretWords = longWords(BODY.replace(/<[^>]+>/g, " ")).filter(w => !open.has(w));
   assert.ok(secretWords.length > 10);
   for (const w of secretWords) assert.ok(!json.includes(w), "bocor: " + w);
@@ -93,8 +95,7 @@ test("HTTP: endpoint pratinjau terkunci, no-store, tidak membocorkan, ID salah 4
     assert.strictEqual(r.status, 200);
     assert.strictEqual(r.headers.get("cache-control"), "no-store");
     const txt = await r.text();
-    assert.ok(txt.includes("Organisasi pembelajar"));
-    for (const w of ["digitalisasi", "implementasi", "pengendalian", "manufaktur", "efisiensi"]) assert.ok(!txt.toLowerCase().includes(w), "bocor: " + w);
+        for (const w of ["digitalisasi", "implementasi", "pengendalian", "manufaktur", "efisiensi"]) assert.ok(!txt.toLowerCase().includes(w), "bocor: " + w);
     assert.strictEqual((await fetch(base + "/ms/parafrase/preview/" + "0".repeat(32))).status, 404);
     assert.strictEqual((await fetch(base + "/ms/parafrase/preview/../../etc")).status, 404);
   } finally { srv.close(); }

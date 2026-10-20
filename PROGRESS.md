@@ -28,3 +28,10 @@ Cabang: `feature/cek-parafrase-mandiri` (dari `nextaja-baru`). Jangan deploy seb
 - Rute `GET /ms/parafrase/preview/:id` (no-store, 200 permintaan/jam/IP, paginasi). Pengaturan baru `preview_open_sentences` (default 1).
 - Tes kebocoran otomatis: 34 tes lulus.
 - Berikutnya: tuning aturan 4a pada 3-5 dokumen asli, lalu Tahap 5 (halaman).
+
+## Tahap 5 selesai (halaman)
+- `parafrase/pages.js` + `parafrase/pages/`: `/ruangakademikut` (hub), `/ruangakademikut/cek-parafrase-mandiri` (unggah, pratinjau 8 warna, detail, harga, jalur cepat), `/ruangakademikut/pesanan` (placeholder sampai Tahap 7), aset di `/ruangakademikut/assets/*` (daftar putih). `/akademik` dan `/kebutuhan-anak-ut` dialihkan 301.
+- `public/index.html` (salinan repo): menu Akademik -> Ruang Akademik UT, `#akademik` dialihkan lewat skrip kecil. Versi live harus disesuaikan lewat skrip pasang.
+- Contoh terbuka kini = kalimat BERCATATAN pertama (bukan judul).
+- Tombol Bayar dengan QRIS belum membuat pesanan (Tahap 6a). 35 tes lulus, diuji di browser (desktop dan HP).
+- Berikutnya: Tahap 6a (pesanan + QRIS manual + bukti bayar + Konfirmasi/Tolak).

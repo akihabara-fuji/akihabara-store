@@ -23,7 +23,9 @@ function maskText(len, seedBytes) {
   }
   out = out.slice(0, len).trimEnd();
   while (out.length < len) out += "x";
-  return out.charAt(0).toUpperCase() + out.slice(1, Math.max(1, len - 1)) + (len > 1 ? "." : "");
+  if (len < 2) return "x";
+  let body = (out.charAt(0).toUpperCase() + out.slice(1, len - 1)).replace(/ $/, "x");
+  return body + ".";
 }
 
 /* a: hasil analyze() (paragraphs), findings: hasil analyzeFindings(), secret: rahasia server (string), id: pengenal unggahan/pesanan.
@@ -39,14 +41,21 @@ function buildPreview(a, findings, secret, id, opts = {}) {
   const pages = Math.max(1, Math.ceil(visible.length / pageSize));
   const page = Math.min(pages, Math.max(1, opts.page | 0 || 1));
 
-  // jumlah kalimat terbuka dihitung dari awal dokumen, bukan dari awal halaman
-  let opened = 0;
+  // Kalimat terbuka: N kalimat BERCATATAN pertama di dokumen (contoh yang berguna). Bila tidak ada catatan, N kalimat pertama.
+  // Dihitung dari seluruh dokumen, bukan per halaman, supaya paginasi tidak membuka kalimat tambahan.
+  const openKeys = new Set();
+  if (open > 0 && open !== Infinity) {
+    const flagged = [...new Set(findings.map(f => f.para_idx + ":" + f.sent_idx))];
+    const order = (a, b) => { const [pa, sa] = a.split(":").map(Number), [pb, sb] = b.split(":").map(Number); return pa - pb || sa - sb; };
+    flagged.sort(order).slice(0, open).forEach(k => openKeys.add(k));
+    if (!openKeys.size) for (const p of visible) { for (let i = 0; i < splitSentences(p.text).length && openKeys.size < open; i++) openKeys.add(p.idx + ":" + i); if (openKeys.size >= open) break; }
+  }
   const outParas = [];
   visible.forEach((p, vi) => {
     const sents = splitSentences(p.text);
     const inPage = vi >= (page - 1) * pageSize && vi < page * pageSize;
     const segs = sents.map((s, si) => {
-      const isOpen = opened < open; if (isOpen) opened++;
+      const isOpen = unlocked || openKeys.has(p.idx + ":" + si);
       if (!inPage) return null;
       const fs = (byKey.get(p.idx + ":" + si) || []).slice().sort((x, y) => PRIORITY.indexOf(x.code) - PRIORITY.indexOf(y.code));
       const primary = fs.length ? fs[0].code : null;

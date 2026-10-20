@@ -8,6 +8,7 @@ const crypto = require("crypto");
 const fs = require("fs");
 const { create } = require("./settings");
 const mountUploads = require("./uploads");
+const mountPages = require("./pages");
 
 module.exports = function mount(ctx) {
   const { app, express, requireAdmin, ROOT, sameOrigin } = ctx;
@@ -37,6 +38,7 @@ module.exports = function mount(ctx) {
   let secret = ""; try { secret = fs.readFileSync(secretFile, "utf8").trim(); } catch {}
   if (secret.length < 32) { fs.mkdirSync(path.dirname(secretFile), { recursive: true }); secret = crypto.randomBytes(32).toString("hex"); fs.writeFileSync(secretFile, secret, { mode: 0o600 }); }
 
+  mountPages({ app, express });
   const uploads = mountUploads({ app, db, settings, root: ROOT, sameOrigin: sameOrigin || (() => true), secret });
   const t = setInterval(() => uploads.purgeExpired().catch(() => {}), 10 * 60 * 1000); t.unref();
 
