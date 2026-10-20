@@ -58,6 +58,8 @@ test("publicConfig tidak membocorkan nilai internal", () => {
   assert.strictEqual(p.price_per_word, 17);
   assert.strictEqual(p.fast_lane.remaining, 5);
   assert.strictEqual(p.has_qris, false);
+  assert.strictEqual(p.qris_merchant_name, "CATATAN TERBUKA");
+  assert.ok(p.update_group_url.startsWith("https://chat.whatsapp.com/"));
   s.set({ qris_image_path: "private/qris.jpg" });
   assert.strictEqual(s.publicConfig().has_qris, true);
   assert.ok(!JSON.stringify(s.publicConfig()).includes("qris.jpg"));

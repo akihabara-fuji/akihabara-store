@@ -19,7 +19,8 @@ const DEFS = {
   unique_code_max:              { type: "int",  min: 1, max: 999, def: 99 },
   payment_window_minutes:       { type: "int",  min: 5, max: 1440, def: 60, pub: true },
   admin_wa_number:              { type: "str",  re: WA, allowEmpty: true, def: "6285722227544", pub: true },
-  update_group_url:             { type: "url",  allowEmpty: true, def: "", pub: true },
+  update_group_url:             { type: "url",  allowEmpty: true, def: "https://chat.whatsapp.com/GABKsK7XnfjHpZe8iC7A7A", pub: true },
+  qris_merchant_name:           { type: "str",  re: /^[\p{L}\p{N} .,&'-]{0,60}$/u, allowEmpty: true, def: "CATATAN TERBUKA", pub: true },
   qris_image_path:              { type: "str",  re: /^[a-z0-9/_.-]{0,200}$/i, allowEmpty: true, def: "" },
 };
 const KEYS = Object.keys(DEFS);
