@@ -20,11 +20,15 @@ if ! grep -q '^PARAFRASE_WA_WEBHOOK=' $NEXT/.env; then
   printf 'PARAFRASE_WA_WEBHOOK=http://127.0.0.1:3399/kirim\nPARAFRASE_WA_SECRET=%s\n' "$(cat $APP/.kirim-secret)" >> $NEXT/.env
 fi
 systemctl restart wabot
-sleep 20
 SEC=$(cat $APP/.kirim-secret)
-CODE=$(curl -s -o /dev/null -w '%{http_code}' -X POST http://127.0.0.1:3399/kirim -H "Authorization: Bearer $SEC" -H 'Content-Type: application/json' -d '{"to":"6285722227544","text":"Tes: notifikasi Cek & Parafrase sudah tersambung ke WA2."}')
-echo "Hasil tes kirim: HTTP $CODE (200 = pesan masuk ke WA admin)"
-[ "$CODE" = 200 ] || { echo "Tes tidak 200 (503 = WA2 belum konek, tunggu lalu coba lagi manual)."; }
+CODE=000
+for i in $(seq 1 12); do
+  sleep 10
+  CODE=$(curl -s -o /dev/null -w '%{http_code}' -X POST http://127.0.0.1:3399/kirim -H "Authorization: Bearer $SEC" -H 'Content-Type: application/json' -d '{"to":"6285722227544","text":"Tes: notifikasi Cek & Parafrase sudah tersambung ke WA2."}' || true)
+  echo "percobaan $i: HTTP $CODE"
+  [ "$CODE" = 200 ] && break
+done
+echo "Hasil tes kirim: HTTP $CODE (200 = pesan masuk ke WA admin; 503/000 = WA2 belum konek, pemasangan tetap tersimpan)"
 trap - ERR
 pm2 restart nextaja --update-env >/dev/null
 echo "SELESAI. Rollback: cp $APP/src/bot.js.bak-parafrase $APP/src/bot.js && rm $APP/src/kirim-wa2.js && systemctl restart wabot"
