@@ -522,7 +522,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
         <form id="f" novalidate>
           <label id="lName" hidden>Nama<input name="name" autocomplete="name" maxlength="60"></label>
           <label>Email<input name="email" type="email" autocomplete="email" required maxlength="254"></label>
-          <label>Sandi<input name="password" type="password" autocomplete="current-password" required minlength="8" maxlength="100"><small id="hint" hidden>Minimal 8 karakter.</small></label>
+          <label>Sandi<span class="pw"><input name="password" type="password" autocomplete="current-password" required minlength="8" maxlength="100"><button type="button" id="pwT" aria-label="Tampilkan sandi" aria-pressed="false">Lihat</button></span><small id="hint" hidden>Minimal 8 karakter.</small></label>
           <p class="err" id="err" role="alert"></p>
           <button class="btn btn-pri" id="go" type="submit">Masuk</button>
         </form>
@@ -536,6 +536,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
         document.querySelectorAll(".tabs2 button").forEach(function(x){x.setAttribute("aria-pressed",x===b)});
         document.getElementById("lName").hidden=mode!=="up";document.getElementById("hint").hidden=mode!=="up";
         document.getElementById("go").textContent=mode==="up"?"Buat akun":"Masuk";f.password.autocomplete=mode==="up"?"new-password":"current-password";err.textContent="";});});
+      document.getElementById("pwT").addEventListener("click",function(){var sh=f.password.type==="password";f.password.type=sh?"text":"password";this.textContent=sh?"Sembunyi":"Lihat";this.setAttribute("aria-pressed",sh);this.setAttribute("aria-label",sh?"Sembunyikan sandi":"Tampilkan sandi")});
       var GID=${JSON.stringify(GOOGLE_ID)};
       if(GID){var sc=document.createElement("script");sc.src="https://accounts.google.com/gsi/client";sc.async=true;sc.onload=function(){
         google.accounts.id.initialize({client_id:GID,callback:function(r){err.textContent="";

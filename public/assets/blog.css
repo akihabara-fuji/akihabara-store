@@ -89,3 +89,4 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:24px}
 .ft .ft-in{max-width:none;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:24px;padding-left:clamp(16px,2.2vw,32px);padding-right:clamp(16px,2.2vw,32px)}
 .ft-b{display:grid;gap:4px;max-width:420px}.ft-b b{color:var(--text);font-size:16px}.ft-b small{font-size:12.5px}
 .ft-n{display:flex;flex-wrap:wrap;gap:12px 22px}.ft-n a{color:var(--muted);text-decoration:none}.ft-n a:hover{color:var(--text)}
+.pw{position:relative;display:block}.pw input{width:100%;padding-right:84px}.pw button{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:0;background:none;color:var(--acc);font:inherit;font-size:13px;font-weight:700;cursor:pointer;padding:6px 10px}
