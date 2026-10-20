@@ -9,15 +9,19 @@ rollback(){ echo "GAGAL -> rollback nginx"; tar xzf "$BK" -C / ; nginx -t && sys
 trap 'echo "GAGAL di baris $LINENO"; rollback' ERR
 python3 - $FILES <<'PY'
 import re,sys
+pat=re.compile(r'location\s+((?:=|\^~|~\*?)\s+)?(/nugas/?)\s*\{[^{}]*\}')
 for f in sys.argv[1:]:
     s=open(f).read()
     if 'nx-nugas-redirect' in s: print(f,"sudah"); continue
-    add='\n    # nx-nugas-redirect\n    location = /nugas { return 301 /ruangakademikut; }\n    location ^~ /nugas/ { return 301 /ruangakademikut; }\n'
-    n=0
+    n=[0]
     def rep(m):
-        global n; n+=1; return m.group(0)+add
-    s2=re.sub(r'server_name[^;]*nextaja\.com[^;]*;',rep,s)
-    open(f,'w').write(s2); print(f,"blok diubah:",n)
+        n[0]+=1; mod=m.group(1) or ''
+        return 'location %s%s { # nx-nugas-redirect\n        return 301 /ruangakademikut;\n    }'%(mod,m.group(2))
+    s2=pat.sub(rep,s)
+    if n[0]==0:
+        add='\n    # nx-nugas-redirect\n    location ^~ /nugas { return 301 /ruangakademikut; }\n'
+        s2=re.sub(r'(server_name[^;]*nextaja\.com[^;]*;)',lambda m:m.group(1)+add,s,count=1)
+    open(f,'w').write(s2); print(f,"blok /nugas diganti:",n[0])
 PY
 nginx -t
 systemctl reload nginx
