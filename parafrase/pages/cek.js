@@ -30,7 +30,7 @@
     var fd = new FormData(); fd.append("file", f);
     fetch("/ms/parafrase/upload", { method: "POST", body: fd }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
       .then(function (x) {
-        if (!x.ok) { showErr(x.j.error || "Unggahan gagal. Coba lagi."); return; }
+        if (!x.ok) { if (x.j.login) { location.href = "/ms/masuk?next=" + encodeURIComponent(location.pathname); return; } showErr(x.j.error || "Unggahan gagal. Coba lagi."); return; }
         st.up = x.j; st.page = 1; fill(); $("s1").classList.add("hidden"); $("s2").classList.remove("hidden"); window.scrollTo(0, 0); loadPreview();
       }).catch(function () { showErr("Koneksi terputus. Coba unggah lagi."); })
       .then(function () { $("busy").classList.add("hidden"); $("pick").disabled = false; });
@@ -81,6 +81,7 @@
       excludeBib: $("nobib").checked, fast: $("fast").checked, deadline: dl.getTime(), agree: $("agree").checked }) })
       .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
       .then(function (x) {
+        if (!x.ok && x.j.login) { location.href = "/ms/masuk?next=" + encodeURIComponent(location.pathname); return; }
         if (x.ok) { try { localStorage.setItem("pf_last", x.j.token); } catch (e) {} location.href = x.j.url; return; }
         showErr(x.j.error || "Pesanan gagal dibuat.");
         if (x.j.code === "fast_full") { fetch("/ms/public-config").then(function (r) { return r.json(); }).then(function (c) { window.PF.cfg = c; price(); }); }

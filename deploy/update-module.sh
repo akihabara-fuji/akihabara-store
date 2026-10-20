@@ -12,11 +12,11 @@ rollback(){ echo "GAGAL -> rollback dari $BK"; tar xzf "$BK" -C "$D"; pm2 restar
 trap 'echo "GAGAL di baris $LINENO: $BASH_COMMAND"; rollback' ERR
 T=$(mktemp -d); mkdir -p "$T/pages"
 JS="index.js cards.js"
-PG="site.css hub.css common.js admin.js hub.html cek.html pesanan.html admin.html"
+PG="site.css hub.css common.js cek.js admin.js hub.html cek.html pesanan.html admin.html"
 for f in $JS; do curl -fsSL "$RAW/$f" -o "$T/$f"; done
 for f in $PG; do curl -fsSL "$RAW/pages/$f" -o "$T/pages/$f"; done
 for f in $JS; do cp "$T/$f" "$T/chk-$f"; node --check "$T/$f"; done
-for f in common.js admin.js; do node --check "$T/pages/$f"; done
+for f in common.js cek.js admin.js; do node --check "$T/pages/$f"; done
 for f in $JS; do cp "$T/$f" "$D/$f"; done
 for f in $PG; do cp "$T/pages/$f" "$D/pages/$f"; done
 rm -rf "$T"

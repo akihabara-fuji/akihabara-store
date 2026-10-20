@@ -302,6 +302,10 @@ app.get(["/", "/index.html"], async (req, res) => {
 const extra = require("./blog-akun")({ app, express, requireAdmin, sameOrigin, getCookie, SECURE_COOKIE, ROOT, SITE: (process.env.SITE_URL || "https://nextaja.com").replace(/\/+$/, ""), getSettings: () => store.settings });
 
 /* ---------------- Cek dan Parafrase Mandiri (modul terpisah, lihat parafrase/) ---------------- */
+/* fitur coba (unggah & pesan) wajib login; halaman dan harga tetap terbuka */
+const needLogin = (req, res, next) => (extra.userFrom(req) ? next() : res.status(401).json({ error: "Masuk dulu untuk mencoba fitur ini.", login: true }));
+app.post("/ms/parafrase/upload", needLogin);
+app.post("/ms/parafrase/order", needLogin);
 require("./parafrase")({ app, express, requireAdmin, sameOrigin, ROOT });
 
 app.use("/admin", express.static(path.join(ROOT, "admin"), { index: "index.html" }));
