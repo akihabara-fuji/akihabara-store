@@ -254,7 +254,8 @@ module.exports = function mount(ctx) {
   app.get("/ms/blog/latest", (req, res) => {
     res.set("Cache-Control", "no-cache");
     const f = TOPICS[req.query.f] ? req.query.f : "";
-    const list = published().filter(p => !f || p.topic === f).slice(0, 3);
+    const lim = Math.min(9, Math.max(1, parseInt(req.query.limit, 10) || 3));
+    const list = published().filter(p => !f || p.topic === f).slice(0, lim);
     res.json({ posts: list.map(p => ({ slug: p.slug, title: p.title, excerpt: p.excerpt, topic: tl(p.topic), cover: p.cover, date: p.publishedAt })) });
   });
 
