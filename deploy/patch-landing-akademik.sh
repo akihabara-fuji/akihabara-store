@@ -2,7 +2,7 @@
 # Ganti "Bantu Akademik" di landing nextaja.com menjadi "Ruang Akademik UT" (kartu di bagian "Yang bisa kamu pesan" juga menuju /ruangakademikut).
 set -euo pipefail
 [ "$(id -u)" = 0 ] || { echo "Jalankan sebagai root"; exit 1; }
-FILES="/var/www/mahyra-serv/public/index.html $(grep -rlI 'Bantu Akademik' /root/nxl/nx-landing/parts 2>/dev/null | tr '\n' ' ')"
+FILES="/var/www/mahyra-serv/public/index.html $(grep -rlI 'Bantu Akademik' /root/nxl/nx-landing/parts 2>/dev/null | tr '\n' ' ' || true)"
 for F in $FILES; do
   [ -f "$F" ] || continue
   [ -f "$F.bak-akd" ] || cp "$F" "$F.bak-akd"
