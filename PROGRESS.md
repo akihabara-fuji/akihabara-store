@@ -19,7 +19,6 @@ Cabang: `feature/cek-parafrase-mandiri` (dari `nextaja-baru`). Jangan deploy seb
 - Tahap 4a: mesin analisis lokal `parafrase/rules.js` untuk 8 kategori (U, O, B, K, M-internal, H, P, A), ambang dari pengaturan, kode utama per kalimat, `saveFindings`. Upload sekarang mengembalikan `notes` (jumlah per kode). 29 tes lulus. Catatan: M v1 hanya kalimat berulang di dalam dokumen; kemiripan sumber luar butuh laporan DrillBit murid (v2) atau tanda manual admin. Aturan bersifat heuristik, perlu penyetelan dengan dokumen asli.
 
 ## Langkah berikutnya
-1. Tahap 4b (penyamaran server pada pratinjau: kalimat pertama terbuka, sisanya tersamar, teks asli tidak boleh bocor)
-2. (lanjutan) penyetelan aturan 4a dengan 3 sampai 5 dokumen asli;
-: mesin analisis dan penyamaran server.
+1. Tahap 4b: penyamaran server pada pratinjau (kalimat pertama terbuka, sisanya berwarna tapi teks diganti karakter pengganti; teks asli tidak boleh bocor di respons, HTML, atau cache).
+2. Penyetelan aturan 4a dengan 3 sampai 5 dokumen tugas asli (kurangi salah tandai).
 3. Tahap 5: halaman /ruangakademikut ("Ruang Akademik UT") dan halaman murid.
