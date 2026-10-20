@@ -13,12 +13,19 @@ module.exports = function mountCards({ app, root, requireAdmin }) {
   const dir = path.join(root, "data", "parafrase-cards");
   fs.mkdirSync(dir, { recursive: true });
   const file = slug => path.join(dir, slug + ".webp");
+  // gambar bawaan bila admin belum mengunggah; unggahan admin selalu menang
+  const DEFAULTS = { cek: "ruang-akademik", semester: "tips-kuliah", metopen: "metodologi", tugas: "tugas-diskusi", diskusi: "tugas-diskusi", makalah: "materi-belajar", info: "jadwal-kalender" };
 
   app.get("/ruangakademikut/img/:name", (req, res) => {
     const m = /^([a-z]+)\.webp$/.exec(String(req.params.name));
     if (!m || !SLUGS.includes(m[1])) return res.status(404).end();
     res.set({ "Cache-Control": "public, max-age=300", "X-Content-Type-Options": "nosniff" });
-    res.sendFile(file(m[1]), err => { if (err && !res.headersSent) res.status(404).end(); });
+    res.sendFile(file(m[1]), err => {
+      if (!err || res.headersSent) return;
+      const d = DEFAULTS[m[1]];
+      if (!d) return res.status(404).end();
+      res.sendFile(path.join(root, "public", "assets", "portal", d + ".webp"), e2 => { if (e2 && !res.headersSent) res.status(404).end(); });
+    });
   });
 
   app.get("/ms/admin/parafrase/card-images", requireAdmin, (req, res) => {

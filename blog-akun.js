@@ -308,6 +308,8 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
 </body></html>`;
   }
 
+  const PORTAL_IMG = { "": ["blog-berita", "Blog dan berita nextaja"], viral: ["blog-berita", "Blog dan berita nextaja"], updateut: ["jadwal-kalender", "Info UT: jadwal, registrasi, dan ujian"], study: ["materi-belajar", "Materi belajar dan tips kuliah"], ai: ["tools-ai", "Tools AI dan otomatisasi"], social: ["video-studio", "Konten dan social media"] };
+  const portalBanner = (key, w, h) => { const [n, alt] = PORTAL_IMG[key] || PORTAL_IMG[""]; return `<img class="pbanner" src="/assets/portal/${n}.webp" alt="${esc(alt)}" width="${w || 300}" height="${h || 233}" loading="lazy">`; };
   const topicChip = (key, active) => `<a class="chip${active ? " on" : ""}" href="${key ? "/blog?f=" + key : "/blog"}">${key ? esc(TOPICS[key].label) : "Semua"}</a>`;
   const coverHtml = p => p.cover ? `<img src="${esc(p.cover)}" alt="" loading="lazy">` : `<span class="ph-t">${esc(tl(p.topic))}</span>`;
 
@@ -316,6 +318,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
     const list = published().filter(p => !f || p.topic === f).slice(0, 60);
     const heading = f ? TOPICS[f].label : "Tulisan terbaru";
     const body = `<section class="pg"><div class="wrap">
+      ${portalBanner(f)}
       <span class="eyebrow">Blog</span><h1>${esc(f === "viral" ? "Berita viral apa hari ini?" : heading)}</h1>
       <p class="lead">Catatan tentang belajar, social media, AI, dan hal-hal yang lagi ramai. Ditulis apa adanya.</p>
       <div class="chips">${topicChip("", !f)}${Object.keys(TOPICS).map(k => topicChip(k, f === k)).join("")}</div>
@@ -450,8 +453,9 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
         <div><h2>Studio Konten <span class="soon">beta</span></h2>
         <p>Unggah foto, pilih gaya tipografi, atur teksnya, lalu unduh gambarnya. Ada juga ide hook dan kerangka caption. Semua diproses di browser kamu.</p>
         <a class="btn btn-pri" href="/ms/studio">Coba Studio Konten</a></div>
+        <img class="ls-img" src="/assets/portal/video-studio.webp" alt="Video Content Studio" width="311" height="233" loading="lazy">
       </div>
-      <h2 class="ls-h" id="produk">Preset &amp; Template</h2>
+      <div class="ls-hd" id="produk"><h2 class="ls-h">Preset &amp; Template</h2><img class="ls-img" src="/assets/portal/preset-template.webp" alt="Preset dan template" width="297" height="233" loading="lazy"></div>
       <div class="chips" id="lt" role="tablist"></div>
       <div class="grid" id="lp"><p class="small">Memuat produk…</p></div>
     </div></section>
