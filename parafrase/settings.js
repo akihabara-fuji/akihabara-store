@@ -14,6 +14,7 @@ const DEFS = {
   retention_hours:              { type: "int",  min: 1, max: 720, def: 24, pub: true },
   reminder_before_delete_hours: { type: "int",  min: 0, max: 72, def: 3 },
   long_sentence_words:          { type: "int",  min: 10, max: 100, def: 35 },
+  preview_open_sentences:       { type: "int",  min: 0, max: 5, def: 1 },
   avg_words_per_hour:           { type: "int",  min: 100, max: 20000, def: 1500 },
   unique_code_enabled:          { type: "bool", def: true, pub: true },
   unique_code_max:              { type: "int",  min: 1, max: 999, def: 99 },

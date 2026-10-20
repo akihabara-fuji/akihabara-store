@@ -8,6 +8,7 @@ const multer = require("multer");
 const { analyze, summary, DocxError } = require("./docx");
 const { quote } = require("./pricing");
 const { analyzeFindings, countByCode } = require("./rules");
+const { buildPreview } = require("./preview");
 
 const UPLOAD_TTL_MS = 2 * 3600 * 1000;       // unggahan yang tidak jadi pesanan dihapus setelah 2 jam
 const RATE = { max: 10, windowMs: 3600 * 1000 };
@@ -66,6 +67,35 @@ module.exports = function mountUploads({ app, db, settings, root, sameOrigin, se
         res.status(500).json({ error: "Dokumen tidak bisa diproses. Coba simpan ulang sebagai .docx lalu unggah lagi." });
       }
     });
+  });
+
+  /* Pratinjau terkunci: unggahan belum punya pesanan berbayar, jadi SELALU terkunci. (Pesanan berbayar memakai buildPreview dengan unlocked=true di tahap 6.) */
+  const cache = new Map(); // id -> {a, findings, at}; kecil dan berumur pendek
+  const getAnalysis = async (id, cfg) => {
+    const c = cache.get(id); if (c && Date.now() - c.at < 10 * 60 * 1000) return c;
+    const row = db.prepare("SELECT path, expires_at, order_id FROM uploads WHERE id=?").get(id);
+    if (!row || row.expires_at < Date.now()) return null;
+    let buf; try { buf = await fsp.readFile(path.join(root, "data", "private", row.path)); } catch { return null; }
+    const a = await analyze(buf);
+    const entry = { a, findings: analyzeFindings(a.paragraphs, a.bibliographyParagraphIndex, cfg), at: Date.now() };
+    cache.set(id, entry); if (cache.size > 8) cache.delete(cache.keys().next().value);
+    return entry;
+  };
+  const pvHits = new Map();
+  app.get("/ms/parafrase/preview/:id", async (req, res) => {
+    res.set("Cache-Control", "no-store");
+    const id = String(req.params.id || "");
+    if (!/^[a-f0-9]{32}$/.test(id)) return res.status(404).json({ error: "Unggahan tidak ditemukan." });
+    const now = Date.now(), h = hashIp(req.ip);
+    const arr = (pvHits.get(h) || []).filter(t => now - t < 3600 * 1000);
+    if (arr.length >= 200) return res.status(429).json({ error: "Terlalu banyak permintaan. Coba lagi nanti." });
+    arr.push(now); pvHits.set(h, arr);
+    try {
+      const cfg = settings.getAll();
+      const e = await getAnalysis(id, cfg);
+      if (!e) return res.status(404).json({ error: "Unggahan tidak ditemukan atau sudah kedaluwarsa. Unggah ulang dokumenmu." });
+      res.json(buildPreview(e.a, e.findings, secret, id, { unlocked: false, openSentences: cfg.preview_open_sentences, page: parseInt(req.query.page, 10) || 1, pageSize: parseInt(req.query.size, 10) || 30 }));
+    } catch (err) { console.error("[parafrase] preview gagal:", err && err.message); res.status(500).json({ error: "Pratinjau tidak bisa dibuat." }); }
   });
 
   /* Hapus unggahan yang kedaluwarsa dan belum jadi pesanan. */

@@ -22,3 +22,9 @@ Cabang: `feature/cek-parafrase-mandiri` (dari `nextaja-baru`). Jangan deploy seb
 1. Tahap 4b: penyamaran server pada pratinjau (kalimat pertama terbuka, sisanya berwarna tapi teks diganti karakter pengganti; teks asli tidak boleh bocor di respons, HTML, atau cache).
 2. Penyetelan aturan 4a dengan 3 sampai 5 dokumen tugas asli (kurangi salah tandai).
 3. Tahap 5: halaman /ruangakademikut ("Ruang Akademik UT") dan halaman murid.
+
+## Tahap 4b selesai
+- `parafrase/preview.js`: pratinjau dengan penyamaran di server (kalimat pertama terbuka, sisanya diganti karakter acak deterministik dengan panjang sama; alasan catatan tidak dikirim saat terkunci).
+- Rute `GET /ms/parafrase/preview/:id` (no-store, 200 permintaan/jam/IP, paginasi). Pengaturan baru `preview_open_sentences` (default 1).
+- Tes kebocoran otomatis: 34 tes lulus.
+- Berikutnya: tuning aturan 4a pada 3-5 dokumen asli, lalu Tahap 5 (halaman).
