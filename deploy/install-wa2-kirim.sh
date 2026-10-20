@@ -3,7 +3,7 @@
 set -euo pipefail
 APP=/opt/wabot/app
 NEXT=/var/www/mahyra-serv
-BASE=https://raw.githubusercontent.com/akihabara-fuji/akihabara-store/feature/cek-parafrase-mandiri/deploy/wa2
+BASE=https://raw.githubusercontent.com/akihabara-fuji/akihabara-store/bc3115a19a07523102ddd19889da66ba1f4c19c1/deploy/wa2
 BAK=$APP/src/bot.js.bak-parafrase
 [ "$(id -u)" = 0 ] || { echo "Jalankan sebagai root"; exit 1; }
 [ -f "$BAK" ] || cp $APP/src/bot.js "$BAK"
