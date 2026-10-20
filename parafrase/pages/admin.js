@@ -19,7 +19,7 @@
   }
   function dt(ms) { return ms ? new Date(ms).toLocaleString("id-ID", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "-"; }
   var STAT = { menunggu_bayar: "Menunggu bayar", menunggu_verifikasi: "Menunggu verifikasi", baru_dibayar: "Baru dibayar", dikerjakan: "Dikerjakan", cek_ulang: "Cek ulang", terkirim: "Terkirim", kedaluwarsa: "Kedaluwarsa" };
-  var TABS = [["queue", "Antrean"], ["verif", "Verifikasi bayar"], ["all", "Semua pesanan"], ["set", "Pengaturan & QRIS"], ["wa", "Pesan WhatsApp"]];
+  var TABS = [["queue", "Antrean"], ["verif", "Verifikasi bayar"], ["all", "Semua pesanan"], ["set", "Pengaturan & QRIS"], ["wa", "Pesan WhatsApp"], ["img", "Gambar kartu"]];
   var cur = "queue";
 
   function showLogin() { $("app").classList.add("hidden"); $("login").classList.remove("hidden"); }
@@ -38,7 +38,7 @@
   function go(t) {
     cur = t; TABS.forEach(function (x) { $("t-" + x[0]).classList.toggle("hidden", x[0] !== t); });
     [].forEach.call($("tabs").children, function (b) { b.classList.toggle("on", b.getAttribute("data-t") === t); });
-    ({ queue: renderQueue, verif: renderVerif, all: renderAll, set: renderSettings, wa: renderWa })[t]();
+    ({ queue: renderQueue, verif: renderVerif, all: renderAll, set: renderSettings, wa: renderWa, img: renderImg })[t]();
   }
   function waLink(o, text) { return "https://wa.me/" + o.wa + (text ? "?text=" + encodeURIComponent(text) : ""); }
 
@@ -146,6 +146,24 @@
       var lg = h("div", { class: "card", style: "margin-top:18px" }, [h("b", {}, "Riwayat perubahan")]);
       j.log.slice(0, 15).forEach(function (l) { lg.appendChild(h("div", { class: "muted" }, dt(l.at) + " · " + (LABEL[l.key] || l.key) + ": " + l.old_value + " → " + l.new_value)); });
       s.appendChild(lg);
+    }).catch(function (e) { s.textContent = e.message; });
+  }
+  var CARDNAME = { cek: "Cek dan Parafrase Mandiri", semester: "Paket Semester Lengkap", metopen: "Paket Metopen", tugas: "Tugas", diskusi: "Diskusi", makalah: "Makalah" };
+  function renderImg() {
+    var s = $("t-img"); s.textContent = "Memuat…";
+    api("/ms/admin/parafrase/card-images").then(function (j) {
+      s.textContent = ""; s.appendChild(h("p", { class: "muted" }, "Gambar tampil di bagian atas kartu layanan di Ruang Akademik UT. JPG, PNG, atau WebP, maks 5 MB; dipotong otomatis ke rasio 4:3. Tanpa gambar, kartu tampil polos."));
+      var g = h("div", { class: "grid" }); s.appendChild(g);
+      j.slugs.forEach(function (x) {
+        var f = h("input", { type: "file", accept: "image/png,image/jpeg,image/webp", class: "hidden" });
+        f.addEventListener("change", function () { if (!f.files[0]) return; var fd = new FormData(); fd.append("img", f.files[0]); api("/ms/admin/parafrase/card-images/" + x.slug, { method: "POST", body: fd }).then(function () { toast("Gambar dipasang"); renderImg(); }).catch(function (e) { toast(e.message); }); });
+        g.appendChild(h("div", { class: "card", style: "display:flex;flex-direction:column;gap:10px" }, [
+          h("b", {}, CARDNAME[x.slug] || x.slug),
+          x.has ? h("img", { class: "proof", alt: "", src: "/ruangakademikut/img/" + x.slug + ".webp?t=" + Date.now(), style: "max-width:100%" }) : h("div", { class: "muted" }, "Belum ada gambar."),
+          f,
+          h("div", { class: "act" }, [h("button", { class: "btn", type: "button", on: { click: function () { f.click(); } } }, x.has ? "Ganti gambar" : "Unggah gambar"),
+            x.has ? h("button", { class: "btn o", type: "button", on: { click: function () { api("/ms/admin/parafrase/card-images/" + x.slug, { method: "DELETE" }).then(function () { toast("Gambar dihapus"); renderImg(); }); } } }, "Hapus") : null].filter(Boolean))]));
+      });
     }).catch(function (e) { s.textContent = e.message; });
   }
   function renderWa() {

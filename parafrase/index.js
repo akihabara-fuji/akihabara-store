@@ -8,6 +8,7 @@ const crypto = require("crypto");
 const fs = require("fs");
 const { create } = require("./settings");
 const mountUploads = require("./uploads");
+const mountCards = require("./cards");
 const mountPages = require("./pages");
 const mountOrders = require("./orders");
 const createNotifier = require("./notify");
@@ -41,6 +42,7 @@ module.exports = function mount(ctx) {
   if (secret.length < 32) { fs.mkdirSync(path.dirname(secretFile), { recursive: true }); secret = crypto.randomBytes(32).toString("hex"); fs.writeFileSync(secretFile, secret, { mode: 0o600 }); }
 
   mountPages({ app, express });
+  mountCards({ app, root: ROOT, requireAdmin });
   const uploads = mountUploads({ app, db, settings, root: ROOT, sameOrigin: sameOrigin || (() => true), secret });
   const notifier = createNotifier({ db, settings });
   const orders = mountOrders({ app, express, db, settings, notifier, root: ROOT, sameOrigin: sameOrigin || (() => true), requireAdmin, secret });

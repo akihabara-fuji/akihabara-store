@@ -44,3 +44,31 @@
     if (nl) { if (S.nugasUrl) nl.href = S.nugasUrl; }
   }).catch(function () {});
 })();
+
+/* Kartu layanan: gambar opsional (diunggah admin) dan efek miring + sorot mengikuti kursor. */
+(function () {
+  var cards = document.querySelectorAll(".pc[data-slug]");
+  if (!cards.length) return;
+  var pend = cards.length, okc = 0, bad = [];
+  var settle = function () {
+    if (--pend) return;
+    if (!okc) return; // tidak ada gambar sama sekali: kartu tampil ringkas tanpa slot gambar
+    bad.forEach(function (c) { var m = c.querySelector(".pc-media"), bi = m.querySelector("img"); if (bi) bi.remove(); m.hidden = false; m.classList.add("ph"); m.setAttribute("data-l", (c.querySelector("h2").textContent || "?").trim().charAt(0)); });
+  };
+  cards.forEach(function (c) {
+    var m = c.querySelector(".pc-media"), img = m && m.querySelector("img");
+    if (!img) { settle(); return; }
+    img.onload = function () { m.hidden = false; okc++; settle(); };
+    img.onerror = function () { m.hidden = true; bad.push(c); settle(); };
+    img.src = "/ruangakademikut/img/" + c.getAttribute("data-slug") + ".webp";
+  });
+  if (!window.matchMedia || !matchMedia("(hover:hover) and (pointer:fine)").matches || matchMedia("(prefers-reduced-motion:reduce)").matches) return;
+  cards.forEach(function (c) {
+    c.addEventListener("mousemove", function (e) {
+      var r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+      c.style.setProperty("--mx", (x * 100).toFixed(1) + "%"); c.style.setProperty("--my", (y * 100).toFixed(1) + "%");
+      c.style.setProperty("--ry", ((x - .5) * 6).toFixed(2) + "deg"); c.style.setProperty("--rx", ((.5 - y) * 5).toFixed(2) + "deg");
+    });
+    c.addEventListener("mouseleave", function () { c.style.setProperty("--rx", "0deg"); c.style.setProperty("--ry", "0deg"); });
+  });
+})();
