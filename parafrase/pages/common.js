@@ -20,3 +20,27 @@
   }
   fetch("/ms/public-config").then(function (r) { return r.json(); }).then(fill).catch(function () {});
 })();
+
+/* Mode Gelap/Terang dan menu seluler: sama dengan nextaja.com (kunci "nx-theme"). */
+(function () {
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest && e.target.closest("[data-m]");
+    if (b) { var m = b.getAttribute("data-m"); document.documentElement.dataset.theme = m; try { localStorage.setItem("nx-theme", m); } catch (x) {} return; }
+    var bg = e.target.closest && e.target.closest("#burger");
+    if (bg) { var l = document.getElementById("links"); var o = l.classList.toggle("open"); bg.setAttribute("aria-expanded", o ? "true" : "false"); }
+  });
+})();
+
+/* Harga layanan dari pengaturan toko yang sama dengan beranda (/ms/store). Bila gagal, harga bawaan di HTML tetap tampil. */
+(function () {
+  var els = document.querySelectorAll("[data-pk]"), nl = document.getElementById("nugasLink");
+  if (!els.length && !nl) return;
+  fetch("/ms/store").then(function (r) { return r.json(); }).then(function (d) {
+    var S = (d && d.settings) || {};
+    els.forEach(function (e) {
+      var v = S[e.dataset.pk];
+      if (v && /^[A-Za-z0-9 .,\/-]{1,24}$/.test(v)) { var n = e.firstChild; if (n && n.nodeType === 3) n.nodeValue = v + " "; else e.textContent = v; }
+    });
+    if (nl) { if (S.nugasUrl) nl.href = S.nugasUrl; }
+  }).catch(function () {});
+})();

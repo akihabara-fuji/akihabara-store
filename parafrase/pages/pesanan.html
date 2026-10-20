@@ -2,12 +2,16 @@
 <html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Pesanan | nextaja</title><meta name="robots" content="noindex">
 <link rel="icon" href="/favicon.ico">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Bricolage+Grotesque:wght@500;700&display=swap" rel="stylesheet"><script>try{var t=localStorage.getItem("nx-theme");document.documentElement.dataset.theme=(t==="light"||t==="dark")?t:"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script>
 <link rel="stylesheet" href="/ruangakademikut/assets/site.css">
-<style>.qr{width:240px;height:240px;object-fit:contain;border:2px solid #12202F;border-radius:8px;background:#fff}.amt{font-size:30px;font-weight:700}.box{padding:14px 18px;border-radius:14px;font-size:14px;line-height:1.6}.b-info{background:#E3F0FD;color:#0D47A1}.b-ok{background:#E3F5EA;color:#1B5E20}.b-bad{background:#FDE8E8;color:#8E1B1B}.b-warn{background:#FFF8D6;color:#6B5000}.sum .l{display:flex;justify-content:space-between;gap:12px;color:#55606E}</style>
+<style>.qr{width:240px;height:240px;object-fit:contain;border:2px solid var(--text);border-radius:8px;background:#fff}.amt{font-size:30px;font-weight:700}.box{padding:14px 18px;border-radius:14px;font-size:14px;line-height:1.6}.b-info{background:#E3F0FD;color:#0D47A1}.b-ok{background:#E3F5EA;color:#1B5E20}.b-bad{background:#FDE8E8;color:#8E1B1B}.b-warn{background:#FFF8D6;color:#6B5000}.sum .l{display:flex;justify-content:space-between;gap:12px;color:var(--muted)}</style>
 </head><body>
-<div class="nav"><div class="wrap"><a class="brand" href="/"><i>N</i>NextAja</a>
-<nav><a href="/ruangakademikut">Ruang Akademik UT</a><a href="/ruangakademikut/cek-parafrase-mandiri">Cek &amp; Parafrase</a><a class="on" href="/ruangakademikut/pesanan">Cek Pesanan</a></nav></div></div>
+<header class="nav"><div class="wrap">
+  <a href="/" class="logo" aria-label="nextaja, ke beranda"><b>N</b><span>nextaja</span></a>
+  <nav class="links" id="links" aria-label="Menu utama"><a class="on" href="/ruangakademikut">Ruang Akademik UT</a><a href="/#harga">Harga</a><a href="/#produk">Lab Studio</a><a href="/#analisa">Analisa</a><a href="/blog">Blog</a><a href="/ms/masuk" class="only-m">Masuk</a></nav>
+  <div class="nav-r"><div class="mode" role="group" aria-label="Mode tampilan"><button type="button" data-m="dark">Gelap</button><button type="button" data-m="light">Terang</button></div><a class="btn btn-sm" href="/ms/masuk">Masuk</a><button class="burger" id="burger" type="button" aria-label="Buka menu" aria-expanded="false">☰</button></div>
+</div></header>
+<div class="sub"><div class="wrap"><a href="/ruangakademikut">Ringkasan</a><a href="/ruangakademikut/cek-parafrase-mandiri">Cek &amp; Parafrase</a><a class="on" href="/ruangakademikut/pesanan">Cek Pesanan</a></div></div>
 <main class="wrap" style="max-width:940px;padding-top:36px;padding-bottom:56px">
   <div id="load" class="muted">Memuat pesanan…</div>
   <div id="nf" class="hidden"><h1 style="margin-top:0">Pesanan tidak ditemukan</h1><p class="lead" style="margin-left:0">Periksa kembali tautannya, atau hubungi admin dengan menyebut ID pesananmu.</p><a class="pill" data-chat href="#">Chat admin</a></div>
@@ -25,12 +29,12 @@
       <div class="card" style="flex:1 1 340px;display:flex;flex-direction:column;align-items:center;gap:12px;padding:28px">
         <div id="qrbox"></div>
         <div class="muted">Total yang harus dibayar</div><div class="amt" id="amt"></div>
-        <div class="muted" id="amtd" style="text-align:center;font-size:13px;color:#3F4B59"></div>
+        <div class="muted" id="amtd" style="text-align:center;font-size:13px;color:var(--muted)"></div>
         <div class="box b-warn" style="text-align:center;font-size:13px">Nama penerima yang tampil di aplikasimu: <strong id="mname"></strong>. Itu QRIS resmi kami.</div>
         <div id="cd" style="font-size:14px;font-weight:600;color:#8E1B1B"></div>
       </div>
       <div style="flex:1 1 320px;display:flex;flex-direction:column;gap:14px">
-        <div class="card" style="border:2px dashed #0F5C8C;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px">
+        <div class="card" style="border:2px dashed var(--link);text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px">
           <div style="font-size:16px;font-weight:700">Unggah foto bukti bayar</div>
           <div class="muted">Tangkapan layar atau foto struk. JPG atau PNG, maksimal 5 MB. Nominal, tanggal, dan jam harus terlihat.</div>
           <input id="pf" type="file" accept="image/jpeg,image/png" class="hidden"><button class="btn" id="pb" type="button">Pilih foto</button>
