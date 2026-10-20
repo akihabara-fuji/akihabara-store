@@ -7,7 +7,7 @@ BASE=https://raw.githubusercontent.com/akihabara-fuji/akihabara-store/feature/ce
 [ "$(id -u)" = 0 ] || { echo "Jalankan sebagai root"; exit 1; }
 [ "$(grep -c '^    wa2Socket = sock;$' $APP/src/bot.js)" = 1 ] || { echo "Anchor wa2Socket tidak ditemukan/ganda. Batal."; exit 1; }
 grep -q 'kirim-wa2' $APP/src/bot.js && { echo "Sudah terpasang."; exit 0; }
-cp -n $APP/src/bot.js $APP/src/bot.js.bak-parafrase
+[ -f $APP/src/bot.js.bak-parafrase ] || cp $APP/src/bot.js $APP/src/bot.js.bak-parafrase
 rollback(){ echo "GAGAL -> rollback"; cp $APP/src/bot.js.bak-parafrase $APP/src/bot.js; rm -f $APP/src/kirim-wa2.js; systemctl restart wabot || true; }
 trap rollback ERR
 curl -fsSL "$BASE/kirim-wa2.js" -o $APP/src/kirim-wa2.js
