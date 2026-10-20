@@ -38,13 +38,14 @@ module.exports = function createNotifier({ db, settings, fetchImpl }) {
     dikonfirmasi: o => `Halo! Pembayaran pesanan ${o.id} sudah dikonfirmasi. Pesananmu masuk antrean Cek dan Parafrase Mandiri. Pantau di sini: ${link(o)}`,
     ditolak: o => `Halo, bukti bayar pesanan ${o.id} belum bisa diverifikasi (${o.reject_reason || "tidak sesuai"}). Silakan unggah bukti yang benar di: ${link(o)}`,
     dikerjakan: o => `Pesanan ${o.id} mulai dikerjakan. Kami kabari lagi setelah selesai. Pantau: ${link(o)}`,
-    selesai: (o, cfg) => `Pesanan ${o.id} selesai! Unduh hasil Word-nya di: ${link(o)} . File dihapus otomatis ${cfg.retention_hours} jam setelah ini, jadi segera unduh. Ada 1x revisi gratis dalam waktu itu, balas pesan ini.`,
+    selesai: (o, cfg) => `Pesanan ${o.id} selesai! Unduh hasil Word-nya di: ${link(o)} . File dihapus otomatis ${cfg.retention_hours} jam setelah ini, jadi segera unduh. Ada 1x revisi gratis dalam waktu itu, hubungi admin (nomor di bawah).`,
     pengingat: (o, cfg) => `Pengingat: file pesanan ${o.id} akan dihapus sekitar ${cfg.reminder_before_delete_hours} jam lagi. Unduh sekarang di: ${link(o)}`,
     kedaluwarsa: o => `Pesanan ${o.id} kedaluwarsa karena pembayaran belum diterima. Kamu bisa membuat pesanan baru kapan saja di ${site()}/ruangakademikut`,
   };
+  const footer = cfg => `\n\nPesan otomatis, mohon tidak dibalas ke nomor ini. Pertanyaan atau revisi? Hubungi admin: https://wa.me/${cfg.admin_wa_number || "6285722227544"}`;
   function send(kind, o, now = Date.now()) {
     const cfg = settings.getAll();
-    return enqueue({ orderId: o.id, to: o.wa_number, kind, text: T[kind](o, cfg), dedupe: `${o.id}:${kind}:${o.revision_no || 0}`, now });
+    return enqueue({ orderId: o.id, to: o.wa_number, kind, text: T[kind](o, cfg) + footer(cfg), dedupe: `${o.id}:${kind}:${o.revision_no || 0}`, now });
   }
   return { enqueue, flush, send, hookConfigured: () => !!hook() };
 };
