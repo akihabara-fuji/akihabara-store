@@ -11,8 +11,10 @@ import re, sys
 p = sys.argv[1]; s = open(p, encoding="utf-8").read()
 n_before = s.count("Kebutuhan anak UT")
 s2, n = re.subn(r'<a href="#akademik"(?: data-tx="t\d+")?>Kebutuhan anak UT</a>', '<a href="/ruangakademikut">Ruang Akademik UT</a>', s)
+s2, n2 = re.subn(r'(<a class="nx-(?:door nx-d1|help)" href=")#akademik(")', r'\1/ruangakademikut\2', s2)
+n += n2
 if n: open(p, "w", encoding="utf-8").write(s2)
-print(f"{p}: {n} menu diganti (sisa teks 'Kebutuhan anak UT' lain: {s2.count('Kebutuhan anak UT')})")
+print(f"{p}: {n} tautan diganti (sisa teks 'Kebutuhan anak UT' lain: {s2.count('Kebutuhan anak UT')})")
 PY
 done
 curl -s http://127.0.0.1:3200/ | grep -o 'href="/ruangakademikut"[^<]*<' | head -3 || true
