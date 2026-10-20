@@ -5,7 +5,7 @@
   var NAMES = { M: "Tulis ulang", O: "Beri kutip", K: "Tambah sumber", B: "Lengkapi sitasi", U: "Singkat", H: "Tambah kalimat", P: "Tambah analisis", A: "Variasikan" };
   var ORDER = ["M", "O", "K", "B", "U", "H", "P", "A"];
 
-  function showErr(m) { var e = $("err"); e.textContent = m || ""; e.classList.toggle("hidden", !m); }
+  function showErr(m) { ["err", "err2"].forEach(function (id) { var e = $(id); e.textContent = m || ""; e.classList.toggle("hidden", !m); }); }
   function cfg() { return (window.PF && window.PF.cfg) || null; }
   document.addEventListener("pf-config", function (ev) {
     var c = ev.detail; $("maxmb").textContent = c.file_max_mb;
@@ -74,9 +74,18 @@
   ["nobib", "fast"].forEach(function (id) { $(id).addEventListener("change", price); });
 
   $("pay").onclick = function () {
-    // Pembuatan pesanan + halaman QRIS dikerjakan di Tahap 6a. Sampai itu terpasang, tombol hanya memberi tahu.
-    showErr("");
-    showErr("Pembayaran QRIS belum diaktifkan di versi uji ini.");
+    showErr(""); var dl = dlDate(); if (!st.up || !dl) return;
+    $("pay").disabled = true; $("pay").textContent = "Membuat pesanan…";
+    fetch("/ms/parafrase/order", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({
+      uploadId: st.up.uploadId, wa: $("wa").value, title: $("judul").value, language: $("bhs").value, docType: $("jenis").value,
+      excludeBib: $("nobib").checked, fast: $("fast").checked, deadline: dl.getTime(), agree: $("agree").checked }) })
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (x) {
+        if (x.ok) { try { localStorage.setItem("pf_last", x.j.token); } catch (e) {} location.href = x.j.url; return; }
+        showErr(x.j.error || "Pesanan gagal dibuat.");
+        if (x.j.code === "fast_full") { fetch("/ms/public-config").then(function (r) { return r.json(); }).then(function (c) { window.PF.cfg = c; price(); }); }
+      }).catch(function () { showErr("Koneksi terputus. Coba lagi."); })
+      .then(function () { $("pay").textContent = "Bayar dengan QRIS"; gate(); });
   };
 
   function esc(s) { return s.replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }

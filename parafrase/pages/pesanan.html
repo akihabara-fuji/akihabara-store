@@ -1,10 +1,47 @@
 <!doctype html>
 <html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Cek Pesanan | nextaja</title><meta name="robots" content="noindex">
+<title>Pesanan | nextaja</title><meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.ico">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/ruangakademikut/assets/site.css"></head><body>
+<link rel="stylesheet" href="/ruangakademikut/assets/site.css">
+<style>.qr{width:240px;height:240px;object-fit:contain;border:2px solid #12202F;border-radius:8px;background:#fff}.amt{font-size:30px;font-weight:700}.box{padding:14px 18px;border-radius:14px;font-size:14px;line-height:1.6}.b-info{background:#E3F0FD;color:#0D47A1}.b-ok{background:#E3F5EA;color:#1B5E20}.b-bad{background:#FDE8E8;color:#8E1B1B}.b-warn{background:#FFF8D6;color:#6B5000}.sum .l{display:flex;justify-content:space-between;gap:12px;color:#55606E}</style>
+</head><body>
 <div class="nav"><div class="wrap"><a class="brand" href="/"><i>N</i>NextAja</a>
 <nav><a href="/ruangakademikut">Ruang Akademik UT</a><a href="/ruangakademikut/cek-parafrase-mandiri">Cek &amp; Parafrase</a><a class="on" href="/ruangakademikut/pesanan">Cek Pesanan</a></nav></div></div>
-<main class="hero"><h1>Cek Pesanan</h1><p class="lead">Fitur cek status pesanan sedang disiapkan. Sementara itu, hubungi admin dengan menyebut ID pesananmu.</p>
-<a class="pill" data-chat href="#">Chat admin</a></main>
-<script src="/ruangakademikut/assets/common.js"></script></body></html>
+<main class="wrap" style="max-width:940px;padding-top:36px;padding-bottom:56px">
+  <div id="load" class="muted">Memuat pesanan…</div>
+  <div id="nf" class="hidden"><h1 style="margin-top:0">Pesanan tidak ditemukan</h1><p class="lead" style="margin-left:0">Periksa kembali tautannya, atau hubungi admin dengan menyebut ID pesananmu.</p><a class="pill" data-chat href="#">Chat admin</a></div>
+  <div id="ord" class="hidden">
+    <div class="muted" id="oid"></div>
+    <h1 id="ttl" style="margin:4px 0 6px;font-size:30px"></h1>
+    <div id="stat" class="box b-info" style="margin:12px 0 20px"></div>
+    <div id="payv" class="hidden" style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start">
+      <div class="card" style="flex:1 1 340px;display:flex;flex-direction:column;align-items:center;gap:12px;padding:28px">
+        <div id="qrbox"></div>
+        <div class="muted">Total yang harus dibayar</div><div class="amt" id="amt"></div>
+        <div class="muted" id="amtd" style="text-align:center;font-size:13px;color:#3F4B59"></div>
+        <div class="box b-warn" style="text-align:center;font-size:13px">Nama penerima yang tampil di aplikasimu: <strong id="mname"></strong>. Itu QRIS resmi kami.</div>
+        <div id="cd" style="font-size:14px;font-weight:600;color:#8E1B1B"></div>
+      </div>
+      <div style="flex:1 1 320px;display:flex;flex-direction:column;gap:14px">
+        <div class="card" style="border:2px dashed #0F5C8C;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px">
+          <div style="font-size:16px;font-weight:700">Unggah foto bukti bayar</div>
+          <div class="muted">Tangkapan layar atau foto struk. JPG atau PNG, maksimal 5 MB. Nominal, tanggal, dan jam harus terlihat.</div>
+          <input id="pf" type="file" accept="image/jpeg,image/png" class="hidden"><button class="btn" id="pb" type="button">Pilih foto</button>
+          <div id="perr" class="err hidden" style="margin:0;width:100%"></div>
+        </div>
+        <div class="card sum" style="font-size:14px;line-height:1.8"><div class="l"><span id="s1"></span><span id="s1v"></span></div><div class="l"><span>Jalur cepat</span><span id="s2"></span></div><div class="l"><span>Kode unik</span><span id="s3"></span></div><div class="l"><span>Deadline</span><span id="s4"></span></div></div>
+        <div class="muted">Belum diverifikasi lebih dari 30 menit? <a data-chat href="#">Chat admin</a> dengan menyebut ID pesananmu. Jika pembayaran tidak bisa diverifikasi karena kendala dari pihak kami, dananya dikembalikan.</div>
+      </div>
+    </div>
+    <div id="docv" class="hidden card" style="margin-top:20px;display:flex;flex-direction:column;gap:12px">
+      <div style="font-size:18px;font-weight:700">Catatan dokumenmu</div>
+      <div id="docnote" class="muted"></div>
+      <div class="doc" id="doc"></div>
+      <div class="pager"><button class="btn ghost" id="prev" type="button">Sebelumnya</button><span id="pg"></span><button class="btn ghost" id="next" type="button">Berikutnya</button></div>
+    </div>
+  </div>
+</main>
+<script src="/ruangakademikut/assets/common.js"></script>
+<script src="/ruangakademikut/assets/pesanan.js"></script>
+</body></html>

@@ -1,0 +1,85 @@
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var rp = function (n) { return "Rp " + Number(n).toLocaleString("id-ID"); };
+  var m = location.pathname.match(/\/pesanan\/([a-f0-9]{48})\/?$/);
+  if (!m) { // tanpa token: coba pesanan terakhir di perangkat ini
+    var last = ""; try { last = localStorage.getItem("pf_last") || ""; } catch (e) {}
+    if (/^[a-f0-9]{48}$/.test(last)) { location.replace("/ruangakademikut/pesanan/" + last); return; }
+    $("load").classList.add("hidden"); $("nf").classList.remove("hidden"); return;
+  }
+  var token = m[1], o = null, page = 1, timer = null, previewFor = "";
+  var NAMES = { M: "Tulis ulang", O: "Beri kutip", K: "Tambah sumber", B: "Lengkapi sitasi", U: "Singkat", H: "Tambah kalimat", P: "Tambah analisis", A: "Variasikan" };
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function dt(ms) { return new Date(ms).toLocaleString("id-ID", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }); }
+  function box(cls, html) { var s = $("stat"); s.className = "box " + cls; s.innerHTML = html; }
+
+  function load() {
+    fetch("/ms/parafrase/order/" + token, { cache: "no-store" }).then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (j) { o = j; render(); })
+      .catch(function () { $("load").classList.add("hidden"); $("nf").classList.remove("hidden"); $("ord").classList.add("hidden"); });
+  }
+  function render() {
+    try { localStorage.setItem("pf_last", token); } catch (e) {}
+    $("load").classList.add("hidden"); $("ord").classList.remove("hidden");
+    $("oid").textContent = "ID pesanan " + o.orderId; $("ttl").textContent = o.title || "Dokumenmu";
+    var pay = o.status === "menunggu_bayar" && !o.expired;
+    $("payv").classList.toggle("hidden", !(pay || o.status === "menunggu_verifikasi"));
+    $("payv").style.display = (pay || o.status === "menunggu_verifikasi") ? "flex" : "none";
+    if (o.status === "menunggu_bayar" && o.expired) box("b-bad", "<strong>Waktu pembayaran habis.</strong><br>Pesanan ini kedaluwarsa. Buat pesanan baru, atau hubungi admin dengan menyebut ID pesananmu jika kamu sudah membayar.");
+    else if (o.status === "kedaluwarsa") box("b-bad", "<strong>Pesanan kedaluwarsa.</strong><br>Waktu pembayaran habis dan dokumen sudah dihapus. Silakan unggah ulang dan buat pesanan baru.");
+    else if (pay && o.rejectReason) box("b-bad", "<strong>Bukti bayar belum bisa diverifikasi:</strong> " + esc(o.rejectReason) + "<br>Unggah bukti yang benar sebelum waktu habis.");
+    else if (pay) box("b-info", "<strong>Status: menunggu bukti bayar.</strong><br>Setelah bukti diunggah, admin memverifikasi. Catatan berwarna terbuka dan pesananmu masuk antrean setelah diverifikasi. Antrean mengikuti waktu bukti bayar diunggah.");
+    else if (o.status === "menunggu_verifikasi") box("b-warn", "<strong>Bukti bayar diterima, menunggu verifikasi admin.</strong><br>Halaman ini diperbarui otomatis. Kamu juga bisa menutupnya dan kembali lewat tautan ini.");
+    else if (o.paid) box("b-ok", "<strong>Pembayaran terkonfirmasi.</strong><br>Pesananmu masuk antrean. Hasil dikirim ke WhatsApp setelah selesai.");
+    else box("b-info", "<strong>Status: " + esc(o.status) + "</strong>");
+    if (pay || o.status === "menunggu_verifikasi") fillPay();
+    $("docv").classList.toggle("hidden", !(o.paid)); $("docv").style.display = o.paid ? "flex" : "none";
+    if (o.paid && previewFor !== o.status) { previewFor = o.status; loadDoc(); }
+    clearInterval(timer); timer = setInterval(function () { if (pay) tick(); }, 1000);
+    schedulePoll();
+  }
+  function fillPay() {
+    $("qrbox").innerHTML = o.hasQris ? '<img class="qr" alt="QRIS pembayaran NextAja" src="/ms/parafrase/qris?v=' + Date.now() + '">' : '<div class="box b-warn" style="width:240px;text-align:center">QRIS belum dipasang. Hubungi admin untuk nomor tujuan pembayaran.</div>';
+    $("amt").textContent = rp(o.total);
+    $("amtd").textContent = rp(o.baseTotal + o.fastPrice) + " + kode unik " + rp(o.uniqueCode) + ". Kode unik membantu kami mencocokkan pembayaranmu, jadi bayar PERSIS nominal ini.";
+    $("mname").textContent = o.merchantName || "NextAja";
+    $("s1").textContent = "Revisi " + Number(o.words).toLocaleString("id-ID") + " kata × " + rp(o.pricePerWord); $("s1v").textContent = rp(o.baseTotal);
+    $("s2").textContent = o.lane === "cepat" ? "+" + rp(o.fastPrice) : "tidak dipilih"; $("s3").textContent = rp(o.uniqueCode); $("s4").textContent = dt(o.deadlineAt);
+    var up = o.status === "menunggu_verifikasi"; $("pb").textContent = up ? "Ganti foto bukti" : "Pilih foto";
+    $("cd").classList.toggle("hidden", up); tick();
+  }
+  function tick() {
+    if (!o || o.status !== "menunggu_bayar") return;
+    var s = Math.floor((o.payExpiresAt - Date.now()) / 1000);
+    if (s <= 0) { o.expired = true; render(); return; }
+    $("cd").textContent = "Selesaikan dalam " + String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+  }
+  var poll = null;
+  function schedulePoll() { clearTimeout(poll); if (o && (o.status === "menunggu_verifikasi" || o.status === "menunggu_bayar")) poll = setTimeout(function () { fetch("/ms/parafrase/order/" + token, { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) { var ch = j.status !== o.status || j.rejectReason !== o.rejectReason; o = j; if (ch) render(); else schedulePoll(); }).catch(schedulePoll); }, 10000); }
+
+  $("pb").onclick = function () { $("pf").click(); };
+  $("pf").onchange = function () {
+    var f = this.files[0]; this.value = ""; if (!f) return;
+    var e = $("perr"); e.classList.add("hidden");
+    if (f.size > 5 * 1048576) { e.textContent = "Foto terlalu besar. Maksimal 5 MB."; e.classList.remove("hidden"); return; }
+    $("pb").disabled = true; var fd = new FormData(); fd.append("proof", f);
+    fetch("/ms/parafrase/order/" + token + "/proof", { method: "POST", body: fd }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (x) { if (!x.ok) { e.textContent = x.j.error || "Unggahan gagal."; e.classList.remove("hidden"); } else load(); })
+      .catch(function () { e.textContent = "Koneksi terputus. Coba lagi."; e.classList.remove("hidden"); })
+      .then(function () { $("pb").disabled = false; });
+  };
+
+  function loadDoc() {
+    $("docnote").textContent = "Catatan berwarna di bawah adalah bagian yang akan dikerjakan tim NextAja.";
+    fetch("/ms/parafrase/order/" + token + "/preview?page=" + page, { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (pv) {
+      if (!pv.paragraphs) { $("doc").innerHTML = '<p class="muted">' + esc(pv.error || "Dokumen tidak tersedia.") + "</p>"; return; }
+      page = pv.page;
+      $("doc").innerHTML = pv.paragraphs.map(function (p) { return "<p>" + p.segments.map(function (s) {
+        var tag = s.primary ? '<sup class="t" title="' + esc((s.reasons || []).map(function (r) { return r.reason; }).join(" | ")) + '">[' + s.codes.map(function (c) { return c + " " + NAMES[c]; }).join(" · ") + "]</sup>" : "";
+        return '<span class="seg' + (s.primary ? " s-" + s.primary : "") + (s.locked ? " locked" : "") + '">' + esc(s.text) + "</span>" + tag + " ";
+      }).join("") + "</p>"; }).join("");
+      $("pg").textContent = "Halaman " + pv.page + " dari " + pv.pages; $("prev").disabled = pv.page <= 1; $("next").disabled = pv.page >= pv.pages;
+    }).catch(function () {});
+  }
+  $("prev").onclick = function () { page--; loadDoc(); }; $("next").onclick = function () { page++; loadDoc(); };
+  load();
+})();

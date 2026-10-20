@@ -35,3 +35,11 @@ Cabang: `feature/cek-parafrase-mandiri` (dari `nextaja-baru`). Jangan deploy seb
 - Contoh terbuka kini = kalimat BERCATATAN pertama (bukan judul).
 - Tombol Bayar dengan QRIS belum membuat pesanan (Tahap 6a). 35 tes lulus, diuji di browser (desktop dan HP).
 - Berikutnya: Tahap 6a (pesanan + QRIS manual + bukti bayar + Konfirmasi/Tolak).
+
+## Tahap 6a selesai (pesanan + QRIS manual)
+- `parafrase/orders.js`: POST /ms/parafrase/order (harga, kode unik, slot jalur cepat dihitung di server; WA dinormalkan 62; deadline wajib), GET /ms/parafrase/order/:token, GET /ms/parafrase/qris (foto QRIS dari pengaturan), POST .../proof (JPG/PNG maks 5 MB, EXIF dibuang lewat sharp, hash SHA-256, duplikat antar pesanan ditolak, queue_time = waktu bukti diunggah), GET .../preview (terbuka hanya setelah konfirmasi).
+- Admin: GET /ms/admin/parafrase/orders[?status], GET .../orders/:id/proof, POST .../confirm, POST .../reject {reason}, POST /ms/admin/parafrase/qris (unggah foto QRIS). `confirmPayment(orderId, source)` = antarmuka tunggal konfirmasi (siap untuk pembayaran otomatis kelak).
+- expireUnpaid (job 10 menit): pesanan tak dibayar -> kedaluwarsa, slot jalur cepat dilepas, dokumen dihapus.
+- Halaman /ruangakademikut/pesanan/:token (QRIS, kode unik, hitung mundur, unggah bukti, status otomatis, catatan terbuka setelah dikonfirmasi). Tombol Bayar di halaman unggah sudah membuat pesanan.
+- 41 tes lulus + uji alur penuh di browser.
+- Berikutnya: 6b (nomor antrean, urutan, jalur cepat vs biasa, "Dikerjakan" tidak tergeser), lalu 7 (Cek Pesanan, WhatsApp, retensi 24 jam), 8a-c (panel admin, Word berwarna, cek ulang).

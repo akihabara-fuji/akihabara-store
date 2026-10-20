@@ -1,0 +1,246 @@
+/* Pesanan: buat pesanan (harga dihitung di server), QRIS manual, bukti bayar, verifikasi admin.
+   Status: menunggu_bayar -> menunggu_verifikasi -> baru_dibayar (selanjutnya dikelola Tahap 6b/8). */
+"use strict";
+const fs = require("fs");
+const fsp = fs.promises;
+const path = require("path");
+const crypto = require("crypto");
+const multer = require("multer");
+const sharp = require("sharp");
+const { analyze } = require("./docx");
+const { analyzeFindings, saveFindings, countByCode } = require("./rules");
+const { quote } = require("./pricing");
+const { buildPreview } = require("./preview");
+
+const PAID = new Set(["baru_dibayar", "dianalisis", "dikerjakan", "cek_ulang", "terkirim"]);
+const PROOF_MAX = 5 * 1024 * 1024;
+
+module.exports = function mountOrders({ app, express, db, settings, root, sameOrigin, requireAdmin, secret }) {
+  const priv = p => path.join(root, "data", "private", p);
+  for (const d of ["proofs", "qris"]) fs.mkdirSync(priv(d), { recursive: true });
+  const hashIp = ip => crypto.createHmac("sha256", secret).update(String(ip || "")).digest("hex").slice(0, 32);
+  const buckets = new Map();
+  const limited = (key, max, now = Date.now()) => {
+    const arr = (buckets.get(key) || []).filter(t => now - t < 3600e3);
+    if (arr.length >= max) { buckets.set(key, arr); return true; }
+    arr.push(now); buckets.set(key, arr); return false;
+  };
+  const event = (orderId, type, detail, now = Date.now()) => db.prepare("INSERT INTO order_events(order_id,type,detail,at) VALUES(?,?,?,?)").run(orderId, type, detail == null ? null : String(detail).slice(0, 500), now);
+  const byToken = t => (/^[a-f0-9]{48}$/.test(String(t)) ? db.prepare("SELECT * FROM orders WHERE public_token=?").get(t) : undefined);
+  const wa62 = raw => { let d = String(raw || "").replace(/\D/g, ""); d = d.replace(/^62/, "").replace(/^0/, ""); return /^8\d{8,12}$/.test(d) ? "62" + d : null; };
+  const J = express.json({ limit: "16kb" });
+
+  /* ---------- buat pesanan ---------- */
+  function createOrder(body, ipHash, now = Date.now()) {
+    const cfg = settings.getAll();
+    const up = db.prepare("SELECT * FROM uploads WHERE id=?").get(String(body.uploadId || ""));
+    if (!up || up.expires_at < now) throw Object.assign(new Error("Unggahan tidak ditemukan atau kedaluwarsa. Unggah ulang dokumenmu."), { status: 404 });
+    if (up.order_id) throw Object.assign(new Error("Dokumen ini sudah dipakai untuk pesanan."), { status: 409 });
+    const wa = wa62(body.wa); if (!wa) throw Object.assign(new Error("Nomor WhatsApp tidak valid."), { status: 400 });
+    if (body.agree !== true) throw Object.assign(new Error("Centang persetujuan syarat dan kebijakan privasi."), { status: 400 });
+    const dl = Number(body.deadline);
+    if (!Number.isFinite(dl) || dl <= now || dl > now + 120 * 86400e3) throw Object.assign(new Error("Deadline harus waktu yang belum lewat."), { status: 400 });
+    const det = JSON.parse(up.detected);
+    const excl = body.excludeBib !== false && det.hasBibliography;
+    const words = excl ? det.wordsWithoutBibliography : det.words;
+    const wantFast = body.fast === true;
+    if (wantFast && !(cfg.fast_lane_enabled && cfg.fast_lane_daily_cap > 0)) throw Object.assign(new Error("Jalur cepat sedang tidak tersedia."), { status: 409 });
+    const q = quote(words, wantFast, cfg);
+    const title = String(body.title || det.title || "").trim().slice(0, 200);
+    const lang = body.language === "en" ? "en" : "id";
+    const docType = ["umum", "metopen", "artikel"].includes(body.docType) ? body.docType : det.docType || "umum";
+    const token = crypto.randomBytes(24).toString("hex");
+    const payExp = now + cfg.payment_window_minutes * 60e3;
+
+    const tx = db.transaction(() => {
+      if (wantFast) {
+        const used = settings.fastLaneUsed(now);
+        if (used >= cfg.fast_lane_daily_cap) throw Object.assign(new Error("Jalur cepat penuh hari ini."), { status: 409, code: "fast_full" });
+      }
+      const last = db.prepare("SELECT MAX(CAST(SUBSTR(id,4) AS INTEGER)) n FROM orders").get().n || 1000;
+      const id = "NA-" + (last + 1);
+      let code = 0;
+      if (cfg.unique_code_enabled) {
+        const taken = new Set(db.prepare("SELECT total FROM orders WHERE status IN ('menunggu_bayar','menunggu_verifikasi')").all().map(r => r.total));
+        const free = []; for (let c = 1; c <= cfg.unique_code_max; c++) if (!taken.has(q.total + c)) free.push(c);
+        if (!free.length) throw Object.assign(new Error("Sistem pembayaran sedang penuh. Coba lagi beberapa menit lagi."), { status: 503 });
+        code = free[crypto.randomInt(free.length)];
+      }
+      const total = q.total + code;
+      db.prepare(`INSERT INTO orders(id,public_token,wa_number,title,language,doc_type,word_count,original_file,status,lane,price_per_word,min_price,fast_price,base_total,unique_code,total,deadline_at,pay_expires_at,created_at,updated_at)
+                  VALUES(?,?,?,?,?,?,?,?,'menunggu_bayar',?,?,?,?,?,?,?,?,?,?,?)`)
+        .run(id, token, wa, title, lang, docType, words, up.path, wantFast ? "cepat" : "biasa", q.price_per_word, q.min_price, q.fast_price, q.base_total, code, total, dl, payExp, now, now);
+      if (wantFast) db.prepare("INSERT INTO fast_reservations(order_id,day,status,expires_at,created_at) VALUES(?,?,?,?,?)").run(id, settings.wibDay(now), "reserved", payExp, now);
+      db.prepare("UPDATE uploads SET order_id=? WHERE id=?").run(id, up.id);
+      event(id, "dibuat", `kata=${words} total=${total} lane=${wantFast ? "cepat" : "biasa"} ip=${ipHash}`, now);
+      return { id, total, code };
+    });
+    const r = tx();
+    return { r, token, payExp, up };
+  }
+
+  app.post("/ms/parafrase/order", J, async (req, res) => {
+    res.set("Cache-Control", "no-store");
+    if (!sameOrigin(req)) return res.status(403).json({ error: "Permintaan ditolak." });
+    const ipHash = hashIp(req.ip);
+    if (limited("o:" + ipHash, 10)) return res.status(429).json({ error: "Terlalu banyak pesanan dari jaringan ini. Coba lagi nanti." });
+    try {
+      const { r, token, payExp, up } = createOrder(req.body || {}, ipHash);
+      // Simpan catatan di database (teks asli tetap di server).
+      try {
+        const buf = await fsp.readFile(priv(up.path)); const a = await analyze(buf);
+        saveFindings(db, r.id, analyzeFindings(a.paragraphs, a.bibliographyParagraphIndex, settings.getAll()));
+      } catch (e) { console.error("[parafrase] simpan catatan gagal:", e && e.message); }
+      res.json({ orderId: r.id, token, total: r.total, uniqueCode: r.code, expiresAt: payExp, url: "/ruangakademikut/pesanan/" + token });
+    } catch (e) {
+      if (e.status) return res.status(e.status).json({ error: e.message, code: e.code });
+      console.error("[parafrase] buat pesanan gagal:", e && e.message); res.status(500).json({ error: "Pesanan tidak bisa dibuat. Coba lagi." });
+    }
+  });
+
+  /* ---------- status publik ---------- */
+  const view = (o, now = Date.now()) => {
+    const cfg = settings.getAll();
+    return {
+      orderId: o.id, status: o.status, lane: o.lane, title: o.title, words: o.word_count,
+      total: o.total, baseTotal: o.base_total, fastPrice: o.fast_price, uniqueCode: o.unique_code, pricePerWord: o.price_per_word,
+      deadlineAt: o.deadline_at, payExpiresAt: o.pay_expires_at, expired: o.status === "menunggu_bayar" && o.pay_expires_at < now,
+      proofUploaded: !!o.proof_uploaded_at, rejectReason: o.status === "menunggu_bayar" ? o.reject_reason : null,
+      paid: PAID.has(o.status), hasQris: !!cfg.qris_image_path, merchantName: cfg.qris_merchant_name,
+      adminWa: cfg.admin_wa_number, paymentWindowMinutes: cfg.payment_window_minutes,
+    };
+  };
+  app.get("/ms/parafrase/order/:token", (req, res) => {
+    res.set("Cache-Control", "no-store");
+    if (limited("g:" + hashIp(req.ip), 600)) return res.status(429).json({ error: "Terlalu banyak permintaan." });
+    const o = byToken(req.params.token); if (!o) return res.status(404).json({ error: "Pesanan tidak ditemukan." });
+    res.json(view(o));
+  });
+
+  /* Foto QRIS toko: memang publik (dipindai pembeli), disajikan lewat rute, bukan folder statis. */
+  app.get("/ms/parafrase/qris", async (req, res) => {
+    const p = settings.get("qris_image_path");
+    if (!p) return res.status(404).end();
+    try { res.set("Cache-Control", "no-cache").type("png").send(await fsp.readFile(priv(p))); } catch { res.status(404).end(); }
+  });
+
+  /* ---------- bukti bayar ---------- */
+  const proofUp = multer({ storage: multer.memoryStorage(), limits: { fileSize: PROOF_MAX, files: 1 } }).single("proof");
+  app.post("/ms/parafrase/order/:token/proof", (req, res) => {
+    res.set("Cache-Control", "no-store");
+    if (!sameOrigin(req)) return res.status(403).json({ error: "Permintaan ditolak." });
+    const o = byToken(req.params.token); if (!o) return res.status(404).json({ error: "Pesanan tidak ditemukan." });
+    if (limited("p:" + o.id, 8)) return res.status(429).json({ error: "Terlalu banyak unggahan. Hubungi admin." });
+    proofUp(req, res, async err => {
+      if (err) return res.status(400).json({ error: err.code === "LIMIT_FILE_SIZE" ? "Foto terlalu besar. Maksimal 5 MB." : "Unggahan gagal." });
+      const now = Date.now(), f = req.file;
+      if (!f) return res.status(400).json({ error: "Pilih foto bukti bayar." });
+      const cur = db.prepare("SELECT * FROM orders WHERE id=?").get(o.id);
+      if (!["menunggu_bayar", "menunggu_verifikasi"].includes(cur.status)) return res.status(409).json({ error: "Pesanan ini tidak menerima bukti bayar lagi." });
+      if (cur.status === "menunggu_bayar" && cur.pay_expires_at < now) return res.status(409).json({ error: "Waktu pembayaran habis. Hubungi admin dengan menyebut ID pesananmu.", code: "expired" });
+      try {
+        const meta = await sharp(f.buffer, { limitInputPixels: 50e6 }).metadata();
+        if (!["jpeg", "png"].includes(meta.format)) throw new Error("format");
+        const out = await sharp(f.buffer, { limitInputPixels: 50e6 }).rotate().resize({ width: 1600, height: 2400, fit: "inside", withoutEnlargement: true }).jpeg({ quality: 82 }).toBuffer(); // metadata (EXIF/GPS) dibuang
+        const hash = crypto.createHash("sha256").update(f.buffer).digest("hex");
+        const dup = db.prepare("SELECT id FROM orders WHERE proof_hash=? AND id<>? AND status<>'dikembalikan'").get(hash, cur.id);
+        if (dup) return res.status(409).json({ error: "Foto ini sudah dipakai di pesanan lain. Unggah bukti bayar untuk pesanan ini." });
+        const rel = `proofs/${cur.id}-${crypto.randomBytes(4).toString("hex")}.jpg`;
+        await fsp.writeFile(priv(rel), out, { mode: 0o600 });
+        if (cur.proof_path) fsp.unlink(priv(cur.proof_path)).catch(() => {});
+        db.transaction(() => {
+          db.prepare("UPDATE orders SET proof_path=?, proof_hash=?, proof_uploaded_at=?, queue_time=?, status='menunggu_verifikasi', reject_reason=NULL, updated_at=? WHERE id=?").run(rel, hash, now, now, now, cur.id);
+          event(cur.id, "bukti_diunggah", `hash=${hash.slice(0, 12)}`, now);
+        })();
+        res.json({ ok: true, status: "menunggu_verifikasi" });
+      } catch (e) { res.status(400).json({ error: "File bukan foto JPG atau PNG yang valid." }); }
+    });
+  });
+
+  /* ---------- konfirmasi (dipakai admin; antarmuka sama bila nanti ada pembayaran otomatis) ---------- */
+  function confirmPayment(orderId, source = "admin", now = Date.now()) {
+    return db.transaction(() => {
+      const o = db.prepare("SELECT * FROM orders WHERE id=?").get(orderId);
+      if (!o) throw Object.assign(new Error("Pesanan tidak ditemukan."), { status: 404 });
+      if (!["menunggu_verifikasi", "menunggu_bayar"].includes(o.status)) throw Object.assign(new Error("Status pesanan tidak bisa dikonfirmasi: " + o.status), { status: 409 });
+      db.prepare("UPDATE orders SET status='baru_dibayar', confirmed_at=?, confirmed_by=?, queue_time=COALESCE(queue_time,?), reject_reason=NULL, updated_at=? WHERE id=?").run(now, source, now, now, orderId);
+      if (o.lane === "cepat") {
+        const r = db.prepare("UPDATE fast_reservations SET status='confirmed' WHERE order_id=?").run(orderId);
+        if (!r.changes) db.prepare("INSERT INTO fast_reservations(order_id,day,status,expires_at,created_at) VALUES(?,?,?,?,?)").run(orderId, settings.wibDay(now), "confirmed", now, now);
+      }
+      event(orderId, "dikonfirmasi", source, now);
+      return db.prepare("SELECT * FROM orders WHERE id=?").get(orderId);
+    })();
+  }
+  function rejectPayment(orderId, reason, now = Date.now()) {
+    const cfg = settings.getAll();
+    return db.transaction(() => {
+      const o = db.prepare("SELECT * FROM orders WHERE id=?").get(orderId);
+      if (!o) throw Object.assign(new Error("Pesanan tidak ditemukan."), { status: 404 });
+      if (o.status !== "menunggu_verifikasi") throw Object.assign(new Error("Hanya pesanan menunggu verifikasi yang bisa ditolak."), { status: 409 });
+      const why = String(reason || "").trim().slice(0, 200) || "Bukti bayar tidak sesuai.";
+      const exp = now + cfg.payment_window_minutes * 60e3;
+      db.prepare("UPDATE orders SET status='menunggu_bayar', reject_reason=?, proof_path=NULL, proof_hash=NULL, proof_uploaded_at=NULL, queue_time=NULL, pay_expires_at=?, updated_at=? WHERE id=?").run(why, exp, now, orderId);
+      db.prepare("UPDATE fast_reservations SET expires_at=? WHERE order_id=? AND status='reserved'").run(exp, orderId);
+      if (o.proof_path) fsp.unlink(priv(o.proof_path)).catch(() => {});
+      event(orderId, "ditolak", why, now);
+    })();
+  }
+
+  /* Pesanan yang tidak dibayar sampai batas waktu: kedaluwarsa, slot jalur cepat dilepas, dokumen dihapus. */
+  async function expireUnpaid(now = Date.now()) {
+    const rows = db.prepare("SELECT id, original_file FROM orders WHERE status='menunggu_bayar' AND pay_expires_at<?").all(now);
+    for (const r of rows) {
+      db.transaction(() => {
+        db.prepare("UPDATE orders SET status='kedaluwarsa', updated_at=? WHERE id=?").run(now, r.id);
+        db.prepare("UPDATE fast_reservations SET status='released' WHERE order_id=? AND status='reserved'").run(r.id);
+        event(r.id, "kedaluwarsa", null, now);
+      })();
+      try { await fsp.unlink(priv(r.original_file)); } catch {}
+      db.prepare("DELETE FROM uploads WHERE order_id=?").run(r.id);
+    }
+    return rows.length;
+  }
+
+  /* ---------- pratinjau terbuka (hanya pesanan yang sudah dikonfirmasi) ---------- */
+  app.get("/ms/parafrase/order/:token/preview", async (req, res) => {
+    res.set("Cache-Control", "no-store");
+    const o = byToken(req.params.token); if (!o) return res.status(404).json({ error: "Pesanan tidak ditemukan." });
+    if (limited("v:" + o.id, 300)) return res.status(429).json({ error: "Terlalu banyak permintaan." });
+    try {
+      const a = await analyze(await fsp.readFile(priv(o.original_file)));
+      const findings = db.prepare("SELECT code, para_idx, sent_idx, reason FROM findings WHERE order_id=? ORDER BY seq").all(o.id);
+      res.json(buildPreview(a, findings, secret, o.id, { unlocked: PAID.has(o.status), openSentences: settings.get("preview_open_sentences"), page: parseInt(req.query.page, 10) || 1, pageSize: parseInt(req.query.size, 10) || 30 }));
+    } catch { res.status(404).json({ error: "Dokumen tidak tersedia (mungkin sudah dihapus)." }); }
+  });
+
+  /* ---------- admin ---------- */
+  app.get("/ms/admin/parafrase/orders", requireAdmin, (req, res) => {
+    res.set("Cache-Control", "no-store");
+    const st = String(req.query.status || "");
+    const rows = st ? db.prepare("SELECT * FROM orders WHERE status=? ORDER BY COALESCE(queue_time,created_at)").all(st)
+                    : db.prepare("SELECT * FROM orders ORDER BY created_at DESC LIMIT 300").all();
+    res.json({ orders: rows.map(o => ({ ...view(o), wa: o.wa_number, proofAt: o.proof_uploaded_at, queueTime: o.queue_time, createdAt: o.created_at, hasProof: !!o.proof_path, rejectReasonRaw: o.reject_reason })) });
+  });
+  app.get("/ms/admin/parafrase/orders/:id/proof", requireAdmin, async (req, res) => {
+    const o = db.prepare("SELECT proof_path FROM orders WHERE id=?").get(String(req.params.id));
+    if (!o || !o.proof_path) return res.status(404).end();
+    try { res.set("Cache-Control", "no-store").type("jpeg").send(await fsp.readFile(priv(o.proof_path))); } catch { res.status(404).end(); }
+  });
+  const wrap = fn => (req, res) => { try { res.json({ ok: true, order: view(fn(req)) }); } catch (e) { res.status(e.status || 500).json({ error: e.message }); } };
+  app.post("/ms/admin/parafrase/orders/:id/confirm", requireAdmin, wrap(req => confirmPayment(String(req.params.id), "admin")));
+  app.post("/ms/admin/parafrase/orders/:id/reject", requireAdmin, J, wrap(req => { rejectPayment(String(req.params.id), req.body && req.body.reason); return db.prepare("SELECT * FROM orders WHERE id=?").get(String(req.params.id)); }));
+  app.post("/ms/admin/parafrase/qris", requireAdmin, (req, res) => {
+    multer({ storage: multer.memoryStorage(), limits: { fileSize: PROOF_MAX, files: 1 } }).single("qris")(req, res, async err => {
+      if (err || !req.file) return res.status(400).json({ error: "Pilih foto QRIS (JPG atau PNG, maks 5 MB)." });
+      try {
+        const out = await sharp(req.file.buffer, { limitInputPixels: 50e6 }).rotate().resize({ width: 1600, height: 1600, fit: "inside", withoutEnlargement: true }).png().toBuffer();
+        await fsp.writeFile(priv("qris/qris.png"), out, { mode: 0o600 });
+        settings.set({ qris_image_path: "qris/qris.png" }, "admin");
+        res.json({ ok: true });
+      } catch { res.status(400).json({ error: "File bukan gambar yang valid." }); }
+    });
+  });
+
+  return { createOrder, confirmPayment, rejectPayment, expireUnpaid, byToken };
+};
