@@ -32,7 +32,8 @@ else:
     code=rd(P('blog-akun.js'))
     tops={p.get('topic') for p in posts}|set(re.findall(r'["\']([a-z0-9-]{2,20})["\']',code))
     pick=None
-    for pat in (r'["\']?([A-Za-z0-9_-]{2,20})["\']?\s*:\s*["\'](?:Study|study)["\']',            # id: "Study"
+    for pat in (r'\b([a-z][a-z0-9_-]{1,19})\s*:\s*\{\s*label\s*:\s*["\']Study["\']',
+                r'["\']?([A-Za-z0-9_-]{2,20})["\']?\s*:\s*["\'](?:Study|study)["\']',            # id: "Study"
                 r'(?:id|key|value|slug)\s*:\s*["\']([A-Za-z0-9_-]{2,20})["\'][^{}]{0,80}(?:label|name|title)\s*:\s*["\']Study["\']',
                 r'\[\s*["\']([A-Za-z0-9_-]{2,20})["\']\s*,\s*["\']Study["\']'):
         m=re.search(pat,code)
