@@ -20,7 +20,7 @@ if not updir:
         if os.path.isdir(root): updir=root; break
 assert updir,'folder uploads tidak ketemu'
 log.append('folder uploads: '+updir)
-cov={'cara-mengerjakan-tugas-tutorial-ut-biar-rapi-dan-tidak-telat':'tugas','sitasi-apa-dengan-mendeley-untuk-mahasiswa-ut':'sitasi','kenapa-views-tiktok-turun-10-hal-yang-perlu-dicek':'views'}
+cov={'cara-mengerjakan-tugas-tutorial-ut-biar-rapi-dan-tidak-telat':'tugas','sitasi-apa-dengan-mendeley-untuk-mahasiswa-ut':'sitasi','kenapa-views-tiktok-turun-10-hal-yang-perlu-dicek':'views','siswi-smk-yang-hilang-ditemukan-di-apartemen-pik-2-polisi-masih-dalami-kronologi':'berita'}
 for p in posts:
     k=cov.get(p['slug'])
     if k and not p.get('cover'):
@@ -42,6 +42,12 @@ if not any(p['slug']==SL for p in posts):
           'excerpt':'Siswi SMK berusia 16 tahun asal Tasikmalaya yang dilaporkan hilang sejak 2 Oktober ditemukan selamat di apartemen kawasan PIK 2. Polisi masih mendalami kronologinya.','body':rd(os.path.join(HERE,'parts','artikel4.txt')).strip()})
         posts.insert(0,n); log.append('berita viral ditambah (kategori %s)'%m.group(1))
 else: log.append('berita viral sudah ada')
+for p in posts:
+    k=cov.get(p['slug'])
+    if k and not p.get('cover'):
+        name='nx-cover-%s.jpg'%k
+        shutil.copy2(os.path.join(HERE,'assets','cover','cover-%s.jpg'%k),os.path.join(updir,name))
+        p['cover']='/uploads/'+name; log.append('sampul dipasang: '+p['slug'][:40])
 print('\n'.join(log))
 if any(l.startswith(('sampul','berita viral ditambah')) for l in log):
     bk='/root/backups/nx-stage5-'+time.strftime('%Y%m%d-%H%M%S'); os.makedirs(bk,exist_ok=True); shutil.copy2(F,bk)
