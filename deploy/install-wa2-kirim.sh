@@ -9,11 +9,11 @@ BASE=https://raw.githubusercontent.com/akihabara-fuji/akihabara-store/feature/ce
 grep -q 'kirim-wa2' $APP/src/bot.js && { echo "Sudah terpasang."; exit 0; }
 [ -f $APP/src/bot.js.bak-parafrase ] || cp $APP/src/bot.js $APP/src/bot.js.bak-parafrase
 rollback(){ echo "GAGAL -> rollback"; cp $APP/src/bot.js.bak-parafrase $APP/src/bot.js; rm -f $APP/src/kirim-wa2.js; systemctl restart wabot || true; }
-trap rollback ERR
+trap 'echo "GAGAL di baris $LINENO: $BASH_COMMAND"; rollback' ERR
 curl -fsSL "$BASE/kirim-wa2.js" -o $APP/src/kirim-wa2.js
 node --check $APP/src/kirim-wa2.js
 [ -s $APP/.kirim-secret ] || { openssl rand -hex 24 > $APP/.kirim-secret; }
-chmod 600 $APP/.kirim-secret; chown wabot:wabot $APP/.kirim-secret $APP/src/kirim-wa2.js
+chmod 600 $APP/.kirim-secret; chown wabot $APP/.kirim-secret $APP/src/kirim-wa2.js
 sed -i '/^    wa2Socket = sock;$/a\    require("./kirim-wa2")(() => wa2Socket);' $APP/src/bot.js
 node --check $APP/src/bot.js
 if ! grep -q '^PARAFRASE_WA_WEBHOOK=' $NEXT/.env; then
