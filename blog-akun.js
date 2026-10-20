@@ -363,7 +363,8 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
     const b = req.body || {};
     if (b.website) return res.json({ ok: true });
     const u = userFrom(req);
-    const name = str(b.name || (u && u.name) || "", 40);
+    if (!u) return res.status(401).json({ error: "Masuk dulu untuk berkomentar.", login: true });
+    const name = str(u.name || String(u.email || "").split("@")[0], 40);
     const text = str(b.text, 1000);
     if (name.length < 2) return res.status(400).json({ error: "Nama minimal 2 huruf." });
     if (text.length < 3) return res.status(400).json({ error: "Komentar terlalu pendek." });
@@ -400,13 +401,13 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
   const commentsBlock = slug => `<section class="cmts" id="komentar" aria-labelledby="cmH">
       <h2 id="cmH">Komentar <span id="cmN"></span></h2>
       <div id="cmList" aria-live="polite"><p class="small">Memuat komentar…</p></div>
-      <form id="cmF" class="cmf" novalidate>
-        <label>Nama<input name="name" maxlength="40" autocomplete="name" required></label>
+      <div id="cmLogin" class="cm-login" hidden><b>Mau ikut komentar?</b><span>Masuk dulu (bisa lewat Google, cuma beberapa detik).</span><a class="btn btn-pri btn-sm" href="/ms/masuk?next=${encodeURIComponent("/blog/" + slug)}">Masuk untuk berkomentar</a></div>
+      <form id="cmF" class="cmf" novalidate hidden>
         <label>Komentar<textarea name="text" rows="4" maxlength="1000" required placeholder="Tulis pertanyaan atau tanggapan kamu…"></textarea></label>
         <input name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0;height:0">
         <p class="err" id="cmE" role="alert"></p>
         <button class="btn btn-pri" type="submit">Kirim komentar</button>
-        <p class="small">Tidak perlu login. Admin akan membalas langsung di bawah komentar kamu.</p>
+        <p class="small" id="cmWho"></p>
       </form>
       <script>
       (function(){var slug=${JSON.stringify(slug)},L=document.getElementById("cmList"),F=document.getElementById("cmF"),E=document.getElementById("cmE"),isAdmin=false;
@@ -426,9 +427,9 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
       function load(){var u=isAdmin?"/ms/admin/comments":"/ms/blog/"+encodeURIComponent(slug)+"/comments";
         fetch(u,{cache:"no-store"}).then(function(r){return r.json()}).then(function(j){var it=j.items||[];if(isAdmin)it=it.filter(function(c){return c.slug===slug}).reverse();render(it)}).catch(function(){L.textContent="Komentar gagal dimuat."})}
       fetch("/ms/admin/comments",{cache:"no-store"}).then(function(r){isAdmin=r.ok;load()}).catch(load);
-      fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(function(d){if(d.user&&!F.name.value)F.name.value=d.user.name||""}).catch(function(){});
+      fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(function(d){if(d.user){F.hidden=false;document.getElementById("cmWho").textContent="Berkomentar sebagai "+(d.user.name||d.user.email)+". Admin akan membalas di bawah komentarmu."}else document.getElementById("cmLogin").hidden=false}).catch(function(){document.getElementById("cmLogin").hidden=false});
       F.addEventListener("submit",function(e){e.preventDefault();E.textContent="";var b=F.querySelector("button");b.disabled=true;
-        api("POST","/ms/blog/"+encodeURIComponent(slug)+"/comments",{name:F.name.value,text:F.text.value,website:F.website.value}).then(function(x){b.disabled=false;
+        api("POST","/ms/blog/"+encodeURIComponent(slug)+"/comments",{text:F.text.value,website:F.website.value}).then(function(x){b.disabled=false;
           if(x.ok){F.text.value="";load()}else E.textContent=x.j.error||"Gagal mengirim."}).catch(function(){b.disabled=false;E.textContent="Tidak bisa terhubung."})});
       })();
       </script>
@@ -527,7 +528,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
         <p class="small">Lupa sandi? <a id="wa" href="#" target="_blank" rel="noopener">Hubungi admin lewat WhatsApp</a> dan minta sandi sementara.</p>
       </div></div></section>
       <script>
-      (function(){var mode="in",f=document.getElementById("f"),err=document.getElementById("err");
+      (function(){var NEXT=(function(){var n=new URLSearchParams(location.search).get("next")||"";return /^\/[a-zA-Z0-9\/_\-?=&.%]*$/.test(n)&&n.indexOf("//")!==0?n:"/ms/akun"})();var mode="in",f=document.getElementById("f"),err=document.getElementById("err");
       var w=${JSON.stringify(String((SOCIAL().waNumber) || "6285722227544"))};document.getElementById("wa").href="https://wa.me/"+w+"?text="+encodeURIComponent("Halo admin nextaja, saya lupa sandi akun saya.");
       document.querySelectorAll(".tabs2 button").forEach(function(b){b.addEventListener("click",function(){mode=b.dataset.t;
         document.querySelectorAll(".tabs2 button").forEach(function(x){x.setAttribute("aria-pressed",x===b)});
@@ -537,14 +538,14 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
       if(GID){var sc=document.createElement("script");sc.src="https://accounts.google.com/gsi/client";sc.async=true;sc.onload=function(){
         google.accounts.id.initialize({client_id:GID,callback:function(r){err.textContent="";
           fetch("/ms/auth/google",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({credential:r.credential})})
-          .then(function(x){return x.json().then(function(j){return {ok:x.ok,j:j}})}).then(function(x){if(x.ok)location.href="/ms/akun";else err.textContent=x.j.error||"Gagal. Coba lagi.";})
+          .then(function(x){return x.json().then(function(j){return {ok:x.ok,j:j}})}).then(function(x){if(x.ok)location.href=NEXT;else err.textContent=x.j.error||"Gagal. Coba lagi.";})
           .catch(function(){err.textContent="Tidak bisa terhubung. Coba lagi.";});}});
         google.accounts.id.renderButton(document.getElementById("gBtn"),{theme:"outline",size:"large",text:"continue_with",shape:"pill",width:300,locale:"id"});
         document.getElementById("gWrap").hidden=false;};document.head.appendChild(sc);}
       f.addEventListener("submit",function(e){e.preventDefault();err.textContent="";
         var d={email:f.email.value,password:f.password.value};if(mode==="up")d.name=f.name.value;
         fetch("/ms/auth/"+(mode==="up"?"register":"login"),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)})
-        .then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j}})}).then(function(x){if(x.ok)location.href="/ms/akun";else err.textContent=x.j.error||"Gagal. Coba lagi.";})
+        .then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j}})}).then(function(x){if(x.ok)location.href=NEXT;else err.textContent=x.j.error||"Gagal. Coba lagi.";})
         .catch(function(){err.textContent="Tidak bisa terhubung. Coba lagi.";});});})();
       </script>`;
     res.set("Cache-Control", "no-store").type("html").send(layout({ title: "Masuk atau daftar — nextaja", desc: "Masuk ke akun nextaja untuk melihat pesanan kamu.", path: "/ms/masuk", body }));

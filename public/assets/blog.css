@@ -77,3 +77,4 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:24px}
 .cmf input,.cmf textarea{font:inherit;padding:11px 14px;border:1px solid var(--border);border-radius:12px;background:var(--surface);color:var(--text)}
 .cmf textarea{resize:vertical}
 .cmf .btn{justify-self:start}
+.cm-login{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;border:1px dashed var(--dash);border-radius:16px;padding:16px 18px;margin-top:16px}.cm-login span{color:var(--muted);flex:1 1 220px}
