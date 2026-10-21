@@ -6,10 +6,13 @@
   function paint() {
     var s = cfg[cur]; if (!s) return;
     $("chips").innerHTML = "";
-    Object.keys(cfg).forEach(function (k) {
+    var grp = s.kind === "metopen" ? ["metopen_paket", "metopen1", "metopen2", "metopen3", "metopen4"] : s.kind === "revisi" ? ["revisi_tugas", "revisi_diskusi", "revisi_metopen"] : ["tugas", "diskusi"];
+    grp.forEach(function (k) {
+      if (!cfg[k]) return;
       var b = document.createElement("button"); b.type = "button"; b.className = "btn"; b.textContent = cfg[k].label + " · " + rp(cfg[k].price);
       if (k !== cur) b.style.cssText = "background:transparent;border:1px solid currentColor"; b.onclick = function () { cur = k; paint(); }; $("chips").appendChild(b);
     });
+    document.querySelectorAll(".sub a").forEach(function (a) { var t = a.textContent.trim(), on = (t === "Tugas" && cur === "tugas") || (t === "Diskusi" && cur === "diskusi") || (t === "Metopen" && s.kind === "metopen") || (t === "Revisi" && s.kind === "revisi"); a.classList.toggle("on", on); });
     var rev = s.kind === "revisi"; $("pbox").style.display = rev ? "flex" : "none";
     $("blabel").textContent = rev ? "Masukan dari tutor" : "Kebutuhanmu";
     $("price").textContent = rev ? "Gratis 1x untuk hasil kami, atau " + rp(s.price) + " untuk revisi dari luar" : rp(s.price);
