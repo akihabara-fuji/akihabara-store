@@ -205,6 +205,7 @@ module.exports = function mount(ctx) {
     Object.assign(p, { title, topic, excerpt: str(b.excerpt, 260), body: String(b.body || "").slice(0, 60000), cover: img(b.cover), status, updatedAt: now });
     if (status === "published" && !p.publishedAt) p.publishedAt = now;
     await saveBlog(); res.json({ ok: true, post: p });
+    if (status === "published") pingIndex([p.slug]);
   });
   app.post("/ms/admin/posts/:id/trash", requireAdmin, async (req, res) => {
     const p = blog.posts.find(x => x.id === req.params.id); if (!p) return res.status(404).json({ error: "Tulisan tidak ditemukan." });
@@ -261,7 +262,7 @@ module.exports = function mount(ctx) {
 
   /* ============================ HALAMAN ============================ */
   const SOCIAL = () => (ctx.getSettings ? ctx.getSettings() : {}) || {};
-  function layout({ title, desc, path: pth, body, extra = "" }) {
+  function layout({ title, desc, path: pth, body, extra = "", image = "", type = "website", noindex = false }) {
     const st = SOCIAL();
     const brand = esc(st.brand || "nextaja");
     const canon = `${SITE}${pth}`;
@@ -273,7 +274,8 @@ module.exports = function mount(ctx) {
 <meta name="description" content="${esc(desc)}">
 <meta name="theme-color" content="#f6f3ff">
 <link rel="canonical" href="${esc(canon)}">
-<meta property="og:type" content="website"><meta property="og:site_name" content="${brand}"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${esc(canon)}">
+<meta name="robots" content="${noindex ? "noindex,follow" : "index,follow,max-image-preview:large,max-snippet:-1"}">
+<meta property="og:type" content="${type}"><meta property="og:locale" content="id_ID"><meta property="og:site_name" content="${brand}"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${esc(canon)}">${image ? `<meta property="og:image" content="${esc(image)}"><meta name="twitter:image" content="${esc(image)}">` : ""}<meta name="twitter:card" content="${image ? "summary_large_image" : "summary"}"><meta name="twitter:title" content="${esc(title)}"><meta name="twitter:description" content="${esc(desc)}"><link rel="alternate" type="application/rss+xml" title="${brand}" href="${SITE}/blog/feed.xml">
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Bricolage+Grotesque:wght@600;700&display=swap" rel="stylesheet">
@@ -309,7 +311,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
   }
 
   const PORTAL_IMG = { "": ["blog-berita", "Blog dan berita nextaja"], viral: ["blog-berita", "Blog dan berita nextaja"], updateut: ["jadwal-kalender", "Info UT: jadwal, registrasi, dan ujian"], study: ["materi-belajar", "Materi belajar dan tips kuliah"], ai: ["tools-ai", "Tools AI dan otomatisasi"], social: ["video-studio", "Konten dan social media"] };
-  const portalBanner = (key, w, h) => { const [n, alt] = PORTAL_IMG[key] || PORTAL_IMG[""]; return `<img class="pbanner" src="/assets/portal/${n}.webp" alt="${esc(alt)}" width="${w || 300}" height="${h || 233}" loading="lazy">`; };
+  const portalBanner = (key, w, h) => { const [n, alt] = PORTAL_IMG[key] || PORTAL_IMG[""]; return `<img class="pbanner" src="/site-img/portal/${n}.webp" alt="${esc(alt)}" width="${w || 300}" height="${h || 233}" loading="lazy">`; };
   const topicChip = (key, active) => `<a class="chip${active ? " on" : ""}" href="${key ? "/blog?f=" + key : "/blog"}">${key ? esc(TOPICS[key].label) : "Semua"}</a>`;
   const coverHtml = p => p.cover ? `<img src="${esc(p.cover)}" alt="" loading="lazy">` : `<span class="ph-t">${esc(tl(p.topic))}</span>`;
 
@@ -327,20 +329,42 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
     </div></section>`;
     res.set("Cache-Control", "no-cache").type("html").send(layout({ title: `${heading} — Blog nextaja`, desc: "Catatan tentang belajar, social media, AI, dan berita viral hari ini dari nextaja.", path: f ? `/blog?f=${f}` : "/blog", body }));
   });
+  /* Indeks cepat: IndexNow (Bing, Yandex, dll) dipanggil otomatis saat tulisan terbit, berubah, atau dihapus.
+     Google tidak punya jalur ping: Google menemukan tulisan lewat sitemap.xml yang selalu diperbarui (daftarkan sekali di Search Console). */
+  const KEYF = path.join(DATA_DIR, "indexnow.key");
+  let INK = ""; try { INK = fs.readFileSync(KEYF, "utf8").trim(); } catch {}
+  if (!/^[a-f0-9]{32}$/.test(INK)) { INK = crypto.randomBytes(16).toString("hex"); try { fs.writeFileSync(KEYF, INK); } catch {} }
+  app.get(/^\/([a-f0-9]{32})\.txt$/, (req, res, next) => (req.params[0] === INK ? res.type("text/plain").send(INK) : next()));
+  function pingIndex(slugs) {
+    if (!/^https:\/\//.test(SITE) || process.env.NODE_ENV === "test") return;
+    const urls = [...slugs.map(s => `${SITE}/blog/${s}`), `${SITE}/blog`];
+    fetch("https://api.indexnow.org/indexnow", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ host: new URL(SITE).host, key: INK, keyLocation: `${SITE}/${INK}.txt`, urlList: urls }), signal: AbortSignal.timeout(8000) })
+      .then(r => console.log("IndexNow", r.status, urls.length, "url")).catch(e => console.log("IndexNow gagal:", e.message));
+  }
+  app.get("/blog/feed.xml", (req, res) => {
+    const x = t => esc(t);
+    res.type("application/rss+xml").send(`<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0"><channel><title>nextaja blog</title><link>${SITE}/blog</link><description>Tips akademik, UT, dan layanan nextaja.</description><language>id-id</language>\n${published().slice(0, 30).map(p => `<item><title>${x(p.title)}</title><link>${SITE}/blog/${p.slug}</link><guid>${SITE}/blog/${p.slug}</guid><pubDate>${new Date(p.publishedAt).toUTCString()}</pubDate><description>${x(p.excerpt || p.title)}</description></item>`).join("\n")}\n</channel></rss>\n`);
+  });
+
   app.get("/blog/:slug", (req, res, next) => {
     const p = published().find(x => x.slug === req.params.slug);
     if (!p) return next();
-    const ld = JSON.stringify({ "@context": "https://schema.org", "@type": "BlogPosting", headline: p.title, datePublished: p.publishedAt, dateModified: p.updatedAt, description: p.excerpt, image: p.cover ? SITE + p.cover : undefined, author: { "@type": "Person", name: "Dika Priyadi" }, mainEntityOfPage: `${SITE}/blog/${p.slug}` }).replace(/</g, "\\u003c");
+    const plain = String(p.body || "").replace(/[#*_>`\[\]()!-]/g, " ").replace(/\s+/g, " ").trim();
+    const desc = p.excerpt || (plain.length > 155 ? plain.slice(0, 152).replace(/\s+\S*$/, "") + "…" : plain) || p.title;
+    const img = p.cover ? (/^https?:/.test(p.cover) ? p.cover : SITE + p.cover) : SITE + "/icon-512.png";
+    const url = `${SITE}/blog/${p.slug}`;
+    const ld = JSON.stringify([{ "@context": "https://schema.org", "@type": "BlogPosting", headline: p.title.slice(0, 110), datePublished: p.publishedAt, dateModified: p.updatedAt || p.publishedAt, description: desc, image: [img], inLanguage: "id-ID", wordCount: plain.split(" ").length, author: { "@type": "Person", name: "Dika Priyadi" }, publisher: { "@type": "Organization", name: "nextaja", logo: { "@type": "ImageObject", url: SITE + "/icon-512.png" } }, mainEntityOfPage: { "@type": "WebPage", "@id": url } },
+      { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Beranda", item: SITE + "/" }, { "@type": "ListItem", position: 2, name: "Blog", item: SITE + "/blog" }, { "@type": "ListItem", position: 3, name: p.title, item: url }] }]).replace(/</g, "\\u003c");
     const body = `<article class="pg art"><div class="wrap narrow">
       <a class="back" href="/blog?f=${esc(p.topic)}">← ${esc(tl(p.topic))}</a>
       <h1>${esc(p.title)}</h1>
       <div class="meta">${esc(fmtDate(p.publishedAt))} · Dika Priyadi</div>
-      ${p.cover ? `<img class="hero-img" src="${esc(p.cover)}" alt="">` : ""}
+      ${p.cover ? `<img class="hero-img" src="${esc(p.cover)}" alt="${esc(p.title)}">` : ""}
       <div class="prose">${renderBody(p.body)}</div>
       ${commentsBlock(p.slug)}
       <div class="cta-box"><b>Butuh bantuan?</b><span>Analisa akun, template IG, bantuan akademik, atau housekeeping.</span><a class="btn btn-pri btn-sm" href="/#analisa">Lihat layanan</a></div>
     </div></article>`;
-    res.set("Cache-Control", "no-cache").type("html").send(layout({ title: `${p.title} — nextaja`, desc: p.excerpt || p.title, path: `/blog/${p.slug}`, body, extra: `<script type="application/ld+json">${ld}</script>` }));
+    res.set("Cache-Control", "no-cache").type("html").send(layout({ title: `${p.title} — nextaja`, desc, path: `/blog/${p.slug}`, body, image: img, type: "article", extra: `<meta property="article:published_time" content="${esc(p.publishedAt)}"><meta property="article:modified_time" content="${esc(p.updatedAt || p.publishedAt)}"><script type="application/ld+json">${ld}</script>` }));
   });
 
 
@@ -453,9 +477,9 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
         <div><h2>Studio Konten <span class="soon">beta</span></h2>
         <p>Unggah foto, pilih gaya tipografi, atur teksnya, lalu unduh gambarnya. Ada juga ide hook dan kerangka caption. Semua diproses di browser kamu.</p>
         <a class="btn btn-pri" href="/ms/studio">Coba Studio Konten</a></div>
-        <img class="ls-img" src="/assets/portal/video-studio.webp" alt="Video Content Studio" width="311" height="233" loading="lazy">
+        <img class="ls-img" src="/site-img/portal/video-studio.webp" alt="Video Content Studio" width="311" height="233" loading="lazy">
       </div>
-      <div class="ls-hd" id="produk"><h2 class="ls-h">Preset &amp; Template</h2><img class="ls-img" src="/assets/portal/preset-template.webp" alt="Preset dan template" width="297" height="233" loading="lazy"></div>
+      <div class="ls-hd" id="produk"><h2 class="ls-h">Preset &amp; Template</h2><img class="ls-img" src="/site-img/portal/preset-template.webp" alt="Preset dan template" width="297" height="233" loading="lazy"></div>
       <div class="chips" id="lt" role="tablist"></div>
       <div class="grid" id="lp"><p class="small">Memuat produk…</p></div>
     </div></section>
@@ -625,5 +649,5 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
   });
 
   // untuk sitemap
-  return { userFrom, blogUrls: () => published().map(p => ({ loc: `${SITE}/blog/${p.slug}`, lastmod: (p.updatedAt || p.publishedAt || "").slice(0, 10), pri: "0.6" })) };
+  return { userFrom, pageUrls: () => ["/ruangakademikut", "/ruangakademikut/cek-parafrase-mandiri", "/ruangakademikut/audit", "/ruangakademikut/layanan"].map(u => ({ loc: `${SITE}${u}`, pri: "0.7" })), blogUrls: () => published().map(p => ({ loc: `${SITE}/blog/${p.slug}`, lastmod: (p.updatedAt || p.publishedAt || "").slice(0, 10), pri: "0.6" })) };
 };

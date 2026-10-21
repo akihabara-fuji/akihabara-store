@@ -9,6 +9,7 @@ const fs = require("fs");
 const { create } = require("./settings");
 const mountUploads = require("./uploads");
 const mountCards = require("./cards");
+const mountSiteImg = require("./siteimg");
 const mountPages = require("./pages");
 const mountAudit = require("./audit");
 const mountLayanan = require("./layanan");
@@ -45,6 +46,13 @@ module.exports = function mount(ctx) {
 
   mountPages({ app, express });
   mountCards({ app, root: ROOT, requireAdmin });
+  mountSiteImg({ app, root: ROOT, requireAdmin });
+  /* Verifikasi Google Search Console lewat berkas HTML: admin cukup menempel nama berkas di Pengaturan. */
+  app.get(/^\/(google[a-z0-9]{8,40}\.html)$/, (req, res) => {
+    const want = settings.get("google_verify_file");
+    if (!want || want !== req.params[0]) return res.status(404).end();
+    res.type("text/html").send("google-site-verification: " + want);
+  });
   const uploads = mountUploads({ app, db, settings, root: ROOT, sameOrigin: sameOrigin || (() => true), secret });
   const notifier = createNotifier({ db, settings });
   const orders = mountOrders({ app, express, db, settings, notifier, root: ROOT, sameOrigin: sameOrigin || (() => true), requireAdmin, secret });

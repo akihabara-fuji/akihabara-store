@@ -37,6 +37,7 @@ const DEFS = {
   price_pengarahan_semester:    { type: "int",  min: 0, max: 100000000, def: 99000, pub: true },
   price_pengarahan_lulus:       { type: "int",  min: 0, max: 100000000, def: 199000, pub: true },
   price_pengarahan_normal:      { type: "int",  min: 0, max: 100000000, def: 396000, pub: true },
+  google_verify_file:           { type: "str",  re: /^google[a-z0-9]{8,40}\.html$/, allowEmpty: true, def: "" },
   qris_image_path:              { type: "str",  re: /^[a-z0-9/_.-]{0,200}$/i, allowEmpty: true, def: "" },
 };
 const KEYS = Object.keys(DEFS);
