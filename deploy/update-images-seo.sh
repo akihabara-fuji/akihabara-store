@@ -19,6 +19,8 @@ curl -fsSL "$RAW/deploy/patch-landing-images.py" -o "$T/p.py"
 for f in $JS; do cp "$T/$f" "$D/$f"; done
 for f in $PG; do cp "$T/pages/$f" "$D/pages/$f"; done
 cp "$T/blog-akun.js" "$APP/blog-akun.js"
+mkdir -p "$APP/public/assets/portal"
+for n in blog-berita jadwal-kalender karir-lowongan materi-belajar metodologi preset-template registrasi ruang-akademik selamat-datang tentang tips-kuliah tools-ai tugas-diskusi ujian-ut video-studio; do [ -s "$APP/public/assets/portal/$n.webp" ] || curl -fsSL "$RAW/public/assets/portal/$n.webp" -o "$APP/public/assets/portal/$n.webp"; done
 python3 "$T/p.py" "$APP/public/index.html" "$APP/server.js"
 rm -rf "$T"
 pm2 restart nextaja --update-env >/dev/null
