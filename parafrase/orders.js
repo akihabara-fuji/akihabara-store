@@ -151,9 +151,10 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
       proofUploaded: !!o.proof_uploaded_at, rejectReason: o.status === "menunggu_bayar" ? o.reject_reason : null,
       paid: PAID.has(o.status), hasQris: !!cfg.qris_image_path, merchantName: cfg.qris_merchant_name,
       adminWa: cfg.admin_wa_number, paymentWindowMinutes: cfg.payment_window_minutes,
-      queue: ["baru_dibayar", "dianalisis", "dikerjakan"].includes(o.status) ? queue.info(db, o.id, cfg) : null,
+      queue: o.doc_type !== "layanan" && o.doc_type !== "audit" && ["baru_dibayar", "dianalisis", "dikerjakan"].includes(o.status) ? queue.info(db, o.id, cfg) : null,
       resultReady: o.status === "terkirim" && !!o.result_path && !o.files_deleted_at && (!o.delete_at || o.delete_at > now),
       resultName: o.result_name || null, deleteAt: o.delete_at || null, filesDeleted: !!o.files_deleted_at,
+      service: o.service || null, resultText: o.doc_type === "layanan" && o.status === "terkirim" && !o.files_deleted_at && (!o.delete_at || o.delete_at > now) ? o.result_text || null : null,
       docType: o.doc_type, auditReady: o.doc_type === "audit" && PAID.has(o.status) && !o.files_deleted_at && (!o.delete_at || o.delete_at > now),
     };
   };
@@ -242,10 +243,11 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
   }
 
   /* Pesanan yang tidak dibayar sampai batas waktu: kedaluwarsa, slot jalur cepat dilepas, dokumen dihapus. */
+  async function dropAttach(json) { try { for (const a of JSON.parse(json || "[]")) { try { await fsp.unlink(priv(a.path)); } catch {} } } catch {} }
   async function expireUnpaid(now = Date.now()) {
     // Bukti yang tidak pernah diverifikasi lebih dari 7 hari juga dilepas agar tidak menggantung selamanya.
     db.prepare("UPDATE orders SET pay_expires_at=?, status='menunggu_bayar' WHERE status='menunggu_verifikasi' AND proof_uploaded_at<?").run(now - 1, now - 7 * 86400e3);
-    const rows = db.prepare("SELECT id, original_file, proof_path FROM orders WHERE status='menunggu_bayar' AND pay_expires_at<?").all(now);
+    const rows = db.prepare("SELECT id, original_file, proof_path, attach_json FROM orders WHERE status='menunggu_bayar' AND pay_expires_at<?").all(now);
     for (const r of rows) {
       db.transaction(() => {
         db.prepare("UPDATE orders SET status='kedaluwarsa', updated_at=? WHERE id=?").run(now, r.id);
@@ -254,6 +256,8 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
         notifier.send("kedaluwarsa", db.prepare("SELECT * FROM orders WHERE id=?").get(r.id), now);
       })();
       for (const f of [r.original_file, r.proof_path]) if (f) { try { await fsp.unlink(priv(f)); } catch {} }
+      await dropAttach(r.attach_json);
+      db.prepare("UPDATE orders SET brief=NULL, attach_json=NULL WHERE id=?").run(r.id);
       db.prepare("DELETE FROM uploads WHERE order_id=?").run(r.id);
     }
     return rows.length;
@@ -322,7 +326,7 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
       const buf = await fsp.readFile(priv(o.result_path));
       const name = (o.result_name || o.id + ".docx").replace(/[^\w.\- ()]/g, "_");
       res.set({ "Cache-Control": "no-store", "Content-Disposition": `attachment; filename="${name}"`, "X-Content-Type-Options": "nosniff" })
-        .type("application/vnd.openxmlformats-officedocument.wordprocessingml.document").send(buf);
+        .type(/\.pdf$/i.test(name) ? "application/pdf" : "application/vnd.openxmlformats-officedocument.wordprocessingml.document").send(buf);
       event(o.id, "diunduh", null, now);
     } catch { res.status(410).json({ error: "File hasil tidak tersedia." }); }
   });
@@ -361,6 +365,8 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
     for (const o of db.prepare("SELECT * FROM orders WHERE status='terkirim' AND delete_at IS NOT NULL AND files_deleted_at IS NULL").all()) {
       if (o.delete_at <= now) {
         for (const f of [o.original_file, o.result_path, o.revised_path, o.proof_path]) if (f) { try { await fsp.unlink(priv(f)); } catch {} }
+        await dropAttach(o.attach_json);
+        db.prepare("UPDATE orders SET result_text=NULL, brief=NULL, attach_json=NULL WHERE id=?").run(o.id);
         db.prepare("UPDATE orders SET files_deleted_at=?, updated_at=? WHERE id=?").run(now, now, o.id);
         db.prepare("DELETE FROM uploads WHERE order_id=?").run(o.id);
         db.prepare("UPDATE findings SET text='' WHERE order_id=?").run(o.id);

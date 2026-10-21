@@ -134,6 +134,13 @@ const MIGRATIONS = [
   );
   CREATE INDEX wa_outbox_status ON wa_outbox(status, created_at);
   `,
+  /* 4: layanan (Tugas, Diskusi, Metopen, Revisi) memakai tabel pesanan yang sama */
+  `
+  ALTER TABLE orders ADD COLUMN service TEXT;
+  ALTER TABLE orders ADD COLUMN brief TEXT;
+  ALTER TABLE orders ADD COLUMN attach_json TEXT;
+  ALTER TABLE orders ADD COLUMN result_text TEXT;
+  `,
 ];
 
 

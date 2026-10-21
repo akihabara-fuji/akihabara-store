@@ -41,15 +41,21 @@
     else if (o.status === "menunggu_verifikasi") box("b-warn", "<strong>Bukti bayar diterima, menunggu verifikasi admin.</strong><br>Halaman ini diperbarui otomatis. Kamu juga bisa menutupnya dan kembali lewat tautan ini.");
     else if (o.status === "terkirim") {
       if (o.docType === "audit") { if (o.auditReady) box("b-ok", "<strong>Pembayaran terkonfirmasi. Hasil Audit Lengkap sudah terbuka.</strong><br><a class=\"btn\" style=\"margin-top:10px\" href=\"/ruangakademikut/audit/hasil/" + token + "\">Buka hasil audit</a><br>File dihapus otomatis pada " + dt(o.deleteAt) + "."); else box("b-bad", "<strong>File sudah dihapus.</strong><br>Sesuai ketentuan, file dihapus setelah masa simpan berakhir. Hubungi admin jika perlu bantuan."); }
+      else if (o.service) box("b-ok", "<strong>Pesanan selesai.</strong><br>" + (o.resultReady ? "Unduh hasilmu di bawah. " : "") + (o.resultText ? "Teks hasil ada di bawah, tinggal salin. " : "") + "Semua file dihapus otomatis pada " + dt(o.deleteAt) + ". Simpan sebelum itu. Free revisi 1x lewat menu Layanan.");
       else if (o.resultReady) box("b-ok", "<strong>Pesanan selesai.</strong><br>Unduh hasil Word-mu di bawah. File dihapus otomatis pada " + dt(o.deleteAt) + ". Unduh sebelum itu.");
       else box("b-bad", "<strong>File sudah dihapus.</strong><br>Sesuai ketentuan, file dihapus " + "setelah masa unduh berakhir. Hubungi admin jika perlu bantuan.");
     }
+    else if (o.paid && o.service) box("b-ok", "<strong>" + (o.status === "dikerjakan" ? "Pesananmu sedang dikerjakan admin." : "Pembayaran terkonfirmasi, pesananmu masuk antrean admin.") + "</strong><br>Hasil muncul di halaman ini dan dikabari lewat WhatsApp.");
     else if (o.paid) { var q = o.queue; box("b-ok", "<strong>" + (o.status === "dikerjakan" ? "Pesananmu sedang dikerjakan." : "Pembayaran terkonfirmasi, pesananmu dalam antrean.") + "</strong>" + (q ? "<br>Posisi antrean: <strong>" + q.position + "</strong> dari " + q.total + (q.ahead ? " (" + q.ahead + " pesanan di depan)" : "") + ". Perkiraan sekitar " + q.etaHours + " jam, ini perkiraan, bukan jaminan." + (o.lane === "cepat" ? " Jalur cepat aktif." : "") : "") + "<br>Hasil dikirim ke WhatsApp setelah selesai."); }
     else box("b-info", "<strong>Status: " + esc(o.status) + "</strong>");
     if (pay || o.status === "menunggu_verifikasi") fillPay();
     $("dlv").classList.toggle("hidden", !o.resultReady);
     if (o.resultReady) { $("dla").href = "/ms/parafrase/order/" + token + "/result"; $("dlname").textContent = o.resultName || "Hasil.docx"; }
-    var showDoc = o.paid && !o.filesDeleted && o.docType !== "audit";
+    var rt = $("rtext");
+    if (!rt) { rt = document.createElement("div"); rt.id = "rtext"; rt.className = "hidden"; rt.style.cssText = "margin:16px 0"; rt.innerHTML = '<pre id="rtpre" style="white-space:pre-wrap;padding:14px;border:1px solid currentColor;border-radius:12px;margin:0 0 8px"></pre><button class="btn" id="rtcopy" type="button">Salin</button>'; $("ord").appendChild(rt);
+      $("rtcopy").onclick = function () { var b = this, t = $("rtpre").textContent; (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).catch(function () { var a = document.createElement("textarea"); a.value = t; document.body.appendChild(a); a.select(); try { document.execCommand("copy"); } catch (e) {} a.remove(); }).then(function () { b.textContent = "Tersalin"; setTimeout(function () { b.textContent = "Salin"; }, 1500); }); }; }
+    $("rtpre").textContent = o.resultText || ""; rt.classList.toggle("hidden", !o.resultText);
+    var showDoc = o.paid && !o.filesDeleted && o.docType !== "audit" && !o.service;
     $("docv").classList.toggle("hidden", !showDoc); $("docv").style.display = showDoc ? "flex" : "none";
     if (showDoc && previewFor !== o.status) { previewFor = o.status; loadDoc(); }
     clearInterval(timer); timer = setInterval(function () { if (pay) tick(); }, 1000);
@@ -60,7 +66,7 @@
     $("amt").textContent = rp(o.total);
     $("amtd").textContent = rp(o.baseTotal + o.fastPrice) + " + kode unik " + rp(o.uniqueCode) + ". Kode unik membantu kami mencocokkan pembayaranmu, jadi bayar PERSIS nominal ini.";
     $("mname").textContent = o.merchantName || "NextAja";
-    $("s1").textContent = (o.docType === "audit" ? "Audit Lengkap " : "Revisi ") + Number(o.words).toLocaleString("id-ID") + " kata × " + rp(o.pricePerWord); $("s1v").textContent = rp(o.baseTotal);
+    $("s1").textContent = (o.service ? "Layanan akademik" : (o.docType === "audit" ? "Audit Lengkap " : "Revisi ") + Number(o.words).toLocaleString("id-ID") + " kata × " + rp(o.pricePerWord)); $("s1v").textContent = rp(o.baseTotal);
     $("s2").textContent = o.lane === "cepat" ? "+" + rp(o.fastPrice) : "tidak dipilih"; $("s3").textContent = rp(o.uniqueCode); $("s4").textContent = dt(o.deadlineAt);
     var up = o.status === "menunggu_verifikasi"; $("pb").textContent = up ? "Ganti foto bukti" : "Pilih foto";
     $("cd").classList.toggle("hidden", up); tick();

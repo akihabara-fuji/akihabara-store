@@ -308,6 +308,7 @@ app.post("/ms/parafrase/upload", needLogin);
 app.post("/ms/parafrase/order", needLogin);
 app.post("/ms/audit/upload", needLogin);
 app.post("/ms/audit/order", needLogin);
+app.post("/ms/layanan/order", needLogin);
 require("./parafrase")({ app, express, requireAdmin, sameOrigin, ROOT });
 
 app.use("/admin", express.static(path.join(ROOT, "admin"), { index: "index.html" }));

@@ -11,6 +11,7 @@ const mountUploads = require("./uploads");
 const mountCards = require("./cards");
 const mountPages = require("./pages");
 const mountAudit = require("./audit");
+const mountLayanan = require("./layanan");
 const mountOrders = require("./orders");
 const createNotifier = require("./notify");
 
@@ -48,6 +49,7 @@ module.exports = function mount(ctx) {
   const notifier = createNotifier({ db, settings });
   const orders = mountOrders({ app, express, db, settings, notifier, root: ROOT, sameOrigin: sameOrigin || (() => true), requireAdmin, secret });
   mountAudit({ app, express, db, orders, root: ROOT, sameOrigin: sameOrigin || (() => true), secret });
+  mountLayanan({ app, express, db, settings, orders, root: ROOT, sameOrigin: sameOrigin || (() => true), secret, requireAdmin });
   const t = setInterval(() => { uploads.purgeExpired().catch(() => {}); orders.expireUnpaid().catch(() => {}); orders.sweepRetention().catch(() => {}); }, 10 * 60 * 1000); t.unref();
   const t2 = setInterval(() => notifier.flush().catch(() => {}), 30 * 1000); t2.unref();
 
