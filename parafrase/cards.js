@@ -6,7 +6,7 @@ const path = require("path");
 const multer = require("multer");
 const sharp = require("sharp");
 
-const SLUGS = ["cek", "semester", "metopen", "tugas", "diskusi", "makalah", "info"];
+const SLUGS = ["tugas", "diskusi", "metopen", "audit", "revisi", "pengarahan", "cek", "semester", "info"];
 const MAX = 5 * 1024 * 1024;
 
 module.exports = function mountCards({ app, root, requireAdmin }) {
@@ -14,12 +14,12 @@ module.exports = function mountCards({ app, root, requireAdmin }) {
   fs.mkdirSync(dir, { recursive: true });
   const file = slug => path.join(dir, slug + ".webp");
   // gambar bawaan bila admin belum mengunggah; unggahan admin selalu menang
-  const DEFAULTS = { cek: "ruang-akademik", semester: "tips-kuliah", metopen: "metodologi", tugas: "tugas-diskusi", diskusi: "tugas-diskusi", makalah: "materi-belajar", info: "jadwal-kalender" };
+  const DEFAULTS = { cek: "ruang-akademik", semester: "tips-kuliah", metopen: "metodologi", tugas: "tugas-diskusi", diskusi: "tugas-diskusi", audit: "preset-template", revisi: "materi-belajar", pengarahan: "registrasi", info: "jadwal-kalender" };
 
   app.get("/ruangakademikut/img/:name", (req, res) => {
     const m = /^([a-z]+)\.webp$/.exec(String(req.params.name));
     if (!m || !SLUGS.includes(m[1])) return res.status(404).end();
-    res.set({ "Cache-Control": "public, max-age=300", "X-Content-Type-Options": "nosniff" });
+    res.set({ "Cache-Control": "no-cache", "X-Content-Type-Options": "nosniff" });
     res.sendFile(file(m[1]), err => {
       if (!err || res.headersSent) return;
       const d = DEFAULTS[m[1]];

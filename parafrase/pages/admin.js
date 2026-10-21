@@ -19,8 +19,11 @@
   }
   function dt(ms) { return ms ? new Date(ms).toLocaleString("id-ID", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "-"; }
   var STAT = { menunggu_bayar: "Menunggu bayar", menunggu_verifikasi: "Menunggu verifikasi", baru_dibayar: "Baru dibayar", dikerjakan: "Dikerjakan", cek_ulang: "Cek ulang", terkirim: "Terkirim", kedaluwarsa: "Kedaluwarsa" };
-  var TABS = [["queue", "Antrean"], ["verif", "Verifikasi bayar"], ["all", "Semua pesanan"], ["set", "Pengaturan & QRIS"], ["wa", "Pesan WhatsApp"], ["img", "Gambar kartu"]];
-  var cur = "queue";
+  var TABS = [["verif", "Verifikasi bayar"], ["lay", "Tugas, Diskusi, Metopen, Revisi"], ["queue", "Cek & Parafrase"], ["audit", "Audit Dokumen"], ["all", "Semua pesanan"], ["set", "QRIS & Pengaturan"], ["img", "Gambar kartu"], ["wa", "Pesan WhatsApp"]];
+  var cur = "verif";
+  var EMBED = /[?&]embed=1/.test(location.search);
+  if (EMBED) document.documentElement.classList.add("embed");
+  var TYPE = { layanan: "Layanan", audit: "Audit", umum: "Cek & Parafrase", metopen: "Cek & Parafrase", artikel: "Cek & Parafrase" };
 
   function showLogin() { $("app").classList.add("hidden"); $("login").classList.remove("hidden"); }
   $("lgo").onclick = function () {
@@ -38,7 +41,7 @@
   function go(t) {
     cur = t; TABS.forEach(function (x) { $("t-" + x[0]).classList.toggle("hidden", x[0] !== t); });
     [].forEach.call($("tabs").children, function (b) { b.classList.toggle("on", b.getAttribute("data-t") === t); });
-    ({ queue: renderQueue, verif: renderVerif, all: renderAll, set: renderSettings, wa: renderWa, img: renderImg })[t]();
+    ({ queue: renderQueue, verif: renderVerif, all: renderAll, audit: renderAuditList, lay: renderLay, set: renderSettings, wa: renderWa, img: renderImg })[t]();
   }
   function waLink(o, text) { return "https://wa.me/" + o.wa + (text ? "?text=" + encodeURIComponent(text) : ""); }
 
@@ -78,7 +81,7 @@
     rows.forEach(function (o) {
       tb.appendChild(h("tr", {}, [
         withPos ? h("td", {}, o.position) : null,
-        h("td", {}, [h("b", {}, o.orderId), h("div", { class: "muted" }, o.title || "-"), h("div", { class: "muted" }, "+" + o.wa + " · " + rp(o.total))].filter(Boolean)),
+        h("td", {}, [h("b", {}, o.orderId), h("div", { class: "muted" }, (TYPE[o.docType] || "Pesanan") + " · " + (o.title || "-")), h("div", { class: "muted" }, "+" + o.wa + " · " + rp(o.total))].filter(Boolean)),
         h("td", {}, Number(o.words).toLocaleString("id-ID")),
         h("td", {}, [h("span", { class: "st" }, STAT[o.status] || o.status), o.lane === "cepat" ? h("span", { class: "st cepat", style: "margin-left:4px" }, "CEPAT") : null].filter(Boolean)),
         h("td", {}, dt(o.deadlineAt)),
@@ -93,7 +96,7 @@
     var s = $("t-queue"); s.textContent = "Memuat…";
     api("/ms/admin/parafrase/queue").then(function (j) {
       s.textContent = ""; s.appendChild(h("p", { class: "muted" }, "Urutan: Dikerjakan tidak tergeser, lalu jalur cepat, lalu biasa. Dalam jalur yang sama mengikuti waktu bukti bayar diunggah. Deadline tidak memengaruhi urutan. Kecepatan rata-rata untuk perkiraan: " + j.avgWordsPerHour + " kata/jam."));
-      s.appendChild(orderTable(j.queue, true));
+      s.appendChild(orderTable(j.queue.filter(function (o) { return o.docType !== "layanan" && o.docType !== "audit"; }), true));
     }).catch(function (e) { s.textContent = e.message; });
   }
   function renderVerif() {
@@ -105,7 +108,7 @@
         s.appendChild(h("div", { class: "card", style: "margin-bottom:14px;display:flex;flex-wrap:wrap;gap:18px" }, [
           h("div", {}, o.hasProof ? h("img", { class: "proof", alt: "Bukti bayar " + o.orderId, src: "/ms/admin/parafrase/orders/" + o.orderId + "/proof?t=" + (o.proofAt || 0) }) : h("div", { class: "muted" }, "Tidak ada foto")),
           h("div", { style: "flex:1 1 260px;display:flex;flex-direction:column;gap:8px" }, [
-            h("b", {}, o.orderId + " · " + (o.title || "-")), h("div", {}, "Nominal HARUS persis: " + rp(o.total) + " (kode unik " + o.uniqueCode + ")"),
+            h("b", {}, o.orderId + " · " + (TYPE[o.docType] || "Pesanan") + " · " + (o.title || "-")), h("div", {}, "Nominal HARUS persis: " + rp(o.total) + " (kode unik " + o.uniqueCode + ")"),
             h("div", { class: "muted" }, "Bukti diunggah " + dt(o.proofAt) + " · " + (o.lane === "cepat" ? "JALUR CEPAT" : "biasa") + " · deadline " + dt(o.deadlineAt)), reason,
             h("div", { class: "act" }, [
               h("button", { type: "button", class: "btn g", on: { click: function () { api("/ms/admin/parafrase/orders/" + o.orderId + "/confirm", { json: {} }).then(function () { toast("Dikonfirmasi " + o.orderId); renderVerif(); }).catch(function (e) { toast(e.message); }); } } }, "Konfirmasi"),
@@ -118,6 +121,28 @@
     var s = $("t-all"); s.textContent = "Memuat…";
     api("/ms/admin/parafrase/orders").then(function (j) { s.textContent = ""; s.appendChild(orderTable(j.orders, false)); }).catch(function (e) { s.textContent = e.message; });
   }
+
+  function renderAuditList() {
+    var s = $("t-audit"); s.textContent = "Memuat…";
+    api("/ms/admin/parafrase/orders").then(function (j) {
+      s.textContent = ""; s.appendChild(h("p", { class: "muted" }, "Audit Dokumen berjalan otomatis (tanpa AI). Pembayaran dikonfirmasi di tab Verifikasi bayar; hasil langsung terbuka untuk pelanggan setelah lunas."));
+      s.appendChild(orderTable(j.orders.filter(function (o) { return o.docType === "audit"; }), false));
+    }).catch(function (e) { s.textContent = e.message; });
+  }
+  function renderLay() {
+    var s = $("t-lay"); if (s.firstChild) return;
+    s.appendChild(h("iframe", { src: "/admin/layanan?embed=1", title: "Pesanan Tugas, Diskusi, Metopen, Revisi", style: "width:100%;height:80vh;border:0;border-radius:12px;background:transparent" }));
+  }
+  /* kecilkan foto HP sebelum upload supaya tidak mentok batas ukuran server */
+  function shrink(file, max) {
+    if (!/^image\/(jpeg|png|webp)$/.test(file.type) || file.size < 1.5 * 1024 * 1024 || !window.createImageBitmap) return Promise.resolve(file);
+    return createImageBitmap(file).then(function (b) {
+      var k = Math.min(1, max / Math.max(b.width, b.height)), c = document.createElement("canvas"); c.width = Math.round(b.width * k); c.height = Math.round(b.height * k);
+      c.getContext("2d").drawImage(b, 0, 0, c.width, c.height);
+      return new Promise(function (ok) { c.toBlob(function (bl) { ok(bl && bl.size < file.size ? new File([bl], "foto.jpg", { type: "image/jpeg" }) : file); }, "image/jpeg", 0.9); });
+    }).catch(function () { return file; });
+  }
+  function upErr(e) { toast(/Failed to fetch|NetworkError|413/.test(e.message) ? "Foto terlalu besar atau koneksi putus. Coba foto yang lebih kecil." : e.message); }
 
   var LABEL = { price_per_word: "Harga per kata (Rp)", min_order_price: "Harga minimum (Rp)", fast_lane_enabled: "Jalur cepat aktif", fast_lane_price: "Biaya jalur cepat (Rp)", fast_lane_daily_cap: "Kuota jalur cepat per hari", revision_free_count: "Jumlah revisi gratis", revision_price_per_word: "Harga revisi berikutnya per kata (Rp)", file_max_mb: "Ukuran file maks (MB)", retention_hours: "File dihapus setelah (jam)", reminder_before_delete_hours: "Pengingat sebelum dihapus (jam)", long_sentence_words: "Kalimat panjang mulai (kata)", preview_open_sentences: "Kalimat contoh terbuka", avg_words_per_hour: "Kecepatan rata-rata (kata/jam)", unique_code_enabled: "Kode unik aktif", unique_code_max: "Kode unik maksimum", payment_window_minutes: "Batas waktu bayar (menit)", admin_wa_number: "WhatsApp admin (62…)", update_group_url: "Tautan grup Ruang Akademik UT", qris_merchant_name: "Nama penerima QRIS" };
   function renderSettings() {
@@ -139,24 +164,24 @@
         api("/ms/admin/parafrase/settings", { method: "PUT", json: { values: v } }).then(function () { toast("Tersimpan"); renderSettings(); }).catch(function (e) { toast(e.message); });
       } } }, "Simpan pengaturan")));
       var q = h("input", { type: "file", accept: "image/png,image/jpeg", class: "hidden" });
-      q.addEventListener("change", function () { if (!q.files[0]) return; var fd = new FormData(); fd.append("qris", q.files[0]); api("/ms/admin/parafrase/qris", { method: "POST", body: fd }).then(function () { toast("QRIS dipasang"); renderSettings(); }).catch(function (e) { toast(e.message); }); });
+      q.addEventListener("change", function () { var f0 = q.files[0]; if (!f0) return; toast("Mengunggah QRIS…"); shrink(f0, 1600).then(function (f1) { var fd = new FormData(); fd.append("qris", f1); return api("/ms/admin/parafrase/qris", { method: "POST", body: fd }); }).then(function () { toast("QRIS dipasang"); renderSettings(); }).catch(upErr); });
       s.appendChild(h("div", { class: "card", style: "margin-top:18px;display:flex;flex-wrap:wrap;gap:16px;align-items:center" }, [
         j.values.qris_image_path ? h("img", { class: "proof", alt: "QRIS saat ini", src: "/ms/parafrase/qris?t=" + Date.now() }) : h("div", { class: "muted" }, "QRIS belum dipasang."),
-        h("div", {}, [h("b", {}, "Foto QRIS"), h("div", { class: "muted" }, "JPG atau PNG, maks 5 MB. Dipakai di halaman bayar murid."), q, h("button", { class: "btn o", type: "button", style: "margin-top:8px", on: { click: function () { q.click(); } } }, "Unggah foto QRIS")])]));
+        h("div", {}, [h("b", {}, "Foto QRIS"), h("div", { class: "muted" }, "JPG atau PNG. Foto besar dikecilkan otomatis. Dipakai di halaman bayar semua layanan."), q, h("button", { class: "btn o", type: "button", style: "margin-top:8px", on: { click: function () { q.click(); } } }, "Unggah foto QRIS")])]));
       var lg = h("div", { class: "card", style: "margin-top:18px" }, [h("b", {}, "Riwayat perubahan")]);
       j.log.slice(0, 15).forEach(function (l) { lg.appendChild(h("div", { class: "muted" }, dt(l.at) + " · " + (LABEL[l.key] || l.key) + ": " + l.old_value + " → " + l.new_value)); });
       s.appendChild(lg);
     }).catch(function (e) { s.textContent = e.message; });
   }
-  var CARDNAME = { cek: "Cek dan Parafrase Mandiri", semester: "Paket Semester Lengkap", metopen: "Paket Metopen", tugas: "Tugas", diskusi: "Diskusi", makalah: "Makalah", info: "Info UT (menuju blog)" };
+  var CARDNAME = { tugas: "Tugas", diskusi: "Diskusi", metopen: "Metopen", audit: "Audit Dokumen", revisi: "Revisi", pengarahan: "Pengarahan Intensif", cek: "Cek dan Parafrase Mandiri", semester: "Paket Semester", info: "Info UT (menuju blog)" };
   function renderImg() {
     var s = $("t-img"); s.textContent = "Memuat…";
     api("/ms/admin/parafrase/card-images").then(function (j) {
-      s.textContent = ""; s.appendChild(h("p", { class: "muted" }, "Gambar tampil di bagian atas kartu layanan di Ruang Akademik UT. JPG, PNG, atau WebP, maks 5 MB; dipotong otomatis ke rasio 4:3. Tanpa gambar, kartu tampil polos."));
+      s.textContent = ""; s.appendChild(h("p", { class: "muted" }, "Gambar tampil di bagian atas kartu layanan di Ruang Akademik UT. JPG, PNG, atau WebP; dikecilkan dan dipotong otomatis ke rasio 4:3. Tanpa gambar, kartu tampil polos."));
       var g = h("div", { class: "grid" }); s.appendChild(g);
       j.slugs.forEach(function (x) {
         var f = h("input", { type: "file", accept: "image/png,image/jpeg,image/webp", class: "hidden" });
-        f.addEventListener("change", function () { if (!f.files[0]) return; var fd = new FormData(); fd.append("img", f.files[0]); api("/ms/admin/parafrase/card-images/" + x.slug, { method: "POST", body: fd }).then(function () { toast("Gambar dipasang"); renderImg(); }).catch(function (e) { toast(e.message); }); });
+        f.addEventListener("change", function () { var f0 = f.files[0]; if (!f0) return; toast("Mengunggah…"); shrink(f0, 1600).then(function (f1) { var fd = new FormData(); fd.append("img", f1); return api("/ms/admin/parafrase/card-images/" + x.slug, { method: "POST", body: fd }); }).then(function () { toast("Gambar dipasang"); renderImg(); }).catch(upErr); });
         g.appendChild(h("div", { class: "card", style: "display:flex;flex-direction:column;gap:10px" }, [
           h("b", {}, CARDNAME[x.slug] || x.slug),
           x.has ? h("img", { class: "proof", alt: "", src: "/ruangakademikut/img/" + x.slug + ".webp?t=" + Date.now(), style: "max-width:100%" }) : h("div", { class: "muted" }, "Belum ada gambar."),
