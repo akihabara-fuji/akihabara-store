@@ -10,6 +10,7 @@ const { create } = require("./settings");
 const mountUploads = require("./uploads");
 const mountCards = require("./cards");
 const mountPages = require("./pages");
+const mountAudit = require("./audit");
 const mountOrders = require("./orders");
 const createNotifier = require("./notify");
 
@@ -43,6 +44,7 @@ module.exports = function mount(ctx) {
 
   mountPages({ app, express });
   mountCards({ app, root: ROOT, requireAdmin });
+  mountAudit({ app, sameOrigin: sameOrigin || (() => true), secret });
   const uploads = mountUploads({ app, db, settings, root: ROOT, sameOrigin: sameOrigin || (() => true), secret });
   const notifier = createNotifier({ db, settings });
   const orders = mountOrders({ app, express, db, settings, notifier, root: ROOT, sameOrigin: sameOrigin || (() => true), requireAdmin, secret });

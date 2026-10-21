@@ -306,6 +306,7 @@ const extra = require("./blog-akun")({ app, express, requireAdmin, sameOrigin, g
 const needLogin = (req, res, next) => (extra.userFrom(req) ? next() : res.status(401).json({ error: "Masuk dulu untuk mencoba fitur ini.", login: true }));
 app.post("/ms/parafrase/upload", needLogin);
 app.post("/ms/parafrase/order", needLogin);
+app.post("/ms/audit/upload", needLogin);
 require("./parafrase")({ app, express, requireAdmin, sameOrigin, ROOT });
 
 app.use("/admin", express.static(path.join(ROOT, "admin"), { index: "index.html" }));
