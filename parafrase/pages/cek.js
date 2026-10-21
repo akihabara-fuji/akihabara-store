@@ -20,6 +20,7 @@
   ["dragenter", "dragover"].forEach(function (t) { drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.add("over"); }); });
   ["dragleave", "drop"].forEach(function (t) { drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.remove("over"); }); });
   drop.addEventListener("drop", function (e) { var f = e.dataTransfer.files[0]; if (f) send(f); });
+  ["goform", "goform2"].forEach(function (id) { $(id).onclick = function () { var d = $("detail"); d.scrollIntoView({ behavior: "smooth", block: "start" }); var w = $("judul"); setTimeout(function () { try { w.focus({ preventScroll: true }); } catch (e) {} }, 500); }; });
   $("again").onclick = function () { st.up = null; $("s2").classList.add("hidden"); $("s1").classList.remove("hidden"); showErr(""); };
 
   function send(f) {

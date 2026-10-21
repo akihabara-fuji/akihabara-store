@@ -47,15 +47,16 @@
         <p style="margin:0;color:var(--muted);line-height:1.55">Sorotan warna menunjukkan bagian yang akan kami kerjakan. Isi catatan dibuka setelah pembayaran.</p>
         <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px">
           <div><div id="fname" style="font-size:16px;font-weight:700;overflow-wrap:anywhere"></div><div id="fmeta" class="muted" style="margin-top:2px"></div></div>
-          <button type="button" class="btn ghost" id="again">Ganti file</button>
+          <div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn ghost" id="again">Ganti file</button><button type="button" class="btn" id="goform">Lanjut isi data dan bayar ↓</button></div>
         </div>
         <div class="chips" id="chips"></div>
-        <div class="doc" id="doc" aria-label="Pratinjau dokumen"></div>
+        <div class="doc" id="doc" aria-label="Pratinjau dokumen" style="max-height:min(52vh,420px);overflow-y:auto;line-height:1.7;font-size:15px;padding:16px"></div>
         <div class="pager"><button class="btn ghost" id="prev" type="button">Sebelumnya</button><span id="pg"></span><button class="btn ghost" id="next" type="button">Berikutnya</button></div>
+        <button type="button" class="btn" id="goform2">Lanjut isi data dan bayar ↓</button>
         <div class="muted">Satu contoh dibuka agar kamu tahu bentuk catatannya. Sisanya tersamar dari server, bukan sekadar efek tampilan, jadi teks aslinya tidak ikut terkirim sebelum pembayaran.</div>
       </div>
 
-      <div class="card" style="display:flex;flex-direction:column;gap:16px">
+      <div class="card" id="detail" style="display:flex;flex-direction:column;gap:16px;scroll-margin-top:90px">
         <div style="font-size:16px;font-weight:700">Detail dokumen <span style="font-size:12px;font-weight:600;color:var(--link);margin-left:6px">Terdeteksi otomatis, ubah jika salah</span></div>
         <div class="row">
           <div class="fld" style="flex:2 1 300px"><label for="judul">Judul dokumen</label><input id="judul" type="text" maxlength="200"></div>
