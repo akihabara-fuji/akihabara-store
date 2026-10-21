@@ -12,10 +12,11 @@ module.exports = function mountPages({ app, express }) {
     next();
   });
   const SITE = (process.env.SITE_URL || "https://nextaja.com").replace(/\/+$/, "");
+  const TRACK = new Set(["hub.html", "cek.html", "audit.html", "layanan.html", "blog-ut.html"]); // halaman pesanan dan hasil memuat token rahasia: tidak dilacak
   const page = file => (req, res) => {
     fs.readFile(path.join(dir, file), "utf8", (err, html) => {
       if (err) return res.status(500).type("text").send("Halaman tidak tersedia.");
-      res.set("Cache-Control", "no-cache").type("html").send(html.replaceAll("{{SITE}}", SITE));
+      res.set("Cache-Control", "no-cache").type("html").send((TRACK.has(file) ? html.replace("</head>", '<script async src="/t.js"></script></head>') : html).replaceAll("{{SITE}}", SITE));
     });
   };
   app.get(["/ruangakademikut", "/ruangakademikut/"], page("hub.html"));

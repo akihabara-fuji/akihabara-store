@@ -37,6 +37,8 @@ const DEFS = {
   price_pengarahan_semester:    { type: "int",  min: 0, max: 100000000, def: 99000, pub: true },
   price_pengarahan_lulus:       { type: "int",  min: 0, max: 100000000, def: 199000, pub: true },
   price_pengarahan_normal:      { type: "int",  min: 0, max: 100000000, def: 396000, pub: true },
+  ga_id:                        { type: "str",  re: /^G-[A-Z0-9]{6,14}$/, allowEmpty: true, def: "G-LM2GBRG1YX", pub: true },
+  gtm_id:                       { type: "str",  re: /^GTM-[A-Z0-9]{4,10}$/, allowEmpty: true, def: "", pub: true },
   google_verify_file:           { type: "str",  re: /^google[a-z0-9]{8,40}\.html$/, allowEmpty: true, def: "" },
   qris_image_path:              { type: "str",  re: /^[a-z0-9/_.-]{0,200}$/i, allowEmpty: true, def: "" },
 };
