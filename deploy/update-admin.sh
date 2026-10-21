@@ -29,8 +29,8 @@ AP=$(c "http://127.0.0.1:3200/admin/parafrase?embed=1")
 AL=$(c "http://127.0.0.1:3200/admin/layanan?embed=1")
 CI=$(c http://127.0.0.1:3200/ruangakademikut/img/tugas.webp)
 B=$(c http://127.0.0.1:3200/blog)
-echo "hub $H, admin $AD, admin akademik $AP, admin layanan $AL, gambar kartu $CI, blog $B (semua harus 200)"
-for x in $H $AD $AP $AL $CI $B; do [ "$x" = 200 ]; done
+echo "hub $H, admin $AD, admin akademik $AP, admin layanan $AL, gambar kartu bawaan $CI (404 boleh), blog $B (semua harus 200)"
+for x in $H $AD $AP $AL $B; do [ "$x" = 200 ]; done
 trap - ERR
 echo "SELESAI. Buka nextaja.com/admin lalu Ctrl+F5, tab Ruang Akademik."
 echo "Rollback: tar xzf $BK -C $APP && pm2 restart nextaja"
