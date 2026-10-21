@@ -22,10 +22,11 @@ module.exports = function mountPages({ app, express }) {
   app.get("/ruangakademikut/cek-parafrase-mandiri", page("cek.html"));
   app.get("/ruangakademikut/audit", page("audit.html"));
   app.get("/ruangakademikut/layanan", page("layanan.html"));
+  app.get("/ruangakademikut/blog-ut", page("blog-ut.html"));
   app.get(["/admin/layanan", "/admin/layanan/"], (req, res) => fs.readFile(path.join(dir, "layanan-admin.html"), "utf8", (err, html) => err ? res.status(500).end() : res.set({ "Cache-Control": "no-store", "X-Robots-Tag": "noindex" }).type("html").send(html)));
   app.get("/ruangakademikut/audit/hasil/:token", page("audit-hasil.html"));
   app.get(["/ruangakademikut/pesanan", "/ruangakademikut/pesanan/:token"], page("pesanan.html"));
-  const ASSETS = new Set(["site.css", "hub.css", "common.js", "cek.js", "pesanan.js", "admin.js", "audit.js", "audit-hasil.js", "layanan.js", "layanan-admin.js"]);
+  const ASSETS = new Set(["site.css", "hub.css", "common.js", "cek.js", "pesanan.js", "admin.js", "audit.js", "audit-hasil.js", "layanan.js", "layanan-admin.js", "blog-ut.js"]);
   app.get("/ruangakademikut/assets/:f", (req, res) => {
     if (!ASSETS.has(req.params.f)) return res.status(404).end();
     res.set("Cache-Control", "no-cache").sendFile(path.join(dir, req.params.f));

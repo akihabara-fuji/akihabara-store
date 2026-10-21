@@ -254,9 +254,9 @@ module.exports = function mount(ctx) {
   /* ---------------- API publik blog (untuk beranda) ---------------- */
   app.get("/ms/blog/latest", (req, res) => {
     res.set("Cache-Control", "no-cache");
-    const f = TOPICS[req.query.f] ? req.query.f : "";
-    const lim = Math.min(9, Math.max(1, parseInt(req.query.limit, 10) || 3));
-    const list = published().filter(p => !f || p.topic === f).slice(0, lim);
+    const f = TOPICS[req.query.f] || req.query.f === "ut" ? req.query.f : "";
+    const lim = Math.min(30, Math.max(1, parseInt(req.query.limit, 10) || 3));
+    const list = published().filter(p => !f || p.topic === f || (f === "ut" && (p.topic === "updateut" || p.topic === "study"))).slice(0, lim);
     res.json({ posts: list.map(p => ({ slug: p.slug, title: p.title, excerpt: p.excerpt, topic: tl(p.topic), cover: p.cover, date: p.publishedAt })) });
   });
 
@@ -649,5 +649,5 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
   });
 
   // untuk sitemap
-  return { userFrom, pageUrls: () => ["/ruangakademikut", "/ruangakademikut/cek-parafrase-mandiri", "/ruangakademikut/audit", "/ruangakademikut/layanan"].map(u => ({ loc: `${SITE}${u}`, pri: "0.7" })), blogUrls: () => published().map(p => ({ loc: `${SITE}/blog/${p.slug}`, lastmod: (p.updatedAt || p.publishedAt || "").slice(0, 10), pri: "0.6" })) };
+  return { userFrom, pageUrls: () => ["/ruangakademikut", "/ruangakademikut/cek-parafrase-mandiri", "/ruangakademikut/audit", "/ruangakademikut/layanan", "/ruangakademikut/blog-ut"].map(u => ({ loc: `${SITE}${u}`, pri: "0.7" })), blogUrls: () => published().map(p => ({ loc: `${SITE}/blog/${p.slug}`, lastmod: (p.updatedAt || p.publishedAt || "").slice(0, 10), pri: "0.6" })) };
 };

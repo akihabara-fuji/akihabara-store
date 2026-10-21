@@ -14,6 +14,7 @@ for a, b in [
     ("sampai lulus Rp199.000", 'sampai lulus Rp<span data-p="price_pengarahan_lulus">199.000</span>'),
 ]:
     new = new.replace(a, b)
+new = new.replace("/blog?f=updateut", "/ruangakademikut/blog-ut")
 if new != sec:
     s = s.replace(sec, new, 1)
 if "data-p-sync" not in s:
