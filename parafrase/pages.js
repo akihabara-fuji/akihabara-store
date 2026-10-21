@@ -27,7 +27,7 @@ module.exports = function mountPages({ app, express }) {
   const ASSETS = new Set(["site.css", "hub.css", "common.js", "cek.js", "pesanan.js", "admin.js", "audit.js", "audit-hasil.js", "layanan.js", "layanan-admin.js"]);
   app.get("/ruangakademikut/assets/:f", (req, res) => {
     if (!ASSETS.has(req.params.f)) return res.status(404).end();
-    res.set("Cache-Control", "public, max-age=600").sendFile(path.join(dir, req.params.f));
+    res.set("Cache-Control", "no-cache").sendFile(path.join(dir, req.params.f));
   });
   app.get(["/admin/parafrase", "/admin/parafrase/"], (req, res) => {
     fs.readFile(path.join(dir, "admin.html"), "utf8", (err, html) => err ? res.status(500).end() : res.set({ "Cache-Control": "no-store", "X-Robots-Tag": "noindex" }).type("html").send(html));
