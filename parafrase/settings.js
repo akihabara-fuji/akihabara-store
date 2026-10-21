@@ -34,6 +34,8 @@ const DEFS = {
   price_revisi_metopen:         { type: "int",  min: 0, max: 100000000, def: 100000, pub: true },
   audit_per_word:               { type: "int",  min: 0, max: 100000000, def: 20, pub: true },
   audit_min:                    { type: "int",  min: 0, max: 100000000, def: 35000, pub: true },
+  price_semester_min:           { type: "int",  min: 0, max: 100000000, def: 1300000, pub: true },
+  price_semester_max:           { type: "int",  min: 0, max: 100000000, def: 1800000, pub: true },
   price_pengarahan_semester:    { type: "int",  min: 0, max: 100000000, def: 99000, pub: true },
   price_pengarahan_lulus:       { type: "int",  min: 0, max: 100000000, def: 199000, pub: true },
   price_pengarahan_normal:      { type: "int",  min: 0, max: 100000000, def: 396000, pub: true },
