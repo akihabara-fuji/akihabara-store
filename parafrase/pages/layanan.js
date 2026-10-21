@@ -11,7 +11,7 @@
     grp.forEach(function (k) {
       if (!cfg[k]) return;
       var b = document.createElement("button"); b.type = "button"; b.className = "btn"; b.textContent = cfg[k].label + " · " + rp(cfg[k].price);
-      if (k !== cur) b.style.cssText = "background:transparent;border:1px solid currentColor"; b.onclick = function () { cur = k; paint(); }; $("chips").appendChild(b);
+      if (k !== cur) b.style.cssText = "background:transparent;color:inherit;border:1px solid currentColor"; b.onclick = function () { cur = k; paint(); }; $("chips").appendChild(b);
     });
     document.querySelectorAll(".sub a").forEach(function (a) { var t = a.textContent.trim(), on = (t === "Tugas" && cur === "tugas") || (t === "Diskusi" && cur === "diskusi") || (t === "Metopen" && s.kind === "metopen") || (t === "Revisi" && s.kind === "revisi"); a.classList.toggle("on", on); });
     var rev = s.kind === "revisi", td = s.kind === "tugas" || s.kind === "diskusi", dis = s.kind === "diskusi";
