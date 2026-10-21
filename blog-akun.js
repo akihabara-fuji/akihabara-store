@@ -346,6 +346,8 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
     res.type("application/rss+xml").send(`<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0"><channel><title>nextaja blog</title><link>${SITE}/blog</link><description>Tips akademik, UT, dan layanan nextaja.</description><language>id-id</language>\n${published().slice(0, 30).map(p => `<item><title>${x(p.title)}</title><link>${SITE}/blog/${p.slug}</link><guid>${SITE}/blog/${p.slug}</guid><pubDate>${new Date(p.publishedAt).toUTCString()}</pubDate><description>${x(p.excerpt || p.title)}</description></item>`).join("\n")}\n</channel></rss>\n`);
   });
 
+  /* Bagian penutup lama ("Kalau kamu butuh bantuan ...") di dalam isi tulisan diganti bubble WhatsApp di bawah. */
+  const cleanBody = t => String(t || "").replace(/\r/g, "").replace(/\n#{2,3}\s*Kalau kamu butuh bantuan[\s\S]{0,1600}$/i, "").trimEnd();
   app.get("/blog/:slug", (req, res, next) => {
     const p = published().find(x => x.slug === req.params.slug);
     if (!p) return next();
@@ -353,6 +355,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
     const desc = p.excerpt || (plain.length > 155 ? plain.slice(0, 152).replace(/\s+\S*$/, "") + "…" : plain) || p.title;
     const img = p.cover ? (/^https?:/.test(p.cover) ? p.cover : SITE + p.cover) : SITE + "/icon-512.png";
     const url = `${SITE}/blog/${p.slug}`;
+    const waHref = `https://wa.me/${String(SOCIAL().waNumber || "6285722227544").replace(/\D/g, "")}?text=${encodeURIComponent(`Halo admin nextaja, saya baca artikel "${p.title}" dan butuh bantuan soal UT.`)}`;
     const ld = JSON.stringify([{ "@context": "https://schema.org", "@type": "BlogPosting", headline: p.title.slice(0, 110), datePublished: p.publishedAt, dateModified: p.updatedAt || p.publishedAt, description: desc, image: [img], inLanguage: "id-ID", wordCount: plain.split(" ").length, author: { "@type": "Person", name: "Dika Priyadi" }, publisher: { "@type": "Organization", name: "nextaja", logo: { "@type": "ImageObject", url: SITE + "/icon-512.png" } }, mainEntityOfPage: { "@type": "WebPage", "@id": url } },
       { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Beranda", item: SITE + "/" }, { "@type": "ListItem", position: 2, name: "Blog", item: SITE + "/blog" }, { "@type": "ListItem", position: 3, name: p.title, item: url }] }]).replace(/</g, "\\u003c");
     const body = `<article class="pg art"><div class="wrap narrow">
@@ -360,11 +363,12 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
       <h1>${esc(p.title)}</h1>
       <div class="meta">${esc(fmtDate(p.publishedAt))} · Dika Priyadi</div>
       ${p.cover ? `<img class="hero-img" src="${esc(p.cover)}" alt="${esc(p.title)}">` : ""}
-      <div class="prose">${renderBody(p.body)}</div>
+      <div class="prose">${renderBody(cleanBody(p.body))}</div>
+      <p class="meta" style="margin-top:28px">nextaja bukan situs resmi Universitas Terbuka. Selalu pegang ketentuan dari tutor dan sumber resmi UT.</p>
       ${commentsBlock(p.slug)}
-      <div class="cta-box"><b>Butuh bantuan?</b><span>Analisa akun, template IG, bantuan akademik, atau housekeeping.</span><a class="btn btn-pri btn-sm" href="/#analisa">Lihat layanan</a></div>
-    </div></article>`;
-    res.set("Cache-Control", "no-cache").type("html").send(layout({ title: `${p.title} — nextaja`, desc, path: `/blog/${p.slug}`, body, image: img, type: "article", extra: `<meta property="article:published_time" content="${esc(p.publishedAt)}"><meta property="article:modified_time" content="${esc(p.updatedAt || p.publishedAt)}"><script type="application/ld+json">${ld}</script>` }));
+    </div></article>
+    <a class="wa-bubble" href="${esc(waHref)}" target="_blank" rel="noopener" aria-label="Chat admin lewat WhatsApp"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.2-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .5l-.4.6-.3.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1.1c.2-.3.4-.2.6-.1l2 .9c.3.1.5.2.5.4 0 .1 0 .7-.2 1.4z"/></svg><span>Tanya admin soal UT</span></a>`;
+    res.set("Cache-Control", "no-cache").type("html").send(layout({ title: `${p.title} — nextaja`, desc, path: `/blog/${p.slug}`, body, image: img, type: "article", extra: `<style>.wa-bubble{position:fixed;right:16px;bottom:16px;z-index:50;display:inline-flex;align-items:center;gap:8px;padding:12px 18px;border-radius:999px;background:#25D366;color:#073b1b;font:700 14px Onest,sans-serif;text-decoration:none;box-shadow:0 8px 24px rgba(0,0,0,.35)}.wa-bubble:hover{filter:brightness(1.06)}@media(max-width:480px){.wa-bubble span{display:none}.wa-bubble{padding:14px}}</style><meta property="article:published_time" content="${esc(p.publishedAt)}"><meta property="article:modified_time" content="${esc(p.updatedAt || p.publishedAt)}"><script type="application/ld+json">${ld}</script>` }));
   });
 
 
