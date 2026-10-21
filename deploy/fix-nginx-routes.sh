@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Nginx: arahkan /site-img/, /t.js, berkas kunci IndexNow, dan berkas verifikasi Google ke aplikasi (port 3200). Backup + nginx -t + rollback otomatis.
 set -euo pipefail
-F=$(grep -l 'manifest\\.webmanifest' /etc/nginx/sites-enabled/* /etc/nginx/conf.d/* 2>/dev/null | head -1)
+F=$(grep -l 'manifest\\.webmanifest' /etc/nginx/sites-enabled/* /etc/nginx/conf.d/* 2>/dev/null | head -1 || true)
 [ -n "$F" ] || { echo "berkas nginx tidak ditemukan"; exit 1; }
 BK=/root/nginx-backup-$(date +%Y%m%d-%H%M%S).conf
 cp "$F" "$BK"
