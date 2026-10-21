@@ -7,18 +7,20 @@ D=$APP/parafrase
 RAW=https://raw.githubusercontent.com/akihabara-fuji/akihabara-store/$REF
 [ -d "$D" ] || { echo "Folder $D tidak ada"; exit 1; }
 BK=/root/admin-backup-$(date +%Y%m%d-%H%M%S).tgz
-tar czf "$BK" -C "$APP" parafrase server.js admin
+tar czf "$BK" -C "$APP" parafrase server.js admin public/index.html
 rollback(){ echo "GAGAL -> rollback dari $BK"; tar xzf "$BK" -C "$APP"; pm2 restart nextaja --update-env >/dev/null || true; }
 trap 'echo "GAGAL di baris $LINENO: $BASH_COMMAND"; rollback' ERR
 T=$(mktemp -d); mkdir -p "$T/pages"
-JS="cards.js pages.js"
-PG="admin.html admin.js layanan-admin.html layanan-admin.js"
+JS="cards.js pages.js settings.js layanan.js orders.js audit.js index.js"
+PG="admin.html admin.js common.js hub.html audit.html layanan-admin.html layanan-admin.js"
 for f in $JS; do curl -fsSL "$RAW/parafrase/$f" -o "$T/$f"; node --check "$T/$f"; done
 for f in $PG; do curl -fsSL "$RAW/parafrase/pages/$f" -o "$T/pages/$f"; done
 curl -fsSL "$RAW/deploy/patch-admin-tab.py" -o "$T/patch.py"
 for f in $JS; do cp "$T/$f" "$D/$f"; done
 for f in $PG; do cp "$T/pages/$f" "$D/pages/$f"; done
 python3 "$T/patch.py" "$APP/admin/index.html"
+curl -fsSL "$RAW/deploy/patch-landing-prices.py" -o "$T/lp.py"
+python3 "$T/lp.py" "$APP/public/index.html"
 rm -rf "$T"
 pm2 restart nextaja --update-env >/dev/null
 sleep 4

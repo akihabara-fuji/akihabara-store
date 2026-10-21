@@ -86,7 +86,7 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
   }
 
   /* Audit Lengkap: memakai tabel pesanan dan alur QRIS yang sama (doc_type='audit'). Tarif tetap di sini, dihitung di server. */
-  const AUDIT_PER_WORD = 20, AUDIT_MIN = 35000;
+  const auditRate = cfg => ({ perWord: cfg.audit_per_word, min: cfg.audit_min });
   function createAuditOrder(body, ipHash, now = Date.now()) {
     const cfg = settings.getAll();
     const up = db.prepare("SELECT * FROM uploads WHERE id=?").get(String(body.uploadId || ""));
@@ -98,6 +98,7 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
     if (unpaid.length >= 3) throw Object.assign(new Error("Kamu masih punya 3 pesanan yang belum dibayar. Selesaikan atau tunggu kedaluwarsa dulu."), { status: 429 });
     const det = JSON.parse(up.detected);
     const words = Number(det.words) || 0;
+    const { perWord: AUDIT_PER_WORD, min: AUDIT_MIN } = auditRate(cfg);
     const base = Math.max(words * AUDIT_PER_WORD, AUDIT_MIN);
     const token = crypto.randomBytes(24).toString("hex");
     const payExp = now + cfg.payment_window_minutes * 60e3;
@@ -437,6 +438,6 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
     } catch (e) { console.error("[parafrase] finalisasi gagal:", e && e.message); res.status(500).json({ error: "Gagal membuat file bersih." }); }
   });
 
-  return { createOrder, createAuditOrder, AUDIT_PER_WORD, AUDIT_MIN, confirmPayment, rejectPayment, expireUnpaid, startWork, sweepRetention, byToken, event, view, priv };
+  return { createOrder, createAuditOrder, auditRate, confirmPayment, rejectPayment, expireUnpaid, startWork, sweepRetention, byToken, event, view, priv };
 
 };

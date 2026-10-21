@@ -14,7 +14,7 @@ const { runAudit } = require("./auditrules");
 
 const MAX_MB = 10, RATE = { max: 10, windowMs: 3600 * 1000 }, UPLOAD_TTL_MS = 2 * 3600 * 1000;
 
-module.exports = function mountAudit({ app, express, db, orders, root, sameOrigin, secret, fetchFn }) {
+module.exports = function mountAudit({ app, express, db, settings, orders, root, sameOrigin, secret, fetchFn }) {
   const dir = path.join(root, "data", "private", "docs");
   fs.mkdirSync(dir, { recursive: true });
   const hits = new Map();
@@ -28,7 +28,7 @@ module.exports = function mountAudit({ app, express, db, orders, root, sameOrigi
   let running = 0; // batas pekerjaan bersamaan, supaya server tidak berat saat ramai
   const MAX_RUNNING = 3;
   const insert = db.prepare(`INSERT INTO uploads(id,path,original_name,size,sha256,detected,ip_hash,created_at,expires_at) VALUES(?,?,?,?,?,?,?,?,?)`);
-  const quote = words => ({ words, perWord: orders.AUDIT_PER_WORD, min: orders.AUDIT_MIN, total: Math.max(words * orders.AUDIT_PER_WORD, orders.AUDIT_MIN) });
+  const quote = words => { const r = orders.auditRate(settings.getAll()); return { words, perWord: r.perWord, min: r.min, total: Math.max(words * r.perWord, r.min) }; };
 
   app.post("/ms/audit/upload", (req, res) => {
     res.set("Cache-Control", "no-store");

@@ -25,6 +25,7 @@ const MAX_FILES = 3, MAX_MB = 10;
 const MAGIC = { docx: b => b.slice(0, 2).toString() === "PK", pdf: b => b.slice(0, 4).toString() === "%PDF", png: b => b.slice(0, 4).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47])), jpg: b => b[0] === 0xff && b[1] === 0xd8, jpeg: b => b[0] === 0xff && b[1] === 0xd8, txt: b => !b.includes(0) };
 
 module.exports = function mountLayanan({ app, express, db, settings, orders, root, sameOrigin, secret, requireAdmin }) {
+  const priceOf = k => { const v = settings.get("price_" + k); return Number.isInteger(v) ? v : SV[k].price; };
   const priv = p => path.join(root, "data", "private", p);
   const hits = new Map();
   const hashIp = ip => crypto.createHmac("sha256", secret).update(String(ip || "")).digest("hex").slice(0, 32);
@@ -34,7 +35,7 @@ module.exports = function mountLayanan({ app, express, db, settings, orders, roo
   const ext = n => ((String(n).match(/\.([a-z0-9]{2,5})$/i) || [])[1] || "").toLowerCase();
   const bad = (status, error) => Object.assign(new Error(error), { status });
 
-  app.get("/ms/layanan/config", (req, res) => { res.set("Cache-Control", "public, max-age=60"); res.json(Object.fromEntries(Object.entries(SV).map(([k, v]) => [k, { label: v.label, price: v.price, kind: v.kind }]))); });
+  app.get("/ms/layanan/config", (req, res) => { res.set("Cache-Control", "public, max-age=5"); res.json(Object.fromEntries(Object.entries(SV).map(([k, v]) => [k, { label: v.label, price: priceOf(k), kind: v.kind }]))); });
 
   const up = multer({ storage: multer.memoryStorage(), limits: { fileSize: MAX_MB * 1048576, files: MAX_FILES, fields: 8 } }).array("files", MAX_FILES);
   app.post("/ms/layanan/order", (req, res) => {
@@ -71,7 +72,7 @@ module.exports = function mountLayanan({ app, express, db, settings, orders, roo
         }
 
         const cfg = settings.getAll(), token = crypto.randomBytes(24).toString("hex");
-        const base = free ? 0 : sv.price, payExp = now + cfg.payment_window_minutes * 60e3;
+        const base = free ? 0 : priceOf(b.service), payExp = now + cfg.payment_window_minutes * 60e3;
         const r = db.transaction(() => {
           const last = db.prepare("SELECT MAX(CAST(SUBSTR(id,4) AS INTEGER)) n FROM orders").get().n || 1000;
           const id = "NA-" + (last + 1);

@@ -7,6 +7,7 @@
     var set = function (sel, v) { document.querySelectorAll(sel).forEach(function (e) { e.textContent = v; }); };
     set("[data-ppw]", rp(c.price_per_word)); set("[data-min]", rp(c.min_order_price)); set("[data-fast]", rp(c.fast_lane.price));
     set("[data-retention]", c.retention_hours);
+    document.querySelectorAll("[data-p]").forEach(function (e) { var v = c[e.getAttribute("data-p")]; if (v != null) e.textContent = rp(v); });
     document.querySelectorAll("[data-chat]").forEach(function (a) {
       if (!c.admin_wa_number) { a.classList.add("hidden"); return; }
       var m = a.getAttribute("data-msg") || "Halo admin nextaja, saya mau tanya Cek dan Parafrase Mandiri.";

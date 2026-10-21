@@ -144,21 +144,35 @@
   }
   function upErr(e) { toast(/Failed to fetch|NetworkError|413/.test(e.message) ? "Foto terlalu besar atau koneksi putus. Coba foto yang lebih kecil." : e.message); }
 
-  var LABEL = { price_per_word: "Harga per kata (Rp)", min_order_price: "Harga minimum (Rp)", fast_lane_enabled: "Jalur cepat aktif", fast_lane_price: "Biaya jalur cepat (Rp)", fast_lane_daily_cap: "Kuota jalur cepat per hari", revision_free_count: "Jumlah revisi gratis", revision_price_per_word: "Harga revisi berikutnya per kata (Rp)", file_max_mb: "Ukuran file maks (MB)", retention_hours: "File dihapus setelah (jam)", reminder_before_delete_hours: "Pengingat sebelum dihapus (jam)", long_sentence_words: "Kalimat panjang mulai (kata)", preview_open_sentences: "Kalimat contoh terbuka", avg_words_per_hour: "Kecepatan rata-rata (kata/jam)", unique_code_enabled: "Kode unik aktif", unique_code_max: "Kode unik maksimum", payment_window_minutes: "Batas waktu bayar (menit)", admin_wa_number: "WhatsApp admin (62…)", update_group_url: "Tautan grup Ruang Akademik UT", qris_merchant_name: "Nama penerima QRIS" };
+  var LABEL = { price_tugas: "Tugas (Rp)", price_diskusi: "Diskusi (Rp)", price_metopen1: "Metopen Tugas 1 (Rp)", price_metopen2: "Metopen Tugas 2 (Rp)", price_metopen3: "Metopen Tugas 3 (Rp)", price_metopen4: "Metopen Tugas 4 (Rp)", price_metopen_paket: "Paket Komplit Metopen (Rp)", price_revisi_tugas: "Revisi Tugas dari luar (Rp)", price_revisi_diskusi: "Revisi Diskusi dari luar (Rp)", price_revisi_metopen: "Revisi Metopen dari luar (Rp)", audit_per_word: "Audit Lengkap per kata (Rp)", audit_min: "Audit Lengkap harga minimum (Rp)", price_pengarahan_semester: "Pengarahan 1 semester (Rp)", price_pengarahan_lulus: "Pengarahan sampai lulus (Rp)", price_pengarahan_normal: "Harga normal (dicoret) sampai lulus (Rp)", price_per_word: "Harga per kata (Rp)", min_order_price: "Harga minimum per dokumen (Rp)", fast_lane_enabled: "Jalur cepat aktif", fast_lane_price: "Biaya jalur cepat (Rp)", fast_lane_daily_cap: "Kuota jalur cepat per hari", revision_free_count: "Jumlah revisi gratis (Cek & Parafrase)", revision_price_per_word: "Harga revisi berikutnya per kata (Rp)", file_max_mb: "Ukuran file maks (MB)", retention_hours: "File dihapus setelah (jam)", reminder_before_delete_hours: "Pengingat sebelum dihapus (jam)", long_sentence_words: "Kalimat panjang mulai (kata)", preview_open_sentences: "Kalimat contoh terbuka", avg_words_per_hour: "Kecepatan rata-rata (kata/jam)", unique_code_enabled: "Kode unik aktif", unique_code_max: "Kode unik maksimum", payment_window_minutes: "Batas waktu bayar (menit)", admin_wa_number: "WhatsApp admin (62…)", update_group_url: "Tautan grup Ruang Akademik UT", qris_merchant_name: "Nama penerima QRIS" };
   function renderSettings() {
     var s = $("t-set"); s.textContent = "Memuat…";
     api("/ms/admin/parafrase/settings").then(function (j) {
       s.textContent = "";
       var fl = j.fastLane, inputs = {};
       s.appendChild(h("div", { class: "card", style: "margin-bottom:14px" }, [h("b", {}, "Jalur cepat hari ini"), h("div", { class: "muted" }, "Terpakai " + fl.used + " dari " + fl.cap + " · sisa " + fl.remaining + (fl.full ? " (PENUH)" : "") + ". Reset tiap pukul 00.00 WIB. Perubahan langsung terlihat di halaman murid.")]));
-      var grid = h("div", { class: "grid" });
-      Object.keys(LABEL).forEach(function (k) {
-        var v = j.values[k], inp;
-        if (typeof v === "boolean") { inp = h("select", {}, [h("option", { value: "true" }, "Ya"), h("option", { value: "false" }, "Tidak")]); inp.value = String(v); }
-        else inp = h("input", { type: "text", value: v == null ? "" : String(v) });
-        inputs[k] = inp; grid.appendChild(h("div", { class: "fld" }, [h("label", {}, LABEL[k]), inp]));
+      var GROUPS = [
+        ["Tugas", "Kartu Tugas di hub dan form Layanan.", ["price_tugas"]],
+        ["Diskusi", "Kartu Diskusi di hub dan form Layanan.", ["price_diskusi"]],
+        ["Metopen", "Per tahap dan paket komplit.", ["price_metopen1", "price_metopen2", "price_metopen3", "price_metopen4", "price_metopen_paket"]],
+        ["Revisi", "Revisi untuk hasil dari luar. Hasil buatan kami gratis sesuai jumlah revisi gratis.", ["price_revisi_tugas", "price_revisi_diskusi", "price_revisi_metopen"]],
+        ["Cek & Parafrase Mandiri", "Harga per kata, jalur cepat, revisi, dan batas file.", ["price_per_word", "min_order_price", "fast_lane_enabled", "fast_lane_price", "fast_lane_daily_cap", "revision_free_count", "revision_price_per_word", "long_sentence_words", "preview_open_sentences", "avg_words_per_hour"]],
+        ["Audit Dokumen", "Audit Ringkas gratis. Audit Lengkap dihitung per kata, ada harga minimum.", ["audit_per_word", "audit_min"]],
+        ["Pengarahan Intensif", "Kartu Pengarahan di hub.", ["price_pengarahan_semester", "price_pengarahan_lulus", "price_pengarahan_normal"]],
+        ["Pembayaran", "Berlaku untuk semua layanan. Foto QRIS ada di kartu bawah.", ["qris_merchant_name", "payment_window_minutes", "unique_code_enabled", "unique_code_max"]],
+        ["Kontak dan file", "WhatsApp admin, grup, ukuran dan masa simpan file.", ["admin_wa_number", "update_group_url", "file_max_mb", "retention_hours", "reminder_before_delete_hours"]],
+      ];
+      s.appendChild(h("p", { class: "muted" }, "Satu tempat untuk semua harga dan aturan. Urutannya sama dengan menu di halaman Ruang Akademik. Setelah disimpan, hub, form, dan landing langsung memakai angka baru."));
+      GROUPS.forEach(function (g) {
+        var grid = h("div", { class: "grid" });
+        g[2].forEach(function (k) {
+          var v = j.values[k], inp;
+          if (typeof v === "boolean") { inp = h("select", {}, [h("option", { value: "true" }, "Ya"), h("option", { value: "false" }, "Tidak")]); inp.value = String(v); }
+          else inp = h("input", { type: "text", value: v == null ? "" : String(v) });
+          inputs[k] = inp; grid.appendChild(h("div", { class: "fld" }, [h("label", {}, LABEL[k] || k), inp]));
+        });
+        s.appendChild(h("div", { class: "card", style: "margin-bottom:14px" }, [h("b", {}, g[0]), h("div", { class: "muted", style: "margin-bottom:10px" }, g[1]), grid]));
       });
-      s.appendChild(grid);
       s.appendChild(h("div", { style: "margin-top:14px" }, h("button", { class: "btn", type: "button", on: { click: function () {
         var v = {}; Object.keys(inputs).forEach(function (k) { var x = inputs[k].value; v[k] = typeof j.values[k] === "number" ? (x.trim() === "" ? x : Number(x)) : x; });
         api("/ms/admin/parafrase/settings", { method: "PUT", json: { values: v } }).then(function () { toast("Tersimpan"); renderSettings(); }).catch(function (e) { toast(e.message); });
