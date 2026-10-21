@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Menu "Blog UT" di samping Cek Pesanan di Ruang Akademik UT (halaman /ruangakademikut/blog-ut). Backup + rollback otomatis.
+# Menu "Update UT baca disini" di samping Cek Pesanan di Ruang Akademik UT (halaman /ruangakademikut/blog-ut). Backup + rollback otomatis.
 set -euo pipefail
 REF="${1:?pakai: update-blogut.sh <commit>}"
 APP=/var/www/mahyra-serv
@@ -31,5 +31,5 @@ echo "blog-ut $P, js $J, hub $H, api $B, sitemap $S (semua 200, sitemap >=1)"
 for x in $P $J $H $B; do [ "$x" = 200 ]; done
 [ "$S" -ge 1 ]
 trap - ERR
-echo "SELESAI. Buka nextaja.com/ruangakademikut lalu Ctrl+F5, menu Blog UT di samping Cek Pesanan."
+echo "SELESAI. Buka nextaja.com/ruangakademikut lalu Ctrl+F5, menu Update UT baca disini di samping Cek Pesanan."
 echo "Rollback: tar xzf $BK -C $APP && pm2 restart nextaja"
