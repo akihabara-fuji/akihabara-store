@@ -13,7 +13,7 @@ rollback(){ echo "GAGAL -> rollback dari $BK"; tar xzf "$BK" -C "$APP"; pm2 rest
 trap 'echo "GAGAL di baris $LINENO: $BASH_COMMAND"; rollback' ERR
 T=$(mktemp -d); mkdir -p "$T/pages"
 JS=""
-PG="hub.html layanan.html cek.html pesanan.html audit.html"
+PG="hub.html layanan.html cek.html pesanan.html audit.html audit-hasil.html"
 for f in $JS; do curl -fsSL "$RAW/parafrase/$f" -o "$T/$f"; node --check "$T/$f"; done
 for f in $PG; do curl -fsSL "$RAW/parafrase/pages/$f" -o "$T/pages/$f"; done
 
