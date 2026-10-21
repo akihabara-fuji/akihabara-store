@@ -85,6 +85,43 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
     return { r, token, payExp, up };
   }
 
+  /* Audit Lengkap: memakai tabel pesanan dan alur QRIS yang sama (doc_type='audit'). Tarif tetap di sini, dihitung di server. */
+  const AUDIT_PER_WORD = 20, AUDIT_MIN = 35000;
+  function createAuditOrder(body, ipHash, now = Date.now()) {
+    const cfg = settings.getAll();
+    const up = db.prepare("SELECT * FROM uploads WHERE id=?").get(String(body.uploadId || ""));
+    if (!up || up.expires_at < now) throw Object.assign(new Error("Unggahan tidak ditemukan atau kedaluwarsa. Unggah ulang dokumenmu."), { status: 404 });
+    if (up.order_id) throw Object.assign(new Error("Dokumen ini sudah dipakai untuk pesanan."), { status: 409 });
+    const wa = wa62(body.wa); if (!wa) throw Object.assign(new Error("Nomor WhatsApp tidak valid."), { status: 400 });
+    if (body.agree !== true) throw Object.assign(new Error("Centang persetujuan syarat dan kebijakan privasi."), { status: 400 });
+    const unpaid = db.prepare("SELECT 1 FROM orders WHERE wa_number=? AND status='menunggu_bayar' AND pay_expires_at>?").all(wa, now);
+    if (unpaid.length >= 3) throw Object.assign(new Error("Kamu masih punya 3 pesanan yang belum dibayar. Selesaikan atau tunggu kedaluwarsa dulu."), { status: 429 });
+    const det = JSON.parse(up.detected);
+    const words = Number(det.words) || 0;
+    const base = Math.max(words * AUDIT_PER_WORD, AUDIT_MIN);
+    const token = crypto.randomBytes(24).toString("hex");
+    const payExp = now + cfg.payment_window_minutes * 60e3;
+    const tx = db.transaction(() => {
+      const last = db.prepare("SELECT MAX(CAST(SUBSTR(id,4) AS INTEGER)) n FROM orders").get().n || 1000;
+      const id = "NA-" + (last + 1);
+      let code = 0;
+      if (cfg.unique_code_enabled) {
+        const taken = new Set(db.prepare("SELECT total FROM orders WHERE status IN ('menunggu_bayar','menunggu_verifikasi')").all().map(r => r.total));
+        const free = []; for (let c = 1; c <= cfg.unique_code_max; c++) if (!taken.has(base + c)) free.push(c);
+        if (!free.length) throw Object.assign(new Error("Sistem pembayaran sedang penuh. Coba lagi beberapa menit lagi."), { status: 503 });
+        code = free[crypto.randomInt(free.length)];
+      }
+      const total = base + code;
+      db.prepare(`INSERT INTO orders(id,public_token,wa_number,title,language,doc_type,word_count,original_file,status,lane,price_per_word,min_price,fast_price,base_total,unique_code,total,deadline_at,pay_expires_at,created_at,updated_at)
+                  VALUES(?,?,?,?,?,'audit',?,?,'menunggu_bayar','biasa',?,?,0,?,?,?,?,?,?,?)`)
+        .run(id, token, wa, "Audit: " + String(up.original_name || "dokumen").slice(0, 150), "id", words, up.path, AUDIT_PER_WORD, AUDIT_MIN, base, code, total, now + 7 * 86400e3, payExp, now, now);
+      db.prepare("UPDATE uploads SET order_id=? WHERE id=?").run(id, up.id);
+      event(id, "dibuat", `audit kata=${words} total=${total} ip=${ipHash}`, now);
+      return { id, total, code };
+    });
+    return { r: tx(), token, payExp, up };
+  }
+
   app.post("/ms/parafrase/order", J, async (req, res) => {
     res.set("Cache-Control", "no-store");
     if (!sameOrigin(req)) return res.status(403).json({ error: "Permintaan ditolak." });
@@ -117,6 +154,7 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
       queue: ["baru_dibayar", "dianalisis", "dikerjakan"].includes(o.status) ? queue.info(db, o.id, cfg) : null,
       resultReady: o.status === "terkirim" && !!o.result_path && !o.files_deleted_at && (!o.delete_at || o.delete_at > now),
       resultName: o.result_name || null, deleteAt: o.delete_at || null, filesDeleted: !!o.files_deleted_at,
+      docType: o.doc_type, auditReady: o.doc_type === "audit" && PAID.has(o.status) && !o.files_deleted_at && (!o.delete_at || o.delete_at > now),
     };
   };
   app.get("/ms/parafrase/order/:token", (req, res) => {
@@ -176,6 +214,10 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
       if (o.lane === "cepat") {
         const r = db.prepare("UPDATE fast_reservations SET status='confirmed' WHERE order_id=?").run(orderId);
         if (!r.changes) db.prepare("INSERT INTO fast_reservations(order_id,day,status,expires_at,created_at) VALUES(?,?,?,?,?)").run(orderId, settings.wibDay(now), "confirmed", now, now);
+      }
+      if (o.doc_type === "audit") { // Audit Lengkap tidak perlu dikerjakan tim: hasil langsung terbuka, file dihapus sesuai masa simpan.
+        const hrs = settings.getAll().retention_hours || 24;
+        db.prepare("UPDATE orders SET status='terkirim', sent_at=?, delete_at=?, updated_at=? WHERE id=?").run(now, now + hrs * 3600e3, now, orderId);
       }
       event(orderId, "dikonfirmasi", source, now);
       const done = db.prepare("SELECT * FROM orders WHERE id=?").get(orderId);
@@ -389,6 +431,6 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
     } catch (e) { console.error("[parafrase] finalisasi gagal:", e && e.message); res.status(500).json({ error: "Gagal membuat file bersih." }); }
   });
 
-  return { createOrder, confirmPayment, rejectPayment, expireUnpaid, startWork, sweepRetention, byToken, event, view, priv };
+  return { createOrder, createAuditOrder, AUDIT_PER_WORD, AUDIT_MIN, confirmPayment, rejectPayment, expireUnpaid, startWork, sweepRetention, byToken, event, view, priv };
 
 };

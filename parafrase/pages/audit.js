@@ -2,6 +2,7 @@
   var $ = function (id) { return document.getElementById(id); };
   var rp = function (n) { return Number(n).toLocaleString("id-ID"); };
   var SEV = { kritis: ["Kritis", "#ff8aa5"], peringatan: ["Peringatan", "#f3ff4d"], info: ["Info", "#8ec5ff"] };
+  var upId = null;
   function showErr(m) { var e = $("err"); e.textContent = m || ""; e.classList.toggle("hidden", !m); }
   var drop = $("drop");
   $("pick").onclick = function () { $("file").click(); };
@@ -20,11 +21,20 @@
     fetch("/ms/audit/upload", { method: "POST", body: fd }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
       .then(function (x) {
         if (!x.ok) { if (x.j.login) { location.href = "/ms/masuk?next=" + encodeURIComponent(location.pathname); return; } showErr(x.j.error || "Audit gagal. Coba lagi."); return; }
-        render(x.j); $("s1").classList.add("hidden"); $("s2").classList.remove("hidden"); window.scrollTo(0, 0);
+        upId = x.j.uploadId; render(x.j); $("s1").classList.add("hidden"); $("s2").classList.remove("hidden"); window.scrollTo(0, 0);
       }).catch(function () { showErr("Koneksi terputus. Coba lagi."); })
       .then(function () { $("busy").classList.add("hidden"); $("pick").disabled = false; });
   }
 
+  function gate() { var wa = $("wa").value.replace(/\D/g, "").replace(/^62/, "").replace(/^0/, ""); $("buy").disabled = !(upId && /^8\d{8,12}$/.test(wa) && $("agree").checked); }
+  $("wa").oninput = gate; $("agree").onchange = gate;
+  $("buy").onclick = function () {
+    var b = this; b.disabled = true; var e = $("oerr"); e.classList.add("hidden");
+    fetch("/ms/audit/order", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ uploadId: upId, wa: $("wa").value, agree: $("agree").checked }) })
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (x) { if (x.ok) { location.href = x.j.url; return; } if (x.j.login) { location.href = "/ms/masuk?next=" + encodeURIComponent(location.pathname); return; } e.textContent = x.j.error || "Pesanan gagal. Coba lagi."; e.classList.remove("hidden"); gate(); })
+      .catch(function () { e.textContent = "Koneksi terputus. Coba lagi."; e.classList.remove("hidden"); gate(); });
+  };
   function el(tag, css, txt) { var e = document.createElement(tag); if (css) e.style.cssText = css; if (txt != null) e.textContent = txt; return e; }
   function render(d) {
     $("rmeta").textContent = d.file.name + " · " + rp(d.words) + " kata";

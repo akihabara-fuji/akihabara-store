@@ -44,7 +44,13 @@
     <b>Buka semua detail (Audit Lengkap)</b>
     <div class="muted" style="margin:4px 0 10px">Lokasi tepat, penjelasan, dan saran perbaikan tiap temuan. Rp <span id="perword">20</span> per kata, minimal Rp <span id="minp">35.000</span>.</div>
     <div style="font-size:22px;font-weight:700;margin-bottom:10px">Rp <span id="total"></span></div>
-    <a class="btn" data-chat href="#">Minta Audit Lengkap via admin</a>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px">
+      <label for="wa" style="font-weight:600;font-size:14px">Nomor WhatsApp (untuk konfirmasi)</label>
+      <input id="wa" type="text" inputmode="tel" placeholder="08xx" autocomplete="tel" style="padding:12px 14px;border-radius:12px;border:1px solid currentColor;background:transparent;color:inherit;font:inherit">
+      <label style="display:flex;gap:8px;align-items:flex-start;font-size:13.5px"><input id="agree" type="checkbox"> <span>Saya setuju dengan <a href="/ms/ketentuan">syarat</a> dan <a href="/ms/privasi">kebijakan privasi</a>.</span></label>
+      <div id="oerr" class="err hidden" role="alert"></div>
+    </div>
+    <button class="btn" id="buy" type="button" disabled>Beli Audit Lengkap</button>
     <button class="btn" id="again" type="button" style="margin-left:8px;background:transparent;border:1px solid currentColor">Audit dokumen lain</button>
   </div>
 </section>

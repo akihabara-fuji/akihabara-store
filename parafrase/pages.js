@@ -20,8 +20,9 @@ module.exports = function mountPages({ app, express }) {
   app.get(["/ruangakademikut", "/ruangakademikut/"], page("hub.html"));
   app.get("/ruangakademikut/cek-parafrase-mandiri", page("cek.html"));
   app.get("/ruangakademikut/audit", page("audit.html"));
+  app.get("/ruangakademikut/audit/hasil/:token", page("audit-hasil.html"));
   app.get(["/ruangakademikut/pesanan", "/ruangakademikut/pesanan/:token"], page("pesanan.html"));
-  const ASSETS = new Set(["site.css", "hub.css", "common.js", "cek.js", "pesanan.js", "admin.js", "audit.js"]);
+  const ASSETS = new Set(["site.css", "hub.css", "common.js", "cek.js", "pesanan.js", "admin.js", "audit.js", "audit-hasil.js"]);
   app.get("/ruangakademikut/assets/:f", (req, res) => {
     if (!ASSETS.has(req.params.f)) return res.status(404).end();
     res.set("Cache-Control", "public, max-age=600").sendFile(path.join(dir, req.params.f));

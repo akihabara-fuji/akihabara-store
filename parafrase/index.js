@@ -44,10 +44,10 @@ module.exports = function mount(ctx) {
 
   mountPages({ app, express });
   mountCards({ app, root: ROOT, requireAdmin });
-  mountAudit({ app, sameOrigin: sameOrigin || (() => true), secret });
   const uploads = mountUploads({ app, db, settings, root: ROOT, sameOrigin: sameOrigin || (() => true), secret });
   const notifier = createNotifier({ db, settings });
   const orders = mountOrders({ app, express, db, settings, notifier, root: ROOT, sameOrigin: sameOrigin || (() => true), requireAdmin, secret });
+  mountAudit({ app, express, db, orders, root: ROOT, sameOrigin: sameOrigin || (() => true), secret });
   const t = setInterval(() => { uploads.purgeExpired().catch(() => {}); orders.expireUnpaid().catch(() => {}); orders.sweepRetention().catch(() => {}); }, 10 * 60 * 1000); t.unref();
   const t2 = setInterval(() => notifier.flush().catch(() => {}), 30 * 1000); t2.unref();
 
