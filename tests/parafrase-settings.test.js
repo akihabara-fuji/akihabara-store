@@ -9,9 +9,9 @@ const mk = () => { const db = open(":memory:"); return { db, s: create(db) }; };
 
 test("migrasi: user_version naik dan bisa diulang", () => {
   const { db } = mk();
-  assert.strictEqual(db.pragma("user_version", { simple: true }), 3);
+  assert.strictEqual(db.pragma("user_version", { simple: true }), 4);
   require("../parafrase/db").migrate(db);
-  assert.strictEqual(db.pragma("user_version", { simple: true }), 3);
+  assert.strictEqual(db.pragma("user_version", { simple: true }), 4);
   for (const t of ["settings", "settings_log", "orders", "findings", "order_events", "fast_reservations", "uploads", "wa_outbox"])
     assert.ok(db.prepare("SELECT name FROM sqlite_master WHERE name=?").get(t), t);
 });

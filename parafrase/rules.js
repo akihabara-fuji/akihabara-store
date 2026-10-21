@@ -15,6 +15,7 @@
    "dibandingkan dengan database jurnal dan internet". */
 "use strict";
 const { splitSentences, countWords } = require("./docx");
+const { checkStandar, STANDAR_CODE } = require("./standar");
 
 const CODES = {
   M: { color: "merah", action: "Tulis ulang" },
@@ -170,6 +171,10 @@ function analyzeFindings(paras, bibAt, cfg = {}) {
     }
   }
 
+  /* Standar Bab 4 dan Bab 5 dipakai bersama oleh Cek Parafrase (di sini) dan Audit Dokumen (auditrules.js). Aturannya satu, di standar.js. */
+  for (const f of checkStandar(paras, bibAt, { splitSentences, countWords, findCitations, hasCitation, isBody }))
+    add(STANDAR_CODE[f.rule], paras.find(p => p.idx === f.para_idx), f.sent_idx, f.text, f.reason);
+
   // B: pustaka yang tidak pernah disitasi di teks
   if (hasBib) {
     const { entries } = parseBibliography(paras, bibAt);
@@ -202,4 +207,4 @@ function saveFindings(db, orderId, findings, now = Date.now()) {
   })();
 }
 
-module.exports = { analyzeFindings, countByCode, saveFindings, findCitations, CODES, PRIORITY };
+module.exports = { analyzeFindings, countByCode, saveFindings, findCitations, hasCitation, isBody, CODES, PRIORITY };

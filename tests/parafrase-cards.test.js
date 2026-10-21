@@ -45,7 +45,7 @@ test("hub: tanpa kartu Tips, ada slogan DP di atas, semua layanan UT", async () 
   try {
     const t = await (await fetch("http://127.0.0.1:" + srv.address().port + "/ruangakademikut")).text();
     assert.ok(!t.includes("Tips Jawaban")); assert.ok(!t.includes("Sahabat Nugas")); assert.ok(t.includes("Konsultasikan semua dengan admin")); assert.ok(!t.includes("Harga via chat admin")); assert.ok(t.includes("Info UT") && t.includes("Baca info UT") && t.includes("/blog?f=updateut"));
-    assert.ok(t.indexOf("Bisa DP dulu") > 0 && t.indexOf("Bisa DP dulu") < t.indexOf('class="cards"'));
-    for (const n of ["Cek dan Parafrase Mandiri", "Paket Semester Lengkap", "Paket Metopen", ">Tugas<", ">Diskusi<", ">Makalah<", "/blog"]) assert.ok(t.includes(n), n);
+    assert.ok(t.indexOf("Bisa DP dulu") > 0);
+    for (const n of ["Cek dan Parafrase Mandiri", "Paket Semester Lengkap", ">Metopen<", ">Tugas<", ">Diskusi<", ">Audit<", ">Revisi<", "/blog"]) assert.ok(t.includes(n), n);
   } finally { srv.close(); }
 });

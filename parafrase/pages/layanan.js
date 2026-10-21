@@ -24,6 +24,7 @@
     $("pick").textContent = dis ? "+ Lampirkan file (opsional, mis. file revisi)" : "+ Lampirkan file";
     var pv = $("pid").value.trim();
     $("price").textContent = rev ? "Gratis 1x untuk hasil kami, atau " + rp(s.price) + " untuk revisi dari luar" : td && pv ? "Revisi gratis 1x (dicek otomatis dari ID pesanan)" : rp(s.price);
+    $("price").title = ""; var nt = $("note"); if (nt) nt.style.display = s.kind === "metopen" ? "block" : "none";
     $("go").textContent = "Pesan " + s.label; gate();
   }
   function gate() { var wa = $("wa").value.replace(/\D/g, "").replace(/^62/, "").replace(/^0/, ""); $("go").disabled = !(cfg[cur] && /^8\d{8,12}$/.test(wa) && $("agree").checked && ($("brief").value.trim().length >= 5 || files.length)); }

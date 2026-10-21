@@ -1,6 +1,8 @@
 /* Aturan Audit Dokumen (Audit Ringkas). Semua temuan hanya dari isi dokumen dan pengecekan DOI nyata:
    tidak ada AI, tidak ada tebakan. Yang tidak bisa dicek ditandai tidak terverifikasi, tidak dikarang. */
 "use strict";
+const { checkStandar, STANDAR_AUDIT } = require("./standar");
+const rules = require("./rules");
 
 const fold = s => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 const WORD = "[A-ZÀ-ɏ][\\p{L}'’-]+";
@@ -109,7 +111,7 @@ async function runAudit(a, { fetchFn } = {}) {
     if (bib.length < 10) add("info", "Jumlah pustaka kurang dari 10", "Daftar pustaka", `Hanya ${bib.length} entri terbaca. Metopen UT umumnya minimal 10 referensi.`);
     const yrs = bib.map(b => parseInt(b.year, 10)).filter(Boolean), nowY = new Date().getFullYear();
     const old = yrs.filter(y => nowY - y > 10).length;
-    if (yrs.length >= 5 && old / yrs.length > 0.5) add("info", "Banyak pustaka berusia lebih dari 10 tahun", "Daftar pustaka", `${old} dari ${yrs.length} pustaka bertahun lebih dari 10 tahun lalu.`);
+    if (yrs.length >= 5 && old / yrs.length > 0.5) add("info", "Banyak pustaka berusia lebih dari 10 tahun", "Daftar pustaka", `${old} dari ${yrs.length} pustaka bertahun lebih dari 10 tahun lalu. Standar Bab 4: utamakan artikel 5 sampai 7 tahun terakhir.`);
 
     const withDoi = bib.filter(b => b.doi);
     const doiRes = await checkDois(withDoi.map(b => b.doi), fetchFn);
@@ -121,6 +123,9 @@ async function runAudit(a, { fetchFn } = {}) {
     if (un) add("info", `${un} DOI belum bisa diverifikasi`, "Daftar pustaka", "TIDAK TERVERIFIKASI: layanan pengecekan tidak menjawab, bukan berarti DOI salah.");
     var refs = { total: bib.length, withDoi: withDoi.length, doiOk: ok, doiNotFound: nf, doiUnverified: un };
   }
+  // Standar Bab 4 dan 5: aturan yang SAMA dengan Cek Parafrase (standar.js)
+  const hh = { splitSentences: require("./docx").splitSentences, countWords: require("./docx").countWords, findCitations: rules.findCitations, hasCitation: rules.hasCitation, isBody: rules.isBody };
+  for (const f of checkStandar(paras, bibIdx == null || bibIdx < 0 ? null : bibIdx, hh)) add(STANDAR_AUDIT[f.rule].sev, STANDAR_AUDIT[f.rule].cat, "Paragraf " + (f.para_idx + 1), f.reason);
   const order = { kritis: 0, peringatan: 1, info: 2 };
   F.sort((x, y) => order[x.sev] - order[y.sev]);
   const count = s => F.filter(f => f.sev === s).length;
