@@ -12,7 +12,7 @@ test("halaman: hub, unggah, pesanan, aset; alamat lama dialihkan; berkas html ti
   require("../parafrase")({ app, express, requireAdmin: (q, r, n) => n(), ROOT: fs.mkdtempSync(path.join(os.tmpdir(), "pf-pg-")) });
   const srv = app.listen(0), base = "http://127.0.0.1:" + srv.address().port;
   try {
-    for (const [u, needle] of [["/ruangakademikut", "Ruang Akademik UT"], ["/ruangakademikut/", "Cek dan Parafrase Mandiri"], ["/ruangakademikut/cek-parafrase-mandiri", "Tarik dan lepas"], ["/ruangakademikut/pesanan", "Cek Pesanan"], ["/ruangakademikut/pesanan/" + "a".repeat(48), "Memuat pesanan"]]) {
+    for (const [u, needle] of [["/ruangakademikut", "Catatan Akademik"], ["/ruangakademikut/", "Cek dan Parafrase Mandiri"], ["/ruangakademikut/cek-parafrase-mandiri", "Tarik dan lepas"], ["/ruangakademikut/pesanan", "Cek Pesanan"], ["/ruangakademikut/pesanan/" + "a".repeat(48), "Memuat pesanan"]]) {
       const r = await fetch(base + u); assert.strictEqual(r.status, 200, u);
       const t = await r.text(); assert.ok(t.includes(needle), u); assert.ok(!t.includes("{{SITE}}"), u);
     }

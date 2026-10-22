@@ -297,7 +297,7 @@ ${extra}
 <header class="nav"><div class="wrap">
   <a href="/" class="logo" aria-label="${brand}, beranda"><b>${brand.charAt(0)}</b><span>${brand}</span></a>
   <nav class="links" id="links" aria-label="Menu utama">
-    <a href="/ruangakademikut">Ruang Akademik UT</a><a href="/blog" class="on">Blog</a>
+    <a href="/ruangakademikut">Layanan UT</a><a href="/blog" class="on">Blog</a>
   </nav>
   <div class="nav-r">
     <div class="mode" role="group" aria-label="Mode tampilan"><button type="button" data-m="dark">Gelap</button><button type="button" data-m="light">Terang</button></div>
@@ -306,7 +306,7 @@ ${extra}
   </div>
 </div></header>
 <main>${body}</main>
-<footer class="ft"><div class="wrap ft-in"><div class="ft-b"><b>${brand}</b><span>Jakarta Barat. Ruang Akademik UT dan Blog.</span><small>© ${new Date().getFullYear()} Semua hak dilindungi.</small></div><nav class="ft-n" aria-label="Footer"><a href="/ruangakademikut">Ruang Akademik UT</a><a href="/blog">Blog</a><a href="/ms/masuk">Masuk</a><a href="/ms/privasi">Privasi</a><a href="/ms/ketentuan">Ketentuan</a></nav></div></footer>
+<footer class="ft"><div class="wrap ft-in"><div class="ft-b"><b>${brand}</b><span>Jakarta Barat. Layanan UT dan Blog.</span><small>© ${new Date().getFullYear()} Semua hak dilindungi.</small></div><nav class="ft-n" aria-label="Footer"><a href="/ruangakademikut">Layanan UT</a><a href="/blog">Blog</a><a href="/ms/masuk">Masuk</a><a href="/ms/privasi">Privasi</a><a href="/ms/ketentuan">Ketentuan</a></nav></div></footer>
 <script>
 (function(){
 function setMode(m){document.documentElement.dataset.theme=m;try{localStorage.setItem("nx-theme",m)}catch(e){}var tc=document.querySelector('meta[name=theme-color]');if(tc)tc.content=m==="light"?"#f6f3ff":"#0a0a1c";}
@@ -376,7 +376,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
       <p class="meta" style="margin-top:28px">nextaja bukan situs resmi Universitas Terbuka. Selalu pegang ketentuan dari tutor dan sumber resmi UT.</p>
       ${commentsBlock(p.slug)}
     </div></article>
-    <a class="wa-bubble" href="/ruangakademikut"><span>Layanan Ruang Akademik UT</span><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg></a>`;
+    <a class="wa-bubble" href="/ruangakademikut"><span>Layanan Catatan Akademik</span><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg></a>`;
     res.set("Cache-Control", "no-cache").type("html").send(layout({ title: `${p.title} — nextaja`, desc, path: `/blog/${p.slug}`, body, image: img, type: "article", extra: `<style>.wa-bubble{position:fixed;right:16px;bottom:16px;z-index:50;display:inline-flex;align-items:center;gap:8px;padding:12px 18px;border-radius:999px;background:#6d28d9;color:#fff;font:700 14px Onest,sans-serif;text-decoration:none;box-shadow:0 8px 24px rgba(0,0,0,.35)}.wa-bubble:hover{filter:brightness(1.06)}@media(max-width:480px){.wa-bubble{right:12px;left:12px;justify-content:center}}</style><meta property="article:published_time" content="${esc(p.publishedAt)}"><meta property="article:modified_time" content="${esc(p.updatedAt || p.publishedAt)}"><script type="application/ld+json">${ld}</script>` }));
   });
 
