@@ -136,7 +136,7 @@ async function buildColored(buf, findings, now = Date.now()) {
   if (comments.length) {
     const cdoc = existing || parse(`${DECL}<w:comments xmlns:w="${W}"/>`);
     for (const c of comments) {
-      const ce = wel(cdoc, "comment", { id: c.id, author: "NextAja", initials: "NA", date: new Date(now).toISOString().replace(/\.\d+Z$/, "Z") });
+      const ce = wel(cdoc, "comment", { id: c.id, author: "Catatan Akademik", initials: "CA", date: new Date(now).toISOString().replace(/\.\d+Z$/, "Z") });
       for (const line of c.text.split("\n")) { const p = wel(cdoc, "p"), r = wel(cdoc, "r"), t = wel(cdoc, "t"); t.setAttribute("xml:space", "preserve"); t.appendChild(cdoc.createTextNode(line)); r.appendChild(t); p.appendChild(r); ce.appendChild(p); }
       cdoc.documentElement.appendChild(ce);
     }
@@ -159,7 +159,7 @@ async function recheck(revisedBuf, originalFindings, cfg) {
     words: a.wordsBody, now: countByCode(now), before: countByCode(originalFindings),
     unchangedSentences: still.length, unchangedByCode: stillBy,
     unchanged: still.slice(0, 40).map(f => ({ code: f.code, para: f.para_idx + 1, snippet: f.text.slice(0, 90) })),
-    note: "Pemeriksaan Internal NextAja: aturan lokal, bukan skor kemiripan dan tidak membandingkan dengan database jurnal atau internet.",
+    note: "Pemeriksaan Internal Catatan Akademik: aturan lokal, bukan skor kemiripan dan tidak membandingkan dengan database jurnal atau internet.",
   };
 }
 

@@ -431,7 +431,7 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
       await fsp.writeFile(priv(rel), clean, { mode: 0o600 });
       const cfg = settings.getAll(), now = Date.now(), resend = o.status === "terkirim";
       db.prepare("UPDATE orders SET status='terkirim', result_path=?, result_name=?, sent_at=?, delete_at=?, reminder_sent_at=NULL, revision_no=revision_no+?, updated_at=? WHERE id=?")
-        .run(rel, `${slug(o.title)} - NextAja.docx`, now, now + cfg.retention_hours * 3600e3, resend ? 1 : 0, now, o.id);
+        .run(rel, `${slug(o.title)} - Catatan Akademik.docx`, now, now + cfg.retention_hours * 3600e3, resend ? 1 : 0, now, o.id);
       event(o.id, resend ? "hasil_dikirim_ulang" : "hasil_dikirim", null, now);
       notifier.send("selesai", rowById(o.id), now);
       res.json({ ok: true, order: view(rowById(o.id)) });

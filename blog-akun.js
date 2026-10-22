@@ -69,6 +69,9 @@ module.exports = function mount(ctx) {
   /* Domain akademik (ACAD_URL beda dari situs utama): hanya topik akademik/UT yang tampil. Tulisan lain tidak dihapus, hanya disembunyikan. */
   const ACAD_ONLY = !!process.env.ACAD_URL && process.env.ACAD_URL.replace(/\/+$/, "") !== (process.env.SITE_URL || "https://nextaja.com").replace(/\/+$/, "");
   const ACAD_TOPICS = ["study", "updateut"];
+  const BRAND = ACAD_ONLY ? "Catatan Akademik" : "nextaja";
+  /* Di domain akademik, nama "nextaja" pada teks halaman diganti nama brand akademik (URL dan alamat email tidak disentuh). */
+  const rebrand = h => (ACAD_ONLY ? String(h).replace(/(?<![\w./@-])nextaja(?![\w-]|\.\w)/gi, BRAND) : h);
   const published = () => blog.posts.filter(p => p.status === "published" && !p.trashedAt && (!ACAD_ONLY || ACAD_TOPICS.includes(p.topic))).sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
 
   function inline(t) {
@@ -267,9 +270,9 @@ module.exports = function mount(ctx) {
   const SOCIAL = () => (ctx.getSettings ? ctx.getSettings() : {}) || {};
   function layout({ title, desc, path: pth, body, extra = "", image = "", type = "website", noindex = false }) {
     const st = SOCIAL();
-    const brand = esc(st.brand || "nextaja");
+    const brand = esc(st.brand || BRAND);
     const canon = `${SITE}${pth}`;
-    return `<!doctype html>
+    return rebrand(`<!doctype html>
 <html lang="id" data-theme="dark">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -288,7 +291,7 @@ ${extra}
 </head>
 <body>
 <header class="nav"><div class="wrap">
-  <a href="/" class="logo" aria-label="${brand}, beranda"><b>N</b><span>${brand}</span></a>
+  <a href="/" class="logo" aria-label="${brand}, beranda"><b>${brand.charAt(0)}</b><span>${brand}</span></a>
   <nav class="links" id="links" aria-label="Menu utama">
     <a href="/ruangakademikut">Ruang Akademik UT</a><a href="/blog" class="on">Blog</a>
   </nav>
@@ -310,7 +313,7 @@ bg.addEventListener("click",function(){var o=ln.classList.toggle("open");bg.setA
 fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(function(d){if(d.user){var a=document.getElementById("navAcc");a.textContent="Akun saya";a.href="/ms/akun";}}).catch(function(){});
 })();
 </script>
-</body></html>`;
+</body></html>`);
   }
 
   const PORTAL_IMG = { "": ["blog-berita", "Blog dan berita nextaja"], viral: ["blog-berita", "Blog dan berita nextaja"], updateut: ["jadwal-kalender", "Info UT: jadwal, registrasi, dan ujian"], study: ["materi-belajar", "Materi belajar dan tips kuliah"], ai: ["tools-ai", "Tools AI dan otomatisasi"], social: ["video-studio", "Konten dan social media"] };
@@ -346,7 +349,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
   }
   app.get("/blog/feed.xml", (req, res) => {
     const x = t => esc(t);
-    res.type("application/rss+xml").send(`<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0"><channel><title>nextaja blog</title><link>${SITE}/blog</link><description>Tips akademik, UT, dan layanan nextaja.</description><language>id-id</language>\n${published().slice(0, 30).map(p => `<item><title>${x(p.title)}</title><link>${SITE}/blog/${p.slug}</link><guid>${SITE}/blog/${p.slug}</guid><pubDate>${new Date(p.publishedAt).toUTCString()}</pubDate><description>${x(p.excerpt || p.title)}</description></item>`).join("\n")}\n</channel></rss>\n`);
+    res.type("application/rss+xml").send(`<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0"><channel><title>${BRAND} blog</title><link>${SITE}/blog</link><description>Tips akademik, UT, dan layanan ${BRAND}.</description><language>id-id</language>\n${published().slice(0, 30).map(p => `<item><title>${x(p.title)}</title><link>${SITE}/blog/${p.slug}</link><guid>${SITE}/blog/${p.slug}</guid><pubDate>${new Date(p.publishedAt).toUTCString()}</pubDate><description>${x(p.excerpt || p.title)}</description></item>`).join("\n")}\n</channel></rss>\n`);
   });
 
   /* Bagian penutup lama ("Kalau kamu butuh bantuan ...") di dalam isi tulisan diganti bubble WhatsApp di bawah. */
@@ -358,7 +361,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
     const desc = p.excerpt || (plain.length > 155 ? plain.slice(0, 152).replace(/\s+\S*$/, "") + "…" : plain) || p.title;
     const img = p.cover ? (/^https?:/.test(p.cover) ? p.cover : SITE + p.cover) : SITE + "/icon-512.png";
     const url = `${SITE}/blog/${p.slug}`;
-    const ld = JSON.stringify([{ "@context": "https://schema.org", "@type": "BlogPosting", headline: p.title.slice(0, 110), datePublished: p.publishedAt, dateModified: p.updatedAt || p.publishedAt, description: desc, image: [img], inLanguage: "id-ID", wordCount: plain.split(" ").length, author: { "@type": "Person", name: "Dika Priyadi" }, publisher: { "@type": "Organization", name: "nextaja", logo: { "@type": "ImageObject", url: SITE + "/icon-512.png" } }, mainEntityOfPage: { "@type": "WebPage", "@id": url } },
+    const ld = JSON.stringify([{ "@context": "https://schema.org", "@type": "BlogPosting", headline: p.title.slice(0, 110), datePublished: p.publishedAt, dateModified: p.updatedAt || p.publishedAt, description: desc, image: [img], inLanguage: "id-ID", wordCount: plain.split(" ").length, author: { "@type": "Person", name: "Dika Priyadi" }, publisher: { "@type": "Organization", name: BRAND, logo: { "@type": "ImageObject", url: SITE + "/icon-512.png" } }, mainEntityOfPage: { "@type": "WebPage", "@id": url } },
       { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Beranda", item: SITE + "/" }, { "@type": "ListItem", position: 2, name: "Blog", item: SITE + "/blog" }, { "@type": "ListItem", position: 3, name: p.title, item: url }] }]).replace(/</g, "\\u003c");
     const body = `<article class="pg art"><div class="wrap narrow">
       <a class="back" href="/blog?f=${esc(p.topic)}">← ${esc(tl(p.topic))}</a>

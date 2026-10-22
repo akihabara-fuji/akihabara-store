@@ -62,10 +62,10 @@
     schedulePoll();
   }
   function fillPay() {
-    $("qrbox").innerHTML = o.hasQris ? '<img class="qr" alt="QRIS pembayaran NextAja" src="/ms/parafrase/qris?v=' + Date.now() + '">' : '<div class="box b-warn" style="width:240px;text-align:center">QRIS belum dipasang. Hubungi admin untuk nomor tujuan pembayaran.</div>';
+    $("qrbox").innerHTML = o.hasQris ? '<img class="qr" alt="QRIS pembayaran Catatan Akademik" src="/ms/parafrase/qris?v=' + Date.now() + '">' : '<div class="box b-warn" style="width:240px;text-align:center">QRIS belum dipasang. Hubungi admin untuk nomor tujuan pembayaran.</div>';
     $("amt").textContent = rp(o.total);
     $("amtd").textContent = rp(o.baseTotal + o.fastPrice) + " + kode unik " + rp(o.uniqueCode) + ". Kode unik membantu kami mencocokkan pembayaranmu, jadi bayar PERSIS nominal ini.";
-    $("mname").textContent = o.merchantName || "NextAja";
+    $("mname").textContent = o.merchantName || "Catatan Akademik";
     $("s1").textContent = (o.service ? "Layanan akademik" : (o.docType === "audit" ? "Audit Lengkap " : "Revisi ") + Number(o.words).toLocaleString("id-ID") + " kata × " + rp(o.pricePerWord)); $("s1v").textContent = rp(o.baseTotal);
     $("s2").textContent = o.lane === "cepat" ? "+" + rp(o.fastPrice) : "tidak dipilih"; $("s3").textContent = rp(o.uniqueCode); $("s4").textContent = dt(o.deadlineAt);
     var up = o.status === "menunggu_verifikasi"; $("pb").textContent = up ? "Ganti foto bukti" : "Pilih foto";
@@ -93,7 +93,7 @@
   };
 
   function loadDoc() {
-    $("docnote").textContent = "Catatan berwarna di bawah adalah bagian yang akan dikerjakan tim NextAja.";
+    $("docnote").textContent = "Catatan berwarna di bawah adalah bagian yang akan dikerjakan tim Catatan Akademik.";
     fetch("/ms/parafrase/order/" + token + "/preview?page=" + page, { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (pv) {
       if (!pv.paragraphs) { $("doc").innerHTML = '<p class="muted">' + esc(pv.error || "Dokumen tidak tersedia.") + "</p>"; return; }
       page = pv.page;
