@@ -15,11 +15,13 @@ curl -fsSL "$RAW/blog-akun.js" -o "$T/blog-akun.js"; node --check "$T/blog-akun.
 PG="beranda blog-ut hub cek audit audit-hasil layanan pesanan admin"
 for p in $PG; do curl -fsSL "$RAW/parafrase/pages/$p.html" -o "$T/pages/$p.html"; done
 for e in $EXTRA; do curl -fsSL "$RAW/parafrase/$e" -o "$T/$e"; node --check "$T/$e"; done
+mkdir -p "$T/ca"; for f in favicon.ico favicon-32.png apple-touch-icon.png icon-192.png icon-512.png logo-96.png manifest.webmanifest; do curl -fsSL "$RAW/parafrase/pages/ca/$f" -o "$T/ca/$f"; done
 curl -fsSL "$RAW/public/assets/blog.css" -o "$T/blog.css"
 cp "$T/blog-akun.js" "$APP/blog-akun.js"
 [ -d "$APP/public/assets" ] && cp "$T/blog.css" "$APP/public/assets/blog.css" || echo "PERINGATAN: $APP/public/assets tidak ada, blog.css dilewati"
 for e in $EXTRA; do cp "$T/$e" "$APP/parafrase/$e"; done
 for p in $PG; do cp "$T/pages/$p.html" "$APP/parafrase/pages/$p.html"; done
+mkdir -p "$APP/parafrase/pages/ca"; cp "$T"/ca/* "$APP/parafrase/pages/ca/"
 rm -rf "$T"
 pm2 restart nextaja --update-env >/dev/null
 sleep 5
@@ -32,6 +34,8 @@ SM=$(curl -s -H 'Host: catatanakademik.com' http://127.0.0.1:3200/sitemap.xml | 
 VR=$(c -H 'Host: catatanakademik.com' http://127.0.0.1:3200/blog/siswi-smk-yang-hilang-ditemukan-di-apartemen-pik-2-polisi-masih-dalami-kronologi)
 NX=$(curl -s -H 'Host: catatanakademik.com' http://127.0.0.1:3200/ruangakademikut | grep -ci 'nextaja' || true)
 UL=$(c -H 'Host: catatanakademik.com' http://127.0.0.1:3200/ms/ulasan)
+FV=$(c -H 'Host: catatanakademik.com' http://127.0.0.1:3200/ruangakademikut/assets/ca/favicon.ico)
+echo "favicon: $FV (200)"; [ "$FV" = 200 ]
 echo "ulasan API: $UL (200)"
 [ "$UL" = 200 ]
 echo "nextaja tersisa di hub: $NX | hub $H blog $B | Lab Studio di hub: $LS (0) | sitemap loc: $SM | artikel viral: $VR (404)"

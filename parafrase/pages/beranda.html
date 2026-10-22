@@ -453,9 +453,9 @@ svg.nx-i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;s
 </section>
 
 <section class="s" style="padding-block:28px 8px"><div class="wrap"><div class="stats3 card rv" id="statsBox">
-  <div><b data-to="5" data-plus="1">0</b><span>Tahun melayani mahasiswa UT</span></div>
-  <div><b data-to="800" data-plus="1">0</b><span>Mahasiswa sudah dibantu</span></div>
-  <div><b data-to="17400" data-plus="1">0</b><span>File sudah dikerjakan</span></div>
+  <div><b data-to="5" data-plus="1">5+</b><span>Tahun melayani mahasiswa UT</span></div>
+  <div><b data-to="800" data-plus="1">800+</b><span>Mahasiswa sudah dibantu</span></div>
+  <div><b data-to="17400" data-plus="1">17.400+</b><span>File sudah dikerjakan</span></div>
 </div></div></section>
 
 <section class="s" id="layanan">
@@ -566,7 +566,8 @@ var hero=$("#heroSec"),nav=$(".nav"),prog=$("#prog");
     node.replaceChild(frag,c)}
   else if(c.nodeType===1)walk(c)})})($("#heroTitle"))})();
 /* angka: dihitung sekali saat terlihat */
-(function(){var box=$("#statsBox"),bs=box.querySelectorAll("b[data-to]");
+function RM2(){return matchMedia("(prefers-reduced-motion:reduce)").matches}
+(function(){var box=$("#statsBox"),bs=box.querySelectorAll("b[data-to]");if(!RM2()&&"IntersectionObserver" in window)bs.forEach(function(b){b.textContent="0"});
   var fmt=function(b,v){b.textContent=(b.dataset.plus?Number(v).toLocaleString("id-ID")+"+":String(v))};
   if(RM||!("IntersectionObserver" in window)){bs.forEach(function(b){fmt(b,b.dataset.to)});return}
   var once=new IntersectionObserver(function(en){if(!en[0].isIntersecting)return;once.disconnect();
