@@ -19,7 +19,7 @@
   }
   function dt(ms) { return ms ? new Date(ms).toLocaleString("id-ID", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "-"; }
   var STAT = { menunggu_bayar: "Menunggu bayar", menunggu_verifikasi: "Menunggu verifikasi", baru_dibayar: "Baru dibayar", dikerjakan: "Dikerjakan", cek_ulang: "Cek ulang", terkirim: "Terkirim", kedaluwarsa: "Kedaluwarsa" };
-  var TABS = [["verif", "Verifikasi bayar"], ["lay", "Tugas, Diskusi, Metopen, Revisi"], ["queue", "Cek & Parafrase"], ["audit", "Audit Dokumen"], ["all", "Semua pesanan"], ["set", "QRIS & Pengaturan"], ["img", "Gambar kartu"], ["site", "Gambar situs"], ["wa", "Pesan WhatsApp"]];
+  var TABS = [["verif", "Verifikasi bayar"], ["lay", "Tugas, Diskusi, Metopen, Revisi"], ["queue", "Cek & Parafrase"], ["audit", "Audit Dokumen"], ["all", "Semua pesanan"], ["set", "QRIS & Pengaturan"], ["img", "Gambar kartu"], ["site", "Gambar situs"], ["wa", "Pesan WhatsApp"], ["ul", "Ulasan pelanggan"]];
   var cur = "verif";
   var EMBED = /[?&]embed=1/.test(location.search);
   if (EMBED) document.documentElement.classList.add("embed");
@@ -41,7 +41,7 @@
   function go(t) {
     cur = t; TABS.forEach(function (x) { $("t-" + x[0]).classList.toggle("hidden", x[0] !== t); });
     [].forEach.call($("tabs").children, function (b) { b.classList.toggle("on", b.getAttribute("data-t") === t); });
-    ({ queue: renderQueue, verif: renderVerif, all: renderAll, audit: renderAuditList, lay: renderLay, set: renderSettings, wa: renderWa, img: renderImg, site: renderSite })[t]();
+    ({ queue: renderQueue, verif: renderVerif, all: renderAll, audit: renderAuditList, lay: renderLay, set: renderSettings, wa: renderWa, img: renderImg, site: renderSite, ul: renderUlasan })[t]();
   }
   function waLink(o, text) { return "https://wa.me/" + o.wa + (text ? "?text=" + encodeURIComponent(text) : ""); }
 
@@ -225,6 +225,34 @@
               x.has ? h("button", { class: "btn o", type: "button", on: { click: function () { api("/ms/admin/site-images/" + g.group + "/" + x.name, { method: "DELETE" }).then(function () { toast("Kembali ke gambar bawaan"); renderSite(); }); } } }, "Kembalikan bawaan") : null].filter(Boolean))]));
         });
       });
+    }).catch(function (e) { s.textContent = e.message; });
+  }
+  function renderUlasan() {
+    var s = $("t-ul"); s.textContent = "Memuat…";
+    api("/ms/admin/ulasan").then(function (j) {
+      s.textContent = "";
+      s.appendChild(h("p", { class: "muted" }, "Tulis ulasan pelanggan dan lampirkan tangkapan layar chat. Di landing tampil 3D; arahkan kursor ke kartu dan gambarnya keluar. Tampilkan hanya dengan izin pelanggan."));
+      var nama = h("input", { placeholder: "Nama (boleh inisial)", maxlength: 60 }), ket = h("input", { placeholder: "Keterangan, misal: Mahasiswa Manajemen UT", maxlength: 80 }),
+        teks = h("textarea", { placeholder: "Isi ulasan", rows: 3, maxlength: 500 }), img = h("input", { type: "file", accept: "image/jpeg,image/png,image/webp" }),
+        tampil = h("input", { type: "checkbox", checked: "checked" }), eid = null, info = h("div", { class: "muted" }, "Ulasan baru");
+      var form = h("div", { class: "card", style: "display:grid;gap:8px;max-width:560px;margin-bottom:16px" }, [info, nama, ket, teks, h("label", {}, ["Gambar chat (opsional) ", img]), h("label", {}, [tampil, " Tampilkan di landing"]),
+        h("div", { class: "act" }, [h("button", { type: "button", class: "btn g", on: { click: function () {
+          var fd = new FormData(); if (eid) fd.append("id", eid); fd.append("nama", nama.value); fd.append("ket", ket.value); fd.append("teks", teks.value); fd.append("tampil", tampil.checked ? "1" : "0");
+          if (img.files[0]) fd.append("img", img.files[0]);
+          toast("Menyimpan…"); (img.files[0] ? shrink(img.files[0], 1800) : Promise.resolve(null)).then(function (f1) { if (f1) { fd.delete("img"); fd.append("img", f1); } return api("/ms/admin/ulasan", { method: "POST", body: fd }); })
+            .then(function () { toast("Ulasan tersimpan"); renderUlasan(); }).catch(upErr); } } }, "Simpan"),
+          h("button", { type: "button", class: "btn o", on: { click: function () { renderUlasan(); } } }, "Kosongkan")])]);
+      s.appendChild(form);
+      j.items.forEach(function (x) {
+        s.appendChild(h("div", { class: "card", style: "display:flex;gap:12px;align-items:flex-start;margin-bottom:10px;flex-wrap:wrap" }, [
+          x.imgAdmin ? h("img", { src: x.imgAdmin, alt: "", style: "width:64px;height:84px;object-fit:cover;border-radius:8px" }) : null,
+          h("div", { style: "flex:1;min-width:200px" }, [h("b", {}, x.nama + (x.ket ? " · " + x.ket : "")), h("div", { class: "muted" }, x.teks), h("div", { class: "muted" }, x.tampil ? "Tampil di landing" : "Disembunyikan")]),
+          h("div", { class: "act" }, [
+            h("button", { type: "button", class: "btn o", on: { click: function () { eid = x.id; info.textContent = "Ubah ulasan (gambar lama tetap kecuali diganti)"; nama.value = x.nama; ket.value = x.ket || ""; teks.value = x.teks; tampil.checked = x.tampil; form.scrollIntoView({ behavior: "smooth" }); } } }, "Ubah"),
+            h("button", { type: "button", class: "btn o", on: { click: function () { api("/ms/admin/ulasan/" + x.id + "/toggle", { method: "POST" }).then(renderUlasan); } } }, x.tampil ? "Sembunyikan" : "Tampilkan"),
+            h("button", { type: "button", class: "btn r", on: { click: function () { if (confirm("Hapus ulasan ini permanen? Sembunyikan saja bila ragu.")) api("/ms/admin/ulasan/" + x.id, { method: "DELETE" }).then(renderUlasan); } } }, "Hapus")])].filter(Boolean)));
+      });
+      if (!j.items.length) s.appendChild(h("p", { class: "muted" }, "Belum ada ulasan."));
     }).catch(function (e) { s.textContent = e.message; });
   }
   function renderWa() {

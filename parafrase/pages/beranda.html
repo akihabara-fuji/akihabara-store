@@ -378,6 +378,22 @@ svg.nx-i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;s
 .cvt i,.cvt b{position:relative;z-index:1;font-style:normal}
 .cvt i{background:rgba(255,255,255,.18);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:4px 12px;font:600 12px Onest,sans-serif}
 .cvt b{font:700 14px "Bricolage Grotesque",sans-serif;letter-spacing:.02em}
+
+/* ulasan 3D */
+.ul3{perspective:1100px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;padding-top:34px}
+.rc{position:relative;transform-style:preserve-3d;transition:transform .25s ease-out;min-height:210px;padding:22px 22px 24px;border-radius:22px;background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow);will-change:transform;cursor:default;display:flex;flex-direction:column;gap:12px}
+.rc{animation:rcin .6s cubic-bezier(.2,.8,.2,1) both}@keyframes rcin{from{opacity:0;translate:0 20px}}
+.rc:hover,.rc.open{z-index:6;border-color:var(--acc);box-shadow:0 24px 50px -18px var(--halo,rgba(168,85,247,.5))}
+.rc q{display:block;quotes:none;font-size:15px;line-height:1.6;transform:translateZ(26px)}
+.rc .who{margin-top:auto;transform:translateZ(18px);font-weight:700;font-size:14px}.rc .who small{display:block;color:var(--muted);font-weight:500;font-size:12.5px}
+.rc .shot{position:absolute;right:14px;bottom:16px;width:30%;aspect-ratio:3/4;border-radius:12px;border:2px solid var(--surface);overflow:hidden;box-shadow:0 10px 26px rgba(0,0,0,.35);transform:translateZ(34px) rotate(6deg);transition:transform .35s cubic-bezier(.2,.8,.2,1),width .35s cubic-bezier(.2,.8,.2,1);background:var(--surface2)}
+.rc .shot img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
+.rc:hover .shot,.rc.open .shot{width:64%;transform:translateZ(110px) translateY(-34%) rotate(-3deg)}
+.rc.has q{padding-right:34%}
+.rc .hint{position:absolute;left:22px;bottom:-1px;transform:translateY(100%);font-size:11.5px;color:var(--muted);padding-top:6px}
+@media(max-width:900px){.ul3{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.ul3{grid-template-columns:1fr}.rc:hover .shot,.rc.open .shot{width:58%}}
+@media(prefers-reduced-motion:reduce){.rc,.rc .shot{transition:none}}
 @media(max-width:700px){.stats3 b{font-size:26px}.stats3 span{font-size:12.5px}}
 </style>
 <style id="theme-vars"></style>
@@ -410,8 +426,8 @@ svg.nx-i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;s
     <h1 id="heroTitle">Urus kuliah UT, <em>mulai dari sini.</em></h1>
     <p class="nx-lead fx" style="--d:.5s">Pendampingan tugas, diskusi, dan metopen untuk mahasiswa UT. Rapi, ada tahap review, dan semua referensi bisa diperiksa.</p>
     <div class="nx-two">
-      <a class="nx-door nx-d1" href="/layanan-ut"><span class="nx-t"><svg class="nx-i" viewBox="0 0 24 24"><path d="M3 8l9-4 9 4-9 4-9-4z"/><path d="M7 10.5V15c0 1.5 2.2 3 5 3s5-1.5 5-3v-4.5"/></svg>Layanan Jasa<b>→</b></span><small>Tugas, diskusi, metopen, audit, dan paket semester</small></a>
-      <a class="nx-door nx-d2" href="/blog-ut"><span class="nx-t"><svg class="nx-i" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.4 7.6-8 9-4.6-1.4-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>Info UT<b>→</b></span><small>Jadwal, kabar penting, dan panduan terbaru seputar UT</small></a>
+      <a class="nx-door nx-d1" href="/layanan-ut"><span class="nx-t"><svg class="nx-i" viewBox="0 0 24 24"><path d="M3 8l9-4 9 4-9 4-9-4z"/><path d="M7 10.5V15c0 1.5 2.2 3 5 3s5-1.5 5-3v-4.5"/></svg>Kebutuhan akademikmu<b>→</b></span><small>Tugas, diskusi, metopen, audit, dan paket semester</small></a>
+      <a class="nx-door nx-d2" href="/blog-ut"><span class="nx-t"><svg class="nx-i" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.4 7.6-8 9-4.6-1.4-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>Update info UT<b>→</b></span><small>Semua blog dan berita terbaru tentang UT</small></a>
     </div>
     <div class="nx-pop fx" style="--d:.8s"><a class="nx-help" href="/layanan-ut">Langsung mulai dari menu populer →</a>
       <div class="nx-chips">
@@ -470,6 +486,13 @@ svg.nx-i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;s
   <div class="wrap">
     <div class="sh"><div><h2>Tulisan terbaru</h2><p>Tips kuliah dan info UT yang sudah diperiksa.</p></div><a class="btn btn-ghost btn-sm" href="/blog">Lihat semua</a></div>
     <div class="g4" id="blogList"></div>
+  </div>
+</section>
+
+<section class="s" id="ulasan" hidden>
+  <div class="wrap">
+    <div class="sh"><div><h2>Apa kata mereka?</h2><p>Cuplikan chat pelanggan, ditampilkan dengan izin mereka. Arahkan kursor ke kartu untuk melihat chat aslinya.</p></div></div>
+    <div class="ul3" id="ulList"></div>
   </div>
 </section>
 
@@ -549,6 +572,18 @@ var hero=$("#heroSec"),nav=$(".nav"),prog=$("#prog");
   var once=new IntersectionObserver(function(en){if(!en[0].isIntersecting)return;once.disconnect();
     bs.forEach(function(b){var to=+b.dataset.to,t0=performance.now();(function tick(t){var p=Math.min(1,(t-t0)/1300);fmt(b,Math.round(to*(1-Math.pow(1-p,3))));if(p<1)requestAnimationFrame(tick)})(t0)})},{threshold:.4});
   once.observe(box)})();
+/* ulasan 3D: kartu miring mengikuti kursor, gambar chat keluar saat disorot */
+(function(){var sec=$("#ulasan"),box=$("#ulList");if(!sec||!box)return;
+  fetch("/ms/ulasan").then(function(r){return r.json()}).then(function(j){var a=(j.items||[]).slice(0,6);if(!a.length)return;
+    a.forEach(function(x){var c=document.createElement("div");c.className="rc"+(x.img?" has":"");
+      var q=document.createElement("q");q.textContent=x.teks;c.appendChild(q);
+      var w=document.createElement("div");w.className="who";w.textContent=x.nama;if(x.ket){var m=document.createElement("small");m.textContent=x.ket;w.appendChild(m)}c.appendChild(w);
+      if(x.img){var sh=document.createElement("div");sh.className="shot";var im=document.createElement("img");im.loading="lazy";im.alt="Tangkapan layar chat dari "+x.nama;im.src=x.img;sh.appendChild(im);c.appendChild(sh);
+        c.addEventListener("click",function(){c.classList.toggle("open")})}
+      if(!matchMedia("(prefers-reduced-motion:reduce)").matches&&matchMedia("(hover:hover)").matches){c.addEventListener("pointermove",function(e){var r=c.getBoundingClientRect(),px=(e.clientX-r.left)/r.width-.5,py=(e.clientY-r.top)/r.height-.5;c.style.transform="rotateY("+(px*14).toFixed(2)+"deg) rotateX("+(-py*12).toFixed(2)+"deg) translateZ(14px)"});
+        c.addEventListener("pointerleave",function(){c.style.transform=""})}
+      box.appendChild(c)});
+    sec.hidden=false;reveal()}).catch(function(){})})();
 var ticking=false;
 function frame(){ticking=false;var y=window.scrollY||0;nav.classList.toggle("sc",y>12);
   var max=document.documentElement.scrollHeight-innerHeight;
