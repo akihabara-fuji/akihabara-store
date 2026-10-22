@@ -13,8 +13,12 @@ SITE_L = 'const SITE = (process.env.SITE_URL || "https://nextaja.com").replace(/
 rep(SITE_L, SITE_L + '\n// Alamat rumah layanan akademik dan blog. Bila ACAD_URL belum diatur, sama dengan SITE (perilaku lama).\nconst ACAD = (process.env.ACAD_URL || SITE).replace(/\\/+$/, "");\nconst ACAD_HOSTS = ACAD === SITE ? [] : [new URL(ACAD).hostname, "www." + new URL(ACAD).hostname];\nconst isAcadHost = req => ACAD_HOSTS.includes(req.hostname);')
 rep('  res.type("text/plain").send(`User-agent: *\\nAllow: /\\nDisallow: /admin\\nDisallow: /ms/\\n\\nSitemap: ${SITE}/sitemap.xml\\n`);',
     '  const base = isAcadHost(req) ? ACAD : SITE;\n  res.type("text/plain").send(`User-agent: *\\nAllow: /\\nDisallow: /admin\\nDisallow: /ms/\\n\\nSitemap: ${base}/sitemap.xml\\n`);')
-rep('  const urls = [{ loc: `${SITE}/`, pri: "1.0" }, { loc: `${SITE}/blog`, pri: "0.8" }, ...extra.blogUrls()];',
-    '  const urls = ACAD === SITE\n    ? [{ loc: `${SITE}/`, pri: "1.0" }, { loc: `${SITE}/blog`, pri: "0.8" }, ...extra.blogUrls()]\n    : isAcadHost(req)\n      ? [{ loc: `${ACAD}/blog`, pri: "0.8" }, ...extra.blogUrls()]\n      : [{ loc: `${SITE}/`, pri: "1.0" }];')
+import re
+m = re.search(r'  const urls = \[\{ loc: `\$\{SITE\}/`, pri: "1\.0" \}, \{ loc: `\$\{SITE\}/blog`, pri: "0\.8" \}(?P<tail>[^\]]*)\];', s)
+if not m or len(re.findall(r'  const urls = \[', s)) != 1:
+    raise SystemExit("penanda sitemap tidak ditemukan")
+tail = m.group("tail")
+s = s[:m.start()] + ('  const urls = ACAD === SITE\n    ? [{ loc: `${SITE}/`, pri: "1.0" }, { loc: `${SITE}/blog`, pri: "0.8" }' + tail + ']\n    : isAcadHost(req)\n      ? [{ loc: `${ACAD}/blog`, pri: "0.8" }' + tail + ']\n      : [{ loc: `${SITE}/`, pri: "1.0" }];') + s[m.end():]
 rep('SITE: (process.env.SITE_URL || "https://nextaja.com").replace(/\\/+$/, ""), getSettings', 'SITE: ACAD, getSettings')
 open(f, "w", encoding="utf8").write(s)
 print("ACAD dipasang")
