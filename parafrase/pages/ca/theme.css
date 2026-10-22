@@ -1,0 +1,12 @@
+/* Tema Catatan Akademik: biru navy dari logo CA + emas sebagai aksen kecil. Hanya dimuat di domain akademik. Ubah warna cukup di sini. */
+:root,[data-theme=light]{--bg:#f5f7fa;--surface:#ffffff;--surface2:#eef2f7;--border:#e3e8ef;--dash:#cfd8e3;--text:#172033;--muted:#5b6678;--acc:#1d4ed8;--acc2:#d9972b;--on-accent:#ffffff;--tint1:rgba(29,78,216,.07);--halo:rgba(29,78,216,.16);--glow:rgba(29,78,216,.22);--btn:#1d4ed8;--btn-h:#1e40af;--link:#1d4ed8}
+[data-theme=dark],.band{--bg:#0b1326;--surface:#111c36;--surface2:#16254a;--border:#243764;--dash:#2f4478;--text:#eef3ff;--muted:#aebbd9;--acc:#4f8ff7;--acc2:#f5b942;--on-accent:#0b1326;--tint1:rgba(79,143,247,.14);--halo:rgba(79,143,247,.22);--glow:rgba(79,143,247,.3);--btn:#2f6fe0;--btn-h:#2563eb;--link:#8bb6ff}
+.btn-pri{background:#1d4ed8;color:#fff}.btn-pri:hover{background:#1e40af}
+[data-theme=dark] .btn-pri,.band .btn-pri{background:#2f6fe0}
+.band .eyebrow,.band .soon{color:#9cc2ff}
+/* hero, cincin 3D, dan sorot kartu: ikut biru/emas */
+.hero.hx{--nx-blue:#1d4ed8;--nx-blue2:var(--acc);--nx-gold:#f5b942;--nx-glow:rgba(79,143,247,.26)}
+[data-theme=dark] .hero.hx{--nx-blue:#2f6fe0}
+.hl1{background:conic-gradient(from 0deg,#0b2a6b,var(--acc) 10%,#dbeafe 18%,#f5b942 26%,#0b2a6b 44%,#071a42 54%,var(--acc) 70%,#dbeafe 79%,#0b2a6b)!important}
+.pt:after{background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(79,143,247,.28),transparent 55%)!important}
+.nx-strip{background:#0b1326!important;color:#eef3ff!important}.nx-strip svg{color:#f5b942!important}

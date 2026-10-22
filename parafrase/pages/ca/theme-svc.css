@@ -1,0 +1,3 @@
+/* Tema untuk halaman layanan (site.css): neutral navy, aksen emas, tombol biru. */
+:root,[data-theme=light]{--bg:#f5f7fa;--surface:#ffffff;--surface2:#eef2f7;--border:#e3e8ef;--dash:#cfd8e3;--text:#172033;--muted:#5b6678;--acc:#f5b942;--on-accent:#172033;--btn:#1d4ed8;--btn-h:#1e40af;--link:#1d4ed8}
+[data-theme=dark]{--bg:#0b1326;--surface:#111c36;--surface2:#16254a;--border:#243764;--dash:#2f4478;--text:#eef3ff;--muted:#aebbd9;--acc:#f5b942;--on-accent:#0b1326;--btn:#2f6fe0;--btn-h:#2563eb;--link:#8bb6ff}
