@@ -71,7 +71,11 @@ module.exports = function mount(ctx) {
   const ACAD_TOPICS = ["study", "updateut"];
   const BRAND = ACAD_ONLY ? "Catatan Akademik" : "nextaja";
   /* Di domain akademik, nama "nextaja" pada teks halaman diganti nama brand akademik (URL dan alamat email tidak disentuh). */
-  const rebrand = h => (ACAD_ONLY ? String(h).replace(/(?<![\w./@-])nextaja(?![\w-]|\.\w)/gi, BRAND) : h);
+  const shortPath = h => h
+    .replace(/\/ruangakademikut\/(cek-parafrase-mandiri|audit|layanan|blog-ut|pesanan)/g, "/$1")
+    .replace(/(https?:\/\/[^"'\s<]+?)\/ruangakademikut(?=["'<\s?#)])/g, "$1/")
+    .replace(/(["'(=])\/ruangakademikut(?=["'<\s?#)])/g, "$1/");
+  const rebrand = h => (ACAD_ONLY ? shortPath(String(h).replace(/(?<![\w./@-])nextaja(?![\w-]|\.\w)/gi, BRAND)) : h);
   const published = () => blog.posts.filter(p => p.status === "published" && !p.trashedAt && (!ACAD_ONLY || ACAD_TOPICS.includes(p.topic))).sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
 
   function inline(t) {
@@ -659,5 +663,5 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
   });
 
   // untuk sitemap
-  return { userFrom, pageUrls: () => ["/ruangakademikut", "/ruangakademikut/cek-parafrase-mandiri", "/ruangakademikut/audit", "/ruangakademikut/layanan", "/ruangakademikut/blog-ut"].map(u => ({ loc: `${SITE}${u}`, pri: "0.7" })), blogUrls: () => published().map(p => ({ loc: `${SITE}/blog/${p.slug}`, lastmod: (p.updatedAt || p.publishedAt || "").slice(0, 10), pri: "0.6" })) };
+  return { userFrom, pageUrls: () => ["/ruangakademikut", "/ruangakademikut/cek-parafrase-mandiri", "/ruangakademikut/audit", "/ruangakademikut/layanan", "/ruangakademikut/blog-ut"].map(u => ({ loc: `${SITE}${ACAD_ONLY ? shortPath(u) : u}`, pri: "0.7" })), blogUrls: () => published().map(p => ({ loc: `${SITE}/blog/${p.slug}`, lastmod: (p.updatedAt || p.publishedAt || "").slice(0, 10), pri: "0.6" })) };
 };

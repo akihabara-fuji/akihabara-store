@@ -59,7 +59,7 @@ else{gtag("js",new Date());gtag("config",G,{anonymize_ip:true});ld("https://www.
 function ev(n,p){p=p||{};p.page_path=location.pathname;if(T)dataLayer.push(Object.assign({event:n},p));else gtag("event",n,p)}
 document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[href]");if(!a)return;var h=a.getAttribute("href")||"";
 if(/wa\\.me\\//.test(h))ev("click_whatsapp",{link_url:h.split("?")[0]});
-else if(/\\/ruangakademikut\\/(layanan|cek-parafrase-mandiri|audit)/.test(h))ev("klik_layanan",{link_url:h})},true);})();`);
+else if(/\\/(?:ruangakademikut\\/)?(layanan|cek-parafrase-mandiri|audit)(?:[\\/?#]|$)/.test(h))ev("klik_layanan",{link_url:h})},true);})();`);
   });
   /* Verifikasi Google Search Console lewat berkas HTML: admin cukup menempel nama berkas di Pengaturan. */
   app.get(/^\/(google[a-z0-9]{8,40}\.html)$/, (req, res) => {
