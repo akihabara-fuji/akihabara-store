@@ -53,7 +53,7 @@ module.exports = function mountAudit({ app, express, db, settings, orders, root,
         await fsp.writeFile(path.join(root, "data", "private", rel), f.buffer, { mode: 0o600 });
         insert.run(id, rel, name, f.size, crypto.createHash("sha256").update(f.buffer).digest("hex"), JSON.stringify({ kind: "audit", words, wordsWithoutBibliography: a.wordsBody, hasBibliography: !!a.hasBibliography }), h, now, now + UPLOAD_TTL_MS);
         res.json({
-          uploadId: id, file: { name, size: f.size }, words, counts: r.counts, refs: r.refs,
+          uploadId: id, file: { name, size: f.size }, words, counts: r.counts, refs: r.refs, score: r.score,
           /* Hanya tingkat, kategori, dan lokasi. Penjelasan ada di Audit Lengkap. */
           findings: r.findings.map(x => ({ sev: x.sev, cat: x.cat, where: x.where })),
           quote: quote(words),
@@ -97,7 +97,7 @@ module.exports = function mountAudit({ app, express, db, settings, orders, root,
     try {
       const a = await analyze(await fsp.readFile(orders.priv(o.original_file)));
       const r = await runAudit(a, { fetchFn: doFetch });
-      const data = { title: o.title, words: o.word_count, counts: r.counts, refs: r.refs, findings: r.findings, deleteAt: o.delete_at };
+      const data = { title: o.title, words: o.word_count, counts: r.counts, refs: r.refs, score: r.score, findings: r.findings, deleteAt: o.delete_at };
       cache.set(o.id, { at: now, data }); if (cache.size > 20) cache.delete(cache.keys().next().value);
       res.json(data);
     } catch (e) { console.error("[audit] laporan gagal:", e && e.message); res.status(500).json({ error: "Hasil tidak bisa dibuat. Hubungi admin dengan ID pesananmu." }); }

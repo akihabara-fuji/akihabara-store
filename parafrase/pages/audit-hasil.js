@@ -9,6 +9,7 @@
   fetch("/ms/audit/report/" + token, { cache: "no-store" }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); }).then(function (x) {
     if (!x.ok) return fail(x.j.error || "Hasil tidak bisa dibuka.");
     var d = x.j; $("rmeta").textContent = d.title + " · " + rp(d.words) + " kata";
+    window.auditScoreCard(d.score, $("score"));
     ["kritis", "peringatan", "info"].forEach(function (k) {
       var b = el("div", "min-width:130px;padding:14px 18px;border-radius:16px;border:1px solid #2b2b58");
       b.appendChild(el("b", "display:block;font-size:30px;color:" + SEV[k][1], d.counts[k])); b.appendChild(el("span", "font-size:13.5px", SEV[k][0])); $("counts").appendChild(b);

@@ -76,6 +76,33 @@ async function checkDois(dois, fetchFn, { max = 25, timeoutMs = 6000, concurrenc
   return res;
 }
 
+/* Skor Kesiapan: murni hitungan dari temuan di atas, tanpa AI dan tanpa database luar.
+   BUKAN skor DrillBit dan BUKAN skor UT: kemiripan dengan sumber luar hanya bisa dinilai DrillBit resmi. */
+const pct = (a, b) => b > 0 ? Math.round(a * 100 / b) : null;
+function buildScore(body, counts, refs, M) {
+  const sents = [], seen = new Map();
+  const { splitSentences } = require("./docx");
+  for (const p of body) for (const t of splitSentences(p.text || "")) {
+    const k = fold(t).replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
+    if (k.split(" ").length >= 8) sents.push(k);
+  }
+  let dup = 0; for (const k of sents) { if (seen.has(k)) dup++; else seen.set(k, 1); }
+  const checked = refs.doiOk + refs.doiNotFound;
+  const metrics = [
+    { key: "sitasi", label: "Sitasi punya pasangan di daftar pustaka", value: pct(M.citeMatched, M.citeTotal), good: "tinggi" },
+    { key: "pustaka", label: "Pustaka yang dikutip di isi", value: pct(M.bibCited, M.bibWithKey), good: "tinggi" },
+    { key: "doi", label: "DOI terdaftar di Crossref", value: pct(refs.doiOk, checked), good: "tinggi" },
+    { key: "berulang", label: "Kalimat berulang di dalam dokumen", value: sents.length ? Math.round(dup * 1000 / sents.length) / 10 : null, good: "rendah" },
+  ];
+  const dupPct = metrics[3].value || 0;
+  const penalty = Math.min(60, counts.kritis * 8) + Math.min(25, counts.peringatan * 3) + Math.min(10, counts.info) + Math.min(15, Math.round(dupPct / 2));
+  let value = Math.max(0, 100 - penalty);
+  if (counts.kritis > 0) value = Math.min(value, 84); // ada temuan kritis: tidak boleh berlabel "siap"
+  const level = value >= 85 ? "siap" : value >= 70 ? "hampir" : value >= 50 ? "perlu" : "banyak";
+  const label = { siap: "Siap dikumpulkan", hampir: "Hampir siap", perlu: "Perlu perbaikan", banyak: "Banyak yang harus dibenahi" }[level];
+  return { value, level, label, metrics, note: "Skor internal Catatan Akademik dari temuan di dokumenmu. Bukan skor DrillBit atau UT: kemiripan dengan sumber luar hanya bisa dinilai DrillBit resmi." };
+}
+
 async function runAudit(a, { fetchFn } = {}) {
   const paras = a.paragraphs || [];
   const bibIdx = a.bibliographyParagraphIndex;
@@ -84,6 +111,7 @@ async function runAudit(a, { fetchFn } = {}) {
   const cites = extractCitations(body);
   const F = [];
   const add = (sev, cat, where, detail) => F.push({ sev, cat, where, detail });
+  const M = { citeTotal: 0, citeMatched: 0, bibWithKey: 0, bibCited: 0 };
 
   if (!bib.length) {
     add("kritis", "Daftar pustaka tidak ditemukan", "Akhir dokumen", "Judul Daftar Pustaka atau Referensi tidak terbaca, atau isinya kosong.");
@@ -92,6 +120,7 @@ async function runAudit(a, { fetchFn } = {}) {
     const bibByName = new Map();
     for (const b of bib) if (b.name) { const k = fold(b.name).replace(/[^a-z]/g, ""); (bibByName.get(k) || bibByName.set(k, []).get(k)).push(b); }
     const seen = new Set(), citedKeys = new Set(), citedNames = new Set();
+    M.citeTotal = new Set(cites.map(c => c.key)).size; M.citeMatched = new Set(cites.filter(c => bibKeys.has(c.key)).map(c => c.key)).size;
     for (const c of cites) {
       citedNames.add(c.key.split("|")[0]);
       if (bibKeys.has(c.key)) { citedKeys.add(c.key); continue; }
@@ -100,6 +129,7 @@ async function runAudit(a, { fetchFn } = {}) {
       if (same) add("peringatan", "Tahun sitasi berbeda dengan daftar pustaka", "Paragraf " + (c.idx + 1), `Sitasi ${c.name} (${c.year}), di pustaka tertulis tahun ${same.map(s => s.year || "tanpa tahun").join(" / ")}.`);
       else add("kritis", "Sitasi tidak ada di daftar pustaka", "Paragraf " + (c.idx + 1), `Sitasi ${c.name} (${c.year}) tidak punya pasangan di daftar pustaka.`);
     }
+    M.bibWithKey = bib.filter(b => b.key).length; M.bibCited = bib.filter(b => b.key && (citedKeys.has(b.key) || citedNames.has(b.key.split("|")[0]))).length;
     for (const b of bib) {
       if (b.key && !citedKeys.has(b.key) && !citedNames.has(b.key.split("|")[0])) add("peringatan", "Pustaka tidak dikutip di teks", "Pustaka no. " + b.n, `Entri "${b.text.slice(0, 80)}" tidak muncul sebagai sitasi di isi.`);
       if (!b.year) add("peringatan", "Pustaka tanpa tahun", "Pustaka no. " + b.n, `Entri "${b.text.slice(0, 80)}" tidak memuat tahun terbit.`);
@@ -129,7 +159,9 @@ async function runAudit(a, { fetchFn } = {}) {
   const order = { kritis: 0, peringatan: 1, info: 2 };
   F.sort((x, y) => order[x.sev] - order[y.sev]);
   const count = s => F.filter(f => f.sev === s).length;
-  return { findings: F, counts: { kritis: count("kritis"), peringatan: count("peringatan"), info: count("info") }, refs: refs || { total: 0, withDoi: 0, doiOk: 0, doiNotFound: 0, doiUnverified: 0 }, citations: cites.length };
+  const counts = { kritis: count("kritis"), peringatan: count("peringatan"), info: count("info") };
+  const refsOut = refs || { total: 0, withDoi: 0, doiOk: 0, doiNotFound: 0, doiUnverified: 0 };
+  return { findings: F, counts, refs: refsOut, citations: cites.length, score: buildScore(body, counts, refsOut, M) };
 }
 
 module.exports = { runAudit, extractCitations, extractBibliography, checkDois };
