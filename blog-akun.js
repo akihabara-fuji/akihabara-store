@@ -395,11 +395,6 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
         .then(r => console.log("IndexNow", new URL(base).host, r.status, urls.length, "url")).catch(e => console.log("IndexNow gagal:", e.message));
     };
     send(SITE, [...slugs.map(s => `${SITE}/blog/${s}`), `${SITE}/blog`]);
-    if (ACAD_ONLY) { /* domain akademik: hanya tulisan bertopik akademik/UT */
-      const AC = process.env.ACAD_URL.replace(/\/+$/, "");
-      const ok = slugs.filter(s => { const p = blog.posts.find(x => x.slug === s); return p && ACAD_TOPICS.includes(p.topic); });
-      if (ok.length) send(AC, [...ok.map(s => `${AC}/blog/${s}`), `${AC}/blog`, `${AC}/blog-ut`]);
-    }
   }
   app.get("/blog/feed.xml", (req, res) => {
     const x = t => esc(t);

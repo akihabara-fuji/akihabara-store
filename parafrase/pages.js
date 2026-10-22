@@ -49,6 +49,14 @@ module.exports = function mountPages({ app, express }) {
     if (!CA.has(req.params.f)) return res.status(404).end();
     res.set("Cache-Control", "public, max-age=86400").sendFile(path.join(dir, "ca", req.params.f));
   });
+  /* Domain akademik: browser/Google meminta ikon di jalur root. Tanpa ini yang keluar ikon "n" milik nextaja. */
+  const ACH = (() => { try { return new URL(process.env.ACAD_URL || "").hostname.toLowerCase(); } catch { return ""; } })();
+  const ROOT_ICON = { "/favicon.ico": "favicon.ico", "/apple-touch-icon.png": "apple-touch-icon.png", "/icon-192.png": "icon-192.png", "/icon-512.png": "icon-512.png", "/manifest.webmanifest": "manifest.webmanifest" };
+  app.get(Object.keys(ROOT_ICON), (req, res, next) => {
+    const h = String(req.headers.host || "").toLowerCase().replace(/:\d+$/, "");
+    if (!SHORT || !ACH || (h !== ACH && h !== "www." + ACH)) return next();
+    res.set("Cache-Control", "public, max-age=3600").sendFile(path.join(dir, "ca", ROOT_ICON[req.path]));
+  });
   /* Verifikasi Bing Webmaster Tools (kode per akun, bukan rahasia) */
   app.get("/BingSiteAuth.xml", (req, res) => res.type("application/xml").set("Cache-Control", "public, max-age=3600")
     .send('<?xml version="1.0"?>\n<users>\n\t<user>5A51A6D49E191DE95E89EA165A5F3815</user>\n</users>'));
