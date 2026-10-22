@@ -10,7 +10,7 @@ tar czf "$BK" -C "$APP" parafrase blog-akun.js admin/index.html
 rollback(){ echo "GAGAL -> rollback dari $BK"; tar xzf "$BK" -C "$APP"; pm2 restart nextaja --update-env >/dev/null || true; }
 trap 'echo "GAGAL di baris $LINENO: $BASH_COMMAND"; rollback' ERR
 T=$(mktemp -d); mkdir -p "$T/pages"
-EXTRA="pages/blog-ut.js pages/pesanan.js pages/common.js pages/admin.js wordtools.js orders.js pages.js notify.js index.js ulasan.js"
+EXTRA="auditrules.js audit.js pages/audit.js pages/audit-hasil.js pages/blog-ut.js pages/pesanan.js pages/common.js pages/admin.js wordtools.js orders.js pages.js notify.js index.js ulasan.js"
 curl -fsSL "$RAW/blog-akun.js" -o "$T/blog-akun.js"; node --check "$T/blog-akun.js"
 PG="beranda blog-ut hub cek audit audit-hasil layanan pesanan admin"
 for p in $PG; do curl -fsSL "$RAW/parafrase/pages/$p.html" -o "$T/pages/$p.html"; done
