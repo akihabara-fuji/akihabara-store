@@ -10,5 +10,5 @@
     }).catch(function () { L.textContent = "Tulisan gagal dimuat."; });
   }
   [].forEach.call(document.querySelectorAll("#bt button"), function (b) { b.onclick = function () { [].forEach.call(document.querySelectorAll("#bt button"), function (x) { x.classList.toggle("on", x === b); }); load(b.getAttribute("data-f")); }; });
-  load("ut");
+  if (!L.querySelector(".blog-row")) load("ut"); /* sudah dirender server (dengan halaman 1,2,...) */
 })();
