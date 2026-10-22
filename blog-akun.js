@@ -86,6 +86,10 @@ module.exports = function mount(ctx) {
     .replace("</head>", "<style>.logo b.lg{background:none!important}.logo b.lg img{width:34px;height:34px;object-fit:contain;display:block}</style></head>");
   const rebrand = h => (ACAD_ONLY ? caBrand(shortPath(String(h).replace(/(?<![\w./@-])nextaja(?![\w-]|\.\w)/gi, BRAND))) : h);
   const published = () => blog.posts.filter(p => p.status === "published" && !p.trashedAt && (!ACAD_ONLY || ACAD_TOPICS.includes(p.topic))).sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+  app.locals.renderAcadBlogCards = req => {
+    if (!ACAD_ONLY) return "";
+    return published().slice(0, 30).map(p => `<a class="pc bp" href="/blog/${esc(p.slug)}"><div class="cv">${coverHtml(p)}</div><div class="pb"><small>${esc(tl(p.topic))}</small><h2>${esc(p.title)}</h2><div class="muted">${esc(p.excerpt || "")}</div></div></a>`).join("");
+  };
 
   function inline(t) {
     return esc(t)
@@ -351,7 +355,9 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
       ${list.length ? `<div class="grid pgrid">${list.map(p => `<a class="card post" href="/blog/${esc(p.slug)}"><div class="cv">${coverHtml(p)}</div><div class="pb"><span class="tag">${esc(tl(p.topic))}</span><h3>${esc(p.title)}</h3><p>${esc(p.excerpt)}</p><small>${esc(fmtDate(p.publishedAt))}</small></div></a>`).join("")}</div>`
         : `<div class="empty">Belum ada tulisan di sini. Tulisan pertama segera terbit.</div>`}
     </div></section>`;
-    res.set("Cache-Control", "no-cache").type("html").send(layout({ title: `${heading} — Blog nextaja`, desc: "Catatan tentang belajar, social media, AI, dan berita viral hari ini dari nextaja.", path: f ? `/blog?f=${f}` : "/blog", body }));
+    const blogTitle = ACAD_ONLY ? `${heading} — Blog Catatan Akademik` : `${heading} — Blog nextaja`;
+    const blogDesc = ACAD_ONLY ? "Catatan seputar kuliah, tugas, dan info terbaru Universitas Terbuka dari Catatan Akademik." : "Catatan tentang belajar, social media, AI, dan berita viral hari ini dari nextaja.";
+    res.set("Cache-Control", "no-cache").type("html").send(layout({ title: blogTitle, desc: blogDesc, path: f ? `/blog?f=${f}` : "/blog", body }));
   });
   /* Indeks cepat: IndexNow (Bing, Yandex, dll) dipanggil otomatis saat tulisan terbit, berubah, atau dihapus.
      Google tidak punya jalur ping: Google menemukan tulisan lewat sitemap.xml yang selalu diperbarui (daftarkan sekali di Search Console). */
@@ -381,13 +387,17 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
     const url = `${SITE}/blog/${p.slug}`;
     const ld = JSON.stringify([{ "@context": "https://schema.org", "@type": "BlogPosting", headline: p.title.slice(0, 110), datePublished: p.publishedAt, dateModified: p.updatedAt || p.publishedAt, description: desc, image: [img], inLanguage: "id-ID", wordCount: plain.split(" ").length, author: { "@type": "Person", name: "Dika Priyadi" }, publisher: { "@type": "Organization", name: BRAND, logo: { "@type": "ImageObject", url: SITE + "/icon-512.png" } }, mainEntityOfPage: { "@type": "WebPage", "@id": url } },
       { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Beranda", item: SITE + "/" }, { "@type": "ListItem", position: 2, name: "Blog", item: SITE + "/blog" }, { "@type": "ListItem", position: 3, name: p.title, item: url }] }]).replace(/</g, "\\u003c");
+    const related = published().filter(x => x.slug !== p.slug && (x.topic === p.topic || !ACAD_ONLY)).slice(0, 3);
+    const relatedHtml = related.length ? `<aside class="related" aria-labelledby="related-title"><h2 id="related-title">Artikel terkait</h2><div class="related-grid">${related.map(x => `<a class="card related-card" href="/blog/${esc(x.slug)}"><div class="tag">${esc(tl(x.topic))}</div><b>${esc(x.title)}</b></a>`).join("")}</div></aside>` : "";
     const body = `<article class="pg art"><div class="wrap narrow">
-      <a class="back" href="/blog?f=${esc(p.topic)}">← ${esc(tl(p.topic))}</a>
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Beranda</a><span aria-hidden="true">/</span><a href="/blog">Blog</a><span aria-hidden="true">/</span><span aria-current="page">${esc(p.title)}</span></nav>
+      <a class="back" href="/blog?f=${esc(p.topic)}">← Kembali ke ${esc(tl(p.topic))}</a>
       <h1>${esc(p.title)}</h1>
       <div class="meta">${esc(fmtDate(p.publishedAt))} · Dika Priyadi</div>
       ${p.cover ? `<img class="hero-img" src="${esc(p.cover)}" alt="${esc(p.title)}">` : ""}
       <div class="prose">${renderBody(cleanBody(p.body))}</div>
-      <p class="meta" style="margin-top:28px">nextaja bukan situs resmi Universitas Terbuka. Selalu pegang ketentuan dari tutor dan sumber resmi UT.</p>
+      <p class="meta" style="margin-top:28px">${BRAND} bukan situs resmi Universitas Terbuka. Selalu pegang ketentuan dari tutor dan sumber resmi UT.</p>
+      ${relatedHtml}
       ${commentsBlock(p.slug)}
     </div></article>
     <a class="wa-bubble" href="/ruangakademikut"><span>Layanan Catatan Akademik</span><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg></a>`;

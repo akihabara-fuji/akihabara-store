@@ -25,10 +25,14 @@ module.exports = function mountPages({ app, express }) {
     .replace(/(https?:\/\/[^"'\s<]+?)\/ruangakademikut(?=["'<\s?#)])/g, "$1/layanan-ut")
     .replace(/(["'(=])\/ruangakademikut(?=["'<\s?#)])/g, "$1/layanan-ut");
   const TRACK = new Set(["beranda.html", "hub.html", "cek.html", "audit.html", "layanan.html", "blog-ut.html"]); // halaman pesanan dan hasil memuat token rahasia: tidak dilacak
+  const esc = value => String(value == null ? "" : value).replace(/[&<>\"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '\"': "&quot;", "'": "&#39;" }[c]));
+  const blogCards = req => typeof app.locals.renderAcadBlogCards === "function" ? app.locals.renderAcadBlogCards(req) : "";
   const page = file => (req, res) => {
     fs.readFile(path.join(dir, file), "utf8", (err, html) => {
       if (err) return res.status(500).type("text").send("Halaman tidak tersedia.");
-      const out = (TRACK.has(file) ? html.replace("</head>", '<script async src="/t.js"></script></head>') : html).replaceAll("{{SITE}}", SITE);
+      let out = html;
+      if (file === "blog-ut.html") out = out.replace('<div id="bl" class="cards" aria-live="polite"></div>', `<div id="bl" class="cards" aria-live="polite">${blogCards(req)}</div>`);
+      out = (TRACK.has(file) ? out.replace("</head>", '<script async src="/t.js"></script></head>') : out).replaceAll("{{SITE}}", SITE);
       res.set("Cache-Control", "no-cache").type("html").send(shorten(out));
     });
   };
