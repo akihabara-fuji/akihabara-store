@@ -5,6 +5,8 @@
   ready(function () {
     var ta = document.getElementById("bBody"), form = document.getElementById("bForm");
     if (!ta || !form || ta.dataset.seo) return; ta.dataset.seo = "1";
+    var hint = ta.closest("label") && ta.closest("label").querySelector("small");
+    if (hint) hint.textContent = "· Seleksi baris lalu klik H2 atau H3 (tanda ## terpasang otomatis, jangan diketik lagi). Baris kosong = paragraf baru.";
     var css = document.createElement("style");
     css.textContent = ".bseo-bar{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.bseo-bar button{min-height:36px;padding:0 12px;border-radius:8px;border:1px solid var(--border,#ccc);background:var(--surface2,#eee);color:inherit;font:700 13px inherit;cursor:pointer}.bseo-bar button:hover{border-color:var(--acc,#06c)}.bseo-box{border:1px solid var(--border,#ccc);border-radius:12px;padding:10px 14px;margin:8px 0;font-size:13px;line-height:1.6}.bseo-box b{display:block;margin-bottom:4px}.bseo-box div.ok{color:#1b8a4b}.bseo-box div.warn{color:#b36b00}.bseo-box div.bad{color:#c62828}";
     document.head.appendChild(css);

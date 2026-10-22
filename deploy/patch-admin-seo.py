@@ -2,8 +2,10 @@
 import sys
 f = sys.argv[1]
 s = open(f, encoding="utf8").read()
-tag = '<script src="/assets/admin-blog-seo.js?v=1" defer></script>\n'
+tag = '<script src="/assets/admin-blog-seo.js?v=2" defer></script>\n'
 if "admin-blog-seo.js" in s:
+    if "admin-blog-seo.js?v=2" not in s:
+        open(f, "w", encoding="utf8").write(s.replace("admin-blog-seo.js?v=1", "admin-blog-seo.js?v=2"))
     print("skrip SEO editor sudah terpasang"); raise SystemExit(0)
 i = s.rfind("</body>")
 if i < 0: raise SystemExit("penanda </body> tidak ditemukan")
