@@ -49,6 +49,9 @@ module.exports = function mountPages({ app, express }) {
     if (!CA.has(req.params.f)) return res.status(404).end();
     res.set("Cache-Control", "public, max-age=86400").sendFile(path.join(dir, "ca", req.params.f));
   });
+  /* Verifikasi Bing Webmaster Tools (kode per akun, bukan rahasia) */
+  app.get("/BingSiteAuth.xml", (req, res) => res.type("application/xml").set("Cache-Control", "public, max-age=3600")
+    .send('<?xml version="1.0"?>\n<users>\n\t<user>5A51A6D49E191DE95E89EA165A5F3815</user>\n</users>'));
   const ASSETS = new Set(["site.css", "hub.css", "common.js", "cek.js", "pesanan.js", "admin.js", "audit.js", "audit-hasil.js", "layanan.js", "layanan-admin.js", "blog-ut.js"]);
   app.get("/ruangakademikut/assets/:f", (req, res) => {
     if (!ASSETS.has(req.params.f)) return res.status(404).end();
