@@ -66,7 +66,10 @@ module.exports = function mount(ctx) {
     while (blog.posts.some(p => p.slug === s && p.id !== selfId)) s = `${base}-${n++}`;
     return s;
   }
-  const published = () => blog.posts.filter(p => p.status === "published" && !p.trashedAt).sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+  /* Domain akademik (ACAD_URL beda dari situs utama): hanya topik akademik/UT yang tampil. Tulisan lain tidak dihapus, hanya disembunyikan. */
+  const ACAD_ONLY = !!process.env.ACAD_URL && process.env.ACAD_URL.replace(/\/+$/, "") !== (process.env.SITE_URL || "https://nextaja.com").replace(/\/+$/, "");
+  const ACAD_TOPICS = ["study", "updateut"];
+  const published = () => blog.posts.filter(p => p.status === "published" && !p.trashedAt && (!ACAD_ONLY || ACAD_TOPICS.includes(p.topic))).sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
 
   function inline(t) {
     return esc(t)
@@ -287,7 +290,7 @@ ${extra}
 <header class="nav"><div class="wrap">
   <a href="/" class="logo" aria-label="${brand}, beranda"><b>N</b><span>${brand}</span></a>
   <nav class="links" id="links" aria-label="Menu utama">
-    <a href="/ruangakademikut">Ruang Akademik UT</a><a href="/#harga">Harga</a><a href="/ms/labstudio">Lab Studio</a><a href="/#analisa">Analisa</a><a href="/blog" class="on">Blog</a>
+    <a href="/ruangakademikut">Ruang Akademik UT</a><a href="/blog" class="on">Blog</a>
   </nav>
   <div class="nav-r">
     <div class="mode" role="group" aria-label="Mode tampilan"><button type="button" data-m="dark">Gelap</button><button type="button" data-m="light">Terang</button></div>
@@ -296,7 +299,7 @@ ${extra}
   </div>
 </div></header>
 <main>${body}</main>
-<footer class="ft"><div class="wrap ft-in"><div class="ft-b"><b>${brand}</b><span>Jakarta Barat. Ruang Akademik UT, Lab Studio, Analisa, dan Blog.</span><small>© ${new Date().getFullYear()} Semua hak dilindungi.</small></div><nav class="ft-n" aria-label="Footer"><a href="/ruangakademikut">Ruang Akademik UT</a><a href="/ms/labstudio">Lab Studio</a><a href="/#analisa">Analisa</a><a href="/blog">Blog</a><a href="/ms/masuk">Masuk</a><a href="/ms/privasi">Privasi</a><a href="/ms/ketentuan">Ketentuan</a></nav></div></footer>
+<footer class="ft"><div class="wrap ft-in"><div class="ft-b"><b>${brand}</b><span>Jakarta Barat. Ruang Akademik UT dan Blog.</span><small>© ${new Date().getFullYear()} Semua hak dilindungi.</small></div><nav class="ft-n" aria-label="Footer"><a href="/ruangakademikut">Ruang Akademik UT</a><a href="/blog">Blog</a><a href="/ms/masuk">Masuk</a><a href="/ms/privasi">Privasi</a><a href="/ms/ketentuan">Ketentuan</a></nav></div></footer>
 <script>
 (function(){
 function setMode(m){document.documentElement.dataset.theme=m;try{localStorage.setItem("nx-theme",m)}catch(e){}var tc=document.querySelector('meta[name=theme-color]');if(tc)tc.content=m==="light"?"#f6f3ff":"#0a0a1c";}
@@ -316,14 +319,14 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
   const coverHtml = p => p.cover ? `<img src="${esc(p.cover)}" alt="" loading="lazy">` : `<span class="ph-t">${esc(tl(p.topic))}</span>`;
 
   app.get("/blog", (req, res) => {
-    const f = TOPICS[req.query.f] ? req.query.f : "";
+    const f = TOPICS[req.query.f] && (!ACAD_ONLY || ACAD_TOPICS.includes(req.query.f)) ? req.query.f : "";
     const list = published().filter(p => !f || p.topic === f).slice(0, 60);
     const heading = f ? TOPICS[f].label : "Tulisan terbaru";
     const body = `<section class="pg"><div class="wrap">
       ${portalBanner(f)}
       <span class="eyebrow">Blog</span><h1>${esc(f === "viral" ? "Berita viral apa hari ini?" : heading)}</h1>
-      <p class="lead">Catatan tentang belajar, social media, AI, dan hal-hal yang lagi ramai. Ditulis apa adanya.</p>
-      <div class="chips">${topicChip("", !f)}${Object.keys(TOPICS).map(k => topicChip(k, f === k)).join("")}</div>
+      <p class="lead">${ACAD_ONLY ? "Catatan seputar kuliah, tugas, dan info terbaru Universitas Terbuka. Ditulis apa adanya." : "Catatan tentang belajar, social media, AI, dan hal-hal yang lagi ramai. Ditulis apa adanya."}</p>
+      <div class="chips">${topicChip("", !f)}${Object.keys(TOPICS).filter(k => !ACAD_ONLY || ACAD_TOPICS.includes(k)).map(k => topicChip(k, f === k)).join("")}</div>
       ${list.length ? `<div class="grid">${list.map(p => `<a class="card post" href="/blog/${esc(p.slug)}"><div class="cv">${coverHtml(p)}</div><div class="pb"><span class="tag">${esc(tl(p.topic))}</span><h3>${esc(p.title)}</h3><p>${esc(p.excerpt)}</p><small>${esc(fmtDate(p.publishedAt))}</small></div></a>`).join("")}</div>`
         : `<div class="empty">Belum ada tulisan di sini. Tulisan pertama segera terbit.</div>`}
     </div></section>`;
@@ -470,7 +473,8 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
 
 
   /* ============================== LAB STUDIO (satu kesatuan) ============================== */
-  app.get("/ms/labstudio", (req, res) => {
+  app.get("/ms/labstudio", (req, res, next) => {
+    if (ACAD_ONLY) return res.redirect(301, (process.env.SITE_URL || "https://nextaja.com").replace(/\/+$/, "") + "/ms/labstudio");
     const wa = String(SOCIAL().waNumber || "6285722227544").replace(/\D/g, "");
     const body = `<section class="pg"><div class="wrap">
       <span class="eyebrow">Lab Studio</span>
