@@ -663,5 +663,5 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
   });
 
   // untuk sitemap
-  return { userFrom, pageUrls: () => ["/ruangakademikut", "/ruangakademikut/cek-parafrase-mandiri", "/ruangakademikut/audit", "/ruangakademikut/layanan", "/ruangakademikut/blog-ut"].map(u => ({ loc: `${SITE}${ACAD_ONLY ? shortPath(u) : u}`, pri: "0.7" })), blogUrls: () => published().map(p => ({ loc: `${SITE}/blog/${p.slug}`, lastmod: (p.updatedAt || p.publishedAt || "").slice(0, 10), pri: "0.6" })) };
+  return { userFrom, pageUrls: () => ["/ruangakademikut", "/ruangakademikut/cek-parafrase-mandiri", "/ruangakademikut/audit", "/ruangakademikut/layanan", "/ruangakademikut/blog-ut"].map(u => ({ loc: `${SITE}${ACAD_ONLY ? (u === "/ruangakademikut" ? "/" : shortPath(u)) : u}`, pri: "0.7" })), blogUrls: () => published().map(p => ({ loc: `${SITE}/blog/${p.slug}`, lastmod: (p.updatedAt || p.publishedAt || "").slice(0, 10), pri: "0.6" })) };
 };
