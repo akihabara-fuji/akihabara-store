@@ -69,3 +69,13 @@ test("daftar judul: terbaru di atas, per bulan lalu minggu, hanya bulan terbaru 
     assert.ok(page.includes('class="blog-month"') || page.includes("blog-month"));
   } finally { srv.close(); }
 });
+
+test("halaman masuk: semua script inline valid (tab Daftar dan tombol Google tidak mati)", async () => {
+  const t = await boot();
+  try {
+    const h = await (await fetch(t.base + "/ms/masuk")).text();
+    const scripts = [...h.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)].map(m => m[1]).filter(s => s.trim());
+    assert.ok(scripts.some(s => s.includes("/ms/auth/")), "script login ada");
+    for (const s of scripts) assert.doesNotThrow(() => new Function(s), "script inline harus bisa di-parse");
+  } finally { t.close(); }
+});

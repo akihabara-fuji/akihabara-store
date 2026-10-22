@@ -681,7 +681,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
         <p class="small">Lupa sandi? <a id="wa" href="#" target="_blank" rel="noopener">Hubungi admin lewat WhatsApp</a> dan minta sandi sementara.</p>
       </div></div></section>
       <script>
-      (function(){var NEXT=(function(){var n=new URLSearchParams(location.search).get("next")||"";return /^\/[a-zA-Z0-9\/_\-?=&.%]*$/.test(n)&&n.indexOf("//")!==0?n:"/ms/akun"})();var mode="in",f=document.getElementById("f"),err=document.getElementById("err");
+      (function(){var NEXT=(function(){var n=new URLSearchParams(location.search).get("next")||"";return /^\\/[a-zA-Z0-9\\/_\\-?=&.%]*$/.test(n)&&n.indexOf("//")!==0?n:"/ms/akun"})();var mode="in",f=document.getElementById("f"),err=document.getElementById("err");
       var w=${JSON.stringify(String((SOCIAL().waNumber) || "6285722227544"))};document.getElementById("wa").href="https://wa.me/"+w+"?text="+encodeURIComponent("Halo admin nextaja, saya lupa sandi akun saya.");
       document.querySelectorAll(".tabs2 button").forEach(function(b){b.addEventListener("click",function(){mode=b.dataset.t;
         document.querySelectorAll(".tabs2 button").forEach(function(x){x.setAttribute("aria-pressed",x===b)});
