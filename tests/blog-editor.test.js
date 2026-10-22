@@ -46,3 +46,26 @@ test("tautan: situs sendiri = tab sama tanpa nofollow, luar = nofollow, protokol
     assert.ok(!a.includes('href="//evil.test'));
   } finally { t.close(); }
 });
+
+test("daftar judul: terbaru di atas, per bulan lalu minggu, hanya bulan terbaru terbuka", async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "bl-")); fs.mkdirSync(path.join(root, "data"), { recursive: true });
+  const mk = (id, iso) => ({ id, slug: "s-" + id, title: "Judul " + id, topic: "study", status: "published", publishedAt: iso, updatedAt: iso, createdAt: iso, body: "x" });
+  fs.writeFileSync(path.join(root, "data", "blog.json"), JSON.stringify({ posts: [mk("a", "2026-09-03T05:00:00Z"), mk("b", "2026-10-02T05:00:00Z"), mk("c", "2026-10-24T05:00:00Z"), mk("d", "2026-10-09T05:00:00Z"), mk("e", "2026-09-30T20:00:00Z")] }));
+  const app = express();
+  require("../blog-akun.js")({ app, express, requireAdmin: (q, r, n) => n(), sameOrigin: () => true, getCookie: () => "", SECURE_COOKIE: false, ROOT: root, SITE: "https://example.test", getSettings: () => ({}) });
+  const srv = app.listen(0), base = "http://127.0.0.1:" + srv.address().port;
+  try {
+    const j = await (await fetch(base + "/ms/blog/list-html?f=")).json();
+    assert.strictEqual(j.n, 5);
+    const h = j.html;
+    assert.ok(h.indexOf("Oktober 2026") < h.indexOf("September 2026"), "bulan terbaru dulu");
+    assert.ok(h.indexOf("Minggu ke-4") < h.indexOf("Minggu ke-2") && h.indexOf("Minggu ke-2") < h.indexOf("Minggu ke-1"), "minggu terbaru dulu");
+    assert.strictEqual((h.match(/<details class="blog-month" open>/g) || []).length, 1, "hanya satu bulan terbuka");
+    assert.ok(h.indexOf("Judul c") < h.indexOf("Judul d") && h.indexOf("Judul d") < h.indexOf("Judul b"));
+    assert.ok(h.includes("Oktober 2026") && h.includes("1–7 Oktober") && h.includes("22–31 Oktober"));
+    /* 30 Sep 20:00 UTC = 1 Okt 03:00 WIB, jadi masuk Oktober minggu ke-1 */
+    assert.ok(h.indexOf("Judul e") < h.indexOf("September 2026"));
+    const page = await (await fetch(base + "/blog")).text();
+    assert.ok(page.includes('class="blog-month"') || page.includes("blog-month"));
+  } finally { srv.close(); }
+});

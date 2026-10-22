@@ -86,14 +86,31 @@ module.exports = function mount(ctx) {
     .replace("</head>", "<style>.logo b.lg{background:none!important}.logo b.lg img{width:34px;height:34px;object-fit:contain;display:block}</style></head>");
   const rebrand = h => (ACAD_ONLY ? caBrand(shortPath(String(h).replace(/(?<![\w./@-])nextaja(?![\w-]|\.\w)/gi, BRAND))) : h);
   const published = () => blog.posts.filter(p => p.status === "published" && !p.trashedAt && (!ACAD_ONLY || ACAD_TOPICS.includes(p.topic))).sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
-  const pageNumber = req => Math.max(1, parseInt(req.query.page, 10) || 1);
-  const listCard = p => `<article class="blog-row"><a href="/blog/${esc(p.slug)}"><div class="blog-row-top"><span class="tag">${esc(tl(p.topic))}</span><time datetime="${esc(p.publishedAt)}">${esc(fmtDate(p.publishedAt))}</time></div><h2>${esc(p.title)}</h2><p>${esc(p.excerpt || "")}</p><div class="blog-row-foot"><span>Selengkapnya »</span><b>${esc(BRAND)}</b></div></a></article>`;
-  const listPager = (page, total, base) => { const sep = base.includes("?") ? "&" : "?"; return `<nav class="blog-pager" aria-label="Paginasi blog">${page > 1 ? `<a href="${base}${sep}page=${page - 1}">← Sebelumnya</a>` : ""}${page * 10 < total ? `<a href="${base}${sep}page=${page + 1}">Muat lebih banyak →</a>` : ""}</nav>`; };
-  app.locals.renderAcadBlogCards = req => {
-    if (!ACAD_ONLY) return "";
-    const all = published(), page = pageNumber(req), items = all.slice((page - 1) * 10, page * 10);
-    return items.map(listCard).join("") + listPager(page, all.length, "/blog-ut");
+  /* Daftar judul dikelompokkan: Bulan (bisa dilipat; hanya bulan terbaru terbuka) > Minggu ke-N, terbaru di atas. Zona waktu WIB. */
+  const BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+  const wib = iso => { const d = new Date(new Date(iso).getTime() + 7 * 3600e3); return { y: d.getUTCFullYear(), m: d.getUTCMonth(), d: d.getUTCDate() }; };
+  const weekOf = day => Math.min(4, Math.ceil(day / 7));
+  const titleRow = p => `<li><a href="/blog/${esc(p.slug)}"><time datetime="${esc(p.publishedAt)}">${esc(new Date(p.publishedAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", timeZone: "Asia/Jakarta" }))}</time><span class="t">${esc(p.title)}</span><span class="tag">${esc(tl(p.topic))}</span></a></li>`;
+  const groupedList = posts => {
+    const months = new Map();
+    for (const p of posts) { const w = wib(p.publishedAt), k = w.y * 12 + w.m; if (!months.has(k)) months.set(k, { w, weeks: new Map(), n: 0 }); const M = months.get(k), wk = weekOf(w.d); if (!M.weeks.has(wk)) M.weeks.set(wk, []); M.weeks.get(wk).push(p); M.n++; }
+    return [...months.entries()].sort((a, b) => b[0] - a[0]).map(([, M], i) => {
+      const last = new Date(Date.UTC(M.w.y, M.w.m + 1, 0)).getUTCDate();
+      const weeks = [...M.weeks.entries()].sort((a, b) => b[0] - a[0]).map(([wk, arr]) => {
+        const a = (wk - 1) * 7 + 1, b = wk === 4 ? last : wk * 7;
+        return `<section class="blog-week"><h3>Minggu ke-${wk} <small>${a}\u2013${b} ${BULAN[M.w.m]}</small></h3><ul class="blog-titles">${arr.map(titleRow).join("")}</ul></section>`;
+      }).join("");
+      return `<details class="blog-month"${i === 0 ? " open" : ""}><summary><span>${BULAN[M.w.m]} ${M.w.y}</span><small>${M.n} tulisan</small></summary>${weeks}</details>`;
+    }).join("");
   };
+  app.locals.renderAcadBlogCards = req => ACAD_ONLY ? groupedList(published()) : "";
+  /* potongan HTML daftar untuk filter di halaman Update UT */
+  app.get("/ms/blog/list-html", (req, res) => {
+    res.set("Cache-Control", "no-cache");
+    const f = TOPICS[req.query.f] || req.query.f === "ut" ? req.query.f : "";
+    const list = published().filter(p => !f || p.topic === f || (f === "ut" && (p.topic === "updateut" || p.topic === "study")));
+    res.json({ n: list.length, html: groupedList(list) });
+  });
 
   function inline(t) {
     return esc(t)
@@ -328,7 +345,7 @@ module.exports = function mount(ctx) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Bricolage+Grotesque:wght@600;700&display=swap" rel="stylesheet">
 <script>try{var t=localStorage.getItem("nx-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
-<link rel="stylesheet" href="/assets/blog.css?v=8"><script async src="/t.js"></script>
+<link rel="stylesheet" href="/assets/blog.css?v=9"><script async src="/t.js"></script>
 ${extra}
 </head>
 <body>
@@ -367,14 +384,14 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
 
   app.get("/blog", (req, res) => {
     const f = TOPICS[req.query.f] && (!ACAD_ONLY || ACAD_TOPICS.includes(req.query.f)) ? req.query.f : "";
-    const all = published().filter(p => !f || p.topic === f), page = pageNumber(req), list = all.slice((page - 1) * 10, page * 10);
+    const list = published().filter(p => !f || p.topic === f);
     const heading = f ? TOPICS[f].label : "Tulisan terbaru";
     const body = `<section class="pg"><div class="wrap">
       ${ACAD_ONLY ? "" : portalBanner(f)}
       <span class="eyebrow">Blog</span><h1>${esc(f === "viral" ? "Berita viral apa hari ini?" : heading)}</h1>
       <p class="lead">${ACAD_ONLY ? "Catatan seputar kuliah, tugas, dan info terbaru Universitas Terbuka. Ditulis apa adanya." : "Catatan tentang belajar, social media, AI, dan hal-hal yang lagi ramai. Ditulis apa adanya."}</p>
       <div class="chips">${topicChip("", !f)}${Object.keys(TOPICS).filter(k => !ACAD_ONLY || ACAD_TOPICS.includes(k)).map(k => topicChip(k, f === k)).join("")}</div>
-      ${list.length ? `<div class="blog-list">${list.map(listCard).join("")}</div>${listPager(page, all.length, f ? `/blog?f=${encodeURIComponent(f)}` : "/blog")}`
+      ${list.length ? `<div class="blog-list">${groupedList(list)}</div>`
         : `<div class="empty">Belum ada tulisan di sini. Tulisan pertama segera terbit.</div>`}
     </div></section>`;
     const blogTitle = ACAD_ONLY ? `${heading} — Blog Catatan Akademik` : `${heading} — Blog nextaja`;

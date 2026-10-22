@@ -10,7 +10,7 @@
     var ta = document.getElementById("bBody"), form = document.getElementById("bForm"), dlg = document.getElementById("bDlg");
     if (!ta || !form || !dlg || ta.dataset.seo) return; ta.dataset.seo = "1";
 
-    var link = document.createElement("link"); link.rel = "stylesheet"; link.href = "/assets/admin-blog-seo.css?v=4"; document.head.appendChild(link);
+    var link = document.createElement("link"); link.rel = "stylesheet"; link.href = "/assets/admin-blog-seo.css?v=5"; document.head.appendChild(link);
 
     /* ---------- susun ulang: kolom utama + samping ---------- */
     var head = form.querySelector(".dlg-head"), foot = form.querySelector(".dlg-foot");
@@ -184,4 +184,48 @@
 
     if (dlg.open) opened(); else analyse();
   });
+})();
+
+/* ---------- Daftar tulisan di admin: terbaru di atas, per bulan (bisa dilipat) lalu minggu ---------- */
+(function () {
+  var L = document.getElementById("postList"); if (!L) return;
+  var BL = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+  var opened = {}, busy = false, dates = null, tmr = 0;
+  function wib(t) { var d = new Date(t + 7 * 36e5); return { y: d.getUTCFullYear(), m: d.getUTCMonth(), d: d.getUTCDate() }; }
+  function isItem(c) { return c.classList && c.classList.contains("item"); }
+  function titleOf(it) { var b = it.querySelector(".info b") || it.querySelector("b"); return (b ? b.textContent : it.textContent).trim(); }
+  function loadDates(cb) {
+    fetch("/ms/admin/posts", { cache: "no-store", credentials: "same-origin" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+      var m = {}; ((j && j.posts) || []).forEach(function (p) { var k = String(p.title || "").trim(); (m[k] = m[k] || []).push(Date.parse(p.publishedAt || p.createdAt || p.updatedAt) || 0); });
+      dates = m; cb();
+    }).catch(function () {});
+  }
+  function group() {
+    var items = [].filter.call(L.children, isItem); if (!items.length || !dates) return;
+    busy = true;
+    var pool = {}; Object.keys(dates).forEach(function (k) { pool[k] = dates[k].slice(); });
+    var rows = items.map(function (it) { var a = pool[titleOf(it)]; return { it: it, t: a && a.length ? a.shift() : Date.now() }; }).sort(function (x, y) { return y.t - x.t; });
+    var months = [], idx = {};
+    rows.forEach(function (r) {
+      var w = wib(r.t), key = w.y + "-" + w.m, wk = Math.min(4, Math.ceil(w.d / 7));
+      if (!idx[key]) { idx[key] = { key: key, w: w, weeks: {}, order: [], n: 0 }; months.push(idx[key]); }
+      var M = idx[key]; if (!M.weeks[wk]) { M.weeks[wk] = []; M.order.push(wk); } M.weeks[wk].push(r.it); M.n++;
+    });
+    var frag = document.createDocumentFragment();
+    months.forEach(function (M, i) {
+      var det = document.createElement("details"); det.className = "adm-month"; det.open = opened[M.key] === undefined ? i === 0 : opened[M.key];
+      var sum = document.createElement("summary"); sum.innerHTML = "<span>" + BL[M.w.m] + " " + M.w.y + "</span><small>" + M.n + " tulisan</small>"; det.appendChild(sum);
+      M.order.sort(function (a, b) { return b - a; }).forEach(function (wk) {
+        var s = document.createElement("section"); s.className = "adm-week"; var h = document.createElement("h4"); h.textContent = "Minggu ke-" + wk; s.appendChild(h);
+        M.weeks[wk].forEach(function (it) { s.appendChild(it); }); det.appendChild(s);
+      });
+      det.addEventListener("toggle", function () { opened[M.key] = det.open; });
+      frag.appendChild(det);
+    });
+    L.appendChild(frag);
+    setTimeout(function () { busy = false; }, 0);
+  }
+  function schedule() { if (busy) return; if (![].some.call(L.children, isItem)) return; clearTimeout(tmr); tmr = setTimeout(function () { loadDates(group); }, 80); }
+  new MutationObserver(schedule).observe(L, { childList: true });
+  schedule();
 })();
