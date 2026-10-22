@@ -86,9 +86,13 @@ module.exports = function mount(ctx) {
     .replace("</head>", "<style>.logo b.lg{background:none!important}.logo b.lg img{width:34px;height:34px;object-fit:contain;display:block}</style></head>");
   const rebrand = h => (ACAD_ONLY ? caBrand(shortPath(String(h).replace(/(?<![\w./@-])nextaja(?![\w-]|\.\w)/gi, BRAND))) : h);
   const published = () => blog.posts.filter(p => p.status === "published" && !p.trashedAt && (!ACAD_ONLY || ACAD_TOPICS.includes(p.topic))).sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+  const pageNumber = req => Math.max(1, parseInt(req.query.page, 10) || 1);
+  const listCard = p => `<article class="blog-row"><a href="/blog/${esc(p.slug)}"><div class="blog-row-top"><span class="tag">${esc(tl(p.topic))}</span><time datetime="${esc(p.publishedAt)}">${esc(fmtDate(p.publishedAt))}</time></div><h2>${esc(p.title)}</h2><p>${esc(p.excerpt || "")}</p><div class="blog-row-foot"><span>Selengkapnya »</span><b>${esc(BRAND)}</b></div></a></article>`;
+  const listPager = (page, total, base) => { const sep = base.includes("?") ? "&" : "?"; return `<nav class="blog-pager" aria-label="Paginasi blog">${page > 1 ? `<a href="${base}${sep}page=${page - 1}">← Sebelumnya</a>` : ""}${page * 10 < total ? `<a href="${base}${sep}page=${page + 1}">Muat lebih banyak →</a>` : ""}</nav>`; };
   app.locals.renderAcadBlogCards = req => {
     if (!ACAD_ONLY) return "";
-    return published().slice(0, 30).map(p => `<a class="pc bp" href="/blog/${esc(p.slug)}"><div class="cv">${coverHtml(p)}</div><div class="pb"><small>${esc(tl(p.topic))}</small><h2>${esc(p.title)}</h2><div class="muted">${esc(p.excerpt || "")}</div></div></a>`).join("");
+    const all = published(), page = pageNumber(req), items = all.slice((page - 1) * 10, page * 10);
+    return items.map(listCard).join("") + listPager(page, all.length, "/blog-ut");
   };
 
   function inline(t) {
@@ -345,14 +349,14 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
 
   app.get("/blog", (req, res) => {
     const f = TOPICS[req.query.f] && (!ACAD_ONLY || ACAD_TOPICS.includes(req.query.f)) ? req.query.f : "";
-    const list = published().filter(p => !f || p.topic === f).slice(0, 60);
+    const all = published().filter(p => !f || p.topic === f), page = pageNumber(req), list = all.slice((page - 1) * 10, page * 10);
     const heading = f ? TOPICS[f].label : "Tulisan terbaru";
     const body = `<section class="pg"><div class="wrap">
       ${portalBanner(f)}
       <span class="eyebrow">Blog</span><h1>${esc(f === "viral" ? "Berita viral apa hari ini?" : heading)}</h1>
       <p class="lead">${ACAD_ONLY ? "Catatan seputar kuliah, tugas, dan info terbaru Universitas Terbuka. Ditulis apa adanya." : "Catatan tentang belajar, social media, AI, dan hal-hal yang lagi ramai. Ditulis apa adanya."}</p>
       <div class="chips">${topicChip("", !f)}${Object.keys(TOPICS).filter(k => !ACAD_ONLY || ACAD_TOPICS.includes(k)).map(k => topicChip(k, f === k)).join("")}</div>
-      ${list.length ? `<div class="grid pgrid">${list.map(p => `<a class="card post" href="/blog/${esc(p.slug)}"><div class="cv">${coverHtml(p)}</div><div class="pb"><span class="tag">${esc(tl(p.topic))}</span><h3>${esc(p.title)}</h3><p>${esc(p.excerpt)}</p><small>${esc(fmtDate(p.publishedAt))}</small></div></a>`).join("")}</div>`
+      ${list.length ? `<div class="blog-list">${list.map(listCard).join("")}</div>${listPager(page, all.length, f ? `/blog?f=${encodeURIComponent(f)}` : "/blog")}`
         : `<div class="empty">Belum ada tulisan di sini. Tulisan pertama segera terbit.</div>`}
     </div></section>`;
     const blogTitle = ACAD_ONLY ? `${heading} — Blog Catatan Akademik` : `${heading} — Blog nextaja`;
@@ -389,12 +393,13 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
       { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Beranda", item: SITE + "/" }, { "@type": "ListItem", position: 2, name: "Blog", item: SITE + "/blog" }, { "@type": "ListItem", position: 3, name: p.title, item: url }] }]).replace(/</g, "\\u003c");
     const related = published().filter(x => x.slug !== p.slug && (x.topic === p.topic || !ACAD_ONLY)).slice(0, 3);
     const relatedHtml = related.length ? `<aside class="related" aria-labelledby="related-title"><h2 id="related-title">Artikel terkait</h2><div class="related-grid">${related.map(x => `<a class="card related-card" href="/blog/${esc(x.slug)}"><div class="tag">${esc(tl(x.topic))}</div><b>${esc(x.title)}</b></a>`).join("")}</div></aside>` : "";
+    const articleCover = p.cover ? `<img class="article-cover" src="${esc(p.cover)}" alt="${esc(p.title)}">` : (ACAD_ONLY ? `<div class="article-cover article-poster" aria-label="${esc(p.title)}">${posterHtml(p)}</div>` : "");
     const body = `<article class="pg art"><div class="wrap narrow">
       <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Beranda</a><span aria-hidden="true">/</span><a href="/blog">Blog</a><span aria-hidden="true">/</span><span aria-current="page">${esc(p.title)}</span></nav>
       <a class="back" href="/blog?f=${esc(p.topic)}">← Kembali ke ${esc(tl(p.topic))}</a>
       <h1>${esc(p.title)}</h1>
       <div class="meta">${esc(fmtDate(p.publishedAt))} · Dika Priyadi</div>
-      ${p.cover ? `<img class="hero-img" src="${esc(p.cover)}" alt="${esc(p.title)}">` : ""}
+      ${articleCover}
       <div class="prose">${renderBody(cleanBody(p.body))}</div>
       <p class="meta" style="margin-top:28px">${BRAND} bukan situs resmi Universitas Terbuka. Selalu pegang ketentuan dari tutor dan sumber resmi UT.</p>
       ${relatedHtml}
