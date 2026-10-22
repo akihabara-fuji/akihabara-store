@@ -290,7 +290,7 @@ module.exports = function mount(ctx) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Bricolage+Grotesque:wght@600;700&display=swap" rel="stylesheet">
 <script>try{var t=localStorage.getItem("nx-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
-<link rel="stylesheet" href="/assets/blog.css?v=5"><script async src="/t.js"></script>
+<link rel="stylesheet" href="/assets/blog.css?v=6"><script async src="/t.js"></script>
 ${extra}
 </head>
 <body>
@@ -323,7 +323,9 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
   const PORTAL_IMG = { "": ["blog-berita", "Blog dan berita nextaja"], viral: ["blog-berita", "Blog dan berita nextaja"], updateut: ["jadwal-kalender", "Info UT: jadwal, registrasi, dan ujian"], study: ["materi-belajar", "Materi belajar dan tips kuliah"], ai: ["tools-ai", "Tools AI dan otomatisasi"], social: ["video-studio", "Konten dan social media"] };
   const portalBanner = (key, w, h) => { const [n, alt] = PORTAL_IMG[key] || PORTAL_IMG[""]; return `<img class="pbanner" src="/site-img/portal/${n}.webp" alt="${esc(alt)}" width="${w || 300}" height="${h || 233}" loading="lazy">`; };
   const topicChip = (key, active) => `<a class="chip${active ? " on" : ""}" href="${key ? "/blog?f=" + key : "/blog"}">${key ? esc(TOPICS[key].label) : "Semua"}</a>`;
-  const coverHtml = p => p.cover ? `<img src="${esc(p.cover)}" alt="" loading="lazy">` : `<span class="ph-t">${esc(tl(p.topic))}</span>`;
+  const POSTER_POS = ["50% 8%", "62% 20%", "40% 12%", "70% 30%"], POSTER_Z = [1.05, 1.25, 1.15, 1.4];
+  const posterHtml = p => { const h = [...String(p.slug || "")].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7) % 4; return `<span class="cvt" style="--pos:${POSTER_POS[h]};--z:${POSTER_Z[h]}"><i>${esc(tl(p.topic))}</i><b>${esc(BRAND)}</b></span>`; };
+  const coverHtml = p => ACAD_ONLY ? posterHtml(p) : p.cover ? `<img src="${esc(p.cover)}" alt="" loading="lazy">` : `<span class="ph-t">${esc(tl(p.topic))}</span>`;
 
   app.get("/blog", (req, res) => {
     const f = TOPICS[req.query.f] && (!ACAD_ONLY || ACAD_TOPICS.includes(req.query.f)) ? req.query.f : "";

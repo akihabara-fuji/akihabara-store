@@ -27,6 +27,7 @@ c(){ curl -s -o /dev/null -w '%{http_code}' "$@"; }
 H=$(c -H 'Host: catatanakademik.com' http://127.0.0.1:3200/ruangakademikut)
 B=$(c -H 'Host: catatanakademik.com' http://127.0.0.1:3200/blog)
 LS=$(curl -s -H 'Host: catatanakademik.com' http://127.0.0.1:3200/ruangakademikut | grep -c 'Lab Studio' || true)
+[ -f "$APP/public/assets/hero/model-ut.jpg" ] || echo "PERINGATAN: model-ut.jpg tidak ada di $APP/public/assets/hero"
 SM=$(curl -s -H 'Host: catatanakademik.com' http://127.0.0.1:3200/sitemap.xml | grep -c '<loc>' || true)
 VR=$(c -H 'Host: catatanakademik.com' http://127.0.0.1:3200/blog/siswi-smk-yang-hilang-ditemukan-di-apartemen-pik-2-polisi-masih-dalami-kronologi)
 NX=$(curl -s -H 'Host: catatanakademik.com' http://127.0.0.1:3200/ruangakademikut | grep -ci 'nextaja' || true)
