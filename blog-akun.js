@@ -385,10 +385,18 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
   if (!/^[a-f0-9]{32}$/.test(INK)) { INK = crypto.randomBytes(16).toString("hex"); try { fs.writeFileSync(KEYF, INK); } catch {} }
   app.get(/^\/([a-f0-9]{32})\.txt$/, (req, res, next) => (req.params[0] === INK ? res.type("text/plain").send(INK) : next()));
   function pingIndex(slugs) {
-    if (!/^https:\/\//.test(SITE) || process.env.NODE_ENV === "test") return;
-    const urls = [...slugs.map(s => `${SITE}/blog/${s}`), `${SITE}/blog`];
-    fetch("https://api.indexnow.org/indexnow", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ host: new URL(SITE).host, key: INK, keyLocation: `${SITE}/${INK}.txt`, urlList: urls }), signal: AbortSignal.timeout(8000) })
-      .then(r => console.log("IndexNow", r.status, urls.length, "url")).catch(e => console.log("IndexNow gagal:", e.message));
+    if (process.env.NODE_ENV === "test") return;
+    const send = (base, urls) => {
+      if (!/^https:\/\//.test(base)) return;
+      fetch("https://api.indexnow.org/indexnow", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ host: new URL(base).host, key: INK, keyLocation: `${base}/${INK}.txt`, urlList: urls }), signal: AbortSignal.timeout(8000) })
+        .then(r => console.log("IndexNow", new URL(base).host, r.status, urls.length, "url")).catch(e => console.log("IndexNow gagal:", e.message));
+    };
+    send(SITE, [...slugs.map(s => `${SITE}/blog/${s}`), `${SITE}/blog`]);
+    if (ACAD_ONLY) { /* domain akademik: hanya tulisan bertopik akademik/UT */
+      const AC = process.env.ACAD_URL.replace(/\/+$/, "");
+      const ok = slugs.filter(s => { const p = blog.posts.find(x => x.slug === s); return p && ACAD_TOPICS.includes(p.topic); });
+      if (ok.length) send(AC, [...ok.map(s => `${AC}/blog/${s}`), `${AC}/blog`, `${AC}/blog-ut`]);
+    }
   }
   app.get("/blog/feed.xml", (req, res) => {
     const x = t => esc(t);
