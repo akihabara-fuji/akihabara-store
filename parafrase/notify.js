@@ -32,7 +32,7 @@ module.exports = function createNotifier({ db, settings, fetchImpl }) {
     return sent;
   }
 
-  const site = () => (process.env.SITE_URL || "https://nextaja.com").replace(/\/+$/, "");
+  const site = () => (process.env.ACAD_URL || process.env.SITE_URL || "https://nextaja.com").replace(/\/+$/, "");
   const link = o => `${site()}/ruangakademikut/pesanan/${o.public_token}`;
   const T = {
     dikonfirmasi: o => `Halo! Pembayaran pesanan ${o.id} sudah dikonfirmasi. Pesananmu masuk antrean Cek dan Parafrase Mandiri. Pantau di sini: ${link(o)}`,

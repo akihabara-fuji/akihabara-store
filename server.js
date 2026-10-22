@@ -280,13 +280,22 @@ function publicStore() {
   };
 }
 const SITE = (process.env.SITE_URL || "https://nextaja.com").replace(/\/+$/, "");
+// Alamat rumah layanan akademik dan blog. Bila ACAD_URL belum diatur, sama dengan SITE (perilaku lama).
+const ACAD = (process.env.ACAD_URL || SITE).replace(/\/+$/, "");
+const ACAD_HOSTS = ACAD === SITE ? [] : [new URL(ACAD).hostname, "www." + new URL(ACAD).hostname];
+const isAcadHost = req => ACAD_HOSTS.includes(req.hostname);
 const TEMPLATE = path.join(PUB, "index.html");
 const today = () => new Date().toISOString().slice(0, 10);
 app.get("/robots.txt", (req, res) => {
-  res.type("text/plain").send(`User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /ms/\n\nSitemap: ${SITE}/sitemap.xml\n`);
+  const base = isAcadHost(req) ? ACAD : SITE;
+  res.type("text/plain").send(`User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /ms/\n\nSitemap: ${base}/sitemap.xml\n`);
 });
 app.get("/sitemap.xml", (req, res) => {
-  const urls = [{ loc: `${SITE}/`, pri: "1.0" }, { loc: `${SITE}/blog`, pri: "0.8" }, ...extra.blogUrls()];
+  const urls = ACAD === SITE
+    ? [{ loc: `${SITE}/`, pri: "1.0" }, { loc: `${SITE}/blog`, pri: "0.8" }, ...extra.blogUrls()]
+    : isAcadHost(req)
+      ? [{ loc: `${ACAD}/blog`, pri: "0.8" }, ...extra.blogUrls()]
+      : [{ loc: `${SITE}/`, pri: "1.0" }];
   res.type("application/xml").send(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(u => `  <url><loc>${u.loc}</loc><lastmod>${u.lastmod || today()}</lastmod><priority>${u.pri}</priority></url>`).join("\n")}\n</urlset>\n`);
 });
 app.get(["/", "/index.html"], async (req, res) => {
@@ -299,7 +308,7 @@ app.get(["/", "/index.html"], async (req, res) => {
     .replace('<script id="store-data" type="application/json">null</script>', `<script id="store-data" type="application/json">${json}</script>`));
 });
 /* ---------------- blog + akun customer ---------------- */
-const extra = require("./blog-akun")({ app, express, requireAdmin, sameOrigin, getCookie, SECURE_COOKIE, ROOT, SITE: (process.env.SITE_URL || "https://nextaja.com").replace(/\/+$/, ""), getSettings: () => store.settings });
+const extra = require("./blog-akun")({ app, express, requireAdmin, sameOrigin, getCookie, SECURE_COOKIE, ROOT, SITE: ACAD, getSettings: () => store.settings });
 
 /* ---------------- Cek dan Parafrase Mandiri (modul terpisah, lihat parafrase/) ---------------- */
 /* fitur coba (unggah & pesan) wajib login; halaman dan harga tetap terbuka */

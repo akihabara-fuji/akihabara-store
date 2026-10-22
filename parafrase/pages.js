@@ -11,7 +11,7 @@ module.exports = function mountPages({ app, express }) {
     res.set({ "Referrer-Policy": "no-referrer", "X-Content-Type-Options": "nosniff", "X-Frame-Options": ADM.test(req.originalUrl) ? "SAMEORIGIN" : "DENY", "Content-Security-Policy": ADM.test(req.originalUrl) ? "frame-ancestors 'self'" : "frame-ancestors 'none'" });
     next();
   });
-  const SITE = (process.env.SITE_URL || "https://nextaja.com").replace(/\/+$/, "");
+  const SITE = (process.env.ACAD_URL || process.env.SITE_URL || "https://nextaja.com").replace(/\/+$/, "");
   const TRACK = new Set(["hub.html", "cek.html", "audit.html", "layanan.html", "blog-ut.html"]); // halaman pesanan dan hasil memuat token rahasia: tidak dilacak
   const page = file => (req, res) => {
     fs.readFile(path.join(dir, file), "utf8", (err, html) => {
