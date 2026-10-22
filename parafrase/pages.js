@@ -19,19 +19,18 @@ module.exports = function mountPages({ app, express }) {
     .replace(/<link rel="apple-touch-icon"[^>]*>/g, '<link rel="apple-touch-icon" href="/ruangakademikut/assets/ca/apple-touch-icon.png">')
     .replace(/<link rel="manifest"[^>]*>/g, '<link rel="manifest" href="/ruangakademikut/assets/ca/manifest.webmanifest">')
     .replace(/(<a [^>]*class="logo"[^>]*>)<b>C<\/b>/g, '$1<b class="lg"><img src="/ruangakademikut/assets/ca/logo-96.png" alt="" width="34" height="34"></b>')
-    .replace("</head>", (h.includes("/site.css") ? '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme-svc.css?v=1">' : '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme.css?v=1">') + "</head>")
+    .replace("</head>", (h.includes("/site.css") ? '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme-svc.css?v=2">' : '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme.css?v=2">') + "</head>")
     .replace("</head>", "<style>.logo b.lg{background:none!important;box-shadow:none}.logo b.lg img{width:34px;height:34px;object-fit:contain;display:block}</style></head>")
     .replace(/\/ruangakademikut\/(cek-parafrase-mandiri|audit|layanan|blog-ut|pesanan)/g, "/$1")
     .replace(/(https?:\/\/[^"'\s<]+?)\/ruangakademikut(?=["'<\s?#)])/g, "$1/layanan-ut")
     .replace(/(["'(=])\/ruangakademikut(?=["'<\s?#)])/g, "$1/layanan-ut");
   const TRACK = new Set(["beranda.html", "hub.html", "cek.html", "audit.html", "layanan.html", "blog-ut.html"]); // halaman pesanan dan hasil memuat token rahasia: tidak dilacak
-  const esc = value => String(value == null ? "" : value).replace(/[&<>\"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '\"': "&quot;", "'": "&#39;" }[c]));
   const blogCards = req => typeof app.locals.renderAcadBlogCards === "function" ? app.locals.renderAcadBlogCards(req) : "";
   const page = file => (req, res) => {
     fs.readFile(path.join(dir, file), "utf8", (err, html) => {
       if (err) return res.status(500).type("text").send("Halaman tidak tersedia.");
       let out = html;
-      if (file === "blog-ut.html") out = out.replace('<div id="bl" class="cards" aria-live="polite"></div>', `<div id="bl" class="cards" aria-live="polite">${blogCards(req)}</div>`);
+      if (file === "blog-ut.html") out = out.replace('<div id="bl" class="blog-list" aria-live="polite"></div>', `<div id="bl" class="blog-list" aria-live="polite">${blogCards(req)}</div>`);
       out = (TRACK.has(file) ? out.replace("</head>", '<script async src="/t.js"></script></head>') : out).replaceAll("{{SITE}}", SITE);
       res.set("Cache-Control", "no-cache").type("html").send(shorten(out));
     });

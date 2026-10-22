@@ -82,7 +82,7 @@ module.exports = function mount(ctx) {
     .replace(/<link rel="apple-touch-icon"[^>]*>/g, '<link rel="apple-touch-icon" href="/ruangakademikut/assets/ca/apple-touch-icon.png">')
     .replace(/<link rel="manifest"[^>]*>/g, '<link rel="manifest" href="/ruangakademikut/assets/ca/manifest.webmanifest">')
     .replace(/(<a [^>]*class="logo"[^>]*>)<b>[^<]*<\/b>/g, '$1<b class="lg"><img src="/ruangakademikut/assets/ca/logo-96.png" alt="" width="34" height="34"></b>')
-    .replace("</head>", '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme.css?v=1"></head>')
+    .replace("</head>", '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme.css?v=2"></head>')
     .replace("</head>", "<style>.logo b.lg{background:none!important}.logo b.lg img{width:34px;height:34px;object-fit:contain;display:block}</style></head>");
   const rebrand = h => (ACAD_ONLY ? caBrand(shortPath(String(h).replace(/(?<![\w./@-])nextaja(?![\w-]|\.\w)/gi, BRAND))) : h);
   const published = () => blog.posts.filter(p => p.status === "published" && !p.trashedAt && (!ACAD_ONLY || ACAD_TOPICS.includes(p.topic))).sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
@@ -107,9 +107,10 @@ module.exports = function mount(ctx) {
     for (const raw of String(txt || "").replace(/\r/g, "").split("\n")) {
       const l = raw.trim();
       if (!l) { flush(); endList(); continue; }
+      if (/^#\s+/.test(l)) { flush(); endList(); html += `<h2>${inline(l.replace(/^#\s+/, ""))}</h2>`; continue; } // H1 hanya dari kolom Judul; "# " di isi dijadikan H2
       if (/^##\s+/.test(l)) { flush(); endList(); html += `<h2>${inline(l.replace(/^##\s+/, ""))}</h2>`; continue; }
       if (/^###\s+/.test(l)) { flush(); endList(); html += `<h3>${inline(l.replace(/^###\s+/, ""))}</h3>`; continue; }
-      if (/^[-*]\s+/.test(l)) { flush(); if (!list) { html += "<ul>"; list = true; } html += `<li>${inline(l.replace(/^[-*]\s+/, ""))}</li>`; continue; }
+      if (/^[-*\u2022]\s+/.test(l)) { flush(); if (!list) { html += "<ul>"; list = true; } html += `<li>${inline(l.replace(/^[-*\u2022]\s+/, ""))}</li>`; continue; }
       endList(); para.push(l);
     }
     flush(); endList();
@@ -229,6 +230,10 @@ module.exports = function mount(ctx) {
     if (!title) return res.status(400).json({ error: "Judul wajib diisi." });
     const topic = TOPICS[b.topic] && (!onAcadHost(req) || ACAD_TOPICS.includes(b.topic)) ? b.topic : (onAcadHost(req) ? "study" : "social");
     const status = b.status === "published" ? "published" : "draft";
+    if (status === "published") { // aturan struktur judul untuk Google: tulisan panjang wajib punya sub-judul H2
+      const bodyTxt = String(b.body || ""), words = (bodyTxt.match(/\S+/g) || []).length;
+      if (words >= 300 && !/^\s*##?\s+\S/m.test(bodyTxt)) return res.status(400).json({ error: "Tulisan sepanjang ini wajib punya sub-judul H2. Tulis ## di awal baris judul bagian, atau simpan sebagai Draf." });
+    }
     const now = new Date().toISOString();
     let p = b.id ? blog.posts.find(x => x.id === b.id) : null;
     if (!p) { p = { id: crypto.randomBytes(6).toString("hex"), slug: uniqueSlug(slugify(title)), createdAt: now }; blog.posts.push(p); }
@@ -310,7 +315,7 @@ module.exports = function mount(ctx) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Bricolage+Grotesque:wght@600;700&display=swap" rel="stylesheet">
 <script>try{var t=localStorage.getItem("nx-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
-<link rel="stylesheet" href="/assets/blog.css?v=6"><script async src="/t.js"></script>
+<link rel="stylesheet" href="/assets/blog.css?v=7"><script async src="/t.js"></script>
 ${extra}
 </head>
 <body>
@@ -352,7 +357,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
     const all = published().filter(p => !f || p.topic === f), page = pageNumber(req), list = all.slice((page - 1) * 10, page * 10);
     const heading = f ? TOPICS[f].label : "Tulisan terbaru";
     const body = `<section class="pg"><div class="wrap">
-      ${portalBanner(f)}
+      ${ACAD_ONLY ? "" : portalBanner(f)}
       <span class="eyebrow">Blog</span><h1>${esc(f === "viral" ? "Berita viral apa hari ini?" : heading)}</h1>
       <p class="lead">${ACAD_ONLY ? "Catatan seputar kuliah, tugas, dan info terbaru Universitas Terbuka. Ditulis apa adanya." : "Catatan tentang belajar, social media, AI, dan hal-hal yang lagi ramai. Ditulis apa adanya."}</p>
       <div class="chips">${topicChip("", !f)}${Object.keys(TOPICS).filter(k => !ACAD_ONLY || ACAD_TOPICS.includes(k)).map(k => topicChip(k, f === k)).join("")}</div>

@@ -10,3 +10,4 @@
 .hl1{background:conic-gradient(from 0deg,#0b2a6b,var(--acc) 10%,#dbeafe 18%,#f5b942 26%,#0b2a6b 44%,#071a42 54%,var(--acc) 70%,#dbeafe 79%,#0b2a6b)!important}
 .pt:after{background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(79,143,247,.28),transparent 55%)!important}
 .nx-strip{background:#0b1326!important;color:#eef3ff!important}.nx-strip svg{color:#f5b942!important}
+.wa-bubble{background:#1d4ed8!important}[data-theme=dark] .wa-bubble{background:#2f6fe0!important}
