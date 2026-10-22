@@ -98,22 +98,28 @@ module.exports = function mount(ctx) {
   function inline(t) {
     return esc(t)
       .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+      .replace(/(^|[^*\w])\*([^*\s](?:[^*]*[^*\s])?)\*(?![*\w])/g, "$1<em>$2</em>")
       .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" rel="nofollow noopener" target="_blank">$1</a>');
   }
   function renderBody(txt) {
-    let html = "", list = false, para = [];
+    let html = "", list = "", para = [], quote = [];
     const flush = () => { if (para.length) { html += `<p>${inline(para.join(" "))}</p>`; para = []; } };
-    const endList = () => { if (list) { html += "</ul>"; list = false; } };
+    const endList = () => { if (list) { html += `</${list}>`; list = ""; } };
+    const endQuote = () => { if (quote.length) { html += `<blockquote><p>${inline(quote.join(" "))}</p></blockquote>`; quote = []; } };
+    const item = (kind, l, re) => { flush(); endQuote(); if (list !== kind) { endList(); html += `<${kind}>`; list = kind; } html += `<li>${inline(l.replace(re, ""))}</li>`; };
     for (const raw of String(txt || "").replace(/\r/g, "").split("\n")) {
       const l = raw.trim();
-      if (!l) { flush(); endList(); continue; }
+      if (!l) { flush(); endList(); endQuote(); continue; }
+      if (/^>\s?/.test(l)) { flush(); endList(); quote.push(l.replace(/^>\s?/, "")); continue; }
+      endQuote();
       if (/^#\s+/.test(l)) { flush(); endList(); html += `<h2>${inline(l.replace(/^#\s+/, ""))}</h2>`; continue; } // H1 hanya dari kolom Judul; "# " di isi dijadikan H2
       if (/^##\s+/.test(l)) { flush(); endList(); html += `<h2>${inline(l.replace(/^##\s+/, ""))}</h2>`; continue; }
       if (/^###\s+/.test(l)) { flush(); endList(); html += `<h3>${inline(l.replace(/^###\s+/, ""))}</h3>`; continue; }
-      if (/^[-*\u2022]\s+/.test(l)) { flush(); if (!list) { html += "<ul>"; list = true; } html += `<li>${inline(l.replace(/^[-*\u2022]\s+/, ""))}</li>`; continue; }
+      if (/^[-*\u2022]\s+/.test(l)) { item("ul", l, /^[-*\u2022]\s+/); continue; }
+      if (/^\d{1,2}[.)]\s+/.test(l)) { item("ol", l, /^\d{1,2}[.)]\s+/); continue; }
       endList(); para.push(l);
     }
-    flush(); endList();
+    flush(); endList(); endQuote();
     return html;
   }
 
@@ -242,6 +248,10 @@ module.exports = function mount(ctx) {
     await saveBlog(); res.json({ ok: true, post: p });
     if (status === "published") pingIndex([p.slug]);
   });
+  app.post("/ms/admin/preview", requireAdmin, adminJson, (req, res) => {
+    const b = req.body || {};
+    res.json({ title: str(b.title, 140), html: renderBody(cleanBody(String(b.body || "").slice(0, 60000))) });
+  });
   app.post("/ms/admin/posts/:id/trash", requireAdmin, async (req, res) => {
     const p = blog.posts.find(x => x.id === req.params.id); if (!p) return res.status(404).json({ error: "Tulisan tidak ditemukan." });
     p.trashedAt = new Date().toISOString(); await saveBlog(); res.json({ ok: true });
@@ -315,7 +325,7 @@ module.exports = function mount(ctx) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Bricolage+Grotesque:wght@600;700&display=swap" rel="stylesheet">
 <script>try{var t=localStorage.getItem("nx-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
-<link rel="stylesheet" href="/assets/blog.css?v=7"><script async src="/t.js"></script>
+<link rel="stylesheet" href="/assets/blog.css?v=8"><script async src="/t.js"></script>
 ${extra}
 </head>
 <body>

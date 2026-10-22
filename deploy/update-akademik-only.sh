@@ -18,13 +18,14 @@ for e in $EXTRA; do curl -fsSL "$RAW/parafrase/$e" -o "$T/$e"; node --check "$T/
 mkdir -p "$T/ca"; for f in theme.css theme-svc.css favicon.ico favicon-32.png apple-touch-icon.png icon-192.png icon-512.png logo-96.png manifest.webmanifest; do curl -fsSL "$RAW/parafrase/pages/ca/$f" -o "$T/ca/$f"; done
 curl -fsSL "$RAW/public/assets/blog.css" -o "$T/blog.css"
 curl -fsSL "$RAW/public/assets/admin-blog-seo.js" -o "$T/admin-blog-seo.js"; node --check "$T/admin-blog-seo.js"
+curl -fsSL "$RAW/public/assets/admin-blog-seo.css" -o "$T/admin-blog-seo.css"
 curl -fsSL "$RAW/deploy/patch-admin-seo.py" -o "$T/patch-admin-seo.py"
 cp "$T/blog-akun.js" "$APP/blog-akun.js"
 [ -d "$APP/public/assets" ] && cp "$T/blog.css" "$APP/public/assets/blog.css" || echo "PERINGATAN: $APP/public/assets tidak ada, blog.css dilewati"
 for e in $EXTRA; do cp "$T/$e" "$APP/parafrase/$e"; done
 for p in $PG; do cp "$T/pages/$p.html" "$APP/parafrase/pages/$p.html"; done
 mkdir -p "$APP/parafrase/pages/ca"; cp "$T"/ca/* "$APP/parafrase/pages/ca/"
-[ -d "$APP/public/assets" ] && cp "$T/admin-blog-seo.js" "$APP/public/assets/admin-blog-seo.js"
+[ -d "$APP/public/assets" ] && cp "$T/admin-blog-seo.js" "$APP/public/assets/admin-blog-seo.js" && cp "$T/admin-blog-seo.css" "$APP/public/assets/admin-blog-seo.css"
 python3 "$T/patch-admin-seo.py" "$APP/admin/index.html"
 rm -rf "$T"
 pm2 restart nextaja --update-env >/dev/null

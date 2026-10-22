@@ -118,3 +118,5 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:24px}
 .cvt i,.cvt b{position:relative;z-index:1;font-style:normal}
 .cvt i{background:rgba(255,255,255,.18);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:4px 12px;font:600 12px Onest,sans-serif}
 .cvt b{font:700 14px "Bricolage Grotesque",sans-serif;letter-spacing:.02em}
+
+.prose ol{margin:0 0 18px;padding-left:24px}.prose blockquote{margin:0 0 18px;padding:4px 18px;border-left:3px solid var(--acc);color:var(--muted)}.prose blockquote p{margin:8px 0}.prose em{font-style:italic}
