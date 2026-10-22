@@ -1,7 +1,7 @@
 """Pasang skrip editor blog (toolbar, pratinjau, panel SEO) ke admin/index.html. Idempoten: hanya menambah/menaikkan versi satu baris <script>."""
 import re, sys
 f = sys.argv[1]
-V = "3"  # naikkan angka ini tiap skrip berubah, supaya cache browser tidak menyimpan versi lama
+V = "4"  # naikkan angka ini tiap skrip berubah, supaya cache browser tidak menyimpan versi lama
 s = open(f, encoding="utf8").read()
 tag = '<script src="/assets/admin-blog-seo.js?v=%s" defer></script>\n' % V
 if "admin-blog-seo.js" in s:

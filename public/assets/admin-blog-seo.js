@@ -10,7 +10,7 @@
     var ta = document.getElementById("bBody"), form = document.getElementById("bForm"), dlg = document.getElementById("bDlg");
     if (!ta || !form || !dlg || ta.dataset.seo) return; ta.dataset.seo = "1";
 
-    var link = document.createElement("link"); link.rel = "stylesheet"; link.href = "/assets/admin-blog-seo.css?v=3"; document.head.appendChild(link);
+    var link = document.createElement("link"); link.rel = "stylesheet"; link.href = "/assets/admin-blog-seo.css?v=4"; document.head.appendChild(link);
 
     /* ---------- susun ulang: kolom utama + samping ---------- */
     var head = form.querySelector(".dlg-head"), foot = form.querySelector(".dlg-foot");
@@ -38,6 +38,9 @@
     var note = document.createElement("div"); note.className = "bed-note"; if (cover) cover.appendChild(note);
     [lTopic, lStatus, snip, box].forEach(function (n) { if (n) side.appendChild(n); });
     if (cover) side.insertBefore(cover, snip);
+    /* "Foto di dalam isi" (blok bawaan admin VPS tanpa class) dipindah ke bawah kolom Isi tulisan */
+    var inl = [].filter.call(form.children, function (c) { return c !== head && c !== foot && c !== main && c !== side && /^\s*Foto di dalam isi/.test(c.textContent); })[0];
+    if (inl) { inl.classList.add("bed-inl"); main.appendChild(inl); }
     form.insertBefore(main, foot); form.insertBefore(side, foot);
 
     var st = document.createElement("span"); st.className = "bed-st"; st.setAttribute("aria-live", "polite"); var h3 = head && head.querySelector("h3"); if (h3 && h3.parentNode) h3.parentNode.insertBefore(st, h3.nextSibling);
@@ -148,7 +151,7 @@
     function dirty() { return dlg.open && cur() !== snap; }
     var dbar = document.createElement("div"); dbar.className = "bed-draft"; dbar.hidden = true; form.insertBefore(dbar, main);
     function opened() {
-      snap = cur(); dkey = "ca-draft:" + (form.title.value.trim() || "new"); status(form.title.value ? "Tersimpan" : "Tulisan baru", ""); dbar.hidden = true; dbar.textContent = "";
+      snap = cur(); dkey = "ca-draft:" + (form.title.value.trim() || "new"); status(form.title.value ? "Tersimpan" : "", ""); dbar.hidden = true; dbar.textContent = "";
       var raw = store(dkey); if (raw) { try {
         var d = JSON.parse(raw), same = JSON.stringify([d.t, d.c, d.e, d.b]) === snap;
         if (!same && (d.b || d.t)) { dbar.hidden = false; var s = document.createElement("span"); s.textContent = "Ada draf lokal yang belum tersimpan (" + new Date(d.at).toLocaleString("id-ID") + "). "; var a = document.createElement("button"), b = document.createElement("button"); a.type = b.type = "button"; a.textContent = "Pulihkan"; b.textContent = "Buang";

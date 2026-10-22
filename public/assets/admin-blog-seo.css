@@ -28,3 +28,4 @@
 #bPrev .pv blockquote{margin:0 0 16px;padding:2px 16px;border-left:3px solid var(--acc,#4f8ff7);color:var(--muted,#9aa)}#bPrev .pv a{color:#7fb0ff}
 @media(max-width:860px){#bForm.bed{grid-template-columns:1fr}.bed-ed textarea{min-height:300px}.bseo-bar{position:sticky;top:0;z-index:2}}
 @media(max-width:560px){#postList{grid-template-columns:minmax(0,1fr)}#app .item{flex-wrap:wrap;min-width:0}#app .item .info{min-width:0;flex:1 1 140px;overflow-wrap:anywhere}#app .item .acts{flex-wrap:wrap;max-width:100%}}
+.bed-inl{margin:0!important}
