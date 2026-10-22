@@ -14,29 +14,40 @@ trap 'echo "GAGAL di baris $LINENO: $BASH_COMMAND"; rollback' ERR
 python3 - "$AV" <<'PY'
 import sys,re
 f=sys.argv[1]; s=open(f).read()
-if "cek-parafrase-mandiri|audit" in s: print("nginx sudah berisi aturan URL pendek"); sys.exit(0)
+if "layanan-ut" in s: print("nginx sudah berisi aturan terbaru"); sys.exit(0)
 PAGES="cek-parafrase-mandiri|audit|layanan|blog-ut|pesanan"
-blk=f'''    # URL pendek: /audit dst -> diteruskan ke jalur lama; jalur lama -> 301 ke URL pendek
-    location ~ ^/ruangakademikut/({PAGES})(/.*)?$ {{
-        return 301 /$1$2$is_args$args;
-    }}
-    location ~ ^/ruangakademikut/?$ {{
-        return 301 /;
-    }}
-    location ~ ^/({PAGES})(/.*)?$ {{
-        rewrite ^/(.*)$ /ruangakademikut/$1 break;
-        proxy_pass http://127.0.0.1:3200;
+P='''        proxy_pass http://127.0.0.1:3200;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header X-Forwarded-For $remote_addr;
         proxy_read_timeout 300s;
-    }}
 '''
+blk=f'''    # URL pendek: / = landing, /layanan-ut = hub, /audit dst; jalur lama /ruangakademikut/... -> 301 ke URL pendek
+    location ~ ^/ruangakademikut/({PAGES})(/.*)?$ {{
+        return 301 /$1$2$is_args$args;
+    }}
+    location ~ ^/ruangakademikut/?$ {{
+        return 301 /layanan-ut;
+    }}
+    location = /beranda {{
+        return 301 /;
+    }}
+    location = /layanan-ut {{
+        rewrite ^ /ruangakademikut break;
+{P}    }}
+    location ~ ^/({PAGES})(/.*)?$ {{
+        rewrite ^/(.*)$ /ruangakademikut/$1 break;
+{P}    }}
+'''
+# buang blok URL pendek versi lama (jika ada), lalu pasang yang baru sebelum 'location = /'
+s=re.sub(r'[ \t]*# URL pendek:.*?(?=^[ \t]*location = / \{)','',s,flags=re.S|re.M)
 m=re.search(r'^[ \t]*location = / \{',s,re.M)
 if not m: print("penanda 'location = /' tidak ditemukan"); sys.exit(2)
 s=s[:m.start()]+blk+s[m.start():]
+s=re.sub(r'(location = / \{\s*rewrite \^ )/ruangakademikut( break;)',r'\1/beranda\2',s,count=1)
+if "rewrite ^ /beranda break;" not in s: print("rewrite / -> /beranda gagal"); sys.exit(3)
 open(f,"w").write(s)
 PY
 nginx -t
@@ -47,9 +58,9 @@ P=/audit; A=$(R -o /dev/null -w '%{http_code}')
 P=/cek-parafrase-mandiri; B=$(R -o /dev/null -w '%{http_code}')
 P=/ruangakademikut/audit; C=$(R -o /dev/null -w '%{http_code} %{redirect_url}')
 P=/ruangakademikut; D=$(R -o /dev/null -w '%{http_code} %{redirect_url}')
-P=/; E=$(R -o /dev/null -w '%{http_code}')
+P=/; E=$(R -o /dev/null -w '%{http_code}'); P=/layanan-ut; G=$(R -o /dev/null -w '%{http_code}'); P=/; LP=$(R | grep -c 'mascot-hero' || true)
 P=/blog; F=$(R -o /dev/null -w '%{http_code}')
-echo "/audit $A | /cek-parafrase-mandiri $B | lama->pendek: $C | /ruangakademikut: $D | / $E | /blog $F"
-[ "$A" = 200 ]; [ "$B" = 200 ]; [ "$E" = 200 ]; [ "$F" = 200 ]; [[ "$C" == 301* ]]; [[ "$D" == 301* ]]
+echo "landing mascot: $LP | /layanan-ut $G | /audit $A | /cek-parafrase-mandiri $B | lama->pendek: $C | /ruangakademikut: $D | / $E | /blog $F"
+[ "$A" = 200 ]; [ "$B" = 200 ]; [ "$E" = 200 ]; [ "$G" = 200 ]; [ "$LP" -ge 1 ]; [ "$F" = 200 ]; [[ "$C" == 301* ]]; [[ "$D" == 301*layanan-ut* ]]
 trap - ERR
 echo "SELESAI. Rollback nginx: cp $BK $AV && nginx -t && systemctl reload nginx"

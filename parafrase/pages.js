@@ -16,9 +16,9 @@ module.exports = function mountPages({ app, express }) {
   const SHORT = !!process.env.ACAD_URL && process.env.ACAD_URL.replace(/\/+$/, "") !== (process.env.SITE_URL || "https://nextaja.com").replace(/\/+$/, "");
   const shorten = h => !SHORT ? h : h
     .replace(/\/ruangakademikut\/(cek-parafrase-mandiri|audit|layanan|blog-ut|pesanan)/g, "/$1")
-    .replace(/(https?:\/\/[^"'\s<]+?)\/ruangakademikut(?=["'<\s?#)])/g, "$1/")
-    .replace(/(["'(=])\/ruangakademikut(?=["'<\s?#)])/g, "$1/");
-  const TRACK = new Set(["hub.html", "cek.html", "audit.html", "layanan.html", "blog-ut.html"]); // halaman pesanan dan hasil memuat token rahasia: tidak dilacak
+    .replace(/(https?:\/\/[^"'\s<]+?)\/ruangakademikut(?=["'<\s?#)])/g, "$1/layanan-ut")
+    .replace(/(["'(=])\/ruangakademikut(?=["'<\s?#)])/g, "$1/layanan-ut");
+  const TRACK = new Set(["beranda.html", "hub.html", "cek.html", "audit.html", "layanan.html", "blog-ut.html"]); // halaman pesanan dan hasil memuat token rahasia: tidak dilacak
   const page = file => (req, res) => {
     fs.readFile(path.join(dir, file), "utf8", (err, html) => {
       if (err) return res.status(500).type("text").send("Halaman tidak tersedia.");
@@ -27,6 +27,7 @@ module.exports = function mountPages({ app, express }) {
     });
   };
   app.get(["/ruangakademikut", "/ruangakademikut/"], page("hub.html"));
+  app.get("/beranda", page("beranda.html")); // landing domain akademik (nginx: / -> /beranda)
   app.get("/ruangakademikut/cek-parafrase-mandiri", page("cek.html"));
   app.get("/ruangakademikut/audit", page("audit.html"));
   app.get("/ruangakademikut/layanan", page("layanan.html"));

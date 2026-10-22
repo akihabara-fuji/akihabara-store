@@ -12,7 +12,7 @@ trap 'echo "GAGAL di baris $LINENO: $BASH_COMMAND"; rollback' ERR
 T=$(mktemp -d); mkdir -p "$T/pages"
 EXTRA="pages/pesanan.js pages/common.js wordtools.js orders.js pages.js notify.js index.js"
 curl -fsSL "$RAW/blog-akun.js" -o "$T/blog-akun.js"; node --check "$T/blog-akun.js"
-PG="blog-ut hub cek audit audit-hasil layanan pesanan"
+PG="beranda blog-ut hub cek audit audit-hasil layanan pesanan"
 for p in $PG; do curl -fsSL "$RAW/parafrase/pages/$p.html" -o "$T/pages/$p.html"; done
 for e in $EXTRA; do curl -fsSL "$RAW/parafrase/$e" -o "$T/$e"; node --check "$T/$e"; done
 cp "$T/blog-akun.js" "$APP/blog-akun.js"
