@@ -35,3 +35,14 @@ test("terbit: tulisan 300 kata tanpa H2 ditolak, draf tidak diblokir", async () 
     assert.strictEqual((await post("draft")).status, 200);
   } finally { t.close(); }
 });
+
+test("tautan: situs sendiri = tab sama tanpa nofollow, luar = nofollow, protokol berbahaya ditolak", async () => {
+  const t = await boot();
+  try {
+    const a = await t.html("[a](/layanan-ut) [b](https://example.test/x) [c](https://luar.test/y) [d](//evil.test/z)");
+    assert.ok(a.includes('<a href="/layanan-ut">a</a>'));
+    assert.ok(a.includes('<a href="https://example.test/x">b</a>'));
+    assert.ok(a.includes('href="https://luar.test/y" rel="nofollow noopener" target="_blank"'));
+    assert.ok(!a.includes('href="//evil.test'));
+  } finally { t.close(); }
+});

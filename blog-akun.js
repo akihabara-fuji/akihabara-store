@@ -99,8 +99,11 @@ module.exports = function mount(ctx) {
     return esc(t)
       .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
       .replace(/(^|[^*\w])\*([^*\s](?:[^*]*[^*\s])?)\*(?![*\w])/g, "$1<em>$2</em>")
-      .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" rel="nofollow noopener" target="_blank">$1</a>');
+      .replace(/\[([^\]]+)\]\((\/[^\s)\/][^\s)]*|https?:\/\/[^\s)]+)\)/g, (m, txt, url) => isOwn(url) ? `<a href="${url}">${txt}</a>` : `<a href="${url}" rel="nofollow noopener" target="_blank">${txt}</a>`);
   }
+  /* tautan ke situs sendiri (relatif atau domain utama/akademik): tab yang sama, tanpa nofollow */
+  const OWN_HOSTS = [(() => { try { return new URL(SITE).host; } catch { return ""; } })(), ACAD_HOST].filter(Boolean);
+  function isOwn(u) { if (u[0] === "/") return true; try { return OWN_HOSTS.includes(new URL(u.replace(/&amp;/g, "&")).host); } catch { return false; } }
   function renderBody(txt) {
     let html = "", list = "", para = [], quote = [];
     const flush = () => { if (para.length) { html += `<p>${inline(para.join(" "))}</p>`; para = []; } };
