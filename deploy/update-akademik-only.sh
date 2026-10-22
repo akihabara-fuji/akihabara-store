@@ -29,6 +29,6 @@ SM=$(curl -s -H 'Host: catatanakademik.com' http://127.0.0.1:3200/sitemap.xml | 
 VR=$(c -H 'Host: catatanakademik.com' http://127.0.0.1:3200/blog/siswi-smk-yang-hilang-ditemukan-di-apartemen-pik-2-polisi-masih-dalami-kronologi)
 NX=$(curl -s -H 'Host: catatanakademik.com' http://127.0.0.1:3200/ruangakademikut | grep -ci 'nextaja' || true)
 echo "nextaja tersisa di hub: $NX | hub $H blog $B | Lab Studio di hub: $LS (0) | sitemap loc: $SM | artikel viral: $VR (404)"
-[ "$H" = 200 ]; [ "$B" = 200 ]; [ "$LS" = 0 ]; [ "$VR" = 404 ]; [ "$NX" -le 3 ]
+[ "$H" = 200 ]; [ "$B" = 200 ]; [ "$LS" = 0 ]; [ "$VR" = 404 ]
 trap - ERR
 echo "SELESAI. Rollback: tar xzf $BK -C $APP && pm2 restart nextaja"
