@@ -94,3 +94,55 @@ window.auditScoreCard = function (sc, box) {
   wrap.appendChild(ring); wrap.appendChild(side); box.appendChild(wrap);
   box.appendChild(el("p", "max-width:760px;margin:0 auto 10px;font-size:12.5px;opacity:.7;text-align:center", sc.note));
 };
+
+/* Angka Drillbit asli: murid menempel angka dari laporan Drillbit resminya. Tidak diverifikasi dan tidak disimpan di server;
+   hanya diingat di browser murid. Batas hanyalah acuan (atur admin). */
+window.auditDrillbit = function (box, score) {
+  if (!box) return; box.innerHTML = "";
+  var cfg = (window.PF && window.PF.cfg) || {}, SIM = Number(cfg.drillbit_sim_max) || 25, AI = Number(cfg.drillbit_ai_max) || 20;
+  function el(t, css, x) { var e = document.createElement(t); if (css) e.style.cssText = css; if (x != null) e.textContent = x; return e; }
+  var KEY = "ca-drillbit", saved = {};
+  try { saved = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) {}
+  var wrap = el("div", "max-width:760px;margin:0 auto 14px;padding:16px 18px;border-radius:18px;border:1px solid var(--border,#2b2b58);text-align:left");
+  wrap.appendChild(el("b", "display:block", "Punya laporan Drillbit resmi dari UT?"));
+  wrap.appendChild(el("div", "font-size:13.5px;opacity:.75;margin:2px 0 10px", "Tempel dua angkanya, nanti digabung dengan skor di atas. Angka ini dari kamu dan tidak kami verifikasi."));
+  var row = el("div", "display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end");
+  function field(id, label) {
+    var w = el("label", "display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600"); w.appendChild(el("span", "", label));
+    var i = el("input", "width:130px;padding:10px 12px;border-radius:12px;border:1px solid currentColor;background:transparent;color:inherit;font:inherit"); i.id = id; i.type = "text"; i.inputMode = "decimal"; i.placeholder = "mis. 18,5"; i.autocomplete = "off";
+    if (saved[id] != null) i.value = String(saved[id]).replace(".", ",");
+    w.appendChild(i); row.appendChild(w); return i;
+  }
+  var iS = field("dbSim", "Similarity (%)"), iA = field("dbAi", "Tulisan AI (%)");
+  var go = el("button", "", "Tampilkan"); go.type = "button"; go.className = "btn"; row.appendChild(go); wrap.appendChild(row);
+  var err = el("div", "color:#ff8aa5;font-size:13px;margin-top:8px"), out = el("div", "margin-top:12px");
+  wrap.appendChild(err); wrap.appendChild(out); box.appendChild(wrap);
+  function num(v) { v = String(v || "").trim().replace(",", ".").replace(/%$/, ""); if (v === "") return null; if (!/^\d{1,3}(\.\d{1,2})?$/.test(v)) return NaN; var n = parseFloat(v); return n > 100 ? NaN : n; }
+  function tile(label, v, max) {
+    var ok = v <= max, col = ok ? "#5ee6a8" : "#ff8aa5";
+    var t = el("div", "flex:1;min-width:210px;padding:12px 14px;border-radius:14px;border:1px solid " + col);
+    t.appendChild(el("div", "font-size:12.5px;opacity:.75", label));
+    t.appendChild(el("b", "display:block;font-size:30px;line-height:1.2;color:" + col, String(v).replace(".", ",") + "%"));
+    t.appendChild(el("div", "font-size:13px", ok ? "Di bawah batas acuan (" + max + "%)." : "Di atas batas acuan (" + max + "%): perlu turun sekitar " + (Math.round((v - max) * 10) / 10).toString().replace(".", ",") + " poin."));
+    return t;
+  }
+  function show() {
+    err.textContent = ""; out.innerHTML = "";
+    var s = num(iS.value), a = num(iA.value);
+    if (Number.isNaN(s) || Number.isNaN(a)) { err.textContent = "Isi angka 0 sampai 100, contoh 18,5."; return; }
+    if (s == null && a == null) { err.textContent = "Isi minimal satu angka dari laporan Drillbit."; return; }
+    try { localStorage.setItem(KEY, JSON.stringify({ dbSim: s, dbAi: a })); } catch (e) {}
+    var tiles = el("div", "display:flex;flex-wrap:wrap;gap:10px");
+    if (s != null) tiles.appendChild(tile("Similarity (dari laporanmu)", s, SIM));
+    if (a != null) tiles.appendChild(tile("Tulisan AI (dari laporanmu)", a, AI));
+    out.appendChild(tiles);
+    var over = (s != null && s > SIM) || (a != null && a > AI), auditOk = !score || score.level === "siap" || score.level === "hampir";
+    var msg = !over && auditOk ? "Angka Drillbit dan skor audit sama-sama aman. Tetap baca ulang sebelum dikumpulkan."
+      : !over ? "Angka Drillbit aman, tapi skor audit masih menandai masalah sitasi atau pustaka. Benahi temuan di bawah dulu."
+      : "Ada angka di atas batas acuan. Kurangi kemiripan atau gaya tulisan terlalu seragam lewat Cek & Parafrase Mandiri, lalu cek ulang di Drillbit resmi.";
+    out.appendChild(el("p", "margin:10px 0 4px;font-weight:600", msg));
+    if (over) { var l = el("a", "", "Buka Cek & Parafrase Mandiri"); l.href = "/ruangakademikut/cek-parafrase-mandiri"; l.style.fontSize = "14px"; out.appendChild(l); }
+    out.appendChild(el("p", "margin:6px 0 0;font-size:12.5px;opacity:.7", "Batas acuan diatur admin, bukan aturan resmi UT. Ikuti ketentuan prodi dan tutormu. Angka berasal dari laporan Drillbit yang kamu tempel."));
+  }
+  go.onclick = show; if (saved.dbSim != null || saved.dbAi != null) show();
+};

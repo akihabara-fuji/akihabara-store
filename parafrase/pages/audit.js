@@ -38,7 +38,7 @@
   function el(tag, css, txt) { var e = document.createElement(tag); if (css) e.style.cssText = css; if (txt != null) e.textContent = txt; return e; }
   function render(d) {
     $("rmeta").textContent = d.file.name + " · " + rp(d.words) + " kata";
-    window.auditScoreCard(d.score, $("score"));
+    window.auditScoreCard(d.score, $("score")); window.auditDrillbit($("dbit"), d.score);
     var c = $("counts"); c.innerHTML = "";
     ["kritis", "peringatan", "info"].forEach(function (k) {
       var b = el("div", "min-width:130px;padding:14px 18px;border-radius:16px;border:1px solid #2b2b58");

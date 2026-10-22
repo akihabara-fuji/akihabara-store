@@ -34,6 +34,8 @@ const DEFS = {
   price_revisi_metopen:         { type: "int",  min: 0, max: 100000000, def: 100000, pub: true },
   audit_per_word:               { type: "int",  min: 0, max: 100000000, def: 20, pub: true },
   audit_min:                    { type: "int",  min: 0, max: 100000000, def: 35000, pub: true },
+  drillbit_sim_max:             { type: "int",  min: 1, max: 100, def: 25, pub: true },
+  drillbit_ai_max:              { type: "int",  min: 1, max: 100, def: 20, pub: true },
   price_semester_min:           { type: "int",  min: 0, max: 100000000, def: 1300000, pub: true },
   price_semester_max:           { type: "int",  min: 0, max: 100000000, def: 1800000, pub: true },
   price_pengarahan_semester:    { type: "int",  min: 0, max: 100000000, def: 99000, pub: true },

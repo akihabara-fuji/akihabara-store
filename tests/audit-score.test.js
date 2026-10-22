@@ -21,3 +21,9 @@ test("skor kesiapan: kalimat berulang dan sitasi tanpa pustaka menurunkan skor, 
   assert.ok(buruk.score.metrics[3].value > 0, "kalimat berulang terdeteksi");
   assert.ok(buruk.counts.kritis > 0 && buruk.score.value <= 84 && buruk.score.level !== "siap");
 });
+
+test("pengaturan batas Drillbit: ada di config publik dengan acuan bawaan", () => {
+  const { DEFS } = require("../parafrase/settings");
+  assert.strictEqual(DEFS.drillbit_sim_max.def, 25); assert.strictEqual(DEFS.drillbit_ai_max.def, 20);
+  assert.ok(DEFS.drillbit_sim_max.pub && DEFS.drillbit_ai_max.pub);
+});
