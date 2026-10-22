@@ -15,7 +15,9 @@ curl -fsSL "$RAW/blog-akun.js" -o "$T/blog-akun.js"; node --check "$T/blog-akun.
 PG="beranda blog-ut hub cek audit audit-hasil layanan pesanan"
 for p in $PG; do curl -fsSL "$RAW/parafrase/pages/$p.html" -o "$T/pages/$p.html"; done
 for e in $EXTRA; do curl -fsSL "$RAW/parafrase/$e" -o "$T/$e"; node --check "$T/$e"; done
+curl -fsSL "$RAW/public/assets/blog.css" -o "$T/blog.css"
 cp "$T/blog-akun.js" "$APP/blog-akun.js"
+[ -d "$APP/public/assets" ] && cp "$T/blog.css" "$APP/public/assets/blog.css" || echo "PERINGATAN: $APP/public/assets tidak ada, blog.css dilewati"
 for e in $EXTRA; do cp "$T/$e" "$APP/parafrase/$e"; done
 for p in $PG; do cp "$T/pages/$p.html" "$APP/parafrase/pages/$p.html"; done
 rm -rf "$T"

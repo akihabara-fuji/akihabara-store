@@ -290,7 +290,7 @@ module.exports = function mount(ctx) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Bricolage+Grotesque:wght@600;700&display=swap" rel="stylesheet">
 <script>try{var t=localStorage.getItem("nx-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
-<link rel="stylesheet" href="/assets/blog.css?v=4"><script async src="/t.js"></script>
+<link rel="stylesheet" href="/assets/blog.css?v=5"><script async src="/t.js"></script>
 ${extra}
 </head>
 <body>
@@ -334,7 +334,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
       <span class="eyebrow">Blog</span><h1>${esc(f === "viral" ? "Berita viral apa hari ini?" : heading)}</h1>
       <p class="lead">${ACAD_ONLY ? "Catatan seputar kuliah, tugas, dan info terbaru Universitas Terbuka. Ditulis apa adanya." : "Catatan tentang belajar, social media, AI, dan hal-hal yang lagi ramai. Ditulis apa adanya."}</p>
       <div class="chips">${topicChip("", !f)}${Object.keys(TOPICS).filter(k => !ACAD_ONLY || ACAD_TOPICS.includes(k)).map(k => topicChip(k, f === k)).join("")}</div>
-      ${list.length ? `<div class="grid">${list.map(p => `<a class="card post" href="/blog/${esc(p.slug)}"><div class="cv">${coverHtml(p)}</div><div class="pb"><span class="tag">${esc(tl(p.topic))}</span><h3>${esc(p.title)}</h3><p>${esc(p.excerpt)}</p><small>${esc(fmtDate(p.publishedAt))}</small></div></a>`).join("")}</div>`
+      ${list.length ? `<div class="grid pgrid">${list.map(p => `<a class="card post" href="/blog/${esc(p.slug)}"><div class="cv">${coverHtml(p)}</div><div class="pb"><span class="tag">${esc(tl(p.topic))}</span><h3>${esc(p.title)}</h3><p>${esc(p.excerpt)}</p><small>${esc(fmtDate(p.publishedAt))}</small></div></a>`).join("")}</div>`
         : `<div class="empty">Belum ada tulisan di sini. Tulisan pertama segera terbit.</div>`}
     </div></section>`;
     res.set("Cache-Control", "no-cache").type("html").send(layout({ title: `${heading} — Blog nextaja`, desc: "Catatan tentang belajar, social media, AI, dan berita viral hari ini dari nextaja.", path: f ? `/blog?f=${f}` : "/blog", body }));
