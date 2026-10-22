@@ -7,7 +7,7 @@ NEW=https://catatanakademik.com
 APP=/var/www/mahyra-serv
 BK=/root/cutover-backup-$(date +%Y%m%d-%H%M%S).tgz
 tar czf "$BK" -C /etc nginx
-rollback(){ echo "GAGAL -> rollback"; tar xzf "$BK" -C /etc; nginx -t && systemctl reload nginx || true; pm2 delete nextaja >/dev/null 2>&1 || true; cd "$APP" && pm2 start server.js --name nextaja >/dev/null 2>&1 || pm2 restart nextaja --update-env >/dev/null 2>&1 || true; pm2 save >/dev/null 2>&1 || true; }
+rollback(){ echo "GAGAL -> rollback"; tar xzf "$BK" -C /etc; nginx -t && systemctl reload nginx || true; ACAD_URL="" pm2 restart nextaja --update-env >/dev/null 2>&1 || true; pm2 save >/dev/null 2>&1 || true; }
 trap 'echo "GAGAL di baris $LINENO: $BASH_COMMAND"; rollback' ERR
 NX=$(readlink -f /etc/nginx/sites-enabled/nextaja)
 CA=$(readlink -f /etc/nginx/sites-enabled/catatanakademik)
