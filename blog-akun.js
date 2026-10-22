@@ -69,6 +69,8 @@ module.exports = function mount(ctx) {
   /* Domain akademik (ACAD_URL beda dari situs utama): hanya topik akademik/UT yang tampil. Tulisan lain tidak dihapus, hanya disembunyikan. */
   const ACAD_ONLY = !!process.env.ACAD_URL && process.env.ACAD_URL.replace(/\/+$/, "") !== (process.env.SITE_URL || "https://nextaja.com").replace(/\/+$/, "");
   const ACAD_TOPICS = ["study", "updateut"];
+  const ACAD_HOST = (() => { try { return new URL(process.env.ACAD_URL || "").host; } catch { return ""; } })();
+  const onAcadHost = req => ACAD_ONLY && !!ACAD_HOST && String(req.headers.host || "").toLowerCase() === ACAD_HOST.toLowerCase();
   const BRAND = ACAD_ONLY ? "Catatan Akademik" : "nextaja";
   /* Di domain akademik, nama "nextaja" pada teks halaman diganti nama brand akademik (URL dan alamat email tidak disentuh). */
   const shortPath = h => h
@@ -200,14 +202,17 @@ module.exports = function mount(ctx) {
   /* ---------------- API admin: blog ---------------- */
   const adminJson = express.json({ limit: "400kb" });
   app.get("/ms/admin/posts", requireAdmin, (req, res) => {
-    const all = blog.posts.slice().sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-    res.json({ topics: TOPICS, posts: all.filter(p => !p.trashedAt), trash: all.filter(p => p.trashedAt) });
+    let all = blog.posts.slice().sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+    let topics = TOPICS;
+    /* di catatanakademik.com, menu tulis hanya menawarkan topik akademik */
+    if (onAcadHost(req)) { topics = Object.fromEntries(Object.entries(TOPICS).filter(([k]) => ACAD_TOPICS.includes(k))); all = all.filter(p => ACAD_TOPICS.includes(p.topic)); }
+    res.json({ topics, posts: all.filter(p => !p.trashedAt), trash: all.filter(p => p.trashedAt) });
   });
   app.post("/ms/admin/posts", requireAdmin, adminJson, async (req, res) => {
     const b = req.body || {};
     const title = str(b.title, 140);
     if (!title) return res.status(400).json({ error: "Judul wajib diisi." });
-    const topic = TOPICS[b.topic] ? b.topic : "social";
+    const topic = TOPICS[b.topic] && (!onAcadHost(req) || ACAD_TOPICS.includes(b.topic)) ? b.topic : (onAcadHost(req) ? "study" : "social");
     const status = b.status === "published" ? "published" : "draft";
     const now = new Date().toISOString();
     let p = b.id ? blog.posts.find(x => x.id === b.id) : null;
