@@ -242,6 +242,15 @@ const MIGRATIONS = [
     from_holding INTEGER NOT NULL DEFAULT 0,  -- bagian yang berasal dari saldo titipan mahasiswa (di luar pendapatan terpakai)
     at       INTEGER NOT NULL
   );
+  /* Simulasi presentasi: tanya jawab lengkap dibuka sekali per pesanan. Pembukaan pertama tiap akun gratis, berikutnya bayar koin. */
+  CREATE TABLE sim_unlocks (
+    order_id TEXT PRIMARY KEY,
+    user_id  TEXT NOT NULL,
+    how      TEXT NOT NULL,                  -- gratis | koin
+    coins    INTEGER NOT NULL DEFAULT 0,
+    at       INTEGER NOT NULL
+  );
+  CREATE INDEX sim_unlocks_user ON sim_unlocks(user_id);
   `,
 ];
 

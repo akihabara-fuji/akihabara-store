@@ -51,10 +51,12 @@ const DEFS = {
   gtm_id:                       { type: "str",  re: /^GTM-[A-Z0-9]{4,10}$/, allowEmpty: true, def: "", pub: true },
   google_verify_file:           { type: "str",  re: /^google[a-z0-9]{8,40}\.html$/, allowEmpty: true, def: "" },
   qris_image_path:              { type: "str",  re: /^[a-z0-9/_.-]{0,200}$/i, allowEmpty: true, def: "" },
+  price_simulasi:               { type: "int",  min: 0, max: 100000000, def: 0, pub: true },        // biaya pesan simulasi (0 = gratis dipesan)
+  sim_koin_price:               { type: "int",  min: 0, max: 1000, def: 4, pub: true },             // koin untuk membuka tanya jawab lengkap (pembukaan pertama tiap akun gratis)
   layanan_nonaktif:             { type: "str",  re: /^[a-z0-9_]+(,[a-z0-9_]+)*$/, allowEmpty: true, def: "", pub: true }, // kode layanan yang ditutup, dipisah koma
 };
 /* Nama tampil tiap layanan (formulir, judul pesanan, daftar admin). Kosong = pakai nama bawaan di layanan.js. Diubah dari panel admin. */
-for (const k of ["tugas", "diskusi", "metopen1", "metopen2", "metopen3", "metopen4", "metopen_paket", "revisi_tugas", "revisi_diskusi", "revisi_metopen"])
+for (const k of ["tugas", "diskusi", "metopen1", "metopen2", "metopen3", "metopen4", "metopen_paket", "revisi_tugas", "revisi_diskusi", "revisi_metopen", "simulasi"])
   DEFS["label_" + k] = { type: "str", re: /^[\p{L}\p{N} &.,()'+\/:-]{0,40}$/u, allowEmpty: true, def: "", pub: true };
 /* Kartu di halaman Layanan UT yang disembunyikan (kode kartu dipisah koma, mis. "semester,pengarahan"). */
 DEFS.kartu_sembunyi = { type: "str", re: /^[a-z_]+(,[a-z_]+)*$/, allowEmpty: true, def: "" };

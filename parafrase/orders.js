@@ -143,6 +143,15 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
   });
 
   /* ---------- status publik ---------- */
+  /* resultText untuk layanan biasa apa adanya. Simulasi presentasi: tanya jawab dipotong di server sampai dibuka (lihat simulasi.js). */
+  const simPart = (o, now) => {
+    const live = o.doc_type === "layanan" && o.status === "terkirim" && !o.files_deleted_at && (!o.delete_at || o.delete_at > now) && o.result_text;
+    if (o.service !== "simulasi") return { resultText: live ? o.result_text : null };
+    if (!live) return { resultText: null, sim: null };
+    const unlocked = !!db.prepare("SELECT 1 FROM sim_unlocks WHERE order_id=?").get(o.id);
+    const v = require("./simulasi").visible(o.result_text, unlocked);
+    return { resultText: null, sim: { talk: v.talk, qa: v.qa, locked: v.locked, total: v.total, coins: settings.getAll().sim_koin_price } };
+  };
   const view = (o, now = Date.now()) => {
     const cfg = settings.getAll();
     return {
@@ -155,7 +164,7 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
       queue: o.doc_type !== "layanan" && o.doc_type !== "audit" && ["baru_dibayar", "dianalisis", "dikerjakan"].includes(o.status) ? queue.info(db, o.id, cfg) : null,
       resultReady: o.status === "terkirim" && !!o.result_path && !o.files_deleted_at && (!o.delete_at || o.delete_at > now),
       resultName: o.result_name || null, deleteAt: o.delete_at || null, filesDeleted: !!o.files_deleted_at,
-      service: o.service || null, resultText: o.doc_type === "layanan" && o.status === "terkirim" && !o.files_deleted_at && (!o.delete_at || o.delete_at > now) ? o.result_text || null : null,
+      service: o.service || null, ...simPart(o, now),
       docType: o.doc_type, auditReady: o.doc_type === "audit" && PAID.has(o.status) && !o.files_deleted_at && (!o.delete_at || o.delete_at > now),
     };
   };

@@ -11,6 +11,7 @@ const multer = require("multer");
 const { requirements, checkStage } = require("./metopen");
 const { checkFree } = require("./revisi");
 const { coinsFor } = require("./koin");
+const simulasi = require("./simulasi");
 
 const SV = {
   tugas:          { label: "Tugas", price: 35000, kind: "tugas" },
@@ -23,6 +24,7 @@ const SV = {
   revisi_tugas:   { label: "Revisi Tugas", price: 20000, kind: "revisi", of: "tugas" },
   revisi_diskusi: { label: "Revisi Diskusi", price: 10000, kind: "revisi", of: "diskusi" },
   revisi_metopen: { label: "Revisi Metopen", price: 99000, kind: "revisi", of: "metopen" },
+  simulasi:       { label: "Simulasi Presentasi", price: 0, kind: "simulasi" },
 };
 const MAX_FILES = 5, MAX_MB = 10;
 const MAGIC = { docx: b => b.slice(0, 2).toString() === "PK", pdf: b => b.slice(0, 4).toString() === "%PDF", png: b => b.slice(0, 4).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47])), jpg: b => b[0] === 0xff && b[1] === 0xd8, jpeg: b => b[0] === 0xff && b[1] === 0xd8, txt: b => !b.includes(0) };
@@ -39,7 +41,7 @@ module.exports = function mountLayanan({ app, express, db, settings, orders, roo
   const ext = n => ((String(n).match(/\.([a-z0-9]{2,5})$/i) || [])[1] || "").toLowerCase();
   const bad = (status, error, extra) => Object.assign(new Error(error), { status }, extra || {});
 
-  app.get("/ms/layanan/config", (req, res) => { res.set("Cache-Control", "public, max-age=5"); res.json(Object.fromEntries(Object.entries(SV).map(([k, v]) => [k, { label: labelOf(k), price: priceOf(k), kind: v.kind, ...(v.of ? { of: v.of } : {}), ...requirements(k) }]))); });
+  app.get("/ms/layanan/config", (req, res) => { res.set("Cache-Control", "public, max-age=5"); res.json(Object.fromEntries(Object.entries(SV).map(([k, v]) => [k, { label: labelOf(k), price: priceOf(k), kind: v.kind, ...(v.of ? { of: v.of } : {}), ...(v.kind === "simulasi" ? { simCoins: settings.get("sim_koin_price") } : {}), ...requirements(k) }]))); });
 
   const up = multer({ storage: multer.memoryStorage(), limits: { fileSize: MAX_MB * 1048576, files: MAX_FILES, fields: 8 } }).array("files", MAX_FILES);
   app.post("/ms/layanan/order", (req, res) => {
@@ -74,6 +76,18 @@ module.exports = function mountLayanan({ app, express, db, settings, orders, roo
           if (!brief || brief.length < 5) throw bad(400, "Tempel masukan dari tutor di kotak kebutuhan.");
         }
 
+        /* Simulasi presentasi: wajib unggah file penelitian; gratis dipesan (harga 0), satu yang aktif per akun dan paling banyak 3 per hari agar tim tidak kebanjiran. */
+        if (sv.kind === "simulasi") {
+          if (!files.length) throw bad(400, "Unggah file penelitianmu (Word atau PDF) supaya simulasinya sesuai isi penelitianmu.");
+          const who = userFrom && userFrom(req);
+          if (who) {
+            const act = db.prepare("SELECT COUNT(*) n FROM orders WHERE user_id=? AND service='simulasi' AND status IN ('baru_dibayar','dikerjakan','menunggu_bayar')").get(String(who.id)).n;
+            if (act >= 1) throw bad(429, "Simulasimu yang sebelumnya masih dikerjakan. Tunggu hasilnya dulu, lalu pesan lagi.");
+            const day = db.prepare("SELECT COUNT(*) n FROM orders WHERE user_id=? AND service='simulasi' AND created_at>?").get(String(who.id), now - 86400e3).n;
+            if (day >= 3) throw bad(429, "Batas 3 simulasi per hari tercapai. Coba lagi besok.");
+          }
+          if (priceOf(b.service) === 0) free = true;
+        }
         const cfg = settings.getAll(), token = crypto.randomBytes(24).toString("hex");
         const base = free ? 0 : priceOf(b.service);
         /* Bayar pakai koin: 1 koin = Rp1.000. Potongan koin dan pembuatan pesanan satu transaksi, jadi tidak ada pesanan tanpa potongan. */
@@ -149,13 +163,17 @@ module.exports = function mountLayanan({ app, express, db, settings, orders, roo
         if (!["baru_dibayar", "dikerjakan", "terkirim"].includes(o.status)) throw bad(409, "Pesanan belum dibayar.");
         const text = String((req.body && req.body.text) || "").trim().slice(0, 60000), f = req.file;
         if (!text && !f) throw bad(400, "Isi teks hasil atau pilih file hasil (Word atau PDF).");
+        if (o.service === "simulasi") { // teks saja: berkas hasil tidak bisa dipotong, jadi bagian terkunci bisa bocor
+          if (f) throw bad(400, "Simulasi dikirim sebagai teks, bukan file. Tempel hasilnya di kotak teks.");
+          if (!simulasi.MARK.test(text) || !simulasi.split(text).talk || !simulasi.split(text).qa) throw bad(400, "Pisahkan dengan satu baris === TANYA JAWAB ===: simulasi presentasi di atasnya, daftar tanya jawab (P1., P2., ...) di bawahnya.");
+        }
         let rel = null, name = null;
         if (f) {
           const e = ext(f.originalname); if (!["docx", "pdf"].includes(e) || !MAGIC[e](f.buffer)) throw bad(415, "File hasil harus Word (.docx) atau PDF yang valid.");
           name = safeName(f.originalname); rel = `layanan/${id}/hasil-${name}`;
           await fsp.mkdir(path.dirname(priv(rel)), { recursive: true }); await fsp.writeFile(priv(rel), f.buffer, { mode: 0o600 });
         }
-        const hrs = settings.getAll().retention_hours || 24;
+        const hrs = o.service === "simulasi" ? 168 : (settings.getAll().retention_hours || 24); // simulasi disimpan 7 hari karena tanya jawab dibuka belakangan
         db.prepare("UPDATE orders SET status='terkirim', result_path=COALESCE(?,result_path), result_name=COALESCE(?,result_name), result_text=COALESCE(?,result_text), sent_at=?, delete_at=?, reminder_sent_at=NULL, updated_at=? WHERE id=?").run(rel, name, text || null, now, now + hrs * 3600e3, now, id);
         orders.event(id, "hasil_dikirim", null, now);
         res.json({ ok: true });

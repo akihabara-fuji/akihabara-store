@@ -3,8 +3,22 @@
   var rp = function (n) { return "Rp" + Number(n).toLocaleString("id-ID"); };
   var cfg = {}, cur = (new URLSearchParams(location.search).get("s") || "tugas"), files = [], slotFiles = {}, lastStage = "metopen_paket";
   function showErr(m) { var e = $("err"); e.textContent = m || ""; e.classList.toggle("hidden", !m); }
+  /* Simulasi presentasi: wajib unggah file penelitian, tanpa harga di formulir. Tanya jawab lengkap dibuka di halaman hasil. */
+  function paintSim(s) {
+    $("chips").innerHTML = ""; $("stages").innerHTML = ""; $("stages").style.display = "none"; $("slots").style.display = "none"; $("slots").innerHTML = "";
+    document.querySelectorAll(".sub a").forEach(function (a) { a.classList.toggle("on", a.textContent.trim() === "Simulasi Presentasi"); });
+    $("ttl").textContent = "Simulasi Presentasi";
+    $("ld").textContent = "Bingung menjelaskan penelitianmu saat presentasi? Unggah file penelitianmu. Tim menyusun simulasi presentasi: urutan penjelasan, alasan memilih judul dan metode, serta pertanyaan yang biasa diajukan penguji beserta arahan jawabannya. Ini alat belajar supaya kamu paham penelitianmu sendiri, bukan janji nilai.";
+    $("pbox").style.display = "none"; $("tguide").style.display = "none"; var nt = $("note"); if (nt) nt.style.display = "none";
+    $("blabel").textContent = "Tentang presentasimu";
+    $("brief").placeholder = "Tulis judul penelitianmu, jurusan, dan kapan kamu presentasi. Bagian yang paling kamu khawatirkan juga boleh ditulis.";
+    $("pick").textContent = "+ Unggah file penelitian (Word atau PDF)";
+    $("price").textContent = "Gratis dipesan. Simulasi presentasi tampil penuh. Tanya jawab dosen tampil cuplikan: membuka lengkapnya gratis untuk pertama kali, berikutnya " + (s.simCoins || 4) + " koin.";
+    $("go").textContent = "Kirim untuk disimulasikan"; gate(); payPaint();
+  }
   function paint() {
     var s = cfg[cur]; if (!s) return;
+    if (s.kind === "simulasi") return paintSim(s);
     $("chips").innerHTML = "";
     var base = s.of || (s.kind === "metopen" ? "metopen" : cur), fam = base;
     if (s.kind === "metopen") lastStage = cur;
@@ -56,8 +70,8 @@
   fetch("/ms/koin/saldo", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) { if (typeof j.balance === "number") { bal = j.balance; payPaint(); } }).catch(function () {});
   function need() { return (cfg[cur] && cfg[cur].needs) || []; }
   function gate() {
-    var wa = $("wa").value.replace(/\D/g, "").replace(/^62/, "").replace(/^0/, ""), n = need(), slots = n.every(function (l) { return slotFiles[l]; }), total = n.length + files.length;
-    $("go").disabled = !(cfg[cur] && /^8\d{8,12}$/.test(wa) && $("agree").checked && slots && ($("brief").value.trim().length >= 5 || total));
+    var wa = $("wa").value.replace(/\D/g, "").replace(/^62/, "").replace(/^0/, ""), n = need(), slots = n.every(function (l) { return slotFiles[l]; }), total = n.length + files.length, sim = cfg[cur] && cfg[cur].kind === "simulasi";
+    $("go").disabled = !(cfg[cur] && /^8\d{8,12}$/.test(wa) && $("agree").checked && slots && (sim ? files.length > 0 : ($("brief").value.trim().length >= 5 || total)));
   }
   /* Slot berkas per tahap sebelumnya (Metopen Tugas 2 ke atas): satu file per tahap, wajib. */
   function paintSlots() {

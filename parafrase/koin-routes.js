@@ -73,6 +73,27 @@ module.exports = function mountKoin({ app, express, db, settings, koin, root, sa
     });
   });
 
+  /* ---------- simulasi presentasi: buka tanya jawab lengkap ---------- */
+  const simOrder = (req, res) => {
+    const u = need(req, res); if (!u) return null;
+    const o = db.prepare("SELECT * FROM orders WHERE public_token=? AND service='simulasi'").get(String(req.params.token));
+    if (!o || String(o.user_id || "") !== String(u.id)) { no(res, 404, "Simulasi tidak ditemukan di akunmu. Masuk dengan akun yang dipakai memesan."); return null; }
+    if (o.status !== "terkirim") { no(res, 409, "Simulasi belum selesai dikerjakan."); return null; }
+    return { u, o };
+  };
+  app.get("/ms/koin/simulasi/:token", wrap((req, res) => {
+    const x = simOrder(req, res); if (!x) return;
+    const st = koin.simState(x.u.id, x.o.id);
+    res.json({ unlocked: st.unlocked, free: st.firstFree && !st.unlocked, coins: settings.getAll().sim_koin_price, balance: koin.balance(x.u.id) });
+  }));
+  app.post("/ms/koin/simulasi/:token/buka", J, wrap((req, res) => {
+    if (!sameOrigin(req)) return no(res);
+    const x = simOrder(req, res); if (!x) return;
+    if (limited("ks:" + x.u.id, 30)) return no(res, 429, "Terlalu banyak percobaan. Coba lagi nanti.");
+    try { const r = koin.unlockSim(x.u.id, x.o.id, settings.getAll().sim_koin_price); res.json({ ok: true, free: !!r.free, already: !!r.already, balance: r.balance }); }
+    catch (e) { if (e.status === 402) return res.status(402).json({ error: `Saldo koinmu kurang ${e.short} koin. Isi koin dulu.`, short: e.short, balance: e.balance }); throw e; }
+  }));
+
   /* ---------- admin ---------- */
   const who = req => (req.admin && req.admin.name) || "admin";
   const email = id => { const u = users && users.byId && users.byId(id); return u ? u.email : String(id); };

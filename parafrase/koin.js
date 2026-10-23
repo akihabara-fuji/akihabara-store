@@ -157,9 +157,24 @@ function createKoin(db, { settings, now: clock } = {}) {
     });
   }
 
+  /* Buka tanya jawab lengkap sebuah simulasi. Pembukaan pertama setiap akun gratis; berikutnya potong koin. Satu pesanan hanya dibuka sekali. */
+  function unlockSim(uid, orderId, coins, at) {
+    const now = at || T();
+    return tx(() => {
+      const had = db.prepare("SELECT * FROM sim_unlocks WHERE order_id=?").get(String(orderId));
+      if (had) return { already: true, how: had.how, balance: balance(uid) };
+      const first = !db.prepare("SELECT 1 FROM sim_unlocks WHERE user_id=?").get(String(uid));
+      if (first || coins <= 0) { db.prepare("INSERT INTO sim_unlocks(order_id,user_id,how,coins,at) VALUES(?,?,?,?,?)").run(String(orderId), String(uid), "gratis", 0, now); return { already: false, how: "gratis", free: true, balance: balance(uid) }; }
+      post(uid, -coins, "sim", orderId, `Buka tanya jawab simulasi ${orderId}`, now);
+      db.prepare("INSERT INTO sim_unlocks(order_id,user_id,how,coins,at) VALUES(?,?,?,?,?)").run(String(orderId), String(uid), "koin", coins, now);
+      return { already: false, how: "koin", free: false, balance: balance(uid) };
+    });
+  }
+  const simState = (uid, orderId) => ({ unlocked: !!db.prepare("SELECT 1 FROM sim_unlocks WHERE order_id=?").get(String(orderId)), firstFree: !db.prepare("SELECT 1 FROM sim_unlocks WHERE user_id=?").get(String(uid)) });
+
   const history = (uid, limit = 50) => db.prepare("SELECT delta, balance_after, kind, ref, note, created_at FROM coin_ledger WHERE user_id=? ORDER BY id DESC LIMIT ?").all(String(uid), limit);
 
-  return { RP, KATEGORI, balance, debitOrder, refundOrder, adjust, parseRupiah, createTopup, attachProof, confirmTopup, rejectTopup, expireTopups, summary, withdraw, history, tx };
+  return { RP, KATEGORI, balance, debitOrder, refundOrder, adjust, parseRupiah, createTopup, attachProof, confirmTopup, rejectTopup, expireTopups, summary, withdraw, history, unlockSim, simState, tx };
 }
 
 /* Harga koin sebuah pesanan: harga rupiah / 1000. Harga di luar kelipatan Rp1.000 tidak bisa dibayar koin. */
