@@ -1,5 +1,5 @@
 /* Syarat berkas per tahap Metopen. Tugas berikutnya dibangun di atas tugas sebelumnya, jadi pemesan wajib melampirkan hasil tahap
-   sebelumnya dan catatan dari tutor. Fungsi murni (tanpa database) supaya mudah diuji. */
+   sebelumnya; catatan dari tutor boleh dikosongkan. Fungsi murni (tanpa database) supaya mudah diuji. */
 "use strict";
 
 const NEEDS = {
@@ -9,6 +9,7 @@ const NEEDS = {
   metopen4: ["Tugas 1", "Tugas 2", "Tugas 3"],
   metopen_paket: [],
 };
+/* Tahap yang menampilkan kolom catatan tutor (opsional). */
 const NEEDS_NOTE = new Set(["metopen2", "metopen3", "metopen4"]);
 
 /* { needs: ["Tugas 1", ...], tutorNote: bool } untuk layanan; kosong bila bukan tahap yang bergantung. */
@@ -18,7 +19,7 @@ function requirements(service) { return { needs: (NEEDS[service] || []).slice(),
 function checkStage(service, label, fileCount, brief) {
   const r = requirements(service);
   if (r.needs.length && fileCount < r.needs.length) return `${label} dibangun dari tugas sebelumnya. Lampirkan file ${r.needs.join(" dan ")} (satu file per tahap).`;
-  if (r.tutorNote && String(brief || "").trim().length < 10 && fileCount <= r.needs.length) return "Sertakan catatan dari tutor: tempel di kotak kebutuhan, atau lampirkan filenya.";
+  /* Catatan tutor opsional: bila kosong, tahap dikerjakan sesuai template yang berlaku. */
   return null;
 }
 

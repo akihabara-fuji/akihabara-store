@@ -10,12 +10,11 @@ test("syarat per tahap: Tugas 3 butuh Tugas 1 dan Tugas 2 plus catatan tutor; Tu
   for (const k of ["metopen1", "metopen_paket", "tugas", "diskusi", "revisi_metopen"]) assert.deepStrictEqual(requirements(k), { needs: [], tutorNote: false }, k);
 });
 
-test("validasi pesanan Tugas 3: file kurang ditolak, catatan tutor wajib (teks atau file), lengkap diterima", () => {
+test("validasi pesanan Tugas 3: file tahap sebelumnya wajib, catatan tutor opsional (boleh kosong, dikerjakan sesuai template)", () => {
   const L = "Metopen Tugas 3", note = "Tutor minta rumusan masalah dipertajam dan teori dihubungkan ke variabel.";
   assert.match(checkStage("metopen3", L, 1, note), /Tugas 1 dan Tugas 2/);
   assert.match(checkStage("metopen3", L, 0, note), /Tugas 1 dan Tugas 2/);
-  assert.match(checkStage("metopen3", L, 2, ""), /catatan dari tutor/i);
-  assert.match(checkStage("metopen3", L, 2, "singkat"), /catatan dari tutor/i);
+  assert.strictEqual(checkStage("metopen3", L, 2, ""), null, "tanpa catatan tutor tetap diterima");
   assert.strictEqual(checkStage("metopen3", L, 2, note), null);
   assert.strictEqual(checkStage("metopen3", L, 3, ""), null, "catatan tutor boleh berupa file ketiga");
   assert.strictEqual(checkStage("metopen1", "Metopen Tugas 1", 0, "Masalah di tempat kerja saya adalah absensi"), null);
@@ -28,4 +27,6 @@ test("server memakai syarat itu, config mengirimkannya, dan halaman menampilkan 
   const html = fs.readFileSync(path.join(__dirname, "..", "parafrase", "pages", "layanan.html"), "utf8");
   assert.ok(/Progres ini akan dikerjakan tim admin Catatan Akademik/.test(html) && /Jika ada revisi, silakan ke menu <a href="\/ruangakademikut\/layanan\?s=revisi_metopen">Revisi/.test(html));
   assert.ok(/id="slots"/.test(html));
+  assert.ok(/Panduan catatan tutor/.test(html) && /Tidak ada catatan\? Kosongkan saja/.test(html) && /sesuai template yang berlaku/.test(html));
+  assert.ok(/Kabar setiap status pesanan dikirim ke WhatsApp/.test(html));
 });
