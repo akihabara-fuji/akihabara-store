@@ -354,7 +354,7 @@ a.mini:hover:after{transform:translateX(6px)}
 .nx-chip{display:flex;flex-direction:column;align-items:center;gap:4px;width:84px;padding:12px 6px;border-radius:16px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-size:12.5px;text-decoration:none;box-shadow:var(--nx-shadow);transition:transform .2s,border-color .2s}
 .nx-chip:hover{transform:translateY(-4px);border-color:var(--nx-blue2)}
 .nx-chip svg{color:var(--nx-blue2)}
-.nx-fc{position:absolute;z-index:4;display:flex;gap:10px;align-items:center;padding:10px 14px;border-radius:16px;background:color-mix(in srgb,var(--surface) 82%,transparent);backdrop-filter:blur(10px);border:1px solid var(--border);box-shadow:var(--nx-shadow);color:var(--text);will-change:transform}
+.nx-fc[hidden]{display:none}.nx-fc{text-decoration:none;position:absolute;z-index:4;display:flex;gap:10px;align-items:center;padding:10px 14px;border-radius:16px;background:color-mix(in srgb,var(--surface) 82%,transparent);backdrop-filter:blur(10px);border:1px solid var(--border);box-shadow:var(--nx-shadow);color:var(--text);will-change:transform}
 .nx-fc svg{color:var(--nx-blue2);flex:0 0 auto}
 .nx-fc b{display:block;font:700 14px "Bricolage Grotesque",sans-serif}
 .nx-fc small{display:block;color:var(--muted);font-size:12px;line-height:1.3}
@@ -367,7 +367,7 @@ a.mini:hover:after{transform:translateX(6px)}
 .nx-strip svg{color:#c4a5ff;flex:0 0 auto}
 .nx-strip b{font-weight:600}
 .nx-strip small{width:100%;padding-left:32px;margin-top:-4px;color:#b9b3dd;font-size:12px}
-.nx-strip .nx-rt{white-space:nowrap;margin-left:0;color:#b9b3dd;font-size:12.5px}
+.nx-strip .nx-rt{white-space:nowrap;margin-left:0;color:#e4e0ff;font-size:13px;font-weight:600}
 svg.nx-i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 @media(max-width:980px){.hero.hx .nx-bg{width:70%}.hero.hx::after{background:linear-gradient(90deg,var(--surface) 0%,var(--surface) 30%,transparent 80%)}.nx-fc{display:none}.nx-strip{gap:16px;padding:0 24px}.nx-hc{padding-left:24px}}
 @media(max-width:860px){.hero.hx{min-height:0;display:flex;align-items:stretch;flex-direction:column;width:calc(100% - 16px);margin:8px auto 0;border-radius:24px}.hero.hx .nx-bg{position:relative;display:block;width:100%;height:340px;order:2}.hero.hx::after{display:none}.nx-hc{width:100%;padding:26px 20px 20px;order:1}.nx-fc{display:none}.nx-strip{position:relative;order:3;height:auto;grid-template-columns:1fr;justify-items:start;gap:14px;padding:18px 20px 76px}.nx-strip .nx-rt{margin-left:0}.nx-two{grid-template-columns:1fr}.nx-chip{width:calc(33.3% - 7px)}}
@@ -428,7 +428,7 @@ svg.nx-i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;s
     <h1 id="heroTitle">Urus kuliah UT, <em>mulai dari sini.</em></h1>
     <p class="nx-lead fx" style="--d:.5s">Pendampingan tugas, diskusi, dan metopen untuk mahasiswa UT. Rapi, ada tahap review, dan semua referensi bisa diperiksa.</p>
     <div class="nx-two">
-      <a class="nx-door nx-d1" href="/layanan-ut"><span class="nx-t"><svg class="nx-i" viewBox="0 0 24 24"><path d="M3 8l9-4 9 4-9 4-9-4z"/><path d="M7 10.5V15c0 1.5 2.2 3 5 3s5-1.5 5-3v-4.5"/></svg>Kebutuhan akademikmu<b>→</b></span><small>Tugas, diskusi, metopen, audit, dan paket semester</small></a>
+      <a class="nx-door nx-d1" href="/ruangakademikut/kalkulator-nilai-ut"><span class="nx-t"><svg class="nx-i" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M14 12h2M8 16h2M14 16h2"/></svg>Kalkulator Nilai UT<b>→</b></span><small>Gratis: nilai akhir, huruf mutu, dan target IPK</small></a>
       <a class="nx-door nx-d2" href="/blog-ut"><span class="nx-t"><svg class="nx-i" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.4 7.6-8 9-4.6-1.4-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>Update info UT<b>→</b></span><small>Semua blog dan berita terbaru tentang UT</small></a>
     </div>
     <div class="nx-pop fx" style="--d:.8s"><a class="nx-help" href="/layanan-ut">Langsung mulai dari menu populer →</a>
@@ -441,11 +441,11 @@ svg.nx-i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;s
         <a class="nx-chip" id="chipWa" href="#" target="_blank" rel="noopener"><svg class="nx-i" viewBox="0 0 24 24"><path d="M4 4h16v13H8l-4 4z"/></svg>Chat Admin</a>
       </div></div>
   </div>
-  <div class="nx-fc nx-c1" data-d="26"><svg class="nx-i" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/></svg><div><b>Tugas</b><small>Dikerjakan rapi</small></div></div>
-  <div class="nx-fc nx-c2" data-d="34"><svg class="nx-i" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.5A8 8 0 1 1 21 12z"/></svg><div><b>Diskusi</b><small>Per mata kuliah</small></div></div>
-  <div class="nx-fc nx-c3" data-d="20"><svg class="nx-i" viewBox="0 0 24 24"><path d="M4 4h16v13H8l-4 4z"/></svg><div><b>Metopen</b><small>Paket satu semester</small></div></div>
-  <div class="nx-fc nx-c4" data-d="-24"><svg class="nx-i" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg><div><b>Tips Tutor</b><small>Jawaban yang disukai</small></div></div>
-  <div class="nx-fc nx-c5" data-d="-32"><svg class="nx-i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg><div><b>Paket Semester</b><small>Update nilai tiap minggu</small></div></div>
+  <div class="nx-fc nx-c1" data-d="26"><svg class="nx-i" viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg><div><b>2.100+ mahasiswa UT</b><small>menghubungi kami sejak 2022</small></div></div>
+  <a class="nx-fc nx-c2" data-group href="#" data-d="26"><svg class="nx-i" viewBox="0 0 24 24"><path d="M16 11a3 3 0 1 0-6 0M4 20a8 8 0 0 1 16 0M18 8a2.5 2.5 0 1 0-2-4M6 8a2.5 2.5 0 1 1 2-4"/></svg><div><b>Grup WhatsApp</b><small>800+ anggota, info UT</small></div></a>
+  <a class="nx-fc nx-c3"  href="/ruangakademikut" data-d="34"><svg class="nx-i" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M14 12h2M8 16h2M14 16h2"/></svg><div><b>Alat gratis</b><small>Kalkulator, sitasi APA, pasfoto</small></div></a>
+  <a class="nx-fc nx-c4"  href="/blog-ut" data-d="20"><svg class="nx-i" viewBox="0 0 24 24"><path d="M4 5h16v14H4zM8 9h8M8 13h5"/></svg><div><b>Blog &amp; Berita UT</b><small>Jadwal dan aturan terbaru</small></div></a>
+  <a class="nx-fc nx-c5"  href="/pesanan" data-d="-24"><svg class="nx-i" viewBox="0 0 24 24"><path d="M9 3h6l1 2h3v16H5V5h3zM9 12l2 2 4-4"/></svg><div><b>Cek pesanan</b><small>Pantau status pakai kode</small></div></a>
   <div class="nx-strip">
     <span><svg class="nx-i" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.4 7.6-8 9-4.6-1.4-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg><b>Ada tahap review</b><small>Sebelum dikirim ke tutor</small></span>
     <span><svg class="nx-i" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"/></svg><b>Revisi atas masukan tutor</b><small>Selama sesi masih aktif</small></span>
@@ -517,7 +517,7 @@ svg.nx-i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;s
 
 <footer>
   <div class="wrap">
-    <div><b>Catatan Akademik</b> · Jakarta Barat<br>© <span id="yr"></span> Semua hak dilindungi.</div>
+    <div><b>Catatan Akademik</b> · Jakarta Barat<br>© <span id="yr"></span> Semua hak dilindungi.<br>Catatan Akademik adalah layanan independen. Bukan situs resmi dan tidak terafiliasi dengan Universitas Terbuka.</div>
     <nav aria-label="Footer"><a href="/layanan-ut">Layanan UT</a><a href="/blog-ut">Blog &amp; Berita UT</a><a href="/pesanan">Cek Pesanan</a><a href="/ms/privasi">Privasi</a><a href="/ms/ketentuan">Ketentuan</a></nav>
   </div>
 </footer>
@@ -539,6 +539,7 @@ function setWa(n){wa=n||wa;var u="https://wa.me/"+wa+"?text="+encodeURIComponent
 setWa();
 fetch("/ms/public-config",{cache:"no-store"}).then(function(r){return r.json()}).then(function(c){
   if(!c)return;if(c.admin_wa_number)setWa(c.admin_wa_number);
+  document.querySelectorAll("[data-group]").forEach(function(a){if(c.update_group_url){a.href=c.update_group_url;a.target="_blank";a.rel="noopener"}else a.hidden=true});
   document.querySelectorAll("[data-p]").forEach(function(e){var v=c[e.dataset.p];if(v!=null)e.textContent=rp(v)});
 }).catch(function(){});
 fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(function(d){if(d.user){var a=$("#navAcc");a.textContent="Akun saya";a.href="/ms/akun";var m=document.querySelector(".only-m");if(m){m.textContent="Akun saya";m.href="/ms/akun";}}}).catch(function(){});
