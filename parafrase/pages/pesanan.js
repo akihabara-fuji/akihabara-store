@@ -1,5 +1,45 @@
 (function () {
   var $ = function (id) { return document.getElementById(id); };
+  /* Simulasi presentasi: bagian presentasi tampil penuh. Tanya jawab dosen tampil sebagai cuplikan sampai dibuka; teks yang terkunci tidak pernah dikirim server. */
+  var simBound = null;
+  function renderSim(o) {
+    var box = $("simv");
+    if (!box) { box = document.createElement("div"); box.id = "simv"; box.className = "hidden"; box.style.cssText = "display:flex;flex-direction:column;gap:16px;margin:16px 0"; var st = $("stat"); st.parentNode.insertBefore(box, st.nextSibling); }
+    var sim = o.sim; box.classList.toggle("hidden", !sim); if (!sim) return;
+    var key = sim.locked + "|" + sim.qa.length + "|" + sim.talk.length; if (simBound === key) return; simBound = key;
+    box.textContent = "";
+    function sec(title, text, note) {
+      var c = document.createElement("div"); c.className = "card"; c.style.cssText = "display:flex;flex-direction:column;gap:10px";
+      var h = document.createElement("div"); h.style.cssText = "font-size:18px;font-weight:700"; h.textContent = title; c.appendChild(h);
+      if (note) { var n = document.createElement("div"); n.className = "muted"; n.textContent = note; c.appendChild(n); }
+      var pre = document.createElement("pre"); pre.style.cssText = "white-space:pre-wrap;word-break:break-word;margin:0;font:inherit;line-height:1.7"; pre.textContent = text; c.appendChild(pre);
+      box.appendChild(c); return c;
+    }
+    sec("Simulasi presentasi", sim.talk || "Belum ada isi.", "Susunan yang bisa kamu pakai untuk berlatih. Sesuaikan dengan gayamu dan cocokkan dengan penelitianmu sendiri.");
+    var qc = sec("Tanya jawab dosen", sim.qa, sim.locked ? "Cuplikan. Ada " + sim.total + " pertanyaan lengkap dengan arahan jawabannya." : sim.total + " pertanyaan dan arahan jawabannya.");
+    if (!sim.locked) return;
+    var fade = document.createElement("div"); fade.className = "muted"; fade.textContent = "Selebihnya terkunci."; qc.appendChild(fade);
+    var btn = document.createElement("button"); btn.type = "button"; btn.className = "btn"; btn.textContent = "Buka semua tanya jawab"; qc.appendChild(btn);
+    var msg = document.createElement("div"); msg.className = "err hidden"; msg.style.margin = "0"; qc.appendChild(msg);
+    var me = null;
+    function err(t, href, label) { msg.textContent = t || ""; msg.classList.toggle("hidden", !t); if (href) { var a = document.createElement("a"); a.href = href; a.textContent = " " + label; msg.appendChild(a); } }
+    fetch("/ms/koin/simulasi/" + token, { cache: "no-store", credentials: "same-origin" }).then(function (r) { return r.json().then(function (j) { return { s: r.status, j: j }; }); }).then(function (x) {
+      if (x.s === 401) { btn.textContent = "Masuk untuk membuka tanya jawab"; me = "login"; return; }
+      if (x.s !== 200) { btn.disabled = true; err(x.j.error || "Tanya jawab tidak bisa dibuka dari akun ini."); return; }
+      me = x.j; btn.textContent = x.j.free ? "Buka semua tanya jawab (gratis, pertama kali)" : "Buka semua tanya jawab (" + x.j.coins + " koin)";
+      if (!x.j.free) { var b = document.createElement("div"); b.className = "muted"; b.textContent = "Saldo koinmu " + x.j.balance + " koin."; qc.insertBefore(b, btn); }
+    }).catch(function () {});
+    btn.onclick = function () {
+      if (me === "login") { location.href = "/ms/masuk?next=" + encodeURIComponent(location.pathname); return; }
+      btn.disabled = true; err("");
+      fetch("/ms/koin/simulasi/" + token + "/buka", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}", credentials: "same-origin" }).then(function (r) { return r.json().then(function (j) { return { s: r.status, j: j }; }); }).then(function (x) {
+        if (x.s === 200) { location.reload(); return; }
+        btn.disabled = false;
+        if (x.s === 402) err(x.j.error, "/ruangakademikut/koin?kurang=" + x.j.short + "&next=" + encodeURIComponent(location.pathname), "Isi koin");
+        else err(x.j.error || "Gagal membuka. Coba lagi.");
+      }).catch(function () { btn.disabled = false; err("Koneksi terputus. Coba lagi."); });
+    };
+  }
   var rp = function (n) { return "Rp " + Number(n).toLocaleString("id-ID"); };
   var m = location.pathname.match(/\/pesanan\/([a-f0-9]{48})\/?$/);
   if (!m) { // tanpa token: coba pesanan terakhir di perangkat ini
@@ -41,11 +81,11 @@
     else if (o.status === "menunggu_verifikasi") box("b-warn", "<strong>Bukti bayar diterima, menunggu verifikasi admin.</strong><br>Halaman ini diperbarui otomatis. Kamu juga bisa menutupnya dan kembali lewat tautan ini.");
     else if (o.status === "terkirim") {
       if (o.docType === "audit") { if (o.auditReady) box("b-ok", "<strong>Pembayaran terkonfirmasi. Hasil Audit Lengkap sudah terbuka.</strong><br><a class=\"btn\" style=\"margin-top:10px\" href=\"/ruangakademikut/audit/hasil/" + token + "\">Buka hasil audit</a><br>File dihapus otomatis pada " + dt(o.deleteAt) + "."); else box("b-bad", "<strong>File sudah dihapus.</strong><br>Sesuai ketentuan, file dihapus setelah masa simpan berakhir. Hubungi admin jika perlu bantuan."); }
-      else if (o.service) box("b-ok", "<strong>Pesanan selesai.</strong><br>" + (o.resultReady ? "Unduh hasilmu di bawah. " : "") + (o.resultText ? "Teks hasil ada di bawah, tinggal salin. " : "") + "Semua file dihapus otomatis pada " + dt(o.deleteAt) + ". Simpan sebelum itu. Free revisi 1x lewat menu Layanan.");
+      else if (o.service) box("b-ok", "<strong>Pesanan selesai.</strong><br>" + (o.resultReady ? "Unduh hasilmu di bawah. " : "") + (o.resultText ? "Teks hasil ada di bawah, tinggal salin. " : "") + "Semua file dihapus otomatis pada " + dt(o.deleteAt) + ". Simpan sebelum itu. Free revisi lewat menu Layanan.");
       else if (o.resultReady) box("b-ok", "<strong>Pesanan selesai.</strong><br>Unduh hasil Word-mu di bawah. File dihapus otomatis pada " + dt(o.deleteAt) + ". Unduh sebelum itu.");
       else box("b-bad", "<strong>File sudah dihapus.</strong><br>Sesuai ketentuan, file dihapus " + "setelah masa unduh berakhir. Hubungi admin jika perlu bantuan.");
     }
-    else if (o.paid && o.service) box("b-ok", "<strong>" + (o.status === "dikerjakan" ? "Pesananmu sedang dikerjakan admin." : "Pembayaran terkonfirmasi, pesananmu masuk antrean admin.") + "</strong><br>Hasil muncul di halaman ini dan dikabari lewat WhatsApp.");
+    else if (o.paid && o.service) box("b-ok", "<strong>" + (o.status === "dikerjakan" ? "Pesananmu sedang dikerjakan admin." : o.service === "simulasi" ? "Permintaan simulasimu masuk antrean admin." : "Pembayaran terkonfirmasi, pesananmu masuk antrean admin.") + "</strong><br>Hasil muncul di halaman ini dan dikabari lewat WhatsApp.");
     else if (o.paid) { var q = o.queue; box("b-ok", "<strong>" + (o.status === "dikerjakan" ? "Pesananmu sedang dikerjakan." : "Pembayaran terkonfirmasi, pesananmu dalam antrean.") + "</strong>" + (q ? "<br>Posisi antrean: <strong>" + q.position + "</strong> dari " + q.total + (q.ahead ? " (" + q.ahead + " pesanan di depan)" : "") + ". Perkiraan sekitar " + q.etaHours + " jam, ini perkiraan, bukan jaminan." + (o.lane === "cepat" ? " Jalur cepat aktif." : "") : "") + "<br>Hasil dikirim ke WhatsApp setelah selesai."); }
     else box("b-info", "<strong>Status: " + esc(o.status) + "</strong>");
     if (pay || o.status === "menunggu_verifikasi") fillPay();
@@ -55,6 +95,7 @@
     if (!rt) { rt = document.createElement("div"); rt.id = "rtext"; rt.className = "hidden"; rt.style.cssText = "margin:16px 0"; rt.innerHTML = '<pre id="rtpre" style="white-space:pre-wrap;padding:14px;border:1px solid currentColor;border-radius:12px;margin:0 0 8px"></pre><button class="btn" id="rtcopy" type="button">Salin</button>'; $("ord").appendChild(rt);
       $("rtcopy").onclick = function () { var b = this, t = $("rtpre").textContent; (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).catch(function () { var a = document.createElement("textarea"); a.value = t; document.body.appendChild(a); a.select(); try { document.execCommand("copy"); } catch (e) {} a.remove(); }).then(function () { b.textContent = "Tersalin"; setTimeout(function () { b.textContent = "Salin"; }, 1500); }); }; }
     $("rtpre").textContent = o.resultText || ""; rt.classList.toggle("hidden", !o.resultText);
+    renderSim(o);
     var showDoc = o.paid && !o.filesDeleted && o.docType !== "audit" && !o.service;
     $("docv").classList.toggle("hidden", !showDoc); $("docv").style.display = showDoc ? "flex" : "none";
     if (showDoc && previewFor !== o.status) { previewFor = o.status; loadDoc(); }

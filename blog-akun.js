@@ -109,7 +109,7 @@ module.exports = function mount(ctx) {
   const BRAND = ACAD_ONLY ? "Catatan Akademik" : "nextaja";
   /* Di domain akademik, nama "nextaja" pada teks halaman diganti nama brand akademik (URL dan alamat email tidak disentuh). */
   const shortPath = h => h
-    .replace(/\/ruangakademikut\/(cek-parafrase-mandiri|audit|layanan|blog-ut|pesanan|kalkulator-nilai-ut|pasfoto-yudisium)/g, "/$1")
+    .replace(/\/ruangakademikut\/(cek-parafrase-mandiri|audit|layanan|blog-ut|pesanan|kalkulator-nilai-ut|pasfoto-yudisium|sitasi-apa)/g, "/$1")
     .replace(/(https?:\/\/[^"'\s<]+?)\/ruangakademikut(?=["'<\s?#)])/g, "$1/layanan-ut")
     .replace(/(["'(=])\/ruangakademikut(?=["'<\s?#)])/g, "$1/layanan-ut");
   const caBrand = h => String(h)
@@ -569,6 +569,7 @@ bg.addEventListener("click",function(){var o=ln.classList.toggle("open");bg.setA
 fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(function(d){if(d.user){var a=document.getElementById("navAcc");a.textContent="Akun saya";a.href="/ms/akun";}}).catch(function(){});
 })();
 </script>
+${ACAD_ONLY ? '<script defer src="/ruangakademikut/assets/koin-chip.js?v=1"></script>' : ""}
 </body></html>`);
   }
 
@@ -868,6 +869,8 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
     <p>Hanya untuk menjalankan akun dan pesananmu, serta menghubungi kamu terkait pesanan. Kami tidak menjual atau menyewakan data kamu kepada pihak lain.</p>
     <h2>Cookie</h2>
     <p>Kami memakai cookie sesi agar kamu tetap masuk, dan penyimpanan lokal untuk mengingat pilihan tampilan terang atau gelap. Tidak ada cookie iklan.</p>
+    <h2>Statistik kunjungan</h2>
+    <p>Kami menghitung jumlah kunjungan dan halaman yang dibuka untuk mengetahui materi apa yang dibutuhkan pembaca. Penghitungan ini tidak memakai cookie dan tidak menyimpan alamat IP: pengunjung hanya dikenali lewat kode acak yang berganti setiap hari. Kami menghormati sinyal Do Not Track dan Global Privacy Control, dan tidak menghitung kunjungan admin.</p>
     <h2>Hapus data kamu</h2>
     <p>Minta penghapusan akun dan datamu kapan saja lewat {WA}.</p>`));
   app.get("/ms/ketentuan", legalPage("Ketentuan Layanan — nextaja", "Aturan pemakaian situs dan layanan nextaja.", "/ms/ketentuan", `
@@ -877,6 +880,8 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
     <p>nextaja menyediakan analisa akun, preset dan template, bantuan akademik, serta jasa housekeeping. Detail, harga, dan jadwal disepakati lewat WhatsApp sebelum pengerjaan.</p>
     <h2>Bantuan akademik</h2>
     <p>Bantuan akademik berupa pendampingan dan referensi untuk membantu kamu belajar. Kami tidak menjamin nilai atau kelulusan. Kamu bertanggung jawab atas karya yang kamu kumpulkan dan atas kepatuhan pada aturan kampusmu.</p>
+    <h2>Koin</h2>
+    <p>Koin dipakai untuk membayar layanan Catatan Akademik dan nilainya tetap: 1 koin = Rp1.000. Koin diisi lewat pembayaran QRIS dan baru masuk saldo setelah admin mengonfirmasi bukti bayar. Koin tidak dapat diuangkan dan tidak dapat dipindahkan ke akun lain. Jika pesanan yang kamu bayar dengan koin dibatalkan, koinnya kembali ke saldomu. Hubungi admin untuk kendala saldo.</p>
     <h2>Akun</h2>
     <p>Jaga kerahasiaan akunmu. Kami bisa menonaktifkan akun yang dipakai untuk menyalahgunakan layanan.</p>
     <h2>Perubahan</h2>
@@ -963,8 +968,8 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
   }
 
   /* halaman statis di sitemap: lastmod = kapan berkas halamannya terakhir berubah (tanggal rilis), bukan tanggal buatan */
-  const SITEMAP_PAGES = { "/ruangakademikut": "hub.html", "/ruangakademikut/cek-parafrase-mandiri": "cek.html", "/ruangakademikut/audit": "audit.html", "/ruangakademikut/layanan": "layanan.html", "/ruangakademikut/kalkulator-nilai-ut": "alat-nilai.html", "/ruangakademikut/pasfoto-yudisium": "alat-pasfoto.html" };
+  const SITEMAP_PAGES = { "/ruangakademikut": "hub.html", "/ruangakademikut/cek-parafrase-mandiri": "cek.html", "/ruangakademikut/audit": "audit.html", "/ruangakademikut/layanan": "layanan.html", "/ruangakademikut/kalkulator-nilai-ut": "alat-nilai.html", "/ruangakademikut/pasfoto-yudisium": "alat-pasfoto.html", "/ruangakademikut/sitasi-apa": "sitasi.html" };
   const pageMod = file => { try { return fs.statSync(path.join(__dirname, "parafrase", "pages", file)).mtime.toISOString().slice(0, 10); } catch { return undefined; } };
   // untuk sitemap. /blog-ut tidak didaftarkan: isinya sama dengan /blog (kanonis ke /blog).
-  return { userFrom, notFound, articlePage, isLive, suggestTags, suggestTopic, tagLabel, posts: () => blog.posts, usersCount: () => db.users.length, TOPICS, ACAD_TOPICS, pageUrls: () => (ACAD_ONLY ? [{ loc: `${SITE}/`, lastmod: pageMod("beranda.html"), pri: "1.0" }] : []).concat(Object.entries(SITEMAP_PAGES).map(([u, file]) => ({ loc: `${SITE}${ACAD_ONLY ? (u === "/ruangakademikut" ? "/layanan-ut" : shortPath(u)) : u}`, lastmod: pageMod(file), pri: "0.7" }))), blogUrls: () => published().map(p => ({ loc: `${SITE}/blog/${p.slug}`, lastmod: String(modifiedAt(p) || "").slice(0, 10), pri: "0.6" })) };
+  return { userFrom, userById: id => db.users.find(x => x.id === id) || null, userByEmail: e => db.users.find(x => String(x.email || "").toLowerCase() === String(e || "").trim().toLowerCase()) || null, notFound, articlePage, isLive, suggestTags, suggestTopic, tagLabel, posts: () => blog.posts, usersCount: () => db.users.length, TOPICS, ACAD_TOPICS, pageUrls: () => (ACAD_ONLY ? [{ loc: `${SITE}/`, lastmod: pageMod("beranda.html"), pri: "1.0" }] : []).concat(Object.entries(SITEMAP_PAGES).map(([u, file]) => ({ loc: `${SITE}${ACAD_ONLY ? (u === "/ruangakademikut" ? "/layanan-ut" : shortPath(u)) : u}`, lastmod: pageMod(file), pri: "0.7" }))), blogUrls: () => published().map(p => ({ loc: `${SITE}/blog/${p.slug}`, lastmod: String(modifiedAt(p) || "").slice(0, 10), pri: "0.6" })) };
 };

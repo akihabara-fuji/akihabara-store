@@ -50,7 +50,7 @@ function range(q, days = 30) {
   return { from, to, fromKey: dayKey(from), toKey: dayKey(to) };
 }
 
-module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, blog, settings, orders, texts, pages, ROOT, UPLOADS, sharp, ACAD }) {
+module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, blog, settings, orders, texts, pages, ROOT, UPLOADS, sharp, ACAD, koin, traffic }) {
   const J = express.json({ limit: "16kb" });
   labelOf = k => labelFor(settings, k);
   const one = id => db.prepare("SELECT * FROM orders WHERE id=?").get(String(id));
@@ -127,10 +127,12 @@ module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, b
       if (["terkirim", "dibatalkan", "kedaluwarsa", "dikembalikan"].includes(o.status)) throw bad(409, `Pesanan berstatus ${(STATUS[o.status] || {}).label || o.status} tidak bisa dibatalkan.`);
       db.prepare("UPDATE orders SET status='dibatalkan', reject_reason=?, updated_at=? WHERE id=?").run(reason, now, o.id);
       db.prepare("UPDATE fast_reservations SET status='released' WHERE order_id=? AND status IN ('reserved','confirmed')").run(o.id);
-      orders.event(o.id, "dibatalkan", `${req.admin.name}: ${reason}${isPaid(o) ? " (sudah dibayar: refund manual diperlukan)" : ""}`, now);
+      const back = koin ? koin.refundOrder(o.id, `Pesanan ${o.id} dibatalkan, koin kembali`, now) : null; // dibayar koin: koin kembali otomatis
+      o.coinBack = back ? back.delta : 0;
+      orders.event(o.id, "dibatalkan", `${req.admin.name}: ${reason}${o.coinBack ? ` (koin kembali: ${o.coinBack})` : isPaid(o) ? " (sudah dibayar: refund manual diperlukan)" : ""}`, now);
     })();
     if (!isPaid(o)) for (const f of [o.original_file, o.proof_path]) if (f) await fsp.unlink(orders.priv(f)).catch(() => {});
-    return { ok: true, refundNeeded: isPaid(o) };
+    return { ok: true, refundNeeded: isPaid(o) && !o.coinBack, coinBack: o.coinBack || 0 };
   }));
   app.post("/ms/admin/ca/orders/:id/refunded", requireAdmin, J, send(req => {
     const o = one(req.params.id); if (!o) throw bad(404, "Pesanan tidak ditemukan.");
@@ -145,13 +147,21 @@ module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, b
     recent: db.prepare("SELECT * FROM orders WHERE confirmed_at IS NOT NULL AND COALESCE(confirmed_by,'')<>'gratis' ORDER BY confirmed_at DESC LIMIT 15").all().map(row),
   })));
 
+  /* ---------------- pengunjung dan konten yang dicari ---------------- */
+  const PAGE_LABEL = [[/(^|\/)kalkulator-nilai-ut$/, "Kalkulator Nilai Akhir UT"], [/(^|\/)pasfoto-yudisium$/, "Pasfoto Yudisium"], [/(^|\/)sitasi-apa$/, "Generator Sitasi APA"], [/cek-parafrase-mandiri$/, "Cek & Parafrase Mandiri"], [/(^|\/)audit$/, "Audit Dokumen"], [/(^|\/)layanan$/, "Form pesan layanan"], [/(^|\/)(layanan-ut|ruangakademikut)$/, "Halaman Layanan UT"], [/(^|\/)blog-ut$/, "Blog & Berita UT"], [/^\/blog$/, "Daftar blog"], [/(^|\/)koin$/, "Koin"], [/^\/(beranda)?$/, "Beranda"], [/pesanan\/\*$/, "Halaman pesanan (token)"]];
+  app.get("/ms/admin/ca/traffic", requireAdmin, send(req => {
+    const titles = new Map(((blog && blog.posts && blog.posts()) || []).map(p => ["/blog/" + String(p.slug).toLowerCase(), p.title]));
+    const label = p => titles.get(p) || (PAGE_LABEL.find(([re]) => re.test(p)) || [])[1] || null;
+    return traffic.summary(req.query.days, label);
+  }));
+
   /* ---------------- layanan & harga ---------------- */
   app.get("/ms/admin/ca/services", requireAdmin, send(() => {
     const cfg = settings.getAll(), off = String(cfg.layanan_nonaktif || "").split(",").filter(Boolean), hiddenCards = String(cfg.kartu_sembunyi || "").split(",").filter(Boolean);
     const used = Object.fromEntries(db.prepare("SELECT service, COUNT(*) n FROM orders WHERE doc_type='layanan' GROUP BY service").all().map(x => [x.service, x.n]));
     return { items: Object.entries(SV).map(([k, v]) => ({ key: k, label: labelFor(settings, k), labelDefault: v.label, labelKey: "label_" + k, kind: v.kind, price: Number.isInteger(cfg["price_" + k]) ? cfg["price_" + k] : v.price, priceKey: "price_" + k, active: !off.includes(k), orders: used[k] || 0 })),
       other: [["price_per_word", "Cek & Parafrase: harga per kata"], ["min_order_price", "Cek & Parafrase: harga minimum"], ["fast_lane_price", "Jalur cepat"], ["audit_per_word", "Audit Dokumen: per kata"], ["audit_min", "Audit Dokumen: minimum"],
-        ["price_semester_min", "Paket Semester: mulai"], ["price_semester_max", "Paket Semester: sampai"], ["price_pengarahan_semester", "Pengarahan registrasi: semester"], ["price_pengarahan_lulus", "Pengarahan: lulus"], ["price_pengarahan_normal", "Pengarahan: normal"]]
+        ["sim_koin_price", "Simulasi presentasi: koin untuk buka tanya jawab"], ["price_semester_min", "Paket Semester: mulai"], ["price_semester_max", "Paket Semester: sampai"], ["price_pengarahan_semester", "Pengarahan registrasi: semester"], ["price_pengarahan_lulus", "Pengarahan: lulus"], ["price_pengarahan_normal", "Pengarahan: normal"]]
         .map(([key, label]) => ({ key, label, price: cfg[key] })),
       cards: texts ? texts.cards().map(c => ({ ...c, shown: !hiddenCards.includes(c.slug) })) : [],
       note: "Harga baru hanya berlaku untuk pesanan baru. Pesanan lama tetap memakai harga yang tersimpan saat pesanan dibuat." };

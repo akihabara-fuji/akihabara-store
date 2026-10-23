@@ -7,7 +7,7 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
   const dir = path.join(__dirname, "pages");
   // Tautan pesanan memuat token rahasia: jangan bocor lewat Referer ke pihak ketiga (mis. Google Fonts), dan jangan boleh di-iframe.
   const ADM = /^\/admin\/(parafrase|layanan)(\/|\?|$)/; // halaman admin boleh dibingkai oleh /admin (satu asal), halaman murid tidak
-  app.use(["/ruangakademikut", "/ms/parafrase", "/ms/admin/parafrase", "/admin/parafrase", "/admin/layanan", "/ms/layanan"], (req, res, next) => {
+  app.use(["/ruangakademikut", "/ms/parafrase", "/ms/admin/parafrase", "/admin/parafrase", "/admin/layanan", "/ms/layanan", "/ms/koin", "/ms/admin/koin"], (req, res, next) => {
     res.set({ "Referrer-Policy": "no-referrer", "X-Content-Type-Options": "nosniff", "X-Frame-Options": ADM.test(req.originalUrl) ? "SAMEORIGIN" : "DENY", "Content-Security-Policy": ADM.test(req.originalUrl) ? "frame-ancestors 'self'" : "frame-ancestors 'none'" });
     next();
   });
@@ -21,10 +21,10 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
     .replace(/(<a [^>]*class="logo"[^>]*>)<b>C<\/b>/g, '$1<b class="lg"><img src="/ruangakademikut/assets/ca/logo-96.png" alt="" width="34" height="34"></b>')
     .replace("</head>", (h.includes("/site.css") ? '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme-svc.css?v=2">' : '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme.css?v=2">') + "</head>")
     .replace("</head>", "<style>.logo b.lg{background:none!important;box-shadow:none}.logo b.lg img{width:34px;height:34px;object-fit:contain;display:block}</style></head>")
-    .replace(/\/ruangakademikut\/(cek-parafrase-mandiri|audit|layanan|blog-ut|pesanan|kalkulator-nilai-ut|pasfoto-yudisium)/g, "/$1")
+    .replace(/\/ruangakademikut\/(cek-parafrase-mandiri|audit|layanan|blog-ut|pesanan|kalkulator-nilai-ut|pasfoto-yudisium|sitasi-apa)/g, "/$1")
     .replace(/(https?:\/\/[^"'\s<]+?)\/ruangakademikut(?=["'<\s?#)])/g, "$1/layanan-ut")
     .replace(/(["'(=])\/ruangakademikut(?=["'<\s?#)])/g, "$1/layanan-ut");
-  const TRACK = new Set(["beranda.html", "hub.html", "cek.html", "audit.html", "layanan.html", "blog-ut.html", "alat-nilai.html", "alat-pasfoto.html"]); // halaman pesanan dan hasil memuat token rahasia: tidak dilacak
+  const TRACK = new Set(["beranda.html", "hub.html", "cek.html", "audit.html", "layanan.html", "blog-ut.html", "alat-nilai.html", "alat-pasfoto.html", "sitasi.html"]); // halaman pesanan dan hasil memuat token rahasia: tidak dilacak
   const blogCards = req => typeof app.locals.renderAcadBlogCards === "function" ? app.locals.renderAcadBlogCards(req) : "";
   /* Satu jalur render untuk halaman publik DAN pratinjau admin. Kamus teks (sitetexts.js) dan kartu tersembunyi diterapkan di sini,
      di server, jadi pengunjung dan Google langsung menerima teks yang sudah diganti. opts: { over: Map pengganti sementara, mark: teks yang disorot } */
@@ -35,6 +35,7 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
     if (file === "hub.html" && texts) out = texts.hideCards(out, opts.hidden || hiddenCards());
     if (texts) out = texts.apply(out, opts.over || null, { mark: opts.mark });
     out = (TRACK.has(file) && !opts.preview ? out.replace("</head>", '<script async src="/t.js"></script></head>') : out).replaceAll("{{SITE}}", SITE);
+    if (!opts.preview) out = out.replace("</body>", '<script defer src="/ruangakademikut/assets/koin-chip.js?v=1"></script></body>'); // chip koin di samping "Akun saya"
     return shorten(out);
   }
   const page = file => (req, res) => {
@@ -48,10 +49,11 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
   app.get("/ruangakademikut/layanan", page("layanan.html"));
   app.get("/ruangakademikut/blog-ut", page("blog-ut.html"));
   /* Alat gratis: di domain akademik alamat resminya pendek (/kalkulator-nilai-ut); jalur lama /ruangakademikut/... dialihkan 301. */
-  for (const [slug, file] of [["kalkulator-nilai-ut", "alat-nilai.html"], ["pasfoto-yudisium", "alat-pasfoto.html"]]) {
+  for (const [slug, file] of [["kalkulator-nilai-ut", "alat-nilai.html"], ["pasfoto-yudisium", "alat-pasfoto.html"], ["sitasi-apa", "sitasi.html"]]) {
     if (SHORT) app.get("/ruangakademikut/" + slug, (req, res) => res.redirect(301, "/" + slug));
     app.get(SHORT ? "/" + slug : ["/ruangakademikut/" + slug, "/" + slug], page(file));
   }
+  app.get("/ruangakademikut/koin", page("koin.html"));
   app.get(["/admin/layanan", "/admin/layanan/"], (req, res) => fs.readFile(path.join(dir, "layanan-admin.html"), "utf8", (err, html) => err ? res.status(500).end() : res.set({ "Cache-Control": "no-store", "X-Robots-Tag": "noindex" }).type("html").send(html)));
   app.get("/ruangakademikut/audit/hasil/:token", page("audit-hasil.html"));
   app.get(["/ruangakademikut/pesanan", "/ruangakademikut/pesanan/:token"], page("pesanan.html"));
@@ -71,7 +73,7 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
   /* Verifikasi Bing Webmaster Tools (kode per akun, bukan rahasia) */
   app.get("/BingSiteAuth.xml", (req, res) => res.type("application/xml").set("Cache-Control", "public, max-age=3600")
     .send('<?xml version="1.0"?>\n<users>\n\t<user>5A51A6D49E191DE95E89EA165A5F3815</user>\n</users>'));
-  const ASSETS = new Set(["site.css", "hub.css", "common.js", "cek.js", "pesanan.js", "admin.js", "audit.js", "audit-hasil.js", "layanan.js", "layanan-admin.js", "blog-ut.js", "nilai-ut.js", "kalkulator.js", "pasfoto.js"]);
+  const ASSETS = new Set(["site.css", "hub.css", "common.js", "cek.js", "pesanan.js", "admin.js", "audit.js", "audit-hasil.js", "layanan.js", "layanan-admin.js", "blog-ut.js", "nilai-ut.js", "kalkulator.js", "pasfoto.js", "koin.js", "koin-chip.js", "sitasi-apa.js", "sitasi.js"]);
   app.get("/ruangakademikut/assets/:f", (req, res) => {
     if (!ASSETS.has(req.params.f)) return res.status(404).end();
     res.set("Cache-Control", "no-cache").sendFile(path.join(dir, req.params.f));

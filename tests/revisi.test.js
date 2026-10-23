@@ -22,3 +22,9 @@ test("ditolak: jenis layanan beda, nomor WA beda, belum selesai, ID tidak ada", 
   assert.strictEqual(run("revisi_tugas", order("tugas", { doc_type: "parafrase" }), 0).status, 404);
 });
 test("familyOf", () => { assert.strictEqual(familyOf(SV.revisi_tugas), "tugas"); assert.strictEqual(familyOf(SV.metopen2), "metopen"); });
+
+test("endpoint config layanan mengirim field of (klien memakainya untuk keluarga revisi)", () => {
+  const src = require("fs").readFileSync(require("path").join(__dirname, "..", "parafrase", "layanan.js"), "utf8");
+  const line = src.split("\n").find(l => l.includes('"/ms/layanan/config"'));
+  assert.ok(line && /of: v\.of/.test(line));
+});

@@ -15,14 +15,16 @@
         var done = o.status === "terkirim";
         return '<div class="o" data-id="' + o.id + '"><b>' + o.id + " · " + esc(o.label) + '</b> <span class="m">' + esc(o.status) + (o.parent ? " · revisi dari " + esc(o.parent) : "") + '</span><div class="m">WA ' + esc(o.wa) + " · " + dt(o.createdAt) + (done ? " · terhapus otomatis " + dt(o.deleteAt) : "") + '</div><pre>' + esc(o.brief) + '</pre><div class="m">Lampiran: ' + files + "</div>" +
           (o.status === "baru_dibayar" ? '<p><button data-a="mulai">Tandai sedang dikerjakan</button></p>' : "") +
-          '<textarea placeholder="Teks hasil (untuk Diskusi, pelanggan dapat tombol Copy)"></textarea><div><input type="file" accept=".docx,.pdf"> <button data-a="hasil">' + (done ? "Kirim ulang hasil" : "Kirim hasil") + '</button></div></div>';
+          (o.service === "simulasi"
+            ? '<div class="m">Format: simulasi presentasi dulu, lalu satu baris <b>=== TANYA JAWAB ===</b>, lalu daftar P1. ... J1. ... dst. Bagian tanya jawab hanya tampil cuplikan sampai mahasiswa membukanya. Kirim sebagai teks, bukan file.</div><textarea placeholder="Simulasi presentasi...&#10;&#10;=== TANYA JAWAB ===&#10;P1. Mengapa memilih judul ini?&#10;J1. ..."></textarea><div><button data-a="hasil">' + (done ? "Kirim ulang hasil" : "Kirim hasil") + '</button></div></div>'
+            : '<textarea placeholder="Teks hasil (untuk Diskusi, pelanggan dapat tombol Copy)"></textarea><div><input type="file" accept=".docx,.pdf"> <button data-a="hasil">' + (done ? "Kirim ulang hasil" : "Kirim hasil") + '</button></div></div>');
       }).join("");
     }).catch(function (e) { L.textContent = e.message || "Gagal memuat."; });
   }
   L.addEventListener("click", function (e) {
     var b = e.target.closest("button"); if (!b) return; var box = b.closest(".o"), id = box.dataset.id;
     if (b.dataset.a === "mulai") post("/ms/admin/layanan/" + id + "/mulai").then(load);
-    if (b.dataset.a === "hasil") { var fd = new FormData(), f = box.querySelector("input[type=file]").files[0]; fd.append("text", box.querySelector("textarea").value); if (f) fd.append("file", f); post("/ms/admin/layanan/" + id + "/hasil", fd, true).then(function (j) { if (j.error) alert(j.error); else load(); }); }
+    if (b.dataset.a === "hasil") { var fd = new FormData(), fi = box.querySelector("input[type=file]"), f = fi && fi.files[0]; fd.append("text", box.querySelector("textarea").value); if (f) fd.append("file", f); post("/ms/admin/layanan/" + id + "/hasil", fd, true).then(function (j) { if (j.error) alert(j.error); else load(); }); }
   });
   load();
 })();

@@ -9,14 +9,14 @@ const SESSION_MS = 12 * 3600e3;
 const OWNER_USER = "pemilik";
 
 /* Rute API yang dilindungi panel ini. Rute admin lain (toko nextaja) tetap memakai login nextaja. */
-const CA_PREFIXES = ["/ms/admin/ca/", "/ms/admin/posts", "/ms/admin/tag-suggestions", "/ms/admin/preview", "/ms/admin/comments", "/ms/admin/parafrase", "/ms/admin/layanan", "/ms/admin/ulasan", "/ms/admin/users", "/ms/admin/orders", "/ms/admin/site-images"];
+const CA_PREFIXES = ["/ms/admin/ca/", "/ms/admin/koin", "/ms/admin/posts", "/ms/admin/tag-suggestions", "/ms/admin/preview", "/ms/admin/comments", "/ms/admin/parafrase", "/ms/admin/layanan", "/ms/admin/ulasan", "/ms/admin/users", "/ms/admin/orders", "/ms/admin/site-images"];
 const isCaPath = p => CA_PREFIXES.some(x => p.startsWith(x));
 
 /* Pemilik boleh semuanya. Editor: konten blog. Admin pesanan (cs): pesanan, pembayaran, pelanggan (lihat). */
 const COMMON = [/^\/ms\/admin\/ca\/(me|logout|password|dashboard)$/];
 const RULES = {
-  editor: [/^\/ms\/admin\/posts(\/|$)/, /^\/ms\/admin\/tag-suggestions$/, /^\/ms\/admin\/preview(-page)?$/, /^\/ms\/admin\/comments(\/|$)/, /^\/ms\/admin\/ca\/(upload|media)(\/[^\/]+)?$/, /^\/ms\/admin\/ulasan(\/|$)/],
-  cs: [/^\/ms\/admin\/parafrase\/(orders|queue|outbox)(\/|$)/, /^\/ms\/admin\/layanan(\/|$)/, /^\/ms\/admin\/ca\/(orders|payments)(\/|$)/, /^\/ms\/admin\/orders(\/|$)/, { re: /^\/ms\/admin\/users$/, get: true }],
+  editor: [{ re: /^\/ms\/admin\/ca\/traffic$/, get: true }, /^\/ms\/admin\/posts(\/|$)/, /^\/ms\/admin\/tag-suggestions$/, /^\/ms\/admin\/preview(-page)?$/, /^\/ms\/admin\/comments(\/|$)/, /^\/ms\/admin\/ca\/(upload|media)(\/[^\/]+)?$/, /^\/ms\/admin\/ulasan(\/|$)/],
+  cs: [/^\/ms\/admin\/koin\/(queue|topups\/[a-f0-9]+\/(proof|confirm|reject))$/, /^\/ms\/admin\/parafrase\/(orders|queue|outbox)(\/|$)/, /^\/ms\/admin\/layanan(\/|$)/, /^\/ms\/admin\/ca\/(orders|payments)(\/|$)/, /^\/ms\/admin\/orders(\/|$)/, { re: /^\/ms\/admin\/users$/, get: true }],
 };
 function can(role, method, p) {
   if (role === "owner") return true;

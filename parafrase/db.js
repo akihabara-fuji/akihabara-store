@@ -199,6 +199,63 @@ const MIGRATIONS = [
   );
   CREATE INDEX site_texts_log_at ON site_texts_log(at);
   `,
+  `
+  /* Koin: 1 koin = Rp1.000. Saldo = jumlah delta di buku koin (tidak ada kolom saldo yang bisa menyimpang).
+     UNIQUE(kind,ref) membuat setiap top-up, pemakaian, dan pengembalian hanya bisa tercatat satu kali. */
+  CREATE TABLE coin_ledger (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id       TEXT NOT NULL,
+    delta         INTEGER NOT NULL,
+    balance_after INTEGER NOT NULL,
+    kind          TEXT NOT NULL,           -- topup | order | refund | adjust
+    ref           TEXT NOT NULL,
+    note          TEXT,
+    created_at    INTEGER NOT NULL,
+    UNIQUE(kind, ref)
+  );
+  CREATE INDEX coin_ledger_user ON coin_ledger(user_id, id);
+  CREATE TABLE coin_topups (
+    token        TEXT PRIMARY KEY,
+    user_id      TEXT NOT NULL,
+    base         INTEGER NOT NULL,         -- rupiah, kelipatan 1000
+    coins        INTEGER NOT NULL,
+    unique_code  INTEGER NOT NULL DEFAULT 0,
+    total        INTEGER NOT NULL,
+    status       TEXT NOT NULL,            -- menunggu_bayar | menunggu_verifikasi | dikonfirmasi | ditolak | kedaluwarsa
+    proof_path   TEXT,
+    proof_hash   TEXT,
+    reject_reason TEXT,
+    pay_expires_at INTEGER NOT NULL,
+    created_at   INTEGER NOT NULL,
+    proof_at     INTEGER,
+    confirmed_at INTEGER,
+    confirmed_by TEXT
+  );
+  CREATE INDEX coin_topups_user ON coin_topups(user_id, created_at);
+  CREATE INDEX coin_topups_status ON coin_topups(status);
+  CREATE TABLE fund_withdrawals (
+    id       INTEGER PRIMARY KEY AUTOINCREMENT,
+    amount   INTEGER NOT NULL CHECK(amount > 0),
+    category TEXT NOT NULL,
+    note     TEXT,
+    by       TEXT,
+    from_holding INTEGER NOT NULL DEFAULT 0,  -- bagian yang berasal dari saldo titipan mahasiswa (di luar pendapatan terpakai)
+    at       INTEGER NOT NULL
+  );
+  /* Simulasi presentasi: tanya jawab lengkap dibuka sekali per pesanan. Pembukaan pertama tiap akun gratis, berikutnya bayar koin. */
+  CREATE TABLE sim_unlocks (
+    order_id TEXT PRIMARY KEY,
+    user_id  TEXT NOT NULL,
+    how      TEXT NOT NULL,                  -- gratis | koin
+    coins    INTEGER NOT NULL DEFAULT 0,
+    at       INTEGER NOT NULL
+  );
+  CREATE INDEX sim_unlocks_user ON sim_unlocks(user_id);
+  /* Statistik pengunjung milik sendiri (lihat traffic.js): tanpa cookie, tanpa IP. */
+  CREATE TABLE pv_day  (day TEXT NOT NULL, path TEXT NOT NULL, views INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(day,path)) WITHOUT ROWID;
+  CREATE TABLE pv_uniq (day TEXT NOT NULL, path TEXT NOT NULL, vh TEXT NOT NULL, PRIMARY KEY(day,path,vh)) WITHOUT ROWID;
+  CREATE TABLE pv_ref  (day TEXT NOT NULL, ref TEXT NOT NULL, views INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(day,ref)) WITHOUT ROWID;
+  `,
 ];
 
 
