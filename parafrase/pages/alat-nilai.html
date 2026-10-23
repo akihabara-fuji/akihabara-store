@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kalkulator Nilai Akhir UT, Huruf Mutu, dan Target IPK | Catatan Akademik</title>
+<meta name="description" content="Hitung nilai akhir UT dari UAS dan Tuton/TMK/TTM, lihat huruf mutu dan minimal soal benar, plus simulasi dan target IPK. Gratis, tanpa daftar.">
+<link rel="canonical" href="{{SITE}}/ruangakademikut/kalkulator-nilai-ut">
+<meta property="og:title" content="Kalkulator Nilai Akhir UT, Huruf Mutu, dan Target IPK | Catatan Akademik"><meta property="og:description" content="Hitung nilai akhir UT dari UAS dan Tuton/TMK/TTM, lihat huruf mutu dan minimal soal benar, plus simulasi dan target IPK. Gratis, tanpa daftar."><meta property="og:url" content="{{SITE}}/ruangakademikut/kalkulator-nilai-ut">
+<link rel="icon" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Bricolage+Grotesque:wght@500;700&display=swap" rel="stylesheet"><script>document.documentElement.classList.add("js");try{var t=localStorage.getItem("nx-theme");document.documentElement.dataset.theme=(t==="light"||t==="dark")?t:"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script>
+<link rel="stylesheet" href="/ruangakademikut/assets/site.css?v=20261102">
+<style>
+.tool{max-width:820px;margin:0 auto;padding:36px 24px 56px}
+.tool h1{margin:0 0 8px}.tool .lead{margin:0 0 22px;text-align:left;max-width:none}
+.tool h2{font-size:20px;margin:28px 0 10px}
+.tool .card{margin:0 0 16px}
+.tool label{font-weight:600;font-size:14px;display:block;margin:0 0 6px}
+.tool input[type=number],.tool select{width:100%;min-height:48px;padding:0 14px;border-radius:12px;border:1px solid var(--dash);background:var(--surface);color:var(--text);font:inherit}
+.tool table{width:100%;border-collapse:collapse;font-size:14.5px}.tool th,.tool td{padding:9px 10px;border-bottom:1px solid var(--border);text-align:left}.tool th{color:var(--muted);font-weight:600;font-size:13px}
+.tool .ok{color:#22c55e;font-weight:700}.tool .bad{color:#ef4444;font-weight:700}
+.tool ul{margin:6px 0 0;padding-left:20px}.tool li{margin:4px 0}
+.tool .note{font-size:13px;color:var(--muted);line-height:1.55}
+.tool a.btn{display:inline-flex;align-items:center;text-decoration:none}
+</style>
+</head><body>
+<header class="nav"><div class="wrap">
+  <a href="/" class="logo" aria-label="Catatan Akademik, ke beranda"><b>C</b><span>Catatan Akademik</span></a>
+  <nav class="links" id="links" aria-label="Menu utama"><a href="/ruangakademikut">Layanan UT</a><a href="/ruangakademikut/blog-ut" class="only-m">Blog &amp; Berita UT</a><a href="/ruangakademikut/pesanan" class="only-m">Cek Pesanan</a><a href="/ms/masuk" class="only-m">Masuk</a></nav>
+  <div class="nav-r"><div class="mode" role="group" aria-label="Mode tampilan"><button type="button" data-m="dark">Gelap</button><button type="button" data-m="light">Terang</button></div><a class="nav-ord" href="/ruangakademikut/pesanan">Cek Pesanan</a><a class="btn btn-sm" href="/ms/masuk">Masuk</a><button class="burger" id="burger" type="button" aria-label="Buka menu" aria-expanded="false">☰</button></div>
+</div></header>
+<div class="sub"><div class="wrap"><details class="dd"><summary class="dds">Layanan</summary><div class="ddp"><a href="/ruangakademikut">Semua Layanan</a><a href="/ruangakademikut/layanan?s=tugas">Tugas</a><a href="/ruangakademikut/layanan?s=diskusi">Diskusi</a><a href="/ruangakademikut/layanan?s=metopen_paket">Metopen</a><a href="/ruangakademikut/pasfoto-yudisium">Pasfoto Yudisium (gratis)</a></div></details><a href="/ruangakademikut/cek-parafrase-mandiri">Cek &amp; Parafrase</a><a href="/ruangakademikut/audit">Audit</a><details class="dd"><summary class="dds on">Kalkulasi Nilai</summary><div class="ddp"><a class="on" href="/ruangakademikut/kalkulator-nilai-ut">Kalkulator Nilai Akhir</a><a href="/ruangakademikut/kalkulator-nilai-ut#ipk-sim">Simulasi &amp; Target IPK</a></div></details><a href="/ruangakademikut/blog-ut">Blog &amp; Berita UT</a></div></div>
+
+<main class="tool">
+<h1>Kalkulator Nilai Akhir UT</h1>
+<p class="lead">Hitung nilai akhir dari UAS dan nilai Tuton/TMK/TTM, lengkap dengan langkah hitungnya. Ada juga konversi nilai angka, simulasi IPK, dan target IPK.</p>
+<h2 style="margin-top:0">Hitung nilai akhir</h2>
+<div class="card">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px">
+    <div><label for="jn">Jenis nilai pendukung</label><select id="jn"><option value="tuton">Tuton (30% + UAS 70%)</option><option value="tmk">TMK (20% + UAS 80%)</option><option value="ttm">TTM / Tuweb (50% + UAS 50%)</option></select></div>
+    <div><label for="nt">Nilai Tuton/TMK/TTM (0–100)</label><input id="nt" type="number" inputmode="decimal" min="0" max="100" step="0.01" placeholder="Contoh: 90"></div>
+    <div><label for="ns">Jumlah soal UAS</label><input id="ns" type="number" inputmode="numeric" min="1" max="200" value="50"></div>
+    <div><label for="nb">Jumlah benar UAS</label><input id="nb" type="number" inputmode="numeric" min="0" placeholder="Contoh: 25"></div>
+  </div>
+  <div id="na" aria-live="polite" style="margin-top:16px"></div>
+  <div id="mb" style="margin-top:14px"></div>
+</div>
+<p class="note">Syarat: jawaban benar UAS minimal 30% dari jumlah soal. Kurang dari itu, nilai Tuton/TMK/TTM tidak dihitung dan nilai akhir ditulis E, sesuai kebijakan UT supaya mahasiswa fokus ke UAS. Beberapa mata kuliah punya komponen lain (misalnya nilai kontribusi), jadi hasil ini adalah perkiraan. Nilai resmi tetap yang keluar di MyUT.</p>
+<h2>Konversi nilai angka ke huruf mutu</h2>
+<div class="card">
+  <label for="n">Nilai angka (0 sampai 100)</label>
+  <input id="n" type="number" inputmode="decimal" min="0" max="100" step="0.01" placeholder="Contoh: 72.5">
+  <div id="out" aria-live="polite" style="margin-top:14px;font-size:17px"></div>
+</div>
+<h2>Tabel konversi</h2>
+<div class="card" style="padding:8px 14px;overflow-x:auto"><table><thead><tr><th>Nilai angka</th><th>Huruf</th><th>Angka mutu</th><th>Kategori</th></tr></thead><tbody id="tb"></tbody></table></div>
+<p class="note">Syarat kontribusi nilai Tuton/TMK: skor murni UAS minimal 30% benar. Acuan: buku saku dan OSMB UT. Ketentuan bisa berbeda per UPBJJ, jadi cek juga informasi dari UPBJJ-mu.</p>
+<h2 id="ipk-sim">Simulasi IPK</h2>
+<div class="card">
+  <div id="rows" style="display:grid;gap:10px"></div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px"><button class="btn btn-sm" id="add" type="button">+ Tambah mata kuliah</button></div>
+  <div id="ipk" aria-live="polite" style="margin-top:14px;font-size:17px"></div>
+  <p class="note" style="margin:8px 0 0">IPK = jumlah (SKS × angka mutu) dibagi total SKS. Perhitungan di browsermu, tidak ada data yang dikirim.</p>
+</div>
+<h2>Target IPK</h2>
+<div class="card">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px">
+    <div><label for="ti">IPK sekarang</label><input id="ti" type="number" inputmode="decimal" min="0" max="4" step="0.01" placeholder="Contoh: 3.20"></div>
+    <div><label for="ts">Total SKS yang sudah lulus</label><input id="ts" type="number" inputmode="numeric" min="0" placeholder="Contoh: 60"></div>
+    <div><label for="tn">SKS semester depan</label><input id="tn" type="number" inputmode="numeric" min="1" max="60" placeholder="Contoh: 20"></div>
+    <div><label for="tt">Target IPK</label><input id="tt" type="number" inputmode="decimal" min="0" max="4" step="0.01" placeholder="Contoh: 3.40"></div>
+  </div>
+  <div id="tr" aria-live="polite" style="margin-top:14px"></div>
+</div>
+<div class="card" style="border-color:var(--link)"><b>Butuh pendampingan?</b> Catatan Akademik membantu tugas, diskusi, dan metopen dengan tahap review sebelum dikirim. <a href="/ruangakademikut" style="color:var(--link);font-weight:700">Lihat layanan</a>. Kami tidak menjamin nilai atau kelulusan.</div>
+<p class="note">Butuh bantuan tugas, diskusi, atau metopen? <a href="/ruangakademikut" style="color:var(--link)">Lihat layanan Catatan Akademik</a>.</p>
+</main>
+<script src="/ruangakademikut/assets/common.js?v=20261102"></script><script src="/ruangakademikut/assets/nilai-ut.js?v=20261101"></script><script src="/ruangakademikut/assets/kalkulator.js?v=20261101"></script>
+<footer class="ft"><div class="wrap ft-in"><div class="ft-b"><b>Catatan Akademik</b><span>Jakarta Barat. Layanan UT dan Blog.</span><small>© Catatan Akademik. Semua hak dilindungi.</small></div><nav class="ft-n" aria-label="Footer"><a href="/ruangakademikut">Layanan UT</a><a href="/ruangakademikut/blog-ut">Blog &amp; Berita UT</a><a href="/ms/masuk">Masuk</a><a href="/ms/privasi">Privasi</a><a href="/ms/ketentuan">Ketentuan</a></nav></div></footer>
+</body></html>

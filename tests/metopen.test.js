@@ -21,11 +21,11 @@ test("validasi pesanan Tugas 3: file tahap sebelumnya wajib, catatan tutor opsio
   assert.strictEqual(checkStage("tugas", "Tugas", 0, "soal ada di file"), null, "layanan lain tidak terpengaruh");
 });
 
-test("server memakai syarat itu, config mengirimkannya, dan halaman menampilkan catatan progres dan tautan Revisi", () => {
+test("server memakai syarat itu, config mengirimkannya, dan halaman menampilkan catatan progres dan arahan ke Revisi Metopen", () => {
   const srv = fs.readFileSync(path.join(__dirname, "..", "parafrase", "layanan.js"), "utf8");
   assert.ok(/checkStage\(b\.service, labelOf\(b\.service\), files\.length, brief\)/.test(srv) && /\.\.\.requirements\(k\)/.test(srv) && /MAX_FILES = 5/.test(srv));
   const html = fs.readFileSync(path.join(__dirname, "..", "parafrase", "pages", "layanan.html"), "utf8");
-  assert.ok(/Progres ini akan dikerjakan tim admin Catatan Akademik/.test(html) && /Jika ada revisi, silakan ke menu <a href="\/ruangakademikut\/layanan\?s=revisi_metopen">Revisi/.test(html));
+  assert.ok(/Progres ini akan dikerjakan tim admin Catatan Akademik/.test(html) && /Jika ada revisi, pilih <b>Revisi Metopen<\/b> di pilihan atas/.test(html));
   assert.ok(/id="slots"/.test(html));
   assert.ok(/Panduan catatan tutor/.test(html) && /Tidak ada catatan\? Kosongkan saja/.test(html) && /sesuai template yang berlaku/.test(html));
   assert.ok(/Admin Catatan Akademik mengirim file hasil ke WhatsApp-mu sesuai status pesanan/.test(html));
