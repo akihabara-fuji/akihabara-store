@@ -5,37 +5,38 @@
 <link rel="canonical" href="{{SITE}}/ruangakademikut/layanan">
 <link rel="icon" href="/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Bricolage+Grotesque:wght@500;700&display=swap" rel="stylesheet"><script>try{var t=localStorage.getItem("nx-theme");document.documentElement.dataset.theme=(t==="light"||t==="dark")?t:"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script>
-<link rel="stylesheet" href="/ruangakademikut/assets/site.css?v=20261021">
-</head><body>
+<link rel="stylesheet" href="/ruangakademikut/assets/site.css?v=20261102">
+<style>.hero .muted,.hero #fl{font-size:14px;line-height:1.55}#chips{margin:18px 0 8px}#chips .btn{min-height:48px}</style></head><body>
 <div class="top">File dihapus otomatis <span data-retention>24</span> jam setelah pesanan selesai. Pantau di Cek Pesanan atau aktifkan notifikasi WhatsApp.</div>
 <header class="nav"><div class="wrap">
   <a href="/" class="logo" aria-label="Catatan Akademik, ke beranda"><b>C</b><span>Catatan Akademik</span></a>
-  <nav class="links" id="links" aria-label="Menu utama"><a class="on" href="/ruangakademikut">Layanan UT</a><a href="/blog">Blog</a><a href="/ms/masuk" class="only-m">Masuk</a></nav>
-  <div class="nav-r"><div class="mode" role="group" aria-label="Mode tampilan"><button type="button" data-m="dark">Gelap</button><button type="button" data-m="light">Terang</button></div><a class="btn btn-sm" href="/ms/masuk">Masuk</a><button class="burger" id="burger" type="button" aria-label="Buka menu" aria-expanded="false">☰</button></div>
+  <nav class="links" id="links" aria-label="Menu utama"><a class="on" href="/ruangakademikut">Layanan UT</a><a href="/ruangakademikut/blog-ut" class="only-m">Blog &amp; Berita UT</a><a href="/ruangakademikut/pesanan" class="only-m">Cek Pesanan</a><a href="/ms/masuk" class="only-m">Masuk</a></nav>
+  <div class="nav-r"><div class="mode" role="group" aria-label="Mode tampilan"><button type="button" data-m="dark">Gelap</button><button type="button" data-m="light">Terang</button></div><a class="nav-ord" href="/ruangakademikut/pesanan">Cek Pesanan</a><a class="btn btn-sm" href="/ms/masuk">Masuk</a><button class="burger" id="burger" type="button" aria-label="Buka menu" aria-expanded="false">☰</button></div>
 </div></header>
-<div class="sub"><div class="wrap"><a href="/ruangakademikut">Ringkasan</a><a class="on" href="/ruangakademikut/layanan?s=tugas">Tugas</a><a href="/ruangakademikut/layanan?s=diskusi">Diskusi</a><a href="/ruangakademikut/layanan?s=metopen_paket">Metopen</a><a href="/ruangakademikut/cek-parafrase-mandiri">Cek &amp; Parafrase</a><a href="/ruangakademikut/audit">Audit</a><a href="/ruangakademikut/layanan?s=revisi_tugas">Revisi</a><a href="/ruangakademikut/pesanan">Cek Pesanan</a><a href="/ruangakademikut/blog-ut">Update UT baca disini</a></div></div>
+<div class="sub"><div class="wrap"><details class="dd"><summary class="dds on">Layanan</summary><div class="ddp"><a href="/ruangakademikut">Semua Layanan</a><a href="/ruangakademikut/layanan?s=tugas">Tugas</a><a href="/ruangakademikut/layanan?s=diskusi">Diskusi</a><a href="/ruangakademikut/layanan?s=metopen_paket">Metopen</a><a href="/ruangakademikut/pasfoto-yudisium">Pasfoto Yudisium (gratis)</a></div></details><a href="/ruangakademikut/cek-parafrase-mandiri">Cek &amp; Parafrase</a><a href="/ruangakademikut/audit">Audit</a><details class="dd"><summary class="dds">Kalkulasi Nilai</summary><div class="ddp"><a href="/ruangakademikut/kalkulator-nilai-ut">Kalkulator Nilai Akhir</a><a href="/ruangakademikut/kalkulator-nilai-ut#ipk">Simulasi &amp; Target IPK</a></div></details><a href="/ruangakademikut/blog-ut">Blog &amp; Berita UT</a></div></div>
 <div class="strip"><div class="wrap">
-  <p><strong>Jangan ketinggalan info UT.</strong> Gabung grup info UT untuk kabar jadwal dan info penting terbaru.</p>
-  <div class="pills"><a class="pill" data-chat href="#">Chat admin</a><a class="pill g" data-group href="#">Gabung grup info UT</a></div>
+  <p><strong>Jangan ketinggalan info UT.</strong> Gabung grup Catatan Akademik (800+ anggota) untuk kabar jadwal dan info penting terbaru.</p>
+  <div class="pills"><a class="pill" data-chat href="#">Chat admin</a><a class="pill g" data-group href="#">Gabung grup Catatan Akademik</a></div>
 </div></div>
 
 <section class="hero">
   <span class="badge">Layanan UT</span>
   <h1 id="ttl">Ceritakan kebutuhanmu.</h1>
-  <p class="lead">Pilih layanan, tulis kebutuhan, unggah file soal atau masukan tutor. Bayar QRIS, hasil muncul di halaman pesananmu. Perlu masuk dengan akun Catatan Akademik.</p>
+  <p class="lead" id="ld">Tulis kebutuhan, lampirkan file soal atau masukan tutor. Bayar QRIS, hasil dikirim admin ke WhatsApp-mu sesuai status pesanan. Perlu masuk dengan akun Catatan Akademik.</p>
   <p class="muted" style="max-width:640px;margin:12px auto"><b>Dikerjakan oleh tim admin Catatan Akademik</b> dengan memverifikasi semua aspek aturan bahasa agar lebih enak dibaca, lalu siap dikirim.</p>
-  <div id="chips" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:18px 0"></div>
+  <div id="chips" role="group" aria-label="Jenis pesanan" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center"></div>
+  <div id="stages" role="group" aria-label="Pilih tahap Metopen" style="display:none;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 0 12px"></div>
   <div style="max-width:640px;margin:0 auto;text-align:left;display:flex;flex-direction:column;gap:14px">
     <label for="brief" style="font-weight:600;font-size:14px" id="blabel">Kebutuhanmu</label>
     <p id="tguide" class="muted" style="display:none;margin:-6px 0 0;font-size:13.5px"><b>Panduan catatan tutor:</b> tempel catatan atau masukan tutor atas tugas sebelumnya (nilai, bagian yang harus diperbaiki, saran). Boleh juga lampirkan foto atau file catatannya lewat tombol di bawah. <b>Tidak ada catatan? Kosongkan saja.</b> Progres akan dikerjakan sesuai template yang berlaku.</p>
     <textarea id="brief" rows="5" style="padding:12px 14px;border-radius:12px;border:1px solid currentColor;background:transparent;color:inherit;font:inherit" placeholder="Contoh: Tugas 2 Manajemen Keuangan, soal ada di file. Atau tempel masukan tutor di sini."></textarea>
     <div id="slots" style="display:none;flex-direction:column;gap:10px"></div>
     <div><button class="btn" id="pick" type="button" style="background:transparent;color:inherit;border:1px solid currentColor">+ Lampirkan file</button> <span class="muted" id="fl">Word, PDF, gambar, atau .txt. Maksimal 5 file, 10 MB per file.</span><input id="file" type="file" multiple accept=".docx,.pdf,.png,.jpg,.jpeg,.txt" class="hidden"></div>
-    <div id="pbox" style="display:none;flex-direction:column;gap:6px"><label for="pid" id="pbl" style="font-weight:600;font-size:14px">ID pesanan sebelumnya (isi untuk revisi gratis 1x)</label><input id="pid" type="text" placeholder="NA-1001" style="padding:12px 14px;border-radius:12px;border:1px solid currentColor;background:transparent;color:inherit;font:inherit"><span class="muted">Revisi dari luar? Kosongkan, lalu unggah file lamanya.</span></div>
+    <div id="pbox" style="display:none;flex-direction:column;gap:6px"><label for="pid" id="pbl" style="font-weight:600;font-size:14px">ID pesanan sebelumnya (isi untuk revisi gratis)</label><input id="pid" type="text" placeholder="NA-1001" style="padding:12px 14px;border-radius:12px;border:1px solid currentColor;background:transparent;color:inherit;font:inherit"><span class="muted">Hasil revisi masih belum sesuai catatan tutor? Isi ID pesanan revisi terakhir, tetap gratis. File dari luar? Kosongkan, lalu unggah file lamanya.</span></div>
     <label for="wa" style="font-weight:600;font-size:14px">Nomor WhatsApp</label>
     <input id="wa" type="text" inputmode="tel" placeholder="08xx" autocomplete="tel" style="padding:12px 14px;border-radius:12px;border:1px solid currentColor;background:transparent;color:inherit;font:inherit">
     <label style="display:flex;gap:8px;align-items:flex-start;font-size:13.5px"><input id="agree" type="checkbox"> <span>Saya setuju dengan <a href="/ms/ketentuan">syarat</a> dan <a href="/ms/privasi">kebijakan privasi</a>. File dijaga kerahasiaannya dan otomatis terhapus 24 jam setelah pesanan selesai.</span></label>
-    <p id="note" class="muted" style="display:none;margin:0">Metopen dikerjakan mengikuti standar Telaah Pustaka (Bab 4) dan Kerangka/Model (Bab 5): tematik, mengarah ke research gap, model berbasis teori. Dicek dengan Cek Parafrase dan Audit sebelum dikirim.<br><b>Progres ini akan dikerjakan tim admin Catatan Akademik.</b> Jika ada revisi, silakan ke menu <a href="/ruangakademikut/layanan?s=revisi_metopen">Revisi</a>.</p>
+    <p id="note" class="muted" style="display:none;margin:0">Metopen dikerjakan mengikuti standar Telaah Pustaka (Bab 4) dan Kerangka/Model (Bab 5): tematik, mengarah ke research gap, model berbasis teori. Dicek dengan Cek Parafrase dan Audit sebelum dikirim.<br><b>Progres ini akan dikerjakan tim admin Catatan Akademik.</b> Jika ada revisi, pilih <b>Revisi Metopen</b> di pilihan atas.</p>
     <p id="wanote" class="muted" style="margin:0;font-size:13.5px">Admin Catatan Akademik mengirim file hasil ke WhatsApp-mu sesuai status pesanan. Pantau statusnya di halaman Cek Pesanan.</p>
     <div id="err" class="err hidden" role="alert"></div>
     <div style="font-size:22px;font-weight:700" id="price"></div>
@@ -43,6 +44,6 @@
   </div>
 </section>
 
-<script src="/ruangakademikut/assets/common.js?v=20261031"></script><script src="/ruangakademikut/assets/layanan.js?v=20261031"></script>
-<footer class="ft"><div class="wrap ft-in"><div class="ft-b"><b>Catatan Akademik</b><span>Jakarta Barat. Layanan UT dan Blog.</span><small>© Catatan Akademik. Semua hak dilindungi.</small></div><nav class="ft-n" aria-label="Footer"><a href="/ruangakademikut">Layanan UT</a><a href="/blog">Blog</a><a href="/ms/masuk">Masuk</a><a href="/ms/privasi">Privasi</a><a href="/ms/ketentuan">Ketentuan</a></nav></div></footer>
+<script src="/ruangakademikut/assets/common.js?v=20261110"></script><script src="/ruangakademikut/assets/layanan.js?v=20261110"></script>
+<footer class="ft"><div class="wrap ft-in"><div class="ft-b"><b>Catatan Akademik</b><span>Jakarta Barat. Layanan UT dan Blog.</span><small>© Catatan Akademik. Semua hak dilindungi.</small></div><nav class="ft-n" aria-label="Footer"><a href="/ruangakademikut">Layanan UT</a><a href="/ruangakademikut/blog-ut">Blog &amp; Berita UT</a><a href="/ms/masuk">Masuk</a><a href="/ms/privasi">Privasi</a><a href="/ms/ketentuan">Ketentuan</a></nav></div></footer>
 </body></html>

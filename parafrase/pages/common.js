@@ -268,3 +268,5 @@ window.renderTriage = function (box, t, opts) {
   card.appendChild(el("p", "margin:10px 0 0;font-size:12.5px;opacity:.7", t.note));
   box.appendChild(card);
 };
+/* dropdown sub-menu: tutup saat klik di luar atau tekan Esc */
+(function(){document.addEventListener("click",function(e){document.querySelectorAll(".sub details[open]").forEach(function(d){if(!d.contains(e.target))d.removeAttribute("open")})});document.addEventListener("keydown",function(e){if(e.key==="Escape")document.querySelectorAll(".sub details[open]").forEach(function(d){d.removeAttribute("open")})});document.querySelectorAll(".sub details").forEach(function(d){d.addEventListener("toggle",function(){if(d.open)document.querySelectorAll(".sub details[open]").forEach(function(o){if(o!==d)o.removeAttribute("open")})})})})();
