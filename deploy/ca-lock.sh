@@ -21,7 +21,7 @@ targets() {
   for p in "$APP"/public/*; do [ -f "$p" ] && echo "$p"; done          # berkas di public/ (bukan folder uploads)
   for p in /etc/nginx/sites-available/catatanakademik /etc/nginx/sites-available/nextaja /etc/nginx/sites-enabled/nextaja; do [ -e "$p" ] && readlink -f "$p"; done | sort -u
 }
-note() { echo "$(date -Is) $1 oleh ${SUDO_USER:-$(whoami)} dari ${SSH_CLIENT%% *}" >> "$LOG"; }
+note() { local from="${SSH_CLIENT:-konsol}"; echo "$(date -Is) $1 oleh ${SUDO_USER:-$(whoami)} dari ${from%% *}" >> "$LOG"; }
 
 case "${1:-status}" in
   install)
