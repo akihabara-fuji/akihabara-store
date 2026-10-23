@@ -70,6 +70,7 @@
 .ax .article-poster{position:relative;aspect-ratio:16/8;border-radius:var(--r);overflow:hidden;margin:0 0 24px}
 .ax .prose{font-size:17px;line-height:1.75}.ax .prose h2,.ax .prose h3,.ax .prose h4{scroll-margin-top:90px}
 .ax .prose h2{font-size:clamp(22px,2.6vw,27px)}
+.prose .tbl{overflow-x:auto;margin:0 0 20px}.prose table{border-collapse:collapse;width:100%;font-size:15px}.prose th,.prose td{border:1px solid var(--border);padding:8px 10px;text-align:left;vertical-align:top}.prose th{background:var(--surface2)}
 .ax-tags{display:flex;flex-wrap:wrap;gap:8px;margin:28px 0 0}.ax-tags a{padding:5px 12px;border:1px solid var(--border);border-radius:999px;color:var(--link);font-size:13.5px;text-decoration:none}
 .ax-note{margin:28px 0 12px;padding:14px 16px;border-radius:12px;background:var(--tint1,rgba(79,143,247,.1));color:var(--muted);font-size:14px}.ax-note a{color:var(--link)}
 .ax .back{display:inline-flex;min-height:44px;align-items:center;color:var(--link);font-weight:600}

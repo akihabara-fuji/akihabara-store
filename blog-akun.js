@@ -172,8 +172,20 @@ module.exports = function mount(ctx) {
     const endList = () => { if (list) { html += `</${list}>`; list = ""; } };
     const endQuote = () => { if (quote.length) { html += `<blockquote><p>${inline(quote.join(" "))}</p></blockquote>`; quote = []; } };
     const item = (kind, l, re) => { flush(); endQuote(); if (list !== kind) { endList(); html += `<${kind}>`; list = kind; } html += `<li>${inline(l.replace(re, ""))}</li>`; };
+    /* tabel: baris berawal dan berakhir "|"; baris kedua "|---|---|" menandai judul kolom */
+    let rows = [];
+    const cells = l => l.replace(/^\|/, "").replace(/\|$/, "").split("|").map(c => c.trim());
+    const endTable = () => {
+      if (!rows.length) return;
+      const sep = rows.length > 1 && /^\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?$/.test(rows[1]);
+      const headRow = sep ? cells(rows[0]) : null, bodyRows = (sep ? rows.slice(2) : rows).map(cells);
+      html += `<div class="tbl"><table>${headRow ? `<thead><tr>${headRow.map(c => `<th scope="col">${inline(c)}</th>`).join("")}</tr></thead>` : ""}<tbody>${bodyRows.map(r => `<tr>${r.map(c => `<td>${inline(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+      rows = [];
+    };
     for (const raw of String(txt || "").replace(/\r/g, "").split("\n")) {
       const l = raw.trim();
+      if (/^\|.*\|$/.test(l)) { flush(); endList(); endQuote(); rows.push(l); continue; }
+      endTable();
       if (!l) { flush(); endList(); endQuote(); continue; }
       if (/^>\s?/.test(l)) { flush(); endList(); quote.push(l.replace(/^>\s?/, "")); continue; }
       endQuote();
@@ -186,7 +198,7 @@ module.exports = function mount(ctx) {
       if (/^\d{1,2}[.)]\s+/.test(l)) { item("ol", l, /^\d{1,2}[.)]\s+/); continue; }
       endList(); para.push(l);
     }
-    flush(); endList(); endQuote();
+    flush(); endList(); endQuote(); endTable();
     return html;
   }
 

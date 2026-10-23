@@ -20,7 +20,8 @@ async function setup(body) {
   const base = "http://127.0.0.1:" + srv.address().port;
   const prose = async () => {
     const html = await (await fetch(base + "/blog/foto-isi")).text();
-    return html.slice(html.indexOf('<div class="prose">'), html.indexOf("</div>", html.indexOf('<div class="prose">')));
+    const s = html.indexOf('<div class="prose">'), e = html.indexOf('<p class="ax-note">', s);
+    return html.slice(s, e > s ? e : html.indexOf("</div>", s));
   };
   return { srv, base, prose };
 }
@@ -61,6 +62,17 @@ test("gambar dari luar /uploads, javascript:, path traversal, atau alt berbahaya
     assert.ok(!/onerror="/i.test(h), "alt tidak di-escape: " + h);
     assert.ok(!/(href|src)="javascript/i.test(h), "javascript: tidak boleh jadi tautan/gambar: " + h);
     assert.ok(!h.includes("users.json\""), "path traversal tidak boleh jadi src: " + h);
+  } finally { srv.close(); }
+});
+
+test("tabel, H4, dan id judul untuk daftar isi; isi tabel tetap di-escape", async () => {
+  const { srv, prose } = await setup("## Jadwal Ujian\n\n| Kegiatan | Tanggal |\n|---|---|\n| UAS <b>1</b> | 1 Des |\n\n#### Catatan kecil\n\n## Jadwal Ujian");
+  try {
+    const h = await prose();
+    assert.match(h, /<h2 id="jadwal-ujian">Jadwal Ujian<\/h2>/);
+    assert.match(h, /<h2 id="jadwal-ujian-2">/, "id judul ganda dibuat unik");
+    assert.match(h, /<thead><tr><th scope="col">Kegiatan<\/th><th scope="col">Tanggal<\/th><\/tr><\/thead><tbody><tr><td>UAS &lt;b&gt;1&lt;\/b&gt;<\/td><td>1 Des<\/td><\/tr><\/tbody>/);
+    assert.match(h, /<h4 id="catatan-kecil">Catatan kecil<\/h4>/);
   } finally { srv.close(); }
 });
 

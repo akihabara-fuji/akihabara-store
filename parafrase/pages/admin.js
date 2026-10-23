@@ -25,7 +25,8 @@
   if (EMBED) document.documentElement.classList.add("embed");
   var TYPE = { layanan: "Layanan", audit: "Audit", umum: "Cek & Parafrase", metopen: "Cek & Parafrase", artikel: "Cek & Parafrase" };
 
-  function showLogin() { $("app").classList.add("hidden"); $("login").classList.remove("hidden"); }
+  /* Login sekarang lewat panel admin Catatan Akademik (akun & peran sendiri), bukan sandi admin nextaja. */
+  function showLogin() { try { (EMBED ? window.top : window).location.href = "/admin/#/login"; } catch (e) { location.href = "/admin/#/login"; } }
   $("lgo").onclick = function () {
     $("lerr").classList.add("hidden");
     fetch("/ms/admin/login", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ password: $("pw").value }) })
@@ -268,5 +269,5 @@
       s.appendChild(h("div", { style: "overflow-x:auto" }, t));
     }).catch(function (e) { s.textContent = e.message; });
   }
-  fetch("/ms/admin/me").then(function (r) { return r.json(); }).then(function (j) { j.authed ? start() : showLogin(); }).catch(showLogin);
+  fetch("/ms/admin/ca/me", { cache: "no-store" }).then(function (r) { r.ok ? start() : showLogin(); }).catch(showLogin);
 })();

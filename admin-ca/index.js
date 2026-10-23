@@ -61,6 +61,8 @@ module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, b
     const r = range(req.query, 30), posts = blog.posts(), now = Date.now();
     const p = { published: 0, draft: 0, review: 0, scheduled: 0, trash: 0 };
     for (const x of posts) { if (x.trashedAt) p.trash++; else if (blog.isLive(x, now)) p.published++; else if (p[x.status] !== undefined) p[x.status]++; }
+    // Editor hanya mengurus konten: data pesanan dan pelanggan tidak dikirim (akses sesuai kebutuhan tugas)
+    if (req.admin.role === "editor") return { range: r, posts: p, recentPosts: posts.filter(x => !x.trashedAt).sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)).slice(0, 8).map(x => ({ id: x.id, title: x.title, status: x.status, updatedAt: x.updatedAt })) };
     const cnt = Object.fromEntries(Object.entries(GROUPS).map(([k, g]) => [k, db.prepare(`SELECT COUNT(*) n FROM orders WHERE ${g.where}`).get().n]));
     const newToday = db.prepare("SELECT COUNT(*) n FROM orders WHERE created_at>=?").get(dayStart(dayKey(now))).n;
     const created = db.prepare("SELECT created_at FROM orders WHERE created_at BETWEEN ? AND ?").all(r.from, r.to);
