@@ -287,6 +287,8 @@ module.exports = function mount(ctx) {
   const needOrigin = (req, res, next) => (sameOrigin(req) ? next() : res.status(403).json({ error: "Permintaan ditolak." }));
 
   app.get("/ms/auth/me", (req, res) => { res.set("Cache-Control", "no-store"); const u = userFrom(req); res.json({ user: u ? pubUser(u) : null }); });
+  /* koin gratis untuk akun baru (diatur di parafrase/koin.js; kosong bila modul koin belum terpasang atau bonus 0) */
+  const welcome = u => { try { return (ctx.onRegister && ctx.onRegister(u)) || 0; } catch (e) { console.error("[bonus daftar]", e.message); return 0; } };
   app.post("/ms/auth/register", json, needOrigin, async (req, res) => {
     const key = "r:" + req.ip;
     if (limited(req, key) || regLimited(req.ip)) return res.status(429).json({ error: "Terlalu banyak percobaan. Coba lagi 15 menit lagi." });
@@ -300,7 +302,7 @@ module.exports = function mount(ctx) {
     db.users.push(u);
     try { await saveDb(); } catch { db.users = db.users.filter(x => x.id !== u.id); return res.status(500).json({ error: "Pendaftaran belum bisa disimpan. Coba lagi sebentar." }); }
     regNote(req.ip); setSession(res, u.id);
-    res.json({ ok: true, user: pubUser(u) });
+    res.json({ ok: true, user: pubUser(u), bonus: welcome(u) });
   });
   app.post("/ms/auth/login", json, needOrigin, (req, res) => {
     const email = str(req.body?.email, 254).toLowerCase(), pw = String(req.body?.password || "");
@@ -324,13 +326,13 @@ module.exports = function mount(ctx) {
       const okIss = t.iss === "accounts.google.com" || t.iss === "https://accounts.google.com";
       if (!r.ok || t.aud !== GOOGLE_ID || !okIss || String(t.email_verified) !== "true" || !t.email || Number(t.exp) * 1000 < Date.now()) { fail(key); return res.status(401).json({ error: "Login Google ditolak. Coba lagi." }); }
       const email = String(t.email).toLowerCase();
-      let u = db.users.find(x => x.email === email);
+      let u = db.users.find(x => x.email === email), bonus = 0;
       if (!u) {
         u = { id: crypto.randomBytes(8).toString("hex"), name: str(t.name || email.split("@")[0], 60), email, google: true, createdAt: new Date().toISOString() };
-        db.users.push(u); await saveDb();
+        db.users.push(u); await saveDb(); bonus = welcome(u);
       }
       fails.delete(key); setSession(res, u.id);
-      res.json({ ok: true, user: pubUser(u) });
+      res.json({ ok: true, user: pubUser(u), bonus });
     } catch { res.status(502).json({ error: "Tidak bisa menghubungi Google. Coba lagi." }); }
   });
   app.post("/ms/auth/logout", (req, res) => { if (!sameOrigin(req)) return res.status(403).json({ error: "Permintaan ditolak." }); res.setHeader("Set-Cookie", "nx_user=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0" + (SECURE_COOKIE ? "; Secure" : "")); res.json({ ok: true }); });
@@ -893,6 +895,7 @@ ${ACAD_ONLY ? '<script defer src="/ruangakademikut/assets/koin-chip.js?v=1"></sc
     const body = `<section class="pg"><div class="wrap narrow">
       <div class="card form">
         <div class="tabs2" role="tablist"><button type="button" data-t="in" aria-pressed="true">Masuk</button><button type="button" data-t="up" aria-pressed="false">Daftar</button></div>
+        ${(ctx.getBonus && ctx.getBonus()) > 0 ? `<p class="small" id="bonus" hidden>Daftar sekarang dan dapat <b>${Number(ctx.getBonus())} koin gratis</b> untuk mencoba layanan.</p>` : ""}
         <form id="f" novalidate>
           <label id="lName" hidden>Nama<input name="name" autocomplete="name" maxlength="60"></label>
           <label>Email<input name="email" type="email" autocomplete="email" required maxlength="254"></label>
@@ -908,7 +911,7 @@ ${ACAD_ONLY ? '<script defer src="/ruangakademikut/assets/koin-chip.js?v=1"></sc
       var w=${JSON.stringify(String((SOCIAL().waNumber) || "6285722227544"))};document.getElementById("wa").href="https://wa.me/"+w+"?text="+encodeURIComponent("Halo admin nextaja, saya lupa sandi akun saya.");
       document.querySelectorAll(".tabs2 button").forEach(function(b){b.addEventListener("click",function(){mode=b.dataset.t;
         document.querySelectorAll(".tabs2 button").forEach(function(x){x.setAttribute("aria-pressed",x===b)});
-        document.getElementById("lName").hidden=mode!=="up";document.getElementById("hint").hidden=mode!=="up";
+        document.getElementById("lName").hidden=mode!=="up";var bn=document.getElementById("bonus");if(bn)bn.hidden=mode!=="up";document.getElementById("hint").hidden=mode!=="up";
         document.getElementById("go").textContent=mode==="up"?"Buat akun":"Masuk";f.password.autocomplete=mode==="up"?"new-password":"current-password";err.textContent="";});});
       document.getElementById("pwT").addEventListener("click",function(){var sh=f.password.type==="password";f.password.type=sh?"text":"password";this.textContent=sh?"Sembunyi":"Lihat";this.setAttribute("aria-pressed",sh);this.setAttribute("aria-label",sh?"Sembunyikan sandi":"Tampilkan sandi")});
       var GID=${JSON.stringify(GOOGLE_ID)};
