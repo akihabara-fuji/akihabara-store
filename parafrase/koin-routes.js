@@ -93,7 +93,7 @@ module.exports = function mountKoin({ app, express, db, settings, koin, root, sa
   });
   app.post("/ms/admin/koin/topups/:token/confirm", requireAdmin, wrap((req, res) => { const r = koin.confirmTopup(req.params.token, who(req)); res.json({ ok: true, balance: r.balance }); }));
   app.post("/ms/admin/koin/topups/:token/reject", requireAdmin, J, wrap((req, res) => { const r = koin.rejectTopup(req.params.token, (req.body || {}).reason); if (r.old) fsp.unlink(priv(r.old)).catch(() => {}); res.json({ ok: true }); }));
-  app.post("/ms/admin/koin/withdraw", requireAdmin, J, wrap((req, res) => { const b = req.body || {}; res.json({ ok: true, summary: koin.withdraw(b.amount, b.category, b.note, who(req)) }); }));
+  app.post("/ms/admin/koin/withdraw", requireAdmin, J, wrap((req, res) => { const b = req.body || {}; const r = koin.withdraw(b.amount, b.category, b.note, who(req)); res.json({ ok: true, fromHolding: r.fromHolding, summary: r }); }));
   app.post("/ms/admin/koin/adjust", requireAdmin, J, wrap((req, res) => {
     const b = req.body || {}, u = users && users.byEmail && users.byEmail(b.email);
     if (!u) return no(res, 404, "Akun dengan email itu tidak ditemukan.");

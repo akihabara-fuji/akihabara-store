@@ -2,7 +2,7 @@
    Aturan:
    - Saldo = SUM(delta) di coin_ledger. Tidak ada kolom saldo yang bisa menyimpang.
    - UNIQUE(kind,ref): satu top-up, satu pemakaian, satu pengembalian per pesanan hanya tercatat sekali.
-   - Koin tidak bisa diuangkan. Dana yang boleh diambil admin = uang masuk dari koin - saldo titipan mahasiswa - yang sudah diambil. */
+   - Koin tidak bisa diuangkan oleh mahasiswa. Admin boleh mengambil semua uang masuk untuk operasional; bagian dari saldo titipan dicatat dan dihitung kekurangannya. */
 "use strict";
 const crypto = require("crypto");
 
@@ -122,18 +122,24 @@ function createKoin(db, { settings, now: clock } = {}) {
     return rows;
   }
 
-  /* ---------- dana ---------- */
+  /* ---------- dana ----------
+     Semua uang yang masuk dari koin boleh diambil untuk operasional (VPS, Claude, domain, dst), karena tagihan itu harus dibayar uang sungguhan.
+     Bedanya hanya dicatat: bagian yang berasal dari saldo titipan mahasiswa (koin yang belum dipakai) ditandai, dan kekurangan kas dihitung
+     supaya admin tahu berapa yang harus tersedia kalau semua mahasiswa memakai koinnya. */
   function summary() {
     const g = sql => db.prepare(sql).get();
     const topupCoins = g("SELECT COALESCE(SUM(delta),0) n FROM coin_ledger WHERE kind='topup'").n;
     const liability = g("SELECT COALESCE(SUM(delta),0) n FROM coin_ledger").n;
     const withdrawn = g("SELECT COALESCE(SUM(amount),0) n FROM fund_withdrawals").n;
-    const incomeRp = (topupCoins - liability) * RP;
+    const cashIn = topupCoins * RP, liabilityRp = liability * RP, incomeRp = cashIn - liabilityRp;
+    const cashOnHand = cashIn - withdrawn;
     return {
-      topupRp: topupCoins * RP, topupCoins,
-      liabilityRp: liability * RP, liabilityCoins: liability,
+      topupRp: cashIn, topupCoins, liabilityRp, liabilityCoins: liability,
       incomeRp, withdrawnRp: withdrawn,
-      withdrawableRp: Math.max(0, incomeRp - withdrawn),
+      cashOnHandRp: cashOnHand,
+      withdrawableRp: Math.max(0, cashOnHand),
+      heldUsedRp: Math.max(0, withdrawn - Math.max(0, incomeRp)),   // bagian pengambilan yang berasal dari saldo titipan
+      shortfallRp: Math.max(0, liabilityRp - cashOnHand),            // kas yang kurang untuk menutup semua saldo titipan
       pending: g("SELECT COUNT(*) n FROM coin_topups WHERE status='menunggu_verifikasi'").n,
     };
   }
@@ -143,9 +149,11 @@ function createKoin(db, { settings, now: clock } = {}) {
     if (!KATEGORI.includes(category)) throw err(400, "Pilih keperluan pengambilan.");
     return tx(() => {
       const s = summary();
-      if (n > s.withdrawableRp) throw err(409, `Jumlah melebihi dana yang boleh diambil (Rp${s.withdrawableRp.toLocaleString("id-ID")}). Saldo titipan mahasiswa tidak bisa diambil.`);
-      db.prepare("INSERT INTO fund_withdrawals(amount,category,note,by,at) VALUES(?,?,?,?,?)").run(n, category, String(note || "").slice(0, 200), by || "admin", at || T());
-      return summary();
+      if (n > s.withdrawableRp) throw err(409, `Jumlah melebihi uang yang ada (Rp${s.withdrawableRp.toLocaleString("id-ID")}).`);
+      const free = Math.max(0, s.incomeRp - s.withdrawnRp);          // pendapatan terpakai yang belum diambil
+      const fromHolding = Math.max(0, n - free);
+      db.prepare("INSERT INTO fund_withdrawals(amount,category,note,by,from_holding,at) VALUES(?,?,?,?,?,?)").run(n, category, String(note || "").slice(0, 200), by || "admin", fromHolding, at || T());
+      return { ...summary(), fromHolding };
     });
   }
 

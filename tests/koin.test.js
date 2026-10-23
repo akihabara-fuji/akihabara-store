@@ -77,19 +77,23 @@ test("tolak bukti mengembalikan tagihan ke menunggu_bayar; kedaluwarsa tidak bis
   assert.throws(() => k.attachProof(t3.token, "u2", "p/e.jpg", "h9", 1000 + 61 * 60e3 + 1), e => e.code === "expired");
 });
 
-test("dana: hanya koin terpakai yang bisa diambil, saldo titipan terkunci", () => {
+test("dana: semua uang bisa diambil, bagian saldo titipan dicatat dan kekurangan kas dihitung", () => {
   const { k } = mk();
   k.confirmTopup(k.createTopup("u1", 100000).token);   // masuk 100 koin
   k.confirmTopup(k.createTopup("u2", 50000).token);    // masuk 50 koin
   k.debitOrder("u1", 35, "NA-1"); k.debitOrder("u2", 20, "NA-2");
   let s = k.summary();
-  assert.equal(s.topupRp, 150000); assert.equal(s.liabilityRp, 95000); assert.equal(s.incomeRp, 55000); assert.equal(s.withdrawableRp, 55000);
-  assert.throws(() => k.withdraw(55001, "Domain", "x"), /melebihi/);
+  assert.equal(s.topupRp, 150000); assert.equal(s.liabilityRp, 95000); assert.equal(s.incomeRp, 55000);
+  assert.equal(s.withdrawableRp, 150000); assert.equal(s.shortfallRp, 0);
+  assert.throws(() => k.withdraw(150001, "Domain", "x"), /melebihi/);
   assert.throws(() => k.withdraw(1000, "Rokok", "x"), /keperluan/);
-  s = k.withdraw("30.000", "Langganan Claude", "Okt"); assert.equal(s.withdrawableRp, 25000); assert.equal(s.withdrawnRp, 30000);
-  assert.throws(() => k.withdraw(25001, "Domain", ""), /melebihi/);
-  k.refundOrder("NA-1");  // koin kembali jadi titipan, dana yang bisa diambil turun
-  assert.equal(k.summary().withdrawableRp, 0); // pendapatan 20.000 < sudah diambil 30.000
+  let r = k.withdraw("30.000", "Langganan Claude", "Okt");          // masih dari pendapatan
+  assert.equal(r.fromHolding, 0); assert.equal(r.heldUsedRp, 0);
+  r = k.withdraw(40000, "VPS dan server", "");                      // pendapatan tersisa 25.000, 15.000 dari saldo titipan
+  assert.equal(r.fromHolding, 15000); assert.equal(r.heldUsedRp, 15000);
+  s = k.summary(); assert.equal(s.cashOnHandRp, 80000); assert.equal(s.liabilityRp, 95000); assert.equal(s.shortfallRp, 15000);
+  assert.equal(k.balance("u1"), 65); assert.equal(k.balance("u2"), 30);   // saldo mahasiswa tidak berubah
+  r = k.withdraw(80000, "Lainnya", "ambil semua"); assert.equal(r.withdrawableRp, 0); assert.equal(r.shortfallRp, 95000);
 });
 
 test("penyesuaian manual wajib alasan dan tercatat", () => {

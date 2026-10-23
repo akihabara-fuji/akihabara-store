@@ -239,6 +239,7 @@ const MIGRATIONS = [
     category TEXT NOT NULL,
     note     TEXT,
     by       TEXT,
+    from_holding INTEGER NOT NULL DEFAULT 0,  -- bagian yang berasal dari saldo titipan mahasiswa (di luar pendapatan terpakai)
     at       INTEGER NOT NULL
   );
   `,
