@@ -329,8 +329,8 @@ app.post("/ms/parafrase/order", needLogin);
 app.post("/ms/layanan/order", needLogin);
 app.post("/ms/audit/order", needLogin);
 app.post("/ms/audit/upload", needLogin);
-const pf = require("./parafrase")({ app, express, requireAdmin, sameOrigin, ROOT, db: caDb });
-require("./admin-ca")({ app, express, db: caDb, auth: caAuth, requireAdmin, blog: extra, settings: pf.settings, orders: pf.orders, texts: pf.texts, pages: pf.pages, ROOT, UPLOADS, sharp, ACAD });
+const pf = require("./parafrase")({ app, express, requireAdmin, sameOrigin, ROOT, db: caDb, userFrom: extra.userFrom, users: { byId: extra.userById, byEmail: extra.userByEmail } });
+require("./admin-ca")({ app, express, db: caDb, auth: caAuth, requireAdmin, blog: extra, settings: pf.settings, orders: pf.orders, koin: pf.koin, texts: pf.texts, pages: pf.pages, ROOT, UPLOADS, sharp, ACAD });
 
 /* /admin: di domain akademik = panel Catatan Akademik; di domain lain = panel toko nextaja. Satu domain (dev) -> panel CA di /admin-ca/. */
 const caPanel = express.static(path.join(ROOT, "admin-ca", "public"), { index: "index.html", maxAge: 0 });
