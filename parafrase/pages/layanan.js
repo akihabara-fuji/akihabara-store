@@ -6,25 +6,28 @@
   function paint() {
     var s = cfg[cur]; if (!s) return;
     $("chips").innerHTML = "";
-    var grp = s.kind === "metopen" ? ["metopen_paket", "metopen1", "metopen2", "metopen3", "metopen4"] : s.kind === "revisi" ? ["revisi_tugas", "revisi_diskusi", "revisi_metopen"] : ["tugas", "diskusi"];
-    if (s.kind === "tugas" || s.kind === "diskusi") grp = [];
+    var base = s.of || (s.kind === "metopen" ? "metopen" : cur), fam = base === "metopen" ? "metopen" : base;
+    var grp = fam === "metopen" ? ["metopen_paket", "metopen1", "metopen2", "metopen3", "metopen4", "revisi_metopen"] : [fam, "revisi_" + fam];
     grp.forEach(function (k) {
       if (!cfg[k]) return;
-      var b = document.createElement("button"); b.type = "button"; b.className = "btn"; b.textContent = cfg[k].label + " · " + rp(cfg[k].price);
-      if (k !== cur) b.style.cssText = "background:transparent;color:inherit;border:1px solid currentColor"; b.onclick = function () { cur = k; slotFiles = {}; paint(); }; $("chips").appendChild(b);
+      var rv = cfg[k].kind === "revisi", b = document.createElement("button"); b.type = "button"; b.className = "btn"; b.setAttribute("aria-pressed", k === cur ? "true" : "false");
+      b.textContent = fam === "metopen" ? cfg[k].label + " · " + rp(cfg[k].price) : (rv ? "Revisi · " + rp(cfg[k].price) : "Pesanan baru · " + rp(cfg[k].price));
+      if (k !== cur) b.style.cssText = "background:transparent;color:inherit;border:1px solid currentColor"; b.onclick = function () { cur = k; slotFiles = {}; history.replaceState(null, "", "?s=" + k); paint(); }; $("chips").appendChild(b);
     });
-    document.querySelectorAll(".sub a").forEach(function (a) { var t = a.textContent.trim(), on = (t === "Tugas" && cur === "tugas") || (t === "Diskusi" && cur === "diskusi") || (t === "Metopen" && s.kind === "metopen") || (t === "Revisi" && s.kind === "revisi"); a.classList.toggle("on", on); });
-    var rev = s.kind === "revisi", td = s.kind === "tugas" || s.kind === "diskusi", dis = s.kind === "diskusi";
-    $("chips").style.display = td ? "none" : "flex";
-    $("ttl").textContent = td ? (dis ? "Diskusi" : "Tugas") : "Ceritakan kebutuhanmu.";
+    var FAM = { tugas: "Tugas", diskusi: "Diskusi", metopen: "Metopen" };
+    document.querySelectorAll(".sub a").forEach(function (a) { var t = a.textContent.trim(); a.classList.toggle("on", t === FAM[fam]); });
+    var rev = s.kind === "revisi", dis = fam === "diskusi", td = fam === "tugas" || fam === "diskusi";
+    $("chips").style.display = "flex";
+    $("ttl").textContent = rev ? "Revisi " + FAM[fam] : fam === "metopen" ? "Metopen" : dis ? "Diskusi" : "Tugas";
+    $("ld").textContent = rev ? "Ada masukan dari tutor? Tempel catatannya atau unggah foto atau file catatan tutor. Revisi gratis 1x untuk hasil buatan Catatan Akademik: isi ID pesanan sebelumnya. Untuk hasil dari luar, revisi berbayar." : "Tulis kebutuhan, lampirkan file soal atau masukan tutor. Bayar QRIS, hasil dikirim admin ke WhatsApp-mu sesuai status pesanan. Perlu masuk dengan akun Catatan Akademik.";
     $("pbox").style.display = (rev || td) ? "flex" : "none";
     $("pbl").textContent = td ? "Revisi dari tutor? Isi ID pesanan sebelumnya (gratis 1x)" : "ID pesanan sebelumnya (isi untuk revisi gratis 1x)";
     $("blabel").textContent = rev ? "Masukan dari tutor" : dis ? "Soal diskusi" : "Kebutuhanmu";
-    $("brief").placeholder = dis ? "Tempel soal diskusi di sini. Cukup teks. Kalau ada revisi dari tutor, tulis atau tempel kalimat tutornya di sini juga." : td ? "Contoh: Tugas 2 Manajemen Keuangan, soal ada di file. Kalau ada revisi dari tutor, tulis catatannya di sini juga." : "Tulis kebutuhanmu atau tempel masukan tutor di sini.";
-    $("pick").textContent = dis ? "+ Lampirkan file (opsional, mis. file revisi)" : "+ Lampirkan file";
+    $("brief").placeholder = rev ? "Contoh: Tutor meminta menambah referensi jurnal pada Bab 2 dan memperbaiki cara mengutip. Tempel kalimat tutornya di sini, atau unggah fotonya lewat tombol di bawah." : dis ? "Tempel soal diskusi di sini. Cukup teks. Kalau ada revisi dari tutor, tulis atau tempel kalimat tutornya di sini juga." : td ? "Contoh: Tugas 2 Manajemen Keuangan, soal ada di file. Kalau ada revisi dari tutor, tulis catatannya di sini juga." : "Tulis kebutuhanmu atau tempel masukan tutor di sini.";
+    $("pick").textContent = rev ? "+ Unggah foto atau file catatan tutor" : dis ? "+ Lampirkan file (opsional, mis. file revisi)" : "+ Lampirkan file";
     var pv = $("pid").value.trim();
     $("price").textContent = rev ? "Gratis 1x untuk hasil kami, atau " + rp(s.price) + " untuk revisi dari luar" : td && pv ? "Revisi gratis 1x (dicek otomatis dari ID pesanan)" : rp(s.price);
-    $("price").title = ""; var nt = $("note"); if (nt) nt.style.display = s.kind === "metopen" ? "block" : "none";
+    $("price").title = ""; var nt = $("note"); if (nt) nt.style.display = fam === "metopen" && !rev ? "block" : "none";
     var tn = s.tutorNote;
     $("tguide").style.display = tn ? "block" : "none";
     if (tn) { $("blabel").textContent = "Catatan dari tutor (opsional)"; $("brief").placeholder = "Tempel catatan tutor di sini. Tidak ada catatan? Kosongkan, nanti dikerjakan sesuai template yang berlaku."; $("pick").textContent = "+ Lampirkan file catatan tutor (opsional)"; }
