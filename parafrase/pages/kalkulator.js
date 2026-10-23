@@ -43,6 +43,21 @@
   /* nilai akhir */
   function line(t, cls) { var d = document.createElement("div"); if (cls) d.className = cls; d.textContent = t; return d; }
   function f2(x) { return (Math.round(x * 100) / 100).toString().replace(".", ","); }
+  /* Kotak saran di bawah hasil. Nilai tinggi (B ke atas): dorongan menjaga. Selain itu: arahkan ke simulasi IPK dan layanan. */
+  function banner(m, r) {
+    var high = r.mutu >= 3.0, b = document.createElement("div"), s = document.createElement("b");
+    b.id = "ban"; b.style.cssText = "margin-top:14px;padding:14px 16px;border-radius:12px;line-height:1.6;border:1px solid " + (high ? "#22a55a" : "#c8862a") + ";background:" + (high ? "rgba(34,165,90,.12)" : "rgba(200,134,42,.12)");
+    var sim = document.createElement("a"); sim.href = "#ipk-sim"; sim.textContent = "Simulasi & Target IPK"; sim.style.cssText = "color:var(--link);text-decoration:underline";
+    if (high) {
+      s.textContent = "Nilai akhirmu sudah di rentang " + r.huruf + ".";
+      b.append(s, " Pertahankan dengan menjaga skor Tuton dan UAS. Mau tahu dampaknya ke IPK? Coba ", sim, ".");
+    } else {
+      var lay = document.createElement("a"); lay.href = "/ruangakademikut"; lay.textContent = "Lihat layanan Catatan Akademik"; lay.style.cssText = "color:var(--link);text-decoration:underline";
+      s.textContent = r.lolos30 ? "Nilai akhirmu masih di rentang " + r.huruf + "." : "Nilai akhirmu belum lolos syarat UAS.";
+      b.append(s, " Kalau ingin naik, lihat dulu berapa soal UAS yang perlu benar di ", sim, ". Perlu teman belajar untuk tugas atau diskusi? ", lay, ". Kami tidak menjamin nilai atau kelulusan. Semangat!");
+    }
+    m.appendChild(b);
+  }
   function akhir() {
     var o = $("na"), m = $("mb"); o.textContent = ""; m.textContent = "";
     var j = $("jn").value, nt = $("nt").value, ns = $("ns").value, nb = $("nb").value;
@@ -53,12 +68,13 @@
     o.appendChild(line("1. Cek syarat 30%: benar " + nb + " dari " + ns + " soal = " + f2(Number(nb) / Number(ns) * 100) + "% (minimal " + r.min + " soal benar). " + (r.lolos30 ? "Lolos." : "Tidak lolos.")));
     if (!r.lolos30) {
       o.appendChild(line("2. Karena UAS di bawah 30%, nilai Tuton/TMK/TTM tidak dihitung."));
-      var e = line("Nilai akhir: E (Gagal / Wajib Mengulang)", "bad"); e.style.cssText = "font-size:19px;font-weight:700;margin-top:8px"; o.appendChild(e); return;
+      var e = line("Nilai akhir: E (Gagal / Wajib Mengulang)", "bad"); e.style.cssText = "font-size:19px;font-weight:700;margin-top:8px"; o.appendChild(e); banner(m, r); return;
     }
     o.appendChild(line("2. Nilai UAS murni: (" + nb + " ÷ " + ns + ") × 100 = " + f2(r.uas)));
     o.appendChild(line("3. Nilai akhir: (" + w + "% × " + f2(Number(nt)) + ") + (" + (100 - w) + "% × " + f2(r.uas) + ") = " + f2(r.bobotTugas) + " + " + f2(r.bobotUas) + " = " + f2(r.akhir)));
     var h = line("Nilai akhir " + r.huruf + " (" + r.mutu.toFixed(1) + "), " + r.kategori, r.ok ? "ok" : "bad"); h.style.cssText = "font-size:19px;font-weight:700;margin-top:8px"; o.appendChild(h);
     var mb = N.minBenarPerHuruf(j, nt, ns);
+    banner(m, r);
     if (mb) { m.appendChild(line("Minimal soal benar dengan nilai pendukung " + f2(Number(nt)) + " dan " + ns + " soal:", "note")); var p = document.createElement("div"); p.style.cssText = "display:flex;flex-wrap:wrap;gap:8px;margin-top:6px"; mb.forEach(function (x) { var c = document.createElement("span"); c.style.cssText = "border:1px solid var(--border);border-radius:999px;padding:4px 12px;font-size:13.5px"; c.textContent = x.huruf + ": " + (x.benar === null ? "tidak tercapai" : x.benar + " benar"); p.appendChild(c); }); m.appendChild(p); }
   }
   /* Hasil muncul setelah tombol Hitung ditekan. Mengubah isian menyembunyikan hasil lama supaya tidak ada angka basi. */
