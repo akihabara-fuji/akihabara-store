@@ -30,7 +30,7 @@ module.exports = function mountPages({ app, express }) {
     fs.readFile(path.join(dir, file), "utf8", (err, html) => {
       if (err) return res.status(500).type("text").send("Halaman tidak tersedia.");
       let out = html;
-      if (file === "blog-ut.html") out = out.replace('<div id="bl" class="blog-list" aria-live="polite"></div>', `<div id="bl" class="blog-list" aria-live="polite">${blogCards(req)}</div>`);
+      if (file === "blog-ut.html") out = out.replace('<div id="bl" class="bx-host"></div>', `<div id="bl" class="bx-host">${blogCards(req)}</div>`);
       out = (TRACK.has(file) ? out.replace("</head>", '<script async src="/t.js"></script></head>') : out).replaceAll("{{SITE}}", SITE);
       res.set("Cache-Control", "no-cache").type("html").send(shorten(out));
     });

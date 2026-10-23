@@ -285,7 +285,6 @@ const ACAD = (process.env.ACAD_URL || SITE).replace(/\/+$/, "");
 const ACAD_HOSTS = ACAD === SITE ? [] : [new URL(ACAD).hostname, "www." + new URL(ACAD).hostname];
 const isAcadHost = req => ACAD_HOSTS.includes(req.hostname);
 const TEMPLATE = path.join(PUB, "index.html");
-const today = () => new Date().toISOString().slice(0, 10);
 app.get("/robots.txt", (req, res) => {
   const base = isAcadHost(req) ? ACAD : SITE;
   res.type("text/plain").send(`User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /ms/\n\nSitemap: ${base}/sitemap.xml\n`);
@@ -296,7 +295,7 @@ app.get("/sitemap.xml", (req, res) => {
     : isAcadHost(req)
       ? [{ loc: `${ACAD}/blog`, pri: "0.8" }, ...extra.pageUrls(), ...extra.blogUrls()]
       : [{ loc: `${SITE}/`, pri: "1.0" }];
-  res.type("application/xml").send(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(u => `  <url><loc>${u.loc}</loc><lastmod>${u.lastmod || today()}</lastmod><priority>${u.pri}</priority></url>`).join("\n")}\n</urlset>\n`);
+  res.type("application/xml").send(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(u => `  <url><loc>${u.loc}</loc>${u.lastmod ? `<lastmod>${u.lastmod}</lastmod>` : ""}<priority>${u.pri}</priority></url>`).join("\n")}\n</urlset>\n`);
 });
 app.get(["/", "/index.html"], async (req, res) => {
   const html = await fsp.readFile(TEMPLATE, "utf8");
@@ -323,6 +322,8 @@ require("./parafrase")({ app, express, requireAdmin, sameOrigin, ROOT });
 app.use("/admin", express.static(path.join(ROOT, "admin"), { index: "index.html" }));
 app.use("/uploads", express.static(UPLOADS, { maxAge: "30d", immutable: true }));
 app.use(express.static(PUB, { maxAge: "1h", index: false }));
+/* Paling akhir: 404. API menjawab JSON, halaman menjawab 404 bermerek. */
+app.use((req, res) => (req.path.startsWith("/ms/") ? res.status(404).json({ error: "Tidak ditemukan." }) : extra.notFound(req, res)));
 
 /* ---------------- migrasi satu kali ke desain nextaja ----------------
    Jalan sekali saja (ditandai settings.nx). Cadangan otomatis dibuat sebelum menyimpan.

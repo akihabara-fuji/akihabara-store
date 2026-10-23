@@ -85,7 +85,13 @@ module.exports = function mount(ctx) {
     .replace("</head>", '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme.css?v=2"></head>')
     .replace("</head>", "<style>.logo b.lg{background:none!important}.logo b.lg img{width:34px;height:34px;object-fit:contain;display:block}</style></head>");
   const rebrand = h => (ACAD_ONLY ? caBrand(shortPath(String(h).replace(/(?<![\w./@-])nextaja(?![\w-]|\.\w)/gi, BRAND))) : h);
-  const published = () => blog.posts.filter(p => p.status === "published" && !p.trashedAt && (!ACAD_ONLY || ACAD_TOPICS.includes(p.topic))).sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+  /* Terjadwal = tampil otomatis saat publishAt lewat (tanpa cron). Draf, review, dan terjadwal yang belum waktunya tidak pernah tampil publik. */
+  const isLive = (p, now = Date.now()) => !p.trashedAt && (p.status === "published" || (p.status === "scheduled" && Date.parse(p.publishAt) <= now));
+  const published = () => blog.posts.filter(p => isLive(p) && (!ACAD_ONLY || ACAD_TOPICS.includes(p.topic))).sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+  const modifiedAt = p => p.contentUpdatedAt || p.updatedAt || p.publishedAt;
+  const readMin = p => Math.max(1, Math.round(String(p.body || "").replace(/!\[[^\]]*\]\([^)]*\)/g, " ").split(/\s+/).filter(Boolean).length / 200));
+  const norm = s => String(s || "").toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "");
+  const matches = (p, q) => { const t = norm(q).split(/\s+/).filter(Boolean); if (!t.length) return true; const hay = norm([p.title, p.excerpt, (p.tags || []).join(" "), p.body].join(" ")); return t.every(w => hay.includes(w)); };
   /* Daftar judul dikelompokkan: Bulan (bisa dilipat; hanya bulan terbaru terbuka) > Minggu ke-N, terbaru di atas. Zona waktu WIB. */
   const BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
   const wib = iso => { const d = new Date(new Date(iso).getTime() + 7 * 3600e3); return { y: d.getUTCFullYear(), m: d.getUTCMonth(), d: d.getUTCDate() }; };
@@ -103,7 +109,39 @@ module.exports = function mount(ctx) {
       return `<details class="blog-month"${i === 0 ? " open" : ""}><summary><span>${BULAN[M.w.m]} ${M.w.y}</span><small>${M.n} tulisan</small></summary>${weeks}</details>`;
     }).join("");
   };
-  app.locals.renderAcadBlogCards = req => ACAD_ONLY ? groupedList(published()) : "";
+  /* ---------- Beranda blog (dipakai /blog dan /blog-ut): cari, filter, artikel pilihan, kartu terbaru, arsip ---------- */
+  const shortDate = iso => new Date(iso).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Jakarta" });
+  const cardCover = p => p.cover ? `<img src="${esc(p.cover)}" alt="${esc(p.coverAlt || "")}" loading="lazy" decoding="async">` : posterHtml(p);
+  const blogCard = p => `<article class="bx-card"><a href="/blog/${esc(p.slug)}"><div class="bx-cv">${cardCover(p)}</div><div class="bx-b"><span class="bx-tag">${esc(tl(p.topic))}</span><h3>${esc(p.title)}</h3>${p.excerpt ? `<p>${esc(p.excerpt)}</p>` : ""}<div class="bx-ft"><span><time datetime="${esc(p.publishedAt)}">${esc(shortDate(p.publishedAt))}</time> · ${readMin(p)} menit baca</span><span class="bx-go" aria-hidden="true">→</span></div></div></a></article>`;
+  const topicsShown = () => Object.keys(TOPICS).filter(k => !ACAD_ONLY || ACAD_TOPICS.includes(k));
+  const topTags = (posts, n) => { const c = new Map(); for (const p of posts) for (const t of p.tags || []) c.set(t, (c.get(t) || 0) + 1); return [...c.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, n).map(x => x[0]); };
+  function blogFilters(req) {
+    const f = TOPICS[req.query.f] && topicsShown().includes(req.query.f) ? req.query.f : "";
+    return { f, tag: str(req.query.tag, 40).toLowerCase(), q: str(req.query.q, 80) };
+  }
+  function blogIndex(req, base) {
+    const { f, tag, q } = blogFilters(req), all = published();
+    const list = all.filter(p => (!f || p.topic === f) && (!tag || (p.tags || []).includes(tag)) && matches(p, q));
+    const filtering = !!(f || tag || q);
+    const featured = filtering ? null : (all.find(p => p.featured) || all.find(p => p.cover) || all[0]);
+    const latest = filtering ? list.slice(0, 24) : all.filter(p => p !== featured).slice(0, 8);
+    const link = (k, v, label, on) => `<a class="bx-chip${on ? " on" : ""}" href="${base}${k ? `?${k}=${encodeURIComponent(v)}` : ""}"${on ? ' aria-current="page"' : ""}>${esc(label)}</a>`;
+    const chips = [link("", "", "Semua", !filtering), ...topicsShown().map(k => link("f", k, TOPICS[k].label, f === k)), ...topTags(all, 6).map(t => link("tag", t, "#" + t, tag === t))].join("");
+    const hero = `<section class="bx-hero"><div class="bx-hero-t">
+        <span class="bx-eyebrow">Update Terbaru</span>
+        <h1>${ACAD_ONLY ? 'Informasi dan Panduan Kuliah <span class="bx-hl">Universitas Terbuka</span>' : "Blog dan tulisan terbaru"}</h1>
+        <p class="bx-lead">${ACAD_ONLY ? "Jadwal, registrasi, ujian, tugas, Metopen, tips belajar, dan pengalaman mahasiswa UT. Bukan situs resmi UT: selalu cocokkan dengan pengumuman resmi di ut.ac.id." : "Catatan tentang belajar, social media, AI, dan hal-hal yang lagi ramai."}</p>
+        <form class="bx-search" role="search" action="${base}" method="get"><label class="bx-sr" for="bxq">Cari artikel</label><input id="bxq" type="search" name="q" value="${esc(q)}" maxlength="80" placeholder="Cari artikel, contoh: jadwal ujian, registrasi, tugas…"><button type="submit">Cari</button></form>
+        <nav class="bx-chips" aria-label="Filter kategori">${chips}</nav>
+      </div>${featured ? `<article class="bx-feat"><a href="/blog/${esc(featured.slug)}"><div class="bx-cv">${cardCover(featured)}<span class="bx-badge">Artikel Pilihan</span></div><div class="bx-b"><h2>${esc(featured.title)}</h2>${featured.excerpt ? `<p>${esc(featured.excerpt)}</p>` : ""}<div class="bx-ft"><span><time datetime="${esc(featured.publishedAt)}">${esc(shortDate(featured.publishedAt))}</time> · ${esc(tl(featured.topic))}</span><span class="bx-go" aria-hidden="true">→</span></div></div></a></article>` : ""}</section>`;
+    const what = q ? `Hasil pencarian “${esc(q)}”` : tag ? `Tag #${esc(tag)}` : f ? esc(TOPICS[f].label) : "Artikel Terbaru";
+    const head = `<div class="bx-head"><h2>${what}</h2>${filtering ? `<span class="bx-count">${list.length} artikel · <a href="${base}">Hapus filter</a></span>` : ""}</div>`;
+    const grid = latest.length ? `<div class="bx-grid">${latest.map(blogCard).join("")}</div>` : `<div class="bx-empty"><b>Belum ada artikel yang cocok.</b><span>Coba kata lain, atau <a href="${base}">lihat semua artikel</a>.</span></div>`;
+    const more = filtering && list.length > latest.length ? `<p class="bx-more">Menampilkan ${latest.length} dari ${list.length}. Persempit pencarian untuk hasil yang lebih tepat.</p>` : "";
+    const archive = !filtering && all.length > latest.length + 1 ? `<section class="bx-arch" aria-labelledby="bxArch"><div class="bx-head"><h2 id="bxArch">Arsip artikel</h2><span class="bx-count">${all.length} artikel</span></div>${groupedList(all)}</section>` : "";
+    return `<div class="bx">${hero}<section class="bx-list" aria-live="polite">${head}${grid}${more}</section>${archive}</div>`;
+  }
+  app.locals.renderAcadBlogCards = req => blogIndex(req, "/blog-ut");
   /* potongan HTML daftar untuk filter di halaman Update UT */
   app.get("/ms/blog/list-html", (req, res) => {
     res.set("Cache-Control", "no-cache");
@@ -128,6 +166,8 @@ module.exports = function mount(ctx) {
   function isOwn(u) { if (u[0] === "/") return true; try { return OWN_HOSTS.includes(new URL(u.replace(/&amp;/g, "&")).host); } catch { return false; } }
   function renderBody(txt) {
     let html = "", list = "", para = [], quote = [];
+    const ids = new Map(); // id unik per judul bagian, dipakai daftar isi
+    const head = (tag, raw) => { const inner = inline(raw); let id = slugify(inner.replace(/<[^>]+>/g, "").replace(/&[a-z#0-9]+;/gi, " ")) || "bagian"; const n = ids.get(id) || 0; ids.set(id, n + 1); if (n) id += "-" + (n + 1); html += `<${tag} id="${id}">${inner}</${tag}>`; };
     const flush = () => { if (para.length) { html += `<p>${inline(para.join(" "))}</p>`; para = []; } };
     const endList = () => { if (list) { html += `</${list}>`; list = ""; } };
     const endQuote = () => { if (quote.length) { html += `<blockquote><p>${inline(quote.join(" "))}</p></blockquote>`; quote = []; } };
@@ -138,9 +178,10 @@ module.exports = function mount(ctx) {
       if (/^>\s?/.test(l)) { flush(); endList(); quote.push(l.replace(/^>\s?/, "")); continue; }
       endQuote();
       if (IMG_LINE.test(l) && IMG_SRC.test(l.match(IMG_LINE)[1])) { flush(); endList(); html += `<figure>${inline(l)}</figure>`; continue; }
-      if (/^#\s+/.test(l)) { flush(); endList(); html += `<h2>${inline(l.replace(/^#\s+/, ""))}</h2>`; continue; } // H1 hanya dari kolom Judul; "# " di isi dijadikan H2
-      if (/^##\s+/.test(l)) { flush(); endList(); html += `<h2>${inline(l.replace(/^##\s+/, ""))}</h2>`; continue; }
-      if (/^###\s+/.test(l)) { flush(); endList(); html += `<h3>${inline(l.replace(/^###\s+/, ""))}</h3>`; continue; }
+      if (/^#\s+/.test(l)) { flush(); endList(); head("h2", l.replace(/^#\s+/, "")); continue; } // H1 hanya dari kolom Judul; "# " di isi dijadikan H2
+      if (/^##\s+/.test(l)) { flush(); endList(); head("h2", l.replace(/^##\s+/, "")); continue; }
+      if (/^###\s+/.test(l)) { flush(); endList(); head("h3", l.replace(/^###\s+/, "")); continue; }
+      if (/^#{4,6}\s+/.test(l)) { flush(); endList(); head("h" + l.match(/^#+/)[0].length, l.replace(/^#{4,6}\s+/, "")); continue; }
       if (/^[-*\u2022]\s+/.test(l)) { item("ul", l, /^[-*\u2022]\s+/); continue; }
       if (/^\d{1,2}[.)]\s+/.test(l)) { item("ol", l, /^\d{1,2}[.)]\s+/); continue; }
       endList(); para.push(l);
@@ -345,17 +386,18 @@ module.exports = function mount(ctx) {
 
   /* ============================ HALAMAN ============================ */
   const SOCIAL = () => (ctx.getSettings ? ctx.getSettings() : {}) || {};
-  function layout({ title, desc, path: pth, body, extra = "", image = "", type = "website", noindex = false }) {
+  function layout({ title, desc, path: pth, body, extra = "", image = "", type = "website", noindex = false, canonical = "" }) {
     const st = SOCIAL();
-    const brand = esc(st.brand || BRAND);
-    const canon = `${SITE}${pth}`;
+    // Di domain akademik nama merek dikunci (isian "brand" di admin milik landing nextaja dan pernah salah ketik).
+    const brand = esc(ACAD_ONLY ? BRAND : (st.brand || BRAND));
+    const canon = `${SITE}${canonical || pth}`;
     return rebrand(`<!doctype html>
 <html lang="id" data-theme="dark">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
-<meta name="theme-color" content="#f6f3ff">
+<meta name="theme-color" content="${ACAD_ONLY ? "#0b1326" : "#f6f3ff"}">
 <link rel="canonical" href="${esc(canon)}">
 <meta name="robots" content="${noindex ? "noindex,follow" : "index,follow,max-image-preview:large,max-snippet:-1"}">
 <meta property="og:type" content="${type}"><meta property="og:locale" content="id_ID"><meta property="og:site_name" content="${brand}"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${esc(canon)}">${image ? `<meta property="og:image" content="${esc(image)}"><meta name="twitter:image" content="${esc(image)}">` : ""}<meta name="twitter:card" content="${image ? "summary_large_image" : "summary"}"><meta name="twitter:title" content="${esc(title)}"><meta name="twitter:description" content="${esc(desc)}"><link rel="alternate" type="application/rss+xml" title="${brand}" href="${SITE}/blog/feed.xml">
@@ -363,7 +405,7 @@ module.exports = function mount(ctx) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Bricolage+Grotesque:wght@600;700&display=swap" rel="stylesheet">
 <script>try{var t=localStorage.getItem("nx-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
-<link rel="stylesheet" href="/assets/blog.css?v=10"><script async src="/t.js"></script>
+<link rel="stylesheet" href="/assets/blog.css?v=10"><link rel="stylesheet" href="/assets/ca-blog.css?v=1"><script async src="/t.js"></script>
 ${extra}
 </head>
 <body>
@@ -382,7 +424,7 @@ ${extra}
 <footer class="ft"><div class="wrap ft-in"><div class="ft-b"><b>${brand}</b><span>Jakarta Barat. Layanan UT dan Blog.</span><small>© ${new Date().getFullYear()} Semua hak dilindungi.</small></div><nav class="ft-n" aria-label="Footer"><a href="/ruangakademikut">Layanan UT</a><a href="/blog">Blog</a><a href="/ms/masuk">Masuk</a><a href="/ms/privasi">Privasi</a><a href="/ms/ketentuan">Ketentuan</a></nav></div></footer>
 <script>
 (function(){
-function setMode(m){document.documentElement.dataset.theme=m;try{localStorage.setItem("nx-theme",m)}catch(e){}var tc=document.querySelector('meta[name=theme-color]');if(tc)tc.content=m==="light"?"#f6f3ff":"#0a0a1c";}
+function setMode(m){document.documentElement.dataset.theme=m;try{localStorage.setItem("nx-theme",m)}catch(e){}var tc=document.querySelector('meta[name=theme-color]');if(tc)tc.content=m==="light"?${JSON.stringify(ACAD_ONLY ? "#f5f7fa" : "#f6f3ff")}:${JSON.stringify(ACAD_ONLY ? "#0b1326" : "#0a0a1c")};}
 document.querySelectorAll(".mode button").forEach(function(b){b.addEventListener("click",function(){setMode(b.dataset.m)})});
 setMode(document.documentElement.dataset.theme||"light");
 var bg=document.getElementById("burger"),ln=document.getElementById("links");
@@ -401,20 +443,13 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
   const coverHtml = p => ACAD_ONLY ? posterHtml(p) : p.cover ? `<img src="${esc(p.cover)}" alt="" loading="lazy">` : `<span class="ph-t">${esc(tl(p.topic))}</span>`;
 
   app.get("/blog", (req, res) => {
-    const f = TOPICS[req.query.f] && (!ACAD_ONLY || ACAD_TOPICS.includes(req.query.f)) ? req.query.f : "";
-    const list = published().filter(p => !f || p.topic === f);
-    const heading = f ? TOPICS[f].label : "Tulisan terbaru";
-    const body = `<section class="pg"><div class="wrap">
-      ${ACAD_ONLY ? "" : portalBanner(f)}
-      <span class="eyebrow">Blog</span><h1>${esc(f === "viral" ? "Berita viral apa hari ini?" : heading)}</h1>
-      <p class="lead">${ACAD_ONLY ? "Catatan seputar kuliah, tugas, dan info terbaru Universitas Terbuka. Ditulis apa adanya." : "Catatan tentang belajar, social media, AI, dan hal-hal yang lagi ramai. Ditulis apa adanya."}</p>
-      <div class="chips">${topicChip("", !f)}${Object.keys(TOPICS).filter(k => !ACAD_ONLY || ACAD_TOPICS.includes(k)).map(k => topicChip(k, f === k)).join("")}</div>
-      ${list.length ? `<div class="blog-list">${groupedList(list)}</div>`
-        : `<div class="empty">Belum ada tulisan di sini. Tulisan pertama segera terbit.</div>`}
-    </div></section>`;
-    const blogTitle = ACAD_ONLY ? `${heading} — Blog Catatan Akademik` : `${heading} — Blog nextaja`;
-    const blogDesc = ACAD_ONLY ? "Catatan seputar kuliah, tugas, dan info terbaru Universitas Terbuka dari Catatan Akademik." : "Catatan tentang belajar, social media, AI, dan berita viral hari ini dari nextaja.";
-    res.set("Cache-Control", "no-cache").type("html").send(layout({ title: blogTitle, desc: blogDesc, path: f ? `/blog?f=${f}` : "/blog", body }));
+    const { f, tag, q } = blogFilters(req);
+    const heading = q ? `Cari: ${q}` : tag ? `#${tag}` : f ? TOPICS[f].label : (ACAD_ONLY ? "Info dan Panduan Kuliah UT" : "Tulisan terbaru");
+    const body = `<section class="pg"><div class="wrap">${blogIndex(req, "/blog")}</div></section>`;
+    const blogTitle = `${heading} — Blog ${ACAD_ONLY ? "Catatan Akademik" : "nextaja"}`;
+    const blogDesc = ACAD_ONLY ? "Info dan panduan kuliah Universitas Terbuka: jadwal, registrasi, ujian, tugas, Metopen, dan tips belajar dari Catatan Akademik." : "Catatan tentang belajar, social media, AI, dan berita viral hari ini dari nextaja.";
+    // halaman pencarian tidak diindeks; filter kategori/tag tetap boleh
+    res.set("Cache-Control", "no-cache").type("html").send(layout({ title: blogTitle, desc: blogDesc, path: f ? `/blog?f=${f}` : tag ? `/blog?tag=${encodeURIComponent(tag)}` : "/blog", body, noindex: !!q }));
   });
   /* Indeks cepat: IndexNow (Bing, Yandex, dll) dipanggil otomatis saat tulisan terbit, berubah, atau dihapus.
      Google tidak punya jalur ping: Google menemukan tulisan lewat sitemap.xml yang selalu diperbarui (daftarkan sekali di Search Console). */
@@ -438,31 +473,56 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
 
   /* Bagian penutup lama ("Kalau kamu butuh bantuan ...") di dalam isi tulisan diganti bubble WhatsApp di bawah. */
   const cleanBody = t => String(t || "").replace(/\r/g, "").replace(/\n[ \t]*(?:#{1,3}[ \t]*)?(?:\*\*)?Kalau kamu butuh bantuan(?:\*\*)?[ \t]*\n[\s\S]{0,1600}$/i, "").trimEnd();
+  /* Halaman artikel. preview=true: pratinjau admin untuk draf/terjadwal (noindex, tanpa komentar, tidak pernah di-cache). */
+  const DEFAULT_AUTHOR = "Dika Priyadi";
+  function articlePage(p, { preview = false } = {}) {
+    const plain = String(p.body || "").replace(IMG_MD, " ").replace(/[#*_>`\[\]()!-]/g, " ").replace(/\s+/g, " ").trim();
+    const desc = p.metaDesc || p.excerpt || (plain.length > 155 ? plain.slice(0, 152).replace(/\s+\S*$/, "") + "…" : plain) || p.title;
+    const img = p.cover ? (/^https?:/.test(p.cover) ? p.cover : SITE + p.cover) : SITE + "/icon-512.png";
+    const url = `${SITE}/blog/${p.slug}`;
+    const author = p.author || DEFAULT_AUTHOR;
+    const pub = p.publishedAt || p.publishAt || new Date().toISOString();
+    const mod = modifiedAt(p) || pub;
+    const showUpd = Date.parse(mod) - Date.parse(pub) > 864e5; // "Diperbarui" hanya bila isi berubah lebih dari sehari setelah terbit
+    const bodyHtml = renderBody(cleanBody(p.body));
+    const toc = [...bodyHtml.matchAll(/<h([23]) id="([^"]+)">([\s\S]*?)<\/h\1>/g)].map(m => ({ lv: m[1], id: m[2], t: m[3].replace(/<[^>]+>/g, "") }));
+    const tocList = `<ol>${toc.map(h => `<li class="l${h.lv}"><a href="#${h.id}">${h.t}</a></li>`).join("")}</ol>`;
+    const tags = (p.tags || []).filter(Boolean);
+    const overlap = x => (x.tags || []).filter(t => tags.includes(t)).length;
+    // terkait: tag yang sama dulu, lalu kategori yang sama, lalu terbaru (selalu terisi bila ada artikel lain)
+    const score = x => overlap(x) * 2 + (x.topic === p.topic ? 1 : 0);
+    const related = published().filter(x => x.slug !== p.slug).sort((a, b) => score(b) - score(a) || new Date(b.publishedAt) - new Date(a.publishedAt)).slice(0, 4);
+    const topicLink = `/blog?f=${encodeURIComponent(p.topic)}`;
+    const ld = JSON.stringify([{ "@context": "https://schema.org", "@type": "BlogPosting", headline: p.title.slice(0, 110), datePublished: pub, dateModified: mod, description: desc, image: [img], inLanguage: "id-ID", wordCount: plain ? plain.split(" ").length : 0, ...(tags.length ? { keywords: tags.join(", ") } : {}), articleSection: tl(p.topic), author: { "@type": "Person", name: author }, publisher: { "@type": "Organization", name: BRAND, logo: { "@type": "ImageObject", url: SITE + "/icon-512.png" } }, mainEntityOfPage: { "@type": "WebPage", "@id": url } },
+      { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Beranda", item: SITE + "/" }, { "@type": "ListItem", position: 2, name: "Blog", item: SITE + "/blog" }, { "@type": "ListItem", position: 3, name: tl(p.topic), item: SITE + topicLink }, { "@type": "ListItem", position: 4, name: p.title, item: url }] }]).replace(/</g, "\\u003c");
+    const cover = p.cover
+      ? `<figure class="ax-cover"><img src="${esc(p.cover)}" alt="${esc(p.coverAlt || p.title)}" fetchpriority="high" decoding="async">${p.coverCaption ? `<figcaption>${esc(p.coverCaption)}</figcaption>` : ""}</figure>`
+      : (ACAD_ONLY ? `<div class="article-cover article-poster" role="img" aria-label="${esc(p.title)}">${posterHtml(p)}</div>` : "");
+    const relatedHtml = related.length ? `<section class="ax-box" aria-labelledby="axRelH"><h2 id="axRelH">Artikel Terkait</h2><div class="ax-rels">${related.map(x => `<a class="ax-rel" href="/blog/${esc(x.slug)}"><span class="ax-rel-cv">${cardCover(x)}</span><span><b>${esc(x.title)}</b><small>${esc(tl(x.topic))} · ${esc(shortDate(x.publishedAt))}</small></span></a>`).join("")}</div></section>` : "";
+    const statusLabel = { draft: "Draf", review: "Menunggu review", scheduled: `Terjadwal ${p.publishAt ? shortDate(p.publishAt) : ""}`, published: "Terbit" }[p.status] || p.status;
+    const body = `${preview ? `<div class="ax-prev" role="status">Pratinjau admin · status: <b>${esc(statusLabel)}</b>. Halaman ini tidak terlihat publik dan tidak diindeks.</div>` : ""}<div class="wrap ax"><article class="ax-main">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Beranda</a><span aria-hidden="true">/</span><a href="/blog">Blog</a><span aria-hidden="true">/</span><a href="${topicLink}">${esc(tl(p.topic))}</a><span aria-hidden="true">/</span><span aria-current="page">${esc(p.title)}</span></nav>
+      <div class="ax-meta"><a class="bx-tag" href="${topicLink}">${esc(tl(p.topic))}</a><time datetime="${esc(pub)}">${esc(shortDate(pub))}</time>${showUpd ? `<span>Diperbarui <time datetime="${esc(mod)}">${esc(shortDate(mod))}</time></span>` : ""}<span>${readMin(p)} menit baca</span></div>
+      <h1>${esc(p.title)}</h1>
+      ${p.excerpt ? `<p class="ax-lead">${esc(p.excerpt)}</p>` : ""}
+      <div class="ax-by">Oleh <b>${esc(author)}</b></div>
+      ${cover}
+      ${toc.length >= 3 ? `<details class="ax-toc ax-toc-in"><summary>Daftar Isi</summary>${tocList}</details>` : ""}
+      <div class="prose">${bodyHtml}</div>
+      ${tags.length ? `<div class="ax-tags" aria-label="Tag">${tags.map(t => `<a href="/blog?tag=${encodeURIComponent(t)}">#${esc(t)}</a>`).join("")}</div>` : ""}
+      <p class="ax-note">${BRAND} bukan situs resmi Universitas Terbuka. Selalu pegang ketentuan dari tutor dan sumber resmi UT di <a href="https://www.ut.ac.id" rel="noopener" target="_blank">ut.ac.id</a>.</p>
+      <a class="back" href="${topicLink}">← Kembali ke ${esc(tl(p.topic))}</a>
+      ${preview ? "" : commentsBlock(p.slug)}
+    </article>
+    <aside class="ax-side">${toc.length >= 3 ? `<nav class="ax-box ax-toc-side" aria-labelledby="axTocH"><h2 id="axTocH">Daftar Isi</h2>${tocList}</nav>` : ""}${relatedHtml}</aside></div>
+    <a class="wa-bubble" href="/ruangakademikut"><span>Layanan ${esc(BRAND)}</span><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg></a>`;
+    return layout({ title: `${p.metaTitle || p.title} — ${BRAND}`, desc, path: `/blog/${p.slug}`, body, image: img, type: "article", noindex: preview,
+      extra: `<meta property="article:published_time" content="${esc(pub)}"><meta property="article:modified_time" content="${esc(mod)}">${tags.map(t => `<meta property="article:tag" content="${esc(t)}">`).join("")}${preview ? "" : `<script type="application/ld+json">${ld}</script>`}` });
+  }
   app.get("/blog/:slug", (req, res, next) => {
     const p = published().find(x => x.slug === req.params.slug);
     if (!p) return next();
-    const plain = String(p.body || "").replace(IMG_MD, " ").replace(/[#*_>`\[\]()!-]/g, " ").replace(/\s+/g, " ").trim();
-    const desc = p.excerpt || (plain.length > 155 ? plain.slice(0, 152).replace(/\s+\S*$/, "") + "…" : plain) || p.title;
-    const img = p.cover ? (/^https?:/.test(p.cover) ? p.cover : SITE + p.cover) : SITE + "/icon-512.png";
-    const url = `${SITE}/blog/${p.slug}`;
-    const ld = JSON.stringify([{ "@context": "https://schema.org", "@type": "BlogPosting", headline: p.title.slice(0, 110), datePublished: p.publishedAt, dateModified: p.updatedAt || p.publishedAt, description: desc, image: [img], inLanguage: "id-ID", wordCount: plain.split(" ").length, author: { "@type": "Person", name: "Dika Priyadi" }, publisher: { "@type": "Organization", name: BRAND, logo: { "@type": "ImageObject", url: SITE + "/icon-512.png" } }, mainEntityOfPage: { "@type": "WebPage", "@id": url } },
-      { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Beranda", item: SITE + "/" }, { "@type": "ListItem", position: 2, name: "Blog", item: SITE + "/blog" }, { "@type": "ListItem", position: 3, name: p.title, item: url }] }]).replace(/</g, "\\u003c");
-    const related = published().filter(x => x.slug !== p.slug && (x.topic === p.topic || !ACAD_ONLY)).slice(0, 3);
-    const relatedHtml = related.length ? `<aside class="related" aria-labelledby="related-title"><h2 id="related-title">Artikel terkait</h2><div class="related-grid">${related.map(x => `<a class="card related-card" href="/blog/${esc(x.slug)}"><div class="tag">${esc(tl(x.topic))}</div><b>${esc(x.title)}</b></a>`).join("")}</div></aside>` : "";
-    const articleCover = p.cover ? `<img class="article-cover" src="${esc(p.cover)}" alt="${esc(p.title)}">` : (ACAD_ONLY ? `<div class="article-cover article-poster" aria-label="${esc(p.title)}">${posterHtml(p)}</div>` : "");
-    const body = `<article class="pg art"><div class="wrap narrow">
-      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Beranda</a><span aria-hidden="true">/</span><a href="/blog">Blog</a><span aria-hidden="true">/</span><span aria-current="page">${esc(p.title)}</span></nav>
-      <a class="back" href="/blog?f=${esc(p.topic)}">← Kembali ke ${esc(tl(p.topic))}</a>
-      <h1>${esc(p.title)}</h1>
-      <div class="meta">${esc(fmtDate(p.publishedAt))} · Dika Priyadi</div>
-      ${articleCover}
-      <div class="prose">${renderBody(cleanBody(p.body))}</div>
-      <p class="meta" style="margin-top:28px">${BRAND} bukan situs resmi Universitas Terbuka. Selalu pegang ketentuan dari tutor dan sumber resmi UT.</p>
-      ${relatedHtml}
-      ${commentsBlock(p.slug)}
-    </div></article>
-    <a class="wa-bubble" href="/ruangakademikut"><span>Layanan Catatan Akademik</span><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg></a>`;
-    res.set("Cache-Control", "no-cache").type("html").send(layout({ title: `${p.title} — nextaja`, desc, path: `/blog/${p.slug}`, body, image: img, type: "article", extra: `<style>.wa-bubble{position:fixed;right:16px;bottom:16px;z-index:50;display:inline-flex;align-items:center;gap:8px;padding:12px 18px;border-radius:999px;background:#6d28d9;color:#fff;font:700 14px Onest,sans-serif;text-decoration:none;box-shadow:0 8px 24px rgba(0,0,0,.35)}.wa-bubble:hover{filter:brightness(1.06)}@media(max-width:480px){.wa-bubble{right:12px;left:12px;justify-content:center}}</style><meta property="article:published_time" content="${esc(p.publishedAt)}"><meta property="article:modified_time" content="${esc(p.updatedAt || p.publishedAt)}"><script type="application/ld+json">${ld}</script>` }));
+    res.set("Cache-Control", "no-cache").type("html").send(articlePage(p));
   });
 
 
@@ -747,6 +807,21 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
     res.set("Cache-Control", "no-store").type("html").send(layout({ title: "Akun saya — nextaja", desc: "Pesanan dan pengaturan akun nextaja.", path: "/ms/akun", body }));
   });
 
-  // untuk sitemap
-  return { userFrom, pageUrls: () => (ACAD_ONLY ? [{ loc: `${SITE}/`, pri: "1.0" }] : []).concat(["/ruangakademikut", "/ruangakademikut/cek-parafrase-mandiri", "/ruangakademikut/audit", "/ruangakademikut/layanan", "/ruangakademikut/blog-ut"].map(u => ({ loc: `${SITE}${ACAD_ONLY ? (u === "/ruangakademikut" ? "/layanan-ut" : shortPath(u)) : u}`, pri: "0.7" }))), blogUrls: () => published().map(p => ({ loc: `${SITE}/blog/${p.slug}`, lastmod: (p.updatedAt || p.publishedAt || "").slice(0, 10), pri: "0.6" })) };
+  /* Halaman 404 bermerek (status tetap 404). Di domain non-akademik cukup halaman polos tanpa merek akademik. */
+  function notFound(req, res) {
+    res.status(404).set("Cache-Control", "no-store");
+    if (ACAD_ONLY && !onAcadHost(req)) return res.type("html").send('<!doctype html><html lang="id"><meta charset="utf-8"><meta name="robots" content="noindex"><title>Halaman tidak ditemukan</title><body style="font-family:system-ui;padding:40px"><h1>Halaman tidak ditemukan</h1><p><a href="/">Kembali ke beranda</a></p></body></html>');
+    const latest = published().slice(0, 4);
+    const body = `<section class="pg"><div class="wrap nf">
+      <span class="bx-eyebrow">Error 404</span><h1>Halaman tidak ditemukan</h1>
+      <p class="bx-lead">Alamat yang kamu buka tidak ada atau sudah dipindah. Coba cari artikelnya, atau buka salah satu halaman di bawah.</p>
+      <form class="bx-search" role="search" action="/blog" method="get"><label class="bx-sr" for="nfq">Cari artikel</label><input id="nfq" type="search" name="q" maxlength="80" placeholder="Cari artikel…"><button type="submit">Cari</button></form>
+      <nav class="bx-chips" aria-label="Halaman utama"><a class="bx-chip" href="/">Beranda</a><a class="bx-chip" href="/blog">Blog</a><a class="bx-chip" href="/ruangakademikut">Layanan UT</a><a class="bx-chip" href="/ruangakademikut/pesanan">Cek Pesanan</a></nav>
+      ${latest.length ? `<div class="bx-head"><h2>Artikel terbaru</h2></div><div class="bx-grid">${latest.map(blogCard).join("")}</div>` : ""}
+    </div></section>`;
+    res.type("html").send(layout({ title: `Halaman tidak ditemukan — ${BRAND}`, desc: "Halaman tidak ditemukan.", path: "/404", body, noindex: true }));
+  }
+
+  // untuk sitemap. /blog-ut tidak didaftarkan: isinya sama dengan /blog (kanonis ke /blog).
+  return { userFrom, notFound, articlePage, isLive, posts: () => blog.posts, TOPICS, ACAD_TOPICS, pageUrls: () => (ACAD_ONLY ? [{ loc: `${SITE}/`, pri: "1.0" }] : []).concat(["/ruangakademikut", "/ruangakademikut/cek-parafrase-mandiri", "/ruangakademikut/audit", "/ruangakademikut/layanan"].map(u => ({ loc: `${SITE}${ACAD_ONLY ? (u === "/ruangakademikut" ? "/layanan-ut" : shortPath(u)) : u}`, pri: "0.7" }))), blogUrls: () => published().map(p => ({ loc: `${SITE}/blog/${p.slug}`, lastmod: String(modifiedAt(p) || "").slice(0, 10), pri: "0.6" })) };
 };
