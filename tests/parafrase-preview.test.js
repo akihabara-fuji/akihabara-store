@@ -96,8 +96,44 @@ test("HTTP: endpoint pratinjau terkunci, no-store, tidak membocorkan, ID salah 4
     assert.strictEqual(r.status, 200);
     assert.strictEqual(r.headers.get("cache-control"), "no-store");
     const txt = await r.text();
-        for (const w of ["digitalisasi", "implementasi", "pengendalian", "manufaktur", "efisiensi"]) assert.ok(!txt.toLowerCase().includes(w), "bocor: " + w);
+    const pvj = JSON.parse(txt), terbuka = (pvj.example ? pvj.example.sentences.map(x => x.text).join(" ") : "").toLowerCase();
+    assert.ok(pvj.example, "ada paragraf contoh terbuka");
+    for (const w of ["digitalisasi", "implementasi", "pengendalian", "manufaktur", "efisiensi"]) if (!terbuka.includes(w)) assert.ok(!txt.toLowerCase().includes(w), "bocor: " + w);
     assert.strictEqual((await fetch(base + "/ms/parafrase/preview/" + "0".repeat(32))).status, 404);
     assert.strictEqual((await fetch(base + "/ms/parafrase/preview/../../etc")).status, 404);
   } finally { srv.close(); }
+});
+
+test("contoh 1 paragraf: rekomendasi, kalimat salah ditandai, paragraf lain tetap terkunci tanpa bocor", async () => {
+  const { a, f } = await setup();
+  const pv = buildPreview(a, f, SECRET, "id1", { unlocked: false, openParagraphs: 1 });
+  const ex = pv.example;
+  assert.ok(ex, "ada paragraf contoh");
+  assert.ok(ex.reason && ex.helper.length > 20 && ex.target.startsWith("Harusnya") && ex.sentences.length >= 1);
+  assert.ok(ex.sentences.some(x => x.flagged) && ex.sentences.every(x => x.text));
+  const segs = pv.paragraphs.flatMap(p => p.segments), open = segs.filter(s => !s.locked);
+  assert.strictEqual(open.length, ex.sentences.length, "yang terbuka hanya kalimat di paragraf contoh");
+  assert.ok(segs.filter(s => s.locked).every(s => !("reasons" in s)), "yang terkunci tidak membocorkan alasan");
+  const locked = segs.filter(s => s.locked).map(s => s.text).join(" ");
+  for (const w of longWords(BODY.replace(/<[^>]+>/g, " "))) if (!ex.sentences.some(x => x.text.toLowerCase().includes(w))) assert.ok(!locked.includes(w), "bocor " + w);
+});
+
+test("contoh paragraf: kode paling serius didahulukan; kalimat panjang bersambung punya contoh penulisan ulang; 0 berarti tidak ada contoh", async () => {
+  const long = "Perusahaan menetapkan target produksi yang tinggi pada setiap shift kerja harian, sehingga pegawai lapangan sering mengabaikan prosedur keselamatan yang sudah ditetapkan manajemen secara tertulis dan resmi.";
+  const a = await analyze(await makeDocx([ "Organisasi pembelajar membutuhkan komunikasi horizontal yang konsisten antarunit kerja dan juga antarpegawai.", long + " Hal itu tampak pada catatan kecelakaan kerja bulan lalu di pabrik.", "Disiplin itu penting bagi perusahaan yang sedang berkembang pesat."].map(P).join("")));
+  const f = analyzeFindings(a.paragraphs, a.bibliographyParagraphIndex, { long_sentence_words: 25 });
+  const pv = buildPreview(a, f, SECRET, "id2", { unlocked: false, openParagraphs: 1 });
+  assert.strictEqual(pv.example.code, "U", "U lebih serius dari H pada contoh ini");
+  assert.ok(pv.example.rewrite && /Akibatnya, /.test(pv.example.rewrite), String(pv.example.rewrite));
+  assert.strictEqual(buildPreview(a, f, SECRET, "id2", { unlocked: false, openParagraphs: 0 }).example, null);
+  assert.strictEqual(buildPreview(a, f, SECRET, "id2", { unlocked: true }).example, null, "setelah dibayar tidak perlu panel contoh");
+});
+
+test("ringkasan aspek ikut di pratinjau dengan kode warna, dan mode lama openSentences tetap berlaku", async () => {
+  const { a, f } = await setup();
+  const pv = buildPreview(a, f, SECRET, "id1", { unlocked: false, openSentences: 1 });
+  assert.strictEqual(pv.example, null);
+  assert.strictEqual(pv.paragraphs.flatMap(p => p.segments).filter(s => !s.locked).length, 1);
+  assert.ok(pv.overview && pv.overview.aspects.length === 6 && pv.overview.ai && pv.overview.aspects.every(x => Array.isArray(x.codes) && x.codes.length));
+  assert.deepStrictEqual(pv.overview.aspects.find(x => x.key === "kalimat_berulang").codes, ["M"]);
 });

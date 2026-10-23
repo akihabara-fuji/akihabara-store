@@ -6,7 +6,7 @@
 "use strict";
 const crypto = require("crypto");
 const { splitSentences, countWords } = require("./docx");
-const { CODES, PRIORITY, helperFor } = require("./rules");
+const { CODES, PRIORITY, helperFor, rewriteFor } = require("./rules");
 const { computeAspects } = require("./aspek");
 
 function prng(bytes) {
@@ -33,7 +33,8 @@ function maskText(len, seedBytes) {
    opts: { unlocked, openSentences, page, pageSize } */
 function buildPreview(a, findings, secret, id, opts = {}) {
   const unlocked = !!opts.unlocked;
-  const open = unlocked ? Infinity : Math.max(0, opts.openSentences ?? 1);
+  const paraMode = !unlocked && Number.isInteger(opts.openParagraphs);
+  const open = unlocked ? Infinity : paraMode ? 0 : Math.max(0, opts.openSentences ?? 1);
   const pageSize = Math.min(100, Math.max(5, opts.pageSize || 30));
   const byKey = new Map();
   for (const f of findings) { const k = f.para_idx + ":" + f.sent_idx; (byKey.get(k) || byKey.set(k, []).get(k)).push(f); }
@@ -59,14 +60,24 @@ function buildPreview(a, findings, secret, id, opts = {}) {
     pick.sort(order).forEach(k => openKeys.add(k));
     if (!openKeys.size) for (const p of visible) { for (let i = 0; i < splitSentences(p.text).length && openKeys.size < open; i++) openKeys.add(p.idx + ":" + i); if (openKeys.size >= open) break; }
   }
+  /* Mode paragraf: buka SEMUA kalimat pada N paragraf contoh. Dipilih paragraf yang catatannya paling serius
+     (urutan PRIORITY: M, O, K, B, U, H, P, A), seri diambil yang paling awal. Paragraf berkalimat 1 kurang bagus sebagai contoh,
+     jadi bila ada pilihan lain dengan kode yang sama, yang berkalimat lebih banyak didahulukan. */
+  const exParas = new Set();
+  if (paraMode && opts.openParagraphs > 0) {
+    const cand = new Map();
+    for (const f of findings) { const c = cand.get(f.para_idx) || { idx: f.para_idx, best: 99, n: 0 }; c.best = Math.min(c.best, PRIORITY.indexOf(f.code)); c.n++; cand.set(f.para_idx, c); }
+    const nSent = new Map(visible.map(p => [p.idx, splitSentences(p.text).length]));
+    [...cand.values()].sort((x, y) => x.best - y.best || ((nSent.get(y.idx) > 1) - (nSent.get(x.idx) > 1)) || x.idx - y.idx)
+      .slice(0, opts.openParagraphs).forEach(c => exParas.add(c.idx));
+  }
   const nOf = new Map([...openKeys].filter(k => byKey.has(k)).sort(order).map((k, i) => [k, i + 1]));
-  const examples = [];
   const outParas = [];
   visible.forEach((p, vi) => {
     const sents = splitSentences(p.text);
     const inPage = vi >= (page - 1) * pageSize && vi < page * pageSize;
     const segs = sents.map((s, si) => {
-      const isOpen = unlocked || openKeys.has(p.idx + ":" + si);
+      const isOpen = unlocked || openKeys.has(p.idx + ":" + si) || exParas.has(p.idx);
       if (!inPage) return null;
       const fs = (byKey.get(p.idx + ":" + si) || []).slice().sort((x, y) => PRIORITY.indexOf(x.code) - PRIORITY.indexOf(y.code));
       const primary = fs.length ? fs[0].code : null;
@@ -88,14 +99,20 @@ function buildPreview(a, findings, secret, id, opts = {}) {
     if (inPage) outParas.push({ idx: p.idx, kind: p.inTable ? "tabel" : /heading|title|judul/i.test(p.style) ? "judul" : "isi", segments: segs.filter(Boolean) });
   });
 
-  if (!unlocked) {
-    for (const p of visible) splitSentences(p.text).forEach((sent, si) => {
-      const k = p.idx + ":" + si, n = nOf.get(k); if (!n) return;
-      const fs = byKey.get(k).slice().sort((x, y) => PRIORITY.indexOf(x.code) - PRIORITY.indexOf(y.code)), c = fs[0].code;
-      examples.push({ n, code: c, color: CODES[c].color, action: CODES[c].action, target: CODES[c].target, text: sent,
-        reasons: fs.map(f => ({ code: f.code, reason: f.reason, helper: helperFor(f.code, sent, f.reason) })) });
-    });
-    examples.sort((a, b) => a.n - b.n);
+  /* Satu paragraf contoh: rekomendasi (kode paling serius di paragraf), kalimat salah ditandai, dan contoh penulisan ulang bila bisa dibuat dari aturan. */
+  let example = null;
+  if (paraMode && exParas.size) {
+    const p = visible.find(v => exParas.has(v.idx)), sents = splitSentences(p.text);
+    const all = findings.filter(f => f.para_idx === p.idx).slice().sort((x, y) => PRIORITY.indexOf(x.code) - PRIORITY.indexOf(y.code));
+    const top = all[0], topSent = sents[top.sent_idx] || "";
+    const forTop = all.filter(f => f.sent_idx === top.sent_idx);
+    example = {
+      paraIdx: p.idx, code: top.code, color: CODES[top.code].color, action: CODES[top.code].action, target: CODES[top.code].target,
+      reason: top.reason, helper: helperFor(top.code, topSent, top.reason), rewrite: rewriteFor(top.code, topSent),
+      sentences: sents.map((s, si) => { const fs = all.filter(f => f.sent_idx === si); return { text: s, code: fs.length ? fs[0].code : null, flagged: fs.length > 0, rewrite: fs.length ? rewriteFor(fs[0].code, s) : null }; }),
+      also: forTop.slice(1).map(f => ({ code: f.code, reason: f.reason, helper: helperFor(f.code, topSent, f.reason) })),
+      remaining: Math.max(0, findings.length - all.length),
+    };
   }
   const bibAt = a.bibliographyParagraphIndex == null || a.bibliographyParagraphIndex < 0 ? null : a.bibliographyParagraphIndex;
   const overview = computeAspects(a.paragraphs, bibAt, findings);
@@ -108,7 +125,7 @@ function buildPreview(a, findings, secret, id, opts = {}) {
     notes: { total: findings.length, byCode: counts },
     legend: Object.fromEntries(Object.entries(CODES).map(([k, v]) => [k, { color: v.color, action: v.action, target: v.target }])),
     paragraphs: outParas,
-    examples,
+    example,
     overview,
   };
 }

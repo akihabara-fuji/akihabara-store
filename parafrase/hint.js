@@ -58,7 +58,7 @@ const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
 const words = s => String(s || "").trim().split(/\s+/).filter(Boolean).length;
 const quoted = reason => (String(reason || "").match(/"([^"]+)"/) || [])[1] || "";
 
-function splitSuggest(text) {
+function splitParts(text) {
   const t = String(text || "").trim().replace(/[.!?]+$/, "");
   const re = /,\s*(sehingga|karena|namun|sedangkan|serta|dan)\s+|\s+(sehingga|karena|namun|sedangkan)\s+/gi;
   let best = null;
@@ -70,7 +70,17 @@ function splitSuggest(text) {
   const a = t.slice(0, best.i).trim(), b = t.slice(best.i + best.len).trim();
   if (words(a) < 6 || words(b) < 4) return null;
   const lead = { sehingga: "Akibatnya, ", karena: "Hal ini terjadi karena ", namun: "Namun, ", sedangkan: "Sementara itu, ", serta: "", dan: "" }[best.conj];
-  return `“${cap(a)}.” lalu “${lead}${lead ? b : cap(b)}.”`;
+  return [`${cap(a)}.`, `${lead}${lead ? b : cap(b)}.`];
+}
+function splitSuggest(text) {
+  const p = splitParts(text);
+  return p ? `“${p[0]}” lalu “${p[1]}”` : null;
+}
+/* Contoh penulisan ulang yang bisa dibuat murni dari aturan: hanya kalimat panjang yang punya kata penghubung di tengah. Selain itu null. */
+function rewriteFor(code, text) {
+  if (code !== "U") return null;
+  const p = splitParts(text);
+  return p ? p.join(" ") : null;
 }
 
 /* Kalimat pembantu: satu atau dua kalimat petunjuk konkret untuk kalimat bertanda. */
@@ -114,4 +124,4 @@ function helperFor(code, text, reason) {
   }
 }
 
-module.exports = { TARGET, AI_MARKERS, TRANS_ALT, findAiMarkers, helperFor, splitSuggest };
+module.exports = { TARGET, AI_MARKERS, TRANS_ALT, findAiMarkers, helperFor, splitSuggest, splitParts, rewriteFor };

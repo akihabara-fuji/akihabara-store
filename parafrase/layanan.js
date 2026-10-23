@@ -8,6 +8,7 @@ const fsp = fs.promises;
 const path = require("path");
 const crypto = require("crypto");
 const multer = require("multer");
+const { requirements, checkStage } = require("./metopen");
 
 const SV = {
   tugas:          { label: "Tugas", price: 40000, kind: "tugas" },
@@ -21,7 +22,7 @@ const SV = {
   revisi_diskusi: { label: "Revisi Diskusi", price: 15000, kind: "revisi", of: "diskusi" },
   revisi_metopen: { label: "Revisi Metopen", price: 100000, kind: "revisi", of: "metopen" },
 };
-const MAX_FILES = 3, MAX_MB = 10;
+const MAX_FILES = 5, MAX_MB = 10;
 const MAGIC = { docx: b => b.slice(0, 2).toString() === "PK", pdf: b => b.slice(0, 4).toString() === "%PDF", png: b => b.slice(0, 4).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47])), jpg: b => b[0] === 0xff && b[1] === 0xd8, jpeg: b => b[0] === 0xff && b[1] === 0xd8, txt: b => !b.includes(0) };
 
 module.exports = function mountLayanan({ app, express, db, settings, orders, root, sameOrigin, secret, requireAdmin }) {
@@ -35,7 +36,7 @@ module.exports = function mountLayanan({ app, express, db, settings, orders, roo
   const ext = n => ((String(n).match(/\.([a-z0-9]{2,5})$/i) || [])[1] || "").toLowerCase();
   const bad = (status, error) => Object.assign(new Error(error), { status });
 
-  app.get("/ms/layanan/config", (req, res) => { res.set("Cache-Control", "public, max-age=5"); res.json(Object.fromEntries(Object.entries(SV).map(([k, v]) => [k, { label: v.label, price: priceOf(k), kind: v.kind }]))); });
+  app.get("/ms/layanan/config", (req, res) => { res.set("Cache-Control", "public, max-age=5"); res.json(Object.fromEntries(Object.entries(SV).map(([k, v]) => [k, { label: v.label, price: priceOf(k), kind: v.kind, ...requirements(k) }]))); });
 
   const up = multer({ storage: multer.memoryStorage(), limits: { fileSize: MAX_MB * 1048576, files: MAX_FILES, fields: 8 } }).array("files", MAX_FILES);
   app.post("/ms/layanan/order", (req, res) => {
@@ -44,7 +45,7 @@ module.exports = function mountLayanan({ app, express, db, settings, orders, roo
     const now = Date.now(), h = hashIp(req.ip);
     if (limited("o:" + h, 10, now)) return res.status(429).json({ error: "Terlalu banyak pesanan dari jaringan ini. Coba lagi nanti." });
     up(req, res, async err => {
-      if (err) return res.status(err.code === "LIMIT_FILE_SIZE" ? 413 : 400).json({ error: err.code === "LIMIT_FILE_SIZE" ? `File terlalu besar (maksimal ${MAX_MB} MB per file).` : "Unggahan gagal. Maksimal 3 file." });
+      if (err) return res.status(err.code === "LIMIT_FILE_SIZE" ? 413 : 400).json({ error: err.code === "LIMIT_FILE_SIZE" ? `File terlalu besar (maksimal ${MAX_MB} MB per file).` : `Unggahan gagal. Maksimal ${MAX_FILES} file.` });
       try {
         const b = req.body || {}, files = req.files || [];
         const sv = SV[b.service]; if (!sv) throw bad(400, "Pilih jenis layanan.");
@@ -54,6 +55,7 @@ module.exports = function mountLayanan({ app, express, db, settings, orders, roo
         const brief = String(b.brief || "").trim().slice(0, 4000);
         if (brief.length < 5 && !files.length) throw bad(400, "Tulis kebutuhanmu atau unggah file soalnya.");
         for (const f of files) { const e = ext(f.originalname); if (!MAGIC[e] || !MAGIC[e](f.buffer)) throw bad(415, "File harus berupa Word (.docx), PDF, gambar (.png/.jpg), atau .txt yang valid."); }
+        const stageErr = checkStage(b.service, sv.label, files.length, brief); if (stageErr) throw bad(400, stageErr);
         const unpaid = db.prepare("SELECT 1 FROM orders WHERE wa_number=? AND status='menunggu_bayar' AND pay_expires_at>?").all(wa, now);
         if (unpaid.length >= 3) throw bad(429, "Kamu masih punya 3 pesanan yang belum dibayar. Selesaikan atau tunggu kedaluwarsa dulu.");
 

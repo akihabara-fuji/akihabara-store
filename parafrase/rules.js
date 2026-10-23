@@ -17,7 +17,7 @@
 "use strict";
 const { splitSentences, countWords } = require("./docx");
 const { checkStandar, STANDAR_CODE } = require("./standar");
-const { TARGET, findAiMarkers, helperFor } = require("./hint");
+const { TARGET, findAiMarkers, helperFor, rewriteFor } = require("./hint");
 
 const CODES = {
   M: { color: "merah", action: "Tulis ulang" },
@@ -153,8 +153,10 @@ function analyzeFindings(paras, bibAt, cfg = {}) {
     });
 
     // H: paragraf pendek kurang berkembang
-    // butir yang diketik manual (1. a) - •) dan pertanyaan bukan paragraf kurang berkembang
-    if (sents.length <= 2 && pWords < 35 && !/[:;?]$/.test(p.text.trim()) && !/^\s*(\d{1,2}[.)]|[a-z][.)]|[•·▪\-–—*])\s/i.test(p.text))
+    // bukan paragraf kurang berkembang: butir ketikan manual (1. a) - •), pertanyaan, judul atau label tanpa tanda baca akhir, teks HURUF KAPITAL
+    const tt = p.text.trim(), letters = tt.replace(/[^\p{L}]/gu, ""), upper = letters.replace(/[^\p{Lu}]/gu, "");
+    const notPara = /[:;?]$/.test(tt) || /^\s*(\d{1,2}[.)]|[a-z][.)]|[•·▪\-–—*])\s/i.test(tt) || !/[.!?…"”')]$/.test(tt) || (letters.length >= 8 && upper.length / letters.length > 0.7);
+    if (sents.length <= 2 && pWords < 35 && !notPara)
       add("H", p, sents.length - 1, sents[sents.length - 1], `Paragraf hanya ${sents.length} kalimat (${pWords} kata). Kembangkan dengan penjelasan, contoh, atau analisis.`);
 
     // P: paragraf generik
@@ -219,4 +221,4 @@ function saveFindings(db, orderId, findings, now = Date.now()) {
   })();
 }
 
-module.exports = { analyzeFindings, countByCode, saveFindings, findCitations, hasCitation, isBody, CODES, PRIORITY, GENERIC, TRANS, helperFor };
+module.exports = { analyzeFindings, countByCode, saveFindings, findCitations, hasCitation, isBody, CODES, PRIORITY, GENERIC, TRANS, helperFor, rewriteFor };
