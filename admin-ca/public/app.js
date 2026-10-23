@@ -311,7 +311,7 @@
                 ${[["draft", "Draf"], ["review", "Menunggu review"], ["scheduled", "Jadwalkan"], ["published", "Terbitkan"]].map(([k, l]) => `<label><input type="radio" name="status" value="${k}" ${st === k ? "checked" : ""}> ${l}</label>`).join("")}</div></fieldset>
               <label class="f" id="whenL">Tanggal & jam terbit (WIB)<input class="in" type="datetime-local" name="publishAt" value="${esc(localAt(v.publishAt))}"></label>
               <label class="f">Penulis<input class="in" name="author" maxlength="60" value="${esc(v.author || "Dika Priyadi")}"></label>
-              <label class="f">Tag <small>· pisahkan dengan koma, maks 8</small><input class="in" name="tags" maxlength="240" value="${esc((v.tags || []).join(", "))}" placeholder="jadwal ujian, registrasi"></label>
+              <label class="f">Tag <small>· pisahkan dengan koma, maks 8</small><input class="in" name="tags" maxlength="240" value="${esc((v.tags || []).join(", "))}" placeholder="uas, jadwal-ut, registrasi"></label><div class="bar small" id="tagSug"></div>
               <div class="f" style="font-size:13px;font-weight:600">Gambar sampul</div>
               <div class="cover-box" id="cov" style="${v.cover ? `background-image:url('${esc(v.cover)}')` : ""}">${v.cover ? "" : "Belum ada gambar"}</div>
               <div class="bar"><label class="btn sm">Unggah gambar<input type="file" id="covF" accept="image/*" hidden></label><button type="button" class="btn sm bad" id="covX">Hapus</button></div>
@@ -353,6 +353,12 @@
     f.addEventListener("change", sync);
     $$("[data-tab]", f).forEach(b => b.onclick = () => { $$("[data-tab]", f).forEach(x => x.classList.toggle("on", x === b)); $$("[data-pane]", f).forEach(pn => { pn.hidden = pn.dataset.pane !== b.dataset.tab; pn.style.display = pn.hidden ? "none" : "flex"; }); });
     sync(); $("#saveSt").textContent = p ? "Tersimpan" : "";
+    // saran tag dari kata kunci artikel (hanya artikel yang sudah tersimpan); klik = tambahkan ke kolom Tag
+    if (id) api("/ms/admin/tag-suggestions").then(sg => {
+      const it = sg.items.find(x => x.id === id), box = $("#tagSug"); if (!it || !it.suggested.length || !box) return;
+      box.innerHTML = `<span class="muted">Saran:</span>${it.suggested.map(t => `<button type="button" class="btn sm" data-sug="${esc(t)}">+ ${esc(sg.labels[t] || t)}</button>`).join("")}`;
+      $$("[data-sug]", box).forEach(b => b.onclick = () => { const cur = f.tags.value.split(",").map(s => s.trim()).filter(Boolean); if (!cur.includes(b.dataset.sug)) f.tags.value = cur.concat(b.dataset.sug).join(", "); b.remove(); DIRTY = true; mark(); });
+    }).catch(() => {});
 
     // pemulihan draf lokal (hanya di browser ini) bila lebih baru dari versi server
     try { const loc = JSON.parse(store(key) || "null"); if (loc && (!p || loc.at > Date.parse(p.updatedAt)) && (loc.v.body !== v.body || loc.v.title !== v.title)) {
@@ -431,11 +437,21 @@
 
   /* ---------------- kategori, tag, media, komentar ---------------- */
   async function pTaxonomy() {
-    const d = await loadBlog(), posts = d.posts, tags = new Map();
+    const d = await loadBlog(), posts = d.posts, tags = new Map(), sg = await api("/ms/admin/tag-suggestions");
     posts.forEach(p => (p.tags || []).forEach(t => tags.set(t, (tags.get(t) || 0) + 1)));
+    const lab = t => sg.labels[t] || t, pending = sg.items.filter(x => x.suggested.length);
+    const sugCard = `<div class="card"><div class="hd"><h2>Saran tag untuk artikel</h2>${pending.length ? `<button class="btn pri sm" id="tagAll">Pasang semua saran (${pending.length} artikel)</button>` : ""}</div>
+      <div class="bd"><p class="small muted" style="margin:0 0 10px">Saran dibuat dari kata kunci di judul, ringkasan, dan isi (UAS, THE, registrasi, tugas tutorial, Metopen, dll). Tag membantu pembaca dan tautan internal (muncul sebagai "Topik populer" di blog); tidak menjamin naik peringkat Google. Periksa sebelum memasang.</p></div>
+      <div class="tbl-wrap">${pending.length ? `<table class="t"><thead><tr><th>Artikel</th><th>Tag sekarang</th><th>Saran</th><th></th></tr></thead><tbody>${pending.map(x => `<tr><td><b>${esc(x.title)}</b></td><td class="small">${x.tags.map(t => esc(lab(t))).join(", ") || '<span class="faint">–</span>'}</td><td class="small">${x.suggested.map(t => `<span class="badge t-info" style="margin:2px">${esc(lab(t))}</span>`).join("")}</td><td><button class="btn sm" data-tagid="${x.id}">Pasang</button></td></tr>`).join("")}</tbody></table>` : '<div class="empty">Semua saran sudah terpasang.</div>'}</div></div>`;
     setPage("Kategori & Tag", "Kategori ditetapkan sistem; tag dibuat dari editor artikel", `<div class="grid g2">
       <div class="card"><div class="hd"><h2>Kategori</h2></div><div class="tbl-wrap"><table class="t"><thead><tr><th>Kategori</th><th class="num">Artikel</th><th></th></tr></thead><tbody>${Object.entries(d.topics).map(([k, t]) => `<tr><td><b>${esc(t.label)}</b><div class="small faint">${esc(t.ask)}</div></td><td class="num">${posts.filter(p => p.topic === k).length}</td><td><a class="btn sm" href="#/posts?topic=${k}">Lihat</a> <a class="btn sm" href="/blog?f=${k}" target="_blank" rel="noopener">Halaman publik</a></td></tr>`).join("")}</tbody></table></div></div>
-      <div class="card"><div class="hd"><h2>Tag</h2><span class="muted small">${tags.size} tag</span></div><div class="bd">${tags.size ? `<div class="tabs">${[...tags.entries()].sort((a, b) => b[1] - a[1]).map(([t, n]) => `<a href="#/posts?tag=${encodeURIComponent(t)}">#${esc(t)} <span class="n">${n}</span></a>`).join("")}</div>` : '<div class="empty">Belum ada tag. Tambahkan tag di editor artikel (panel Pengaturan).</div>'}</div></div></div>`);
+      <div class="card"><div class="hd"><h2>Tag</h2><span class="muted small">${tags.size} tag</span></div><div class="bd">${tags.size ? `<div class="tabs">${[...tags.entries()].sort((a, b) => b[1] - a[1]).map(([t, n]) => `<a href="#/posts?tag=${encodeURIComponent(t)}">${esc(lab(t))} <span class="n">${n}</span></a>`).join("")}</div>` : '<div class="empty">Belum ada tag. Pasang saran di bawah atau tambahkan di editor artikel (panel Pengaturan).</div>'}</div></div></div>${sugCard}`);
+    const apply = (x) => api(`/ms/admin/posts/${x.id}/tags`, { json: { tags: [...new Set(x.tags.concat(x.suggested))] } });
+    $$("[data-tagid]").forEach(b => b.onclick = () => busy(b, async () => { try { await apply(sg.items.find(x => x.id === b.dataset.tagid)); toast("Tag dipasang"); route(); } catch (e) { fail(e); } }));
+    if ($("#tagAll")) $("#tagAll").onclick = async e => {
+      if (!await confirmAct("Pasang semua saran tag?", `${pending.length} artikel akan mendapat tag sesuai saran. Isi dan tanggal artikel tidak berubah; tag bisa diubah lagi di editor.`, "Pasang semua")) return;
+      busy(e.target, async () => { try { for (const x of pending) await apply(x); toast(`Tag dipasang di ${pending.length} artikel`); route(); } catch (err) { fail(err); } });
+    };
   }
   async function pMedia() {
     const d = await api("/ms/admin/ca/media");

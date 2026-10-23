@@ -32,13 +32,39 @@ module.exports = function mount(ctx) {
 
   /* ============================== BLOG ============================== */
   const TOPICS = {
-    study: { label: "Study", ask: "Belajar, kuliah, dan tugas" },
+    study: { label: "Tips Kuliah UT", ask: "Belajar, kuliah, dan tugas" },
     social: { label: "Social Media Update", ask: "Kabar dan tips social media" },
     ai: { label: "AI & Info Lain", ask: "AI, teknologi, dan info lain" },
     viral: { label: "Berita viral hari ini", ask: "Berita viral hari ini" },
     updateut: { label: "Info UT", ask: "Info terbaru seputar UT" },
   };
   const tl = k => (TOPICS[k] || { label: "Lainnya" }).label;
+  /* Tag topik untuk mahasiswa UT: nama tampil + aturan saran (kata kunci di judul/ringkasan/isi). Saran hanya usulan;
+     tag baru terpasang setelah admin menyetujuinya (panel SEO atau editor). Tag lain di luar daftar tetap boleh. */
+  const TAGS = {
+    "uas": ["UAS", /\b(uas|ujian akhir semester|ujian online|ujian ut)\b/i],
+    "take-home-exam": ["Take Home Exam (THE)", /\b(take home exam|the ut|ujian the)\b/i],
+    "jadwal-ut": ["Jadwal UT", /\b(jadwal|kalender akademik|tanggal penting)\b/i],
+    "registrasi": ["Registrasi Mata Kuliah", /\b(registrasi|krs|daftar ulang|sia ut)\b/i],
+    "tugas-tutorial": ["Tugas Tutorial", /\b(tugas tutorial|tugas tuton|tugas ut|tmk)\b/i],
+    "diskusi-tuton": ["Diskusi Tuton", /\b(diskusi tuton|jawaban diskusi|forum diskusi)\b/i],
+    "tuton": ["Tutorial Online (Tuton)", /\b(tuton|tutorial online)\b/i],
+    "nilai-ut": ["Nilai UT", /\b(nilai|ipk|ips|transkrip)\b/i],
+    "metopen": ["Metopen UT", /\b(metopen|metode penelitian|proposal penelitian)\b/i],
+    "makalah": ["Makalah", /\bmakalah\b/i],
+    "referensi-sitasi": ["Referensi & Sitasi", /\b(mendeley|sitasi|daftar pustaka|referensi|jurnal)\b/i],
+    "parafrase": ["Parafrase & Plagiarisme", /\b(parafrase|plagiat|plagiarisme|turnitin|drillbit)\b/i],
+    "modul-ut": ["Modul UT", /\b(modul|bmp)\b/i],
+    "kuliah-sambil-kerja": ["Kuliah Sambil Kerja", /\b(sambil bekerja|sambil kerja|karyawan)\b/i],
+    "tips-lulus-ut": ["Tips Lulus UT", /\b(lulus|wisuda|tips sukses)\b/i],
+  };
+  const tagLabel = t => (TAGS[t] ? TAGS[t][0] : String(t).replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase()));
+  /* Saran tag: aturan di atas dicocokkan ke judul + ringkasan (bobot 3) dan isi (bobot 1); skor minimal 3; maks 5 tag terkuat. */
+  function suggestTags(p) {
+    const head = [p.title, p.excerpt].join(" "), body = String(p.body || "");
+    return Object.entries(TAGS).map(([k, [, re]]) => { const g = new RegExp(re.source, "gi"); return [k, (head.match(g) || []).length * 3 + (body.match(g) || []).length]; })
+      .filter(([, s]) => s >= 3).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([k]) => k); // ada di judul/ringkasan, atau ≥3 kali di isi
+  }
   let blog = readJson(BLOG, { posts: [] });
   if (!Array.isArray(blog.posts)) blog.posts = [];
   const TRASH_MS = 30 * 24 * 3600 * 1000;
@@ -126,15 +152,18 @@ module.exports = function mount(ctx) {
     const featured = filtering ? null : (all.find(p => p.featured) || all.find(p => p.cover) || all[0]);
     const latest = filtering ? list.slice(0, 24) : all.filter(p => p !== featured).slice(0, 8);
     const link = (k, v, label, on) => `<a class="bx-chip${on ? " on" : ""}" href="${base}${k ? `?${k}=${encodeURIComponent(v)}` : ""}"${on ? ' aria-current="page"' : ""}>${esc(label)}</a>`;
-    const chips = [link("", "", "Semua", !filtering), ...topicsShown().map(k => link("f", k, TOPICS[k].label, f === k)), ...topTags(all, 6).map(t => link("tag", t, "#" + t, tag === t))].join("");
+    const chips = [link("", "", "Semua", !filtering), ...topicsShown().map(k => link("f", k, TOPICS[k].label, f === k))].join("");
+    // Topik populer = tag yang benar-benar dipakai artikel tayang (tautan internal ke halaman tag yang bisa dirayapi)
+    const popular = topTags(all, 8);
+    const popHtml = popular.length ? `<nav class="bx-pop" aria-label="Topik populer"><span>Topik populer:</span>${popular.map(t => `<a href="${base}?tag=${encodeURIComponent(t)}"${tag === t ? ' aria-current="page" class="on"' : ""}>${esc(tagLabel(t))}</a>`).join("")}</nav>` : "";
     const hero = `<section class="bx-hero"><div class="bx-hero-t">
         <span class="bx-eyebrow">Update Terbaru</span>
         <h1>${ACAD_ONLY ? 'Informasi dan Panduan Kuliah <span class="bx-hl">Universitas Terbuka</span>' : "Blog dan tulisan terbaru"}</h1>
         <p class="bx-lead">${ACAD_ONLY ? "Jadwal, registrasi, ujian, tugas, Metopen, tips belajar, dan pengalaman mahasiswa UT. Bukan situs resmi UT: selalu cocokkan dengan pengumuman resmi di ut.ac.id." : "Catatan tentang belajar, social media, AI, dan hal-hal yang lagi ramai."}</p>
         <form class="bx-search" role="search" action="${base}" method="get"><label class="bx-sr" for="bxq">Cari artikel</label><input id="bxq" type="search" name="q" value="${esc(q)}" maxlength="80" placeholder="Cari artikel, contoh: jadwal ujian, registrasi, tugas…"><button type="submit">Cari</button></form>
-        <nav class="bx-chips" aria-label="Filter kategori">${chips}</nav>
+        <nav class="bx-chips" aria-label="Filter kategori">${chips}</nav>${popHtml}
       </div>${featured ? `<article class="bx-feat"><a href="/blog/${esc(featured.slug)}"><div class="bx-cv">${cardCover(featured)}<span class="bx-badge">Artikel Pilihan</span></div><div class="bx-b"><h2>${esc(featured.title)}</h2>${featured.excerpt ? `<p>${esc(featured.excerpt)}</p>` : ""}<div class="bx-ft"><span><time datetime="${esc(featured.publishedAt)}">${esc(shortDate(featured.publishedAt))}</time> · ${esc(tl(featured.topic))}</span><span class="bx-go" aria-hidden="true">→</span></div></div></a></article>` : ""}</section>`;
-    const what = q ? `Hasil pencarian “${esc(q)}”` : tag ? `Tag #${esc(tag)}` : f ? esc(TOPICS[f].label) : "Artikel Terbaru";
+    const what = q ? `Hasil pencarian “${esc(q)}”` : tag ? `Artikel tentang ${esc(tagLabel(tag))}` : f ? esc(TOPICS[f].label) : "Artikel Terbaru";
     const head = `<div class="bx-head"><h2>${what}</h2>${filtering ? `<span class="bx-count">${list.length} artikel · <a href="${base}">Hapus filter</a></span>` : ""}</div>`;
     const grid = latest.length ? `<div class="bx-grid">${latest.map(blogCard).join("")}</div>` : `<div class="bx-empty"><b>Belum ada artikel yang cocok.</b><span>Coba kata lain, atau <a href="${base}">lihat semua artikel</a>.</span></div>`;
     const more = filtering && list.length > latest.length ? `<p class="bx-more">Menampilkan ${latest.length} dari ${list.length}. Persempit pencarian untuk hasil yang lebih tepat.</p>` : "";
@@ -380,6 +409,15 @@ module.exports = function mount(ctx) {
     await saveBlog(); res.json({ ok: true, post: p });
     if (isLive(p)) pingIndex([p.slug]);
   });
+  /* Hanya tag (tanpa revisi dan tanpa mengubah tanggal "diperbarui", karena isi artikel tidak berubah). */
+  app.post("/ms/admin/posts/:id/tags", requireAdmin, adminJson, async (req, res) => {
+    const p = blog.posts.find(x => x.id === req.params.id); if (!p) return res.status(404).json({ error: "Tulisan tidak ditemukan." });
+    p.tags = cleanTags((req.body || {}).tags); await saveBlog();
+    res.json({ ok: true, tags: p.tags });
+  });
+  app.get("/ms/admin/tag-suggestions", requireAdmin, (req, res) => {
+    res.set("Cache-Control", "no-store").json({ labels: Object.fromEntries(Object.entries(TAGS).map(([k, v]) => [k, v[0]])), items: blog.posts.filter(p => !p.trashedAt).map(p => ({ id: p.id, title: p.title, tags: p.tags || [], suggested: suggestTags(p).filter(t => !(p.tags || []).includes(t)) })) });
+  });
   app.post("/ms/admin/posts/:id/featured", requireAdmin, async (req, res) => {
     const p = blog.posts.find(x => x.id === req.params.id); if (!p) return res.status(404).json({ error: "Tulisan tidak ditemukan." });
     const on = !p.featured; blog.posts.forEach(x => { delete x.featured; }); if (on) p.featured = true;
@@ -484,7 +522,7 @@ module.exports = function mount(ctx) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Bricolage+Grotesque:wght@600;700&display=swap" rel="stylesheet">
 <script>try{var t=localStorage.getItem("nx-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
-<link rel="stylesheet" href="/assets/blog.css?v=10"><link rel="stylesheet" href="/assets/ca-blog.css?v=1"><script async src="/t.js"></script>
+<link rel="stylesheet" href="/assets/blog.css?v=10"><link rel="stylesheet" href="/assets/ca-blog.css?v=3"><script async src="/t.js"></script>
 ${extra}
 </head>
 <body>
@@ -523,12 +561,15 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
 
   app.get("/blog", (req, res) => {
     const { f, tag, q } = blogFilters(req);
-    const heading = q ? `Cari: ${q}` : tag ? `#${tag}` : f ? TOPICS[f].label : (ACAD_ONLY ? "Info dan Panduan Kuliah UT" : "Tulisan terbaru");
+    const heading = q ? `Cari: ${q}` : tag ? `${tagLabel(tag)}: kumpulan artikel` : f ? TOPICS[f].label : (ACAD_ONLY ? "Info dan Panduan Kuliah UT" : "Tulisan terbaru");
     const body = `<section class="pg"><div class="wrap">${blogIndex(req, "/blog")}</div></section>`;
     const blogTitle = `${heading} — Blog ${ACAD_ONLY ? "Catatan Akademik" : "nextaja"}`;
-    const blogDesc = ACAD_ONLY ? "Info dan panduan kuliah Universitas Terbuka: jadwal, registrasi, ujian, tugas, Metopen, dan tips belajar dari Catatan Akademik." : "Catatan tentang belajar, social media, AI, dan berita viral hari ini dari nextaja.";
-    // halaman pencarian tidak diindeks; filter kategori/tag tetap boleh
-    res.set("Cache-Control", "no-cache").type("html").send(layout({ title: blogTitle, desc: blogDesc, path: f ? `/blog?f=${f}` : tag ? `/blog?tag=${encodeURIComponent(tag)}` : "/blog", body, noindex: !!q }));
+    // halaman tag punya judul & deskripsi sendiri (bukan salinan beranda blog)
+    const tagCount = tag ? published().filter(p => (p.tags || []).includes(tag)).length : 0;
+    const blogDesc = tag ? `${tagCount} artikel Catatan Akademik tentang ${tagLabel(tag)} untuk mahasiswa Universitas Terbuka: panduan, tips, dan info terbaru.`
+      : ACAD_ONLY ? "Info dan panduan kuliah Universitas Terbuka: jadwal, registrasi, ujian, tugas, Metopen, dan tips belajar dari Catatan Akademik." : "Catatan tentang belajar, social media, AI, dan berita viral hari ini dari nextaja.";
+    // halaman pencarian dan tag kosong tidak diindeks; filter kategori/tag yang berisi tetap boleh
+    res.set("Cache-Control", "no-cache").type("html").send(layout({ title: blogTitle, desc: blogDesc, path: f ? `/blog?f=${f}` : tag ? `/blog?tag=${encodeURIComponent(tag)}` : "/blog", body, noindex: !!q || (!!tag && !tagCount) }));
   });
   /* Indeks cepat: IndexNow (Bing, Yandex, dll) dipanggil otomatis saat tulisan terbit, berubah, atau dihapus.
      Google tidak punya jalur ping: Google menemukan tulisan lewat sitemap.xml yang selalu diperbarui (daftarkan sekali di Search Console). */
@@ -588,7 +629,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
       ${cover}
       ${toc.length >= 3 ? `<details class="ax-toc ax-toc-in"><summary>Daftar Isi</summary>${tocList}</details>` : ""}
       <div class="prose">${bodyHtml}</div>
-      ${tags.length ? `<div class="ax-tags" aria-label="Tag">${tags.map(t => `<a href="/blog?tag=${encodeURIComponent(t)}">#${esc(t)}</a>`).join("")}</div>` : ""}
+      ${tags.length ? `<div class="ax-tags" aria-label="Tag">${tags.map(t => `<a href="/blog?tag=${encodeURIComponent(t)}" rel="tag">${esc(tagLabel(t))}</a>`).join("")}</div>` : ""}
       <p class="ax-note">${BRAND} bukan situs resmi Universitas Terbuka. Selalu pegang ketentuan dari tutor dan sumber resmi UT di <a href="https://www.ut.ac.id" rel="noopener" target="_blank">ut.ac.id</a>.</p>
       <a class="back" href="${topicLink}">← Kembali ke ${esc(tl(p.topic))}</a>
       ${preview ? "" : commentsBlock(p.slug)}
@@ -902,5 +943,5 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
   }
 
   // untuk sitemap. /blog-ut tidak didaftarkan: isinya sama dengan /blog (kanonis ke /blog).
-  return { userFrom, notFound, articlePage, isLive, posts: () => blog.posts, usersCount: () => db.users.length, TOPICS, ACAD_TOPICS, pageUrls: () => (ACAD_ONLY ? [{ loc: `${SITE}/`, pri: "1.0" }] : []).concat(["/ruangakademikut", "/ruangakademikut/cek-parafrase-mandiri", "/ruangakademikut/audit", "/ruangakademikut/layanan"].map(u => ({ loc: `${SITE}${ACAD_ONLY ? (u === "/ruangakademikut" ? "/layanan-ut" : shortPath(u)) : u}`, pri: "0.7" }))), blogUrls: () => published().map(p => ({ loc: `${SITE}/blog/${p.slug}`, lastmod: String(modifiedAt(p) || "").slice(0, 10), pri: "0.6" })) };
+  return { userFrom, notFound, articlePage, isLive, suggestTags, tagLabel, posts: () => blog.posts, usersCount: () => db.users.length, TOPICS, ACAD_TOPICS, pageUrls: () => (ACAD_ONLY ? [{ loc: `${SITE}/`, pri: "1.0" }] : []).concat(["/ruangakademikut", "/ruangakademikut/cek-parafrase-mandiri", "/ruangakademikut/audit", "/ruangakademikut/layanan"].map(u => ({ loc: `${SITE}${ACAD_ONLY ? (u === "/ruangakademikut" ? "/layanan-ut" : shortPath(u)) : u}`, pri: "0.7" }))), blogUrls: () => published().map(p => ({ loc: `${SITE}/blog/${p.slug}`, lastmod: String(modifiedAt(p) || "").slice(0, 10), pri: "0.6" })) };
 };

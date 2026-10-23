@@ -8,17 +8,28 @@
 .bx-hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:32px;align-items:center;margin:8px 0 40px}
 .bx-eyebrow{display:inline-flex;align-items:center;min-height:28px;padding:0 12px;border-radius:999px;background:var(--btn,#1d4ed8);color:#fff;font:700 12.5px/1 Onest,sans-serif;letter-spacing:.01em}
 .bx-hero h1,.nf h1{margin:14px 0 12px;font:700 clamp(30px,4.6vw,52px)/1.08 "Bricolage Grotesque",Onest,sans-serif;letter-spacing:-.02em;color:var(--text)}
-.bx-hl{color:var(--acc,#4f8ff7)}
-.bx-lead{margin:0 0 20px;max-width:620px;color:var(--muted);font-size:16.5px;line-height:1.6}
+/* Aksen hangat untuk kata kunci dan tombol aksi utama (Cari), biru untuk navigasi/filter aktif.
+   Dikunci di sini supaya /blog dan /blog-ut sama walau tema halaman berbeda. Kontras dicek WCAG AA:
+   emas #FFB300 di navy ±10:1; di mode terang dipakai amber tua #B45309 (±5:1) karena emas terang tidak terbaca di latar putih.
+   Tombol emas memakai teks navy (±10:1), bukan putih (putih di oranye/emas < 3:1). */
+.bx,.ax,.nf{--bx-hl:#b45309;--bx-cta:#ffb300;--bx-cta-h:#ffc233;--bx-cta-text:#0b1326;--bx-chip-bg:transparent;--bx-chip-line:var(--border);--bx-lead:var(--muted)}
+[data-theme=dark] .bx,[data-theme=dark] .ax,[data-theme=dark] .nf{--bx-hl:#ffb300;--bx-chip-line:rgba(255,255,255,.22);--bx-lead:#d3dcef}
+[data-theme=dark] .bx-hero h1,[data-theme=dark] .nf h1{color:#fff}
+.bx-hl{color:var(--bx-hl)}
+.bx-lead{margin:0 0 20px;max-width:620px;color:var(--bx-lead);font-size:16.5px;line-height:1.6}
 .bx-search{display:flex;gap:8px;max-width:620px;padding:6px;border:1px solid var(--border);border-radius:14px;background:var(--surface)}
 .bx-search input{flex:1;min-width:0;min-height:44px;padding:0 12px;border:0;background:transparent;color:var(--text);font:500 15px Onest,sans-serif}
 .bx-search input:focus{outline:none}
 .bx-search:focus-within{border-color:var(--acc);box-shadow:0 0 0 3px var(--halo,rgba(79,143,247,.25))}
-.bx-search button{min-height:44px;padding:0 22px;border:0;border-radius:10px;background:var(--btn,#1d4ed8);color:#fff;font:700 15px Onest,sans-serif;cursor:pointer}
-.bx-search button:hover{background:var(--btn-h,#1e40af)}
+.bx-search button{min-height:44px;padding:0 22px;border:0;border-radius:10px;background:var(--bx-cta);color:var(--bx-cta-text);font:800 15px Onest,sans-serif;cursor:pointer}
+.bx-search button:hover{background:var(--bx-cta-h)}
 .bx-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
-.bx-chip{display:inline-flex;align-items:center;min-height:38px;padding:0 15px;border:1px solid var(--border);border-radius:999px;background:var(--surface);color:var(--text);font:600 13.5px Onest,sans-serif;text-decoration:none}
-.bx-chip:hover{border-color:var(--acc)}
+.bx-pop{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin-top:14px;font-size:13.5px}
+.bx-pop span{color:var(--muted);font-weight:600}
+.bx-pop a{color:var(--link);text-decoration:underline;text-underline-offset:3px;padding:6px 0;min-height:32px;display:inline-flex;align-items:center}
+.bx-pop a.on{font-weight:800;text-decoration:none}
+.bx-chip{display:inline-flex;align-items:center;min-height:38px;padding:0 15px;border:1px solid var(--bx-chip-line);border-radius:999px;background:var(--bx-chip-bg);color:var(--text);font:600 13.5px Onest,sans-serif;text-decoration:none}
+.bx-chip:hover{border-color:var(--bx-hl);background:rgba(127,127,127,.12)}
 .bx-chip.on{background:var(--btn,#1d4ed8);border-color:var(--btn,#1d4ed8);color:#fff}
 
 /* kartu */
