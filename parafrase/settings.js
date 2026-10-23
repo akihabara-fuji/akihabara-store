@@ -3,10 +3,10 @@
 
 const WA = /^\d{8,15}$/;
 const DEFS = {
-  price_per_word:               { type: "int",  min: 1, max: 1000, def: 17, pub: true },
-  min_order_price:              { type: "int",  min: 0, max: 10000000, def: 30000, pub: true },
+  price_per_word:               { type: "int",  min: 1, max: 1000, def: 50, pub: true },
+  min_order_price:              { type: "int",  min: 0, max: 10000000, def: 40000, pub: true },
   fast_lane_enabled:            { type: "bool", def: true, pub: true },
-  fast_lane_price:              { type: "int",  min: 0, max: 1000000, def: 30000, pub: true },
+  fast_lane_price:              { type: "int",  min: 0, max: 1000000, def: 40000, pub: true },
   fast_lane_daily_cap:          { type: "int",  min: 0, max: 50, def: 5, pub: true },
   revision_free_count:          { type: "int",  min: 0, max: 10, def: 1, pub: true },
   revision_price_per_word:      { type: "int",  min: 1, max: 1000, def: 17, pub: true },
