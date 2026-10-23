@@ -27,3 +27,11 @@ test("pengaturan batas Drillbit: ada di config publik dengan acuan bawaan", () =
   assert.strictEqual(DEFS.drillbit_sim_max.def, 25); assert.strictEqual(DEFS.drillbit_ai_max.def, 20);
   assert.ok(DEFS.drillbit_sim_max.pub && DEFS.drillbit_ai_max.pub);
 });
+
+test("laporan audit lengkap: tombol simpan PDF, tautan ke Cek & Parafrase, dan gaya cetak", () => {
+  const fs = require("fs"), path = require("path");
+  const dir = path.join(__dirname, "..", "parafrase", "pages");
+  const html = fs.readFileSync(path.join(dir, "audit-hasil.html"), "utf8"), js = fs.readFileSync(path.join(dir, "audit-hasil.js"), "utf8"), css = fs.readFileSync(path.join(dir, "site.css"), "utf8");
+  assert.match(html, /id="print"/); assert.match(html, /href="\/ruangakademikut\/cek-parafrase-mandiri"/);
+  assert.match(js, /window\.print\(\)/); assert.match(css, /@media print\{[^}]*\.no-print/);
+});

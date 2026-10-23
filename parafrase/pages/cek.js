@@ -45,7 +45,7 @@
     $("nobib").checked = true; $("nobib").disabled = !d.hasBibliography;
     var t = new Date(Date.now() + 2 * 86400000), p = function (n) { return String(n).padStart(2, "0"); };
     $("dl").min = new Date().toISOString().slice(0, 10); $("dl").value = t.getFullYear() + "-" + p(t.getMonth() + 1) + "-" + p(t.getDate());
-    $("chips").innerHTML = ORDER.map(function (k) { return '<span class="chip c-' + k + '">' + k + " " + NAMES[k] + " · " + (u.notes.byCode ? u.notes.byCode[k] : u.notes[k] || 0) + "</span>"; }).join("");
+    $("chips").innerHTML = ORDER.map(function (k) { return '<span class="chip c-' + k + '" title="' + ((window.PF_TARGET || {})[k] || "") + '">' + k + " " + NAMES[k] + " · " + (u.notes.byCode ? u.notes.byCode[k] : u.notes[k] || 0) + "</span>"; }).join("");
     price();
   }
 
@@ -101,13 +101,51 @@
         $("doc").innerHTML = pv.paragraphs.map(function (p) {
           return "<p>" + p.segments.map(function (s) {
             var cls = "seg" + (s.primary ? " s-" + s.primary : "") + (s.locked ? " locked" : "");
-            var tag = s.primary ? '<sup class="t c-' + s.primary + '" style="background:none">[' + s.codes.join("·") + (s.locked ? "" : " · contoh terbuka") + "]</sup>" : "";
+            var tag = s.primary ? '<sup class="t c-' + s.primary + '" style="background:none">[' + (s.n ? "contoh " + s.n + " · " : "") + s.codes.join("·") + "]</sup>" : "";
             return '<span class="' + cls + '"' + (s.locked ? ' aria-hidden="true"' : "") + ">" + esc(s.text) + "</span>" + tag + " ";
           }).join("") + "</p>";
         }).join("");
+        renderOverview(pv); renderExample(pv);
         $("pg").textContent = "Halaman " + pv.page + " dari " + pv.pages;
         $("prev").disabled = pv.page <= 1; $("next").disabled = pv.page >= pv.pages;
       }).catch(function () { $("doc").innerHTML = '<p class="muted">Pratinjau gagal dimuat.</p>'; });
+  }
+  function mk(tag, css, txt) { var e = document.createElement(tag); if (css) e.style.cssText = css; if (txt != null) e.textContent = txt; return e; }
+  /* Angka aspek yang sama dengan Audit Dokumen (renderer yang sama di common.js). */
+  function renderOverview(pv) {
+    var box = $("overview"); box.innerHTML = ""; if (!pv.overview) return;
+    window.auditAspects(pv.overview, box, { compact: true });
+    box.appendChild(mk("a", "font-size:13.5px", "Skor kesiapan serta penjelasan lengkap sitasi dan daftar pustaka ada di Audit Dokumen →")).href = "/ruangakademikut/audit";
+  }
+  /* Satu paragraf contoh: rekomendasi di atas, kalimat yang salah dicoret dan diberi warna kodenya, lalu contoh penulisan ulang. */
+  function renderExample(pv) {
+    var box = $("examples"); box.innerHTML = ""; var ex = pv.example; if (!ex) return;
+    var card = mk("div", "padding:16px 18px;border-radius:18px;border:1px solid var(--border,#2b2b58);margin:12px 0");
+    var hd = mk("div", "display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px");
+    hd.appendChild(mk("b", "font-size:18px", "Contoh perbaikan: 1 paragraf dari dokumenmu"));
+    if (ex.remaining > 0) hd.appendChild(mk("span", "font-size:12.5px;padding:3px 11px;border-radius:999px;border:1px solid var(--border,#2b2b58);opacity:.85", ex.remaining + " catatan lain terbuka setelah pembayaran"));
+    card.appendChild(hd);
+    var rec = mk("div", "border:1px solid var(--border,#2b2b58);border-left:5px solid #7c5cff;background:rgba(124,92,255,.10);border-radius:12px;padding:12px 16px;margin:8px 0 12px");
+    var lab = mk("b", "display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.8;margin-bottom:3px", "Rekomendasi · " + ex.code + " " + (NAMES[ex.code] || ex.action) + " (" + ex.color + ")");
+    rec.appendChild(lab);
+    rec.appendChild(mk("div", "", ex.reason + " " + (ex.rewrite ? String(ex.target || "").replace(/^Harusnya:\s*/, "Harusnya ") + " Contoh di bawah." : ex.helper)));
+    (ex.also || []).forEach(function (a) { rec.appendChild(mk("div", "margin-top:6px;font-size:14px;opacity:.9", "Juga (" + a.code + "): " + a.reason + " " + a.helper)); });
+    card.appendChild(rec);
+    var para = mk("div", "background:#fff;color:#12202f;border-radius:12px;padding:16px 18px;font-size:15.5px;line-height:1.85");
+    var rewrite = null;
+    ex.sentences.forEach(function (s, i) {
+      var sp = mk("span", "", (i ? " " : "") + s.text);
+      if (s.flagged) { sp.className = "seg s-" + s.code; sp.style.textDecoration = "line-through"; sp.style.textDecorationColor = "#c62828"; sp.style.textDecorationThickness = "2px"; if (!rewrite && s.rewrite) rewrite = s.rewrite; }
+      para.appendChild(sp);
+    });
+    if (rewrite) {
+      var w = mk("div", "margin-top:10px");
+      w.appendChild(mk("div", "color:#5a6b85;font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em", "Contoh penulisan ulang ›"));
+      var f = mk("span", "background:#E3F5EA;border-bottom:2px solid #2e7d32", rewrite); w.appendChild(f); para.appendChild(w);
+    }
+    card.appendChild(para);
+    card.appendChild(mk("p", "margin:8px 0 0;font-size:12.5px;opacity:.7", "Warna dan coretan menunjukkan bagian yang kami kerjakan." + (rewrite ? " Kalimat hijau hanya contoh cara menulis ulang, bukan hasil akhir." : "")));
+    box.appendChild(card);
   }
   $("prev").onclick = function () { st.page--; loadPreview(); };
   $("next").onclick = function () { st.page++; loadPreview(); };

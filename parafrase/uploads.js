@@ -94,7 +94,7 @@ module.exports = function mountUploads({ app, db, settings, root, sameOrigin, se
       const cfg = settings.getAll();
       const e = await getAnalysis(id, cfg);
       if (!e) return res.status(404).json({ error: "Unggahan tidak ditemukan atau sudah kedaluwarsa. Unggah ulang dokumenmu." });
-      res.json(buildPreview(e.a, e.findings, secret, id, { unlocked: false, openSentences: cfg.preview_open_sentences, page: parseInt(req.query.page, 10) || 1, pageSize: parseInt(req.query.size, 10) || 30 }));
+      res.json(buildPreview(e.a, e.findings, secret, id, { unlocked: false, openParagraphs: cfg.preview_open_paragraphs, page: parseInt(req.query.page, 10) || 1, pageSize: parseInt(req.query.size, 10) || 30 }));
     } catch (err) { console.error("[parafrase] preview gagal:", err && err.message); res.status(500).json({ error: "Pratinjau tidak bisa dibuat." }); }
   });
 

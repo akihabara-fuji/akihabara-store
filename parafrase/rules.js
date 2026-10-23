@@ -8,7 +8,8 @@
    U  Ungu        kalimat terlalu panjang
    H  Hijau       paragraf pendek, kurang berkembang
    P  Merah muda  paragraf generik tanpa analisis spesifik
-   A  Abu-abu     transisi atau awalan kalimat berulang
+   A  Abu-abu     transisi atau awalan kalimat berulang, dan frasa yang sering muncul pada tulisan seragam atau otomatis
+               (petunjuk gaya, bukan bukti dan bukan detektor AI)
 
    Catatan M: tanpa korpus sumber, v1 hanya menandai kalimat yang sama/mirip muncul dua kali di dokumen yang sama.
    Kemiripan dengan sumber luar datang dari laporan DrillBit milik murid (v2) atau tanda manual admin. Jangan menyebut
@@ -16,6 +17,7 @@
 "use strict";
 const { splitSentences, countWords } = require("./docx");
 const { checkStandar, STANDAR_CODE } = require("./standar");
+const { TARGET, findAiMarkers, helperFor, rewriteFor } = require("./hint");
 
 const CODES = {
   M: { color: "merah", action: "Tulis ulang" },
@@ -27,6 +29,7 @@ const CODES = {
   P: { color: "merah muda", action: "Tambah analisis" },
   A: { color: "abu-abu", action: "Variasikan" },
 };
+for (const k of Object.keys(CODES)) CODES[k].target = TARGET[k]; // "harusnya seperti apa" per warna (hint.js)
 const PRIORITY = ["M", "O", "K", "B", "U", "H", "P", "A"];
 
 /* ---------- sitasi ---------- */
@@ -105,6 +108,7 @@ function analyzeFindings(paras, bibAt, cfg = {}) {
     if (!sents.length) continue;
     const pCited = sents.some(hasCitation);
     const pWords = sents.reduce((n, s) => n + countWords(s), 0);
+    const pMark = sents.filter(s => findAiMarkers(s).length).length; // jumlah kalimat berpenanda gaya seragam di paragraf ini
 
     sents.forEach((s, si) => {
       const w = countWords(s);
@@ -133,6 +137,13 @@ function analyzeFindings(paras, bibAt, cfg = {}) {
       if (CLAIM.test(s) && !cits.length && !q)
         add("K", p, si, s, "Klaim atau angka tanpa sumber. Tambahkan sitasi yang mendukung.");
 
+      // A: frasa yang sering muncul pada tulisan seragam atau otomatis (konservatif: 2 penanda sekalimat, atau 3 kalimat berpenanda dalam satu paragraf)
+      const am = findAiMarkers(s);
+      if (am.length >= 2 || (am.length >= 1 && pMark >= 3)) {
+        add("A", p, si, s, `Frasa yang sering muncul pada tulisan seragam atau otomatis: "${am.join('", "')}". Ganti dengan kata sendiri atau langsung sebut isinya.`);
+        out[out.length - 1].kind = "ai";
+      }
+
       // M: kalimat berulang dalam dokumen
       if (w >= 10) {
         const k = norm1(s);
@@ -142,7 +153,10 @@ function analyzeFindings(paras, bibAt, cfg = {}) {
     });
 
     // H: paragraf pendek kurang berkembang
-    if (sents.length <= 2 && pWords < 35 && !/[:;]$/.test(p.text.trim()))
+    // bukan paragraf kurang berkembang: butir ketikan manual (1. a) - •), pertanyaan, judul atau label tanpa tanda baca akhir, teks HURUF KAPITAL
+    const tt = p.text.trim(), letters = tt.replace(/[^\p{L}]/gu, ""), upper = letters.replace(/[^\p{Lu}]/gu, "");
+    const notPara = /[:;?]$/.test(tt) || /^\s*(\d{1,2}[.)]|[a-z][.)]|[•·▪\-–—*])\s/i.test(tt) || !/[.!?…"”')]$/.test(tt) || (letters.length >= 8 && upper.length / letters.length > 0.7);
+    if (sents.length <= 2 && pWords < 35 && !notPara)
       add("H", p, sents.length - 1, sents[sents.length - 1], `Paragraf hanya ${sents.length} kalimat (${pWords} kata). Kembangkan dengan penjelasan, contoh, atau analisis.`);
 
     // P: paragraf generik
@@ -207,4 +221,4 @@ function saveFindings(db, orderId, findings, now = Date.now()) {
   })();
 }
 
-module.exports = { analyzeFindings, countByCode, saveFindings, findCitations, hasCitation, isBody, CODES, PRIORITY };
+module.exports = { analyzeFindings, countByCode, saveFindings, findCitations, hasCitation, isBody, CODES, PRIORITY, GENERIC, TRANS, helperFor, rewriteFor };
