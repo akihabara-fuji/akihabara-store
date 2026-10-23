@@ -59,10 +59,11 @@ for f in "${FILES[@]}"; do mkdir -p "$(dirname "$APP/$f")"; cp "$T/new/$f" "$APP
 
 pm2 restart nextaja --update-env >/dev/null
 sleep 5
-c(){ curl -s -o /dev/null -w '%{http_code}' -H "Host: $1" "http://127.0.0.1:3200$2"; }
-get(){ curl -fsS -H "Host: $1" "http://127.0.0.1:3200$2"; }
+# cek lewat nginx di server ini (HTTPS, sama seperti pengunjung), supaya URL pendek nginx (/layanan-ut, /blog-ut) ikut teruji
+c(){ curl -s -o /dev/null -w '%{http_code}' --resolve "$1:443:127.0.0.1" "https://$1$2"; }
+get(){ curl -fsS --resolve "$1:443:127.0.0.1" "https://$1$2"; }
 CA=catatanakademik.com
-for u in / /blog /ruangakademikut/blog-ut /layanan-ut /sitemap.xml /robots.txt /admin/ /blog/cara-membagi-waktu-kuliah-ut-sambil-bekerja; do x=$(c $CA "$u"); echo "$CA$u $x"; [ "$x" = 200 ]; done
+for u in / /blog /blog-ut /layanan-ut /sitemap.xml /robots.txt /admin/ /blog/cara-membagi-waktu-kuliah-ut-sambil-bekerja; do x=$(c $CA "$u"); echo "$CA$u $x"; [ "$x" = 200 ]; done
 get $CA /blog | grep -q 'class="bx-hero"' || { echo "Beranda blog baru tidak tampil"; false; }
 get $CA /admin/ | grep -q 'Admin · Catatan Akademik' || { echo "Panel admin CA tidak tampil di /admin"; false; }
 get $CA /blog/cara-membagi-waktu-kuliah-ut-sambil-bekerja | grep -q '<figure><img src="/uploads/' || { echo "Foto di isi artikel hilang"; false; }
