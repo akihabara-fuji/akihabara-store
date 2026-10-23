@@ -100,3 +100,5 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;line-height:
 .ft .ft-in{max-width:none;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:24px;padding-left:clamp(16px,2.2vw,32px);padding-right:clamp(16px,2.2vw,32px)}
 .ft-b{display:grid;gap:4px;max-width:420px}.ft-b b{color:var(--text);font-size:16px}.ft-b small{font-size:12.5px}
 .ft-n{display:flex;flex-wrap:wrap;gap:12px 22px}.ft-n a{color:var(--muted);text-decoration:none}.ft-n a:hover{color:var(--text)}
+/* Cetak atau simpan PDF laporan audit: sembunyikan menu, tombol, dan latar gelap. */
+@media print{.top,.nav,.sub,.strip,.ft,.no-print,.mode{display:none!important}html,body{background:#fff!important;color:#000!important}.hero{padding:0!important}a{color:#000!important}}

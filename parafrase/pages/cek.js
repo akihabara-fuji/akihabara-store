@@ -45,7 +45,7 @@
     $("nobib").checked = true; $("nobib").disabled = !d.hasBibliography;
     var t = new Date(Date.now() + 2 * 86400000), p = function (n) { return String(n).padStart(2, "0"); };
     $("dl").min = new Date().toISOString().slice(0, 10); $("dl").value = t.getFullYear() + "-" + p(t.getMonth() + 1) + "-" + p(t.getDate());
-    $("chips").innerHTML = ORDER.map(function (k) { return '<span class="chip c-' + k + '">' + k + " " + NAMES[k] + " · " + (u.notes.byCode ? u.notes.byCode[k] : u.notes[k] || 0) + "</span>"; }).join("");
+    $("chips").innerHTML = ORDER.map(function (k) { return '<span class="chip c-' + k + '" title="' + ((window.PF_TARGET || {})[k] || "") + '">' + k + " " + NAMES[k] + " · " + (u.notes.byCode ? u.notes.byCode[k] : u.notes[k] || 0) + "</span>"; }).join("");
     price();
   }
 
@@ -101,13 +101,40 @@
         $("doc").innerHTML = pv.paragraphs.map(function (p) {
           return "<p>" + p.segments.map(function (s) {
             var cls = "seg" + (s.primary ? " s-" + s.primary : "") + (s.locked ? " locked" : "");
-            var tag = s.primary ? '<sup class="t c-' + s.primary + '" style="background:none">[' + s.codes.join("·") + (s.locked ? "" : " · contoh terbuka") + "]</sup>" : "";
+            var tag = s.primary ? '<sup class="t c-' + s.primary + '" style="background:none">[' + (s.n ? "contoh " + s.n + " · " : "") + s.codes.join("·") + "]</sup>" : "";
             return '<span class="' + cls + '"' + (s.locked ? ' aria-hidden="true"' : "") + ">" + esc(s.text) + "</span>" + tag + " ";
           }).join("") + "</p>";
         }).join("");
+        renderOverview(pv); renderExamples(pv);
         $("pg").textContent = "Halaman " + pv.page + " dari " + pv.pages;
         $("prev").disabled = pv.page <= 1; $("next").disabled = pv.page >= pv.pages;
       }).catch(function () { $("doc").innerHTML = '<p class="muted">Pratinjau gagal dimuat.</p>'; });
+  }
+  function mk(tag, css, txt) { var e = document.createElement(tag); if (css) e.style.cssText = css; if (txt != null) e.textContent = txt; return e; }
+  /* Angka aspek yang sama dengan Audit Dokumen (renderer yang sama di common.js). */
+  function renderOverview(pv) {
+    var box = $("overview"); box.innerHTML = ""; if (!pv.overview) return;
+    window.auditAspects(pv.overview, box);
+    box.appendChild(mk("a", "font-size:13.5px", "Mau penjelasan lengkap soal sitasi dan daftar pustaka? Buka Audit Dokumen")).href = "/ruangakademikut/audit";
+  }
+  /* Kalimat contoh: kalimat kamu, kenapa ditandai, harusnya bagaimana, dan kalimat pembantu. */
+  function renderExamples(pv) {
+    var box = $("examples"); box.innerHTML = ""; var ex = pv.examples || []; if (!ex.length) return;
+    box.appendChild(mk("h2", "margin:6px 0 4px;font-size:19px", "Contoh perbaikan di dokumenmu (" + ex.length + " kalimat)"));
+    box.appendChild(mk("p", "margin:0 0 10px;color:var(--muted);font-size:14px", "Ini sebagian kecil dari " + pv.notes.total + " catatan. Pola yang sama berlaku untuk kalimat lain yang berwarna sama."));
+    ex.forEach(function (e) {
+      var card = mk("div", "padding:14px 16px;margin-bottom:10px;border-radius:14px;border:1px solid var(--border,#2b2b58)");
+      var top = mk("div", "display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap");
+      var b = mk("span", "font-weight:700", e.n + ". " + e.code + " " + (NAMES[e.code] || e.action) + " (" + e.color + ")"); b.className = "chip c-" + e.code; top.appendChild(b); card.appendChild(top);
+      function row(label, text, strong) { var d = mk("div", "margin:6px 0;font-size:14.5px;line-height:1.55"); d.appendChild(mk("b", "display:block;font-size:12.5px;opacity:.7;text-transform:uppercase;letter-spacing:.04em", label)); d.appendChild(mk(strong ? "b" : "span", "", text)); card.appendChild(d); }
+      row("Kalimat kamu", "“" + e.text + "”");
+      e.reasons.forEach(function (r, i) {
+        row(i ? "Juga ditandai (" + r.code + ")" : "Kenapa ditandai", r.reason);
+        if (!i) row("Harusnya", String(e.target || "").replace(/^Harusnya:\s*/, ""));
+        row("Kalimat pembantu", r.helper);
+      });
+      box.appendChild(card);
+    });
   }
   $("prev").onclick = function () { st.page--; loadPreview(); };
   $("next").onclick = function () { st.page++; loadPreview(); };

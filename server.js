@@ -292,9 +292,9 @@ app.get("/robots.txt", (req, res) => {
 });
 app.get("/sitemap.xml", (req, res) => {
   const urls = ACAD === SITE
-    ? [{ loc: `${SITE}/`, pri: "1.0" }, { loc: `${SITE}/blog`, pri: "0.8" }, ...extra.blogUrls()]
+    ? [{ loc: `${SITE}/`, pri: "1.0" }, { loc: `${SITE}/blog`, pri: "0.8" }, ...extra.pageUrls(), ...extra.blogUrls()]
     : isAcadHost(req)
-      ? [{ loc: `${ACAD}/blog`, pri: "0.8" }, ...extra.blogUrls()]
+      ? [{ loc: `${ACAD}/blog`, pri: "0.8" }, ...extra.pageUrls(), ...extra.blogUrls()]
       : [{ loc: `${SITE}/`, pri: "1.0" }];
   res.type("application/xml").send(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(u => `  <url><loc>${u.loc}</loc><lastmod>${u.lastmod || today()}</lastmod><priority>${u.pri}</priority></url>`).join("\n")}\n</urlset>\n`);
 });
@@ -315,9 +315,9 @@ const extra = require("./blog-akun")({ app, express, requireAdmin, sameOrigin, g
 const needLogin = (req, res, next) => (extra.userFrom(req) ? next() : res.status(401).json({ error: "Masuk dulu untuk mencoba fitur ini.", login: true }));
 app.post("/ms/parafrase/upload", needLogin);
 app.post("/ms/parafrase/order", needLogin);
-app.post("/ms/audit/upload", needLogin);
-app.post("/ms/audit/order", needLogin);
 app.post("/ms/layanan/order", needLogin);
+app.post("/ms/audit/order", needLogin);
+app.post("/ms/audit/upload", needLogin);
 require("./parafrase")({ app, express, requireAdmin, sameOrigin, ROOT });
 
 app.use("/admin", express.static(path.join(ROOT, "admin"), { index: "index.html" }));

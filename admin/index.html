@@ -117,7 +117,7 @@ dialog::backdrop{background:rgba(0,0,0,.7);backdrop-filter:blur(4px)}
   <form class="login-card" id="loginForm">
     <div class="brand"><img src="/icon-192.png" width="26" height="26" alt="">nextaja</div>
     <h1>Masuk panel admin</h1>
-    <p>Atur harga, produk, foto, jasa, FAQ, dan tampilan web tanpa buka VPS.</p>
+    <p>Atur harga, produk, foto, FAQ, dan tampilan web tanpa buka VPS.</p>
     <label>Password<input type="password" name="password" autocomplete="current-password" required></label>
     <p class="err" id="loginErr" role="alert"></p>
     <button class="btn btn-pri" type="submit">Masuk</button>
@@ -135,12 +135,13 @@ dialog::backdrop{background:rgba(0,0,0,.7);backdrop-filter:blur(4px)}
     </div>
     <div class="wrap"><nav class="tabs" role="tablist" aria-label="Menu admin">
       <button role="tab" aria-selected="true" data-tab="produk">Produk</button>
-      <button role="tab" aria-selected="false" data-tab="jasa">Jasa</button>
+      <button role="tab" aria-selected="false" data-tab="jasa" style="display:none">Jasa</button>
       <button role="tab" aria-selected="false" data-tab="faq">FAQ</button>
       <button role="tab" aria-selected="false" data-tab="ulasan">Foto &amp; Ulasan</button>
       <button role="tab" aria-selected="false" data-tab="blog">Blog</button>
       <button role="tab" aria-selected="false" data-tab="pelanggan">Pelanggan</button>
       <button role="tab" aria-selected="false" data-tab="tampilan">Tampilan</button>
+      <button role="tab" aria-selected="false" data-tab="akademik">Ruang Akademik</button>
       <button role="tab" aria-selected="false" data-tab="pengaturan">Pengaturan</button>
     </nav></div>
   </header>
@@ -209,11 +210,25 @@ dialog::backdrop{background:rgba(0,0,0,.7);backdrop-filter:blur(4px)}
     </section>
 
     <!-- PENGATURAN -->
+    <section data-panel="akademik" hidden><iframe id="akFrame" data-src="/admin/parafrase?embed=1" title="Admin Ruang Akademik UT" style="width:100%;height:88vh;border:0;border-radius:14px"></iframe></section>
     <section data-panel="pengaturan" hidden>
       <div class="panel-head"><div><h2>Pengaturan</h2><p>Nomor WA, link, dan kategori produk.</p></div></div>
       <div class="card">
         <h3>WhatsApp admin</h3>
         <label>Nomor WA <small>· format 62xxx tanpa + dan spasi</small><input id="waNumber" inputmode="numeric" maxlength="20" placeholder="6285722227544"></label>
+      </div>
+      <div class="card"><h3>Teks beranda</h3><div class="hint">Ubah tulisan apa saja di beranda: judul, paragraf, tombol, poin. Kosongkan kolom = kembali ke teks asli. Perubahan tersimpan otomatis.</div><input id="txSearch" placeholder="Cari teks…" style="margin:10px 0"><div id="txList" style="display:flex;flex-direction:column;gap:10px;max-height:520px;overflow:auto"><div class="empty">Memuat…</div></div></div><div class="card">
+        <h3>Link channel &amp; harga di landing</h3>
+        <label>Link WhatsApp Channel<input id="waChannelUrl" type="url" placeholder="https://whatsapp.com/channel/..."></label>
+        <div class="grid2">
+          <label>Harga Paket Metopen<input id="priceMetopen" maxlength="20" placeholder="Rp850.000"></label>
+          <label>Harga Tugas (per tugas)<input id="priceTugas" maxlength="20" placeholder="Rp40.000"></label>
+        </div>
+        <div class="grid2">
+          <label>Harga Diskusi (per mata kuliah)<input id="priceDiskusi" maxlength="20" placeholder="Rp20.000"></label>
+          <label>Harga Makalah<input id="priceMakalah" maxlength="20" placeholder="Rp45.000"></label>
+        </div>
+        <p class="hint">Kosongkan harga untuk memakai angka bawaan. Link channel hanya menerima https://whatsapp.com/channel/...</p>
       </div>
       <div class="card">
         <h3>Nama & sosial media</h3>
@@ -349,10 +364,10 @@ dialog::backdrop{background:rgba(0,0,0,.7);backdrop-filter:blur(4px)}
     <label>Judul<input name="title" maxlength="140" required></label>
     <label>Blog ini tentang apa? <small>· folder terisi otomatis</small><select name="topic" id="bTopic"></select></label>
     <label>Ringkasan <small>· tampil di daftar blog dan hasil Google (maks 260 huruf)</small><textarea name="excerpt" rows="2" maxlength="260"></textarea></label>
-    <label>Isi tulisan <small>(baris kosong = paragraf baru. <code>## Judul bagian</code>, <code>- poin</code>, <code>**tebal**</code>, <code>[teks](https://link)</code></small><textarea name="body" rows="12" id="bBody"></textarea></label>
+    <label>Isi tulisan <small>(baris kosong = paragraf baru. <code>## Judul bagian</code>, <code>- poin</code>, <code>**tebal**</code>, <code>[teks](https://link)</code>, foto pakai tombol di bawah</small><textarea name="body" rows="12" id="bBody"></textarea></label>
     <div><div style="font-size:13px;font-weight:600;color:var(--muted);margin-bottom:6px">Foto sampul <small>(opsional)</small></div>
       <div class="img-prev" id="bImg">Belum ada foto</div>
-      <div style="display:flex;gap:8px;margin-top:8px"><label class="btn btn-sm" style="cursor:pointer;color:var(--text)">Upload foto<input type="file" id="bFile" accept="image/*" hidden></label><button type="button" class="btn btn-sm btn-bad" id="bImgDel">Hapus foto</button></div></div>
+      <div style="display:flex;gap:8px;margin-top:8px"><label class="btn btn-sm" style="cursor:pointer;color:var(--text)">Upload foto<input type="file" id="bFile" accept="image/*" hidden></label><button type="button" class="btn btn-sm btn-bad" id="bImgDel">Hapus foto</button></div></div><div><div style="font-size:13px;font-weight:600;color:var(--muted);margin:14px 0 6px">Foto di dalam isi <small>(muncul di tengah tulisan, di posisi kursor)</small></div><div style="display:flex;gap:8px;flex-wrap:wrap"><label class="btn btn-sm" style="cursor:pointer;color:var(--text)">+ Tambah foto ke isi<input type="file" id="bFile2" accept="image/*" multiple hidden></label></div><div id="bImgs" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px"></div></div>
     <label>Status<select name="status"><option value="draft">Draf (belum tampil)</option><option value="published">Terbit</option></select></label>
     <div class="dlg-foot"><button type="button" class="btn" data-close>Batal</button><button class="btn btn-pri" type="submit">Simpan tulisan</button></div>
   </form>
@@ -569,8 +584,20 @@ $("#studioSoon").addEventListener("change",e=>{ST.settings.studioSoon=e.target.c
 ["heroEyebrow","heroTitle","heroLead"].forEach(id=>$("#"+id).addEventListener("input",e=>{ST.settings[id]=e.target.value; save(800);}));
 $("#marquee").addEventListener("input",e=>{ST.settings.marquee=e.target.value.split("\n").map(x=>x.trim()).filter(Boolean); save(800);});
 
+/* nx-tx-admin */
+(async function(){ const box=$("#txList"); try{
+  const html=await (await fetch("/?"+Date.now(),{cache:"reload"})).text(); const doc=new DOMParser().parseFromString(html,"text/html");
+  const els=[...doc.querySelectorAll("[data-tx]")]; const rows=els.map(e=>{const sec=e.closest("section"); return {k:e.getAttribute("data-tx"),orig:e.textContent.trim(),grp:(sec&&(sec.id||sec.className))||(e.closest("header")?"menu":(e.closest("footer")?"footer":"")) }});
+  function draw(q){ q=(q||"").toLowerCase(); box.innerHTML=""; rows.filter(r=>!q||r.orig.toLowerCase().includes(q)||((ST.settings.texts||{})[r.k]||"").toLowerCase().includes(q)).forEach(r=>{
+    const d=document.createElement("label"); d.style.cssText="display:block;font-size:12px;opacity:.95";
+    const v=(ST.settings.texts||{})[r.k]||"";
+    d.innerHTML='<span style="opacity:.6">'+esc(r.grp||"")+'</span><textarea rows="'+(r.orig.length>90?3:1)+'" maxlength="500" style="width:100%;margin-top:4px" placeholder="'+esc(r.orig)+'">'+esc(v)+'</textarea>';
+    d.querySelector("textarea").addEventListener("input",e=>{ST.settings.texts=ST.settings.texts||{}; const x=e.target.value; if(x.trim()) ST.settings.texts[r.k]=x; else delete ST.settings.texts[r.k]; save(900);});
+    box.appendChild(d); }); if(!box.children.length) box.innerHTML='<div class="empty">Tidak ada yang cocok.</div>'; }
+  draw(); $("#txSearch").addEventListener("input",e=>draw(e.target.value));
+ }catch(err){ box.innerHTML='<div class="empty">Gagal memuat daftar teks: '+esc(err.message)+'</div>'; } })();
 /* ---------- pengaturan ---------- */
-const FIELDS=["waNumber","analisaUrl","analisaFree","analisaPrice","nugasUrl","brand","tiktok","instagram","facebook","facebookUrl"];
+const FIELDS=["waNumber","analisaUrl","analisaFree","analisaPrice","nugasUrl","brand","tiktok","instagram","facebook","facebookUrl","waChannelUrl","priceMetopen","priceTugas","priceDiskusi","priceMakalah"];
 function renderSettings(){
   FIELDS.forEach(id=>$("#"+id).value=ST.settings[id]||"");
   const C=ST.settings.categories;
@@ -622,6 +649,22 @@ $("#addPost").onclick=()=>openPost(null);
 $("#bImgDel").onclick=()=>{editCover="";showCover();};
 $("#bFile").onchange=async e=>{const file=e.target.files[0]; if(!file) return; const fd=new FormData(); fd.append("file",await shrink(file));
   try{ const d=await api("/ms/admin/upload",{method:"POST",body:fd}); editCover=d.url; showCover(); toast("Foto terunggah"); }catch(err){ toast(err.message); } e.target.value="";};
+/* nx-img-admin */
+const bBody=$("#bBody");
+function bImgList(){const re=/!\[([^\]]*)\]\((\/uploads\/[^)\s]+)\)/g,out=[];let m;while((m=re.exec(bBody.value))) out.push({full:m[0],alt:m[1],src:m[2]});return out;}
+function renderImgs(){const box=$("#bImgs"); if(!box) return; const L=bImgList(); box.innerHTML=L.length?"":'<span style="font-size:13px;opacity:.6">Belum ada foto di isi.</span>';
+  L.forEach(it=>{const d=document.createElement("div"); d.style.cssText="position:relative;width:96px";
+    d.innerHTML='<div style="width:96px;height:96px;border-radius:12px;background:#222 center/cover no-repeat;background-image:url(\''+it.src+'\')"></div><button type="button" class="btn btn-sm btn-bad" style="position:absolute;top:4px;right:4px;padding:2px 8px">✕</button>';
+    d.querySelector("button").onclick=()=>{bBody.value=bBody.value.replace(it.full,"").replace(/\n{3,}/g,"\n\n"); renderImgs();};
+    box.appendChild(d);});}
+bBody.addEventListener("input",renderImgs); $("#bDlg").addEventListener("focusin",renderImgs);
+$("#bFile2").onchange=async e=>{const files=[...e.target.files]; if(!files.length) return;
+  for(const file of files){ const fd=new FormData(); fd.append("file",await shrink(file));
+    try{ const d=await api("/ms/admin/upload",{method:"POST",body:fd});
+      const ins="\n\n!["+(file.name.replace(/\.[^.]+$/,"").replace(/[\[\]()]/g,"").slice(0,60))+"]("+d.url+")\n\n";
+      const p=bBody.selectionStart==null?bBody.value.length:bBody.selectionStart; bBody.value=bBody.value.slice(0,p)+ins+bBody.value.slice(p); bBody.selectionStart=bBody.selectionEnd=p+ins.length;
+      toast("Foto ditambahkan ke isi"); }catch(err){ toast(err.message); } }
+  e.target.value=""; renderImgs();};
 $("#bForm").addEventListener("submit",async e=>{
   e.preventDefault(); const f=e.target;
   try{ await api("/ms/admin/posts",{method:"POST",body:JSON.stringify({id:editPost&&editPost.id,title:f.title.value,topic:f.topic.value,excerpt:f.excerpt.value,body:f.body.value,cover:editCover,status:f.status.value})});
@@ -708,5 +751,7 @@ $$("[data-tab]").forEach(b=>b.addEventListener("click",()=>{ if(b.dataset.tab===
 $$("[data-close]").forEach(b=>b.onclick=()=>b.closest("dialog").close());
 $$("[data-tab]").forEach(b=>b.addEventListener("click",()=>{ if(b.dataset.tab==="blog") loadPosts(); if(b.dataset.tab==="pelanggan") loadUsers(); }));
 </script>
+<script>document.querySelectorAll('[data-tab="akademik"]').forEach(function(b){b.addEventListener("click",function(){var f=document.getElementById("akFrame");if(f&&!f.getAttribute("src"))f.setAttribute("src",f.dataset.src)})});if(location.hash==="#akademik"){var _b=document.querySelector('[data-tab="akademik"]');if(_b)setTimeout(function(){_b.click()},400)}</script>
+<script src="/assets/admin-blog-seo.js?v=5" defer></script>
 </body>
 </html>

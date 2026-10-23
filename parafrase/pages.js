@@ -19,19 +19,18 @@ module.exports = function mountPages({ app, express }) {
     .replace(/<link rel="apple-touch-icon"[^>]*>/g, '<link rel="apple-touch-icon" href="/ruangakademikut/assets/ca/apple-touch-icon.png">')
     .replace(/<link rel="manifest"[^>]*>/g, '<link rel="manifest" href="/ruangakademikut/assets/ca/manifest.webmanifest">')
     .replace(/(<a [^>]*class="logo"[^>]*>)<b>C<\/b>/g, '$1<b class="lg"><img src="/ruangakademikut/assets/ca/logo-96.png" alt="" width="34" height="34"></b>')
-    .replace("</head>", (h.includes("/site.css") ? '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme-svc.css?v=1">' : '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme.css?v=1">') + "</head>")
+    .replace("</head>", (h.includes("/site.css") ? '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme-svc.css?v=2">' : '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme.css?v=2">') + "</head>")
     .replace("</head>", "<style>.logo b.lg{background:none!important;box-shadow:none}.logo b.lg img{width:34px;height:34px;object-fit:contain;display:block}</style></head>")
     .replace(/\/ruangakademikut\/(cek-parafrase-mandiri|audit|layanan|blog-ut|pesanan)/g, "/$1")
     .replace(/(https?:\/\/[^"'\s<]+?)\/ruangakademikut(?=["'<\s?#)])/g, "$1/layanan-ut")
     .replace(/(["'(=])\/ruangakademikut(?=["'<\s?#)])/g, "$1/layanan-ut");
   const TRACK = new Set(["beranda.html", "hub.html", "cek.html", "audit.html", "layanan.html", "blog-ut.html"]); // halaman pesanan dan hasil memuat token rahasia: tidak dilacak
-  const esc = value => String(value == null ? "" : value).replace(/[&<>\"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '\"': "&quot;", "'": "&#39;" }[c]));
   const blogCards = req => typeof app.locals.renderAcadBlogCards === "function" ? app.locals.renderAcadBlogCards(req) : "";
   const page = file => (req, res) => {
     fs.readFile(path.join(dir, file), "utf8", (err, html) => {
       if (err) return res.status(500).type("text").send("Halaman tidak tersedia.");
       let out = html;
-      if (file === "blog-ut.html") out = out.replace('<div id="bl" class="cards" aria-live="polite"></div>', `<div id="bl" class="cards" aria-live="polite">${blogCards(req)}</div>`);
+      if (file === "blog-ut.html") out = out.replace('<div id="bl" class="blog-list" aria-live="polite"></div>', `<div id="bl" class="blog-list" aria-live="polite">${blogCards(req)}</div>`);
       out = (TRACK.has(file) ? out.replace("</head>", '<script async src="/t.js"></script></head>') : out).replaceAll("{{SITE}}", SITE);
       res.set("Cache-Control", "no-cache").type("html").send(shorten(out));
     });
@@ -50,6 +49,17 @@ module.exports = function mountPages({ app, express }) {
     if (!CA.has(req.params.f)) return res.status(404).end();
     res.set("Cache-Control", "public, max-age=86400").sendFile(path.join(dir, "ca", req.params.f));
   });
+  /* Domain akademik: browser/Google meminta ikon di jalur root. Tanpa ini yang keluar ikon "n" milik nextaja. */
+  const ACH = (() => { try { return new URL(process.env.ACAD_URL || "").hostname.toLowerCase(); } catch { return ""; } })();
+  const ROOT_ICON = { "/favicon.ico": "favicon.ico", "/apple-touch-icon.png": "apple-touch-icon.png", "/icon-192.png": "icon-192.png", "/icon-512.png": "icon-512.png", "/manifest.webmanifest": "manifest.webmanifest" };
+  app.get(Object.keys(ROOT_ICON), (req, res, next) => {
+    const h = String(req.headers.host || "").toLowerCase().replace(/:\d+$/, "");
+    if (!SHORT || !ACH || (h !== ACH && h !== "www." + ACH)) return next();
+    res.set("Cache-Control", "public, max-age=3600").sendFile(path.join(dir, "ca", ROOT_ICON[req.path]));
+  });
+  /* Verifikasi Bing Webmaster Tools (kode per akun, bukan rahasia) */
+  app.get("/BingSiteAuth.xml", (req, res) => res.type("application/xml").set("Cache-Control", "public, max-age=3600")
+    .send('<?xml version="1.0"?>\n<users>\n\t<user>5A51A6D49E191DE95E89EA165A5F3815</user>\n</users>'));
   const ASSETS = new Set(["site.css", "hub.css", "common.js", "cek.js", "pesanan.js", "admin.js", "audit.js", "audit-hasil.js", "layanan.js", "layanan-admin.js", "blog-ut.js"]);
   app.get("/ruangakademikut/assets/:f", (req, res) => {
     if (!ASSETS.has(req.params.f)) return res.status(404).end();

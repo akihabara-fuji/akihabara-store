@@ -4,7 +4,7 @@
 const JSZip = require("jszip");
 const { DOMParser, XMLSerializer } = require("@xmldom/xmldom");
 const { openDocx, readText, parseBody, paragraphNodes, splitSentences, analyze, W } = require("./docx");
-const { analyzeFindings, countByCode } = require("./rules");
+const { analyzeFindings, countByCode, CODES, helperFor } = require("./rules");
 
 const FILL = { M: "F8BBBB", O: "FFD8A8", K: "FFF3A0", B: "BBD7F5", U: "D9C2F0", H: "BFE5C8", P: "F7BBD5", A: "D5DADD" };
 const MARK = "0A0B0C"; // penanda warna buatan kita pada <w:shd w:color>, dipakai untuk membersihkan
@@ -43,7 +43,7 @@ function colorParagraph(doc, p, rawFindings, nextId, comments) {
   const runs = children.filter(c => isW(c, "r"));
   const simple = children.every(c => c.namespaceURI === W && passthrough.has(c.localName)) && runs.length > 0;
   const addComment = (startRef, endRef, fs) => {
-    const id = nextId(); comments.push({ id, text: fs.map(f => `[${f.code}] ${f.reason}`).join("\n") });
+    const id = nextId(); comments.push({ id, text: fs.map(f => `[${f.code}] ${f.reason}\n${(CODES[f.code] || {}).target || ""}\nKalimat pembantu: ${helperFor(f.code, f.text, f.reason)}`).join("\n\n") });
     p.insertBefore(wel(doc, "commentRangeStart", { id }), startRef);
     const after = endRef.nextSibling;
     const e = wel(doc, "commentRangeEnd", { id }), ref = wel(doc, "r"); ref.appendChild(wel(doc, "commentReference", { id }));

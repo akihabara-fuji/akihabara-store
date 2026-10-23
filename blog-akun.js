@@ -82,37 +82,64 @@ module.exports = function mount(ctx) {
     .replace(/<link rel="apple-touch-icon"[^>]*>/g, '<link rel="apple-touch-icon" href="/ruangakademikut/assets/ca/apple-touch-icon.png">')
     .replace(/<link rel="manifest"[^>]*>/g, '<link rel="manifest" href="/ruangakademikut/assets/ca/manifest.webmanifest">')
     .replace(/(<a [^>]*class="logo"[^>]*>)<b>[^<]*<\/b>/g, '$1<b class="lg"><img src="/ruangakademikut/assets/ca/logo-96.png" alt="" width="34" height="34"></b>')
-    .replace("</head>", '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme.css?v=1"></head>')
+    .replace("</head>", '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme.css?v=2"></head>')
     .replace("</head>", "<style>.logo b.lg{background:none!important}.logo b.lg img{width:34px;height:34px;object-fit:contain;display:block}</style></head>");
   const rebrand = h => (ACAD_ONLY ? caBrand(shortPath(String(h).replace(/(?<![\w./@-])nextaja(?![\w-]|\.\w)/gi, BRAND))) : h);
   const published = () => blog.posts.filter(p => p.status === "published" && !p.trashedAt && (!ACAD_ONLY || ACAD_TOPICS.includes(p.topic))).sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
-  const pageNumber = req => Math.max(1, parseInt(req.query.page, 10) || 1);
-  const listCard = p => `<article class="blog-row"><a href="/blog/${esc(p.slug)}"><div class="blog-row-top"><span class="tag">${esc(tl(p.topic))}</span><time datetime="${esc(p.publishedAt)}">${esc(fmtDate(p.publishedAt))}</time></div><h2>${esc(p.title)}</h2><p>${esc(p.excerpt || "")}</p><div class="blog-row-foot"><span>Selengkapnya »</span><b>${esc(BRAND)}</b></div></a></article>`;
-  const listPager = (page, total, base) => { const sep = base.includes("?") ? "&" : "?"; return `<nav class="blog-pager" aria-label="Paginasi blog">${page > 1 ? `<a href="${base}${sep}page=${page - 1}">← Sebelumnya</a>` : ""}${page * 10 < total ? `<a href="${base}${sep}page=${page + 1}">Muat lebih banyak →</a>` : ""}</nav>`; };
-  app.locals.renderAcadBlogCards = req => {
-    if (!ACAD_ONLY) return "";
-    const all = published(), page = pageNumber(req), items = all.slice((page - 1) * 10, page * 10);
-    return items.map(listCard).join("") + listPager(page, all.length, "/blog-ut");
+  /* Daftar judul dikelompokkan: Bulan (bisa dilipat; hanya bulan terbaru terbuka) > Minggu ke-N, terbaru di atas. Zona waktu WIB. */
+  const BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+  const wib = iso => { const d = new Date(new Date(iso).getTime() + 7 * 3600e3); return { y: d.getUTCFullYear(), m: d.getUTCMonth(), d: d.getUTCDate() }; };
+  const weekOf = day => Math.min(4, Math.ceil(day / 7));
+  const titleRow = p => `<li><a href="/blog/${esc(p.slug)}"><time datetime="${esc(p.publishedAt)}">${esc(new Date(p.publishedAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", timeZone: "Asia/Jakarta" }))}</time><span class="t">${esc(p.title)}</span><span class="tag">${esc(tl(p.topic))}</span></a></li>`;
+  const groupedList = posts => {
+    const months = new Map();
+    for (const p of posts) { const w = wib(p.publishedAt), k = w.y * 12 + w.m; if (!months.has(k)) months.set(k, { w, weeks: new Map(), n: 0 }); const M = months.get(k), wk = weekOf(w.d); if (!M.weeks.has(wk)) M.weeks.set(wk, []); M.weeks.get(wk).push(p); M.n++; }
+    return [...months.entries()].sort((a, b) => b[0] - a[0]).map(([, M], i) => {
+      const last = new Date(Date.UTC(M.w.y, M.w.m + 1, 0)).getUTCDate();
+      const weeks = [...M.weeks.entries()].sort((a, b) => b[0] - a[0]).map(([wk, arr]) => {
+        const a = (wk - 1) * 7 + 1, b = wk === 4 ? last : wk * 7;
+        return `<section class="blog-week"><h3>Minggu ke-${wk} <small>${a}\u2013${b} ${BULAN[M.w.m]}</small></h3><ul class="blog-titles">${arr.map(titleRow).join("")}</ul></section>`;
+      }).join("");
+      return `<details class="blog-month"${i === 0 ? " open" : ""}><summary><span>${BULAN[M.w.m]} ${M.w.y}</span><small>${M.n} tulisan</small></summary>${weeks}</details>`;
+    }).join("");
   };
+  app.locals.renderAcadBlogCards = req => ACAD_ONLY ? groupedList(published()) : "";
+  /* potongan HTML daftar untuk filter di halaman Update UT */
+  app.get("/ms/blog/list-html", (req, res) => {
+    res.set("Cache-Control", "no-cache");
+    const f = TOPICS[req.query.f] || req.query.f === "ut" ? req.query.f : "";
+    const list = published().filter(p => !f || p.topic === f || (f === "ut" && (p.topic === "updateut" || p.topic === "study")));
+    res.json({ n: list.length, html: groupedList(list) });
+  });
 
   function inline(t) {
     return esc(t)
       .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
-      .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" rel="nofollow noopener" target="_blank">$1</a>');
+      .replace(/(^|[^*\w])\*([^*\s](?:[^*]*[^*\s])?)\*(?![*\w])/g, "$1<em>$2</em>")
+      .replace(/\[([^\]]+)\]\((\/[^\s)\/][^\s)]*|https?:\/\/[^\s)]+)\)/g, (m, txt, url) => isOwn(url) ? `<a href="${url}">${txt}</a>` : `<a href="${url}" rel="nofollow noopener" target="_blank">${txt}</a>`);
   }
+  /* tautan ke situs sendiri (relatif atau domain utama/akademik): tab yang sama, tanpa nofollow */
+  const OWN_HOSTS = [(() => { try { return new URL(SITE).host; } catch { return ""; } })(), ACAD_HOST].filter(Boolean);
+  function isOwn(u) { if (u[0] === "/") return true; try { return OWN_HOSTS.includes(new URL(u.replace(/&amp;/g, "&")).host); } catch { return false; } }
   function renderBody(txt) {
-    let html = "", list = false, para = [];
+    let html = "", list = "", para = [], quote = [];
     const flush = () => { if (para.length) { html += `<p>${inline(para.join(" "))}</p>`; para = []; } };
-    const endList = () => { if (list) { html += "</ul>"; list = false; } };
+    const endList = () => { if (list) { html += `</${list}>`; list = ""; } };
+    const endQuote = () => { if (quote.length) { html += `<blockquote><p>${inline(quote.join(" "))}</p></blockquote>`; quote = []; } };
+    const item = (kind, l, re) => { flush(); endQuote(); if (list !== kind) { endList(); html += `<${kind}>`; list = kind; } html += `<li>${inline(l.replace(re, ""))}</li>`; };
     for (const raw of String(txt || "").replace(/\r/g, "").split("\n")) {
       const l = raw.trim();
-      if (!l) { flush(); endList(); continue; }
+      if (!l) { flush(); endList(); endQuote(); continue; }
+      if (/^>\s?/.test(l)) { flush(); endList(); quote.push(l.replace(/^>\s?/, "")); continue; }
+      endQuote();
+      if (/^#\s+/.test(l)) { flush(); endList(); html += `<h2>${inline(l.replace(/^#\s+/, ""))}</h2>`; continue; } // H1 hanya dari kolom Judul; "# " di isi dijadikan H2
       if (/^##\s+/.test(l)) { flush(); endList(); html += `<h2>${inline(l.replace(/^##\s+/, ""))}</h2>`; continue; }
       if (/^###\s+/.test(l)) { flush(); endList(); html += `<h3>${inline(l.replace(/^###\s+/, ""))}</h3>`; continue; }
-      if (/^[-*]\s+/.test(l)) { flush(); if (!list) { html += "<ul>"; list = true; } html += `<li>${inline(l.replace(/^[-*]\s+/, ""))}</li>`; continue; }
+      if (/^[-*\u2022]\s+/.test(l)) { item("ul", l, /^[-*\u2022]\s+/); continue; }
+      if (/^\d{1,2}[.)]\s+/.test(l)) { item("ol", l, /^\d{1,2}[.)]\s+/); continue; }
       endList(); para.push(l);
     }
-    flush(); endList();
+    flush(); endList(); endQuote();
     return html;
   }
 
@@ -129,7 +156,9 @@ module.exports = function mount(ctx) {
   const b64 = o => Buffer.from(JSON.stringify(o)).toString("base64url");
   const mac = s => crypto.createHmac("sha256", secret).update(s).digest("base64url");
   const SESSION_MS = 30 * 24 * 3600 * 1000;
-  function makeToken(uid) { const p = b64({ u: uid, e: Date.now() + SESSION_MS }); return `${p}.${mac(p)}`; }
+  /* v = sidik singkat dari sandi: mengganti sandi membatalkan semua sesi lama (token lama tanpa v tetap diterima sampai kedaluwarsa). */
+  const ver = u => crypto.createHash("sha256").update(String(u.hash || "google")).digest("hex").slice(0, 10);
+  function makeToken(uid) { const u = db.users.find(x => x.id === uid); const p = b64({ u: uid, e: Date.now() + SESSION_MS, v: u ? ver(u) : "" }); return `${p}.${mac(p)}`; }
   function userFrom(req) {
     const t = getCookie(req, "nx_user");
     const [p, m] = String(t || "").split(".");
@@ -139,17 +168,22 @@ module.exports = function mount(ctx) {
     try {
       const d = JSON.parse(Buffer.from(p, "base64url").toString());
       if (!d.e || d.e < Date.now()) return null;
-      return db.users.find(u => u.id === d.u) || null;
+      const u = db.users.find(x => x.id === d.u);
+      if (!u || (d.v !== undefined && d.v !== ver(u))) return null;
+      return u;
     } catch { return null; }
   }
-  const setSession = (res, uid) => res.setHeader("Set-Cookie", `nx_user=${makeToken(uid)}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${SESSION_MS / 1000}${SECURE_COOKIE ? "; Secure" : ""}`);
+  const setSession = (res, uid) => res.setHeader("Set-Cookie", `nx_user=${makeToken(uid)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${SESSION_MS / 1000}${SECURE_COOKIE ? "; Secure" : ""}`);
   const hashPw = (pw, salt) => crypto.scryptSync(pw, salt, 64).toString("hex");
   const checkPw = (pw, u) => { if (!u.hash || !u.salt) return false; const a = Buffer.from(hashPw(pw, u.salt), "hex"), b = Buffer.from(u.hash, "hex"); return a.length === b.length && crypto.timingSafeEqual(a, b); };
   const EMAIL = /^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{2,}$/;
   const pubUser = u => ({ id: u.id, name: u.name, email: u.email });
   const fails = new Map();
   function limited(req, key) { const f = fails.get(key); return f && f.until > Date.now(); }
-  function fail(key) { const f = fails.get(key) || { n: 0 }; f.n++; f.until = f.n >= 6 ? Date.now() + 15 * 60 * 1000 : 0; fails.set(key, f); }
+  const regs = new Map();
+  const regLimited = ip => { const now = Date.now(), a = (regs.get(ip) || []).filter(t => now - t < 3600e3); regs.set(ip, a); if (regs.size > 5000) regs.delete(regs.keys().next().value); return a.length >= 10; };
+  const regNote = ip => regs.get(ip).push(Date.now());
+  function fail(key) { if (fails.size > 5000) for (const [k, v] of fails) if (!v.until || v.until < Date.now()) fails.delete(k); const f = fails.get(key) || { n: 0 }; f.n++; f.until = f.n >= 6 ? Date.now() + 15 * 60 * 1000 : 0; fails.set(key, f); }
   const STATUSES = ["Diterima", "Dikerjakan", "Review", "Selesai", "Dibatalkan"];
   const json = express.json({ limit: "8kb" });
   const needOrigin = (req, res, next) => (sameOrigin(req) ? next() : res.status(403).json({ error: "Permintaan ditolak." }));
@@ -157,7 +191,7 @@ module.exports = function mount(ctx) {
   app.get("/ms/auth/me", (req, res) => { res.set("Cache-Control", "no-store"); const u = userFrom(req); res.json({ user: u ? pubUser(u) : null }); });
   app.post("/ms/auth/register", json, needOrigin, async (req, res) => {
     const key = "r:" + req.ip;
-    if (limited(req, key)) return res.status(429).json({ error: "Terlalu banyak percobaan. Coba lagi 15 menit lagi." });
+    if (limited(req, key) || regLimited(req.ip)) return res.status(429).json({ error: "Terlalu banyak percobaan. Coba lagi 15 menit lagi." });
     const name = str(req.body?.name, 60), email = str(req.body?.email, 254).toLowerCase(), pw = String(req.body?.password || "");
     if (!name) return res.status(400).json({ error: "Nama wajib diisi." });
     if (!EMAIL.test(email)) return res.status(400).json({ error: "Email tidak valid." });
@@ -165,7 +199,9 @@ module.exports = function mount(ctx) {
     if (db.users.some(u => u.email === email)) { fail(key); return res.status(409).json({ error: "Email ini sudah terdaftar. Coba masuk." }); }
     const salt = crypto.randomBytes(16).toString("hex");
     const u = { id: crypto.randomBytes(8).toString("hex"), name, email, salt, hash: hashPw(pw, salt), createdAt: new Date().toISOString() };
-    db.users.push(u); await saveDb(); setSession(res, u.id);
+    db.users.push(u);
+    try { await saveDb(); } catch { db.users = db.users.filter(x => x.id !== u.id); return res.status(500).json({ error: "Pendaftaran belum bisa disimpan. Coba lagi sebentar." }); }
+    regNote(req.ip); setSession(res, u.id);
     res.json({ ok: true, user: pubUser(u) });
   });
   app.post("/ms/auth/login", json, needOrigin, (req, res) => {
@@ -199,13 +235,16 @@ module.exports = function mount(ctx) {
       res.json({ ok: true, user: pubUser(u) });
     } catch { res.status(502).json({ error: "Tidak bisa menghubungi Google. Coba lagi." }); }
   });
-  app.post("/ms/auth/logout", (req, res) => { res.setHeader("Set-Cookie", "nx_user=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0"); res.json({ ok: true }); });
+  app.post("/ms/auth/logout", (req, res) => { if (!sameOrigin(req)) return res.status(403).json({ error: "Permintaan ditolak." }); res.setHeader("Set-Cookie", "nx_user=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0" + (SECURE_COOKIE ? "; Secure" : "")); res.json({ ok: true }); });
   app.post("/ms/auth/password", json, needOrigin, async (req, res) => {
     const u = userFrom(req); if (!u) return res.status(401).json({ error: "Silakan masuk dulu." });
     const old = String(req.body?.old || ""), nw = String(req.body?.new || "");
     if (u.hash && !checkPw(old, u)) return res.status(401).json({ error: "Sandi lama salah." });
     if (nw.length < 8 || nw.length > 100) return res.status(400).json({ error: "Sandi baru minimal 8 karakter." });
-    u.salt = crypto.randomBytes(16).toString("hex"); u.hash = hashPw(nw, u.salt); await saveDb();
+    const prev = { salt: u.salt, hash: u.hash };
+    u.salt = crypto.randomBytes(16).toString("hex"); u.hash = hashPw(nw, u.salt);
+    try { await saveDb(); } catch { u.salt = prev.salt; u.hash = prev.hash; return res.status(500).json({ error: "Sandi belum bisa disimpan. Coba lagi sebentar." }); }
+    setSession(res, u.id);
     res.json({ ok: true });
   });
   app.get("/ms/auth/orders", (req, res) => {
@@ -229,6 +268,10 @@ module.exports = function mount(ctx) {
     if (!title) return res.status(400).json({ error: "Judul wajib diisi." });
     const topic = TOPICS[b.topic] && (!onAcadHost(req) || ACAD_TOPICS.includes(b.topic)) ? b.topic : (onAcadHost(req) ? "study" : "social");
     const status = b.status === "published" ? "published" : "draft";
+    if (status === "published") { // aturan struktur judul untuk Google: tulisan panjang wajib punya sub-judul H2
+      const bodyTxt = String(b.body || ""), words = (bodyTxt.match(/\S+/g) || []).length;
+      if (words >= 300 && !/^\s*##?\s+\S/m.test(bodyTxt)) return res.status(400).json({ error: "Tulisan sepanjang ini wajib punya sub-judul H2. Tulis ## di awal baris judul bagian, atau simpan sebagai Draf." });
+    }
     const now = new Date().toISOString();
     let p = b.id ? blog.posts.find(x => x.id === b.id) : null;
     if (!p) { p = { id: crypto.randomBytes(6).toString("hex"), slug: uniqueSlug(slugify(title)), createdAt: now }; blog.posts.push(p); }
@@ -236,6 +279,10 @@ module.exports = function mount(ctx) {
     if (status === "published" && !p.publishedAt) p.publishedAt = now;
     await saveBlog(); res.json({ ok: true, post: p });
     if (status === "published") pingIndex([p.slug]);
+  });
+  app.post("/ms/admin/preview", requireAdmin, adminJson, (req, res) => {
+    const b = req.body || {};
+    res.json({ title: str(b.title, 140), html: renderBody(cleanBody(String(b.body || "").slice(0, 60000))) });
   });
   app.post("/ms/admin/posts/:id/trash", requireAdmin, async (req, res) => {
     const p = blog.posts.find(x => x.id === req.params.id); if (!p) return res.status(404).json({ error: "Tulisan tidak ditemukan." });
@@ -310,7 +357,7 @@ module.exports = function mount(ctx) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Bricolage+Grotesque:wght@600;700&display=swap" rel="stylesheet">
 <script>try{var t=localStorage.getItem("nx-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
-<link rel="stylesheet" href="/assets/blog.css?v=6"><script async src="/t.js"></script>
+<link rel="stylesheet" href="/assets/blog.css?v=9"><script async src="/t.js"></script>
 ${extra}
 </head>
 <body>
@@ -349,14 +396,14 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
 
   app.get("/blog", (req, res) => {
     const f = TOPICS[req.query.f] && (!ACAD_ONLY || ACAD_TOPICS.includes(req.query.f)) ? req.query.f : "";
-    const all = published().filter(p => !f || p.topic === f), page = pageNumber(req), list = all.slice((page - 1) * 10, page * 10);
+    const list = published().filter(p => !f || p.topic === f);
     const heading = f ? TOPICS[f].label : "Tulisan terbaru";
     const body = `<section class="pg"><div class="wrap">
-      ${portalBanner(f)}
+      ${ACAD_ONLY ? "" : portalBanner(f)}
       <span class="eyebrow">Blog</span><h1>${esc(f === "viral" ? "Berita viral apa hari ini?" : heading)}</h1>
       <p class="lead">${ACAD_ONLY ? "Catatan seputar kuliah, tugas, dan info terbaru Universitas Terbuka. Ditulis apa adanya." : "Catatan tentang belajar, social media, AI, dan hal-hal yang lagi ramai. Ditulis apa adanya."}</p>
       <div class="chips">${topicChip("", !f)}${Object.keys(TOPICS).filter(k => !ACAD_ONLY || ACAD_TOPICS.includes(k)).map(k => topicChip(k, f === k)).join("")}</div>
-      ${list.length ? `<div class="blog-list">${list.map(listCard).join("")}</div>${listPager(page, all.length, f ? `/blog?f=${encodeURIComponent(f)}` : "/blog")}`
+      ${list.length ? `<div class="blog-list">${groupedList(list)}</div>`
         : `<div class="empty">Belum ada tulisan di sini. Tulisan pertama segera terbit.</div>`}
     </div></section>`;
     const blogTitle = ACAD_ONLY ? `${heading} — Blog Catatan Akademik` : `${heading} — Blog nextaja`;
@@ -370,10 +417,13 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
   if (!/^[a-f0-9]{32}$/.test(INK)) { INK = crypto.randomBytes(16).toString("hex"); try { fs.writeFileSync(KEYF, INK); } catch {} }
   app.get(/^\/([a-f0-9]{32})\.txt$/, (req, res, next) => (req.params[0] === INK ? res.type("text/plain").send(INK) : next()));
   function pingIndex(slugs) {
-    if (!/^https:\/\//.test(SITE) || process.env.NODE_ENV === "test") return;
-    const urls = [...slugs.map(s => `${SITE}/blog/${s}`), `${SITE}/blog`];
-    fetch("https://api.indexnow.org/indexnow", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ host: new URL(SITE).host, key: INK, keyLocation: `${SITE}/${INK}.txt`, urlList: urls }), signal: AbortSignal.timeout(8000) })
-      .then(r => console.log("IndexNow", r.status, urls.length, "url")).catch(e => console.log("IndexNow gagal:", e.message));
+    if (process.env.NODE_ENV === "test") return;
+    const send = (base, urls) => {
+      if (!/^https:\/\//.test(base)) return;
+      fetch("https://api.indexnow.org/indexnow", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ host: new URL(base).host, key: INK, keyLocation: `${base}/${INK}.txt`, urlList: urls }), signal: AbortSignal.timeout(8000) })
+        .then(r => console.log("IndexNow", new URL(base).host, r.status, urls.length, "url")).catch(e => console.log("IndexNow gagal:", e.message));
+    };
+    send(SITE, [...slugs.map(s => `${SITE}/blog/${s}`), `${SITE}/blog`]);
   }
   app.get("/blog/feed.xml", (req, res) => {
     const x = t => esc(t);
@@ -643,7 +693,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
         <p class="small">Lupa sandi? <a id="wa" href="#" target="_blank" rel="noopener">Hubungi admin lewat WhatsApp</a> dan minta sandi sementara.</p>
       </div></div></section>
       <script>
-      (function(){var NEXT=(function(){var n=new URLSearchParams(location.search).get("next")||"";return /^\/[a-zA-Z0-9\/_\-?=&.%]*$/.test(n)&&n.indexOf("//")!==0?n:"/ms/akun"})();var mode="in",f=document.getElementById("f"),err=document.getElementById("err");
+      (function(){var NEXT=(function(){var n=new URLSearchParams(location.search).get("next")||"";return /^\\/[a-zA-Z0-9\\/_\\-?=&.%]*$/.test(n)&&n.indexOf("//")!==0?n:"/ms/akun"})();var mode="in",f=document.getElementById("f"),err=document.getElementById("err");
       var w=${JSON.stringify(String((SOCIAL().waNumber) || "6285722227544"))};document.getElementById("wa").href="https://wa.me/"+w+"?text="+encodeURIComponent("Halo admin nextaja, saya lupa sandi akun saya.");
       document.querySelectorAll(".tabs2 button").forEach(function(b){b.addEventListener("click",function(){mode=b.dataset.t;
         document.querySelectorAll(".tabs2 button").forEach(function(x){x.setAttribute("aria-pressed",x===b)});
@@ -658,11 +708,11 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
           .catch(function(){err.textContent="Tidak bisa terhubung. Coba lagi.";});}});
         google.accounts.id.renderButton(document.getElementById("gBtn"),{theme:"outline",size:"large",text:"continue_with",shape:"pill",width:300,locale:"id"});
         document.getElementById("gWrap").hidden=false;};document.head.appendChild(sc);}
-      f.addEventListener("submit",function(e){e.preventDefault();err.textContent="";
+      f.addEventListener("submit",function(e){e.preventDefault();err.textContent="";var go=document.getElementById("go");if(go.disabled)return;var lbl=go.textContent;go.disabled=true;go.textContent="Memproses...";
         var d={email:f.email.value,password:f.password.value};if(mode==="up")d.name=f.name.value;
         fetch("/ms/auth/"+(mode==="up"?"register":"login"),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)})
         .then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j}})}).then(function(x){if(x.ok)location.href=NEXT;else err.textContent=x.j.error||"Gagal. Coba lagi.";})
-        .catch(function(){err.textContent="Tidak bisa terhubung. Coba lagi.";});});})();
+        .catch(function(){err.textContent="Tidak bisa terhubung. Coba lagi.";}).then(function(){go.disabled=false;go.textContent=lbl;});});})();
       </script>`;
     res.set("Cache-Control", "no-store").type("html").send(layout({ title: "Masuk atau daftar — nextaja", desc: "Masuk ke akun nextaja untuk melihat pesanan kamu.", path: "/ms/masuk", body }));
   });

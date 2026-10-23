@@ -5,10 +5,12 @@
   var token = (location.pathname.match(/\/hasil\/([a-f0-9]{48})/) || [])[1];
   function el(tag, css, txt) { var e = document.createElement(tag); if (css) e.style.cssText = css; if (txt != null) e.textContent = txt; return e; }
   function fail(m) { $("rmeta").textContent = ""; $("err").textContent = m; $("err").classList.remove("hidden"); }
+  if ($("print")) $("print").onclick = function () { window.print(); };
   if (!token) return fail("Tautan hasil tidak valid.");
   fetch("/ms/audit/report/" + token, { cache: "no-store" }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); }).then(function (x) {
     if (!x.ok) return fail(x.j.error || "Hasil tidak bisa dibuka.");
     var d = x.j; $("rmeta").textContent = d.title + " · " + rp(d.words) + " kata";
+    window.auditScoreCard(d.score, $("score")); window.auditDrillbit($("dbit"), d.score);
     ["kritis", "peringatan", "info"].forEach(function (k) {
       var b = el("div", "min-width:130px;padding:14px 18px;border-radius:16px;border:1px solid #2b2b58");
       b.appendChild(el("b", "display:block;font-size:30px;color:" + SEV[k][1], d.counts[k])); b.appendChild(el("span", "font-size:13.5px", SEV[k][0])); $("counts").appendChild(b);
