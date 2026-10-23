@@ -25,12 +25,12 @@
     $("ttl").textContent = rev ? "Revisi " + FAM[fam] : fam === "metopen" ? "Metopen" : dis ? "Diskusi" : "Tugas";
     $("ld").textContent = rev ? "Ada masukan dari tutor? Tempel catatannya atau unggah foto atau file catatan tutor. Revisi gratis untuk hasil buatan Catatan Akademik: isi ID pesanan sebelumnya. Kalau setelah revisi hasilnya masih belum sesuai catatan tutor, kamu bisa kembali lagi tanpa biaya (isi ID pesanan revisi terakhir). Untuk file dari luar, revisi berbayar." : "Tulis kebutuhan, lampirkan file soal atau masukan tutor. Bayar QRIS, hasil dikirim admin ke WhatsApp-mu sesuai status pesanan. Perlu masuk dengan akun Catatan Akademik.";
     $("pbox").style.display = (rev || td) ? "flex" : "none";
-    $("pbl").textContent = td ? "Revisi dari tutor? Isi ID pesanan sebelumnya (gratis 1x)" : "ID pesanan sebelumnya (isi untuk revisi gratis 1x)";
+    $("pbl").textContent = td ? "Revisi dari tutor? Isi ID pesanan sebelumnya (gratis untuk hasil kami)" : "ID pesanan sebelumnya (isi untuk revisi gratis)";
     $("blabel").textContent = rev ? "Masukan dari tutor" : dis ? "Soal diskusi" : "Kebutuhanmu";
     $("brief").placeholder = rev ? "Contoh: Tutor meminta menambah referensi jurnal pada Bab 2 dan memperbaiki cara mengutip. Tempel kalimat tutornya di sini, atau unggah fotonya lewat tombol di bawah." : dis ? "Tempel soal diskusi di sini. Cukup teks. Kalau ada revisi dari tutor, tulis atau tempel kalimat tutornya di sini juga." : td ? "Contoh: Tugas 2 Manajemen Keuangan, soal ada di file. Kalau ada revisi dari tutor, tulis catatannya di sini juga." : "Tulis kebutuhanmu atau tempel masukan tutor di sini.";
     $("pick").textContent = rev ? "+ Unggah foto atau file catatan tutor" : dis ? "+ Lampirkan file (opsional, mis. file revisi)" : "+ Lampirkan file";
     var pv = $("pid").value.trim();
-    $("price").textContent = rev ? "Gratis untuk hasil kami (isi ID pesanan), " + rp(s.price) + " untuk file dari luar" : td && pv ? "Revisi gratis 1x (dicek otomatis dari ID pesanan)" : rp(s.price);
+    $("price").textContent = rev ? "Gratis untuk hasil kami (isi ID pesanan), " + rp(s.price) + " untuk file dari luar" : td && pv ? "Revisi gratis (dicek otomatis dari ID pesanan)" : rp(s.price);
     $("price").title = ""; var nt = $("note"); if (nt) nt.style.display = fam === "metopen" && !rev ? "block" : "none";
     var tn = s.tutorNote;
     $("tguide").style.display = tn ? "block" : "none";

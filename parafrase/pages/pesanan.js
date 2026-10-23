@@ -41,7 +41,7 @@
     else if (o.status === "menunggu_verifikasi") box("b-warn", "<strong>Bukti bayar diterima, menunggu verifikasi admin.</strong><br>Halaman ini diperbarui otomatis. Kamu juga bisa menutupnya dan kembali lewat tautan ini.");
     else if (o.status === "terkirim") {
       if (o.docType === "audit") { if (o.auditReady) box("b-ok", "<strong>Pembayaran terkonfirmasi. Hasil Audit Lengkap sudah terbuka.</strong><br><a class=\"btn\" style=\"margin-top:10px\" href=\"/ruangakademikut/audit/hasil/" + token + "\">Buka hasil audit</a><br>File dihapus otomatis pada " + dt(o.deleteAt) + "."); else box("b-bad", "<strong>File sudah dihapus.</strong><br>Sesuai ketentuan, file dihapus setelah masa simpan berakhir. Hubungi admin jika perlu bantuan."); }
-      else if (o.service) box("b-ok", "<strong>Pesanan selesai.</strong><br>" + (o.resultReady ? "Unduh hasilmu di bawah. " : "") + (o.resultText ? "Teks hasil ada di bawah, tinggal salin. " : "") + "Semua file dihapus otomatis pada " + dt(o.deleteAt) + ". Simpan sebelum itu. Free revisi 1x lewat menu Layanan.");
+      else if (o.service) box("b-ok", "<strong>Pesanan selesai.</strong><br>" + (o.resultReady ? "Unduh hasilmu di bawah. " : "") + (o.resultText ? "Teks hasil ada di bawah, tinggal salin. " : "") + "Semua file dihapus otomatis pada " + dt(o.deleteAt) + ". Simpan sebelum itu. Free revisi lewat menu Layanan.");
       else if (o.resultReady) box("b-ok", "<strong>Pesanan selesai.</strong><br>Unduh hasil Word-mu di bawah. File dihapus otomatis pada " + dt(o.deleteAt) + ". Unduh sebelum itu.");
       else box("b-bad", "<strong>File sudah dihapus.</strong><br>Sesuai ketentuan, file dihapus " + "setelah masa unduh berakhir. Hubungi admin jika perlu bantuan.");
     }
