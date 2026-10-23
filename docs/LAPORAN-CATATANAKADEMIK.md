@@ -119,3 +119,4 @@ Tidak perlu lagi membuka VPS untuk mengganti kata-kata di situs.
 - **Tampilan Situs > Testimoni** (pemilik dan editor): unggah tangkapan layar chat dan kata pelanggan. Wajib mencentang izin pelanggan; tampil di beranda (6 terbaru yang berstatus Tampil).
 - Yang sengaja tidak bisa diubah di sini: teks yang diisi skrip di browser (mis. harga), elemen ber-id atau data-*, isi script dan style, dan isi artikel blog (diubah lewat editor artikel).
 - Basis data: migrasi 6 (`site_texts`, `site_texts_log`). Tes: 128 lulus.
+- **Blur otomatis di Testimoni**: saat memilih tangkapan layar, editor memburamkan (mosaik, tidak bisa dipulihkan) nomor HP, email, tautan, rekening, kalimat bersensitif, dan kepala chat. Berjalan di browser (OCR tesseract.js dari CDN), gambar asli tidak dikirim ke server; kotak bisa ditambah dengan menyeret dan dibatalkan dengan klik.

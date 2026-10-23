@@ -602,15 +602,22 @@
         <label class="f">Nama pelanggan<input class="in" name="nama" maxlength="60" required placeholder="mis. Rina, S1 Manajemen"></label>
         <label class="f">Keterangan (opsional)<input class="in" name="ket" maxlength="80" placeholder="mis. Pesan Metopen 1"></label>
         <label class="f" style="grid-column:1/-1">Isi testimoni<textarea class="in" name="teks" rows="3" maxlength="500" required></textarea></label>
-        <label class="f">Tangkapan layar chat (opsional)<input class="in" type="file" name="img" accept="image/jpeg,image/png,image/webp"></label>
+        <label class="f">Tangkapan layar chat (opsional, data sensitif diburamkan otomatis)<input class="in" type="file" name="img" accept="image/jpeg,image/png,image/webp"></label>
         <div class="f"><label class="bar small"><input type="checkbox" name="tampil" checked> Tampilkan di beranda</label><label class="bar small"><input type="checkbox" name="izin" required> Pelanggan sudah mengizinkan ulasan ini ditayangkan</label></div>
         <div class="bar" style="grid-column:1/-1"><button class="btn pri" type="submit">Simpan testimoni</button><button class="btn" type="button" id="tmR">Kosongkan form</button><span class="small faint" id="tmI"></span></div></form></div></div>
       <div class="card"><div class="hd"><h2>Daftar testimoni (${d.items.length})</h2></div><div class="bd">${d.items.length ? '<div class="grid g2">' + d.items.map(x => '<div class="card"><div class="bd">' + (x.imgAdmin ? '<img src="' + esc(x.imgAdmin) + '" alt="" loading="lazy" style="max-width:100%;max-height:220px;object-fit:contain;border-radius:10px;border:1px solid var(--border)">' : "") + "<div><b>" + esc(x.nama) + "</b> " + (x.ket ? '<span class="small faint">' + esc(x.ket) + "</span>" : "") + '</div><p style="margin:0">' + esc(x.teks) + '</p><div class="bar">' + badge(x.tampil ? "Tampil" : "Disembunyikan", x.tampil ? "ok" : "mute") + (x.izin ? "" : badge("Izin belum dicatat", "warn")) + '<span class="grow"></span><button class="btn sm" data-e="' + esc(x.id) + '">Ubah</button><button class="btn sm" data-t="' + esc(x.id) + '">' + (x.tampil ? "Sembunyikan" : "Tampilkan") + '</button><button class="btn sm" data-d="' + esc(x.id) + '">Hapus</button></div></div></div>').join("") + "</div>" : '<div class="empty">Belum ada testimoni. Isi form di atas untuk menambah yang pertama.</div>'}</div></div>`);
-    const f = $("#tmF"); let eid = "";
-    const reset = () => { f.reset(); eid = ""; $("#tmT").textContent = "Tambah testimoni"; $("#tmI").textContent = ""; f.izin.required = true; };
+    const f = $("#tmF"); let eid = "", blurred = null;
+    /* blur otomatis data sensitif di tangkapan layar (blur.js, berjalan di browser; gambar asli tidak dikirim ke server) */
+    const loadBlur = () => window.CABlur ? Promise.resolve() : new Promise((ok, no) => { const s = document.createElement("script"); s.src = "blur.js?v=1"; s.onload = ok; s.onerror = () => no(new Error("Modul blur gagal dimuat.")); document.head.appendChild(s); });
+    f.img.onchange = async () => {
+      blurred = null; const file = f.img.files[0]; if (!file) return;
+      try { await loadBlur(); const blob = await window.CABlur.edit(file, { dialog }); if (blob) { blurred = new File([blob], "testimoni.jpg", { type: "image/jpeg" }); $("#tmI").textContent = "Gambar sudah diburamkan dan siap disimpan."; } else { f.img.value = ""; $("#tmI").textContent = ""; } }
+      catch (err) { f.img.value = ""; fail(err); }
+    };
+    const reset = () => { f.reset(); eid = ""; blurred = null; $("#tmT").textContent = "Tambah testimoni"; $("#tmI").textContent = ""; f.izin.required = true; };
     $("#tmR").onclick = reset;
     f.onsubmit = async e => {
-      e.preventDefault(); const fd = new FormData(f); fd.set("tampil", f.tampil.checked ? "1" : "0"); fd.set("izin", f.izin.checked ? "1" : "0"); if (eid) fd.set("id", eid); if (!f.img.files[0]) fd.delete("img");
+      e.preventDefault(); const fd = new FormData(f); fd.set("tampil", f.tampil.checked ? "1" : "0"); fd.set("izin", f.izin.checked ? "1" : "0"); if (eid) fd.set("id", eid); if (blurred) fd.set("img", blurred); else fd.delete("img");
       await busy($("button[type=submit]", f), async () => { try { await api("/ms/admin/ulasan", { form: fd }); toast("Testimoni tersimpan"); route(); } catch (err) { fail(err); } });
     };
     $$("[data-e]").forEach(b => b.onclick = () => { const x = d.items.find(i => i.id === b.dataset.e); eid = x.id; f.nama.value = x.nama; f.ket.value = x.ket || ""; f.teks.value = x.teks; f.tampil.checked = !!x.tampil; f.izin.checked = true; f.izin.required = false; $("#tmT").textContent = "Ubah testimoni"; $("#tmI").textContent = "Gambar lama tetap dipakai kecuali Anda memilih gambar baru."; f.scrollIntoView({ behavior: "smooth", block: "center" }); f.nama.focus(); });
