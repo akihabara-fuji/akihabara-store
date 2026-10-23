@@ -50,7 +50,7 @@ function range(q, days = 30) {
   return { from, to, fromKey: dayKey(from), toKey: dayKey(to) };
 }
 
-module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, blog, settings, orders, texts, pages, ROOT, UPLOADS, sharp, ACAD, koin }) {
+module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, blog, settings, orders, texts, pages, ROOT, UPLOADS, sharp, ACAD, koin, traffic }) {
   const J = express.json({ limit: "16kb" });
   labelOf = k => labelFor(settings, k);
   const one = id => db.prepare("SELECT * FROM orders WHERE id=?").get(String(id));
@@ -146,6 +146,14 @@ module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, b
     items: db.prepare("SELECT * FROM orders WHERE status='menunggu_verifikasi' ORDER BY proof_uploaded_at").all().map(o => ({ ...row(o), method: "QRIS (transfer manual)", hasProof: !!o.proof_path })),
     recent: db.prepare("SELECT * FROM orders WHERE confirmed_at IS NOT NULL AND COALESCE(confirmed_by,'')<>'gratis' ORDER BY confirmed_at DESC LIMIT 15").all().map(row),
   })));
+
+  /* ---------------- pengunjung dan konten yang dicari ---------------- */
+  const PAGE_LABEL = [[/(^|\/)kalkulator-nilai-ut$/, "Kalkulator Nilai Akhir UT"], [/(^|\/)pasfoto-yudisium$/, "Pasfoto Yudisium"], [/(^|\/)sitasi-apa$/, "Generator Sitasi APA"], [/cek-parafrase-mandiri$/, "Cek & Parafrase Mandiri"], [/(^|\/)audit$/, "Audit Dokumen"], [/(^|\/)layanan$/, "Form pesan layanan"], [/(^|\/)(layanan-ut|ruangakademikut)$/, "Halaman Layanan UT"], [/(^|\/)blog-ut$/, "Blog & Berita UT"], [/^\/blog$/, "Daftar blog"], [/(^|\/)koin$/, "Koin"], [/^\/(beranda)?$/, "Beranda"], [/pesanan\/\*$/, "Halaman pesanan (token)"]];
+  app.get("/ms/admin/ca/traffic", requireAdmin, send(req => {
+    const titles = new Map(((blog && blog.posts && blog.posts()) || []).map(p => ["/blog/" + String(p.slug).toLowerCase(), p.title]));
+    const label = p => titles.get(p) || (PAGE_LABEL.find(([re]) => re.test(p)) || [])[1] || null;
+    return traffic.summary(req.query.days, label);
+  }));
 
   /* ---------------- layanan & harga ---------------- */
   app.get("/ms/admin/ca/services", requireAdmin, send(() => {

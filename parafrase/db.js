@@ -251,6 +251,10 @@ const MIGRATIONS = [
     at       INTEGER NOT NULL
   );
   CREATE INDEX sim_unlocks_user ON sim_unlocks(user_id);
+  /* Statistik pengunjung milik sendiri (lihat traffic.js): tanpa cookie, tanpa IP. */
+  CREATE TABLE pv_day  (day TEXT NOT NULL, path TEXT NOT NULL, views INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(day,path)) WITHOUT ROWID;
+  CREATE TABLE pv_uniq (day TEXT NOT NULL, path TEXT NOT NULL, vh TEXT NOT NULL, PRIMARY KEY(day,path,vh)) WITHOUT ROWID;
+  CREATE TABLE pv_ref  (day TEXT NOT NULL, ref TEXT NOT NULL, views INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(day,ref)) WITHOUT ROWID;
   `,
 ];
 

@@ -869,6 +869,8 @@ ${ACAD_ONLY ? '<script defer src="/ruangakademikut/assets/koin-chip.js?v=1"></sc
     <p>Hanya untuk menjalankan akun dan pesananmu, serta menghubungi kamu terkait pesanan. Kami tidak menjual atau menyewakan data kamu kepada pihak lain.</p>
     <h2>Cookie</h2>
     <p>Kami memakai cookie sesi agar kamu tetap masuk, dan penyimpanan lokal untuk mengingat pilihan tampilan terang atau gelap. Tidak ada cookie iklan.</p>
+    <h2>Statistik kunjungan</h2>
+    <p>Kami menghitung jumlah kunjungan dan halaman yang dibuka untuk mengetahui materi apa yang dibutuhkan pembaca. Penghitungan ini tidak memakai cookie dan tidak menyimpan alamat IP: pengunjung hanya dikenali lewat kode acak yang berganti setiap hari. Kami menghormati sinyal Do Not Track dan Global Privacy Control, dan tidak menghitung kunjungan admin.</p>
     <h2>Hapus data kamu</h2>
     <p>Minta penghapusan akun dan datamu kapan saja lewat {WA}.</p>`));
   app.get("/ms/ketentuan", legalPage("Ketentuan Layanan — nextaja", "Aturan pemakaian situs dan layanan nextaja.", "/ms/ketentuan", `

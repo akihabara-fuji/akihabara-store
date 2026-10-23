@@ -35,6 +35,8 @@ try { sharp = require("sharp"); } catch { console.warn("[i] sharp tidak terpasan
 const app = express();
 app.disable("x-powered-by");
 app.set("trust proxy", 1);
+let recordHit = null; // diisi setelah modul parafrase siap (statistik pengunjung, tanpa cookie dan tanpa IP)
+app.use((req, res, next) => { if (recordHit && req.method === "GET") res.on("finish", () => { try { recordHit(req, res); } catch (e) { /* statistik tidak boleh mengganggu situs */ } }); next(); });
 app.use((req, res, next) => {
   res.set({
     "X-Content-Type-Options": "nosniff",
@@ -330,7 +332,8 @@ app.post("/ms/layanan/order", needLogin);
 app.post("/ms/audit/order", needLogin);
 app.post("/ms/audit/upload", needLogin);
 const pf = require("./parafrase")({ app, express, requireAdmin, sameOrigin, ROOT, db: caDb, userFrom: extra.userFrom, users: { byId: extra.userById, byEmail: extra.userByEmail } });
-require("./admin-ca")({ app, express, db: caDb, auth: caAuth, requireAdmin, blog: extra, settings: pf.settings, orders: pf.orders, koin: pf.koin, texts: pf.texts, pages: pf.pages, ROOT, UPLOADS, sharp, ACAD });
+recordHit = (q, s) => { if (!ACAD_HOSTS.length || isAcadHost(q)) pf.traffic.record(q, s); };
+require("./admin-ca")({ app, express, db: caDb, auth: caAuth, requireAdmin, blog: extra, settings: pf.settings, orders: pf.orders, koin: pf.koin, traffic: pf.traffic, texts: pf.texts, pages: pf.pages, ROOT, UPLOADS, sharp, ACAD });
 
 /* /admin: di domain akademik = panel Catatan Akademik; di domain lain = panel toko nextaja. Satu domain (dev) -> panel CA di /admin-ca/. */
 const caPanel = express.static(path.join(ROOT, "admin-ca", "public"), { index: "index.html", maxAge: 0 });

@@ -33,7 +33,7 @@
   const ALL = ["owner", "editor", "cs"], ED = ["owner", "editor"], CS = ["owner", "cs"], OWN = ["owner"];
   const GROUP_NAV = [["bayar", "Menunggu pembayaran"], ["konfirmasi", "Menunggu konfirmasi"], ["proses", "Sedang diproses"], ["revisi", "Perlu revisi"], ["selesai", "Selesai"], ["batal", "Dibatalkan"]];
   const NAV = [
-    { items: [["dashboard", "Dashboard", "home", ALL]] },
+    { items: [["dashboard", "Dashboard", "home", ALL], ["traffic", "Pengunjung & Konten", "chart", ED]] },
     { h: "Konten", items: [["posts", "Artikel Blog", "doc", ED], ["posts/new", "Tulis Artikel", "pen", ED], ["taxonomy", "Kategori & Tag", "tag", ED], ["media", "Media", "img", ED], ["comments", "Komentar", "chat", ED]] },
     { h: "Tampilan Situs", items: [["testimonials", "Testimoni", "chat", ED], ["texts", "Teks & Nama", "pen", OWN]] },
     { h: "Pesanan", items: [["orders", "Pesanan Layanan", "box", CS, true], ["payments", "Konfirmasi Pembayaran", "card", CS], ["koin", "Koin & Dana", "card", CS], ["tools/parafrase", "Antrean Cek & Parafrase", "list", CS], ["tools/layanan", "Kirim Hasil Layanan", "send", CS]] },
@@ -139,7 +139,7 @@
 
   /* ---------------- router ---------------- */
   const ROUTES = [
-    [/^dashboard$/, ALL, pDashboard], [/^posts$/, ED, pPosts], [/^posts\/new$/, ED, () => pEditor(null)], [/^posts\/([a-f0-9]+)$/, ED, m => pEditor(m[1])],
+    [/^dashboard$/, ALL, pDashboard], [/^traffic$/, ED, pTraffic], [/^posts$/, ED, pPosts], [/^posts\/new$/, ED, () => pEditor(null)], [/^posts\/([a-f0-9]+)$/, ED, m => pEditor(m[1])],
     [/^taxonomy$/, ED, pTaxonomy], [/^media$/, ED, pMedia], [/^comments$/, ED, pComments],
     [/^orders$/, CS, pOrders], [/^orders\/([A-Za-z0-9-]+)$/, CS, m => pOrder(m[1])], [/^payments$/, CS, pPayments], [/^koin$/, CS, pKoin],
     [/^tools\/(parafrase|layanan)$/, CS, m => pEmbed(m[1])], [/^customers$/, CS, pCustomers],
@@ -549,6 +549,28 @@
     $$("[data-proof]").forEach(b => b.onclick = () => dialog({ title: "Bukti bayar " + b.dataset.proof, ok: "", cancel: "Tutup", body: `<img src="/ms/admin/parafrase/orders/${encodeURIComponent(b.dataset.proof)}/proof" alt="Bukti bayar" style="max-width:100%;border-radius:10px"><p class="small muted">Nominal yang harus masuk: <b>${rp(b.dataset.total)}</b></p>` }));
     $$("[data-ok]").forEach(b => b.onclick = async () => { if (!await confirmAct("Konfirmasi pembayaran?", `Dana <b>${rp(b.dataset.total)}</b> untuk ${esc(b.dataset.ok)} sudah terlihat di mutasi?`, "Ya, dana sudah masuk", "ok")) return; busy(b, async () => { try { await api(`/ms/admin/parafrase/orders/${encodeURIComponent(b.dataset.ok)}/confirm`, { json: {} }); toast("Dikonfirmasi: " + b.dataset.ok); } catch (e) { fail(e); } route(); refreshCounts(); }); });
     $$("[data-no]").forEach(b => b.onclick = async () => { const why = await dialog({ title: "Tolak bukti " + b.dataset.no, input: { label: "Alasan (dikirim ke pelanggan)", textarea: true, required: true, min: 5, minMsg: "Tulis alasan minimal 5 huruf.", max: 200 }, ok: "Tolak", okClass: "bad" }); if (!why) return; try { await api(`/ms/admin/parafrase/orders/${encodeURIComponent(b.dataset.no)}/reject`, { json: { reason: why } }); toast("Bukti ditolak"); route(); refreshCounts(); } catch (e) { fail(e); } });
+  }
+  /* Pengunjung dan konten yang paling dicari. Data milik sendiri (tanpa cookie, tanpa IP), jadi hanya sejak statistik ini dipasang. */
+  async function pTraffic() {
+    const q = params(), days = Number(q.get("days")) || 30, d = await api("/ms/admin/ca/traffic?days=" + days);
+    const range = `<select class="in" id="rg" style="width:auto">${[7, 30, 90].map(n => `<option value="${n}" ${n === days ? "selected" : ""}>${n} hari terakhir</option>`).join("")}</select>`;
+    const top = d.pages.length ? Math.max(...d.pages.map(x => x.views)) : 1;
+    const bar = v => `<div style="height:6px;border-radius:3px;background:var(--s1,#3b6cf6);width:${Math.max(3, Math.round(v * 100 / top))}%;margin-top:4px"></div>`;
+    const grp = d.groups.length ? Math.max(...d.groups.map(x => x.views)) : 1, refMax = d.refs.length ? Math.max(...d.refs.map(x => x.views)) : 1;
+    setPage("Pengunjung & Konten", "Halaman dan materi yang paling sering dibuka, dari mana pengunjung datang", `
+      <div class="notice info">${esc(d.note)} Angka ini baru terkumpul sejak statistik dipasang.</div>
+      <div class="bar"><span class="grow"></span>${range}</div>
+      <div class="grid g4">
+        <div class="card stat"><div><b>${num(d.today.visitors)}</b><span>Pengunjung hari ini</span><small>${num(d.today.views)} halaman dibuka</small></div></div>
+        <div class="card stat"><div><b>${num(d.last7.visitors)}</b><span>Pengunjung 7 hari</span><small>${num(d.last7.views)} halaman dibuka</small></div></div>
+        <div class="card stat"><div><b>${num(d.total.visitors)}</b><span>Pengunjung ${days} hari</span><small>${num(d.total.views)} halaman dibuka</small></div></div>
+        <div class="card stat"><div><b>${d.total.visitors ? (d.total.views / d.total.visitors).toFixed(1).replace(".", ",") : "0"}</b><span>Halaman per pengunjung</span><small>Rata-rata per hari kunjungan</small></div></div></div>
+      <div class="card"><div class="hd"><h2>Kunjungan per hari</h2></div><div class="bd">${lineChart(d.series, [["visitors", "Pengunjung", "--s1"], ["views", "Halaman dibuka", "--s2"]])}</div></div>
+      <div class="card"><div class="hd"><h2>Halaman paling banyak dibuka</h2><span class="muted small">${days} hari terakhir. Ini petunjuk materi yang dicari mahasiswa.</span></div><div class="tbl-wrap">${d.pages.length ? `<table class="t"><thead><tr><th>Halaman</th><th>Kelompok</th><th class="num">Dibuka</th><th class="num">Pengunjung</th></tr></thead><tbody>${d.pages.map(x => `<tr><td><b>${esc(x.label || x.path)}</b><div class="faint small mono">${esc(x.path)}</div>${bar(x.views)}</td><td class="small">${esc(x.group)}</td><td class="num"><b>${num(x.views)}</b></td><td class="num">${num(x.visitors)}</td></tr>`).join("")}</tbody></table>` : '<div class="empty">Belum ada data kunjungan. Angka muncul setelah ada pengunjung.</div>'}</div></div>
+      <div class="grid g2">
+        <div class="card"><div class="hd"><h2>Jenis konten</h2></div><div class="bd">${d.groups.map(x => `<div style="margin:0 0 12px"><div style="display:flex;justify-content:space-between"><span>${esc(x.name)}</span><b>${num(x.views)}</b></div><div style="height:8px;border-radius:4px;background:var(--s2,#f5b942);width:${Math.max(3, Math.round(x.views * 100 / grp))}%"></div></div>`).join("") || '<div class="empty">Belum ada data.</div>'}</div></div>
+        <div class="card"><div class="hd"><h2>Dari mana pengunjung datang</h2></div><div class="bd">${d.refs.map(x => `<div style="margin:0 0 12px"><div style="display:flex;justify-content:space-between"><span>${esc(x.ref)}</span><b>${num(x.views)}</b></div><div style="height:8px;border-radius:4px;background:var(--s1,#3b6cf6);width:${Math.max(3, Math.round(x.views * 100 / refMax))}%"></div></div>`).join("") || '<div class="empty">Belum ada data.</div>'}<p class="small muted">“Langsung” mencakup tautan yang dibuka dari aplikasi seperti WhatsApp dan TikTok yang tidak mengirim asal kunjungan.</p></div></div></div>`);
+    $("#rg").onchange = e => go("traffic", { days: e.target.value });
   }
   /* Koin & Dana. Admin pesanan hanya melihat antrean isi koin; ringkasan dana, pengambilan, dan penyesuaian khusus pemilik. */
   async function pKoin() {

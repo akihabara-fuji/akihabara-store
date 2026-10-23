@@ -17,6 +17,7 @@ const mountAudit = require("./audit");
 const mountLayanan = require("./layanan");
 const mountOrders = require("./orders");
 const { createKoin } = require("./koin");
+const createTraffic = require("./traffic").create;
 const mountKoin = require("./koin-routes");
 const createNotifier = require("./notify");
 
@@ -78,10 +79,11 @@ else if(/\\/(?:ruangakademikut\\/)?(layanan|cek-parafrase-mandiri|audit)(?:[\\/?
   const orders = mountOrders({ app, express, db, settings, notifier, root: ROOT, sameOrigin: sameOrigin || (() => true), requireAdmin, secret });
   mountAudit({ app, express, db, settings, orders, root: ROOT, sameOrigin: sameOrigin || (() => true), secret });
   const koin = createKoin(db, { settings });
+  const traffic = createTraffic(db, { secret });
   mountKoin({ app, express, db, settings, koin, root: ROOT, sameOrigin: sameOrigin || (() => true), requireAdmin, userFrom, users, secret });
   mountLayanan({ app, express, db, settings, orders, root: ROOT, sameOrigin: sameOrigin || (() => true), secret, requireAdmin, koin, userFrom });
   const t = setInterval(() => { uploads.purgeExpired().catch(() => {}); orders.expireUnpaid().catch(() => {}); orders.sweepRetention().catch(() => {}); try { koin.expireTopups(); } catch {} }, 10 * 60 * 1000); t.unref();
   const t2 = setInterval(() => notifier.flush().catch(() => {}), 30 * 1000); t2.unref();
 
-  return { db, settings, uploads, orders, notifier, texts, pages, koin };
+  return { db, settings, uploads, orders, notifier, texts, pages, koin, traffic };
 };
