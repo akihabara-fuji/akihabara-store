@@ -61,7 +61,18 @@
     var mb = N.minBenarPerHuruf(j, nt, ns);
     if (mb) { m.appendChild(line("Minimal soal benar dengan nilai pendukung " + f2(Number(nt)) + " dan " + ns + " soal:", "note")); var p = document.createElement("div"); p.style.cssText = "display:flex;flex-wrap:wrap;gap:8px;margin-top:6px"; mb.forEach(function (x) { var c = document.createElement("span"); c.style.cssText = "border:1px solid var(--border);border-radius:999px;padding:4px 12px;font-size:13.5px"; c.textContent = x.huruf + ": " + (x.benar === null ? "tidak tercapai" : x.benar + " benar"); p.appendChild(c); }); m.appendChild(p); }
   }
-  ["jn", "nt", "ns", "nb"].forEach(function (i) { $(i).addEventListener("input", akhir); });
+  /* Hasil muncul setelah tombol Hitung ditekan. Mengubah isian menyembunyikan hasil lama supaya tidak ada angka basi. */
+  function tampil() {
+    var box = $("hasil"), o = $("na"), m = $("mb");
+    if ($("nt").value === "" || $("ns").value === "" || $("nb").value === "") {
+      o.textContent = ""; m.textContent = "";
+      var e = line("Isi nilai Tuton/TMK/TTM, jumlah soal, dan jumlah benar UAS dulu.", "bad"); o.appendChild(e);
+    } else akhir();
+    box.hidden = false; box.classList.remove("pop"); void box.offsetWidth; box.classList.add("pop");
+  }
+  function sembunyi() { $("hasil").hidden = true; }
+  $("hit").addEventListener("click", tampil);
+  ["jn", "nt", "ns", "nb"].forEach(function (i) { $(i).addEventListener("input", sembunyi); $(i).addEventListener("change", sembunyi); $(i).addEventListener("keydown", function (ev) { if (ev.key === "Enter") { ev.preventDefault(); tampil(); } }); });
   /* target IPK */
   function target() {
     var o = $("tr"); o.textContent = "";

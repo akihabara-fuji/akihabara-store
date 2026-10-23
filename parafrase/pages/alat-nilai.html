@@ -15,7 +15,7 @@
 .tool label{font-weight:600;font-size:14px;display:block;margin:0 0 6px}
 .tool input[type=number],.tool select{width:100%;min-height:48px;padding:0 14px;border-radius:12px;border:1px solid var(--dash);background:var(--surface);color:var(--text);font:inherit}
 .tool table{width:100%;border-collapse:collapse;font-size:14.5px}.tool th,.tool td{padding:9px 10px;border-bottom:1px solid var(--border);text-align:left}.tool th{color:var(--muted);font-weight:600;font-size:13px}
-.tool .ok{color:#22c55e;font-weight:700}.tool .bad{color:#ef4444;font-weight:700}[data-theme=light] .tool .ok{color:#15803d}[data-theme=light] .tool .bad{color:#b91c1c}
+.tool .ok{color:#22c55e;font-weight:700}.tool .bad{color:#ef4444;font-weight:700}#hasil[hidden]{display:none}#hasil.pop{animation:pop .35s ease-out}@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}@media(prefers-reduced-motion:reduce){#hasil.pop{animation:none}}[data-theme=light] .tool .ok{color:#15803d}[data-theme=light] .tool .bad{color:#b91c1c}
 .tool ul{margin:6px 0 0;padding-left:20px}.tool li{margin:4px 0}
 .tool .note{font-size:13px;color:var(--muted);line-height:1.55}
 .tool a.btn{display:inline-flex;align-items:center;text-decoration:none}
@@ -30,7 +30,7 @@
 
 <main class="tool">
 <h1>Kalkulator Nilai Akhir UT</h1>
-<p class="lead">Hitung nilai akhir dari UAS dan nilai Tuton/TMK/TTM, lengkap dengan langkah hitungnya. Ada juga konversi nilai angka, simulasi IPK, dan target IPK. Hasil berubah otomatis setiap kamu mengisi angka, tanpa perlu menekan tombol.</p>
+<p class="lead">Hitung nilai akhir dari UAS dan nilai Tuton/TMK/TTM, lengkap dengan langkah hitungnya. Ada juga konversi nilai angka, simulasi IPK, dan target IPK.</p>
 <h2 style="margin-top:0">Hitung nilai akhir</h2>
 <div class="card">
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px">
@@ -39,8 +39,11 @@
     <div><label for="ns">Jumlah soal UAS</label><input id="ns" type="number" inputmode="numeric" min="1" max="200" value="50"></div>
     <div><label for="nb">Jumlah benar UAS</label><input id="nb" type="number" inputmode="numeric" min="0" placeholder="Contoh: 25"></div>
   </div>
-  <div id="na" aria-live="polite" style="margin-top:16px"></div>
-  <div id="mb" style="margin-top:14px"></div>
+  <button id="hit" class="btn" type="button" style="margin-top:16px;min-height:48px;width:100%">Hitung Nilai Akhir</button>
+  <div id="hasil" hidden aria-live="polite" style="margin-top:16px;padding:16px;border:1px solid var(--border);border-radius:12px;background:var(--surface2)">
+    <div id="na"></div>
+    <div id="mb" style="margin-top:14px"></div>
+  </div>
 </div>
 <p class="note">Syarat: jawaban benar UAS minimal 30% dari jumlah soal. Kurang dari itu, nilai Tuton/TMK/TTM tidak dihitung dan nilai akhir ditulis E, sesuai kebijakan UT supaya mahasiswa fokus ke UAS. Beberapa mata kuliah punya komponen lain (misalnya nilai kontribusi), jadi hasil ini adalah perkiraan. Nilai resmi tetap yang keluar di MyUT.</p>
 <h2>Konversi nilai angka ke huruf mutu</h2>
