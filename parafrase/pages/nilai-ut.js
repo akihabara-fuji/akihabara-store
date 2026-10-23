@@ -25,5 +25,35 @@
     (rows || []).forEach(function (r) { var k = Number(r.sks), m = mutu(r.huruf); if (k > 0 && k <= 12 && m !== null) { s += k; b += k * m; } });
     return { sks: s, bobot: b, ipk: s ? Math.floor((b / s) * 100 + 1e-9) / 100 : null };
   }
-  return { TABEL: T, konversi: konversi, mutu: mutu, ipk: ipk };
+
+  /* Nilai akhir: jenis = tuton (30/70) | tmk (20/80) | ttm (50/50). Syarat: UAS minimal 30% benar, jika kurang nilai akhir E (kebijakan UT). */
+  var W = { tuton: 0.3, tmk: 0.2, ttm: 0.5 };
+  function minBenar30(soal) { return Math.ceil(soal * 0.3 - 1e-9); }
+  function valid(jenis, tugas, soal, benar) {
+    tugas = Number(tugas); soal = Number(soal); benar = Number(benar);
+    return W[jenis] !== undefined && isFinite(tugas) && tugas >= 0 && tugas <= 100 && Number.isInteger(soal) && soal >= 1 && soal <= 200 && Number.isInteger(benar) && benar >= 0 && benar <= soal;
+  }
+  function nilaiAkhir(jenis, tugas, soal, benar) {
+    if (!valid(jenis, tugas, soal, benar)) return null;
+    tugas = Number(tugas); soal = Number(soal); benar = Number(benar);
+    var w = W[jenis], uas = benar / soal * 100, min = minBenar30(soal);
+    if (benar < min) return { lolos30: false, min: min, uas: uas, huruf: "E", mutu: 0, ok: false, kategori: "Gagal / Wajib Mengulang" };
+    var akhir = w * tugas + (1 - w) * uas, k = konversi(akhir);
+    return { lolos30: true, min: min, uas: uas, bobotTugas: w * tugas, bobotUas: (1 - w) * uas, akhir: Math.floor(akhir * 100 + 1e-9) / 100, huruf: k.h, mutu: k.m, ok: k.ok, kategori: k.k };
+  }
+  /* Minimal soal benar untuk tiap huruf mutu, diberi nilai tuton/TMK/TTM dan jumlah soal */
+  function minBenarPerHuruf(jenis, tugas, soal) {
+    if (!valid(jenis, tugas, soal, 0)) return null;
+    var out = {};
+    for (var b = minBenar30(Number(soal)); b <= soal; b++) { var r = nilaiAkhir(jenis, tugas, soal, b); if (r && out[r.huruf] === undefined) out[r.huruf] = b; }
+    return T.map(function (t) { return { huruf: t.h, benar: out[t.h] === undefined ? null : out[t.h] }; }).filter(function (x) { return x.huruf !== "E" && x.huruf !== "D"; });
+  }
+  /* IPS yang dibutuhkan semester depan agar IPK mencapai target */
+  function targetIps(ipkNow, sksNow, sksNext, target) {
+    ipkNow = Number(ipkNow); sksNow = Number(sksNow); sksNext = Number(sksNext); target = Number(target);
+    if (![ipkNow, sksNow, sksNext, target].every(isFinite) || ipkNow < 0 || ipkNow > 4 || target < 0 || target > 4 || sksNow < 0 || sksNext <= 0 || sksNext > 60) return null;
+    var need = (target * (sksNow + sksNext) - ipkNow * sksNow) / sksNext;
+    return { perlu: Math.max(0, Math.ceil(need * 100 - 1e-9) / 100), tercapai: need <= 4 + 1e-9, sudahAman: need <= 0 };
+  }
+  return { TABEL: T, konversi: konversi, mutu: mutu, ipk: ipk, nilaiAkhir: nilaiAkhir, minBenarPerHuruf: minBenarPerHuruf, minBenar30: minBenar30, targetIps: targetIps };
 });
