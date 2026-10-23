@@ -36,7 +36,7 @@
     { items: [["dashboard", "Dashboard", "home", ALL]] },
     { h: "Konten", items: [["posts", "Artikel Blog", "doc", ED], ["posts/new", "Tulis Artikel", "pen", ED], ["taxonomy", "Kategori & Tag", "tag", ED], ["media", "Media", "img", ED], ["comments", "Komentar", "chat", ED]] },
     { h: "Tampilan Situs", items: [["testimonials", "Testimoni", "chat", ED], ["texts", "Teks & Nama", "pen", OWN]] },
-    { h: "Pesanan", items: [["orders", "Pesanan Layanan", "box", CS, true], ["payments", "Konfirmasi Pembayaran", "card", CS], ["tools/parafrase", "Antrean Cek & Parafrase", "list", CS], ["tools/layanan", "Kirim Hasil Layanan", "send", CS]] },
+    { h: "Pesanan", items: [["orders", "Pesanan Layanan", "box", CS, true], ["payments", "Konfirmasi Pembayaran", "card", CS], ["koin", "Koin & Dana", "card", CS], ["tools/parafrase", "Antrean Cek & Parafrase", "list", CS], ["tools/layanan", "Kirim Hasil Layanan", "send", CS]] },
     { h: "Pengguna", items: [["customers", "Pelanggan", "users", CS]] },
     { h: "Lainnya", items: [["services", "Layanan & Harga", "price", OWN], ["reports", "Laporan & Statistik", "chart", OWN], ["settings", "Pengaturan Website", "cog", OWN], ["seo", "SEO & Sitemap", "search", OWN], ["admins", "Admin & Peran", "shield", OWN], ["log", "Log Aktivitas", "clock", OWN]] },
   ];
@@ -141,7 +141,7 @@
   const ROUTES = [
     [/^dashboard$/, ALL, pDashboard], [/^posts$/, ED, pPosts], [/^posts\/new$/, ED, () => pEditor(null)], [/^posts\/([a-f0-9]+)$/, ED, m => pEditor(m[1])],
     [/^taxonomy$/, ED, pTaxonomy], [/^media$/, ED, pMedia], [/^comments$/, ED, pComments],
-    [/^orders$/, CS, pOrders], [/^orders\/([A-Za-z0-9-]+)$/, CS, m => pOrder(m[1])], [/^payments$/, CS, pPayments],
+    [/^orders$/, CS, pOrders], [/^orders\/([A-Za-z0-9-]+)$/, CS, m => pOrder(m[1])], [/^payments$/, CS, pPayments], [/^koin$/, CS, pKoin],
     [/^tools\/(parafrase|layanan)$/, CS, m => pEmbed(m[1])], [/^customers$/, CS, pCustomers],
     [/^testimonials$/, ED, pTestimonials], [/^texts$/, OWN, pTexts], [/^services$/, OWN, pServices], [/^reports$/, OWN, pReports], [/^settings$/, OWN, pSettings], [/^seo$/, OWN, pSeo], [/^admins$/, OWN, pAdmins], [/^log$/, OWN, pLog], [/^account$/, ALL, pAccount],
   ];
@@ -549,6 +549,35 @@
     $$("[data-proof]").forEach(b => b.onclick = () => dialog({ title: "Bukti bayar " + b.dataset.proof, ok: "", cancel: "Tutup", body: `<img src="/ms/admin/parafrase/orders/${encodeURIComponent(b.dataset.proof)}/proof" alt="Bukti bayar" style="max-width:100%;border-radius:10px"><p class="small muted">Nominal yang harus masuk: <b>${rp(b.dataset.total)}</b></p>` }));
     $$("[data-ok]").forEach(b => b.onclick = async () => { if (!await confirmAct("Konfirmasi pembayaran?", `Dana <b>${rp(b.dataset.total)}</b> untuk ${esc(b.dataset.ok)} sudah terlihat di mutasi?`, "Ya, dana sudah masuk", "ok")) return; busy(b, async () => { try { await api(`/ms/admin/parafrase/orders/${encodeURIComponent(b.dataset.ok)}/confirm`, { json: {} }); toast("Dikonfirmasi: " + b.dataset.ok); } catch (e) { fail(e); } route(); refreshCounts(); }); });
     $$("[data-no]").forEach(b => b.onclick = async () => { const why = await dialog({ title: "Tolak bukti " + b.dataset.no, input: { label: "Alasan (dikirim ke pelanggan)", textarea: true, required: true, min: 5, minMsg: "Tulis alasan minimal 5 huruf.", max: 200 }, ok: "Tolak", okClass: "bad" }); if (!why) return; try { await api(`/ms/admin/parafrase/orders/${encodeURIComponent(b.dataset.no)}/reject`, { json: { reason: why } }); toast("Bukti ditolak"); route(); refreshCounts(); } catch (e) { fail(e); } });
+  }
+  /* Koin & Dana. Admin pesanan hanya melihat antrean isi koin; ringkasan dana, pengambilan, dan penyesuaian khusus pemilik. */
+  async function pKoin() {
+    const owner = ME.role === "owner";
+    const d = owner ? await api("/ms/admin/koin") : await api("/ms/admin/koin/queue"), S = d.summary;
+    const cards = owner ? `<div class="grid g4">
+      <div class="card stat"><div><b>${rp(S.topupRp)}</b><span>Total isi koin masuk</span><small>${num(S.topupCoins)} koin</small></div></div>
+      <div class="card stat"><div><b>${rp(S.liabilityRp)}</b><span>Saldo titipan mahasiswa</span><small>Belum dipakai. Tidak boleh diambil.</small></div></div>
+      <div class="card stat"><div><b>${rp(S.incomeRp)}</b><span>Pendapatan (koin terpakai)</span><small>Sudah diambil ${rp(S.withdrawnRp)}</small></div></div>
+      <div class="card stat"><div><b>${rp(S.withdrawableRp)}</b><span>Bisa diambil sekarang</span><small>Pendapatan dikurangi yang sudah diambil</small></div></div></div>` : "";
+    const q = `<div class="card"><div class="hd"><h2>Antrean isi koin menunggu konfirmasi</h2><span class="muted small">${d.pending.length} tagihan</span></div><div class="tbl-wrap">${d.pending.length ? `<table class="t"><thead><tr><th>Waktu bukti</th><th>Akun</th><th class="num">Nominal</th><th>Aksi</th></tr></thead><tbody>${d.pending.map(t => `<tr><td class="small">${dt(t.proofAt)}</td><td>${esc(t.email)}</td><td class="num"><b>${rp(t.total)}</b><div class="faint small">${num(t.coins)} koin</div></td><td><div class="bar"><button class="btn sm" data-kp="${esc(t.token)}" data-total="${t.total}">Lihat bukti</button><button class="btn sm ok" data-kok="${esc(t.token)}" data-total="${t.total}" data-coins="${t.coins}">Konfirmasi, masukkan koin</button><button class="btn sm bad" data-kno="${esc(t.token)}">Tolak</button></div></td></tr>`).join("")}</tbody></table>` : '<div class="empty">Tidak ada isi koin yang menunggu.</div>'}</div></div>`;
+    const own = owner ? `<div class="grid g2">
+      <div class="card"><div class="hd"><h2>Catat pengambilan dana</h2></div><div class="bd" style="display:flex;flex-direction:column;gap:10px">
+        <label class="f">Jumlah (Rp)<input class="in" id="wA" inputmode="numeric" autocomplete="off"></label>
+        <label class="f">Keperluan<select class="in" id="wC">${d.kategori.map(k => `<option>${esc(k)}</option>`).join("")}</select></label>
+        <label class="f">Catatan<input class="in" id="wN" maxlength="200"></label>
+        <p class="small muted">Tidak boleh melebihi ${rp(S.withdrawableRp)}. Saldo titipan mahasiswa tidak bisa diambil.</p><p class="err" id="wE"></p>
+        <button class="btn pri" id="wB" type="button">Catat pengambilan</button></div></div>
+      <div class="card"><div class="hd"><h2>Riwayat pengambilan dana</h2></div><div class="tbl-wrap">${d.withdrawals.length ? `<table class="t"><thead><tr><th>Tanggal</th><th>Keperluan</th><th>Catatan</th><th class="num">Jumlah</th></tr></thead><tbody>${d.withdrawals.map(w => `<tr><td class="small">${dt(w.at)}</td><td>${esc(w.category)}</td><td class="small">${esc(w.note || "")}</td><td class="num">${rp(w.amount)}</td></tr>`).join("")}</tbody></table>` : '<div class="empty">Belum ada pengambilan.</div>'}</div></div></div>
+      <div class="card"><div class="hd"><h2>Penyesuaian saldo manual</h2></div><div class="bd"><p class="small muted">Tambah atau kurangi koin satu akun untuk kasus khusus, misalnya salah pesan. Alasan wajib diisi dan tercatat di riwayat mahasiswa.</p>
+        <div class="bar"><input class="in" id="aE1" placeholder="Email akun" style="min-width:220px"><input class="in" id="aD" placeholder="+10 atau -10" style="width:110px"><input class="in grow" id="aR" placeholder="Alasan (min 5 huruf)" maxlength="150"><button class="btn" id="aB" type="button">Terapkan</button></div><p class="err" id="aErr"></p></div></div>` : "";
+    setPage("Koin & Dana", owner ? "Konfirmasi isi koin, saldo titipan, dan dana operasional" : "Konfirmasi isi koin", `${owner ? '<div class="notice info">Dana mahasiswa (saldo titipan) dan pendapatan dipisah. Hanya koin yang sudah terpakai yang dihitung pendapatan dan boleh diambil.</div>' : '<div class="notice info">Konfirmasi hanya setelah nominal beserta kode unik terlihat di mutasi QRIS. Satu isi koin hanya bisa dikonfirmasi satu kali.</div>'}${cards}${q}${own}`);
+    $$("[data-kp]").forEach(b => b.onclick = () => dialog({ title: "Bukti isi koin", ok: "", cancel: "Tutup", body: `<img src="/ms/admin/koin/topups/${encodeURIComponent(b.dataset.kp)}/proof" alt="Bukti bayar" style="max-width:100%;border-radius:10px"><p class="small muted">Nominal yang harus masuk: <b>${rp(b.dataset.total)}</b></p>` }));
+    $$("[data-kok]").forEach(b => b.onclick = async () => { if (!await confirmAct("Konfirmasi isi koin?", `Dana <b>${rp(b.dataset.total)}</b> sudah terlihat di mutasi? Mahasiswa akan menerima <b>${num(b.dataset.coins)} koin</b>.`, "Ya, dana sudah masuk", "ok")) return; busy(b, async () => { try { await api(`/ms/admin/koin/topups/${encodeURIComponent(b.dataset.kok)}/confirm`, { json: {} }); toast("Koin dimasukkan"); } catch (e) { fail(e); } route(); }); });
+    $$("[data-kno]").forEach(b => b.onclick = async () => { const why = await dialog({ title: "Tolak bukti isi koin", input: { label: "Alasan (terlihat oleh mahasiswa)", textarea: true, required: true, min: 5, minMsg: "Tulis alasan minimal 5 huruf.", max: 200 }, ok: "Tolak", okClass: "bad" }); if (!why) return; try { await api(`/ms/admin/koin/topups/${encodeURIComponent(b.dataset.kno)}/reject`, { json: { reason: why } }); toast("Bukti ditolak"); route(); } catch (e) { fail(e); } });
+    if (owner) {
+      $("#wB").onclick = e => busy(e.target, async () => { try { await api("/ms/admin/koin/withdraw", { json: { amount: $("#wA").value, category: $("#wC").value, note: $("#wN").value } }); toast("Pengambilan dicatat"); route(); } catch (err) { $("#wE").textContent = err.message; } });
+      $("#aB").onclick = async e => { const em = $("#aE1").value.trim(), dl = $("#aD").value.trim(); if (!await confirmAct("Terapkan penyesuaian?", `Ubah saldo <b>${esc(em)}</b> sebesar <b>${esc(dl)}</b> koin. Tercatat dengan alasan.`, "Terapkan")) return; busy(e.target, async () => { try { const r = await api("/ms/admin/koin/adjust", { json: { email: em, delta: Number(dl.replace("+", "")), reason: $("#aR").value } }); toast("Saldo " + r.email + " sekarang " + num(r.balance) + " koin"); route(); } catch (err) { $("#aErr").textContent = err.message; } }); };
+    }
   }
   function pEmbed(which) {
     const t = which === "parafrase" ? ["Antrean Cek & Parafrase", "Verifikasi, antrean, Word berwarna, cek ulang, kirim hasil, QRIS, gambar situs, dan pesan WhatsApp", "/admin/parafrase?embed=1"] : ["Kirim Hasil Layanan", "Tugas, Diskusi, Metopen, dan Revisi yang sudah dibayar", "/admin/layanan?embed=1"];

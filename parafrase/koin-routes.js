@@ -81,12 +81,17 @@ module.exports = function mountKoin({ app, express, db, settings, koin, root, sa
     const wd = db.prepare("SELECT * FROM fund_withdrawals ORDER BY id DESC LIMIT 50").all();
     res.json({ summary: koin.summary(), kategori: KATEGORI, pending: pend.map(t => ({ ...view(t), email: email(t.user_id), proofAt: t.proof_at })), withdrawals: wd });
   }));
+  /* Antrean saja (tanpa angka dana): boleh dibuka admin pesanan. Ringkasan dana, pengambilan, dan penyesuaian khusus pemilik. */
+  app.get("/ms/admin/koin/queue", requireAdmin, wrap((req, res) => {
+    const pend = db.prepare("SELECT * FROM coin_topups WHERE status='menunggu_verifikasi' ORDER BY proof_at").all();
+    res.json({ pending: pend.map(t => ({ ...view(t), email: email(t.user_id), proofAt: t.proof_at })) });
+  }));
   app.get("/ms/admin/koin/topups/:token/proof", requireAdmin, async (req, res) => {
     const t = db.prepare("SELECT proof_path FROM coin_topups WHERE token=?").get(String(req.params.token));
     if (!t || !t.proof_path) return res.status(404).end();
     try { res.set("Cache-Control", "no-store").type("jpeg").send(await fsp.readFile(priv(t.proof_path))); } catch { res.status(404).end(); }
   });
-  app.post("/ms/admin/koin/topups/:token/confirm", requireAdmin, wrap((req, res) => { const r = koin.confirmTopup(req.params.token, who(req)); res.json({ ok: true, balance: r.balance, summary: koin.summary() }); }));
+  app.post("/ms/admin/koin/topups/:token/confirm", requireAdmin, wrap((req, res) => { const r = koin.confirmTopup(req.params.token, who(req)); res.json({ ok: true, balance: r.balance }); }));
   app.post("/ms/admin/koin/topups/:token/reject", requireAdmin, J, wrap((req, res) => { const r = koin.rejectTopup(req.params.token, (req.body || {}).reason); if (r.old) fsp.unlink(priv(r.old)).catch(() => {}); res.json({ ok: true }); }));
   app.post("/ms/admin/koin/withdraw", requireAdmin, J, wrap((req, res) => { const b = req.body || {}; res.json({ ok: true, summary: koin.withdraw(b.amount, b.category, b.note, who(req)) }); }));
   app.post("/ms/admin/koin/adjust", requireAdmin, J, wrap((req, res) => {
