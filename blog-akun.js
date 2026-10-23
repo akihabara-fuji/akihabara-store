@@ -156,7 +156,9 @@ module.exports = function mount(ctx) {
   const b64 = o => Buffer.from(JSON.stringify(o)).toString("base64url");
   const mac = s => crypto.createHmac("sha256", secret).update(s).digest("base64url");
   const SESSION_MS = 30 * 24 * 3600 * 1000;
-  function makeToken(uid) { const p = b64({ u: uid, e: Date.now() + SESSION_MS }); return `${p}.${mac(p)}`; }
+  /* v = sidik singkat dari sandi: mengganti sandi membatalkan semua sesi lama (token lama tanpa v tetap diterima sampai kedaluwarsa). */
+  const ver = u => crypto.createHash("sha256").update(String(u.hash || "google")).digest("hex").slice(0, 10);
+  function makeToken(uid) { const u = db.users.find(x => x.id === uid); const p = b64({ u: uid, e: Date.now() + SESSION_MS, v: u ? ver(u) : "" }); return `${p}.${mac(p)}`; }
   function userFrom(req) {
     const t = getCookie(req, "nx_user");
     const [p, m] = String(t || "").split(".");
@@ -166,17 +168,23 @@ module.exports = function mount(ctx) {
     try {
       const d = JSON.parse(Buffer.from(p, "base64url").toString());
       if (!d.e || d.e < Date.now()) return null;
-      return db.users.find(u => u.id === d.u) || null;
+      const u = db.users.find(x => x.id === d.u);
+      if (!u || (d.v !== undefined && d.v !== ver(u))) return null;
+      return u;
     } catch { return null; }
   }
-  const setSession = (res, uid) => res.setHeader("Set-Cookie", `nx_user=${makeToken(uid)}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${SESSION_MS / 1000}${SECURE_COOKIE ? "; Secure" : ""}`);
+  const setSession = (res, uid) => res.setHeader("Set-Cookie", `nx_user=${makeToken(uid)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${SESSION_MS / 1000}${SECURE_COOKIE ? "; Secure" : ""}`);
   const hashPw = (pw, salt) => crypto.scryptSync(pw, salt, 64).toString("hex");
   const checkPw = (pw, u) => { if (!u.hash || !u.salt) return false; const a = Buffer.from(hashPw(pw, u.salt), "hex"), b = Buffer.from(u.hash, "hex"); return a.length === b.length && crypto.timingSafeEqual(a, b); };
   const EMAIL = /^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{2,}$/;
   const pubUser = u => ({ id: u.id, name: u.name, email: u.email });
   const fails = new Map();
   function limited(req, key) { const f = fails.get(key); return f && f.until > Date.now(); }
-  function fail(key) { const f = fails.get(key) || { n: 0 }; f.n++; f.until = f.n >= 6 ? Date.now() + 15 * 60 * 1000 : 0; fails.set(key, f); }
+  const regs = new Map();
+  const regLimited = ip => { const now = Date.now(), a = (regs.get(ip) || []).filter(t => now - t < 3600e3); regs.set(ip, a); if (regs.size > 5000) regs.delete(regs.keys().next().value); return a.length >= 10; };
+  const regNote = ip => regs.get(ip).push(Date.now());
+  function fail(key) { if (fails.size > 5000) for (const [k, v] of fails) if (!v.until || v.until < Date.now()) fails.delete(k);
+    const f = fails.get(key) || { n: 0 }; f.n++; f.until = f.n >= 6 ? Date.now() + 15 * 60 * 1000 : 0; fails.set(key, f); }
   const STATUSES = ["Diterima", "Dikerjakan", "Review", "Selesai", "Dibatalkan"];
   const json = express.json({ limit: "8kb" });
   const needOrigin = (req, res, next) => (sameOrigin(req) ? next() : res.status(403).json({ error: "Permintaan ditolak." }));
@@ -184,7 +192,7 @@ module.exports = function mount(ctx) {
   app.get("/ms/auth/me", (req, res) => { res.set("Cache-Control", "no-store"); const u = userFrom(req); res.json({ user: u ? pubUser(u) : null }); });
   app.post("/ms/auth/register", json, needOrigin, async (req, res) => {
     const key = "r:" + req.ip;
-    if (limited(req, key)) return res.status(429).json({ error: "Terlalu banyak percobaan. Coba lagi 15 menit lagi." });
+    if (limited(req, key) || regLimited(req.ip)) return res.status(429).json({ error: "Terlalu banyak percobaan. Coba lagi 15 menit lagi." });
     const name = str(req.body?.name, 60), email = str(req.body?.email, 254).toLowerCase(), pw = String(req.body?.password || "");
     if (!name) return res.status(400).json({ error: "Nama wajib diisi." });
     if (!EMAIL.test(email)) return res.status(400).json({ error: "Email tidak valid." });
@@ -192,7 +200,7 @@ module.exports = function mount(ctx) {
     if (db.users.some(u => u.email === email)) { fail(key); return res.status(409).json({ error: "Email ini sudah terdaftar. Coba masuk." }); }
     const salt = crypto.randomBytes(16).toString("hex");
     const u = { id: crypto.randomBytes(8).toString("hex"), name, email, salt, hash: hashPw(pw, salt), createdAt: new Date().toISOString() };
-    db.users.push(u); await saveDb(); setSession(res, u.id);
+    db.users.push(u); regNote(req.ip); await saveDb(); setSession(res, u.id);
     res.json({ ok: true, user: pubUser(u) });
   });
   app.post("/ms/auth/login", json, needOrigin, (req, res) => {
@@ -226,13 +234,14 @@ module.exports = function mount(ctx) {
       res.json({ ok: true, user: pubUser(u) });
     } catch { res.status(502).json({ error: "Tidak bisa menghubungi Google. Coba lagi." }); }
   });
-  app.post("/ms/auth/logout", (req, res) => { res.setHeader("Set-Cookie", "nx_user=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0"); res.json({ ok: true }); });
+  app.post("/ms/auth/logout", (req, res) => { res.setHeader("Set-Cookie", "nx_user=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0" + (SECURE_COOKIE ? "; Secure" : "")); res.json({ ok: true }); });
   app.post("/ms/auth/password", json, needOrigin, async (req, res) => {
     const u = userFrom(req); if (!u) return res.status(401).json({ error: "Silakan masuk dulu." });
     const old = String(req.body?.old || ""), nw = String(req.body?.new || "");
     if (u.hash && !checkPw(old, u)) return res.status(401).json({ error: "Sandi lama salah." });
     if (nw.length < 8 || nw.length > 100) return res.status(400).json({ error: "Sandi baru minimal 8 karakter." });
     u.salt = crypto.randomBytes(16).toString("hex"); u.hash = hashPw(nw, u.salt); await saveDb();
+    setSession(res, u.id); // perangkat ini tetap masuk; sesi di perangkat lain dibatalkan
     res.json({ ok: true });
   });
   app.get("/ms/auth/orders", (req, res) => {
