@@ -141,6 +141,46 @@ const MIGRATIONS = [
   ALTER TABLE orders ADD COLUMN attach_json TEXT;
   ALTER TABLE orders ADD COLUMN result_text TEXT;
   `,
+  /* 5: panel admin Catatan Akademik (terpisah dari admin nextaja): akun + peran, sesi, log aktivitas, catatan internal pesanan */
+  `
+  CREATE TABLE ca_admins (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    username      TEXT NOT NULL UNIQUE,
+    name          TEXT NOT NULL,
+    role          TEXT NOT NULL,              -- owner | editor | cs
+    salt          TEXT NOT NULL,
+    hash          TEXT NOT NULL,
+    active        INTEGER NOT NULL DEFAULT 1,
+    created_at    INTEGER NOT NULL,
+    last_login_at INTEGER
+  );
+  CREATE TABLE ca_sessions (
+    token_hash TEXT PRIMARY KEY,              -- sha256 token; token mentah hanya di cookie
+    admin_id   INTEGER NOT NULL,              -- 0 = pemilik (sandi dari .env)
+    expires_at INTEGER NOT NULL,
+    created_at INTEGER NOT NULL
+  );
+  CREATE INDEX ca_sessions_exp ON ca_sessions(expires_at);
+  CREATE TABLE ca_admin_log (
+    id      INTEGER PRIMARY KEY AUTOINCREMENT,
+    at      INTEGER NOT NULL,
+    admin   TEXT NOT NULL,
+    role    TEXT NOT NULL,
+    action  TEXT NOT NULL,                    -- mis. "POST /ms/admin/posts"
+    target  TEXT,
+    status  INTEGER,
+    ip_hash TEXT
+  );
+  CREATE INDEX ca_admin_log_at ON ca_admin_log(at);
+  CREATE TABLE order_notes (
+    id       INTEGER PRIMARY KEY AUTOINCREMENT,
+    order_id TEXT NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+    admin    TEXT NOT NULL,
+    text     TEXT NOT NULL,
+    at       INTEGER NOT NULL
+  );
+  CREATE INDEX order_notes_order ON order_notes(order_id, at);
+  `,
 ];
 
 

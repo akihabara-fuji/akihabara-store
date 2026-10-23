@@ -48,6 +48,7 @@ module.exports = function mountLayanan({ app, express, db, settings, orders, roo
       try {
         const b = req.body || {}, files = req.files || [];
         const sv = SV[b.service]; if (!sv) throw bad(400, "Pilih jenis layanan.");
+        if (String(settings.get("layanan_nonaktif") || "").split(",").includes(b.service)) throw bad(409, `Layanan ${sv.label} sedang tidak dibuka. Hubungi admin lewat WhatsApp.`);
         const wa = wa62(b.wa); if (!wa) throw bad(400, "Nomor WhatsApp tidak valid.");
         if (b.agree !== "true") throw bad(400, "Centang persetujuan syarat dan kebijakan privasi.");
         const brief = String(b.brief || "").trim().slice(0, 4000);
@@ -149,3 +150,4 @@ module.exports = function mountLayanan({ app, express, db, settings, orders, roo
   });
   return { SV };
 };
+module.exports.SV = SV;

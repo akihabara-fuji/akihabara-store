@@ -186,6 +186,8 @@ function sameOrigin(req) {
   try { return new URL(o).host === req.headers.host; } catch { return false; }
 }
 function requireAdmin(req, res, next) {
+  // API milik panel Catatan Akademik memakai login CA sendiri (admin-ca/auth.js); sisanya tetap login admin nextaja.
+  if (caAuth.isCaPath(req.path)) return caAuth.guard(req, res, next);
   if (!isAuthed(req)) return res.status(401).json({ error: "Sesi habis, silakan login lagi." });
   if (req.method !== "GET" && !sameOrigin(req)) return res.status(403).json({ error: "Permintaan ditolak." });
   next();
@@ -306,6 +308,16 @@ app.get(["/", "/index.html"], async (req, res) => {
     .replace('<style id="theme-vars"></style>', `<style id="theme-vars">${themeCss(st.theme)}</style>`)
     .replace('<script id="store-data" type="application/json">null</script>', `<script id="store-data" type="application/json">${json}</script>`));
 });
+/* ---------------- admin Catatan Akademik: login, peran, dan sesi sendiri (terpisah dari admin nextaja) ---------------- */
+const caDb = require("./parafrase/db").open(process.env.PARAFRASE_DB || path.join(ROOT, "data", "parafrase.db"));
+const CA_PASSWORD = process.env.CA_ADMIN_PASSWORD || ADMIN_PASSWORD;
+const caSecret = (() => { const f = path.join(ROOT, "data", "private", ".ca-admin-secret"); try { const s = fs.readFileSync(f, "utf8").trim(); if (s.length >= 32) return s; } catch {} const s = crypto.randomBytes(32).toString("hex"); fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, s, { mode: 0o600 }); return s; })();
+const caAuth = require("./admin-ca/auth")({ db: caDb, getCookie, sameOrigin, SECURE_COOKIE, ownerPassword: CA_PASSWORD.length >= 10 ? CA_PASSWORD : "", sharedWithNextaja: !process.env.CA_ADMIN_PASSWORD, secret: caSecret });
+caAuth.mount(app, express);
+if (!process.env.CA_ADMIN_PASSWORD) console.warn("[!] CA_ADMIN_PASSWORD belum diatur: akun 'pemilik' panel Catatan Akademik memakai ADMIN_PASSWORD nextaja.");
+/* Halaman admin akademik lama hanya di domain akademik; di domain lain diarahkan ke panel CA. */
+app.get(/^\/admin\/(parafrase|layanan)\/?$/, (req, res, next) => (ACAD_HOSTS.length && !isAcadHost(req) ? res.redirect(302, `${ACAD}/admin/`) : next()));
+
 /* ---------------- blog + akun customer ---------------- */
 const extra = require("./blog-akun")({ app, express, requireAdmin, sameOrigin, getCookie, SECURE_COOKIE, ROOT, SITE: ACAD, getSettings: () => store.settings });
 
@@ -317,8 +329,13 @@ app.post("/ms/parafrase/order", needLogin);
 app.post("/ms/layanan/order", needLogin);
 app.post("/ms/audit/order", needLogin);
 app.post("/ms/audit/upload", needLogin);
-require("./parafrase")({ app, express, requireAdmin, sameOrigin, ROOT });
+const pf = require("./parafrase")({ app, express, requireAdmin, sameOrigin, ROOT, db: caDb });
+require("./admin-ca")({ app, express, db: caDb, auth: caAuth, requireAdmin, blog: extra, settings: pf.settings, orders: pf.orders, ROOT, UPLOADS, sharp, ACAD });
 
+/* /admin: di domain akademik = panel Catatan Akademik; di domain lain = panel toko nextaja. Satu domain (dev) -> panel CA di /admin-ca/. */
+const caPanel = express.static(path.join(ROOT, "admin-ca", "public"), { index: "index.html", maxAge: 0 });
+app.use("/admin", (req, res, next) => (isAcadHost(req) ? caPanel(req, res, next) : next()));
+if (!ACAD_HOSTS.length) app.use("/admin-ca", caPanel);
 app.use("/admin", express.static(path.join(ROOT, "admin"), { index: "index.html" }));
 app.use("/uploads", express.static(UPLOADS, { maxAge: "30d", immutable: true }));
 app.use(express.static(PUB, { maxAge: "1h", index: false }));

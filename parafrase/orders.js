@@ -290,7 +290,7 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
     try { res.set("Cache-Control", "no-store").type("jpeg").send(await fsp.readFile(priv(o.proof_path))); } catch { res.status(404).end(); }
   });
   const wrap = fn => (req, res) => { try { res.json({ ok: true, order: view(fn(req)) }); } catch (e) { res.status(e.status || 500).json({ error: e.message }); } };
-  app.post("/ms/admin/parafrase/orders/:id/confirm", requireAdmin, wrap(req => confirmPayment(String(req.params.id), "admin")));
+  app.post("/ms/admin/parafrase/orders/:id/confirm", requireAdmin, wrap(req => confirmPayment(String(req.params.id), (req.admin && req.admin.name) || "admin")));
   app.post("/ms/admin/parafrase/orders/:id/reject", requireAdmin, J, wrap(req => { rejectPayment(String(req.params.id), req.body && req.body.reason); return db.prepare("SELECT * FROM orders WHERE id=?").get(String(req.params.id)); }));
   app.post("/ms/admin/parafrase/qris", requireAdmin, (req, res) => {
     multer({ storage: multer.memoryStorage(), limits: { fileSize: PROOF_MAX, files: 1 } }).single("qris")(req, res, async err => {

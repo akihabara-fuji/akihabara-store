@@ -309,23 +309,90 @@ module.exports = function mount(ctx) {
     if (onAcadHost(req)) { topics = Object.fromEntries(Object.entries(TOPICS).filter(([k]) => ACAD_TOPICS.includes(k))); all = all.filter(p => ACAD_TOPICS.includes(p.topic)); }
     res.json({ topics, posts: all.filter(p => !p.trashedAt), trash: all.filter(p => p.trashedAt) });
   });
+  /* Status tulisan: draft (draf), review (menunggu review editor), scheduled (terbit otomatis di publishAt), published (terbit).
+     Field tambahan hanya diubah bila dikirim, supaya editor lama yang belum mengenal field baru tidak menghapusnya. */
+  const STATUSES_POST = ["draft", "review", "scheduled", "published"];
+  const cleanTags = v => [...new Set((Array.isArray(v) ? v : String(v || "").split(",")).map(t => str(t, 30).toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9 -]/g, "").trim().replace(/\s+/g, "-")).filter(Boolean))].slice(0, 8);
+  const REV_DIR = path.join(DATA_DIR, "blog-revisions");
+  const revFile = id => path.join(REV_DIR, `${String(id).replace(/[^a-f0-9]/gi, "")}.json`);
+  const readRevs = id => readJson(revFile(id), []);
+  async function pushRevision(p, by) {
+    await fsp.mkdir(REV_DIR, { recursive: true });
+    const revs = readRevs(p.id);
+    revs.unshift({ at: new Date().toISOString(), by, title: p.title, excerpt: p.excerpt || "", body: p.body || "", status: p.status });
+    await writeJson(revFile(p.id), revs.slice(0, 30));
+  }
+  function validatePost(b, current) {
+    const title = str(b.title, 140);
+    if (!title) throw new Error("Judul wajib diisi.");
+    const status = STATUSES_POST.includes(b.status) ? b.status : "draft";
+    const body = String(b.body ?? (current ? current.body : "") ?? "").slice(0, 60000);
+    let publishAt = current ? current.publishAt : undefined;
+    if (status === "scheduled") {
+      const t = Date.parse(b.publishAt);
+      if (!Number.isFinite(t)) throw new Error("Isi tanggal dan jam terbit untuk tulisan terjadwal.");
+      if (t < Date.now() - 60e3) throw new Error("Jadwal terbit sudah lewat. Pilih waktu yang akan datang atau pilih Terbitkan sekarang.");
+      publishAt = new Date(t).toISOString();
+    }
+    if (status === "published" || status === "scheduled") { // aturan struktur judul untuk Google: tulisan panjang wajib punya sub-judul H2
+      const words = (body.match(/\S+/g) || []).length;
+      if (words >= 300 && !/^\s*##?\s+\S/m.test(body)) throw new Error("Tulisan sepanjang ini wajib punya sub-judul H2. Tulis ## di awal baris judul bagian, atau simpan sebagai Draf.");
+    }
+    return { title, status, body, publishAt };
+  }
   app.post("/ms/admin/posts", requireAdmin, adminJson, async (req, res) => {
     const b = req.body || {};
-    const title = str(b.title, 140);
-    if (!title) return res.status(400).json({ error: "Judul wajib diisi." });
-    const topic = TOPICS[b.topic] && (!onAcadHost(req) || ACAD_TOPICS.includes(b.topic)) ? b.topic : (onAcadHost(req) ? "study" : "social");
-    const status = b.status === "published" ? "published" : "draft";
-    if (status === "published") { // aturan struktur judul untuk Google: tulisan panjang wajib punya sub-judul H2
-      const bodyTxt = String(b.body || ""), words = (bodyTxt.match(/\S+/g) || []).length;
-      if (words >= 300 && !/^\s*##?\s+\S/m.test(bodyTxt)) return res.status(400).json({ error: "Tulisan sepanjang ini wajib punya sub-judul H2. Tulis ## di awal baris judul bagian, atau simpan sebagai Draf." });
-    }
-    const now = new Date().toISOString();
     let p = b.id ? blog.posts.find(x => x.id === b.id) : null;
-    if (!p) { p = { id: crypto.randomBytes(6).toString("hex"), slug: uniqueSlug(slugify(title)), createdAt: now }; blog.posts.push(p); }
-    Object.assign(p, { title, topic, excerpt: str(b.excerpt, 260), body: String(b.body || "").slice(0, 60000), cover: img(b.cover), status, updatedAt: now });
-    if (status === "published" && !p.publishedAt) p.publishedAt = now;
+    if (b.id && !p) return res.status(404).json({ error: "Tulisan tidak ditemukan." });
+    let v; try { v = validatePost(b, p); } catch (e) { return res.status(400).json({ error: e.message }); }
+    const topic = TOPICS[b.topic] && (!onAcadHost(req) || ACAD_TOPICS.includes(b.topic)) ? b.topic : (p ? p.topic : (onAcadHost(req) ? "study" : "social"));
+    const by = (req.admin && req.admin.name) || "admin";
+    const now = new Date().toISOString();
+    const isNew = !p;
+    if (p && (p.title !== v.title || (p.body || "") !== v.body || (p.excerpt || "") !== str(b.excerpt, 260))) await pushRevision(p, by);
+    if (!p) { p = { id: crypto.randomBytes(6).toString("hex"), slug: uniqueSlug(slugify(v.title)), createdAt: now, author: DEFAULT_AUTHOR }; blog.posts.push(p); }
+    const wasLive = !isNew && isLive(p);
+    const contentChanged = isNew || p.title !== v.title || (p.body || "") !== v.body || (p.excerpt || "") !== str(b.excerpt, 260);
+    Object.assign(p, { title: v.title, topic, excerpt: str(b.excerpt, 260), body: v.body, cover: img(b.cover), status: v.status, updatedAt: now, updatedBy: by });
+    if ("tags" in b) p.tags = cleanTags(b.tags);
+    if ("author" in b) p.author = str(b.author, 60) || DEFAULT_AUTHOR;
+    if ("coverAlt" in b) p.coverAlt = str(b.coverAlt, 160);
+    if ("coverCaption" in b) p.coverCaption = str(b.coverCaption, 200);
+    if ("metaTitle" in b) p.metaTitle = str(b.metaTitle, 70);
+    if ("metaDesc" in b) p.metaDesc = str(b.metaDesc, 170);
+    if (v.status === "scheduled") { p.publishAt = v.publishAt; p.publishedAt = v.publishAt; } else delete p.publishAt;
+    if (v.status === "published" && (!p.publishedAt || Date.parse(p.publishedAt) > Date.now())) p.publishedAt = now;
+    // slug hanya boleh diubah selama belum pernah tayang (URL yang sudah tayang tidak diganti)
+    if ("slug" in b && !wasLive && str(b.slug, 80)) p.slug = uniqueSlug(slugify(b.slug), p.id);
+    if (contentChanged && wasLive) p.contentUpdatedAt = now;
     await saveBlog(); res.json({ ok: true, post: p });
-    if (status === "published") pingIndex([p.slug]);
+    if (isLive(p)) pingIndex([p.slug]);
+  });
+  app.post("/ms/admin/posts/:id/featured", requireAdmin, async (req, res) => {
+    const p = blog.posts.find(x => x.id === req.params.id); if (!p) return res.status(404).json({ error: "Tulisan tidak ditemukan." });
+    const on = !p.featured; blog.posts.forEach(x => { delete x.featured; }); if (on) p.featured = true;
+    await saveBlog(); res.json({ ok: true, featured: on });
+  });
+  app.get("/ms/admin/posts/:id/revisions", requireAdmin, (req, res) => {
+    const p = blog.posts.find(x => x.id === req.params.id); if (!p) return res.status(404).json({ error: "Tulisan tidak ditemukan." });
+    res.set("Cache-Control", "no-store").json({ items: readRevs(p.id).map((r, n) => ({ n, at: r.at, by: r.by, title: r.title, status: r.status, words: (r.body.match(/\S+/g) || []).length })) });
+  });
+  app.get("/ms/admin/posts/:id/revisions/:n", requireAdmin, (req, res) => {
+    const r = readRevs(req.params.id)[Number(req.params.n)];
+    if (!r) return res.status(404).json({ error: "Versi tidak ditemukan." });
+    res.set("Cache-Control", "no-store").json(r);
+  });
+  /* Pratinjau memakai template publik yang sebenarnya; hanya untuk admin, noindex, tidak di-cache. */
+  const sendPreview = (res, p) => res.set({ "Cache-Control": "no-store", "X-Robots-Tag": "noindex, nofollow" }).type("html").send(articlePage(p, { preview: true }));
+  app.get("/ms/admin/posts/:id/preview", requireAdmin, (req, res) => {
+    const p = blog.posts.find(x => x.id === req.params.id); if (!p) return res.status(404).json({ error: "Tulisan tidak ditemukan." });
+    sendPreview(res, p);
+  });
+  app.post("/ms/admin/preview-page", requireAdmin, adminJson, (req, res) => {
+    const b = req.body || {}, cur = b.id ? blog.posts.find(x => x.id === b.id) : null;
+    const p = { ...(cur || { slug: "pratinjau", topic: "study" }), title: str(b.title, 140) || "(Judul belum diisi)", excerpt: str(b.excerpt, 260), body: String(b.body || "").slice(0, 60000), cover: img(b.cover), status: STATUSES_POST.includes(b.status) ? b.status : "draft",
+      topic: TOPICS[b.topic] ? b.topic : (cur ? cur.topic : "study"), tags: cleanTags(b.tags), author: str(b.author, 60) || DEFAULT_AUTHOR, coverAlt: str(b.coverAlt, 160), coverCaption: str(b.coverCaption, 200), metaTitle: str(b.metaTitle, 70), metaDesc: str(b.metaDesc, 170), publishAt: b.publishAt, publishedAt: (cur && cur.publishedAt) || new Date().toISOString() };
+    sendPreview(res, p);
   });
   app.post("/ms/admin/preview", requireAdmin, adminJson, (req, res) => {
     const b = req.body || {};
@@ -823,5 +890,5 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
   }
 
   // untuk sitemap. /blog-ut tidak didaftarkan: isinya sama dengan /blog (kanonis ke /blog).
-  return { userFrom, notFound, articlePage, isLive, posts: () => blog.posts, TOPICS, ACAD_TOPICS, pageUrls: () => (ACAD_ONLY ? [{ loc: `${SITE}/`, pri: "1.0" }] : []).concat(["/ruangakademikut", "/ruangakademikut/cek-parafrase-mandiri", "/ruangakademikut/audit", "/ruangakademikut/layanan"].map(u => ({ loc: `${SITE}${ACAD_ONLY ? (u === "/ruangakademikut" ? "/layanan-ut" : shortPath(u)) : u}`, pri: "0.7" }))), blogUrls: () => published().map(p => ({ loc: `${SITE}/blog/${p.slug}`, lastmod: String(modifiedAt(p) || "").slice(0, 10), pri: "0.6" })) };
+  return { userFrom, notFound, articlePage, isLive, posts: () => blog.posts, usersCount: () => db.users.length, TOPICS, ACAD_TOPICS, pageUrls: () => (ACAD_ONLY ? [{ loc: `${SITE}/`, pri: "1.0" }] : []).concat(["/ruangakademikut", "/ruangakademikut/cek-parafrase-mandiri", "/ruangakademikut/audit", "/ruangakademikut/layanan"].map(u => ({ loc: `${SITE}${ACAD_ONLY ? (u === "/ruangakademikut" ? "/layanan-ut" : shortPath(u)) : u}`, pri: "0.7" }))), blogUrls: () => published().map(p => ({ loc: `${SITE}/blog/${p.slug}`, lastmod: String(modifiedAt(p) || "").slice(0, 10), pri: "0.6" })) };
 };

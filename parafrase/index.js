@@ -19,7 +19,7 @@ const createNotifier = require("./notify");
 
 module.exports = function mount(ctx) {
   const { app, express, requireAdmin, ROOT, sameOrigin } = ctx;
-  const db = open(process.env.PARAFRASE_DB || path.join(ROOT, "data", "parafrase.db"));
+  const db = ctx.db || open(process.env.PARAFRASE_DB || path.join(ROOT, "data", "parafrase.db"));
   const settings = create(db);
 
   /* Publik: hanya harga, minimum, jalur cepat, dan kontak. Cache pendek agar perubahan admin cepat terlihat. */
@@ -35,7 +35,7 @@ module.exports = function mount(ctx) {
   });
   app.put("/ms/admin/parafrase/settings", requireAdmin, express.json({ limit: "8kb" }), (req, res) => {
     try {
-      const values = settings.set(req.body && req.body.values, "admin");
+      const values = settings.set(req.body && req.body.values, (req.admin && req.admin.name) || "admin");
       res.json({ ok: true, values });
     } catch (e) { res.status(400).json({ error: e.message }); }
   });

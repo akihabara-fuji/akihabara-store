@@ -45,6 +45,7 @@ const DEFS = {
   gtm_id:                       { type: "str",  re: /^GTM-[A-Z0-9]{4,10}$/, allowEmpty: true, def: "", pub: true },
   google_verify_file:           { type: "str",  re: /^google[a-z0-9]{8,40}\.html$/, allowEmpty: true, def: "" },
   qris_image_path:              { type: "str",  re: /^[a-z0-9/_.-]{0,200}$/i, allowEmpty: true, def: "" },
+  layanan_nonaktif:             { type: "str",  re: /^[a-z0-9_]+(,[a-z0-9_]+)*$/, allowEmpty: true, def: "", pub: true }, // kode layanan yang ditutup, dipisah koma
 };
 const KEYS = Object.keys(DEFS);
 
