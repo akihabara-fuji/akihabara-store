@@ -295,7 +295,7 @@ app.get("/sitemap.xml", (req, res) => {
   const urls = ACAD === SITE
     ? [{ loc: `${SITE}/`, pri: "1.0" }, { loc: `${SITE}/blog`, pri: "0.8" }, ...extra.pageUrls(), ...extra.blogUrls()]
     : isAcadHost(req)
-      ? [{ loc: `${ACAD}/blog`, pri: "0.8" }, ...extra.pageUrls(), ...extra.blogUrls()]
+      ? [{ loc: `${ACAD}/blog`, lastmod: extra.blogUrls().map(u => u.lastmod).filter(Boolean).sort().pop(), pri: "0.8" }, ...extra.pageUrls(), ...extra.blogUrls()]
       : [{ loc: `${SITE}/`, pri: "1.0" }];
   res.type("application/xml").send(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(u => `  <url><loc>${u.loc}</loc>${u.lastmod ? `<lastmod>${u.lastmod}</lastmod>` : ""}<priority>${u.pri}</priority></url>`).join("\n")}\n</urlset>\n`);
 });
