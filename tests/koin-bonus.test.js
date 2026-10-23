@@ -17,6 +17,16 @@ test("bonus daftar: sekali per akun, bisa dimatikan, dan tidak dihitung sebagai 
   assert.strictEqual(koin.balance("u2"), 0);
 });
 
+test("kredit koin gratis dari admin (2000): masuk saldo, bukan uang masuk, tidak memunculkan kekurangan kas", () => {
+  const { koin } = mk();
+  const r = koin.adjust("admin-konten", 2000, "kredit konten admin", "pemilik", undefined, true);
+  assert.strictEqual(r.balance_after, 2000);
+  const s = koin.summary();
+  assert.strictEqual(s.promoCoins, 2000); assert.strictEqual(s.liabilityRp, 0); assert.strictEqual(s.incomeRp, 0); assert.strictEqual(s.shortfallRp, 0);
+  koin.adjust("lain", 10, "koreksi nyata", "pemilik");            // tanpa promo = koreksi biasa, tetap dihitung sebagai saldo bernilai
+  assert.strictEqual(koin.summary().liabilityCoins, 10);
+});
+
 test("ringkasan dana: bonus terpakai tidak menjadi pendapatan, bonus tersisa tidak menjadi kewajiban kas", () => {
   const { koin } = mk();
   koin.welcome("a");                                   // 7 bonus

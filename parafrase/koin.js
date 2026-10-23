@@ -43,10 +43,12 @@ function createKoin(db, { settings, now: clock } = {}) {
     });
   }
 
-  function adjust(uid, delta, reason, by, at) {
+  /* promo = koin gratis dari admin (hadiah/kredit uji): dicatat seperti bonus daftar, jadi tidak dianggap uang masuk dan tidak menjadi kewajiban kas. */
+  function adjust(uid, delta, reason, by, at, promo) {
     reason = String(reason || "").trim();
     if (reason.length < 5) throw err(400, "Alasan penyesuaian wajib diisi (minimal 5 huruf).");
-    return tx(() => post(uid, delta, "adjust", crypto.randomBytes(8).toString("hex"), `${reason} (oleh ${by || "admin"})`, at));
+    const kind = promo && delta > 0 ? "bonus" : "adjust";
+    return tx(() => post(uid, delta, kind, (kind === "bonus" ? "adm:" : "") + crypto.randomBytes(8).toString("hex"), `${reason} (oleh ${by || "admin"})`, at));
   }
 
   /* ---------- isi koin lewat QRIS manual ---------- */

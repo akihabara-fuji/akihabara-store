@@ -119,7 +119,7 @@ module.exports = function mountKoin({ app, express, db, settings, koin, root, sa
     const b = req.body || {}, u = users && users.byEmail && users.byEmail(b.email);
     if (!u) return no(res, 404, "Akun dengan email itu tidak ditemukan.");
     const delta = Number(b.delta); if (!Number.isInteger(delta) || delta === 0 || Math.abs(delta) > 5000) return no(res, 400, "Jumlah koin harus bilangan bulat, bukan 0, maksimal 5.000.");
-    const r = koin.adjust(u.id, delta, b.reason, who(req));
+    const r = koin.adjust(u.id, delta, b.reason, who(req), undefined, b.promo === true);
     res.json({ ok: true, balance: r.balance_after, email: u.email });
   }));
 };
