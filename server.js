@@ -319,7 +319,7 @@ if (!process.env.CA_ADMIN_PASSWORD) console.warn("[!] CA_ADMIN_PASSWORD belum di
 app.get(/^\/admin\/(parafrase|layanan)\/?$/, (req, res, next) => (ACAD_HOSTS.length && !isAcadHost(req) ? res.redirect(302, `${ACAD}/admin/`) : next()));
 
 /* ---------------- blog + akun customer ---------------- */
-const extra = require("./blog-akun")({ app, express, requireAdmin, sameOrigin, getCookie, SECURE_COOKIE, ROOT, SITE: ACAD, getSettings: () => store.settings });
+const extra = require("./blog-akun")({ app, express, requireAdmin, sameOrigin, getCookie, SECURE_COOKIE, ROOT, SITE: ACAD, getSettings: () => store.settings, getTexts: () => (typeof pf !== "undefined" ? pf.texts : null) });
 
 /* ---------------- Cek dan Parafrase Mandiri (modul terpisah, lihat parafrase/) ---------------- */
 /* fitur coba (unggah & pesan) wajib login; halaman dan harga tetap terbuka */
@@ -330,7 +330,7 @@ app.post("/ms/layanan/order", needLogin);
 app.post("/ms/audit/order", needLogin);
 app.post("/ms/audit/upload", needLogin);
 const pf = require("./parafrase")({ app, express, requireAdmin, sameOrigin, ROOT, db: caDb });
-require("./admin-ca")({ app, express, db: caDb, auth: caAuth, requireAdmin, blog: extra, settings: pf.settings, orders: pf.orders, ROOT, UPLOADS, sharp, ACAD });
+require("./admin-ca")({ app, express, db: caDb, auth: caAuth, requireAdmin, blog: extra, settings: pf.settings, orders: pf.orders, texts: pf.texts, pages: pf.pages, ROOT, UPLOADS, sharp, ACAD });
 
 /* /admin: di domain akademik = panel Catatan Akademik; di domain lain = panel toko nextaja. Satu domain (dev) -> panel CA di /admin-ca/. */
 const caPanel = express.static(path.join(ROOT, "admin-ca", "public"), { index: "index.html", maxAge: 0 });

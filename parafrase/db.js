@@ -181,6 +181,24 @@ const MIGRATIONS = [
   );
   CREATE INDEX order_notes_order ON order_notes(order_id, at);
   `,
+  /* 6: kamus teks situs akademik yang bisa diubah admin tanpa menyentuh VPS (sitetexts.js) + riwayat perubahannya */
+  `
+  CREATE TABLE site_texts (
+    orig       TEXT PRIMARY KEY,           -- teks asli di halaman (spasi dirapikan)
+    value      TEXT NOT NULL,              -- teks pengganti
+    updated_by TEXT,
+    updated_at INTEGER NOT NULL
+  );
+  CREATE TABLE site_texts_log (
+    id        INTEGER PRIMARY KEY AUTOINCREMENT,
+    orig      TEXT NOT NULL,
+    old_value TEXT,                        -- null = bawaan
+    new_value TEXT,                        -- null = dikembalikan ke bawaan
+    by        TEXT,
+    at        INTEGER NOT NULL
+  );
+  CREATE INDEX site_texts_log_at ON site_texts_log(at);
+  `,
 ];
 
 

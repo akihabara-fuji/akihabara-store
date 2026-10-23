@@ -11,7 +11,7 @@
 set -euo pipefail
 REF="${1:?pakai: update-ca-final.sh <commit>}"
 APP=/var/www/mahyra-serv
-KNOWN=(d3321cb ea4b557 4a8953e 3f29ccc e31a933 08cf5f2)   # 4a8953e = rilis CA pertama (live 23 Okt 14:17 WIB)
+KNOWN=(d3321cb ea4b557 4a8953e 3f29ccc e31a933 08cf5f2 12cfe4a)   # 4a8953e = rilis CA pertama (live 23 Okt 14:17 WIB)
 GH=https://codeload.github.com/akihabara-fuji/akihabara-store/tar.gz
 cd "$APP"
 

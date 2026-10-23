@@ -35,6 +35,7 @@
   const NAV = [
     { items: [["dashboard", "Dashboard", "home", ALL]] },
     { h: "Konten", items: [["posts", "Artikel Blog", "doc", ED], ["posts/new", "Tulis Artikel", "pen", ED], ["taxonomy", "Kategori & Tag", "tag", ED], ["media", "Media", "img", ED], ["comments", "Komentar", "chat", ED]] },
+    { h: "Tampilan Situs", items: [["testimonials", "Testimoni", "chat", ED], ["texts", "Teks & Nama", "pen", OWN]] },
     { h: "Pesanan", items: [["orders", "Pesanan Layanan", "box", CS, true], ["payments", "Konfirmasi Pembayaran", "card", CS], ["tools/parafrase", "Antrean Cek & Parafrase", "list", CS], ["tools/layanan", "Kirim Hasil Layanan", "send", CS]] },
     { h: "Pengguna", items: [["customers", "Pelanggan", "users", CS]] },
     { h: "Lainnya", items: [["services", "Layanan & Harga", "price", OWN], ["reports", "Laporan & Statistik", "chart", OWN], ["settings", "Pengaturan Website", "cog", OWN], ["seo", "SEO & Sitemap", "search", OWN], ["admins", "Admin & Peran", "shield", OWN], ["log", "Log Aktivitas", "clock", OWN]] },
@@ -142,7 +143,7 @@
     [/^taxonomy$/, ED, pTaxonomy], [/^media$/, ED, pMedia], [/^comments$/, ED, pComments],
     [/^orders$/, CS, pOrders], [/^orders\/([A-Za-z0-9-]+)$/, CS, m => pOrder(m[1])], [/^payments$/, CS, pPayments],
     [/^tools\/(parafrase|layanan)$/, CS, m => pEmbed(m[1])], [/^customers$/, CS, pCustomers],
-    [/^services$/, OWN, pServices], [/^reports$/, OWN, pReports], [/^settings$/, OWN, pSettings], [/^seo$/, OWN, pSeo], [/^admins$/, OWN, pAdmins], [/^log$/, OWN, pLog], [/^account$/, ALL, pAccount],
+    [/^testimonials$/, ED, pTestimonials], [/^texts$/, OWN, pTexts], [/^services$/, OWN, pServices], [/^reports$/, OWN, pReports], [/^settings$/, OWN, pSettings], [/^seo$/, OWN, pSeo], [/^admins$/, OWN, pAdmins], [/^log$/, OWN, pLog], [/^account$/, ALL, pAccount],
   ];
   const params = () => new URLSearchParams((location.hash.split("?")[1]) || "");
   const go = (path, q) => { const s = q ? "?" + new URLSearchParams(Object.entries(q).filter(([, v]) => v !== "" && v != null)).toString() : ""; location.hash = "#/" + path + (s === "?" ? "" : s); };
@@ -565,18 +566,73 @@
 
   /* ================= LAINNYA (pemilik) ================= */
   const saveSettings = values => api("/ms/admin/parafrase/settings", { method: "PUT", json: { values } });
+
+  /* ================= TAMPILAN SITUS: teks & nama, testimoni ================= */
+  async function pTexts() {
+    const d = await api("/ms/admin/ca/texts"), files = d.files || {}, fileOf = label => Object.keys(files).find(k => files[k] === label);
+    const state = { q: "", page: "", only: false };
+    setPage("Teks & Nama", "Ganti nama menu, judul, deskripsi layanan, dan teks halaman publik tanpa membuka VPS", `<div class="notice info">Klik <b>Ubah</b> pada teks yang ingin diganti. Perubahan berlaku <b>langsung di semua tempat</b> yang memakai teks yang sama (mis. nama menu). Harga dan teks yang diisi otomatis oleh sistem tidak ada di daftar ini. Nama layanan di formulir pesanan diubah di <a href="#/services">Layanan &amp; Harga</a>.</div>
+      <div class="card"><div class="bd"><div class="bar"><input class="in grow" id="txQ" type="search" placeholder="Cari teks…" aria-label="Cari teks"><select class="in" id="txP" style="max-width:260px" aria-label="Halaman"><option value="">Semua halaman</option>${d.pages.map(p => "<option>" + esc(p) + "</option>").join("")}</select><label class="bar small"><input type="checkbox" id="txO"> Hanya yang sudah saya ubah</label></div></div>
+      <div class="tbl-wrap"><table class="t"><thead><tr><th>Teks di situs</th><th>Halaman</th><th></th></tr></thead><tbody id="txB"></tbody></table></div></div>
+      <div class="card"><div class="hd"><h2>Riwayat perubahan teks</h2></div><div class="tbl-wrap">${d.log.length ? '<table class="t"><thead><tr><th>Waktu</th><th>Oleh</th><th>Sebelum</th><th>Sesudah</th></tr></thead><tbody>' + d.log.map(l => "<tr><td>" + esc(dt(l.at)) + "</td><td>" + esc(l.by) + "</td><td>" + esc(l.old_value || l.orig) + "</td><td>" + esc(l.new_value || "(dikembalikan ke bawaan)") + "</td></tr>").join("") + "</tbody></table>" : '<div class="empty">Belum ada perubahan.</div>'}</div></div>`);
+    const draw = () => {
+      const q = state.q.toLowerCase(), rows = d.items.filter(i => (!state.page || i.pages.includes(state.page)) && (!state.only || i.value != null) && (!q || (i.orig + " " + (i.value || "")).toLowerCase().includes(q))).slice(0, 300);
+      $("#txB").innerHTML = rows.length ? rows.map((i, n) => "<tr><td>" + (i.value != null ? "<b>" + esc(i.value) + '</b><div class="small faint">Bawaan: ' + esc(i.orig) + "</div>" : esc(i.orig)) + (i.orphan ? '<div class="small faint">Teks ini sudah tidak ada di halaman. Kembalikan untuk membersihkan.</div>' : "") + '</td><td class="small">' + esc(i.pages.join(", ") || "-") + (i.count > 1 ? " · " + i.count + "×" : "") + '</td><td style="white-space:nowrap"><button class="btn sm" data-ed="' + n + '">Ubah</button>' + (i.value != null ? ' <button class="btn sm" data-rs="' + n + '">Kembalikan</button>' : "") + "</td></tr>").join("") : '<tr><td colspan="3"><div class="empty">Tidak ada teks yang cocok.</div></td></tr>';
+      $$("[data-ed]").forEach(b => b.onclick = () => edit(rows[+b.dataset.ed]));
+      $$("[data-rs]").forEach(b => b.onclick = async () => { const i = rows[+b.dataset.rs]; if (!await confirmAct("Kembalikan ke teks bawaan?", "Teks <b>" + esc(i.value) + "</b> diganti lagi menjadi <b>" + esc(i.orig) + "</b>.", "Kembalikan")) return; try { await api("/ms/admin/ca/texts/reset", { json: { orig: i.orig } }); toast("Dikembalikan"); route(); } catch (e) { fail(e); } });
+    };
+    async function edit(i) {
+      const pg = i.pages.map(fileOf).find(Boolean);
+      const v = await dialog({ title: "Ubah teks", wide: !!pg, body: '<p class="small muted">Bawaan: <b>' + esc(i.orig) + "</b><br>Tampil di: " + esc(i.pages.join(", ") || "-") + "</p>" + (pg ? '<div class="bar"><button type="button" class="btn sm" id="txPv">Lihat pratinjau halaman</button><span class="small faint">Teks yang diubah disorot kuning. Belum disimpan.</span></div><iframe id="txFr" sandbox title="Pratinjau" style="width:100%;height:340px;border:1px solid var(--border);border-radius:10px;background:#fff;display:none"></iframe>' : ""),
+        input: { label: "Teks pengganti", value: i.value != null ? i.value : i.orig, max: d.max, required: true, hint: "Tulis teks biasa, maksimal " + d.max + " karakter, tanpa tanda < atau >." },
+        onOpen: dg => { const pb = $("#txPv", dg); if (pb) pb.onclick = () => busy(pb, async () => { try { const r = await api("/ms/admin/ca/texts/preview", { json: { page: pg, orig: i.orig, value: $("#dlgIn", dg).value } }); const fr = $("#txFr", dg); fr.style.display = "block"; fr.srcdoc = r.html.replace("<head>", '<head><base href="' + location.origin + '/">'); } catch (e) { $("#dlgErr", dg).textContent = e.message; } }); } });
+      if (!v) return;
+      try { await api("/ms/admin/ca/texts", { json: { orig: i.orig, value: v } }); toast("Tersimpan, langsung tayang"); route(); } catch (e) { fail(e); }
+    }
+    $("#txQ").oninput = debounce(e => { state.q = e.target.value; draw(); }, 150);
+    $("#txP").onchange = e => { state.page = e.target.value; draw(); };
+    $("#txO").onchange = e => { state.only = e.target.checked; draw(); };
+    draw();
+  }
+
+  async function pTestimonials() {
+    const d = await api("/ms/admin/ulasan");
+    setPage("Testimoni", "Ulasan asli pelanggan yang tampil di beranda Catatan Akademik", `<div class="notice info">Unggah tangkapan layar chat atau tulis kata pelanggan di sini. Di beranda tampil <b>6 testimoni terbaru yang berstatus Tampil</b>. Hanya unggah testimoni <b>asli</b> dan yang sudah diizinkan pelanggan; tutup nama atau nomor yang tidak perlu terlihat di tangkapan layar.</div>
+      <div class="card"><div class="hd"><h2 id="tmT">Tambah testimoni</h2></div><div class="bd"><form id="tmF" class="grid g2">
+        <label class="f">Nama pelanggan<input class="in" name="nama" maxlength="60" required placeholder="mis. Rina, S1 Manajemen"></label>
+        <label class="f">Keterangan (opsional)<input class="in" name="ket" maxlength="80" placeholder="mis. Pesan Metopen 1"></label>
+        <label class="f" style="grid-column:1/-1">Isi testimoni<textarea class="in" name="teks" rows="3" maxlength="500" required></textarea></label>
+        <label class="f">Tangkapan layar chat (opsional)<input class="in" type="file" name="img" accept="image/jpeg,image/png,image/webp"></label>
+        <div class="f"><label class="bar small"><input type="checkbox" name="tampil" checked> Tampilkan di beranda</label><label class="bar small"><input type="checkbox" name="izin" required> Pelanggan sudah mengizinkan ulasan ini ditayangkan</label></div>
+        <div class="bar" style="grid-column:1/-1"><button class="btn pri" type="submit">Simpan testimoni</button><button class="btn" type="button" id="tmR">Kosongkan form</button><span class="small faint" id="tmI"></span></div></form></div></div>
+      <div class="card"><div class="hd"><h2>Daftar testimoni (${d.items.length})</h2></div><div class="bd">${d.items.length ? '<div class="grid g2">' + d.items.map(x => '<div class="card"><div class="bd">' + (x.imgAdmin ? '<img src="' + esc(x.imgAdmin) + '" alt="" loading="lazy" style="max-width:100%;max-height:220px;object-fit:contain;border-radius:10px;border:1px solid var(--border)">' : "") + "<div><b>" + esc(x.nama) + "</b> " + (x.ket ? '<span class="small faint">' + esc(x.ket) + "</span>" : "") + '</div><p style="margin:0">' + esc(x.teks) + '</p><div class="bar">' + badge(x.tampil ? "Tampil" : "Disembunyikan", x.tampil ? "ok" : "mute") + (x.izin ? "" : badge("Izin belum dicatat", "warn")) + '<span class="grow"></span><button class="btn sm" data-e="' + esc(x.id) + '">Ubah</button><button class="btn sm" data-t="' + esc(x.id) + '">' + (x.tampil ? "Sembunyikan" : "Tampilkan") + '</button><button class="btn sm" data-d="' + esc(x.id) + '">Hapus</button></div></div></div>').join("") + "</div>" : '<div class="empty">Belum ada testimoni. Isi form di atas untuk menambah yang pertama.</div>'}</div></div>`);
+    const f = $("#tmF"); let eid = "";
+    const reset = () => { f.reset(); eid = ""; $("#tmT").textContent = "Tambah testimoni"; $("#tmI").textContent = ""; f.izin.required = true; };
+    $("#tmR").onclick = reset;
+    f.onsubmit = async e => {
+      e.preventDefault(); const fd = new FormData(f); fd.set("tampil", f.tampil.checked ? "1" : "0"); fd.set("izin", f.izin.checked ? "1" : "0"); if (eid) fd.set("id", eid); if (!f.img.files[0]) fd.delete("img");
+      await busy($("button[type=submit]", f), async () => { try { await api("/ms/admin/ulasan", { form: fd }); toast("Testimoni tersimpan"); route(); } catch (err) { fail(err); } });
+    };
+    $$("[data-e]").forEach(b => b.onclick = () => { const x = d.items.find(i => i.id === b.dataset.e); eid = x.id; f.nama.value = x.nama; f.ket.value = x.ket || ""; f.teks.value = x.teks; f.tampil.checked = !!x.tampil; f.izin.checked = true; f.izin.required = false; $("#tmT").textContent = "Ubah testimoni"; $("#tmI").textContent = "Gambar lama tetap dipakai kecuali Anda memilih gambar baru."; f.scrollIntoView({ behavior: "smooth", block: "center" }); f.nama.focus(); });
+    $$("[data-t]").forEach(b => b.onclick = async () => { try { await api("/ms/admin/ulasan/" + b.dataset.t + "/toggle", { method: "POST" }); route(); } catch (err) { fail(err); } });
+    $$("[data-d]").forEach(b => b.onclick = async () => { if (!await confirmAct("Hapus testimoni ini?", "Dihapus permanen beserta gambarnya. Bila ragu, pakai Sembunyikan.", "Hapus", "bad")) return; try { await api("/ms/admin/ulasan/" + b.dataset.d, { method: "DELETE" }); toast("Dihapus"); route(); } catch (err) { fail(err); } });
+  }
   async function pServices() {
     const d = await api("/ms/admin/ca/services");
     setPage("Layanan & Harga", "Harga dan status layanan yang tampil di situs", `<div class="notice info">${esc(d.note)}</div>
-      <div class="card"><div class="hd"><h2>Layanan</h2></div><div class="tbl-wrap"><table class="t"><thead><tr><th>Layanan</th><th>Jenis</th><th>Harga (Rp)</th><th>Status</th><th class="num">Total pesanan</th></tr></thead><tbody>${d.items.map(s => `<tr><td><b>${esc(s.label)}</b><div class="mono faint">${esc(s.key)}</div></td><td>${esc(s.kind)}</td><td><input class="in" type="number" min="0" step="1000" style="max-width:150px" data-price="${esc(s.priceKey)}" data-old="${s.price}" value="${s.price}" aria-label="Harga ${esc(s.label)}"></td><td><label class="bar small"><input type="checkbox" data-svc="${esc(s.key)}" ${s.active ? "checked" : ""}> Dibuka</label></td><td class="num">${num(s.orders)}</td></tr>`).join("")}</tbody></table></div></div>
+      <div class="card"><div class="hd"><h2>Layanan</h2></div><div class="tbl-wrap"><table class="t"><thead><tr><th>Layanan</th><th>Nama tampil</th><th>Jenis</th><th>Harga (Rp)</th><th>Status</th><th class="num">Total pesanan</th></tr></thead><tbody>${d.items.map(s => `<tr><td><b>${esc(s.label)}</b><div class="mono faint">${esc(s.key)}</div></td><td><input class="in" style="max-width:210px" maxlength="40" data-label="${esc(s.labelKey)}" data-old="${esc(s.label === s.labelDefault ? "" : s.label)}" value="${esc(s.label)}" placeholder="${esc(s.labelDefault)}" aria-label="Nama tampil ${esc(s.labelDefault)}"></td><td>${esc(s.kind)}</td><td><input class="in" type="number" min="0" step="1000" style="max-width:150px" data-price="${esc(s.priceKey)}" data-old="${s.price}" value="${s.price}" aria-label="Harga ${esc(s.label)}"></td><td><label class="bar small"><input type="checkbox" data-svc="${esc(s.key)}" ${s.active ? "checked" : ""}> Dibuka</label></td><td class="num">${num(s.orders)}</td></tr>`).join("")}</tbody></table></div></div>
+      ${d.cards.length ? `<div class="card"><div class="hd"><h2>Kartu di halaman Layanan UT</h2></div><div class="bd"><p class="small muted" style="margin:0">Hilangkan centang untuk menyembunyikan kartu dari halaman Layanan UT (layanan tetap ada, hanya kartunya yang tidak tampil). Judul dan deskripsi kartu diubah di <a href="#/texts">Teks &amp; Nama</a>.</p><div class="bar">${d.cards.map(c => `<label class="bar small"><input type="checkbox" data-card="${esc(c.slug)}" ${c.shown ? "checked" : ""}> ${esc(c.title)}</label>`).join("")}</div></div></div>` : ""}
       <div class="card"><div class="hd"><h2>Harga lain</h2></div><div class="tbl-wrap"><table class="t"><tbody>${d.other.map(s => `<tr><td>${esc(s.label)}<div class="mono faint">${esc(s.key)}</div></td><td><input class="in" type="number" min="0" style="max-width:150px" data-price="${esc(s.key)}" data-old="${s.price}" value="${s.price}" aria-label="${esc(s.label)}"></td></tr>`).join("")}</tbody></table></div></div>
       <div class="bar"><span class="grow"></span><button class="btn pri" id="svS">Simpan perubahan</button></div>`);
-    const off0 = d.items.filter(s => !s.active).map(s => s.key).sort().join(",");
+    const off0 = d.items.filter(s => !s.active).map(s => s.key).sort().join(","), hid0 = d.cards.filter(c => !c.shown).map(c => c.slug).sort().join(",");
     $("#svS").onclick = async e => {
       const values = {}, lines = [];
       $$("[data-price]").forEach(i => { if (String(i.value) !== String(i.dataset.old)) { const n = Number(i.value); values[i.dataset.price] = n; lines.push(`${esc(i.getAttribute("aria-label").replace(/^Harga /, ""))}: ${rp(i.dataset.old)} → <b>${rp(n)}</b>`); } });
       const off = $$("[data-svc]").filter(c => !c.checked).map(c => c.dataset.svc).sort().join(",");
       if (off !== off0) { values.layanan_nonaktif = off; lines.push(`Layanan ditutup: <b>${esc(off || "tidak ada")}</b>`); }
+      $$("[data-label]").forEach(i => { const sv = i.value.trim() === i.placeholder ? "" : i.value.trim(); if (sv !== i.dataset.old) { values[i.dataset.label] = sv; lines.push(`Nama: ${esc(i.placeholder)} → <b>${esc(sv || "(bawaan)")}</b>`); } });
+      const hid = $$("[data-card]").filter(c => !c.checked).map(c => c.dataset.card).sort().join(",");
+      if (hid !== hid0) { values.kartu_sembunyi = hid; lines.push(`Kartu disembunyikan: <b>${esc(hid || "tidak ada")}</b>`); }
       if (!lines.length) return toast("Tidak ada perubahan.");
       if (!await confirmAct("Simpan perubahan harga/layanan?", `${lines.join("<br>")}<br><br>Berlaku untuk pesanan baru di situs live. Pesanan lama tidak berubah.`, "Simpan")) return;
       busy(e.target, async () => { try { await saveSettings(values); toast("Tersimpan"); route(); } catch (err) { fail(err); } });

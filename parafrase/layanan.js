@@ -27,6 +27,7 @@ const MAGIC = { docx: b => b.slice(0, 2).toString() === "PK", pdf: b => b.slice(
 
 module.exports = function mountLayanan({ app, express, db, settings, orders, root, sameOrigin, secret, requireAdmin }) {
   const priceOf = k => { const v = settings.get("price_" + k); return Number.isInteger(v) ? v : SV[k].price; };
+  const labelOf = k => labelFor(settings, k); // nama tampil: bisa diubah admin (label_<kode>), bawaan dari SV
   const priv = p => path.join(root, "data", "private", p);
   const hits = new Map();
   const hashIp = ip => crypto.createHmac("sha256", secret).update(String(ip || "")).digest("hex").slice(0, 32);
@@ -36,7 +37,7 @@ module.exports = function mountLayanan({ app, express, db, settings, orders, roo
   const ext = n => ((String(n).match(/\.([a-z0-9]{2,5})$/i) || [])[1] || "").toLowerCase();
   const bad = (status, error) => Object.assign(new Error(error), { status });
 
-  app.get("/ms/layanan/config", (req, res) => { res.set("Cache-Control", "public, max-age=5"); res.json(Object.fromEntries(Object.entries(SV).map(([k, v]) => [k, { label: v.label, price: priceOf(k), kind: v.kind, ...requirements(k) }]))); });
+  app.get("/ms/layanan/config", (req, res) => { res.set("Cache-Control", "public, max-age=5"); res.json(Object.fromEntries(Object.entries(SV).map(([k, v]) => [k, { label: labelOf(k), price: priceOf(k), kind: v.kind, ...requirements(k) }]))); });
 
   const up = multer({ storage: multer.memoryStorage(), limits: { fileSize: MAX_MB * 1048576, files: MAX_FILES, fields: 8 } }).array("files", MAX_FILES);
   app.post("/ms/layanan/order", (req, res) => {
@@ -49,13 +50,13 @@ module.exports = function mountLayanan({ app, express, db, settings, orders, roo
       try {
         const b = req.body || {}, files = req.files || [];
         const sv = SV[b.service]; if (!sv) throw bad(400, "Pilih jenis layanan.");
-        if (String(settings.get("layanan_nonaktif") || "").split(",").includes(b.service)) throw bad(409, `Layanan ${sv.label} sedang tidak dibuka. Hubungi admin lewat WhatsApp.`);
+        if (String(settings.get("layanan_nonaktif") || "").split(",").includes(b.service)) throw bad(409, `Layanan ${labelOf(b.service)} sedang tidak dibuka. Hubungi admin lewat WhatsApp.`);
         const wa = wa62(b.wa); if (!wa) throw bad(400, "Nomor WhatsApp tidak valid.");
         if (b.agree !== "true") throw bad(400, "Centang persetujuan syarat dan kebijakan privasi.");
         const brief = String(b.brief || "").trim().slice(0, 4000);
         if (brief.length < 5 && !files.length) throw bad(400, "Tulis kebutuhanmu atau unggah file soalnya.");
         for (const f of files) { const e = ext(f.originalname); if (!MAGIC[e] || !MAGIC[e](f.buffer)) throw bad(415, "File harus berupa Word (.docx), PDF, gambar (.png/.jpg), atau .txt yang valid."); }
-        const stageErr = checkStage(b.service, sv.label, files.length, brief); if (stageErr) throw bad(400, stageErr);
+        const stageErr = checkStage(b.service, labelOf(b.service), files.length, brief); if (stageErr) throw bad(400, stageErr);
         const unpaid = db.prepare("SELECT 1 FROM orders WHERE wa_number=? AND status='menunggu_bayar' AND pay_expires_at>?").all(wa, now);
         if (unpaid.length >= 3) throw bad(429, "Kamu masih punya 3 pesanan yang belum dibayar. Selesaikan atau tunggu kedaluwarsa dulu.");
 
@@ -86,7 +87,7 @@ module.exports = function mountLayanan({ app, express, db, settings, orders, roo
             if (!fr.length) throw bad(503, "Sistem pembayaran sedang penuh. Coba lagi beberapa menit lagi.");
             code = fr[crypto.randomInt(fr.length)];
           }
-          const total = base + code, title = sv.label + (brief ? ": " + brief.replace(/\s+/g, " ").slice(0, 60) : "");
+          const total = base + code, title = labelOf(b.service) + (brief ? ": " + brief.replace(/\s+/g, " ").slice(0, 60) : "");
           db.prepare(`INSERT INTO orders(id,public_token,wa_number,title,language,doc_type,service,brief,word_count,original_file,status,lane,price_per_word,min_price,fast_price,base_total,unique_code,total,deadline_at,pay_expires_at,confirmed_at,confirmed_by,parent_order_id,created_at,updated_at)
                       VALUES(?,?,?,?,?,'layanan',?,?,0,NULL,?, 'biasa',0,0,0,?,?,?,?,?,?,?,?,?,?)`)
             .run(id, token, wa, title, "id", b.service, brief, free ? "baru_dibayar" : "menunggu_bayar", base, code, total, now + 7 * 86400e3, payExp, free ? now : null, free ? "gratis" : null, parent ? parent.id : null, now, now);
@@ -114,7 +115,7 @@ module.exports = function mountLayanan({ app, express, db, settings, orders, roo
   app.get("/ms/admin/layanan", requireAdmin, (req, res) => {
     res.set("Cache-Control", "no-store");
     const rows = db.prepare("SELECT * FROM orders WHERE doc_type='layanan' AND (status IN ('baru_dibayar','dikerjakan') OR (status='terkirim' AND files_deleted_at IS NULL)) ORDER BY CASE status WHEN 'terkirim' THEN 1 ELSE 0 END, created_at").all();
-    res.json({ orders: rows.map(o => ({ id: o.id, service: o.service, label: (SV[o.service] || {}).label || o.service, title: o.title, wa: o.wa_number, brief: o.brief, status: o.status, total: o.total, parent: o.parent_order_id, createdAt: o.created_at, deleteAt: o.delete_at, attachments: attOf(o).map((a, i) => ({ n: i + 1, name: a.name, size: a.size })), hasResult: !!(o.result_path || o.result_text) })) });
+    res.json({ orders: rows.map(o => ({ id: o.id, service: o.service, label: SV[o.service] ? labelOf(o.service) : o.service, title: o.title, wa: o.wa_number, brief: o.brief, status: o.status, total: o.total, parent: o.parent_order_id, createdAt: o.created_at, deleteAt: o.delete_at, attachments: attOf(o).map((a, i) => ({ n: i + 1, name: a.name, size: a.size })), hasResult: !!(o.result_path || o.result_text) })) });
   });
   app.get("/ms/admin/layanan/:id/file/:n", requireAdmin, async (req, res) => {
     const o = db.prepare("SELECT * FROM orders WHERE id=? AND doc_type='layanan'").get(String(req.params.id));
@@ -153,3 +154,7 @@ module.exports = function mountLayanan({ app, express, db, settings, orders, roo
   return { SV };
 };
 module.exports.SV = SV;
+
+/* Nama tampil sebuah layanan: pengaturan admin (label_<kode>) bila diisi, kalau tidak nama bawaan. Dipakai juga oleh panel admin. */
+function labelFor(settings, k) { return SV[k] ? (settings.get("label_" + k) || SV[k].label) : k; }
+module.exports.labelFor = labelFor;

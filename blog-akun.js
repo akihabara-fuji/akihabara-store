@@ -520,8 +520,11 @@ module.exports = function mount(ctx) {
 
   /* ============================ HALAMAN ============================ */
   const SOCIAL = () => (ctx.getSettings ? ctx.getSettings() : {}) || {};
+  /* Teks menu dan footer ikut kamus teks admin (parafrase/sitetexts.js); tanpa kamus = teks bawaan. */
+  const CHROME = ["Layanan UT", "Blog", "Masuk", "Privasi", "Ketentuan", "Gelap", "Terang", "Jakarta Barat. Layanan UT dan Blog."];
+  const T = () => { const tx = ctx.getTexts && ctx.getTexts(); if (!tx) return s => esc(s); if (!T.reg) { tx.registerExtra(CHROME); T.reg = true; } const m = tx.load(); return s => esc(m.get(s) != null ? m.get(s) : s); };
   function layout({ title, desc, path: pth, body, extra = "", image = "", type = "website", noindex = false, canonical = "" }) {
-    const st = SOCIAL();
+    const st = SOCIAL(), t = ACAD_ONLY ? T() : esc;
     // Di domain akademik nama merek dikunci (isian "brand" di admin milik landing nextaja dan pernah salah ketik).
     const brand = esc(ACAD_ONLY ? BRAND : (st.brand || BRAND));
     const canon = `${SITE}${canonical || pth}`;
@@ -546,16 +549,16 @@ ${extra}
 <header class="nav"><div class="wrap">
   <a href="/" class="logo" aria-label="${brand}, beranda"><b>${brand.charAt(0)}</b><span>${brand}</span></a>
   <nav class="links" id="links" aria-label="Menu utama">
-    <a href="/ruangakademikut">Layanan UT</a><a href="/blog" class="on">Blog</a>
+    <a href="/ruangakademikut">${t("Layanan UT")}</a><a href="/blog" class="on">${t("Blog")}</a>
   </nav>
   <div class="nav-r">
-    <div class="mode" role="group" aria-label="Mode tampilan"><button type="button" data-m="dark">Gelap</button><button type="button" data-m="light">Terang</button></div>
-    <a class="btn btn-pri btn-sm" id="navAcc" href="/ms/masuk">Masuk</a>
+    <div class="mode" role="group" aria-label="Mode tampilan"><button type="button" data-m="dark">${t("Gelap")}</button><button type="button" data-m="light">${t("Terang")}</button></div>
+    <a class="btn btn-pri btn-sm" id="navAcc" href="/ms/masuk">${t("Masuk")}</a>
     <button class="burger" id="burger" aria-label="Buka menu" aria-expanded="false">☰</button>
   </div>
 </div></header>
 <main>${body}</main>
-<footer class="ft"><div class="wrap ft-in"><div class="ft-b"><b>${brand}</b><span>Jakarta Barat. Layanan UT dan Blog.</span><small>© ${new Date().getFullYear()} Semua hak dilindungi.</small></div><nav class="ft-n" aria-label="Footer"><a href="/ruangakademikut">Layanan UT</a><a href="/blog">Blog</a><a href="/ms/masuk">Masuk</a><a href="/ms/privasi">Privasi</a><a href="/ms/ketentuan">Ketentuan</a></nav></div></footer>
+<footer class="ft"><div class="wrap ft-in"><div class="ft-b"><b>${brand}</b><span>${t("Jakarta Barat. Layanan UT dan Blog.")}</span><small>© ${new Date().getFullYear()} Semua hak dilindungi.</small></div><nav class="ft-n" aria-label="Footer"><a href="/ruangakademikut">${t("Layanan UT")}</a><a href="/blog">${t("Blog")}</a><a href="/ms/masuk">${t("Masuk")}</a><a href="/ms/privasi">${t("Privasi")}</a><a href="/ms/ketentuan">${t("Ketentuan")}</a></nav></div></footer>
 <script>
 (function(){
 function setMode(m){document.documentElement.dataset.theme=m;try{localStorage.setItem("nx-theme",m)}catch(e){}var tc=document.querySelector('meta[name=theme-color]');if(tc)tc.content=m==="light"?${JSON.stringify(ACAD_ONLY ? "#f5f7fa" : "#f6f3ff")}:${JSON.stringify(ACAD_ONLY ? "#0b1326" : "#0a0a1c")};}

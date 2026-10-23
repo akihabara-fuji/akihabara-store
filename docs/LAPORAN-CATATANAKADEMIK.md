@@ -109,3 +109,13 @@ Audit = diagnosis, Cek & Parafrase = obat. Satu mesin (`parafrase/triage.js`) da
 - **Pengaturan admin baru** (Pengaturan → Audit Dokumen): `urgensi_ai_sedang` (30), `urgensi_ai_tinggi` (60), `urgensi_paragraf_skor` (8), `urgensi_paragraf_persen` (15). Perubahan langsung berlaku (cache dibatalkan otomatis).
 - **Privasi**: keluaran urgensi hanya hitungan, nomor paragraf, dan label umum; tidak memuat kalimat dokumen saat pratinjau terkunci. Potongan awal paragraf hanya di hasil berbayar.
 - Tes: `tests/triage.test.js` (13 tes). Total 121/121.
+
+## Fase 8: teks, nama layanan, dan testimoni bisa diubah dari panel
+
+Tidak perlu lagi membuka VPS untuk mengganti kata-kata di situs.
+
+- **Tampilan Situs > Teks & Nama** (pemilik): daftar semua teks halaman publik (menu, judul, deskripsi kartu, FAQ, meta SEO), cari, ubah, pratinjau halaman asli dengan teks yang disorot, kembalikan ke bawaan, dan riwayat perubahan. Penggantian dilakukan di server, jadi Google ikut melihat teks baru.
+- **Layanan & Harga**: kolom *Nama tampil* tiap layanan (formulir, judul pesanan, daftar admin) dan pilihan kartu mana yang tampil di halaman Layanan UT.
+- **Tampilan Situs > Testimoni** (pemilik dan editor): unggah tangkapan layar chat dan kata pelanggan. Wajib mencentang izin pelanggan; tampil di beranda (6 terbaru yang berstatus Tampil).
+- Yang sengaja tidak bisa diubah di sini: teks yang diisi skrip di browser (mis. harga), elemen ber-id atau data-*, isi script dan style, dan isi artikel blog (diubah lewat editor artikel).
+- Basis data: migrasi 6 (`site_texts`, `site_texts_log`). Tes: 128 lulus.

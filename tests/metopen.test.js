@@ -23,7 +23,7 @@ test("validasi pesanan Tugas 3: file tahap sebelumnya wajib, catatan tutor opsio
 
 test("server memakai syarat itu, config mengirimkannya, dan halaman menampilkan catatan progres dan tautan Revisi", () => {
   const srv = fs.readFileSync(path.join(__dirname, "..", "parafrase", "layanan.js"), "utf8");
-  assert.ok(/checkStage\(b\.service, sv\.label, files\.length, brief\)/.test(srv) && /\.\.\.requirements\(k\)/.test(srv) && /MAX_FILES = 5/.test(srv));
+  assert.ok(/checkStage\(b\.service, labelOf\(b\.service\), files\.length, brief\)/.test(srv) && /\.\.\.requirements\(k\)/.test(srv) && /MAX_FILES = 5/.test(srv));
   const html = fs.readFileSync(path.join(__dirname, "..", "parafrase", "pages", "layanan.html"), "utf8");
   assert.ok(/Progres ini akan dikerjakan tim admin Catatan Akademik/.test(html) && /Jika ada revisi, silakan ke menu <a href="\/ruangakademikut\/layanan\?s=revisi_metopen">Revisi/.test(html));
   assert.ok(/id="slots"/.test(html));

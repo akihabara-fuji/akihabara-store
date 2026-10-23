@@ -12,6 +12,7 @@ const mountCards = require("./cards");
 const mountSiteImg = require("./siteimg");
 const mountUlasan = require("./ulasan");
 const mountPages = require("./pages");
+const createTexts = require("./sitetexts");
 const mountAudit = require("./audit");
 const mountLayanan = require("./layanan");
 const mountOrders = require("./orders");
@@ -45,7 +46,8 @@ module.exports = function mount(ctx) {
   let secret = ""; try { secret = fs.readFileSync(secretFile, "utf8").trim(); } catch {}
   if (secret.length < 32) { fs.mkdirSync(path.dirname(secretFile), { recursive: true }); secret = crypto.randomBytes(32).toString("hex"); fs.writeFileSync(secretFile, secret, { mode: 0o600 }); }
 
-  mountPages({ app, express });
+  const texts = createTexts({ db, dir: path.join(__dirname, "pages") });
+  const pages = mountPages({ app, express, texts, settings });
   mountCards({ app, root: ROOT, requireAdmin });
   mountSiteImg({ app, root: ROOT, requireAdmin });
   mountUlasan({ app, root: ROOT, requireAdmin });
@@ -77,5 +79,5 @@ else if(/\\/(?:ruangakademikut\\/)?(layanan|cek-parafrase-mandiri|audit)(?:[\\/?
   const t = setInterval(() => { uploads.purgeExpired().catch(() => {}); orders.expireUnpaid().catch(() => {}); orders.sweepRetention().catch(() => {}); }, 10 * 60 * 1000); t.unref();
   const t2 = setInterval(() => notifier.flush().catch(() => {}), 30 * 1000); t2.unref();
 
-  return { db, settings, uploads, orders, notifier };
+  return { db, settings, uploads, orders, notifier, texts, pages };
 };

@@ -34,7 +34,7 @@ module.exports = function mountUlasan({ app, root, requireAdmin }) {
 
   app.get("/ms/admin/ulasan", requireAdmin, (req, res) => {
     res.set("Cache-Control", "no-store");
-    res.json({ items: items.slice().sort((a, b) => b.at - a.at).map(i => Object.assign(pub(i), { tampil: i.tampil, imgAdmin: i.img ? `/ms/admin/ulasan/${i.id}/img?v=${i.at}` : "" })) });
+    res.json({ items: items.slice().sort((a, b) => b.at - a.at).map(i => Object.assign(pub(i), { tampil: i.tampil, izin: !!i.izin, at: i.at, imgAdmin: i.img ? `/ms/admin/ulasan/${i.id}/img?v=${i.at}` : "" })) });
   });
   app.get("/ms/admin/ulasan/:id/img", requireAdmin, (req, res) => {
     const it = items.find(i => i.id === String(req.params.id));
@@ -51,6 +51,8 @@ module.exports = function mountUlasan({ app, root, requireAdmin }) {
       if (!nama || !teks) return res.status(400).json({ error: "Nama dan isi ulasan wajib diisi." });
       let it = b.id ? items.find(i => i.id === String(b.id)) : null;
       if (b.id && !it) return res.status(404).json({ error: "Ulasan tidak ditemukan." });
+      // testimoni asli: wajib ada izin pelanggan untuk menayangkan kata-katanya (dicatat bersama ulasan)
+      if (!it && b.izin !== "1") return res.status(400).json({ error: "Centang dulu: pelanggan sudah mengizinkan ulasannya ditayangkan." });
       if (!it) { it = { id: crypto.randomBytes(6).toString("hex"), img: false }; items.push(it); }
       try {
         if (req.file) {
@@ -58,7 +60,7 @@ module.exports = function mountUlasan({ app, root, requireAdmin }) {
           await fsp.writeFile(imgPath(it.id), out); it.img = true;
         } else if (b.hapusGambar === "1" && it.img) { await fsp.rm(imgPath(it.id), { force: true }); it.img = false; }
       } catch { items = items.filter(x => x !== it || x.img); return res.status(400).json({ error: "File bukan gambar yang valid." }); }
-      Object.assign(it, { nama, ket: clip(b.ket, 80), teks, tampil: b.tampil !== "0" && b.tampil !== "false", at: Date.now() });
+      Object.assign(it, { nama, ket: clip(b.ket, 80), teks, izin: !!it.izin || b.izin === "1", tampil: b.tampil !== "0" && b.tampil !== "false", at: Date.now() });
       await save(); res.json({ ok: true, id: it.id });
     });
   });

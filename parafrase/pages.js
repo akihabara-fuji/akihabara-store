@@ -3,7 +3,7 @@
 const path = require("path");
 const fs = require("fs");
 
-module.exports = function mountPages({ app, express }) {
+module.exports = function mountPages({ app, express, texts = null, settings = null }) {
   const dir = path.join(__dirname, "pages");
   // Tautan pesanan memuat token rahasia: jangan bocor lewat Referer ke pihak ketiga (mis. Google Fonts), dan jangan boleh di-iframe.
   const ADM = /^\/admin\/(parafrase|layanan)(\/|\?|$)/; // halaman admin boleh dibingkai oleh /admin (satu asal), halaman murid tidak
@@ -26,14 +26,20 @@ module.exports = function mountPages({ app, express }) {
     .replace(/(["'(=])\/ruangakademikut(?=["'<\s?#)])/g, "$1/layanan-ut");
   const TRACK = new Set(["beranda.html", "hub.html", "cek.html", "audit.html", "layanan.html", "blog-ut.html"]); // halaman pesanan dan hasil memuat token rahasia: tidak dilacak
   const blogCards = req => typeof app.locals.renderAcadBlogCards === "function" ? app.locals.renderAcadBlogCards(req) : "";
+  /* Satu jalur render untuk halaman publik DAN pratinjau admin. Kamus teks (sitetexts.js) dan kartu tersembunyi diterapkan di sini,
+     di server, jadi pengunjung dan Google langsung menerima teks yang sudah diganti. opts: { over: Map pengganti sementara, mark: teks yang disorot } */
+  const hiddenCards = () => (settings ? String(settings.get("kartu_sembunyi") || "").split(",").filter(Boolean) : []);
+  function render(file, req, opts = {}) {
+    let out = fs.readFileSync(path.join(dir, file), "utf8");
+    if (file === "blog-ut.html") out = out.replace('<div id="bl" class="bx-host"></div>', `<div id="bl" class="bx-host">${blogCards(req)}</div>`);
+    if (file === "hub.html" && texts) out = texts.hideCards(out, opts.hidden || hiddenCards());
+    if (texts) out = texts.apply(out, opts.over || null, { mark: opts.mark });
+    out = (TRACK.has(file) && !opts.preview ? out.replace("</head>", '<script async src="/t.js"></script></head>') : out).replaceAll("{{SITE}}", SITE);
+    return shorten(out);
+  }
   const page = file => (req, res) => {
-    fs.readFile(path.join(dir, file), "utf8", (err, html) => {
-      if (err) return res.status(500).type("text").send("Halaman tidak tersedia.");
-      let out = html;
-      if (file === "blog-ut.html") out = out.replace('<div id="bl" class="bx-host"></div>', `<div id="bl" class="bx-host">${blogCards(req)}</div>`);
-      out = (TRACK.has(file) ? out.replace("</head>", '<script async src="/t.js"></script></head>') : out).replaceAll("{{SITE}}", SITE);
-      res.set("Cache-Control", "no-cache").type("html").send(shorten(out));
-    });
+    let out; try { out = render(file, req); } catch { return res.status(500).type("text").send("Halaman tidak tersedia."); }
+    res.set("Cache-Control", "no-cache").type("html").send(out);
   };
   app.get(["/ruangakademikut", "/ruangakademikut/"], page("hub.html"));
   app.get("/beranda", page("beranda.html")); // landing domain akademik (nginx: / -> /beranda)
@@ -70,4 +76,5 @@ module.exports = function mountPages({ app, express }) {
   });
   // Alamat lama
   app.get(["/kebutuhan-anak-ut", "/akademik"], (req, res) => res.redirect(301, "/ruangakademikut"));
+  return { render };
 };

@@ -6,7 +6,7 @@ const fsp = fs.promises;
 const path = require("path");
 const crypto = require("crypto");
 const multer = require("multer");
-const { SV } = require("../parafrase/layanan");
+const { SV, labelFor } = require("../parafrase/layanan");
 
 const STATUS = {
   menunggu_bayar: { label: "Menunggu pembayaran", tone: "warn" },
@@ -30,7 +30,8 @@ const GROUPS = {
   selesai: { label: "Selesai", where: "status='terkirim'" },
   batal: { label: "Dibatalkan", where: "status IN ('dibatalkan','kedaluwarsa','dikembalikan')" },
 };
-const svcLabel = o => o.doc_type === "layanan" ? ((SV[o.service] || {}).label || o.service || "Layanan") : o.doc_type === "audit" ? "Audit Dokumen" : "Cek & Parafrase";
+let labelOf = k => (SV[k] || {}).label; // diganti di mountCaAdmin agar ikut nama buatan admin
+const svcLabel = o => o.doc_type === "layanan" ? (labelOf(o.service) || o.service || "Layanan") : o.doc_type === "audit" ? "Audit Dokumen" : "Cek & Parafrase";
 const WIB = 7 * 3600e3;
 const dayKey = ms => new Date(ms + WIB).toISOString().slice(0, 10);
 const dayStart = s => /^\d{4}-\d{2}-\d{2}$/.test(s || "") ? Date.parse(`${s}T00:00:00+07:00`) : NaN;
@@ -49,8 +50,9 @@ function range(q, days = 30) {
   return { from, to, fromKey: dayKey(from), toKey: dayKey(to) };
 }
 
-module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, blog, settings, orders, ROOT, UPLOADS, sharp, ACAD }) {
+module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, blog, settings, orders, texts, pages, ROOT, UPLOADS, sharp, ACAD }) {
   const J = express.json({ limit: "16kb" });
+  labelOf = k => labelFor(settings, k);
   const one = id => db.prepare("SELECT * FROM orders WHERE id=?").get(String(id));
   const row = o => ({ id: o.id, service: svcLabel(o), kind: o.doc_type, status: o.status, statusLabel: (STATUS[o.status] || {}).label || o.status, tone: (STATUS[o.status] || {}).tone || "mute",
     title: o.title, wa: o.wa_number, total: o.total, uniqueCode: o.unique_code, lane: o.lane, createdAt: o.created_at, proofAt: o.proof_uploaded_at, confirmedAt: o.confirmed_at, confirmedBy: o.confirmed_by, parent: o.parent_order_id, deadlineAt: o.deadline_at });
@@ -145,14 +147,31 @@ module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, b
 
   /* ---------------- layanan & harga ---------------- */
   app.get("/ms/admin/ca/services", requireAdmin, send(() => {
-    const cfg = settings.getAll(), off = String(cfg.layanan_nonaktif || "").split(",").filter(Boolean);
+    const cfg = settings.getAll(), off = String(cfg.layanan_nonaktif || "").split(",").filter(Boolean), hiddenCards = String(cfg.kartu_sembunyi || "").split(",").filter(Boolean);
     const used = Object.fromEntries(db.prepare("SELECT service, COUNT(*) n FROM orders WHERE doc_type='layanan' GROUP BY service").all().map(x => [x.service, x.n]));
-    return { items: Object.entries(SV).map(([k, v]) => ({ key: k, label: v.label, kind: v.kind, price: Number.isInteger(cfg["price_" + k]) ? cfg["price_" + k] : v.price, priceKey: "price_" + k, active: !off.includes(k), orders: used[k] || 0 })),
+    return { items: Object.entries(SV).map(([k, v]) => ({ key: k, label: labelFor(settings, k), labelDefault: v.label, labelKey: "label_" + k, kind: v.kind, price: Number.isInteger(cfg["price_" + k]) ? cfg["price_" + k] : v.price, priceKey: "price_" + k, active: !off.includes(k), orders: used[k] || 0 })),
       other: [["price_per_word", "Cek & Parafrase: harga per kata"], ["min_order_price", "Cek & Parafrase: harga minimum"], ["fast_lane_price", "Jalur cepat"], ["audit_per_word", "Audit Dokumen: per kata"], ["audit_min", "Audit Dokumen: minimum"],
         ["price_semester_min", "Paket Semester: mulai"], ["price_semester_max", "Paket Semester: sampai"], ["price_pengarahan_semester", "Pengarahan registrasi: semester"], ["price_pengarahan_lulus", "Pengarahan: lulus"], ["price_pengarahan_normal", "Pengarahan: normal"]]
         .map(([key, label]) => ({ key, label, price: cfg[key] })),
+      cards: texts ? texts.cards().map(c => ({ ...c, shown: !hiddenCards.includes(c.slug) })) : [],
       note: "Harga baru hanya berlaku untuk pesanan baru. Pesanan lama tetap memakai harga yang tersimpan saat pesanan dibuat." };
   }));
+
+  /* ---------------- teks & nama situs (kamus teks: parafrase/sitetexts.js) ---------------- */
+  if (texts) {
+    const who = req => req.admin.name || req.admin.username || "admin";
+    app.get("/ms/admin/ca/texts", requireAdmin, send(() => ({ ...texts.list(), files: texts.PAGES, max: texts.MAX, log: texts.log(30) })));
+    app.post("/ms/admin/ca/texts", requireAdmin, J, send(req => texts.set(str(req.body && req.body.orig, 600), req.body && req.body.value, who(req))));
+    app.post("/ms/admin/ca/texts/reset", requireAdmin, J, send(req => texts.reset(str(req.body && req.body.orig, 600), who(req))));
+    /* pratinjau: halaman asli dengan teks usulan (belum disimpan) dan teks yang diubah disorot */
+    app.post("/ms/admin/ca/texts/preview", requireAdmin, J, send(req => {
+      const b = req.body || {}, file = String(b.page || "");
+      if (!pages || !Object.keys(texts.PAGES).includes(file) || /^(audit-hasil|pesanan)\.html$/.test(file)) throw bad(400, "Halaman tidak dikenal.");
+      const over = new Map(texts.load()), orig = texts.norm(str(b.orig, 600));
+      if (orig && typeof b.value === "string" && b.value.trim()) over.set(orig, str(b.value, texts.MAX).replace(/[<>]/g, ""));
+      return { html: pages.render(file, req, { over, mark: orig || undefined, preview: true }) };
+    }));
+  }
 
   /* ---------------- laporan ---------------- */
   app.get("/ms/admin/ca/report", requireAdmin, send(req => {
