@@ -80,3 +80,15 @@ test("kalimat panjang: saran pecah menjadi dua kalimat utuh bila ada kata penghu
   assert.strictEqual(splitSuggest("Kalimat tanpa penghubung yang bisa dipecah secara otomatis oleh aturan sederhana ini."), null);
   assert.match(helperFor("U", panjang, "Kalimat 40 kata"), /Pecah menjadi dua kalimat, contoh:/);
 });
+
+test("paragraf pendek (H): butir ketikan manual dan pertanyaan tidak dihitung, paragraf pendek biasa tetap", () => {
+  const dok = [
+    para(0, "Motivasi kerja yang rendah sering muncul pada perusahaan kecil karena sistem kerja belum tertata dengan baik. Absensi masih dicatat manual oleh supervisor lapangan pada tiap shift. Akibatnya, pelanggaran jam masuk baru diketahui setelah akhir bulan, ketika rekap kehadiran dihitung oleh bagian personalia."),
+    para(1, "1. Karyawan wajib hadir tepat waktu setiap hari kerja."),
+    para(2, "a) Absensi dicatat manual oleh supervisor lapangan."),
+    para(3, "Mengapa disiplin karyawan perlu ditegakkan di perusahaan kecil?"),
+    para(4, "Disiplin itu penting bagi perusahaan kecil yang berkembang."),
+  ];
+  const h = analyzeFindings(dok, null).filter(f => f.code === "H").map(f => f.para_idx);
+  assert.deepStrictEqual(h, [4]);
+});

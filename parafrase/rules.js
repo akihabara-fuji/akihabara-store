@@ -153,7 +153,8 @@ function analyzeFindings(paras, bibAt, cfg = {}) {
     });
 
     // H: paragraf pendek kurang berkembang
-    if (sents.length <= 2 && pWords < 35 && !/[:;]$/.test(p.text.trim()))
+    // butir yang diketik manual (1. a) - •) dan pertanyaan bukan paragraf kurang berkembang
+    if (sents.length <= 2 && pWords < 35 && !/[:;?]$/.test(p.text.trim()) && !/^\s*(\d{1,2}[.)]|[a-z][.)]|[•·▪\-–—*])\s/i.test(p.text))
       add("H", p, sents.length - 1, sents[sents.length - 1], `Paragraf hanya ${sents.length} kalimat (${pWords} kata). Kembangkan dengan penjelasan, contoh, atau analisis.`);
 
     // P: paragraf generik
