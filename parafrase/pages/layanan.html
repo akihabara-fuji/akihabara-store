@@ -40,6 +40,12 @@
     <p id="wanote" class="muted" style="margin:0;font-size:13.5px">Admin Catatan Akademik mengirim file hasil ke WhatsApp-mu sesuai status pesanan. Pantau statusnya di halaman Cek Pesanan.</p>
     <div id="err" class="err hidden" role="alert"></div>
     <div style="font-size:22px;font-weight:700" id="price"></div>
+    <fieldset id="paybox" style="border:1px solid var(--line,#2a3a63);border-radius:14px;padding:14px 16px;margin:0;display:none;flex-direction:column;gap:10px">
+      <legend style="font-weight:700;font-size:14px;padding:0 6px">Bayar dengan</legend>
+      <label style="display:flex;gap:10px;align-items:flex-start;font-size:14.5px"><input type="radio" name="pay" value="koin" id="payk"> <span id="paykt"></span></label>
+      <label style="display:flex;gap:10px;align-items:flex-start;font-size:14.5px"><input type="radio" name="pay" value="qris" id="payq"> <span>QRIS (bayar lalu unggah bukti, dikonfirmasi admin)</span></label>
+      <div id="paykn" class="muted" style="font-size:13px"></div>
+    </fieldset>
     <button class="btn" id="go" type="button" disabled>Pesan</button>
   </div>
 </section>

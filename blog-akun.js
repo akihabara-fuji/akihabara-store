@@ -569,6 +569,7 @@ bg.addEventListener("click",function(){var o=ln.classList.toggle("open");bg.setA
 fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(function(d){if(d.user){var a=document.getElementById("navAcc");a.textContent="Akun saya";a.href="/ms/akun";}}).catch(function(){});
 })();
 </script>
+${ACAD_ONLY ? '<script defer src="/ruangakademikut/assets/koin-chip.js?v=1"></script>' : ""}
 </body></html>`);
   }
 
