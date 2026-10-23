@@ -10,7 +10,7 @@
     var ta = document.getElementById("bBody"), form = document.getElementById("bForm"), dlg = document.getElementById("bDlg");
     if (!ta || !form || !dlg || ta.dataset.seo) return; ta.dataset.seo = "1";
 
-    var link = document.createElement("link"); link.rel = "stylesheet"; link.href = "/assets/admin-blog-seo.css?v=5"; document.head.appendChild(link);
+    var link = document.createElement("link"); link.rel = "stylesheet"; link.href = "/assets/admin-blog-seo.css?v=6"; document.head.appendChild(link);
 
     /* ---------- susun ulang: kolom utama + samping ---------- */
     var head = form.querySelector(".dlg-head"), foot = form.querySelector(".dlg-foot");

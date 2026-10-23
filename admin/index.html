@@ -752,6 +752,6 @@ $$("[data-close]").forEach(b=>b.onclick=()=>b.closest("dialog").close());
 $$("[data-tab]").forEach(b=>b.addEventListener("click",()=>{ if(b.dataset.tab==="blog") loadPosts(); if(b.dataset.tab==="pelanggan") loadUsers(); }));
 </script>
 <script>document.querySelectorAll('[data-tab="akademik"]').forEach(function(b){b.addEventListener("click",function(){var f=document.getElementById("akFrame");if(f&&!f.getAttribute("src"))f.setAttribute("src",f.dataset.src)})});if(location.hash==="#akademik"){var _b=document.querySelector('[data-tab="akademik"]');if(_b)setTimeout(function(){_b.click()},400)}</script>
-<script src="/assets/admin-blog-seo.js?v=5" defer></script>
+<script src="/assets/admin-blog-seo.js?v=6" defer></script>
 </body>
 </html>

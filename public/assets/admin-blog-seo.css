@@ -25,7 +25,7 @@
 #bPrev{width:min(760px,100% - 16px);max-height:92vh;border:1px solid var(--line2,#445);border-radius:18px;background:var(--card,#111);color:var(--text,#eee);padding:0}
 #bPrev .pv{padding:22px 26px;overflow:auto;max-height:92vh}#bPrev h1{font-size:30px;line-height:1.2;margin:0 0 14px}#bPrev .pv-x{float:right}
 #bPrev .pv p,#bPrev .pv li{font-size:16.5px;line-height:1.7}#bPrev .pv h2{font-size:24px;margin:28px 0 10px}#bPrev .pv h3{font-size:19px;margin:22px 0 8px}
-#bPrev .pv blockquote{margin:0 0 16px;padding:2px 16px;border-left:3px solid var(--acc,#4f8ff7);color:var(--muted,#9aa)}#bPrev .pv a{color:#7fb0ff}
+#bPrev .pv blockquote{margin:0 0 16px;padding:2px 16px;border-left:3px solid var(--acc,#4f8ff7);color:var(--muted,#9aa)}#bPrev .pv a{color:#7fb0ff}#bPrev .pv figure{margin:0 0 18px}#bPrev .pv img{display:block;max-width:100%;height:auto;border-radius:12px}#bPrev .pv p img{display:inline-block;vertical-align:middle}
 @media(max-width:860px){#bForm.bed{grid-template-columns:1fr}.bed-ed textarea{min-height:300px}.bseo-bar{position:sticky;top:0;z-index:2}}
 @media(max-width:560px){#postList{grid-template-columns:minmax(0,1fr)}#app .item{flex-wrap:wrap;min-width:0}#app .item .info{min-width:0;flex:1 1 140px;overflow-wrap:anywhere}#app .item .acts{flex-wrap:wrap;max-width:100%}}
 .bed-inl{margin:0!important}

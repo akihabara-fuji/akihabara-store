@@ -120,6 +120,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:24px}
 .cvt b{font:700 14px "Bricolage Grotesque",sans-serif;letter-spacing:.02em}
 
 .prose ol{margin:0 0 18px;padding-left:24px}.prose blockquote{margin:0 0 18px;padding:4px 18px;border-left:3px solid var(--acc);color:var(--muted)}.prose blockquote p{margin:8px 0}.prose em{font-style:italic}
+.prose figure{margin:0 0 22px}.prose img{display:block;max-width:100%;height:auto;border-radius:14px;background:var(--surface)}.prose p img{display:inline-block;vertical-align:middle}
 
 /* Daftar judul per bulan > minggu (bulan terbaru terbuka, bulan lama dilipat) */
 .blog-month{border:1px solid var(--line,rgba(127,127,127,.25));border-radius:14px;margin:0 0 12px;background:var(--card,transparent);overflow:hidden}

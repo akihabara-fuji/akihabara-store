@@ -112,8 +112,13 @@ module.exports = function mount(ctx) {
     res.json({ n: list.length, html: groupedList(list) });
   });
 
+  /* Foto di dalam isi: ![alt](/uploads/nama.webp). Hanya berkas gambar dari /uploads; selain itu yang tampil cukup teks alt-nya. */
+  const IMG_SRC = /^\/uploads\/[a-z0-9][a-z0-9._-]*\.(?:webp|jpe?g|png|gif|avif)$/i;
+  const IMG_MD = /!\[([^\]]*)\]\(([^)\s]*)\)/g;
+  const IMG_LINE = /^!\[[^\]]*\]\(([^)\s]*)\)$/;
   function inline(t) {
     return esc(t)
+      .replace(IMG_MD, (m, alt, src) => IMG_SRC.test(src) ? `<img src="${src}" alt="${alt.replace(/\*/g, "")}" loading="lazy" decoding="async">` : alt)
       .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
       .replace(/(^|[^*\w])\*([^*\s](?:[^*]*[^*\s])?)\*(?![*\w])/g, "$1<em>$2</em>")
       .replace(/\[([^\]]+)\]\((\/[^\s)\/][^\s)]*|https?:\/\/[^\s)]+)\)/g, (m, txt, url) => isOwn(url) ? `<a href="${url}">${txt}</a>` : `<a href="${url}" rel="nofollow noopener" target="_blank">${txt}</a>`);
@@ -132,6 +137,7 @@ module.exports = function mount(ctx) {
       if (!l) { flush(); endList(); endQuote(); continue; }
       if (/^>\s?/.test(l)) { flush(); endList(); quote.push(l.replace(/^>\s?/, "")); continue; }
       endQuote();
+      if (IMG_LINE.test(l) && IMG_SRC.test(l.match(IMG_LINE)[1])) { flush(); endList(); html += `<figure>${inline(l)}</figure>`; continue; }
       if (/^#\s+/.test(l)) { flush(); endList(); html += `<h2>${inline(l.replace(/^#\s+/, ""))}</h2>`; continue; } // H1 hanya dari kolom Judul; "# " di isi dijadikan H2
       if (/^##\s+/.test(l)) { flush(); endList(); html += `<h2>${inline(l.replace(/^##\s+/, ""))}</h2>`; continue; }
       if (/^###\s+/.test(l)) { flush(); endList(); html += `<h3>${inline(l.replace(/^###\s+/, ""))}</h3>`; continue; }
@@ -357,7 +363,7 @@ module.exports = function mount(ctx) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Bricolage+Grotesque:wght@600;700&display=swap" rel="stylesheet">
 <script>try{var t=localStorage.getItem("nx-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
-<link rel="stylesheet" href="/assets/blog.css?v=9"><script async src="/t.js"></script>
+<link rel="stylesheet" href="/assets/blog.css?v=10"><script async src="/t.js"></script>
 ${extra}
 </head>
 <body>
@@ -435,7 +441,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
   app.get("/blog/:slug", (req, res, next) => {
     const p = published().find(x => x.slug === req.params.slug);
     if (!p) return next();
-    const plain = String(p.body || "").replace(/[#*_>`\[\]()!-]/g, " ").replace(/\s+/g, " ").trim();
+    const plain = String(p.body || "").replace(IMG_MD, " ").replace(/[#*_>`\[\]()!-]/g, " ").replace(/\s+/g, " ").trim();
     const desc = p.excerpt || (plain.length > 155 ? plain.slice(0, 152).replace(/\s+\S*$/, "") + "…" : plain) || p.title;
     const img = p.cover ? (/^https?:/.test(p.cover) ? p.cover : SITE + p.cover) : SITE + "/icon-512.png";
     const url = `${SITE}/blog/${p.slug}`;
