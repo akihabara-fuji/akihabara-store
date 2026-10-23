@@ -14,12 +14,12 @@ echo "Backup: $BK"
 rollback(){ echo "GAGAL -> rollback dari $BK"; tar xzf "$BK" -C "$APP"; pm2 restart nextaja --update-env >/dev/null || true; }
 trap 'echo "GAGAL di baris $LINENO: $BASH_COMMAND"; rollback' ERR
 T=$(mktemp -d); mkdir -p "$T/pages"
-JS="aspek.js hint.js rules.js auditrules.js wordtools.js preview.js settings.js uploads.js orders.js"
-PG="common.js cek.js cek.html audit.html audit-hasil.js audit-hasil.html hub.html layanan.html pesanan.html blog-ut.html site.css admin.js admin.html"
+JS="aspek.js hint.js rules.js auditrules.js wordtools.js preview.js settings.js uploads.js orders.js layanan.js metopen.js"
+PG="common.js cek.js cek.html audit.html audit-hasil.js audit-hasil.html hub.html layanan.html layanan.js pesanan.html blog-ut.html site.css admin.js admin.html"
 curl -fsSL "$RAW/blog-akun.js" -o "$T/blog-akun.js"; node --check "$T/blog-akun.js"
 for f in $JS; do curl -fsSL "$RAW/parafrase/$f" -o "$T/$f"; node --check "$T/$f"; done
 for f in $PG; do curl -fsSL "$RAW/parafrase/pages/$f" -o "$T/pages/$f"; done
-for f in common.js cek.js audit-hasil.js admin.js; do node --check "$T/pages/$f"; done
+for f in common.js cek.js audit-hasil.js admin.js layanan.js; do node --check "$T/pages/$f"; done
 # modul baru harus bisa dimuat bersama modul lama sebelum menimpa apa pun
 ( cd "$T" && NODE_PATH="$APP/node_modules" node -e 'require("./hint");require("./aspek")' ) 2>&1 | head -3 || true
 cp "$T/blog-akun.js" "$APP/blog-akun.js"
@@ -40,9 +40,10 @@ CJ=$(c -H "$H" $B/ruangakademikut/assets/common.js)
 AJ=$(curl -s -H "$H" $B/ruangakademikut/assets/common.js | grep -c "window.auditAspects" || true)
 EX=$(curl -s -H "$H" $B/ruangakademikut/assets/cek.js | grep -c "renderExample" || true)
 HB=$(curl -s -H "$H" $B/ruangakademikut | grep -c "terjamin" || true)
+LC=$(curl -s -H "$H" $B/ms/layanan/config | grep -c "needs" || true)
 PV=$(c -H "$H" $B/ms/parafrase/preview/00000000000000000000000000000000)
 echo "klaim-terjamin-di-hub $HB hub $HUB audit $AUD hasil $HAS cek $CEK masuk $LOG me $ME common.js $CJ aspek-di-common $AJ"
-[ "$HUB" = 200 ]; [ "$AUD" = 200 ]; [ "$LOG" = 200 ]; [ "$ME" = 200 ]; [ "$CJ" = 200 ]; [ "$AJ" -ge 1 ]; [ "$EX" -ge 1 ]; [ "$PV" = 404 ]; [ "$HB" = 0 ]
+[ "$HUB" = 200 ]; [ "$AUD" = 200 ]; [ "$LOG" = 200 ]; [ "$ME" = 200 ]; [ "$CJ" = 200 ]; [ "$AJ" -ge 1 ]; [ "$EX" -ge 1 ]; [ "$PV" = 404 ]; [ "$HB" = 0 ]; [ "$LC" -ge 1 ]
 trap - ERR
 echo "SELESAI. Ctrl+F5 lalu coba unggah satu file Word di /ruangakademikut/audit dan /ms/masuk."
 echo "Rollback: tar xzf $BK -C $APP && pm2 restart nextaja"
