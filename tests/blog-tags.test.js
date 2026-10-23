@@ -13,6 +13,7 @@ async function setup(posts) {
   fs.writeFileSync(path.join(root, "data", "blog.json"), JSON.stringify({ posts }));
   const app = express();
   const blog = require("../blog-akun")({ app, express, requireAdmin: (q, r, n) => n(), sameOrigin: () => true, getCookie: () => "", SECURE_COOKIE: false, ROOT: root, SITE: "https://contoh.test", getSettings: () => ({}) });
+  app.use((req, res) => blog.notFound(req, res)); // seperti server.js: 404 bermerek paling akhir
   const srv = app.listen(0), base = "http://127.0.0.1:" + srv.address().port;
   return { blog, srv, base, root };
 }
@@ -45,6 +46,34 @@ test("saran kategori: pengumuman/jadwal = Info UT, cara/tips = Tips Kuliah UT; p
     assert.deepStrictEqual({ ...after, topic: "updateut" }, JSON.parse(before), "hanya kategori yang berubah");
     assert.strictEqual((await fetch(t.base + "/ms/admin/posts/k1/topic", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ topic: "ngawur" }) })).status, 400);
     assert.strictEqual((await fetch(t.base + "/ms/admin/posts/zzz/topic", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ topic: "study" }) })).status, 404);
+  } finally { t.srv.close(); }
+});
+
+test("SEO teknis: tepat satu H1 di setiap jenis halaman; kartu pakai H2/H3", async () => {
+  const t = await setup([post("h1", "UAS online UT", "x", ["uas"], 21), post("h2", "Registrasi UT", "x", ["registrasi"], 22), post("h3", "Tips Tuton UT", "x", [], 23)]);
+  try {
+    for (const u of ["/blog", "/blog?tag=uas", "/blog?f=updateut", "/blog?q=uas", "/blog/s-h1", "/halaman-tidak-ada"]) {
+      const h = await (await fetch(t.base + u)).text();
+      assert.strictEqual((h.match(/<h1[\s>]/g) || []).length, 1, `${u} harus punya tepat satu H1`);
+    }
+    const home = await (await fetch(t.base + "/blog")).text();
+    assert.ok(!/<article class="bx-(feat|card)">[\s\S]*?<h1/.test(home), "judul di kartu tidak boleh H1");
+  } finally { t.srv.close(); }
+});
+
+test("LCP: gambar kartu pilihan dimuat segera (fetchpriority=high, bukan lazy); kartu lain lazy; ada teks 'Baca'", async () => {
+  const mk = (id, d, cover) => ({ ...post(id, "Judul " + id, "x", [], d), cover, featured: id === "f1" });
+  const t = await setup([mk("f1", 20, "/uploads/a.webp"), mk("f2", 21, "/uploads/b.webp"), mk("f3", 22, "/uploads/c.webp")]);
+  try {
+    const home = await (await fetch(t.base + "/blog")).text();
+    const feat = home.match(/<article class="bx-feat">[\s\S]*?<\/article>/)[0];
+    assert.match(feat, /<img src="\/uploads\/a\.webp"[^>]*fetchpriority="high"/);
+    assert.ok(!/loading="lazy"/.test(feat), "gambar utama tidak boleh lazy");
+    assert.match(feat, /Baca selengkapnya <i aria-hidden="true">→<\/i>/);
+    const cards = [...home.matchAll(/<article class="bx-card">[\s\S]*?<\/article>/g)].map(m => m[0]);
+    assert.ok(cards.length === 2 && cards.every(c => /loading="lazy"/.test(c) && !/fetchpriority/.test(c) && />Baca <i aria-hidden="true">→<\/i>/.test(c)));
+    const art = await (await fetch(t.base + "/blog/s-f1")).text();
+    assert.match(art, /<meta property="og:image:alt" content="Judul f1">/);
   } finally { t.srv.close(); }
 });
 

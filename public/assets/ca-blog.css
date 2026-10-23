@@ -46,8 +46,11 @@
 .bx-b h2,.bx-b h3{margin:2px 0 0;font:700 17px/1.35 Onest,sans-serif;color:var(--text);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .bx-feat .bx-b h2{font-size:clamp(19px,2vw,23px)}
 .bx-b p{margin:0;color:var(--muted);font-size:14px;line-height:1.55;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.bx-ft{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto;padding-top:8px;color:var(--muted);font-size:12.5px}
-.bx-go{display:inline-grid;place-items:center;flex:none;width:30px;height:30px;border-radius:50%;border:1px solid var(--border);color:var(--acc);font-weight:700}
+.bx-ft{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 10px;margin-top:auto;padding-top:8px;color:var(--muted);font-size:12.5px}
+/* teks eksplisit di samping panah: tautan lebih jelas bagi pembaca layar dan pengunjung (kartu tetap seluruhnya bisa diklik) */
+.bx-go{display:inline-flex;align-items:center;gap:6px;flex:none;min-height:30px;padding:0 12px;border:1px solid var(--bx-chip-line);border-radius:999px;color:var(--link);font:700 12.5px Onest,sans-serif;white-space:nowrap}
+.bx-go i{font-style:normal}
+.bx-feat>a:hover .bx-go,.bx-card>a:hover .bx-go{border-color:var(--bx-hl);background:rgba(127,127,127,.12)}
 .bx-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 16px}
 .bx-head h2{margin:0;font:700 clamp(22px,2.6vw,28px)/1.2 "Bricolage Grotesque",Onest,sans-serif;color:var(--text)}
 .bx-count{color:var(--muted);font-size:14px}.bx-count a{color:var(--link)}

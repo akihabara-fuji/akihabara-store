@@ -176,9 +176,11 @@ module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, b
 
   /* ---------------- SEO ---------------- */
   app.get("/ms/admin/ca/seo", requireAdmin, send(() => {
-    const cfg = settings.getAll(), live = blog.posts().filter(p => !p.trashedAt && blog.isLive(p));
+    // hanya artikel yang tampil di domain akademik (kategori non-akademik disembunyikan di sini)
+    const cfg = settings.getAll(), live = blog.posts().filter(p => !p.trashedAt && blog.isLive(p) && blog.ACAD_TOPICS.includes(p.topic));
     const checks = live.map(p => {
       const words = (String(p.body || "").match(/\S+/g) || []).length, issues = [];
+      if (!/\b(ut|universitas terbuka)\b/i.test([p.title, p.metaDesc || p.excerpt || ""].join(" "))) issues.push("Judul/ringkasan belum menyebut “UT” atau “Universitas Terbuka”, kata yang dipakai mahasiswa saat mencari. Sebut secara wajar, jangan dijejalkan.");
       if ((p.metaTitle || p.title).length > 65) issues.push("Judul SEO lebih dari 65 karakter (bisa terpotong di Google).");
       if (!p.metaDesc && !p.excerpt) issues.push("Belum ada ringkasan/meta description.");
       if (p.cover && !p.coverAlt) issues.push("Foto sampul belum punya teks alt.");
@@ -193,12 +195,24 @@ module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, b
 
   /* ---------------- media ---------------- */
   const IMG = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "image/gif": "gif", "image/avif": "avif" };
+  /* Jenis gambar ditentukan dari ISI file (magic bytes), bukan dari tipe/nama yang dilaporkan browser (bisa dipalsukan). */
+  const sniff = b => {
+    if (!b || b.length < 16) return null;
+    if (b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff) return "jpg";
+    if (b.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))) return "png";
+    const h6 = b.subarray(0, 6).toString("latin1"); if (h6 === "GIF87a" || h6 === "GIF89a") return "gif";
+    if (b.subarray(0, 4).toString("latin1") === "RIFF" && b.subarray(8, 12).toString("latin1") === "WEBP") return "webp";
+    if (b.subarray(4, 8).toString("latin1") === "ftyp" && /^(avif|avis)$/.test(b.subarray(8, 12).toString("latin1"))) return "avif";
+    return null;
+  };
   const up = multer({ storage: multer.memoryStorage(), limits: { fileSize: 15 * 1048576, files: 1 }, fileFilter: (req, f, cb) => cb(null, !!IMG[f.mimetype]) }).single("file");
   app.post("/ms/admin/ca/upload", requireAdmin, (req, res) => up(req, res, async err => {
     if (err || !req.file) return res.status(400).json({ error: "File harus gambar (JPG, PNG, WebP, GIF, AVIF), maks 15 MB." });
+    const kind = sniff(req.file.buffer);
+    if (!kind) return res.status(415).json({ error: "Isi file bukan gambar yang valid (JPG, PNG, WebP, GIF, AVIF)." });
     const name = `${Date.now().toString(36)}-${crypto.randomBytes(4).toString("hex")}`;
     try {
-      let out = req.file.buffer, ext = IMG[req.file.mimetype];
+      let out = req.file.buffer, ext = kind;
       if (sharp) { out = await sharp(req.file.buffer, { failOn: "error", limitInputPixels: 60e6 }).rotate().resize({ width: 2000, height: 2000, fit: "inside", withoutEnlargement: true }).webp({ quality: 84 }).toBuffer(); ext = "webp"; }
       await fsp.writeFile(path.join(UPLOADS, `${name}.${ext}`), out);
       res.json({ ok: true, url: `/uploads/${name}.${ext}` });

@@ -171,3 +171,13 @@ textarea.body{border-radius:0 0 10px 10px;min-height:520px;font:15px/1.7 ui-mono
 }
 @media (max-width:520px){.g4{grid-template-columns:minmax(0,1fr)}}
 @media (prefers-reduced-motion:reduce){.side{transition:none}}
+
+/* kartu ringkasan sebagai pintasan: label = tautan yang direntangkan ke seluruh kartu */
+.stat.is-link{position:relative;transition:border-color .15s,transform .15s}
+.stat.is-link:hover{border-color:var(--acc);transform:translateY(-1px)}
+.stat-a{color:var(--muted);font-size:13px;text-decoration:none;font-weight:600}
+.stat-a::after{content:"";position:absolute;inset:0;border-radius:inherit}
+.stat-a:hover{color:var(--link);text-decoration:underline}
+.stat-a:focus-visible{outline:none}
+.stat-a:focus-visible::after{outline:3px solid var(--acc);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.stat.is-link{transition:none}.stat.is-link:hover{transform:none}}

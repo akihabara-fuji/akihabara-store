@@ -337,7 +337,8 @@ const caPanel = express.static(path.join(ROOT, "admin-ca", "public"), { index: "
 app.use("/admin", (req, res, next) => (isAcadHost(req) ? caPanel(req, res, next) : next()));
 if (!ACAD_HOSTS.length) app.use("/admin-ca", caPanel);
 app.use("/admin", express.static(path.join(ROOT, "admin"), { index: "index.html" }));
-app.use("/uploads", express.static(UPLOADS, { maxAge: "30d", immutable: true }));
+/* Berkas unggahan hanya boleh tampil sebagai gambar: tidak ada skrip/HTML yang bisa jalan walau dibuka langsung. */
+app.use("/uploads", express.static(UPLOADS, { maxAge: "30d", immutable: true, setHeaders: res => res.setHeader("Content-Security-Policy", "default-src 'none'; img-src 'self'; sandbox") }));
 app.use(express.static(PUB, { maxAge: "1h", index: false }));
 /* Paling akhir: 404. API menjawab JSON, halaman menjawab 404 bermerek. */
 app.use((req, res) => (req.path.startsWith("/ms/") ? res.status(404).json({ error: "Tidak ditemukan." }) : extra.notFound(req, res)));

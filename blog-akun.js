@@ -146,8 +146,9 @@ module.exports = function mount(ctx) {
   };
   /* ---------- Beranda blog (dipakai /blog dan /blog-ut): cari, filter, artikel pilihan, kartu terbaru, arsip ---------- */
   const shortDate = iso => new Date(iso).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Jakarta" });
-  const cardCover = p => p.cover ? `<img src="${esc(p.cover)}" alt="${esc(p.coverAlt || "")}" loading="lazy" decoding="async">` : posterHtml(p);
-  const blogCard = p => `<article class="bx-card"><a href="/blog/${esc(p.slug)}"><div class="bx-cv">${cardCover(p)}</div><div class="bx-b"><span class="bx-tag">${esc(tl(p.topic))}</span><h3>${esc(p.title)}</h3>${p.excerpt ? `<p>${esc(p.excerpt)}</p>` : ""}<div class="bx-ft"><span><time datetime="${esc(p.publishedAt)}">${esc(shortDate(p.publishedAt))}</time> · ${readMin(p)} menit baca</span><span class="bx-go" aria-hidden="true">→</span></div></div></a></article>`;
+  /* hi=true untuk gambar utama di layar pertama (kandidat LCP): dimuat segera dan diprioritaskan, bukan lazy. */
+  const cardCover = (p, hi = false) => p.cover ? `<img src="${esc(p.cover)}" alt="${esc(p.coverAlt || "")}" ${hi ? 'fetchpriority="high" decoding="async"' : 'loading="lazy" decoding="async"'}>` : posterHtml(p);
+  const blogCard = p => `<article class="bx-card"><a href="/blog/${esc(p.slug)}"><div class="bx-cv">${cardCover(p)}</div><div class="bx-b"><span class="bx-tag">${esc(tl(p.topic))}</span><h3>${esc(p.title)}</h3>${p.excerpt ? `<p>${esc(p.excerpt)}</p>` : ""}<div class="bx-ft"><span><time datetime="${esc(p.publishedAt)}">${esc(shortDate(p.publishedAt))}</time> · ${readMin(p)} menit baca</span><span class="bx-go">Baca <i aria-hidden="true">→</i></span></div></div></a></article>`;
   const topicsShown = () => Object.keys(TOPICS).filter(k => !ACAD_ONLY || ACAD_TOPICS.includes(k));
   const topTags = (posts, n) => { const c = new Map(); for (const p of posts) for (const t of p.tags || []) c.set(t, (c.get(t) || 0) + 1); return [...c.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, n).map(x => x[0]); };
   function blogFilters(req) {
@@ -171,7 +172,7 @@ module.exports = function mount(ctx) {
         <p class="bx-lead">${ACAD_ONLY ? "Jadwal, registrasi, ujian, tugas, Metopen, tips belajar, dan pengalaman mahasiswa UT. Bukan situs resmi UT: selalu cocokkan dengan pengumuman resmi di ut.ac.id." : "Catatan tentang belajar, social media, AI, dan hal-hal yang lagi ramai."}</p>
         <form class="bx-search" role="search" action="${base}" method="get"><label class="bx-sr" for="bxq">Cari artikel</label><input id="bxq" type="search" name="q" value="${esc(q)}" maxlength="80" placeholder="Cari artikel, contoh: jadwal ujian, registrasi, tugas…"><button type="submit">Cari</button></form>
         <nav class="bx-chips" aria-label="Filter kategori">${chips}</nav>${popHtml}
-      </div>${featured ? `<article class="bx-feat"><a href="/blog/${esc(featured.slug)}"><div class="bx-cv">${cardCover(featured)}<span class="bx-badge">Artikel Pilihan</span></div><div class="bx-b"><h2>${esc(featured.title)}</h2>${featured.excerpt ? `<p>${esc(featured.excerpt)}</p>` : ""}<div class="bx-ft"><span><time datetime="${esc(featured.publishedAt)}">${esc(shortDate(featured.publishedAt))}</time> · ${esc(tl(featured.topic))}</span><span class="bx-go" aria-hidden="true">→</span></div></div></a></article>` : ""}</section>`;
+      </div>${featured ? `<article class="bx-feat"><a href="/blog/${esc(featured.slug)}"><div class="bx-cv">${cardCover(featured, true)}<span class="bx-badge">Artikel Pilihan</span></div><div class="bx-b"><h2>${esc(featured.title)}</h2>${featured.excerpt ? `<p>${esc(featured.excerpt)}</p>` : ""}<div class="bx-ft"><span><time datetime="${esc(featured.publishedAt)}">${esc(shortDate(featured.publishedAt))}</time> · ${esc(tl(featured.topic))}</span><span class="bx-go">Baca selengkapnya <i aria-hidden="true">→</i></span></div></div></a></article>` : ""}</section>`;
     const what = q ? `Hasil pencarian “${esc(q)}”` : tag ? `Artikel tentang ${esc(tagLabel(tag))}` : f ? esc(TOPICS[f].label) : "Artikel Terbaru";
     const head = `<div class="bx-head"><h2>${what}</h2>${filtering ? `<span class="bx-count">${list.length} artikel · <a href="${base}">Hapus filter</a></span>` : ""}</div>`;
     const grid = latest.length ? `<div class="bx-grid">${latest.map(blogCard).join("")}</div>` : `<div class="bx-empty"><b>Belum ada artikel yang cocok.</b><span>Coba kata lain, atau <a href="${base}">lihat semua artikel</a>.</span></div>`;
@@ -538,7 +539,7 @@ module.exports = function mount(ctx) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Bricolage+Grotesque:wght@600;700&display=swap" rel="stylesheet">
 <script>try{var t=localStorage.getItem("nx-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
-<link rel="stylesheet" href="/assets/blog.css?v=10"><link rel="stylesheet" href="/assets/ca-blog.css?v=4"><script async src="/t.js"></script>
+<link rel="stylesheet" href="/assets/blog.css?v=10"><link rel="stylesheet" href="/assets/ca-blog.css?v=5"><script async src="/t.js"></script>
 ${extra}
 </head>
 <body>
@@ -653,7 +654,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
     <aside class="ax-side">${toc.length >= 3 ? `<nav class="ax-box ax-toc-side" aria-labelledby="axTocH"><h2 id="axTocH">Daftar Isi</h2>${tocList}</nav>` : ""}${relatedHtml}</aside></div>
     <a class="wa-bubble" href="/ruangakademikut"><span>Layanan ${esc(BRAND)}</span><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg></a>`;
     return layout({ title: `${p.metaTitle || p.title} — ${BRAND}`, desc, path: `/blog/${p.slug}`, body, image: img, type: "article", noindex: preview,
-      extra: `<meta property="article:published_time" content="${esc(pub)}"><meta property="article:modified_time" content="${esc(mod)}">${tags.map(t => `<meta property="article:tag" content="${esc(t)}">`).join("")}${preview ? "" : `<script type="application/ld+json">${ld}</script>`}` });
+      extra: `${p.cover ? `<meta property="og:image:alt" content="${esc(p.coverAlt || p.title)}"><meta name="twitter:image:alt" content="${esc(p.coverAlt || p.title)}">` : ""}<meta property="article:published_time" content="${esc(pub)}"><meta property="article:modified_time" content="${esc(mod)}">${tags.map(t => `<meta property="article:tag" content="${esc(t)}">`).join("")}${preview ? "" : `<script type="application/ld+json">${ld}</script>`}` });
   }
   app.get("/blog/:slug", (req, res, next) => {
     const p = published().find(x => x.slug === req.params.slug);

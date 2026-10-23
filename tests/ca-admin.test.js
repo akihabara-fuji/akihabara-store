@@ -123,3 +123,37 @@ test("pesanan: catatan internal, batal belum bayar, tidak bisa batal dua kali, l
     assert.strictEqual(svc.body.items.find(x => x.key === "tugas").active, false);
   } finally { srv.close(); }
 });
+
+test("unggah gambar: isi file dicek (magic bytes); HTML/skrip berkedok .png ditolak; gambar asli diterima", async () => {
+  const { srv, base, call, login } = await setup();
+  try {
+    const own = await login("pemilik", OWNER_PW);
+    const send = async (bytes, type, name) => { const fd = new FormData(); fd.append("file", new Blob([bytes], { type }), name); const r = await fetch(base + "/ms/admin/ca/upload", { method: "POST", headers: { origin: base, cookie: own }, body: fd }); return { status: r.status, body: await r.json() }; };
+    const html = Buffer.from("<html><script>alert(document.cookie)</script></html>" + " ".repeat(40));
+    assert.strictEqual((await send(html, "image/png", "foto.png")).status, 415, "HTML berkedok PNG");
+    assert.strictEqual((await send(Buffer.from("<svg xmlns='http://www.w3.org/2000/svg'><script>1</script></svg>" + " ".repeat(40)), "image/svg+xml", "x.svg")).status, 400, "SVG tidak diterima");
+    const png = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==", "base64");
+    const ok = await send(png, "image/png", "../../etc/passwd.png");
+    assert.strictEqual(ok.status, 200, JSON.stringify(ok.body));
+    assert.match(ok.body.url, /^\/uploads\/[a-z0-9]+-[a-f0-9]{8}\.png$/, "nama file dibuat server, bukan dari nama unggahan");
+    // tipe yang dilaporkan browser berbohong (JPEG di-klaim sebagai PNG): ekstensi mengikuti ISI file
+    const jpg = Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10]), Buffer.from("JFIF\0"), Buffer.alloc(40)]);
+    const lie = await send(jpg, "image/png", "a.png");
+    assert.ok(lie.status === 200 && lie.body.url.endsWith(".jpg"), JSON.stringify(lie));
+  } finally { srv.close(); }
+});
+
+test("SEO admin: hanya artikel akademik diperiksa; judul/ringkasan tanpa 'UT' ditandai, yang menyebut UT tidak", async () => {
+  const { srv, call, login } = await setup();
+  try {
+    const own = await login("pemilik", OWNER_PW), body = "## Bagian\n\n" + "kata ".repeat(310);
+    const mk = (title, topic, excerpt) => call("/ms/admin/posts", { cookie: own, method: "POST", json: { title, topic, excerpt, body, status: "published" } });
+    await mk("Cara membagi waktu kuliah sambil bekerja", "study", "Langkah praktis membagi waktu antara kerja dan keluarga.");
+    await mk("Jadwal UAS UT semester ini", "updateut", "Cek tanggal ujian di laman resmi.");
+    await mk("Berita viral hari ini", "viral", "Tidak relevan di domain akademik.");
+    const s = await call("/ms/admin/ca/seo", { cookie: own });
+    const by = Object.fromEntries(s.body.checks.map(c => [c.title, c.issues.some(i => /belum menyebut/.test(i))]));
+    assert.deepStrictEqual(by, { "Cara membagi waktu kuliah sambil bekerja": true, "Jadwal UAS UT semester ini": false });
+    assert.strictEqual(s.body.checks.length, 2, "artikel non-akademik tidak ikut diperiksa");
+  } finally { srv.close(); }
+});

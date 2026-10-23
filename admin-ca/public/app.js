@@ -196,7 +196,8 @@
     });
     return html;
   }
-  const stat = (ic, value, label, small) => `<div class="card stat"><span class="ic">${ICON[ic]}</span><div><b>${value}</b><span>${esc(label)}</span>${small ? `<small>${small}</small>` : ""}</div></div>`;
+  /* href: seluruh kartu menjadi pintasan ke daftar yang sudah tersaring (label = tautan yang direntangkan lewat CSS) */
+  const stat = (ic, value, label, small, href) => `<div class="card stat${href ? " is-link" : ""}"><span class="ic">${ICON[ic]}</span><div><b>${value}</b>${href ? `<a class="stat-a" href="${esc(href)}">${esc(label)}</a>` : `<span>${esc(label)}</span>`}${small ? `<small>${small}</small>` : ""}</div></div>`;
   async function pDashboard() {
     const q = params(), days = Number(q.get("days")) || 30;
     const to = dayKey(Date.now()), from = dayKey(Date.now() - (days - 1) * 864e5);
@@ -205,17 +206,17 @@
     const p = d.posts;
     const warn = ME.ownerPasswordShared ? `<div class="notice">Akun <b>pemilik</b> masih memakai sandi yang sama dengan admin nextaja. Atur <code>CA_ADMIN_PASSWORD</code> di file .env server, atau buat akun pemilik bernama di menu Admin &amp; Peran.</div>` : "";
     if (!d.orders) { // peran editor
-      setPage("Dashboard", "Ringkasan konten", `${warn}<div class="grid g4">${stat("doc", num(p.published), "Artikel terbit")}${stat("pen", num(p.draft), "Draf")}${stat("clock", num(p.scheduled), "Terjadwal")}${stat("list", num(p.review), "Menunggu review")}</div>
+      setPage("Dashboard", "Ringkasan konten", `${warn}<div class="grid g4">${stat("doc", num(p.published), "Artikel terbit", "", "#/posts?status=published")}${stat("pen", num(p.draft), "Draf", "", "#/posts?status=draft")}${stat("clock", num(p.scheduled), "Terjadwal", "", "#/posts?status=scheduled")}${stat("list", num(p.review), "Menunggu review")}</div>
         <div class="card"><div class="hd"><h2>Artikel terakhir diubah</h2><a class="btn sm pri" href="#/posts/new">Tulis artikel</a></div><div class="tbl-wrap"><table class="t"><tbody>${d.recentPosts.map(x => `<tr class="click" data-href="#/posts/${x.id}"><td>${esc(x.title)}</td><td>${badge({ draft: "Draf", review: "Review", scheduled: "Terjadwal", published: "Terbit" }[x.status] || x.status, x.status === "published" ? "ok" : "mute")}</td><td class="muted">${dt(x.updatedAt)}</td></tr>`).join("") || '<tr><td class="empty">Belum ada artikel.</td></tr>'}</tbody></table></div></div>`);
       bindRows(); return;
     }
     const o = d.orders;
     setPage("Dashboard", "Ringkasan aktivitas website", `${warn}<div class="bar"><span class="grow"></span>${range}</div>
       <div class="grid g4">
-        ${stat("doc", num(p.published), "Artikel terbit", `${num(p.draft)} draf · ${num(p.scheduled)} terjadwal · ${num(p.review)} review`)}
-        ${stat("box", num(d.newToday), "Pesanan baru hari ini", `${num(o.bayar)} menunggu pembayaran`)}
-        ${stat("card", num(o.konfirmasi), "Menunggu konfirmasi bayar", `<a href="#/payments">Buka antrean pembayaran</a>`)}
-        ${stat("list", num(o.proses), "Sedang diproses", `${num(o.selesai)} selesai · ${num(o.batal)} batal/kedaluwarsa`)}
+        ${stat("doc", num(p.published), "Artikel terbit", `${num(p.draft)} draf · ${num(p.scheduled)} terjadwal · ${num(p.review)} review`, "#/posts?status=published")}
+        ${stat("box", num(d.newToday), "Pesanan baru hari ini", `${num(o.bayar)} menunggu pembayaran`, `#/orders?from=${to}&to=${to}`)}
+        ${stat("card", num(o.konfirmasi), "Menunggu konfirmasi bayar", "Klik untuk membuka antrean", "#/payments")}
+        ${stat("list", num(o.proses), "Sedang diproses", `${num(o.selesai)} selesai · ${num(o.batal)} batal/kedaluwarsa`, "#/orders?group=proses")}
       </div>
       <div class="grid g-main">
         <div class="card"><div class="hd"><h2>Aktivitas ${days} hari terakhir</h2><span class="muted small">Pendapatan terkonfirmasi: <b>${rp(d.revenue)}</b> (${num(d.paidCount)} pesanan)</span></div><div class="bd">${lineChart(d.series, [["orders", "Pesanan dibuat", "--s1"], ["paid", "Pesanan dibayar", "--s2"]])}<p class="small faint" style="margin:8px 0 0">${esc(d.definitions.revenue)}</p></div></div>
@@ -359,7 +360,7 @@
       $("#mtC").innerHTML = `· <span class="${t.length > 60 ? "cnt-warn" : "cnt-ok"}">${t.length}/60</span>`;
       $("#mdC").innerHTML = `· <span class="${ds.length < 70 || ds.length > 160 ? "cnt-warn" : "cnt-ok"}">${ds.length}/160</span>`;
       $("#serp").innerHTML = `<div class="u">catatanakademik.com › blog › ${esc(f.slug.value || "…")}</div><div class="t">${esc((t || "Judul artikel").slice(0, 62))}${t.length > 62 ? "…" : ""} — Catatan Akademik</div><div class="d">${esc((ds || "Tambahkan ringkasan agar Google punya deskripsi yang jelas.").slice(0, 158))}</div>`;
-      const has2 = /^\s*##?\s+\S/m.test(ta.value), C = [[!!f.elements.title.value.trim(), "Judul artikel diisi"], [t.length <= 60, "Judul SEO ≤ 60 karakter"], [ds.length >= 70 && ds.length <= 160, "Deskripsi 70–160 karakter"], [!!f.cover.value, "Gambar sampul dipasang"], [!f.cover.value || !!f.coverAlt.value.trim(), "Teks alt sampul diisi"], [w < 300 || has2, "Tulisan panjang punya sub-judul H2"], [!/!\[[^\]\s]*_[^\]\s]*\]\(/.test(ta.value), "Alt foto di isi bukan nama file"], [w >= 300, "Isi minimal ±300 kata (saran, bukan aturan)"]];
+      const has2 = /^\s*##?\s+\S/m.test(ta.value), C = [[!!f.elements.title.value.trim(), "Judul artikel diisi"], [t.length <= 60, "Judul SEO ≤ 60 karakter"], [ds.length >= 70 && ds.length <= 160, "Deskripsi 70–160 karakter"], [/\b(ut|universitas terbuka)\b/i.test(t + " " + ds), "Menyebut “UT” atau “Universitas Terbuka” di judul/deskripsi (secara wajar)"], [!!f.cover.value, "Gambar sampul dipasang"], [!f.cover.value || !!f.coverAlt.value.trim(), "Teks alt sampul diisi"], [w < 300 || has2, "Tulisan panjang punya sub-judul H2"], [!/!\[[^\]\s]*_[^\]\s]*\]\(/.test(ta.value), "Alt foto di isi bukan nama file"], [w >= 300, "Isi minimal ±300 kata (saran, bukan aturan)"]];
       $("#chk").innerHTML = C.map(([ok, l]) => `<li><span class="${ok ? "y" : "n"}">${ok ? "✓" : "!"}</span>${esc(l)}</li>`).join("");
     };
     const mark = debounce(() => { store(key, JSON.stringify({ at: Date.now(), v: val() })); $("#saveSt").textContent = "Belum disimpan · draf lokal tersimpan di browser ini"; }, 600);
