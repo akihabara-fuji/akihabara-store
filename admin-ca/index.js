@@ -243,6 +243,16 @@ module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, b
     return { items: stats.sort((a, b) => b.at - a.at).slice(0, 400) };
   }));
 
+  /* hapus gambar: hanya yang tidak dipakai artikel mana pun (termasuk draf dan sampah), supaya tidak ada gambar patah */
+  app.delete("/ms/admin/ca/media/:file", requireAdmin, send(async req => {
+    const f = String(req.params.file || "");
+    if (!/^[a-z0-9][a-z0-9._-]*\.(webp|jpe?g|png|gif|avif)$/i.test(f) || f.includes("..")) throw bad(400, "Nama berkas tidak valid.");
+    const url = `/uploads/${f}`, use = blog.posts().filter(p => p.cover === url || String(p.body || "").includes(url));
+    if (use.length) throw bad(409, `Gambar masih dipakai di: ${use.slice(0, 3).map(p => p.title).join(", ")}. Ganti gambar di artikel itu dulu.`);
+    try { await fsp.unlink(path.join(UPLOADS, f)); } catch (e) { if (e.code === "ENOENT") throw bad(404, "Gambar tidak ditemukan."); throw e; }
+    return { ok: true };
+  }));
+
   /* ---------------- admin & peran (hanya pemilik) ---------------- */
   const ROLE_KEYS = Object.keys(auth.ROLES);
   const pubAdmin = a => ({ id: a.id, username: a.username, name: a.name, role: a.role, roleLabel: auth.ROLES[a.role], active: !!a.active, createdAt: a.created_at, lastLoginAt: a.last_login_at });
