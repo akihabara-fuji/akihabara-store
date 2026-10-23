@@ -20,3 +20,12 @@ test("halaman layanan tetap memuat penafian: bukan situs resmi UT dan tidak menj
   assert.ok(/bukan situs resmi/i.test(text("beranda.html")) && /tidak menjamin nilai/i.test(text("beranda.html")));
   assert.ok(/tidak menjamin skor tertentu atau kelulusan/i.test(text("cek.html")));
 });
+
+test("diskon ditampilkan dalam persen yang dihitung dari harga, bukan harga coret; klaim 'bukan AI' untuk pengerjaan tidak dipakai", () => {
+  const hub = text("hub.html");
+  assert.ok(/data-disc="price_pengarahan_lulus,price_pengarahan_normal"/.test(hub) && !/\(normal Rp/.test(hub));
+  for (const f of ["hub.html", "layanan.html"]) assert.ok(!/bukan hasil generate AI/i.test(text(f)), f);
+  assert.ok(/Dikerjakan oleh tim admin Catatan Akademik/.test(hub));
+  const common = fs.readFileSync(path.join(dir, "common.js"), "utf8");
+  assert.ok(/Math\.round\(\(1 - now \/ was\) \* 100\)/.test(common) && /now < was/.test(common), "persen dihitung dan tidak tampil bila harga sekarang tidak lebih murah");
+});

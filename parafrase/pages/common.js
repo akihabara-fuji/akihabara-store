@@ -8,6 +8,10 @@
     set("[data-ppw]", rp(c.price_per_word)); set("[data-min]", rp(c.min_order_price)); set("[data-fast]", rp(c.fast_lane.price));
     set("[data-retention]", c.retention_hours);
     document.querySelectorAll("[data-p]").forEach(function (e) { var v = c[e.getAttribute("data-p")]; if (v != null) e.textContent = rp(v); });
+    /* Diskon dalam persen, dihitung dari harga sekarang dan harga normal (pengaturan admin). Tidak tampil bila datanya tidak masuk akal. */
+    function disc(keys) { var k = String(keys).split(","), now = Number(c[k[0]]), was = Number(c[k[1]]); return was > 0 && now > 0 && now < was ? Math.round((1 - now / was) * 100) : 0; }
+    document.querySelectorAll("[data-disc]").forEach(function (e) { var d = disc(e.getAttribute("data-disc")); if (d > 0) { e.textContent = "· diskon " + d + "%"; e.hidden = false; } else e.hidden = true; });
+    document.querySelectorAll("[data-disc-badge]").forEach(function (e) { var d = disc(e.getAttribute("data-disc-badge")); if (d > 0) e.textContent = "Diskon " + d + "%"; });
     document.querySelectorAll("[data-chat]").forEach(function (a) {
       if (!c.admin_wa_number) { a.classList.add("hidden"); return; }
       var m = a.getAttribute("data-msg") || "Halo admin Catatan Akademik, saya mau tanya Cek dan Parafrase Mandiri.";

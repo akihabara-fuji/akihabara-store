@@ -15,7 +15,7 @@ rollback(){ echo "GAGAL -> rollback dari $BK"; tar xzf "$BK" -C "$APP"; pm2 rest
 trap 'echo "GAGAL di baris $LINENO: $BASH_COMMAND"; rollback' ERR
 T=$(mktemp -d); mkdir -p "$T/pages"
 JS="aspek.js hint.js rules.js auditrules.js wordtools.js preview.js settings.js uploads.js orders.js"
-PG="common.js cek.js cek.html audit.html audit-hasil.js audit-hasil.html hub.html site.css admin.js admin.html"
+PG="common.js cek.js cek.html audit.html audit-hasil.js audit-hasil.html hub.html layanan.html pesanan.html blog-ut.html site.css admin.js admin.html"
 curl -fsSL "$RAW/blog-akun.js" -o "$T/blog-akun.js"; node --check "$T/blog-akun.js"
 for f in $JS; do curl -fsSL "$RAW/parafrase/$f" -o "$T/$f"; node --check "$T/$f"; done
 for f in $PG; do curl -fsSL "$RAW/parafrase/pages/$f" -o "$T/pages/$f"; done
