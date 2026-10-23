@@ -62,18 +62,21 @@ sleep 5
 # cek lewat nginx di server ini (HTTPS, sama seperti pengunjung), supaya URL pendek nginx (/layanan-ut, /blog-ut) ikut teruji
 c(){ curl -s -o /dev/null -w '%{http_code}' --resolve "$1:443:127.0.0.1" "https://$1$2"; }
 get(){ curl -fsS --resolve "$1:443:127.0.0.1" "https://$1$2"; }
+# isi halaman diambil utuh dulu, baru dicari (pipa "curl | grep -q" memutus curl di tengah jalan dan gagal saat pipefail aktif)
+has(){ local b; b=$(get "$1" "$2") || return 1; [[ "$b" == *"$3"* ]]; }
 CA=catatanakademik.com
 for u in / /blog /blog-ut /layanan-ut /sitemap.xml /robots.txt /admin/ /blog/cara-membagi-waktu-kuliah-ut-sambil-bekerja; do x=$(c $CA "$u"); echo "$CA$u $x"; [ "$x" = 200 ]; done
-get $CA /blog | grep -q 'class="bx-hero"' || { echo "Beranda blog baru tidak tampil"; false; }
-get $CA /admin/ | grep -q 'Admin · Catatan Akademik' || { echo "Panel admin CA tidak tampil di /admin"; false; }
-get $CA /blog/cara-membagi-waktu-kuliah-ut-sambil-bekerja | grep -q '<figure><img src="/uploads/' || { echo "Foto di isi artikel hilang"; false; }
-get $CA /sitemap.xml | grep -q '/layanan-ut<' || { echo "Halaman layanan hilang dari sitemap"; false; }
-get $CA /ms/layanan/config | grep -q 'metopen' || { echo "Konfigurasi layanan (Metopen) tidak terbaca"; false; }
+has $CA /blog 'class="bx-hero"' || { echo "Beranda blog baru tidak tampil"; false; }
+has $CA /admin/ 'Admin · Catatan Akademik' || { echo "Panel admin CA tidak tampil di /admin"; false; }
+has $CA /blog/cara-membagi-waktu-kuliah-ut-sambil-bekerja '<figure><img src="/uploads/' || { echo "Foto di isi artikel hilang"; false; }
+has $CA /sitemap.xml '/layanan-ut<' || { echo "Halaman layanan hilang dari sitemap"; false; }
+has $CA /ms/layanan/config 'metopen' || { echo "Konfigurasi layanan (Metopen) tidak terbaca"; false; }
+echo "Isi halaman baru: OK"
 x=$(c $CA /ms/admin/ca/me); echo "API admin CA tanpa login: $x"; [ "$x" = 401 ]
 x=$(c $CA /ms/admin/posts); echo "API blog admin tanpa login: $x"; [ "$x" = 401 ]
 x=$(c $CA /halaman-tidak-ada); echo "404 bermerek: $x"; [ "$x" = 404 ]
 x=$(c nextaja.com /admin/); echo "panel nextaja: $x"; [ "$x" = 200 ]
-get nextaja.com /admin/ | grep -q 'Masuk panel admin' || { echo "Panel nextaja berubah tanpa sengaja"; false; }
+has nextaja.com /admin/ 'Masuk panel admin' || { echo "Panel nextaja berubah tanpa sengaja"; false; }
 trap - ERR
 relock
 
