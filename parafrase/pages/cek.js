@@ -151,6 +151,8 @@
     hd.appendChild(mk("b", "font-size:18px", "Contoh perbaikan: 1 paragraf dari dokumenmu"));
     if (ex.remaining > 0) hd.appendChild(mk("span", "font-size:12.5px;padding:3px 11px;border-radius:999px;border:1px solid var(--border,#2b2b58);opacity:.85", ex.remaining + " catatan lain terbuka setelah pembayaran"));
     card.appendChild(hd);
+    var total = (ex.remaining || 0) + 1 + (ex.also || []).length;
+    card.appendChild(mk("div", "font-size:14px;line-height:1.6;opacity:.9;margin:0 0 10px", "Dokumenmu punya " + total + " catatan perbaikan. Satu paragraf dibuka gratis sebagai contoh supaya kamu lihat bentuknya" + (ex.remaining > 0 ? "; " + ex.remaining + " catatan lainnya dibuka setelah pembayaran." : ".")));
     var rec = mk("div", "border:1px solid var(--border,#2b2b58);border-left:5px solid #7c5cff;background:rgba(124,92,255,.10);border-radius:12px;padding:12px 16px;margin:8px 0 12px");
     var lab = mk("b", "display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.8;margin-bottom:3px", "Rekomendasi · " + ex.code + " " + (NAMES[ex.code] || ex.action) + " (" + ex.color + ")");
     rec.appendChild(lab);
