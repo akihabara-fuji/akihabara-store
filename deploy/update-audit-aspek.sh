@@ -8,10 +8,16 @@ APP=/var/www/mahyra-serv
 D=$APP/parafrase
 RAW=https://raw.githubusercontent.com/akihabara-fuji/akihabara-store/$REF
 [ -d "$D" ] || { echo "Folder $D tidak ada"; exit 1; }
+# Pemeriksaan awal: pastikan semua file tujuan bisa ditulis sebelum menyentuh apa pun (file terkunci chattr +i membuat cp gagal).
+LOCKED=""
+for f in blog-akun.js parafrase/*.js parafrase/pages/*; do [ -f "$APP/$f" ] || continue; ( : >> "$APP/$f" ) 2>/dev/null || LOCKED="$LOCKED $f"; done
+( : > "$D/.tulis-tes" && rm -f "$D/.tulis-tes" ) 2>/dev/null || LOCKED="$LOCKED (folder parafrase)"
+if [ -n "$LOCKED" ]; then echo "BERHENTI: file tidak bisa ditulis (kemungkinan terkunci chattr +i):$LOCKED" | head -c 1200; echo; echo "Belum ada file yang diubah. Cek: lsattr $APP/blog-akun.js"; exit 2; fi
 BK=/root/audit-aspek-backup-$(date +%Y%m%d-%H%M%S).tgz
 tar czf "$BK" -C "$APP" blog-akun.js parafrase
 echo "Backup: $BK"
-rollback(){ echo "GAGAL -> rollback dari $BK"; tar xzf "$BK" -C "$APP"; pm2 restart nextaja --update-env >/dev/null || true; }
+STARTED=0
+rollback(){ if [ "$STARTED" = 0 ]; then echo "GAGAL sebelum ada file diubah: tidak ada yang perlu dipulihkan."; return; fi; echo "GAGAL -> rollback dari $BK"; tar xzf "$BK" -C "$APP" --overwrite; pm2 restart nextaja --update-env >/dev/null || true; }
 trap 'echo "GAGAL di baris $LINENO: $BASH_COMMAND"; rollback' ERR
 T=$(mktemp -d); mkdir -p "$T/pages"
 JS="aspek.js hint.js rules.js auditrules.js wordtools.js preview.js settings.js uploads.js orders.js layanan.js metopen.js revisi.js pages.js"
@@ -22,6 +28,7 @@ for f in $PG; do curl -fsSL "$RAW/parafrase/pages/$f" -o "$T/pages/$f"; done
 for f in common.js cek.js audit-hasil.js admin.js layanan.js nilai-ut.js kalkulator.js pasfoto.js; do node --check "$T/pages/$f"; done
 # modul baru harus bisa dimuat bersama modul lama sebelum menimpa apa pun
 ( cd "$T" && NODE_PATH="$APP/node_modules" node -e 'require("./hint");require("./aspek")' ) 2>&1 | head -3 || true
+STARTED=1
 cp "$T/blog-akun.js" "$APP/blog-akun.js"
 for f in $JS; do cp "$T/$f" "$D/$f"; done
 for f in $PG; do cp "$T/pages/$f" "$D/pages/$f"; done
