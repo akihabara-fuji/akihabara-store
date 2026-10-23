@@ -45,7 +45,7 @@
     $("nobib").checked = true; $("nobib").disabled = !d.hasBibliography;
     var t = new Date(Date.now() + 2 * 86400000), p = function (n) { return String(n).padStart(2, "0"); };
     $("dl").min = new Date().toISOString().slice(0, 10); $("dl").value = t.getFullYear() + "-" + p(t.getMonth() + 1) + "-" + p(t.getDate());
-    $("chips").innerHTML = ORDER.map(function (k) { return '<span class="chip c-' + k + '">' + k + " " + NAMES[k] + " · " + (u.notes.byCode ? u.notes.byCode[k] : u.notes[k] || 0) + "</span>"; }).join("");
+    $("chips").innerHTML = ORDER.map(function (k) { return '<span class="chip c-' + k + '" title="' + ((window.PF_TARGET || {})[k] || "") + '">' + k + " " + NAMES[k] + " · " + (u.notes.byCode ? u.notes.byCode[k] : u.notes[k] || 0) + "</span>"; }).join("");
     price();
   }
 

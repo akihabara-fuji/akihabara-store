@@ -3,6 +3,7 @@
 "use strict";
 const { checkStandar, STANDAR_AUDIT } = require("./standar");
 const rules = require("./rules");
+const { computeAspects } = require("./aspek");
 
 const fold = s => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 const WORD = "[A-ZÀ-ɏ][\\p{L}'’-]+";
@@ -156,12 +157,17 @@ async function runAudit(a, { fetchFn } = {}) {
   // Standar Bab 4 dan 5: aturan yang SAMA dengan Cek Parafrase (standar.js)
   const hh = { splitSentences: require("./docx").splitSentences, countWords: require("./docx").countWords, findCitations: rules.findCitations, hasCitation: rules.hasCitation, isBody: rules.isBody };
   for (const f of checkStandar(paras, bibIdx == null || bibIdx < 0 ? null : bibIdx, hh)) add(STANDAR_AUDIT[f.rule].sev, STANDAR_AUDIT[f.rule].cat, "Paragraf " + (f.para_idx + 1), f.reason);
+  // Aspek seluruh dokumen dalam persen: memakai temuan yang sama dengan Cek & Parafrase, plus indikasi gaya tulisan seragam.
+  const bodyAt = bibIdx == null || bibIdx < 0 ? null : bibIdx;
+  const asp = computeAspects(paras, bodyAt, rules.analyzeFindings(paras, bodyAt));
+  if (asp.ai.value != null && asp.ai.level === "tinggi") add("peringatan", "Indikasi gaya tulisan seragam atau otomatis tinggi", "Seluruh dokumen", `Perkiraan ${asp.ai.value}% dari pola tulisan (frasa klise, panjang kalimat seragam, penghubung dan awalan berulang). Ini heuristik, bukan skor Drillbit. Lihat kalimat bertanda abu-abu dan merah muda di Cek & Parafrase.`);
+  else if (asp.ai.value != null && asp.ai.level === "sedang") add("info", "Indikasi gaya tulisan seragam atau otomatis sedang", "Seluruh dokumen", `Perkiraan ${asp.ai.value}% dari pola tulisan. Variasikan awalan dan penghubung kalimat, dan ganti frasa umum dengan analisis yang spesifik.`);
   const order = { kritis: 0, peringatan: 1, info: 2 };
   F.sort((x, y) => order[x.sev] - order[y.sev]);
   const count = s => F.filter(f => f.sev === s).length;
   const counts = { kritis: count("kritis"), peringatan: count("peringatan"), info: count("info") };
   const refsOut = refs || { total: 0, withDoi: 0, doiOk: 0, doiNotFound: 0, doiUnverified: 0 };
-  return { findings: F, counts, refs: refsOut, citations: cites.length, score: buildScore(body, counts, refsOut, M) };
+  return { findings: F, counts, refs: refsOut, citations: cites.length, score: { ...buildScore(body, counts, refsOut, M), aspects: asp.aspects, ai: asp.ai } };
 }
 
 module.exports = { runAudit, extractCitations, extractBibliography, checkDois };

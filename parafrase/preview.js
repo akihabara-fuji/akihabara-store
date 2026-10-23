@@ -81,7 +81,7 @@ function buildPreview(a, findings, secret, id, opts = {}) {
     page, pages, pageSize,
     totalParagraphs: visible.length,
     notes: { total: findings.length, byCode: counts },
-    legend: Object.fromEntries(Object.entries(CODES).map(([k, v]) => [k, { color: v.color, action: v.action }])),
+    legend: Object.fromEntries(Object.entries(CODES).map(([k, v]) => [k, { color: v.color, action: v.action, target: v.target }])),
     paragraphs: outParas,
   };
 }
