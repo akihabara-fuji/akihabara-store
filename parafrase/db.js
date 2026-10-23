@@ -199,6 +199,49 @@ const MIGRATIONS = [
   );
   CREATE INDEX site_texts_log_at ON site_texts_log(at);
   `,
+  `
+  /* Koin: 1 koin = Rp1.000. Saldo = jumlah delta di buku koin (tidak ada kolom saldo yang bisa menyimpang).
+     UNIQUE(kind,ref) membuat setiap top-up, pemakaian, dan pengembalian hanya bisa tercatat satu kali. */
+  CREATE TABLE coin_ledger (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id       TEXT NOT NULL,
+    delta         INTEGER NOT NULL,
+    balance_after INTEGER NOT NULL,
+    kind          TEXT NOT NULL,           -- topup | order | refund | adjust
+    ref           TEXT NOT NULL,
+    note          TEXT,
+    created_at    INTEGER NOT NULL,
+    UNIQUE(kind, ref)
+  );
+  CREATE INDEX coin_ledger_user ON coin_ledger(user_id, id);
+  CREATE TABLE coin_topups (
+    token        TEXT PRIMARY KEY,
+    user_id      TEXT NOT NULL,
+    base         INTEGER NOT NULL,         -- rupiah, kelipatan 1000
+    coins        INTEGER NOT NULL,
+    unique_code  INTEGER NOT NULL DEFAULT 0,
+    total        INTEGER NOT NULL,
+    status       TEXT NOT NULL,            -- menunggu_bayar | menunggu_verifikasi | dikonfirmasi | ditolak | kedaluwarsa
+    proof_path   TEXT,
+    proof_hash   TEXT,
+    reject_reason TEXT,
+    pay_expires_at INTEGER NOT NULL,
+    created_at   INTEGER NOT NULL,
+    proof_at     INTEGER,
+    confirmed_at INTEGER,
+    confirmed_by TEXT
+  );
+  CREATE INDEX coin_topups_user ON coin_topups(user_id, created_at);
+  CREATE INDEX coin_topups_status ON coin_topups(status);
+  CREATE TABLE fund_withdrawals (
+    id       INTEGER PRIMARY KEY AUTOINCREMENT,
+    amount   INTEGER NOT NULL CHECK(amount > 0),
+    category TEXT NOT NULL,
+    note     TEXT,
+    by       TEXT,
+    at       INTEGER NOT NULL
+  );
+  `,
 ];
 
 

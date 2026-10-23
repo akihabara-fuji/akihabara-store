@@ -1,0 +1,160 @@
+/* Sistem koin: 1 koin = Rp1.000. Inti buku koin (tanpa Express) supaya mudah diuji.
+   Aturan:
+   - Saldo = SUM(delta) di coin_ledger. Tidak ada kolom saldo yang bisa menyimpang.
+   - UNIQUE(kind,ref): satu top-up, satu pemakaian, satu pengembalian per pesanan hanya tercatat sekali.
+   - Koin tidak bisa diuangkan. Dana yang boleh diambil admin = uang masuk dari koin - saldo titipan mahasiswa - yang sudah diambil. */
+"use strict";
+const crypto = require("crypto");
+
+const RP = 1000;
+const MIN_TOPUP = 1000, MAX_TOPUP = 2000000;
+const KATEGORI = ["Langganan Claude", "VPS dan server", "Domain", "Gaji atau bagi hasil tim", "Lainnya"];
+const err = (status, message, extra) => Object.assign(new Error(message), { status }, extra || {});
+
+function createKoin(db, { settings, now: clock } = {}) {
+  const T = () => (clock ? clock() : Date.now());
+
+  const balance = uid => db.prepare("SELECT COALESCE(SUM(delta),0) b FROM coin_ledger WHERE user_id=?").get(String(uid)).b;
+
+  /* Dipanggil di dalam transaksi pemanggil (atau lewat wrapper di bawah). */
+  function post(uid, delta, kind, ref, note, at) {
+    uid = String(uid); ref = String(ref);
+    if (!Number.isInteger(delta) || delta === 0) throw err(400, "Jumlah koin tidak valid.");
+    const dup = db.prepare("SELECT * FROM coin_ledger WHERE kind=? AND ref=?").get(kind, ref);
+    if (dup) return { ...dup, duplicate: true };
+    const bal = balance(uid);
+    if (bal + delta < 0) throw err(402, "Saldo koin tidak cukup.", { short: -(bal + delta), balance: bal });
+    const r = db.prepare("INSERT INTO coin_ledger(user_id,delta,balance_after,kind,ref,note,created_at) VALUES(?,?,?,?,?,?,?)")
+      .run(uid, delta, bal + delta, kind, ref, note || null, at || T());
+    return { id: Number(r.lastInsertRowid), user_id: uid, delta, balance_after: bal + delta, kind, ref, duplicate: false };
+  }
+  const tx = fn => db.transaction(fn)();
+
+  /* Pakai koin untuk pesanan. Panggil di dalam transaksi pembuatan pesanan agar pesanan dan potongan koin satu paket. */
+  const debitOrder = (uid, coins, orderId, note, at) => post(uid, -coins, "order", orderId, note, at);
+
+  /* Kembalikan koin pesanan yang dibatalkan. Aman dipanggil berulang: hanya sekali. Tidak ada potongan = tidak ada pengembalian. */
+  function refundOrder(orderId, note, at) {
+    return tx(() => {
+      const d = db.prepare("SELECT * FROM coin_ledger WHERE kind='order' AND ref=?").get(String(orderId));
+      if (!d) return null;
+      const r = post(d.user_id, -d.delta, "refund", orderId, note || "Pesanan dibatalkan, koin kembali", at);
+      return r.duplicate ? null : r;
+    });
+  }
+
+  function adjust(uid, delta, reason, by, at) {
+    reason = String(reason || "").trim();
+    if (reason.length < 5) throw err(400, "Alasan penyesuaian wajib diisi (minimal 5 huruf).");
+    return tx(() => post(uid, delta, "adjust", crypto.randomBytes(8).toString("hex"), `${reason} (oleh ${by || "admin"})`, at));
+  }
+
+  /* ---------- isi koin lewat QRIS manual ---------- */
+  function parseRupiah(v) {
+    const n = Number(String(v == null ? "" : v).replace(/[.\s]|Rp/gi, ""));
+    if (!Number.isInteger(n) || n < MIN_TOPUP || n > MAX_TOPUP || n % RP) throw err(400, `Isi koin harus kelipatan Rp1.000, antara Rp${MIN_TOPUP.toLocaleString("id-ID")} dan Rp${MAX_TOPUP.toLocaleString("id-ID")}.`);
+    return n;
+  }
+  function createTopup(uid, rupiah, at) {
+    const base = parseRupiah(rupiah), now = at || T();
+    const cfg = settings ? settings.getAll() : { unique_code_enabled: true, unique_code_max: 99, payment_window_minutes: 60 };
+    return tx(() => {
+      const open = db.prepare("SELECT COUNT(*) n FROM coin_topups WHERE user_id=? AND status='menunggu_bayar' AND pay_expires_at>?").get(String(uid), now).n;
+      if (open >= 3) throw err(429, "Kamu masih punya 3 tagihan isi koin yang belum dibayar. Selesaikan atau tunggu kedaluwarsa dulu.");
+      let code = 0;
+      if (cfg.unique_code_enabled) {
+        const taken = new Set([
+          ...db.prepare("SELECT total FROM orders WHERE status IN ('menunggu_bayar','menunggu_verifikasi')").all().map(r => r.total),
+          ...db.prepare("SELECT total FROM coin_topups WHERE status IN ('menunggu_bayar','menunggu_verifikasi')").all().map(r => r.total),
+        ]);
+        const free = []; for (let c = 1; c <= cfg.unique_code_max; c++) if (!taken.has(base + c)) free.push(c);
+        if (!free.length) throw err(503, "Sistem pembayaran sedang penuh. Coba lagi beberapa menit lagi.");
+        code = free[crypto.randomInt(free.length)];
+      }
+      const token = crypto.randomBytes(24).toString("hex"), exp = now + cfg.payment_window_minutes * 60e3;
+      db.prepare("INSERT INTO coin_topups(token,user_id,base,coins,unique_code,total,status,pay_expires_at,created_at) VALUES(?,?,?,?,?,?, 'menunggu_bayar',?,?)")
+        .run(token, String(uid), base, base / RP, code, base + code, exp, now);
+      return db.prepare("SELECT * FROM coin_topups WHERE token=?").get(token);
+    });
+  }
+  function attachProof(token, uid, path, hash, at) {
+    const now = at || T();
+    return tx(() => {
+      const t = db.prepare("SELECT * FROM coin_topups WHERE token=? AND user_id=?").get(String(token), String(uid));
+      if (!t) throw err(404, "Tagihan tidak ditemukan.");
+      if (!["menunggu_bayar", "menunggu_verifikasi"].includes(t.status)) throw err(409, "Tagihan ini tidak menerima bukti bayar lagi.");
+      if (t.status === "menunggu_bayar" && t.pay_expires_at < now) throw err(409, "Waktu pembayaran habis. Buat tagihan baru.", { code: "expired" });
+      const dup = db.prepare("SELECT token FROM coin_topups WHERE proof_hash=? AND token<>?").get(hash, t.token);
+      const dupO = db.prepare("SELECT id FROM orders WHERE proof_hash=?").get(hash);
+      if (dup || dupO) throw err(409, "Foto ini sudah dipakai untuk pembayaran lain. Unggah bukti bayar tagihan ini.");
+      db.prepare("UPDATE coin_topups SET proof_path=?, proof_hash=?, proof_at=?, status='menunggu_verifikasi', reject_reason=NULL WHERE token=?").run(path, hash, now, t.token);
+      return { old: t.proof_path || null };
+    });
+  }
+  /* Konfirmasi hanya sekali: status berubah dan koin masuk dalam satu transaksi. */
+  function confirmTopup(token, by, at) {
+    const now = at || T();
+    return tx(() => {
+      const t = db.prepare("SELECT * FROM coin_topups WHERE token=?").get(String(token));
+      if (!t) throw err(404, "Tagihan tidak ditemukan.");
+      if (t.status === "dikonfirmasi") throw err(409, "Tagihan ini sudah dikonfirmasi sebelumnya.");
+      if (!["menunggu_verifikasi", "menunggu_bayar"].includes(t.status)) throw err(409, "Status tagihan tidak bisa dikonfirmasi: " + t.status);
+      db.prepare("UPDATE coin_topups SET status='dikonfirmasi', confirmed_at=?, confirmed_by=? WHERE token=?").run(now, by || "admin", t.token);
+      const l = post(t.user_id, t.coins, "topup", t.token, `Isi koin via QRIS Rp${t.base.toLocaleString("id-ID")}`, now);
+      return { topup: db.prepare("SELECT * FROM coin_topups WHERE token=?").get(t.token), balance: l.balance_after };
+    });
+  }
+  function rejectTopup(token, reason, at) {
+    const now = at || T(), cfg = settings ? settings.getAll() : { payment_window_minutes: 60 };
+    return tx(() => {
+      const t = db.prepare("SELECT * FROM coin_topups WHERE token=?").get(String(token));
+      if (!t) throw err(404, "Tagihan tidak ditemukan.");
+      if (t.status !== "menunggu_verifikasi") throw err(409, "Hanya tagihan menunggu verifikasi yang bisa ditolak.");
+      const why = String(reason || "").trim().slice(0, 200) || "Bukti bayar tidak sesuai.";
+      db.prepare("UPDATE coin_topups SET status='menunggu_bayar', reject_reason=?, proof_path=NULL, proof_hash=NULL, proof_at=NULL, pay_expires_at=? WHERE token=?").run(why, now + cfg.payment_window_minutes * 60e3, t.token);
+      return { old: t.proof_path || null };
+    });
+  }
+  function expireTopups(at) {
+    const now = at || T();
+    const rows = db.prepare("SELECT token, proof_path FROM coin_topups WHERE status='menunggu_bayar' AND pay_expires_at<?").all(now);
+    for (const r of rows) db.prepare("UPDATE coin_topups SET status='kedaluwarsa' WHERE token=? AND status='menunggu_bayar'").run(r.token);
+    return rows;
+  }
+
+  /* ---------- dana ---------- */
+  function summary() {
+    const g = sql => db.prepare(sql).get();
+    const topupCoins = g("SELECT COALESCE(SUM(delta),0) n FROM coin_ledger WHERE kind='topup'").n;
+    const liability = g("SELECT COALESCE(SUM(delta),0) n FROM coin_ledger").n;
+    const withdrawn = g("SELECT COALESCE(SUM(amount),0) n FROM fund_withdrawals").n;
+    const incomeRp = (topupCoins - liability) * RP;
+    return {
+      topupRp: topupCoins * RP, topupCoins,
+      liabilityRp: liability * RP, liabilityCoins: liability,
+      incomeRp, withdrawnRp: withdrawn,
+      withdrawableRp: Math.max(0, incomeRp - withdrawn),
+      pending: g("SELECT COUNT(*) n FROM coin_topups WHERE status='menunggu_verifikasi'").n,
+    };
+  }
+  function withdraw(amount, category, note, by, at) {
+    const n = Number(String(amount == null ? "" : amount).replace(/[.\s]|Rp/gi, ""));
+    if (!Number.isInteger(n) || n <= 0) throw err(400, "Jumlah pengambilan tidak valid.");
+    if (!KATEGORI.includes(category)) throw err(400, "Pilih keperluan pengambilan.");
+    return tx(() => {
+      const s = summary();
+      if (n > s.withdrawableRp) throw err(409, `Jumlah melebihi dana yang boleh diambil (Rp${s.withdrawableRp.toLocaleString("id-ID")}). Saldo titipan mahasiswa tidak bisa diambil.`);
+      db.prepare("INSERT INTO fund_withdrawals(amount,category,note,by,at) VALUES(?,?,?,?,?)").run(n, category, String(note || "").slice(0, 200), by || "admin", at || T());
+      return summary();
+    });
+  }
+
+  const history = (uid, limit = 50) => db.prepare("SELECT delta, balance_after, kind, ref, note, created_at FROM coin_ledger WHERE user_id=? ORDER BY id DESC LIMIT ?").all(String(uid), limit);
+
+  return { RP, KATEGORI, balance, debitOrder, refundOrder, adjust, parseRupiah, createTopup, attachProof, confirmTopup, rejectTopup, expireTopups, summary, withdraw, history, tx };
+}
+
+/* Harga koin sebuah pesanan: harga rupiah / 1000. Harga di luar kelipatan Rp1.000 tidak bisa dibayar koin. */
+const coinsFor = rupiah => (Number.isInteger(rupiah) && rupiah > 0 && rupiah % RP === 0 ? rupiah / RP : null);
+
+module.exports = { createKoin, coinsFor, RP, KATEGORI };
