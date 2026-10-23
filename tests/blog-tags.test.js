@@ -30,6 +30,31 @@ test("saran tag dari kata kunci judul/isi; tag yang sudah terpasang tidak disara
   } finally { t.srv.close(); }
 });
 
+test("saran kategori: pengumuman/jadwal = Info UT, cara/tips = Tips Kuliah UT; pindah kategori tidak mengubah isi/slug/tanggal", async () => {
+  const mk = (id, title, topic) => ({ ...post(id, title, "Isi.", [], 20), topic });
+  const t = await setup([mk("k1", "Cara Membagi Waktu Kuliah UT Sambil Bekerja", "updateut"), mk("k2", "Update UT: Jadwal Penting Terverifikasi", "study"), mk("k3", "Tips Aktif di Tutorial", "study"), mk("k4", "Panduan Mahasiswa UT", "updateut")]);
+  try {
+    const s = await (await fetch(t.base + "/ms/admin/tag-suggestions")).json();
+    const by = Object.fromEntries(s.items.map(x => [x.id, x.suggestedTopic]));
+    assert.deepStrictEqual(by, { k1: "study", k2: "updateut", k3: null, k4: null });
+    assert.strictEqual(s.topics.study, "Tips Kuliah UT");
+    const before = JSON.stringify(t.blog.posts().find(p => p.id === "k1"));
+    const r = await fetch(t.base + "/ms/admin/posts/k1/topic", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ topic: "study" }) });
+    assert.strictEqual(r.status, 200);
+    const after = t.blog.posts().find(p => p.id === "k1");
+    assert.deepStrictEqual({ ...after, topic: "updateut" }, JSON.parse(before), "hanya kategori yang berubah");
+    assert.strictEqual((await fetch(t.base + "/ms/admin/posts/k1/topic", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ topic: "ngawur" }) })).status, 400);
+    assert.strictEqual((await fetch(t.base + "/ms/admin/posts/zzz/topic", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ topic: "study" }) })).status, 404);
+  } finally { t.srv.close(); }
+});
+
+test("halaman blog-ut: tidak ada sub-navbar layanan; menu utama menandai Blog aktif", async () => {
+  const html = fs.readFileSync(path.join(__dirname, "..", "parafrase", "pages", "blog-ut.html"), "utf8");
+  assert.ok(!html.includes('class="sub"'), "sub-navbar layanan harus tidak ada di halaman blog");
+  assert.ok(!/Cek Pesanan|Revisi|Audit/.test(html.split("<main")[0].split("</header>")[1] || ""), "tidak ada menu transaksi di bawah header");
+  assert.match(html, /<a class="on" href="\/blog" aria-current="page">Blog<\/a>/);
+});
+
 test("memasang tag tidak mengubah tanggal isi dan tidak membuat revisi", async () => {
   const t = await setup([post("b1", "Tips Metopen", "Isi metopen.", [], 20)]);
   try {

@@ -59,6 +59,15 @@ module.exports = function mount(ctx) {
     "tips-lulus-ut": ["Tips Lulus UT", /\b(lulus|wisuda|tips sukses)\b/i],
   };
   const tagLabel = t => (TAGS[t] ? TAGS[t][0] : String(t).replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase()));
+  /* Saran kategori (hanya untuk dua kategori akademik): pengumuman/jadwal = Info UT; cara/tips/panduan belajar = Tips Kuliah UT.
+     Hanya usulan untuk admin; tidak mengubah apa pun sendiri. */
+  function suggestTopic(p) {
+    if (!ACAD_TOPICS.includes(p.topic)) return null;
+    const t = String(p.title || "");
+    const s = /^(update|pengumuman|info)\b|terverifikasi|\bper \d{1,2}\b|\b(jadwal|kalender akademik)\b/i.test(t) ? "updateut"
+      : /\b(cara|tips|kerangka|kesalahan|checklist|persiapan|sitasi|panduan belajar|trik|langkah)\b/i.test(t) ? "study" : null;
+    return s && s !== p.topic ? s : null;
+  }
   /* Saran tag: aturan di atas dicocokkan ke judul + ringkasan (bobot 3) dan isi (bobot 1); skor minimal 3; maks 5 tag terkuat. */
   function suggestTags(p) {
     const head = [p.title, p.excerpt].join(" "), body = String(p.body || "");
@@ -416,7 +425,14 @@ module.exports = function mount(ctx) {
     res.json({ ok: true, tags: p.tags });
   });
   app.get("/ms/admin/tag-suggestions", requireAdmin, (req, res) => {
-    res.set("Cache-Control", "no-store").json({ labels: Object.fromEntries(Object.entries(TAGS).map(([k, v]) => [k, v[0]])), items: blog.posts.filter(p => !p.trashedAt).map(p => ({ id: p.id, title: p.title, tags: p.tags || [], suggested: suggestTags(p).filter(t => !(p.tags || []).includes(t)) })) });
+    res.set("Cache-Control", "no-store").json({ labels: Object.fromEntries(Object.entries(TAGS).map(([k, v]) => [k, v[0]])), items: blog.posts.filter(p => !p.trashedAt).map(p => ({ id: p.id, title: p.title, topic: p.topic, tags: p.tags || [], suggested: suggestTags(p).filter(t => !(p.tags || []).includes(t)), suggestedTopic: suggestTopic(p) })), topics: Object.fromEntries(Object.entries(TOPICS).map(([k, v]) => [k, v.label])) });
+  });
+  /* Pindah kategori saja (tidak mengubah isi, tanggal diperbarui, atau slug). */
+  app.post("/ms/admin/posts/:id/topic", requireAdmin, adminJson, async (req, res) => {
+    const p = blog.posts.find(x => x.id === req.params.id); if (!p) return res.status(404).json({ error: "Tulisan tidak ditemukan." });
+    const t = String((req.body || {}).topic || "");
+    if (!TOPICS[t] || (onAcadHost(req) && !ACAD_TOPICS.includes(t))) return res.status(400).json({ error: "Kategori tidak dikenal." });
+    p.topic = t; await saveBlog(); res.json({ ok: true, topic: t });
   });
   app.post("/ms/admin/posts/:id/featured", requireAdmin, async (req, res) => {
     const p = blog.posts.find(x => x.id === req.params.id); if (!p) return res.status(404).json({ error: "Tulisan tidak ditemukan." });
@@ -522,7 +538,7 @@ module.exports = function mount(ctx) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Bricolage+Grotesque:wght@600;700&display=swap" rel="stylesheet">
 <script>try{var t=localStorage.getItem("nx-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
-<link rel="stylesheet" href="/assets/blog.css?v=10"><link rel="stylesheet" href="/assets/ca-blog.css?v=3"><script async src="/t.js"></script>
+<link rel="stylesheet" href="/assets/blog.css?v=10"><link rel="stylesheet" href="/assets/ca-blog.css?v=4"><script async src="/t.js"></script>
 ${extra}
 </head>
 <body>
@@ -943,5 +959,5 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
   }
 
   // untuk sitemap. /blog-ut tidak didaftarkan: isinya sama dengan /blog (kanonis ke /blog).
-  return { userFrom, notFound, articlePage, isLive, suggestTags, tagLabel, posts: () => blog.posts, usersCount: () => db.users.length, TOPICS, ACAD_TOPICS, pageUrls: () => (ACAD_ONLY ? [{ loc: `${SITE}/`, pri: "1.0" }] : []).concat(["/ruangakademikut", "/ruangakademikut/cek-parafrase-mandiri", "/ruangakademikut/audit", "/ruangakademikut/layanan"].map(u => ({ loc: `${SITE}${ACAD_ONLY ? (u === "/ruangakademikut" ? "/layanan-ut" : shortPath(u)) : u}`, pri: "0.7" }))), blogUrls: () => published().map(p => ({ loc: `${SITE}/blog/${p.slug}`, lastmod: String(modifiedAt(p) || "").slice(0, 10), pri: "0.6" })) };
+  return { userFrom, notFound, articlePage, isLive, suggestTags, suggestTopic, tagLabel, posts: () => blog.posts, usersCount: () => db.users.length, TOPICS, ACAD_TOPICS, pageUrls: () => (ACAD_ONLY ? [{ loc: `${SITE}/`, pri: "1.0" }] : []).concat(["/ruangakademikut", "/ruangakademikut/cek-parafrase-mandiri", "/ruangakademikut/audit", "/ruangakademikut/layanan"].map(u => ({ loc: `${SITE}${ACAD_ONLY ? (u === "/ruangakademikut" ? "/layanan-ut" : shortPath(u)) : u}`, pri: "0.7" }))), blogUrls: () => published().map(p => ({ loc: `${SITE}/blog/${p.slug}`, lastmod: String(modifiedAt(p) || "").slice(0, 10), pri: "0.6" })) };
 };

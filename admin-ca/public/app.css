@@ -1,24 +1,26 @@
 /* Panel admin Catatan Akademik. Token warna di :root (terang) dan [data-theme=dark]. Sidebar navy di kedua mode. */
 :root{
-  --bg:#f3f5f9;--surface:#fff;--surface2:#f6f8fb;--border:#e2e7ef;--text:#152036;--muted:#5d6a80;--faint:#8a96a9;
+  --bg:#f3f5f9;--surface:#fff;--surface2:#f6f8fb;--border:#e2e7ef;--text:#152036;--muted:#4f5b70;--faint:#5b677b;--link:#1340b0;
   --acc:#1d4ed8;--acc-h:#1e40af;--acc-soft:#e8efff;--on-acc:#fff;
   --side:#0b1a36;--side2:#11254a;--side-text:#c9d5ee;--side-muted:#7f90b3;
   --ok:#15803d;--ok-bg:#e7f6ec;--warn:#b45309;--warn-bg:#fdf1e1;--info:#1d4ed8;--info-bg:#e8efff;--bad:#b91c1c;--bad-bg:#fdeaea;--mute-bg:#eef1f5;
-  --s1:#2563eb;--s2:#d97706;--grid:#e6eaf1;
+  --s1:#2563eb;--s2:#d97706;--grid:#d3dae6;
   --r:12px;--shadow:0 1px 2px rgba(16,24,40,.05),0 2px 8px rgba(16,24,40,.04);
   color-scheme:light;
 }
 [data-theme=dark]{
-  --bg:#0a1224;--surface:#111c36;--surface2:#16244a;--border:#24365f;--text:#eaf0ff;--muted:#a8b6d4;--faint:#7d8db0;
+  --bg:#0a1224;--surface:#111c36;--surface2:#16244a;--border:#24365f;--text:#eaf0ff;--muted:#a8b6d4;--faint:#9aa8c6;--link:#7fb0ff;
   --acc:#4f8ff7;--acc-h:#6aa1ff;--acc-soft:#1a2c55;--on-acc:#071226;
   --side:#070f22;--side2:#0f1d3d;
   --ok:#4ade80;--ok-bg:#0f2e1f;--warn:#fbbf24;--warn-bg:#33240b;--info:#8bb6ff;--info-bg:#15274e;--bad:#fca5a5;--bad-bg:#3a1414;--mute-bg:#1a2442;
-  --s1:#5b8def;--s2:#cc7a14;--grid:#1f2f55;
+  --s1:#5b8def;--s2:#cc7a14;--grid:#2f4276;
   --shadow:none;color-scheme:dark;
 }
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--text);font:400 14.5px/1.5 Onest,system-ui,sans-serif}
-a{color:var(--acc)}
+a{color:var(--link)}
+.stat small a,.small a,.sub-t a,.notice a{font-weight:600;text-decoration:underline;text-underline-offset:2px}
+details.small>summary{cursor:pointer;color:var(--link);font-weight:600;text-decoration:underline;text-underline-offset:2px;min-height:32px;display:inline-flex;align-items:center}
 button,input,select,textarea{font:inherit;color:inherit}
 :focus-visible{outline:3px solid var(--acc);outline-offset:2px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}

@@ -72,7 +72,9 @@ module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, b
     for (const x of created) { const s = series[dayKey(x.created_at)]; if (s) s.orders++; }
     for (const x of paid) { const s = series[dayKey(x.confirmed_at)]; if (s) { s.paid++; s.revenue += x.total; } }
     const recent = db.prepare("SELECT * FROM orders ORDER BY created_at DESC LIMIT 8").all().map(row);
-    const acts = db.prepare("SELECT at, admin AS who, action, target FROM ca_admin_log WHERE action NOT LIKE 'login%' ORDER BY at DESC LIMIT 10").all().map(x => ({ ...x, src: "admin" }))
+    // ID artikel di log diganti judulnya agar terbaca manusia
+    const postTitle = id => { const p = posts.find(x => x.id === id); return p ? p.title : null; };
+    const acts = db.prepare("SELECT at, admin AS who, action, target FROM ca_admin_log WHERE action NOT LIKE 'login%' ORDER BY at DESC LIMIT 10").all().map(x => ({ ...x, label: /\/posts/.test(x.action) ? postTitle(x.target) : null, src: "admin" }))
       .concat(db.prepare("SELECT at, order_id AS target, type AS action FROM order_events ORDER BY at DESC LIMIT 10").all().map(x => ({ ...x, who: "sistem", src: "pesanan" })))
       .sort((a, b) => b.at - a.at).slice(0, 12);
     return { range: r, posts: p, orders: cnt, newToday, revenue: paid.reduce((a, x) => a + x.total, 0), paidCount: paid.length, customers: blog.usersCount(), series: days.map(d => series[d]), recent, activity: acts,
