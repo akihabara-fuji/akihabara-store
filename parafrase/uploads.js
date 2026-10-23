@@ -9,6 +9,7 @@ const { analyze, summary, DocxError } = require("./docx");
 const { quote } = require("./pricing");
 const { analyzeFindings, countByCode } = require("./rules");
 const { buildPreview } = require("./preview");
+const { buildTriageBase, withDrillbit, parseDrill, settingsSig } = require("./triage");
 
 const UPLOAD_TTL_MS = 2 * 3600 * 1000;       // unggahan yang tidak jadi pesanan dihapus setelah 2 jam
 const RATE = { max: 10, windowMs: 3600 * 1000 };
@@ -50,13 +51,15 @@ module.exports = function mountUploads({ app, db, settings, root, sameOrigin, se
         await fsp.writeFile(path.join(root, "data", "private", rel), f.buffer, { mode: 0o600 });
         const sha = crypto.createHash("sha256").update(f.buffer).digest("hex");
         const det = summary(a);
-        const notes = countByCode(analyzeFindings(a.paragraphs, a.bibliographyParagraphIndex, cfg));
+        const found = analyzeFindings(a.paragraphs, a.bibliographyParagraphIndex, cfg);
+        const notes = countByCode(found);
         insert.run(id, rel, name, f.size, sha, JSON.stringify(det), ipHash, now, now + UPLOAD_TTL_MS);
         res.json({
           uploadId: id,
           file: { name, size: f.size },
           detected: det,
           notes,
+          triage: withDrillbit(buildTriageBase({ paras: a.paragraphs, bibAt: a.bibliographyParagraphIndex == null || a.bibliographyParagraphIndex < 0 ? null : a.bibliographyParagraphIndex, findings: found, cfg }), null),
           quote: quote(det.wordsWithoutBibliography, false, cfg),
           fastLane: settings.publicConfig(now).fast_lane,
           expiresInMinutes: UPLOAD_TTL_MS / 60000,
@@ -72,12 +75,17 @@ module.exports = function mountUploads({ app, db, settings, root, sameOrigin, se
   /* Pratinjau terkunci: unggahan belum punya pesanan berbayar, jadi SELALU terkunci. (Pesanan berbayar memakai buildPreview dengan unlocked=true di tahap 6.) */
   const cache = new Map(); // id -> {a, findings, at}; kecil dan berumur pendek
   const getAnalysis = async (id, cfg) => {
-    const c = cache.get(id); if (c && Date.now() - c.at < 10 * 60 * 1000) return c;
+    const c = cache.get(id), sig = settingsSig(cfg);
+    if (c && Date.now() - c.at < 10 * 60 * 1000) {
+      // admin mengubah ambang sejak analisis di-cache: hitung ulang temuan dan triage dari teks yang sama
+      if (c.sig !== sig) { c.findings = analyzeFindings(c.a.paragraphs, c.a.bibliographyParagraphIndex, cfg); c.sig = sig; c.base = null; }
+      return c;
+    }
     const row = db.prepare("SELECT path, expires_at, order_id FROM uploads WHERE id=?").get(id);
     if (!row || row.expires_at < Date.now()) return null;
     let buf; try { buf = await fsp.readFile(path.join(root, "data", "private", row.path)); } catch { return null; }
     const a = await analyze(buf);
-    const entry = { a, findings: analyzeFindings(a.paragraphs, a.bibliographyParagraphIndex, cfg), at: Date.now() };
+    const entry = { a, findings: analyzeFindings(a.paragraphs, a.bibliographyParagraphIndex, cfg), at: Date.now(), sig };
     cache.set(id, entry); if (cache.size > 8) cache.delete(cache.keys().next().value);
     return entry;
   };
@@ -94,8 +102,34 @@ module.exports = function mountUploads({ app, db, settings, root, sameOrigin, se
       const cfg = settings.getAll();
       const e = await getAnalysis(id, cfg);
       if (!e) return res.status(404).json({ error: "Unggahan tidak ditemukan atau sudah kedaluwarsa. Unggah ulang dokumenmu." });
-      res.json(buildPreview(e.a, e.findings, secret, id, { unlocked: false, openParagraphs: cfg.preview_open_paragraphs, page: parseInt(req.query.page, 10) || 1, pageSize: parseInt(req.query.size, 10) || 30 }));
+      res.json(buildPreview(e.a, e.findings, secret, id, { unlocked: false, openParagraphs: cfg.preview_open_paragraphs, cfg, page: parseInt(req.query.page, 10) || 1, pageSize: parseInt(req.query.size, 10) || 30 }));
     } catch (err) { console.error("[parafrase] preview gagal:", err && err.message); res.status(500).json({ error: "Pratinjau tidak bisa dibuat." }); }
+  });
+
+  /* Lanjutkan unggahan yang sudah ada (mis. dari Audit Dokumen) tanpa unggah ulang, sekaligus menghitung ulang urgensi
+     dengan angka Drillbit milik murid (?sim=&ai=, tidak disimpan). Responsnya sama dengan POST /upload. ID unggahan acak 128-bit dan
+     hanya hidup 2 jam; unggahan yang sudah jadi pesanan tidak bisa dibuka lagi lewat sini. */
+  app.get("/ms/parafrase/upload/:id", async (req, res) => {
+    res.set("Cache-Control", "no-store");
+    const id = String(req.params.id || "");
+    if (!/^[a-f0-9]{32}$/.test(id)) return res.status(404).json({ error: "Unggahan tidak ditemukan." });
+    const now = Date.now(), h = hashIp(req.ip);
+    const arr = (pvHits.get(h) || []).filter(t => now - t < 3600 * 1000);
+    if (arr.length >= 200) return res.status(429).json({ error: "Terlalu banyak permintaan. Coba lagi nanti." });
+    arr.push(now); pvHits.set(h, arr);
+    try {
+      const row = db.prepare("SELECT original_name, size, expires_at, order_id FROM uploads WHERE id=?").get(id);
+      if (!row || row.expires_at < now || row.order_id) return res.status(404).json({ error: "Unggahan tidak ditemukan, sudah kedaluwarsa, atau sudah dipakai pesanan. Unggah ulang dokumenmu." });
+      const cfg = settings.getAll(), e = await getAnalysis(id, cfg);
+      if (!e) return res.status(404).json({ error: "Unggahan tidak ditemukan atau sudah kedaluwarsa. Unggah ulang dokumenmu." });
+      const a = e.a, det = summary(a), bibAt = a.bibliographyParagraphIndex == null || a.bibliographyParagraphIndex < 0 ? null : a.bibliographyParagraphIndex;
+      e.base = e.base || buildTriageBase({ paras: a.paragraphs, bibAt, findings: e.findings, cfg });
+      res.json({
+        uploadId: id, file: { name: row.original_name, size: row.size }, detected: det, notes: countByCode(e.findings),
+        quote: quote(det.wordsWithoutBibliography, false, cfg), fastLane: settings.publicConfig(now).fast_lane,
+        triage: withDrillbit(e.base, parseDrill(req.query)), expiresInMinutes: Math.max(1, Math.round((row.expires_at - now) / 60000)),
+      });
+    } catch (err) { console.error("[parafrase] lanjut unggahan gagal:", err && err.message); res.status(500).json({ error: "Dokumen tidak bisa dimuat. Unggah ulang dokumenmu." }); }
   });
 
   /* Hapus unggahan yang kedaluwarsa dan belum jadi pesanan. */

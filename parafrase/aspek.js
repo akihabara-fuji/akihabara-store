@@ -5,13 +5,16 @@
 "use strict";
 const { splitSentences, countWords } = require("./docx");
 const rules = require("./rules");
+const { kindOf } = require("./hint");
 
 const MIN_SENTENCES = 12;
 const norm1 = s => String(s || "").toLowerCase().replace(/[^\p{L}\p{N} ]/gu, " ").replace(/\s+/g, " ").trim();
 const r1 = n => Math.round(n * 10) / 10;
 const pctOf = (a, b) => (b > 0 ? r1((a * 100) / b) : null);
 
-function computeAspects(paras, bibAt, findings) {
+/* cfg.urgensi_ai_sedang / urgensi_ai_tinggi: batas tingkat indikasi gaya seragam (diatur admin; bawaan 30 dan 60). */
+function computeAspects(paras, bibAt, findings, cfg = {}) {
+  const lvSedang = Number(cfg.urgensi_ai_sedang) || 30, lvTinggi = Math.max(Number(cfg.urgensi_ai_tinggi) || 60, lvSedang + 1);
   const body = paras.filter(p => rules.isBody(p, bibAt));
   const sents = [];
   for (const p of body) splitSentences(p.text).forEach((s, si) => sents.push({ p: p.idx, si, s, w: countWords(s) }));
@@ -31,7 +34,7 @@ function computeAspects(paras, bibAt, findings) {
   ];
 
   /* indikator gaya seragam atau otomatis */
-  const flagged = keysBy(f => f.kind === "ai");
+  const flagged = keysBy(f => kindOf(f) === "ai"); // kindOf membaca teks alasan bila kolom kind hilang (temuan dari database)
   const cliche = enough ? sents.filter(x => rules.GENERIC.some(g => norm1(x.s).includes(g))).length : 0;
   const transStart = enough ? sents.filter(x => rules.TRANS.some(t => norm1(x.s).startsWith(t + " "))).length : 0;
   let sameStart = 0;
@@ -58,7 +61,7 @@ function computeAspects(paras, bibAt, findings) {
     ai = { value: null, level: "belum", label: "Teks terlalu pendek untuk dinilai", parts, sentences: n };
   } else {
     const value = Math.round(parts.reduce((t, x) => t + W[x.key] * Math.min(100, x.value * x.scale), 0));
-    const level = value >= 60 ? "tinggi" : value >= 30 ? "sedang" : "rendah";
+    const level = value >= lvTinggi ? "tinggi" : value >= lvSedang ? "sedang" : "rendah";
     ai = { value, level, label: { tinggi: "Indikasi tinggi", sedang: "Indikasi sedang", rendah: "Indikasi rendah" }[level], parts, sentences: n };
   }
   ai.codes = ["A"];

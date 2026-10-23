@@ -37,6 +37,11 @@ const DEFS = {
   audit_min:                    { type: "int",  min: 0, max: 100000000, def: 35000, pub: true },
   drillbit_sim_max:             { type: "int",  min: 1, max: 100, def: 25, pub: true },
   drillbit_ai_max:              { type: "int",  min: 1, max: 100, def: 20, pub: true },
+  /* Urgensi perbaikan (triage.js): dipakai Audit Dokumen dan Cek & Parafrase sekaligus, jadi keduanya selalu sepakat. */
+  urgensi_ai_sedang:            { type: "int",  min: 5, max: 95, def: 30 },   // indikasi gaya seragam (%) mulai "sedang"
+  urgensi_ai_tinggi:            { type: "int",  min: 10, max: 100, def: 60 }, // indikasi gaya seragam (%) mulai "tinggi"
+  urgensi_paragraf_skor:        { type: "int",  min: 3, max: 30, def: 8 },    // skor paragraf mulai "mendesak"
+  urgensi_paragraf_persen:      { type: "int",  min: 1, max: 100, def: 15 },  // % paragraf mendesak yang membuat dokumen "mendesak"
   price_semester_min:           { type: "int",  min: 0, max: 100000000, def: 1300000, pub: true },
   price_semester_max:           { type: "int",  min: 0, max: 100000000, def: 1800000, pub: true },
   price_pengarahan_semester:    { type: "int",  min: 0, max: 100000000, def: 99000, pub: true },

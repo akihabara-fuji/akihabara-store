@@ -272,7 +272,7 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
     try {
       const a = await analyze(await fsp.readFile(priv(o.original_file)));
       const findings = db.prepare("SELECT code, para_idx, sent_idx, reason FROM findings WHERE order_id=? ORDER BY seq").all(o.id);
-      res.json(buildPreview(a, findings, secret, o.id, { unlocked: PAID.has(o.status), openParagraphs: settings.get("preview_open_paragraphs"), page: parseInt(req.query.page, 10) || 1, pageSize: parseInt(req.query.size, 10) || 30 }));
+      res.json(buildPreview(a, findings, secret, o.id, { unlocked: PAID.has(o.status), openParagraphs: settings.get("preview_open_paragraphs"), cfg: settings.getAll(), page: parseInt(req.query.page, 10) || 1, pageSize: parseInt(req.query.size, 10) || 30 }));
     } catch { res.status(404).json({ error: "Dokumen tidak tersedia (mungkin sudah dihapus)." }); }
   });
 

@@ -96,3 +96,16 @@ Uji manual di browser (server lokal + data blog asli dari snapshot + pesanan con
 - **Pesanan:** Pesanan Layanan → klik baris → Mulai kerjakan / Kirim hasil / Catatan internal / Batalkan (pesanan berbayar: kembalikan dana lalu "Tandai dana sudah dikembalikan") / Hubungi via WhatsApp.
 - **Harga & layanan:** Layanan & Harga → ubah angka atau centang "Dibuka" → Simpan (berlaku untuk pesanan baru).
 - **Jejak:** Log Aktivitas menampilkan siapa melakukan apa dan kapan.
+
+## 9. Audit Dokumen ↔ Cek & Parafrase (urgensi + resep), 23 Okt 2026
+
+Audit = diagnosis, Cek & Parafrase = obat. Satu mesin (`parafrase/triage.js`) dan satu set angka admin dipakai keduanya.
+
+- **Urgensi dokumen** (Mendesak / Perlu perhatian / Relatif aman): bila murid menempel angka Drillbit resmi (tidak diverifikasi), angka itu menentukan terhadap batas acuan admin; tanpa angka, memakai estimasi pola tulisan + jumlah paragraf mendesak. Selalu berlabel estimasi, bukan skor Drillbit/Turnitin/detektor AI.
+- **Urutan perbaikan**: paragraf diurutkan dari yang paling mendesak (bobot: kalimat berulang 5, kutipan tanpa sitasi 4, paragraf umum/frasa seragam/panjang seragam 3, dst.), bernomor sama dengan peta warna di Cek & Parafrase.
+- **Jembatan**: tombol "Obati lewat Cek & Parafrase Mandiri" di hasil Audit membawa dokumen yang sama (`/cek-parafrase-mandiri?u=<id>`, tersimpan 2 jam), tanpa unggah ulang; angka Drillbit yang ditempel ikut terbawa.
+- **Deteksi baru**: panjang kalimat seragam per paragraf (kode A), frasa "penting untuk diingat", "dalam era digital". Jenis temuan kode A kini diturunkan dari teks alasan, sehingga hasil dari database sama dengan analisis baru.
+- **Resep**: panduan tulis ulang MANUAL (variasi panjang kalimat, kurangi penghubung berulang, tambah analisis sendiri, sitasi lengkap, teknik baca-tutup-tulis ulang). Tidak ada penulisan ulang otomatis dan tidak ada janji skor Drillbit/AI.
+- **Pengaturan admin baru** (Pengaturan → Audit Dokumen): `urgensi_ai_sedang` (30), `urgensi_ai_tinggi` (60), `urgensi_paragraf_skor` (8), `urgensi_paragraf_persen` (15). Perubahan langsung berlaku (cache dibatalkan otomatis).
+- **Privasi**: keluaran urgensi hanya hitungan, nomor paragraf, dan label umum; tidak memuat kalimat dokumen saat pratinjau terkunci. Potongan awal paragraf hanya di hasil berbayar.
+- Tes: `tests/triage.test.js` (13 tes). Total 121/121.

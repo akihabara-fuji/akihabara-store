@@ -76,7 +76,7 @@ function parseBibliography(paras, bibAt) {
 /* ---------- pola ---------- */
 const GENERIC = ["sangat penting", "memegang peranan penting", "memegang peran penting", "era globalisasi", "di era digital", "tidak dapat dipungkiri", "tidak dapat dipungkiri lagi",
   "seiring perkembangan zaman", "seiring dengan perkembangan", "dalam kehidupan sehari-hari", "berbagai aspek", "berbagai bidang", "semakin berkembang pesat", "merupakan hal yang penting",
-  "pada zaman sekarang", "di zaman modern", "tak bisa dipisahkan", "memiliki peran yang sangat", "dalam era modern", "sudah menjadi rahasia umum"];
+  "pada zaman sekarang", "di zaman modern", "tak bisa dipisahkan", "memiliki peran yang sangat", "dalam era modern", "sudah menjadi rahasia umum", "dalam era digital"];
 const CLAIM = /\b(\d+(?:[.,]\d+)?\s*(?:%|persen|juta|miliar|triliun|ribu)|sebesar\s+\d|meningkat\s+\d|menurun\s+\d|terbukti|para ahli|banyak penelitian|studi menunjukkan|penelitian menunjukkan|data menunjukkan|hasil penelitian|menurut penelitian|semua orang|selalu|tidak pernah|satu-satunya|pasti)\b/i;
 const TRANS = ["selain itu", "oleh karena itu", "selanjutnya", "di samping itu", "dengan demikian", "namun demikian", "lebih lanjut", "sehingga", "kemudian", "pertama", "kedua", "ketiga"];
 const norm1 = s => s.toLowerCase().replace(/[^\p{L}\p{N} ]/gu, " ").replace(/\s+/g, " ").trim();
@@ -175,12 +175,25 @@ function analyzeFindings(paras, bibAt, cfg = {}) {
         const low = norm1(s);
         for (const t of TRANS) if (low.startsWith(t + " ")) cnt.set(t, (cnt.get(t) || []).concat(si));
       });
-      for (const [t, idxs] of cnt) if (idxs.length >= 3 && t !== "pertama" && t !== "kedua" && t !== "ketiga")
+      for (const [t, idxs] of cnt) if (idxs.length >= 3 && t !== "pertama" && t !== "kedua" && t !== "ketiga") {
         add("A", p, idxs[2], sents[idxs[2]], `Transisi "${t}" dipakai ${idxs.length} kali di satu paragraf. Variasikan.`);
+        out[out.length - 1].kind = "trans";
+      }
       let run = 1;
       for (let i = 1; i < sents.length; i++) {
         run = firstWords(sents[i], 2) && firstWords(sents[i], 2) === firstWords(sents[i - 1], 2) ? run + 1 : 1;
-        if (run === 3) add("A", p, i, sents[i], `Tiga kalimat berturut-turut diawali "${firstWords(sents[i], 2)}". Variasikan awalan kalimat.`);
+        if (run === 3) { add("A", p, i, sents[i], `Tiga kalimat berturut-turut diawali "${firstWords(sents[i], 2)}". Variasikan awalan kalimat.`); out[out.length - 1].kind = "awalan"; }
+      }
+    }
+
+    // A: panjang kalimat seragam dalam satu paragraf (tulisan manusia umumnya menyelang kalimat pendek dan panjang).
+    // Konservatif: minimal 5 kalimat, rata-rata 10 sampai 26 kata, dan simpangan baku di bawah 16% dari rata-rata.
+    if (sents.length >= 5) {
+      const ws = sents.map(countWords), mean = ws.reduce((a, b) => a + b, 0) / ws.length;
+      const sd = Math.sqrt(ws.reduce((a, b) => a + (b - mean) ** 2, 0) / ws.length);
+      if (mean >= 10 && mean <= 26 && sd / mean < 0.16) {
+        add("A", p, 0, sents[0], `Panjang kalimat di paragraf ini seragam (${Math.min(...ws)} sampai ${Math.max(...ws)} kata pada ${ws.length} kalimat). Selingi kalimat pendek yang tegas dengan kalimat majemuk yang lebih panjang.`);
+        out[out.length - 1].kind = "uniform";
       }
     }
   }

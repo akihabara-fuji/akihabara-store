@@ -8,6 +8,7 @@ const crypto = require("crypto");
 const { splitSentences, countWords } = require("./docx");
 const { CODES, PRIORITY, helperFor, rewriteFor } = require("./rules");
 const { computeAspects } = require("./aspek");
+const { buildTriageBase, withDrillbit } = require("./triage");
 
 function prng(bytes) {
   let s = (bytes.readUInt32LE(0) || 0x9e3779b9) >>> 0;
@@ -96,7 +97,7 @@ function buildPreview(a, findings, secret, id, opts = {}) {
       }
       return seg;
     });
-    if (inPage) outParas.push({ idx: p.idx, kind: p.inTable ? "tabel" : /heading|title|judul/i.test(p.style) ? "judul" : "isi", segments: segs.filter(Boolean) });
+    if (inPage) outParas.push({ idx: p.idx, no: vi + 1, kind: p.inTable ? "tabel" : /heading|title|judul/i.test(p.style) ? "judul" : "isi", segments: segs.filter(Boolean) });
   });
 
   /* Satu paragraf contoh: rekomendasi (kode paling serius di paragraf), kalimat salah ditandai, dan contoh penulisan ulang bila bisa dibuat dari aturan. */
@@ -115,7 +116,10 @@ function buildPreview(a, findings, secret, id, opts = {}) {
     };
   }
   const bibAt = a.bibliographyParagraphIndex == null || a.bibliographyParagraphIndex < 0 ? null : a.bibliographyParagraphIndex;
-  const overview = computeAspects(a.paragraphs, bibAt, findings);
+  const cfg = opts.cfg || {};
+  const overview = computeAspects(a.paragraphs, bibAt, findings, cfg);
+  // Urgensi + urutan paragraf + resep: mesin yang sama dengan Audit Dokumen. Hanya hitungan dan label umum (tanpa teks dokumen) selama terkunci.
+  const triage = withDrillbit(buildTriageBase({ paras: a.paragraphs, bibAt, findings, cfg, withText: unlocked, aspects: overview }), null);
   const counts = Object.fromEntries(Object.keys(CODES).map(k => [k, 0]));
   for (const f of findings) counts[f.code]++;
   return {
@@ -127,6 +131,7 @@ function buildPreview(a, findings, secret, id, opts = {}) {
     paragraphs: outParas,
     example,
     overview,
+    triage,
   };
 }
 

@@ -11,6 +11,7 @@ const crypto = require("crypto");
 const multer = require("multer");
 const { analyze, DocxError } = require("./docx");
 const { runAudit } = require("./auditrules");
+const { buildTriageBase, withDrillbit, parseDrill, settingsSig } = require("./triage");
 
 const MAX_MB = 10, RATE = { max: 10, windowMs: 3600 * 1000 }, UPLOAD_TTL_MS = 2 * 3600 * 1000;
 
@@ -46,14 +47,16 @@ module.exports = function mountAudit({ app, express, db, settings, orders, root,
       running++;
       try {
         const a = await analyze(f.buffer);
-        const r = await runAudit(a, { fetchFn: doFetch });
+        const cfg = settings.getAll();
+        const r = await runAudit(a, { fetchFn: doFetch, cfg });
         const words = a.wordsAll || 0;
+        const triage = withDrillbit(buildTriageBase({ paras: a.paragraphs, bibAt: r.bodyAt, findings: r.docFindings, cfg }), null); // tanpa teks dokumen (gratis)
         // Simpan sementara (2 jam) supaya bisa dibeli sebagai Audit Lengkap; yang tidak dibeli dihapus otomatis oleh purgeExpired.
         const id = crypto.randomBytes(16).toString("hex"), rel = `docs/${id}.docx`;
         await fsp.writeFile(path.join(root, "data", "private", rel), f.buffer, { mode: 0o600 });
         insert.run(id, rel, name, f.size, crypto.createHash("sha256").update(f.buffer).digest("hex"), JSON.stringify({ kind: "audit", words, wordsWithoutBibliography: a.wordsBody, hasBibliography: !!a.hasBibliography }), h, now, now + UPLOAD_TTL_MS);
         res.json({
-          uploadId: id, file: { name, size: f.size }, words, counts: r.counts, refs: r.refs, score: r.score,
+          uploadId: id, file: { name, size: f.size }, words, counts: r.counts, refs: r.refs, score: r.score, triage,
           /* Hanya tingkat, kategori, dan lokasi. Penjelasan ada di Audit Lengkap. */
           findings: r.findings.map(x => ({ sev: x.sev, cat: x.cat, where: x.where })),
           quote: quote(words),
@@ -90,16 +93,19 @@ module.exports = function mountAudit({ app, express, db, settings, orders, root,
     const o = orders.byToken(req.params.token);
     if (!o || o.doc_type !== "audit") return res.status(404).json({ error: "Hasil tidak ditemukan." });
     if (!orders.view(o, now).auditReady) return res.status(402).json({ error: "Hasil belum terbuka (belum dibayar) atau file sudah dihapus." });
-    const hit = cache.get(o.id);
-    if (hit && now - hit.at < 10 * 60 * 1000) return res.json(hit.data);
+    const drill = parseDrill(req.query); // angka Drillbit opsional dari murid (tidak disimpan)
+    const hit = cache.get(o.id), sig = settingsSig(settings.getAll());
+    if (hit && hit.sig === sig && now - hit.at < 10 * 60 * 1000) return res.json({ ...hit.data, triage: withDrillbit(hit.base, drill) });
     if (running >= MAX_RUNNING) return res.status(503).json({ error: "Sedang ramai. Muat ulang beberapa detik lagi." });
     running++;
     try {
       const a = await analyze(await fsp.readFile(orders.priv(o.original_file)));
-      const r = await runAudit(a, { fetchFn: doFetch });
+      const cfg = settings.getAll();
+      const r = await runAudit(a, { fetchFn: doFetch, cfg });
+      const base = buildTriageBase({ paras: a.paragraphs, bibAt: r.bodyAt, findings: r.docFindings, cfg, withText: true }); // berbayar: potongan awal paragraf boleh tampil
       const data = { title: o.title, words: o.word_count, counts: r.counts, refs: r.refs, score: r.score, findings: r.findings, deleteAt: o.delete_at };
-      cache.set(o.id, { at: now, data }); if (cache.size > 20) cache.delete(cache.keys().next().value);
-      res.json(data);
+      cache.set(o.id, { at: now, data, base, sig }); if (cache.size > 20) cache.delete(cache.keys().next().value);
+      res.json({ ...data, triage: withDrillbit(base, drill) });
     } catch (e) { console.error("[audit] laporan gagal:", e && e.message); res.status(500).json({ error: "Hasil tidak bisa dibuat. Hubungi admin dengan ID pesananmu." }); }
     finally { running--; }
   });

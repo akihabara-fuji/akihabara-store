@@ -13,11 +13,12 @@ const TARGET = {
   U: "Harusnya: satu kalimat memuat satu gagasan dan panjangnya di bawah batas.",
   H: "Harusnya: paragraf punya gagasan utama, penjelasan, lalu contoh atau analisis (sekitar 3 kalimat atau lebih).",
   P: "Harusnya: paragraf berisi analisis spesifik (data, contoh, atau sumber), bukan pernyataan umum.",
-  A: "Harusnya: awalan dan penghubung kalimat bervariasi, dan frasa yang terkesan seragam diganti dengan kata sendiri.",
+  A: "Harusnya: panjang kalimat, awalan, dan penghubung bervariasi (selingi kalimat pendek dengan kalimat majemuk), dan frasa yang terkesan seragam diganti dengan kata sendiri.",
 };
 
 /* penanda: [frasa, padanan yang bisa dipakai] */
 const AI_MARKERS = [
+  ["penting untuk diingat", ["perlu diperhatikan", "langsung sebut isinya"]],
   ["penting untuk dicatat", ["perlu diperhatikan", "langsung sebut isinya"]],
   ["perlu dicatat bahwa", ["perlu diperhatikan bahwa", "langsung sebut isinya"]],
   ["dalam konteks ini", ["pada kasus ini", "di sini"]],
@@ -41,6 +42,19 @@ function findAiMarkers(text) {
   const low = " " + norm(text) + " ", out = [];
   for (const [m] of AI_MARKERS) { if (low.includes(" " + m + " ")) { if (!out.some(o => o.includes(m) || m.includes(o))) out.push(m); } }
   return out;
+}
+
+/* Jenis temuan kode A: kolom kind tidak disimpan di database (findings), jadi bila hilang diturunkan dari teks alasan.
+   Dipakai bersama oleh aspek.js (Audit) dan triage.js supaya hitungannya sama di mana pun temuan berasal. */
+function kindOf(f) {
+  if (!f || f.code !== "A") return null;
+  if (f.kind) return f.kind;
+  const r = String(f.reason || "");
+  if (/^Frasa yang sering muncul/.test(r)) return "ai";
+  if (/^Panjang kalimat/.test(r)) return "uniform";
+  if (/^Transisi "/.test(r)) return "trans";
+  if (/^Tiga kalimat berturut/.test(r)) return "awalan";
+  return null;
 }
 
 const TRANS_ALT = {
@@ -108,8 +122,9 @@ function helperFor(code, text, reason) {
     case "H":
       return "Kembangkan menjadi tiga langkah: (1) gagasan utama, (2) penjelasan atau contoh, (3) implikasi atau kaitan dengan penelitian. Pola: \"Hal ini terlihat pada [contoh]. Artinya, [analisis].\"";
     case "P":
-      return `Ganti pernyataan umum${q ? ` (${q})` : ""} dengan hal yang spesifik. Pola: "Pada [objek penelitian], [fenomena] terlihat dari [data atau contoh] ([Penulis], [Tahun])."`;
+      return `Ganti pernyataan umum${q ? ` (${q})` : ""} dengan hal yang spesifik. Pola: "Pada [objek penelitian], [fenomena] terlihat dari [data atau contoh] ([Penulis], [Tahun])." Hubungkan teori langsung dengan objek penelitianmu sendiri, bukan penjelasan yang berlaku untuk semua orang.`;
     case "A": {
+      if (/^Panjang kalimat/.test(reason || "")) return "Selingi panjang kalimat: satu kalimat pendek yang tegas (sekitar 6 sampai 10 kata), lalu satu kalimat majemuk yang lebih panjang berisi alasan, contoh, atau data bersitasi. Pola: \"Dampaknya terasa. [Kalimat panjang yang menjelaskan sebab atau buktinya ([Penulis], [Tahun])].\"";
       const m = String(reason || "").match(/Transisi "([^"]+)"/);
       if (m && TRANS_ALT[m[1]]) return `Ganti sebagian penghubung "${m[1]}" dengan: ${TRANS_ALT[m[1]].join(", ")}; atau mulai kalimat langsung dari subjeknya.`;
       if (/Tiga kalimat berturut-turut/.test(reason || "")) return "Ubah awalan salah satu kalimat: mulai dari objek, keterangan waktu atau tempat, atau gabungkan dua kalimat.";
@@ -124,4 +139,59 @@ function helperFor(code, text, reason) {
   }
 }
 
-module.exports = { TARGET, AI_MARKERS, TRANS_ALT, findAiMarkers, helperFor, splitSuggest, splitParts, rewriteFor };
+/* "Resep" perbaikan: dipasangkan dengan temuan lewat triage.js. Isinya panduan menulis ulang MANUAL dengan pemahaman sendiri.
+   Tidak ada penulisan ulang otomatis di sini, dan tidak ada janji skor Drillbit/AI tertentu: batas dan hasil resmi ikut UT, prodi, dan tutor. */
+const GUIDE = {
+  gaya: {
+    title: "Gaya tulisan terkesan seragam atau otomatis", codes: ["A"],
+    why: "Pola yang terbaca seragam: panjang kalimat hampir sama, penghubung pembuka berulang, dan frasa yang lazim pada tulisan otomatis.",
+    steps: [
+      "Variasikan panjang kalimat: selingi kalimat pendek yang tegas dengan kalimat majemuk. Contoh: \"Teknologi ini bermanfaat. Mahasiswa dapat belajar kapan saja.\" menjadi \"Dengan teknologi ini, mahasiswa memperoleh keleluasaan belajar kapan saja, sehingga efisiensi belajarnya ikut meningkat.\"",
+      "Kurangi penghubung pembuka yang berulang (Selain itu, Oleh karena itu, Dengan demikian) dan frasa seperti \"Penting untuk diingat bahwa\", \"Secara keseluruhan\", atau \"Dalam era digital ini\". Mulai saja dari isinya.",
+      "Variasikan awalan kalimat: mulai dari subjek, keterangan waktu atau tempat, atau objeknya.",
+    ],
+  },
+  analisis: {
+    title: "Paragraf umum dan kurang analisis", codes: ["P", "H"],
+    why: "Penjelasan yang berlaku untuk siapa saja tidak menunjukkan pemahaman dan analisismu sendiri.",
+    steps: [
+      "Tambahkan analisis atau sudut pandangmu: apa arti teori atau data itu bagi objek penelitianmu?",
+      "Pakai data atau contoh nyata dari penelitianmu (jumlah responden, kasus pada mata kuliah, hasil observasi).",
+      "Hubungkan teori langsung dengan konteks UT atau objek yang kamu teliti.",
+    ],
+  },
+  sitasi: {
+    title: "Klaim dan kutipan tanpa dasar yang jelas", codes: ["K", "B", "O"],
+    why: "Angka, klaim, dan kutipan perlu sumber yang bisa dilacak pembaca.",
+    steps: [
+      "Tulis sitasi yang lengkap: Menurut Sugiyono (2020), ... atau (Sugiyono, 2020). Kutipan langsung wajib memakai tanda kutip dan nomor halaman.",
+      "Pastikan setiap sitasi ada di daftar pustaka dan setiap pustaka dipakai di teks.",
+      "Lebih baik menafsirkan kutipan dengan kata sendiri lalu menambahkan komentarmu daripada menempelnya apa adanya.",
+    ],
+  },
+  orisinal: {
+    title: "Kalimat berulang di dalam dokumen", codes: ["M"],
+    why: "Kalimat yang sama muncul lebih dari sekali.",
+    steps: ["Hapus pengulangannya, atau gabungkan dengan kalimat sebelumnya.", "Bila gagasannya memang perlu muncul lagi, ungkapkan dengan struktur dan kata yang berbeda."],
+  },
+  baca: {
+    title: "Kalimat terlalu panjang", codes: ["U"],
+    why: "Kalimat yang memuat banyak gagasan sulit dibaca.",
+    steps: ["Pecah di kata penghubung (karena, sehingga, namun) menjadi dua kalimat, satu gagasan per kalimat."],
+  },
+};
+const GUIDE_TEKNIK = {
+  title: "Teknik tulis ulang manual",
+  why: "Menulis ulang berarti memahami lalu menjelaskan dengan kata sendiri, bukan sekadar mengganti kata.",
+  steps: [
+    "Baca satu paragraf sampai selesai dan pahami intinya.",
+    "Tutup teks aslinya.",
+    "Tulis ulang ide itu dengan kata-katamu sendiri, seolah menjelaskannya kepada dosen pembimbing.",
+    "Bandingkan dengan aslinya: maknanya harus sama, tetapi susunan kalimatnya benar-benar berbeda, dan sumbernya tetap disitasi.",
+  ],
+  note: "Hindari alat spinner otomatis: hasilnya sering janggal atau mengubah makna. Tidak ada cara yang menjamin angka Drillbit tertentu, dan teks yang dihasilkan alat otomatis tetap perlu kamu pahami dan tulis ulang sendiri.",
+};
+const GUIDE_CEK_RESMI = "Bila UT menyediakan cek mandiri Drillbit di e-learning, gunakan kesempatan pertama untuk melihat bagian mana yang ditandai, lalu rombak bagian itu dulu sebelum cek berikutnya. Jumlah kesempatan dan batasnya mengikuti ketentuan UT, prodi, dan tutormu (TIDAK TERVERIFIKASI oleh kami).";
+const GUIDE_BY_CODE = Object.fromEntries(Object.entries(GUIDE).flatMap(([k, g]) => g.codes.map(c => [c, k])));
+
+module.exports = { TARGET, AI_MARKERS, TRANS_ALT, findAiMarkers, helperFor, splitSuggest, splitParts, rewriteFor, kindOf, GUIDE, GUIDE_BY_CODE, GUIDE_TEKNIK, GUIDE_CEK_RESMI };

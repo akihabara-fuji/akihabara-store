@@ -32,10 +32,36 @@
     fetch("/ms/parafrase/upload", { method: "POST", body: fd }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
       .then(function (x) {
         if (!x.ok) { if (x.j.login) { location.href = "/ms/masuk?next=" + encodeURIComponent(location.pathname); return; } showErr(x.j.error || "Unggahan gagal. Coba lagi."); return; }
-        st.up = x.j; st.page = 1; fill(); $("s1").classList.add("hidden"); $("s2").classList.remove("hidden"); window.scrollTo(0, 0); loadPreview();
+        applyUpload(x.j);
       }).catch(function () { showErr("Koneksi terputus. Coba unggah lagi."); })
       .then(function () { $("busy").classList.add("hidden"); $("pick").disabled = false; });
   }
+
+  /* Satu pintu untuk unggahan baru DAN unggahan yang dilanjutkan dari Audit Dokumen (?u=...). Urgensi, urutan paragraf, dan resep
+     datang dari mesin server yang sama dengan Audit; angka Drillbit yang pernah ditempel di Audit (tersimpan di browser ini) ikut dipakai. */
+  function triageUrl(s, a) {
+    var q = []; if (s != null) q.push("sim=" + encodeURIComponent(String(s))); if (a != null) q.push("ai=" + encodeURIComponent(String(a)));
+    return "/ms/parafrase/upload/" + st.up.uploadId + (q.length ? "?" + q.join("&") : "");
+  }
+  function applyUpload(j) {
+    st.up = j; st.page = 1; fill(); $("s1").classList.add("hidden"); $("s2").classList.remove("hidden"); window.scrollTo(0, 0); loadPreview();
+    var tOpts = { here: "cek" };
+    window.renderTriage($("triage"), j.triage, tOpts);
+    window.auditDrillbit($("dbit"), null, {
+      here: "cek",
+      fetch: function (s, a) { return fetch(triageUrl(s, a), { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (x) { return x.triage; }); },
+      onTriage: function (t) { window.renderTriage($("triage"), t, tOpts); }
+    });
+  }
+  function resume(id) {
+    $("busy").classList.remove("hidden"); $("pick").disabled = true;
+    fetch("/ms/parafrase/upload/" + id, { cache: "no-store" }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (x) { if (!x.ok) { showErr(x.j.error || "Dokumen dari Audit tidak bisa dibuka. Unggah ulang dokumenmu."); return; } applyUpload(x.j); })
+      .catch(function () { showErr("Koneksi terputus. Muat ulang halaman atau unggah dokumenmu lagi."); })
+      .then(function () { $("busy").classList.add("hidden"); $("pick").disabled = false; });
+  }
+  var qu = (location.search.match(/[?&]u=([a-f0-9]{32})(?:&|$)/) || [])[1];
+  if (qu) resume(qu);
 
   function fill() {
     var u = st.up, d = u.detected;
@@ -99,7 +125,7 @@
         if (!x.ok) { $("doc").innerHTML = '<p class="muted">' + esc(x.j.error || "Pratinjau tidak tersedia.") + "</p>"; return; }
         var pv = x.j; st.pages = pv.pages; st.page = pv.page;
         $("doc").innerHTML = pv.paragraphs.map(function (p) {
-          return "<p>" + p.segments.map(function (s) {
+          return '<p><span class="pn" title="Paragraf ke-' + p.no + ' (sama dengan nomor di Urutan perbaikan)" style="display:inline-block;min-width:22px;margin-right:6px;font-size:11px;font-weight:700;opacity:.55">' + p.no + "</span>" + p.segments.map(function (s) {
             var cls = "seg" + (s.primary ? " s-" + s.primary : "") + (s.locked ? " locked" : "");
             var tag = s.primary ? '<sup class="t c-' + s.primary + '" style="background:none">[' + (s.n ? "contoh " + s.n + " · " : "") + s.codes.join("·") + "]</sup>" : "";
             return '<span class="' + cls + '"' + (s.locked ? ' aria-hidden="true"' : "") + ">" + esc(s.text) + "</span>" + tag + " ";

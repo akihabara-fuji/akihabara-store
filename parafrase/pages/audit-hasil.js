@@ -10,7 +10,17 @@
   fetch("/ms/audit/report/" + token, { cache: "no-store" }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); }).then(function (x) {
     if (!x.ok) return fail(x.j.error || "Hasil tidak bisa dibuka.");
     var d = x.j; $("rmeta").textContent = d.title + " · " + rp(d.words) + " kata";
-    window.auditScoreCard(d.score, $("score")); window.auditDrillbit($("dbit"), d.score);
+    window.auditScoreCard(d.score, $("score"));
+    var tOpts = { here: "hasil" };
+    window.renderTriage($("triage"), d.triage, tOpts);
+    window.auditDrillbit($("dbit"), d.score, {
+      here: "hasil",
+      fetch: function (s, a) {
+        var q = []; if (s != null) q.push("sim=" + encodeURIComponent(String(s))); if (a != null) q.push("ai=" + encodeURIComponent(String(a)));
+        return fetch("/ms/audit/report/" + token + (q.length ? "?" + q.join("&") : ""), { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) { return j.triage; });
+      },
+      onTriage: function (t) { window.renderTriage($("triage"), t, tOpts); }
+    });
     ["kritis", "peringatan", "info"].forEach(function (k) {
       var b = el("div", "min-width:130px;padding:14px 18px;border-radius:16px;border:1px solid #2b2b58");
       b.appendChild(el("b", "display:block;font-size:30px;color:" + SEV[k][1], d.counts[k])); b.appendChild(el("span", "font-size:13.5px", SEV[k][0])); $("counts").appendChild(b);

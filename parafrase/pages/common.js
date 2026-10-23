@@ -139,7 +139,9 @@ window.auditScoreCard = function (sc, box) {
 
 /* Angka Drillbit asli: murid menempel angka dari laporan Drillbit resminya. Tidak diverifikasi dan tidak disimpan di server;
    hanya diingat di browser murid. Batas hanyalah acuan (atur admin). */
-window.auditDrillbit = function (box, score) {
+/* ctx (opsional): { here: "audit"|"cek"|"hasil", fetch(sim, ai) -> Promise<triage>, onTriage(triage) }.
+   Bila ada, angka yang ditempel dikirim ke server (tidak disimpan) dan kartu urgensi dihitung ulang dengan mesin yang sama. */
+window.auditDrillbit = function (box, score, ctx) {
   if (!box) return; box.innerHTML = "";
   var cfg = (window.PF && window.PF.cfg) || {}, SIM = Number(cfg.drillbit_sim_max) || 25, AI = Number(cfg.drillbit_ai_max) || 20;
   function el(t, css, x) { var e = document.createElement(t); if (css) e.style.cssText = css; if (x != null) e.textContent = x; return e; }
@@ -147,7 +149,7 @@ window.auditDrillbit = function (box, score) {
   try { saved = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) {}
   var wrap = el("div", "max-width:760px;margin:0 auto 14px;padding:16px 18px;border-radius:18px;border:1px solid var(--border,#2b2b58);text-align:left");
   wrap.appendChild(el("b", "display:block", "Punya laporan Drillbit resmi dari UT?"));
-  wrap.appendChild(el("div", "font-size:13.5px;opacity:.75;margin:2px 0 10px", "Tempel dua angkanya, nanti digabung dengan skor di atas. Angka ini dari kamu dan tidak kami verifikasi."));
+  wrap.appendChild(el("div", "font-size:13.5px;opacity:.75;margin:2px 0 10px", (ctx && ctx.here === "cek" ? "Tempel dua angkanya, nanti dipakai menentukan urgensi di bawah, sama seperti di Audit Dokumen. Angka ini dari kamu dan tidak kami verifikasi." : "Tempel dua angkanya, nanti digabung dengan skor di atas. Angka ini dari kamu dan tidak kami verifikasi.")));
   var row = el("div", "display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end");
   function field(id, label) {
     var w = el("label", "display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600"); w.appendChild(el("span", "", label));
@@ -181,9 +183,11 @@ window.auditDrillbit = function (box, score) {
     var over = (s != null && s > SIM) || (a != null && a > AI), auditOk = !score || score.level === "siap" || score.level === "hampir";
     var msg = !over && auditOk ? "Angka Drillbit dan skor audit sama-sama aman. Tetap baca ulang sebelum dikumpulkan."
       : !over ? "Angka Drillbit aman, tapi skor audit masih menandai masalah sitasi atau pustaka. Benahi temuan di bawah dulu."
+      : ctx && ctx.here === "cek" ? "Ada angka di atas batas acuan. Rombak dulu paragraf yang paling mendesak di bawah, lalu cek ulang di Drillbit resmi."
       : "Ada angka di atas batas acuan. Kurangi kemiripan atau gaya tulisan terlalu seragam lewat Cek & Parafrase Mandiri, lalu cek ulang di Drillbit resmi.";
     out.appendChild(el("p", "margin:10px 0 4px;font-weight:600", msg));
-    if (over) { var l = el("a", "", "Buka Cek & Parafrase Mandiri"); l.href = "/ruangakademikut/cek-parafrase-mandiri"; l.style.fontSize = "14px"; out.appendChild(l); }
+    if (over && !(ctx && ctx.here === "cek")) { var l = el("a", "", "Buka Cek & Parafrase Mandiri"); l.href = "/ruangakademikut/cek-parafrase-mandiri" + (ctx && ctx.uploadId ? "?u=" + ctx.uploadId : ""); l.style.fontSize = "14px"; out.appendChild(l); }
+    if (ctx && ctx.fetch && ctx.onTriage) ctx.fetch(s, a).then(ctx.onTriage).catch(function () {});
     out.appendChild(el("p", "margin:6px 0 0;font-size:12.5px;opacity:.7", "Batas acuan diatur admin, bukan aturan resmi UT. Ikuti ketentuan prodi dan tutormu. Angka berasal dari laporan Drillbit yang kamu tempel."));
   }
   go.onclick = show; if (saved.dbSim != null || saved.dbAi != null) show();
@@ -199,4 +203,68 @@ window.PF_TARGET = {
   H: "Harusnya: paragraf punya gagasan utama, penjelasan, lalu contoh atau analisis.",
   P: "Harusnya: paragraf berisi analisis spesifik (data, contoh, sumber), bukan pernyataan umum.",
   A: "Harusnya: awalan dan penghubung kalimat bervariasi; frasa yang terkesan seragam diganti kata sendiri."
+};
+
+/* Kartu urgensi perbaikan: Audit Dokumen = diagnosis, Cek & Parafrase = obat. Satu renderer dan satu mesin server (triage.js),
+   jadi tingkat, urutan paragraf, dan resepnya sama di kedua halaman. Semua teks dari server dimasukkan lewat textContent.
+   opts: { here: "audit"|"cek"|"hasil", uploadId } */
+window.renderTriage = function (box, t, opts) {
+  if (!box) return; box.innerHTML = ""; if (!t) return; opts = opts || {};
+  function el(tag, css, x) { var e = document.createElement(tag); if (css) e.style.cssText = css; if (x != null) e.textContent = x; return e; }
+  var COL = { mendesak: "#ff8aa5", perhatian: "#f3ff4d", aman: "#5ee6a8", belum: "#8ec5ff" }, LVL = { mendesak: "Mendesak", perhatian: "Perhatian", ringan: "Ringan" };
+  var c = COL[t.level] || "#8ec5ff";
+  var card = el("section", "max-width:760px;margin:0 auto 14px;padding:16px 18px;border-radius:18px;border:1px solid var(--border,#2b2b58);border-left:6px solid " + c + ";text-align:left");
+  card.setAttribute("aria-label", "Urgensi perbaikan dokumen");
+  var hd = el("div", "display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px");
+  hd.appendChild(el("span", "font-size:12.5px;opacity:.7;text-transform:uppercase;letter-spacing:.06em", "Urgensi perbaikan"));
+  hd.appendChild(el("b", "font-size:22px;color:" + c, t.label)); card.appendChild(hd);
+  card.appendChild(el("div", "font-size:13px;opacity:.75;margin:2px 0 8px", t.headline));
+  if (t.reasons && t.reasons.length) { var ul = el("ul", "margin:0 0 10px;padding-left:20px;font-size:14px;line-height:1.55"); t.reasons.forEach(function (r) { ul.appendChild(el("li", "", r)); }); card.appendChild(ul); }
+  if (t.next) card.appendChild(el("div", "font-weight:700;margin:0 0 10px", t.next));
+
+  /* urutan paragraf: yang paling mendesak dirombak lebih dulu */
+  var ps = t.paragraphs || [];
+  if (ps.length) {
+    card.appendChild(el("div", "font-weight:700;margin:12px 0 6px", "Urutan perbaikan: paragraf yang dirombak lebih dulu"));
+    var list = el("ol", "margin:0;padding:0;list-style:none;display:grid;gap:6px");
+    ps.forEach(function (p) {
+      var li = el("li", "display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;padding:9px 12px;border-radius:12px;border:1px solid var(--border,#2b2b58)");
+      li.appendChild(el("b", "flex:none;min-width:84px", "Paragraf " + p.no));
+      li.appendChild(el("span", "flex:none;font-size:12px;font-weight:700;padding:1px 9px;border-radius:999px;border:1px solid " + (COL[p.level] || c) + ";color:" + (COL[p.level] || c), LVL[p.level] || p.level));
+      var d = el("span", "flex:1;min-width:200px;font-size:13.5px", p.reasons.join(", ")); li.appendChild(d);
+      li.appendChild(el("span", "flex:none;font-size:13px;font-weight:600", "→ " + (p.fix && p.fix.action || "Perbaiki")));
+      if (p.excerpt) li.appendChild(el("div", "flex-basis:100%;font-size:12.5px;opacity:.65", "“" + p.excerpt + "…”"));
+      list.appendChild(li);
+    });
+    card.appendChild(list);
+    if (!opts.here || opts.here === "audit") card.appendChild(el("p", "margin:6px 0 0;font-size:12.5px;opacity:.7", "Nomor paragraf = urutan paragraf yang berisi teks di dokumenmu (paragraf kosong tidak dihitung). Isi kalimatnya dibuka di Cek & Parafrase Mandiri."));
+  }
+
+  /* resep: panduan menulis ulang manual untuk jenis masalah yang benar-benar ada */
+  var rx = t.treatments || [];
+  if (rx.length || t.teknik) {
+    card.appendChild(el("div", "font-weight:700;margin:14px 0 6px", "Resep perbaikan"));
+    function recipe(r, open) {
+      var d = el("details", "margin:0 0 6px;border:1px solid var(--border,#2b2b58);border-radius:12px;padding:8px 12px"); if (open) d.open = true;
+      d.appendChild(el("summary", "cursor:pointer;font-weight:600", r.title));
+      if (r.why) d.appendChild(el("div", "font-size:13px;opacity:.75;margin:6px 0 4px", r.why));
+      var ol = el("ol", "margin:4px 0 4px;padding-left:20px;font-size:14px;line-height:1.55"); (r.steps || []).forEach(function (s) { ol.appendChild(el("li", "", s)); }); d.appendChild(ol);
+      if (r.note) d.appendChild(el("div", "font-size:13px;opacity:.8;margin:4px 0 2px", r.note));
+      card.appendChild(d);
+    }
+    rx.forEach(function (r, i) { recipe(r, i === 0 && t.level !== "aman"); });
+    if (t.teknik) recipe(t.teknik, false);
+    if (t.cekResmi) card.appendChild(el("p", "margin:8px 0 0;font-size:13px;opacity:.8", t.cekResmi));
+  }
+
+  /* jembatan Audit -> Parafrase: dokumen yang sama dibawa, tanpa unggah ulang */
+  if ((opts.here === "audit" || opts.here === "hasil") && t.level !== "aman" && t.level !== "belum") {
+    var go = el("a", "display:inline-block;margin-top:12px;padding:11px 18px;border-radius:12px;font-weight:700;text-decoration:none;background:#ffb300;color:#0b1326", "Obati lewat Cek & Parafrase Mandiri →");
+    go.href = "/ruangakademikut/cek-parafrase-mandiri" + (opts.uploadId ? "?u=" + encodeURIComponent(opts.uploadId) : "");
+    card.appendChild(go);
+    card.appendChild(el("div", "font-size:12.5px;opacity:.7;margin-top:4px", opts.uploadId ? "Dokumen yang sama dibawa ke sana, tidak perlu unggah ulang (tersimpan sementara 2 jam)." : "Unggah dokumenmu di sana untuk dikerjakan."));
+  }
+  if (opts.here === "cek") { var back = el("a", "display:inline-block;margin-top:10px;font-size:13.5px", "Lihat laporan lengkap di Audit Dokumen →"); back.href = "/ruangakademikut/audit"; card.appendChild(back); }
+  card.appendChild(el("p", "margin:10px 0 0;font-size:12.5px;opacity:.7", t.note));
+  box.appendChild(card);
 };
