@@ -22,7 +22,7 @@ test("default sesuai keputusan", () => {
   assert.strictEqual(v.min_order_price, 40000);
   assert.strictEqual(v.fast_lane_price, 40000);
   assert.strictEqual(v.fast_lane_daily_cap, 5);
-  assert.strictEqual(v.revision_price_per_word, 17);
+  assert.strictEqual(v.revision_price_per_word, 20);
   assert.strictEqual(v.retention_hours, 24);
   assert.strictEqual(v.file_max_mb, 25);
 });

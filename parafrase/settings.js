@@ -9,7 +9,7 @@ const DEFS = {
   fast_lane_price:              { type: "int",  min: 0, max: 1000000, def: 40000, pub: true },
   fast_lane_daily_cap:          { type: "int",  min: 0, max: 50, def: 5, pub: true },
   revision_free_count:          { type: "int",  min: 0, max: 10, def: 1, pub: true },
-  revision_price_per_word:      { type: "int",  min: 1, max: 1000, def: 17, pub: true },
+  revision_price_per_word:      { type: "int",  min: 1, max: 1000, def: 20, pub: true },
   file_max_mb:                  { type: "int",  min: 1, max: 100, def: 25, pub: true },
   retention_hours:              { type: "int",  min: 1, max: 720, def: 24, pub: true },
   reminder_before_delete_hours: { type: "int",  min: 0, max: 72, def: 3 },
