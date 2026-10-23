@@ -21,7 +21,7 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
     .replace(/(<a [^>]*class="logo"[^>]*>)<b>C<\/b>/g, '$1<b class="lg"><img src="/ruangakademikut/assets/ca/logo-96.png" alt="" width="34" height="34"></b>')
     .replace("</head>", (h.includes("/site.css") ? '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme-svc.css?v=2">' : '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme.css?v=2">') + "</head>")
     .replace("</head>", "<style>.logo b.lg{background:none!important;box-shadow:none}.logo b.lg img{width:34px;height:34px;object-fit:contain;display:block}</style></head>")
-    .replace(/\/ruangakademikut\/(cek-parafrase-mandiri|audit|layanan|blog-ut|pesanan)/g, "/$1")
+    .replace(/\/ruangakademikut\/(cek-parafrase-mandiri|audit|layanan|blog-ut|pesanan|kalkulator-nilai-ut|pasfoto-yudisium)/g, "/$1")
     .replace(/(https?:\/\/[^"'\s<]+?)\/ruangakademikut(?=["'<\s?#)])/g, "$1/layanan-ut")
     .replace(/(["'(=])\/ruangakademikut(?=["'<\s?#)])/g, "$1/layanan-ut");
   const TRACK = new Set(["beranda.html", "hub.html", "cek.html", "audit.html", "layanan.html", "blog-ut.html", "alat-nilai.html", "alat-pasfoto.html"]); // halaman pesanan dan hasil memuat token rahasia: tidak dilacak
@@ -47,8 +47,11 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
   app.get("/ruangakademikut/audit", page("audit.html"));
   app.get("/ruangakademikut/layanan", page("layanan.html"));
   app.get("/ruangakademikut/blog-ut", page("blog-ut.html"));
-  app.get(["/ruangakademikut/kalkulator-nilai-ut", "/kalkulator-nilai-ut"], page("alat-nilai.html"));
-  app.get(["/ruangakademikut/pasfoto-yudisium", "/pasfoto-yudisium"], page("alat-pasfoto.html"));
+  /* Alat gratis: di domain akademik alamat resminya pendek (/kalkulator-nilai-ut); jalur lama /ruangakademikut/... dialihkan 301. */
+  for (const [slug, file] of [["kalkulator-nilai-ut", "alat-nilai.html"], ["pasfoto-yudisium", "alat-pasfoto.html"]]) {
+    if (SHORT) app.get("/ruangakademikut/" + slug, (req, res) => res.redirect(301, "/" + slug));
+    app.get(SHORT ? "/" + slug : ["/ruangakademikut/" + slug, "/" + slug], page(file));
+  }
   app.get(["/admin/layanan", "/admin/layanan/"], (req, res) => fs.readFile(path.join(dir, "layanan-admin.html"), "utf8", (err, html) => err ? res.status(500).end() : res.set({ "Cache-Control": "no-store", "X-Robots-Tag": "noindex" }).type("html").send(html)));
   app.get("/ruangakademikut/audit/hasil/:token", page("audit-hasil.html"));
   app.get(["/ruangakademikut/pesanan", "/ruangakademikut/pesanan/:token"], page("pesanan.html"));

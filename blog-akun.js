@@ -109,7 +109,7 @@ module.exports = function mount(ctx) {
   const BRAND = ACAD_ONLY ? "Catatan Akademik" : "nextaja";
   /* Di domain akademik, nama "nextaja" pada teks halaman diganti nama brand akademik (URL dan alamat email tidak disentuh). */
   const shortPath = h => h
-    .replace(/\/ruangakademikut\/(cek-parafrase-mandiri|audit|layanan|blog-ut|pesanan)/g, "/$1")
+    .replace(/\/ruangakademikut\/(cek-parafrase-mandiri|audit|layanan|blog-ut|pesanan|kalkulator-nilai-ut|pasfoto-yudisium)/g, "/$1")
     .replace(/(https?:\/\/[^"'\s<]+?)\/ruangakademikut(?=["'<\s?#)])/g, "$1/layanan-ut")
     .replace(/(["'(=])\/ruangakademikut(?=["'<\s?#)])/g, "$1/layanan-ut");
   const caBrand = h => String(h)

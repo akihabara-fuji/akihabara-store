@@ -11,7 +11,7 @@
 set -euo pipefail
 REF="${1:?pakai: update-ca-final.sh <commit>}"
 APP=/var/www/mahyra-serv
-KNOWN=(d3321cb ea4b557 4a8953e 3f29ccc e31a933 08cf5f2 12cfe4a dc31d36 c7f60c8 1b5c15a ff9447c 364c113 885a538 42d00d3 bd22865)   # 4a8953e = rilis CA pertama (live 23 Okt 14:17 WIB)
+KNOWN=(d3321cb ea4b557 4a8953e 3f29ccc e31a933 08cf5f2 12cfe4a dc31d36 c7f60c8 1b5c15a ff9447c 364c113 885a538 42d00d3 bd22865 c9d19fe)   # 4a8953e = rilis CA pertama (live 23 Okt 14:17 WIB)
 GH=https://codeload.github.com/akihabara-fuji/akihabara-store/tar.gz
 cd "$APP"
 
@@ -65,7 +65,7 @@ get(){ curl -fsS --resolve "$1:443:127.0.0.1" "https://$1$2"; }
 # isi halaman diambil utuh dulu, baru dicari (pipa "curl | grep -q" memutus curl di tengah jalan dan gagal saat pipefail aktif)
 has(){ local b; b=$(get "$1" "$2") || return 1; [[ "$b" == *"$3"* ]]; }
 CA=catatanakademik.com
-for u in / /blog /blog-ut /layanan-ut /sitemap.xml /robots.txt /admin/ /blog/cara-membagi-waktu-kuliah-ut-sambil-bekerja; do x=$(c $CA "$u"); echo "$CA$u $x"; [ "$x" = 200 ]; done
+for u in / /blog /blog-ut /layanan-ut /kalkulator-nilai-ut /pasfoto-yudisium /sitemap.xml /robots.txt /admin/ /blog/cara-membagi-waktu-kuliah-ut-sambil-bekerja; do x=$(c $CA "$u"); echo "$CA$u $x"; [ "$x" = 200 ]; done
 has $CA /blog 'class="bx-hero"' || { echo "Beranda blog baru tidak tampil"; false; }
 has $CA /admin/ 'Admin · Catatan Akademik' || { echo "Panel admin CA tidak tampil di /admin"; false; }
 has $CA /blog/cara-membagi-waktu-kuliah-ut-sambil-bekerja '<figure><img src="/uploads/' || { echo "Foto di isi artikel hilang"; false; }
