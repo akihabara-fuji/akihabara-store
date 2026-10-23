@@ -14,7 +14,7 @@ echo "Backup: $BK"
 rollback(){ echo "GAGAL -> rollback dari $BK"; tar xzf "$BK" -C "$APP"; pm2 restart nextaja --update-env >/dev/null || true; }
 trap 'echo "GAGAL di baris $LINENO: $BASH_COMMAND"; rollback' ERR
 T=$(mktemp -d); mkdir -p "$T/pages"
-JS="aspek.js hint.js rules.js auditrules.js wordtools.js preview.js settings.js uploads.js orders.js layanan.js metopen.js pages.js"
+JS="aspek.js hint.js rules.js auditrules.js wordtools.js preview.js settings.js uploads.js orders.js layanan.js metopen.js revisi.js pages.js"
 PG="common.js cek.js cek.html audit.html audit-hasil.js audit-hasil.html hub.html beranda.html layanan.html layanan.js pesanan.html blog-ut.html alat-nilai.html alat-pasfoto.html nilai-ut.js kalkulator.js pasfoto.js site.css admin.js admin.html"
 curl -fsSL "$RAW/blog-akun.js" -o "$T/blog-akun.js"; node --check "$T/blog-akun.js"
 for f in $JS; do curl -fsSL "$RAW/parafrase/$f" -o "$T/$f"; node --check "$T/$f"; done

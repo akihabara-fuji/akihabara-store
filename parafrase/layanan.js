@@ -9,18 +9,19 @@ const path = require("path");
 const crypto = require("crypto");
 const multer = require("multer");
 const { requirements, checkStage } = require("./metopen");
+const { checkFree } = require("./revisi");
 
 const SV = {
-  tugas:          { label: "Tugas", price: 40000, kind: "tugas" },
+  tugas:          { label: "Tugas", price: 35000, kind: "tugas" },
   diskusi:        { label: "Diskusi", price: 20000, kind: "diskusi" },
   metopen1:       { label: "Metopen Tugas 1", price: 250000, kind: "metopen" },
   metopen2:       { label: "Metopen Tugas 2", price: 200000, kind: "metopen" },
   metopen3:       { label: "Metopen Tugas 3", price: 250000, kind: "metopen" },
   metopen4:       { label: "Metopen Tugas 4", price: 300000, kind: "metopen" },
   metopen_paket:  { label: "Paket Komplit Metopen", price: 919000, kind: "metopen" },
-  revisi_tugas:   { label: "Revisi Tugas", price: 25000, kind: "revisi", of: "tugas" },
-  revisi_diskusi: { label: "Revisi Diskusi", price: 15000, kind: "revisi", of: "diskusi" },
-  revisi_metopen: { label: "Revisi Metopen", price: 100000, kind: "revisi", of: "metopen" },
+  revisi_tugas:   { label: "Revisi Tugas", price: 20000, kind: "revisi", of: "tugas" },
+  revisi_diskusi: { label: "Revisi Diskusi", price: 10000, kind: "revisi", of: "diskusi" },
+  revisi_metopen: { label: "Revisi Metopen", price: 99000, kind: "revisi", of: "metopen" },
 };
 const MAX_FILES = 5, MAX_MB = 10;
 const MAGIC = { docx: b => b.slice(0, 2).toString() === "PK", pdf: b => b.slice(0, 4).toString() === "%PDF", png: b => b.slice(0, 4).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47])), jpg: b => b[0] === 0xff && b[1] === 0xd8, jpeg: b => b[0] === 0xff && b[1] === 0xd8, txt: b => !b.includes(0) };
@@ -63,11 +64,8 @@ module.exports = function mountLayanan({ app, express, db, settings, orders, roo
           const pid = String(b.parentId || "").trim().toUpperCase();
           if (pid) {
             parent = db.prepare("SELECT * FROM orders WHERE id=?").get(pid);
-            const pk = parent && SV[parent.service] && SV[parent.service].kind;
-            if (!parent || parent.doc_type !== "layanan" || parent.wa_number !== wa || pk !== sv.of) throw bad(404, "ID pesanan tidak cocok dengan nomor WhatsApp atau jenis layanannya.");
-            if (parent.status !== "terkirim") throw bad(409, "Pesanan itu belum selesai, jadi belum bisa direvisi.");
-            const used = db.prepare("SELECT COUNT(*) n FROM orders WHERE parent_order_id=? AND service LIKE 'revisi%'").get(pid).n;
-            if (used >= 1 && parent.service !== "metopen_paket") throw bad(409, "Revisi gratis untuk pesanan ini sudah dipakai. Revisi berikutnya berbayar, kosongkan ID pesanan.");
+            const used = parent ? db.prepare("SELECT COUNT(*) n FROM orders WHERE parent_order_id=? AND service LIKE 'revisi%'").get(pid).n : 0;
+            const bad2 = checkFree({ sv, parent, parentSv: parent && SV[parent.service], wa, used }); if (bad2) throw bad(bad2.status, bad2.error);
             free = true;
           } else if (!files.length) throw bad(400, "Revisi dari luar perlu file lamanya. Unggah file yang mau direvisi.");
           if (!brief || brief.length < 5) throw bad(400, "Tempel masukan dari tutor di kotak kebutuhan.");
