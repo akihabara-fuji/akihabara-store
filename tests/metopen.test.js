@@ -28,5 +28,5 @@ test("server memakai syarat itu, config mengirimkannya, dan halaman menampilkan 
   assert.ok(/Progres ini akan dikerjakan tim admin Catatan Akademik/.test(html) && /Jika ada revisi, silakan ke menu <a href="\/ruangakademikut\/layanan\?s=revisi_metopen">Revisi/.test(html));
   assert.ok(/id="slots"/.test(html));
   assert.ok(/Panduan catatan tutor/.test(html) && /Tidak ada catatan\? Kosongkan saja/.test(html) && /sesuai template yang berlaku/.test(html));
-  assert.ok(/Kabar setiap status pesanan dikirim ke WhatsApp/.test(html));
+  assert.ok(/Admin Catatan Akademik mengirim file hasil ke WhatsApp-mu sesuai status pesanan/.test(html));
 });
