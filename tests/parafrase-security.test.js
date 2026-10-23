@@ -19,7 +19,8 @@ test("SEMUA rute admin parafrase menolak permintaan tanpa login (diaudit otomati
 });
 
 test("rute publik tidak membocorkan jalur berkas, hash IP, atau isi dokumen", async () => {
-  const t = await boot();
+  // 1 kalimat contoh terbuka: kalimat lain (berisi "digitalisasi") wajib tetap tersamar. Production memakai 5 (bawaan) dan diuji terpisah.
+  const t = await boot({ preview_open_sentences: 1 });
   try {
     const j = await (await t.order(await t.upload("sec"))).json();
     await t.proof(j.token, await jpg(60));
