@@ -330,7 +330,7 @@
               <label class="f">Tag <small>· pisahkan dengan koma, maks 8</small><input class="in" name="tags" maxlength="240" value="${esc((v.tags || []).join(", "))}" placeholder="uas, jadwal-ut, registrasi"></label><div class="bar small" id="tagSug"></div>
               <div class="f" style="font-size:13px;font-weight:600">Gambar sampul</div>
               <div class="cover-box" id="cov" style="${v.cover ? `background-image:url('${esc(v.cover)}')` : ""}">${v.cover ? "" : "Belum ada gambar"}</div>
-              <div class="bar"><label class="btn sm">Unggah gambar<input type="file" id="covF" accept="image/*" hidden></label><button type="button" class="btn sm bad" id="covX">Hapus</button></div>
+              <div class="bar"><label class="btn sm">Unggah gambar<input type="file" id="covF" accept="image/*" hidden></label><button type="button" class="btn sm" id="covP">Pilih dari Media</button><button type="button" class="btn sm bad" id="covX">Hapus</button></div>
               <input type="hidden" name="cover" value="${esc(v.cover || "")}">
               <label class="f">Teks alt sampul <small>· jelaskan isi gambar untuk pembaca layar dan Google</small><input class="in" name="coverAlt" maxlength="160" value="${esc(v.coverAlt || "")}"></label>
               <label class="f">Keterangan foto (caption) <small>· opsional</small><input class="in" name="coverCaption" maxlength="200" value="${esc(v.coverCaption || "")}"></label>
@@ -406,21 +406,35 @@
         ta.setSelectionRange(s, e); return insert(`[${sel || "teks tautan"}](${url})`);
       }
       if (k === "img") {
-        const pick = document.createElement("input"); pick.type = "file"; pick.accept = "image/*";
-        pick.onchange = async () => {
-          const file = pick.files[0]; if (!file) return; const pos = [ta.selectionStart, ta.selectionEnd];
-          const alt = await dialog({ title: "Teks alt foto", input: { label: "Jelaskan isi foto (untuk pembaca layar dan Google)", required: true, min: 5, minMsg: "Tulis minimal 5 huruf yang menjelaskan foto.", max: 120 }, ok: "Unggah & sisipkan" });
-          if (!alt) return;
-          try { const fd = new FormData(); fd.append("file", file); toast("Mengunggah foto…"); const r = await api("/ms/admin/ca/upload", { form: fd }); ta.setSelectionRange(...pos); insert(`\n\n![${alt.replace(/[\[\]()]/g, "")}](${r.url})\n\n`); toast("Foto disisipkan"); } catch (e) { fail(e); }
-        };
-        pick.click();
+        const pos = [ta.selectionStart, ta.selectionEnd], urls = await pickImages();
+        for (const u of urls) {
+          const alt = await dialog({ title: "Teks alt foto", body: `<img src="${esc(u)}" alt="" style="max-width:100%;max-height:160px;border-radius:8px;align-self:flex-start">`, input: { label: "Jelaskan isi foto (untuk pembaca layar dan Google)", required: true, min: 5, minMsg: "Tulis minimal 5 huruf yang menjelaskan foto.", max: 120 }, ok: "Sisipkan" });
+          if (!alt) continue;
+          ta.setSelectionRange(...pos); insert(`\n\n![${alt.replace(/[\[\]()]/g, "")}](${u})\n\n`); pos[0] = pos[1] = ta.selectionEnd; toast("Foto disisipkan");
+        }
       }
     }
+    /* tempel (Ctrl+V) atau seret foto langsung ke kotak tulisan: boleh banyak sekaligus; teks alt diambil dari nama berkas, periksa lagi */
+    const imgFiles = dt => [...((dt && dt.files) || [])].filter(x => /^image\//.test(x.type));
+    async function addFiles(files) {
+      for (const file of files) {
+        try {
+          toast("Mengunggah " + file.name + "…"); const fd = new FormData(); fd.append("file", file); const r = await api("/ms/admin/ca/upload", { form: fd });
+          const base = file.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ").replace(/[\[\]()]/g, "").trim(), alt = base.length >= 5 && /[a-z]{3}/i.test(base) ? base : "Foto artikel";
+          insert(`\n\n![${alt}](${r.url})\n\n`); toast("Foto disisipkan. Periksa teks alt-nya.");
+        } catch (e) { fail(e); }
+      }
+    }
+    ta.addEventListener("paste", e => { const fs = imgFiles(e.clipboardData); if (!fs.length) return; e.preventDefault(); addFiles(fs); });
+    ta.addEventListener("dragover", e => { if (e.dataTransfer && [...e.dataTransfer.types].includes("Files")) e.preventDefault(); });
+    ta.addEventListener("drop", e => { const fs = imgFiles(e.dataTransfer); if (!fs.length) return; e.preventDefault(); addFiles(fs); });
     $(".tb").addEventListener("click", e => { const b = e.target.closest("button"); if (b) doKey(b.dataset.k); });
     ta.addEventListener("keydown", e => { if (!(e.ctrlKey || e.metaKey)) return; const k = { b: "b", i: "i", k: "a" }[e.key.toLowerCase()]; if (k) { e.preventDefault(); doKey(k); } });
     document.addEventListener("keydown", function sk(e) { if (!document.body.contains(f)) return document.removeEventListener("keydown", sk); if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") { e.preventDefault(); save(); } });
 
-    $("#covF").onchange = async e => { const file = e.target.files[0]; if (!file) return; try { const fd = new FormData(); fd.append("file", file); toast("Mengunggah sampul…"); const r = await api("/ms/admin/ca/upload", { form: fd }); f.cover.value = r.url; $("#cov").style.backgroundImage = `url('${r.url}')`; $("#cov").textContent = ""; DIRTY = true; sync(); mark(); } catch (err) { fail(err); } e.target.value = ""; };
+    const setCover = url => { f.cover.value = url; $("#cov").style.backgroundImage = `url('${url}')`; $("#cov").textContent = ""; DIRTY = true; sync(); mark(); };
+    $("#covF").onchange = async e => { const file = e.target.files[0]; if (!file) return; try { const fd = new FormData(); fd.append("file", file); toast("Mengunggah sampul…"); const r = await api("/ms/admin/ca/upload", { form: fd }); setCover(r.url); } catch (err) { fail(err); } e.target.value = ""; };
+    $("#covP").onclick = async () => { const u = (await pickImages())[0]; if (u) setCover(u); };
     $("#covX").onclick = () => { f.cover.value = ""; $("#cov").style.backgroundImage = ""; $("#cov").textContent = "Belum ada gambar"; DIRTY = true; sync(); };
     $("#prevB").onclick = async () => { try { showHtml("Pratinjau artikel", await api("/ms/admin/preview-page", { json: val(), raw: true })); } catch (e) { fail(e); } };
     $("#draftB").onclick = () => { f.status.value = "draft"; $$("input[name=status]", f).forEach(r => { r.checked = r.value === "draft"; }); sync(); save(); };
@@ -472,6 +486,18 @@
       if (!await confirmAct("Pasang semua saran tag?", `${pending.length} artikel akan mendapat tag sesuai saran. Isi dan tanggal artikel tidak berubah; tag bisa diubah lagi di editor.`, "Pasang semua")) return;
       busy(e.target, async () => { try { for (const x of pending) await apply(x); toast(`Tag dipasang di ${pending.length} artikel`); route(); } catch (err) { fail(err); } });
     };
+  }
+  /* pustaka foto: pilih gambar yang sudah pernah diunggah, atau unggah satu/beberapa sekaligus. Mengembalikan daftar alamat gambar. */
+  async function pickImages() {
+    let out = [];
+    await dialog({ title: "Pilih foto", wide: true, ok: "", cancel: "Tutup", body: `<div class="bar"><label class="btn pri">Unggah foto baru (boleh banyak)<input type="file" id="pkF" accept="image/*" multiple hidden></label><span class="small faint" id="pkS">Atau klik foto yang sudah pernah diunggah.</span></div><div id="pkG" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;max-height:56vh;overflow:auto"></div>`,
+      onOpen: async d => {
+        const g = $("#pkG", d), s = $("#pkS", d);
+        try { const m = await api("/ms/admin/ca/media"); g.innerHTML = m.items.map(i => `<button type="button" class="btn" data-u="${esc(i.url)}" title="${esc(i.usedIn.length ? "Dipakai: " + i.usedIn.map(u => u.title).join(", ") : "Belum dipakai")}" style="padding:0;height:auto;display:block;overflow:hidden"><img src="${esc(i.url)}" alt="" loading="lazy" style="width:100%;height:96px;object-fit:cover;display:block"><small style="display:block;padding:4px 6px;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(i.url.split("/").pop())}</small></button>`).join("") || '<div class="empty">Belum ada foto.</div>'; } catch (e) { s.textContent = e.message; }
+        g.onclick = e => { const b = e.target.closest("[data-u]"); if (!b) return; out = [b.dataset.u]; d.finish(true); };
+        $("#pkF", d).onchange = async e => { const files = [...e.target.files]; for (let i = 0; i < files.length; i++) { s.textContent = `Mengunggah ${i + 1} dari ${files.length}…`; try { const fd = new FormData(); fd.append("file", files[i]); out.push((await api("/ms/admin/ca/upload", { form: fd })).url); } catch (err) { s.textContent = files[i].name + ": " + err.message; return; } } d.finish(true); };
+      } });
+    return out;
   }
   async function pMedia() {
     const d = await api("/ms/admin/ca/media");
