@@ -46,7 +46,7 @@
   /* Kotak saran di bawah hasil. Nilai tinggi (B ke atas): dorongan menjaga. Selain itu: arahkan ke simulasi IPK dan layanan. */
   function banner(m, r) {
     var high = r.mutu >= 3.0, b = document.createElement("div"), s = document.createElement("b");
-    b.id = "ban"; b.style.cssText = "margin-top:14px;padding:14px 16px;border-radius:12px;line-height:1.6;border:1px solid " + (high ? "#22a55a" : "#c8862a") + ";background:" + (high ? "rgba(34,165,90,.12)" : "rgba(200,134,42,.12)");
+    b.id = "ban"; b.style.cssText = "margin-top:14px;padding:14px 16px;border-radius:12px;line-height:1.6;border:1px solid " + (high ? "#22a55a" : "rgba(220,70,70,.45)") + ";background:" + (high ? "rgba(34,165,90,.12)" : "rgba(220,70,70,.08)");
     var sim = document.createElement("a"); sim.href = "#ipk-sim"; sim.textContent = "Simulasi & Target IPK"; sim.style.cssText = "color:var(--link);text-decoration:underline";
     if (high) {
       s.textContent = "Nilai akhirmu sudah di rentang " + r.huruf + ".";
