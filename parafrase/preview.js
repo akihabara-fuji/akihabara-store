@@ -6,7 +6,8 @@
 "use strict";
 const crypto = require("crypto");
 const { splitSentences, countWords } = require("./docx");
-const { CODES, PRIORITY } = require("./rules");
+const { CODES, PRIORITY, helperFor } = require("./rules");
+const { computeAspects } = require("./aspek");
 
 function prng(bytes) {
   let s = (bytes.readUInt32LE(0) || 0x9e3779b9) >>> 0;
@@ -41,15 +42,25 @@ function buildPreview(a, findings, secret, id, opts = {}) {
   const pages = Math.max(1, Math.ceil(visible.length / pageSize));
   const page = Math.min(pages, Math.max(1, opts.page | 0 || 1));
 
-  // Kalimat terbuka: N kalimat BERCATATAN pertama di dokumen (contoh yang berguna). Bila tidak ada catatan, N kalimat pertama.
+  // Kalimat contoh: N kalimat bercatatan yang BERAGAM jenisnya. Yang pertama adalah catatan paling awal di dokumen,
+  // berikutnya bergantian antar kode warna (belum terpakai dulu), lalu hasilnya diurutkan sesuai posisi di dokumen.
   // Dihitung dari seluruh dokumen, bukan per halaman, supaya paginasi tidak membuka kalimat tambahan.
-  const openKeys = new Set();
+  const openKeys = new Set(), order = (a, b) => { const [pa, sa] = a.split(":").map(Number), [pb, sb] = b.split(":").map(Number); return pa - pb || sa - sb; };
   if (open > 0 && open !== Infinity) {
-    const flagged = [...new Set(findings.map(f => f.para_idx + ":" + f.sent_idx))];
-    const order = (a, b) => { const [pa, sa] = a.split(":").map(Number), [pb, sb] = b.split(":").map(Number); return pa - pb || sa - sb; };
-    flagged.sort(order).slice(0, open).forEach(k => openKeys.add(k));
+    const primaryOf = k => byKey.get(k).slice().sort((x, y) => PRIORITY.indexOf(x.code) - PRIORITY.indexOf(y.code))[0].code;
+    const flagged = [...byKey.keys()].sort(order), pick = [];
+    if (flagged.length) pick.push(flagged[0]);
+    const used = new Set(pick.map(primaryOf));
+    while (pick.length < open && pick.length < flagged.length) {
+      const rest = flagged.filter(k => !pick.includes(k));
+      const fresh = rest.find(k => !used.has(primaryOf(k)));
+      const next = fresh || rest[0]; pick.push(next); used.add(primaryOf(next));
+    }
+    pick.sort(order).forEach(k => openKeys.add(k));
     if (!openKeys.size) for (const p of visible) { for (let i = 0; i < splitSentences(p.text).length && openKeys.size < open; i++) openKeys.add(p.idx + ":" + i); if (openKeys.size >= open) break; }
   }
+  const nOf = new Map([...openKeys].filter(k => byKey.has(k)).sort(order).map((k, i) => [k, i + 1]));
+  const examples = [];
   const outParas = [];
   visible.forEach((p, vi) => {
     const sents = splitSentences(p.text);
@@ -68,12 +79,26 @@ function buildPreview(a, findings, secret, id, opts = {}) {
         color: primary ? CODES[primary].color : null,
         action: primary ? CODES[primary].action : null,
       };
-      if (isOpen && fs.length) seg.reasons = fs.map(f => ({ code: f.code, reason: f.reason }));
+      if (isOpen && fs.length) {
+        seg.reasons = fs.map(f => ({ code: f.code, reason: f.reason, target: CODES[f.code].target, helper: helperFor(f.code, s, f.reason) }));
+        if (!unlocked) seg.n = nOf.get(p.idx + ":" + si);
+      }
       return seg;
     });
     if (inPage) outParas.push({ idx: p.idx, kind: p.inTable ? "tabel" : /heading|title|judul/i.test(p.style) ? "judul" : "isi", segments: segs.filter(Boolean) });
   });
 
+  if (!unlocked) {
+    for (const p of visible) splitSentences(p.text).forEach((sent, si) => {
+      const k = p.idx + ":" + si, n = nOf.get(k); if (!n) return;
+      const fs = byKey.get(k).slice().sort((x, y) => PRIORITY.indexOf(x.code) - PRIORITY.indexOf(y.code)), c = fs[0].code;
+      examples.push({ n, code: c, color: CODES[c].color, action: CODES[c].action, target: CODES[c].target, text: sent,
+        reasons: fs.map(f => ({ code: f.code, reason: f.reason, helper: helperFor(f.code, sent, f.reason) })) });
+    });
+    examples.sort((a, b) => a.n - b.n);
+  }
+  const bibAt = a.bibliographyParagraphIndex == null || a.bibliographyParagraphIndex < 0 ? null : a.bibliographyParagraphIndex;
+  const overview = computeAspects(a.paragraphs, bibAt, findings);
   const counts = Object.fromEntries(Object.keys(CODES).map(k => [k, 0]));
   for (const f of findings) counts[f.code]++;
   return {
@@ -83,6 +108,8 @@ function buildPreview(a, findings, secret, id, opts = {}) {
     notes: { total: findings.length, byCode: counts },
     legend: Object.fromEntries(Object.entries(CODES).map(([k, v]) => [k, { color: v.color, action: v.action, target: v.target }])),
     paragraphs: outParas,
+    examples,
+    overview,
   };
 }
 

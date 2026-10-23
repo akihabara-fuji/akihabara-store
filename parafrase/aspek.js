@@ -22,12 +22,12 @@ function computeAspects(paras, bibAt, findings) {
   const parPct = code => (nPar >= 3 ? pctOf(new Set(findings.filter(f => f.code === code).map(f => f.para_idx)).size, nPar) : null);
 
   const aspects = [
-    { key: "kalimat_berulang", group: "orisinalitas", label: "Kalimat yang sama muncul lebih dari sekali", value: sentPct(f => f.code === "M"), good: "rendah" },
-    { key: "kutipan_bermasalah", group: "sitasi", label: "Kalimat dengan sitasi atau kutipan bermasalah", value: sentPct(f => f.code === "B" || f.code === "O"), good: "rendah" },
-    { key: "klaim_tanpa_sumber", group: "sitasi", label: "Kalimat klaim atau angka tanpa sumber", value: sentPct(f => f.code === "K"), good: "rendah" },
-    { key: "kalimat_panjang", group: "keterbacaan", label: "Kalimat terlalu panjang", value: sentPct(f => f.code === "U"), good: "rendah" },
-    { key: "paragraf_pendek", group: "keterbacaan", label: "Paragraf pendek dan kurang berkembang", value: parPct("H"), good: "rendah" },
-    { key: "paragraf_generik", group: "analisis", label: "Paragraf umum tanpa analisis spesifik", value: parPct("P"), good: "rendah" },
+    { key: "kalimat_berulang", codes: ["M"], group: "orisinalitas", label: "Kalimat yang sama muncul lebih dari sekali", value: sentPct(f => f.code === "M"), good: "rendah" },
+    { key: "kutipan_bermasalah", codes: ["B", "O"], group: "sitasi", label: "Kalimat dengan sitasi atau kutipan bermasalah", value: sentPct(f => f.code === "B" || f.code === "O"), good: "rendah" },
+    { key: "klaim_tanpa_sumber", codes: ["K"], group: "sitasi", label: "Kalimat klaim atau angka tanpa sumber", value: sentPct(f => f.code === "K"), good: "rendah" },
+    { key: "kalimat_panjang", codes: ["U"], group: "keterbacaan", label: "Kalimat terlalu panjang", value: sentPct(f => f.code === "U"), good: "rendah" },
+    { key: "paragraf_pendek", codes: ["H"], group: "keterbacaan", label: "Paragraf pendek dan kurang berkembang", value: parPct("H"), good: "rendah" },
+    { key: "paragraf_generik", codes: ["P"], group: "analisis", label: "Paragraf umum tanpa analisis spesifik", value: parPct("P"), good: "rendah" },
   ];
 
   /* indikator gaya seragam atau otomatis */
@@ -61,6 +61,7 @@ function computeAspects(paras, bibAt, findings) {
     const level = value >= 60 ? "tinggi" : value >= 30 ? "sedang" : "rendah";
     ai = { value, level, label: { tinggi: "Indikasi tinggi", sedang: "Indikasi sedang", rendah: "Indikasi rendah" }[level], parts, sentences: n };
   }
+  ai.codes = ["A"];
   ai.note = "Estimasi heuristik dari pola tulisan, bukan detektor AI dan bukan skor Drillbit atau Turnitin. Tulisan manusia bisa terbaca tinggi dan sebaliknya. Angka resmi hanya dari Drillbit milik UT.";
   return { aspects, ai };
 }

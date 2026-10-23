@@ -235,7 +235,7 @@ module.exports = function mount(ctx) {
       res.json({ ok: true, user: pubUser(u) });
     } catch { res.status(502).json({ error: "Tidak bisa menghubungi Google. Coba lagi." }); }
   });
-  app.post("/ms/auth/logout", (req, res) => { res.setHeader("Set-Cookie", "nx_user=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0" + (SECURE_COOKIE ? "; Secure" : "")); res.json({ ok: true }); });
+  app.post("/ms/auth/logout", (req, res) => { if (!sameOrigin(req)) return res.status(403).json({ error: "Permintaan ditolak." }); res.setHeader("Set-Cookie", "nx_user=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0" + (SECURE_COOKIE ? "; Secure" : "")); res.json({ ok: true }); });
   app.post("/ms/auth/password", json, needOrigin, async (req, res) => {
     const u = userFrom(req); if (!u) return res.status(401).json({ error: "Silakan masuk dulu." });
     const old = String(req.body?.old || ""), nw = String(req.body?.new || "");

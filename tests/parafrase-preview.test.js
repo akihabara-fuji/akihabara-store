@@ -100,3 +100,32 @@ test("HTTP: endpoint pratinjau terkunci, no-store, tidak membocorkan, ID salah 4
     assert.strictEqual((await fetch(base + "/ms/parafrase/preview/../../etc")).status, 404);
   } finally { srv.close(); }
 });
+
+test("contoh terbuka: beberapa kalimat beragam kode, tiap contoh punya kenapa, harusnya, dan kalimat pembantu; sisanya tetap terkunci", async () => {
+  const { a, f } = await setup();
+  const total = new Set(f.map(x => x.para_idx + ":" + x.sent_idx)).size;
+  const pv = buildPreview(a, f, SECRET, "id1", { unlocked: false, openSentences: 3 });
+  assert.strictEqual(pv.examples.length, Math.min(3, total));
+  assert.ok(pv.examples.length >= 2, "cukup contoh untuk dokumen ini");
+  assert.deepStrictEqual(pv.examples.map(e => e.n), pv.examples.map((_, i) => i + 1), "bernomor urut");
+  assert.ok(new Set(pv.examples.map(e => e.code)).size >= 2, "contoh tidak seragam satu kode");
+  for (const e of pv.examples) {
+    assert.ok(e.text && e.target.startsWith("Harusnya") && e.reasons.length);
+    assert.ok(e.reasons.every(r => r.reason && r.helper.length > 20), "kalimat pembantu ada");
+  }
+  const segs = pv.paragraphs.flatMap(p => p.segments);
+  assert.strictEqual(segs.filter(s => !s.locked).length, pv.examples.length);
+  assert.ok(segs.filter(s => s.locked).every(s => !("reasons" in s) && !("n" in s)), "yang terkunci tidak membocorkan alasan");
+  const lockedText = segs.filter(s => s.locked).map(s => s.text).join(" ");
+  for (const w of longWords(BODY.replace(/<[^>]+>/g, " "))) if (!pv.examples.some(e => e.text.toLowerCase().includes(w))) assert.ok(!lockedText.includes(w), "bocor " + w);
+});
+
+test("ringkasan aspek ikut di pratinjau (angka sama dengan Audit Dokumen) dan pembukaan kalimat 1 tetap berperilaku lama", async () => {
+  const { a, f } = await setup();
+  const pv = buildPreview(a, f, SECRET, "id1", { unlocked: false, openSentences: 1 });
+  assert.strictEqual(pv.examples.length, 1);
+  assert.ok(pv.overview && pv.overview.aspects.length === 6 && pv.overview.ai && pv.overview.aspects.every(x => Array.isArray(x.codes) && x.codes.length));
+  assert.deepStrictEqual(pv.overview.aspects.find(x => x.key === "kalimat_berulang").codes, ["M"]);
+  const unlocked = buildPreview(a, f, SECRET, "id1", { unlocked: true });
+  assert.strictEqual(unlocked.examples.length, 0, "setelah dibayar tidak perlu panel contoh");
+});

@@ -43,6 +43,7 @@ test("masuk: sandi salah ditolak, benar berhasil, sesi bertahan, keluar mengakhi
   const t = await boot();
   try {
     await t.post("/ms/auth/register", { name: "Uji", email: "uji@example.test", password: "sandiuji123" });
+    assert.strictEqual((await fetch(t.base + "/ms/auth/logout", { method: "POST", headers: { "content-type": "application/json" }, body: "{}" })).status, 403, "keluar tanpa Origin ditolak");
     await t.post("/ms/auth/logout", {}); t.jar.c = "";
     const bad = await t.post("/ms/auth/login", { email: "uji@example.test", password: "salah-salah" });
     assert.strictEqual(bad.r.status, 401); assert.ok(!bad.sc);
