@@ -105,7 +105,7 @@
             return '<span class="' + cls + '"' + (s.locked ? ' aria-hidden="true"' : "") + ">" + esc(s.text) + "</span>" + tag + " ";
           }).join("") + "</p>";
         }).join("");
-        renderOverview(pv); renderExamples(pv);
+        renderOverview(pv); renderExample(pv);
         $("pg").textContent = "Halaman " + pv.page + " dari " + pv.pages;
         $("prev").disabled = pv.page <= 1; $("next").disabled = pv.page >= pv.pages;
       }).catch(function () { $("doc").innerHTML = '<p class="muted">Pratinjau gagal dimuat.</p>'; });
@@ -114,27 +114,38 @@
   /* Angka aspek yang sama dengan Audit Dokumen (renderer yang sama di common.js). */
   function renderOverview(pv) {
     var box = $("overview"); box.innerHTML = ""; if (!pv.overview) return;
-    window.auditAspects(pv.overview, box);
-    box.appendChild(mk("a", "font-size:13.5px", "Mau penjelasan lengkap soal sitasi dan daftar pustaka? Buka Audit Dokumen")).href = "/ruangakademikut/audit";
+    window.auditAspects(pv.overview, box, { compact: true });
+    box.appendChild(mk("a", "font-size:13.5px", "Skor kesiapan serta penjelasan lengkap sitasi dan daftar pustaka ada di Audit Dokumen →")).href = "/ruangakademikut/audit";
   }
-  /* Kalimat contoh: kalimat kamu, kenapa ditandai, harusnya bagaimana, dan kalimat pembantu. */
-  function renderExamples(pv) {
-    var box = $("examples"); box.innerHTML = ""; var ex = pv.examples || []; if (!ex.length) return;
-    box.appendChild(mk("h2", "margin:6px 0 4px;font-size:19px", "Contoh perbaikan di dokumenmu (" + ex.length + " kalimat)"));
-    box.appendChild(mk("p", "margin:0 0 10px;color:var(--muted);font-size:14px", "Ini sebagian kecil dari " + pv.notes.total + " catatan. Pola yang sama berlaku untuk kalimat lain yang berwarna sama."));
-    ex.forEach(function (e) {
-      var card = mk("div", "padding:14px 16px;margin-bottom:10px;border-radius:14px;border:1px solid var(--border,#2b2b58)");
-      var top = mk("div", "display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap");
-      var b = mk("span", "font-weight:700", e.n + ". " + e.code + " " + (NAMES[e.code] || e.action) + " (" + e.color + ")"); b.className = "chip c-" + e.code; top.appendChild(b); card.appendChild(top);
-      function row(label, text, strong) { var d = mk("div", "margin:6px 0;font-size:14.5px;line-height:1.55"); d.appendChild(mk("b", "display:block;font-size:12.5px;opacity:.7;text-transform:uppercase;letter-spacing:.04em", label)); d.appendChild(mk(strong ? "b" : "span", "", text)); card.appendChild(d); }
-      row("Kalimat kamu", "“" + e.text + "”");
-      e.reasons.forEach(function (r, i) {
-        row(i ? "Juga ditandai (" + r.code + ")" : "Kenapa ditandai", r.reason);
-        if (!i) row("Harusnya", String(e.target || "").replace(/^Harusnya:\s*/, ""));
-        row("Kalimat pembantu", r.helper);
-      });
-      box.appendChild(card);
+  /* Satu paragraf contoh: rekomendasi di atas, kalimat yang salah dicoret dan diberi warna kodenya, lalu contoh penulisan ulang. */
+  function renderExample(pv) {
+    var box = $("examples"); box.innerHTML = ""; var ex = pv.example; if (!ex) return;
+    var card = mk("div", "padding:16px 18px;border-radius:18px;border:1px solid var(--border,#2b2b58);margin:12px 0");
+    var hd = mk("div", "display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px");
+    hd.appendChild(mk("b", "font-size:18px", "Contoh perbaikan: 1 paragraf dari dokumenmu"));
+    if (ex.remaining > 0) hd.appendChild(mk("span", "font-size:12.5px;padding:3px 11px;border-radius:999px;border:1px solid var(--border,#2b2b58);opacity:.85", ex.remaining + " catatan lain terbuka setelah pembayaran"));
+    card.appendChild(hd);
+    var rec = mk("div", "border:1px solid var(--border,#2b2b58);border-left:5px solid #7c5cff;background:rgba(124,92,255,.10);border-radius:12px;padding:12px 16px;margin:8px 0 12px");
+    var lab = mk("b", "display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.8;margin-bottom:3px", "Rekomendasi · " + ex.code + " " + (NAMES[ex.code] || ex.action) + " (" + ex.color + ")");
+    rec.appendChild(lab);
+    rec.appendChild(mk("div", "", ex.reason + " " + (ex.rewrite ? String(ex.target || "").replace(/^Harusnya:\s*/, "Harusnya ") + " Contoh di bawah." : ex.helper)));
+    (ex.also || []).forEach(function (a) { rec.appendChild(mk("div", "margin-top:6px;font-size:14px;opacity:.9", "Juga (" + a.code + "): " + a.reason + " " + a.helper)); });
+    card.appendChild(rec);
+    var para = mk("div", "background:#fff;color:#12202f;border-radius:12px;padding:16px 18px;font-size:15.5px;line-height:1.85");
+    var rewrite = null;
+    ex.sentences.forEach(function (s, i) {
+      var sp = mk("span", "", (i ? " " : "") + s.text);
+      if (s.flagged) { sp.className = "seg s-" + s.code; sp.style.textDecoration = "line-through"; sp.style.textDecorationColor = "#c62828"; sp.style.textDecorationThickness = "2px"; if (!rewrite && s.rewrite) rewrite = s.rewrite; }
+      para.appendChild(sp);
     });
+    if (rewrite) {
+      var w = mk("div", "margin-top:10px");
+      w.appendChild(mk("div", "color:#5a6b85;font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em", "Contoh penulisan ulang ›"));
+      var f = mk("span", "background:#E3F5EA;border-bottom:2px solid #2e7d32", rewrite); w.appendChild(f); para.appendChild(w);
+    }
+    card.appendChild(para);
+    card.appendChild(mk("p", "margin:8px 0 0;font-size:12.5px;opacity:.7", "Warna dan coretan menunjukkan bagian yang kami kerjakan." + (rewrite ? " Kalimat hijau hanya contoh cara menulis ulang, bukan hasil akhir." : "")));
+    box.appendChild(card);
   }
   $("prev").onclick = function () { st.page--; loadPreview(); };
   $("next").onclick = function () { st.page++; loadPreview(); };

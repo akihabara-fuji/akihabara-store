@@ -92,3 +92,12 @@ test("paragraf pendek (H): butir ketikan manual dan pertanyaan tidak dihitung, p
   const h = analyzeFindings(dok, null).filter(f => f.code === "H").map(f => f.para_idx);
   assert.deepStrictEqual(h, [4]);
 });
+
+test("paragraf pendek (H): judul HURUF KAPITAL, label tanpa tanda baca akhir, dan teks sampul tidak dihitung", () => {
+  const dok = [
+    para(0, "PENYUSUNAN DAN PENERAPAN ATURAN KEHADIRAN SERTA PENEGAKAN DISIPLIN KARYAWAN PADA PERUSAHAAN YANG BERTUMBUH"),
+    para(1, "Penyusunan dan Penerapan Aturan Kehadiran serta Penegakan Disiplin Karyawan pada Perusahaan yang Bertumbuh dari Skala Kecil"),
+    para(2, "Disiplin itu penting bagi perusahaan kecil yang berkembang."),
+  ];
+  assert.deepStrictEqual(analyzeFindings(dok, null).filter(f => f.code === "H").map(f => f.para_idx), [2]);
+});

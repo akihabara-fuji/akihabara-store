@@ -72,7 +72,8 @@
 
 /* Aspek isi seluruh dokumen (persen) + indikasi gaya tulisan seragam. Dipakai Audit Dokumen DAN Cek & Parafrase, jadi angkanya sama.
    Tiap baris diberi penanda warna yang sama dengan warna di Cek & Parafrase. */
-window.auditAspects = function (sc, box) {
+window.auditAspects = function (sc, box, opts) {
+  var compact = !!(opts && opts.compact);
   if (!sc || !box || !sc.aspects || !sc.aspects.length) return;
   function el(t, css, x) { var e = document.createElement(t); if (css) e.style.cssText = css; if (x != null) e.textContent = x; return e; }
   function chips(codes) {
@@ -90,14 +91,16 @@ window.auditAspects = function (sc, box) {
       var w = value == null ? 0 : Math.min(100, value), bad = rendahBagus ? w : 100 - w;
       tr.appendChild(el("div", "height:100%;width:" + w + "%;background:" + (bad <= 15 ? "#5ee6a8" : bad <= 40 ? "#f3ff4d" : "#ff8aa5"))); row.appendChild(tr); return row;
     }
-    sc.aspects.forEach(function (m) { blk.appendChild(bar(m.label, m.value, m.good === "rendah", m.codes)); });
+    var list = blk;
+    if (compact) { list = el("div", "display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:0 28px"); blk.appendChild(list); }
+    sc.aspects.forEach(function (m) { list.appendChild(bar(m.label, m.value, m.good === "rendah", m.codes)); });
     if (sc.ai) {
       var ai = sc.ai, AC = { tinggi: "#ff8aa5", sedang: "#f3ff4d", rendah: "#5ee6a8" }[ai.level] || "#8ec5ff";
       var hd = el("div", "display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;margin:14px 0 6px;padding-top:12px;border-top:1px solid var(--border,#2b2b58)");
       var tt = el("b", "", "Indikasi gaya tulisan seragam atau otomatis"); tt.appendChild(chips(ai.codes)); hd.appendChild(tt);
       hd.appendChild(el("b", "font-size:26px;line-height:1;color:" + AC, ai.value == null ? "n/a" : ai.value + "%"));
       hd.appendChild(el("span", "font-size:13px;opacity:.8", ai.label)); blk.appendChild(hd);
-      (ai.parts || []).forEach(function (m) { blk.appendChild(bar(m.label, m.value, true)); });
+      if (!compact) (ai.parts || []).forEach(function (m) { blk.appendChild(bar(m.label, m.value, true)); });
       blk.appendChild(el("p", "margin:8px 0 0;font-size:12.5px;opacity:.7", ai.note));
     }
     box.appendChild(blk);
