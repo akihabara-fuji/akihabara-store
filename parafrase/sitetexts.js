@@ -22,6 +22,7 @@ const PAGES = {
   "blog-ut.html": "Halaman blog",
   "alat-nilai.html": "Kalkulator Nilai UT",
   "alat-pasfoto.html": "Pasfoto Yudisium",
+  "portal-ut.html": "Portal UT",
 };
 const EXTRA_PAGE = "Blog dan akun (menu & footer)";
 const META_KEYS = new Set(["description", "og:title", "og:description", "twitter:title", "twitter:description"]);

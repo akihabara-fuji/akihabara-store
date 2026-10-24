@@ -7,6 +7,7 @@
 const fs = require("fs");
 const fsp = fs.promises;
 const path = require("path");
+const { shortPaths } = require("./parafrase/acadpaths");
 const crypto = require("crypto");
 
 module.exports = function mount(ctx) {
@@ -108,10 +109,7 @@ module.exports = function mount(ctx) {
   const onAcadHost = req => ACAD_ONLY && !!ACAD_HOST && String(req.headers.host || "").toLowerCase() === ACAD_HOST.toLowerCase();
   const BRAND = ACAD_ONLY ? "Catatan Akademik" : "nextaja";
   /* Di domain akademik, nama "nextaja" pada teks halaman diganti nama brand akademik (URL dan alamat email tidak disentuh). */
-  const shortPath = h => h
-    .replace(/\/ruangakademikut\/(cek-parafrase-mandiri|audit|layanan|blog-ut|pesanan|kalkulator-nilai-ut|pasfoto-yudisium|sitasi-apa)/g, "/$1")
-    .replace(/(https?:\/\/[^"'\s<]+?)\/ruangakademikut(?=["'<\s?#)])/g, "$1/layanan-ut")
-    .replace(/(["'(=])\/ruangakademikut(?=["'<\s?#)])/g, "$1/layanan-ut");
+  const shortPath = shortPaths; // alamat pendek domain akademik (parafrase/acadpaths.js)
   const caBrand = h => String(h)
     .replace(/<link rel="icon"[^>]*>/g, '<link rel="icon" href="/ruangakademikut/assets/ca/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="/ruangakademikut/assets/ca/favicon-32.png">')
     .replace(/<link rel="apple-touch-icon"[^>]*>/g, '<link rel="apple-touch-icon" href="/ruangakademikut/assets/ca/apple-touch-icon.png">')
@@ -119,7 +117,7 @@ module.exports = function mount(ctx) {
     .replace(/(<a [^>]*class="logo"[^>]*>)<b>[^<]*<\/b>/g, '$1<b class="lg"><img src="/ruangakademikut/assets/ca/logo-96.png" alt="" width="34" height="34"></b>')
     .replace("</head>", '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme.css?v=2"></head>')
     .replace("</head>", "<style>.logo b.lg{background:none!important}.logo b.lg img{width:34px;height:34px;object-fit:contain;display:block}</style></head>");
-  const rebrand = h => (ACAD_ONLY ? caBrand(shortPath(String(h).replace(/(?<![\w./@-])nextaja(?![\w-]|\.\w)/gi, BRAND))) : h);
+  const rebrand = h => (ACAD_ONLY ? shortPath(caBrand(String(h).replace(/(?<![\w./@-])nextaja(?![\w-]|\.\w)/gi, BRAND))) : h);
   /* Terjadwal = tampil otomatis saat publishAt lewat (tanpa cron). Draf, review, dan terjadwal yang belum waktunya tidak pernah tampil publik. */
   const isLive = (p, now = Date.now()) => !p.trashedAt && (p.status === "published" || (p.status === "scheduled" && Date.parse(p.publishAt) <= now));
   const published = () => blog.posts.filter(p => isLive(p) && (!ACAD_ONLY || ACAD_TOPICS.includes(p.topic))).sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
@@ -571,7 +569,7 @@ bg.addEventListener("click",function(){var o=ln.classList.toggle("open");bg.setA
 fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(function(d){if(d.user){var a=document.getElementById("navAcc");a.textContent="Akun saya";a.href="/ms/akun";}}).catch(function(){});
 })();
 </script>
-${ACAD_ONLY ? '<script defer src="/ruangakademikut/assets/koin-chip.js?v=1"></script>' : ""}
+${ACAD_ONLY ? '<script defer src="/ruangakademikut/assets/koin-chip.js?v=20261202"></script>' : ""}
 </body></html>`);
   }
 
@@ -971,7 +969,7 @@ ${ACAD_ONLY ? '<script defer src="/ruangakademikut/assets/koin-chip.js?v=1"></sc
   }
 
   /* halaman statis di sitemap: lastmod = kapan berkas halamannya terakhir berubah (tanggal rilis), bukan tanggal buatan */
-  const SITEMAP_PAGES = { "/ruangakademikut": "hub.html", "/ruangakademikut/cek-parafrase-mandiri": "cek.html", "/ruangakademikut/audit": "audit.html", "/ruangakademikut/layanan": "layanan.html", "/ruangakademikut/kalkulator-nilai-ut": "alat-nilai.html", "/ruangakademikut/pasfoto-yudisium": "alat-pasfoto.html", "/ruangakademikut/sitasi-apa": "sitasi.html" };
+  const SITEMAP_PAGES = { "/ruangakademikut": "hub.html", "/ruangakademikut/cek-parafrase-mandiri": "cek.html", "/ruangakademikut/audit": "audit.html", "/ruangakademikut/layanan": "layanan.html", "/ruangakademikut/kalkulator-nilai-ut": "alat-nilai.html", "/ruangakademikut/pasfoto-yudisium": "alat-pasfoto.html", "/ruangakademikut/sitasi-apa": "sitasi.html", "/ruangakademikut/portal-ut": "portal-ut.html" };
   const pageMod = file => { try { return fs.statSync(path.join(__dirname, "parafrase", "pages", file)).mtime.toISOString().slice(0, 10); } catch { return undefined; } };
   // untuk sitemap. /blog-ut tidak didaftarkan: isinya sama dengan /blog (kanonis ke /blog).
   return { userFrom, userById: id => db.users.find(x => x.id === id) || null, userByEmail: e => db.users.find(x => String(x.email || "").toLowerCase() === String(e || "").trim().toLowerCase()) || null, notFound, articlePage, isLive, suggestTags, suggestTopic, tagLabel, posts: () => blog.posts, usersCount: () => db.users.length, TOPICS, ACAD_TOPICS, pageUrls: () => (ACAD_ONLY ? [{ loc: `${SITE}/`, lastmod: pageMod("beranda.html"), pri: "1.0" }] : []).concat(Object.entries(SITEMAP_PAGES).map(([u, file]) => ({ loc: `${SITE}${ACAD_ONLY ? (u === "/ruangakademikut" ? "/layanan-ut" : shortPath(u)) : u}`, lastmod: pageMod(file), pri: "0.7" }))), blogUrls: () => published().map(p => ({ loc: `${SITE}/blog/${p.slug}`, lastmod: String(modifiedAt(p) || "").slice(0, 10), pri: "0.6" })) };

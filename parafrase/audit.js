@@ -4,6 +4,7 @@
      hasil lengkap terbuka lewat tautan rahasia pesanan, dan file dihapus otomatis sesuai masa simpan.
    Semua temuan dari aturan pasti dan pengecekan DOI nyata, tanpa AI dan tanpa tebakan. */
 "use strict";
+const { U } = require("./acadpaths");
 const fs = require("fs");
 const fsp = fs.promises;
 const path = require("path");
@@ -89,7 +90,7 @@ module.exports = function mountAudit({ app, express, db, settings, orders, root,
     if (limited("o:" + h, 10, now)) return res.status(429).json({ error: "Terlalu banyak pesanan dari jaringan ini. Coba lagi nanti." });
     try {
       const { r, token, payExp } = orders.createAuditOrder(req.body || {}, h, now, userFrom ? userFrom(req) : null);
-      res.json({ orderId: r.id, token, total: r.total, expiresAt: payExp, ...(r.coins ? { paid: "koin", coins: r.coins } : {}), url: "/ruangakademikut/pesanan/" + token });
+      res.json({ orderId: r.id, token, total: r.total, expiresAt: payExp, ...(r.coins ? { paid: "koin", coins: r.coins } : {}), url: U("/ruangakademikut/pesanan/") + token });
     } catch (e) {
       if (e.status) return res.status(e.status).json({ error: e.message, ...(e.login ? { login: true } : {}), ...(e.short ? { short: e.short, balance: e.balance } : {}) });
       console.error("[audit] pesanan gagal:", e && e.message); res.status(500).json({ error: "Pesanan tidak bisa dibuat. Coba lagi." });

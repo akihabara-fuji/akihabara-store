@@ -51,3 +51,7 @@ Kode sudah di `feat/koin` (ujung 2b6c654 saat catatan ini dibuat). Pesan serah-t
 - **Audit mencakup judul sampai penutup**: ditambah cek struktur (judul, pembuka, metode, isi, penutup) di samping sitasi, pustaka, DOI, standar Bab 4 dan 5, dan indikasi gaya tulisan. Dari hasil Audit ada CTA "Perbaiki di Cek & Parafrase" yang melanjutkan dokumen yang sama (?u=), tanpa istilah "obat".
 - **Akun gratis pemilik/tim** (`akun_gratis`): pesanan dan simulasi tanpa potongan koin, tanpa koin palsu di buku.
 - **Beranda**: tombol utama "Lihat Layanan", Kalkulator jadi tombol kedua, kartu melayang 3, "Portal UT" menu sendiri (halamannya belum dibuat), statistik "2.100+ pesanan masuk" dan "4+ tahun".
+
+## Pembaruan 24 Okt malam (sesi Claude Code)
+- **Portal UT sudah jadi**: /portal-ut (alamat lama /ruangakademikut/portal-ut dialihkan 301). Lima bagian menurut perjalanan kuliah, kotak cari, filter Semua / Resmi UT / Dari kami, penafian bukan situs resmi. Alamat resmi UT diperiksa 24 Okt 2026: myut.ut.ac.id, ut.ac.id/kalender-akademik, ut.ac.id/katalog, elearning.ut.ac.id (Tuton), pustaka.ut.ac.id/reader (Ruang Baca Virtual), silayar.ut.ac.id, aksi.ut.ac.id, ut.ac.id/en/contact (Hallo UT). Cari Jurnal dan artikel Panduan Mahasiswa Baru belum ada, jadi tidak dipasang.
+- **Nama /ruangakademikut dihapus dari domain akademik**: halaman, aset (/assets/ut/...), gambar kartu, tautan di JS, keluaran JSON, dan pesan WhatsApp memakai alamat pendek. Jalur lama tetap dilayani (301 untuk halaman, aset lama tetap ada). Aturan penulisan ulang ada di parafrase/acadpaths.js.

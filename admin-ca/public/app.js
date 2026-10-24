@@ -81,7 +81,7 @@
   function renderLogin() {
     document.title = "Masuk · Admin Catatan Akademik";
     $("#root").innerHTML = `<main class="login"><form class="login-card" id="lf" novalidate>
-      <div class="brand"><img src="/ruangakademikut/assets/ca/logo-96.png" alt="" width="38" height="38"><span>Catatan Akademik</span></div>
+      <div class="brand"><img src="/assets/ut/ca/logo-96.png" alt="" width="38" height="38"><span>Catatan Akademik</span></div>
       <h1>Masuk panel admin</h1><p>Kelola artikel, pesanan, dan pembayaran Catatan Akademik.</p>
       <label class="f">Nama pengguna<input class="in" name="u" autocomplete="username" required autocapitalize="none"></label>
       <label class="f">Sandi<input class="in" name="p" type="password" autocomplete="current-password" required></label>
@@ -108,7 +108,7 @@
         (subs ? GROUP_NAV.map(([k, l]) => `<a class="nav sub" href="#/orders?group=${k}" data-r="orders?group=${k}">${l}<span class="cnt" data-c="${k}"></span></a>`).join("") : "")).join("");
     }).join("");
     $("#root").innerHTML = `<div class="shell">
-      <aside class="side" id="side" aria-label="Menu admin"><a class="brand" href="#/dashboard"><img src="/ruangakademikut/assets/ca/logo-96.png" alt="" width="34" height="34"><span><b>Catatan Akademik</b><small>Admin Panel</small></span></a>
+      <aside class="side" id="side" aria-label="Menu admin"><a class="brand" href="#/dashboard"><img src="/assets/ut/ca/logo-96.png" alt="" width="34" height="34"><span><b>Catatan Akademik</b><small>Admin Panel</small></span></a>
         <nav>${nav}</nav>
         <div class="me"><b>${esc(ME.name)}</b><small>${esc(ME.roleLabel)}${ME.username ? " · " + esc(ME.username) : ""}</small><div class="bar" style="margin-top:10px"><a class="btn sm" href="#/account">Akun</a><button class="btn sm" id="logout">${ICON.out}Keluar</button></div></div>
       </aside>

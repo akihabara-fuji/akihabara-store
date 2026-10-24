@@ -3,6 +3,7 @@
    admin mengerjakan lewat Hermes lalu mengirim hasil (file Word/PDF atau teks). Hasil dan lampiran dihapus 24 jam kemudian.
    Memakai tabel pesanan yang sama (doc_type='layanan'); tidak ada AI di server. */
 "use strict";
+const { U } = require("./acadpaths");
 const fs = require("fs");
 const fsp = fs.promises;
 const path = require("path");
@@ -128,7 +129,7 @@ module.exports = function mountLayanan({ app, express, db, settings, orders, roo
           att.push({ name: safeName(files[i].originalname), path: rel, size: files[i].size });
         }
         if (att.length) db.prepare("UPDATE orders SET attach_json=? WHERE id=?").run(JSON.stringify(att), r.id);
-        res.json({ orderId: r.id, token, total: r.total, free, ...(useCoin ? { paid: "koin", coins, balance: koin.balance(buyer.id) } : {}), url: "/ruangakademikut/pesanan/" + token });
+        res.json({ orderId: r.id, token, total: r.total, free, ...(useCoin ? { paid: "koin", coins, balance: koin.balance(buyer.id) } : {}), url: U("/ruangakademikut/pesanan/") + token });
       } catch (e) {
         if (e.status) return res.status(e.status).json({ error: e.message, ...(e.login ? { login: true } : {}), ...(e.short ? { short: e.short, balance: e.balance } : {}) });
         console.error("[layanan] pesanan gagal:", e && e.message); res.status(500).json({ error: "Pesanan tidak bisa dibuat. Coba lagi." });

@@ -12,7 +12,7 @@
     [login, m].forEach(function (x) { if (x) { x.textContent = "Akun saya"; x.setAttribute("href", "/ms/akun"); } });
     if (typeof bal !== "number" || !login || document.getElementById("koinChip")) return;
     var st = document.createElement("style");
-    st.textContent = ".koin-chip{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:999px;border:1px solid #b7791f;background:rgba(245,185,66,.16);color:inherit;font:600 14px/1 Onest,system-ui,sans-serif;text-decoration:none;white-space:nowrap}.koin-chip:hover,.koin-chip:focus-visible{background:rgba(245,185,66,.3)}.koin-chip svg{flex:none}@media(max-width:560px){.koin-chip{padding:0 10px;font-size:13px}}";
+    st.textContent = ".koin-chip{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:999px;border:1px solid #b7791f;background:rgba(245,185,66,.16);color:inherit;font:600 14px/1 Onest,system-ui,sans-serif;text-decoration:none;white-space:nowrap}.koin-chip:hover,.koin-chip:focus-visible{background:rgba(245,185,66,.3)}.koin-chip svg{flex:none}@media(max-width:560px){.koin-chip{padding:0 10px;font-size:13px}}@media(max-width:480px){.nav .logo span{display:none}.nav-r{gap:6px}}";
     document.head.appendChild(st);
     var c = document.createElement("a");
     c.id = "koinChip"; c.className = "koin-chip"; c.href = KOIN_URL;

@@ -1,6 +1,7 @@
 /* Pesanan: buat pesanan (harga dihitung di server), QRIS manual, bukti bayar, verifikasi admin.
    Status: menunggu_bayar -> menunggu_verifikasi -> baru_dibayar (selanjutnya dikelola Tahap 6b/8). */
 "use strict";
+const { U } = require("./acadpaths");
 const fs = require("fs");
 const fsp = fs.promises;
 const path = require("path");
@@ -171,7 +172,7 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
         const buf = await fsp.readFile(priv(up.path)); const a = await analyze(buf);
         saveFindings(db, r.id, analyzeFindings(a.paragraphs, a.bibliographyParagraphIndex, settings.getAll()));
       } catch (e) { console.error("[parafrase] simpan catatan gagal:", e && e.message); }
-      res.json({ orderId: r.id, token, total: r.total, uniqueCode: r.code, expiresAt: payExp, ...(r.coins ? { paid: "koin", coins: r.coins, balance: koin.balance(buyer.id) } : {}), url: "/ruangakademikut/pesanan/" + token });
+      res.json({ orderId: r.id, token, total: r.total, uniqueCode: r.code, expiresAt: payExp, ...(r.coins ? { paid: "koin", coins: r.coins, balance: koin.balance(buyer.id) } : {}), url: U("/ruangakademikut/pesanan/") + token });
     } catch (e) {
       if (e.status) return res.status(e.status).json(failBody(e));
       console.error("[parafrase] buat pesanan gagal:", e && e.message); res.status(500).json({ error: "Pesanan tidak bisa dibuat. Coba lagi." });
@@ -359,7 +360,7 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
     if (limited("lo:" + id, 12)) return res.status(429).json({ error: "Terlalu banyak percobaan untuk pesanan ini. Hubungi admin." });
     const o = /^NA-\d{3,9}$/.test(id) && wa ? db.prepare("SELECT public_token FROM orders WHERE id=? AND wa_number=?").get(id, wa) : null;
     if (!o) return res.status(404).json({ error: "ID pesanan dan nomor WhatsApp tidak cocok." });
-    res.json({ url: "/ruangakademikut/pesanan/" + o.public_token });
+    res.json({ url: U("/ruangakademikut/pesanan/") + o.public_token });
   });
 
   /* ---------- unduh hasil (hanya setelah terkirim dan sebelum dihapus) ---------- */

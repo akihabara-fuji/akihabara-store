@@ -6,7 +6,7 @@
 const crypto = require("crypto");
 
 const BOT = /bot|crawl|spider|slurp|preview|facebookexternalhit|headless|lighthouse|pagespeed|python|curl|wget|monitor|uptime|axios|node-fetch|go-http|java\//i;
-const SKIP = /^\/(admin|admin-ca|ms|uploads|t\.js|favicon|robots|sitemap|google|bingsiteauth|ruangakademikut\/assets)/i;
+const SKIP = /^\/(admin|admin-ca|ms|uploads|t\.js|favicon|robots|sitemap|google|bingsiteauth|ruangakademikut\/assets|assets\/ut)/i;
 const WIB = 7 * 3600e3;
 const dayOf = ms => new Date(ms + WIB).toISOString().slice(0, 10);
 

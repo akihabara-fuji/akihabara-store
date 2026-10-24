@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Portal UT: Tautan Resmi UT dan Alat Gratis untuk Mahasiswa | Catatan Akademik</title>
+<meta name="description" content="Semua yang dibutuhkan mahasiswa Universitas Terbuka di satu halaman, disusun menurut perjalanan kuliah: MyUT, Kalender Akademik, Tuton, Ruang Baca Virtual, kalkulator nilai, sitasi APA, hingga administrasi kelulusan.">
+<link rel="canonical" href="{{SITE}}/ruangakademikut/portal-ut">
+<meta property="og:title" content="Portal UT: Tautan Resmi UT dan Alat Gratis untuk Mahasiswa | Catatan Akademik"><meta property="og:description" content="Tautan resmi UT dan alat gratis, disusun menurut perjalanan kuliah mahasiswa Universitas Terbuka."><meta property="og:url" content="{{SITE}}/ruangakademikut/portal-ut">
+<link rel="icon" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Bricolage+Grotesque:wght@500;700&display=swap" rel="stylesheet"><script>document.documentElement.classList.add("js");try{var t=localStorage.getItem("nx-theme");document.documentElement.dataset.theme=(t==="light"||t==="dark")?t:"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script>
+<link rel="stylesheet" href="/ruangakademikut/assets/site.css?v=20261102">
+<style>
+.portal{max-width:980px;margin:0 auto;padding:36px 24px 56px}
+.portal h1{margin:0 0 8px}.portal .lead{margin:0 0 20px;text-align:left;max-width:720px}
+.pt-tools{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:0 0 8px}
+.pt-tools input[type=search]{flex:1 1 260px;min-height:48px;padding:0 14px;border-radius:12px;border:1px solid var(--dash);background:var(--surface);color:var(--text);font:inherit}
+.pt-chips{display:flex;gap:8px;flex-wrap:wrap}
+.pt-chip{min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--dash);background:transparent;color:var(--text);font:inherit;font-weight:600;font-size:14px;cursor:pointer}
+.pt-chip[aria-pressed=true]{background:var(--link);border-color:var(--link);color:#fff}
+.portal h2{font-size:21px;margin:30px 0 4px}.portal .sec-d{margin:0 0 12px;color:var(--muted);font-size:14px}
+.pt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.pt-card{display:flex;flex-direction:column;gap:8px;padding:16px;border:1px solid var(--border);border-radius:16px;background:var(--surface);text-decoration:none;color:var(--text);transition:border-color .15s,transform .15s}
+.pt-card:hover,.pt-card:focus-visible{border-color:var(--link);transform:translateY(-2px)}
+.pt-card b{font-size:16px}.pt-card p{margin:0;font-size:14px;line-height:1.55;color:var(--muted);flex:1}
+.pt-tag{align-self:flex-start;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;border:1px solid}
+.pt-tag.res{color:#2563eb;border-color:#2563eb}.pt-tag.kami{color:#15803d;border-color:#15803d}
+[data-theme=dark] .pt-tag.res{color:#8ec5ff;border-color:#8ec5ff}[data-theme=dark] .pt-tag.kami{color:#5ee6a8;border-color:#5ee6a8}
+.pt-go{font-size:13px;font-weight:700;color:var(--link)}
+.pt-sec[hidden],.pt-card[hidden]{display:none}
+#pt-none{margin:24px 0;color:var(--muted)}
+.pt-note{margin-top:34px;padding:16px;border:1px solid var(--border);border-radius:14px;background:var(--surface2);font-size:13.5px;line-height:1.6;color:var(--muted)}
+@media(prefers-reduced-motion:reduce){.pt-card{transition:none}.pt-card:hover{transform:none}}
+</style>
+</head><body>
+<header class="nav"><div class="wrap">
+  <a href="/" class="logo" aria-label="Catatan Akademik, ke beranda"><b>C</b><span>Catatan Akademik</span></a>
+  <nav class="links" id="links" aria-label="Menu utama"><a href="/ruangakademikut">Layanan UT</a><a class="on" href="/ruangakademikut/portal-ut" aria-current="page">Portal UT</a><a href="/ruangakademikut/blog-ut" class="only-m">Blog &amp; Berita UT</a><a href="/ruangakademikut/pesanan" class="only-m">Cek Pesanan</a><a href="/ms/masuk" class="only-m">Masuk</a></nav>
+  <div class="nav-r"><div class="mode" role="group" aria-label="Mode tampilan"><button type="button" data-m="dark">Gelap</button><button type="button" data-m="light">Terang</button></div><a class="nav-ord" href="/ruangakademikut/pesanan">Cek Pesanan</a><a class="btn btn-sm" href="/ms/masuk">Masuk</a><button class="burger" id="burger" type="button" aria-label="Buka menu" aria-expanded="false">☰</button></div>
+</div></header>
+<main class="portal">
+<h1>Portal UT</h1>
+<p class="lead">Tautan resmi Universitas Terbuka dan alat gratis kami, disusun menurut perjalanan kuliahmu: dari mulai kuliah sampai lulus.</p>
+<div class="pt-tools">
+  <input id="pt-q" type="search" placeholder="Cari: Tuton, nilai, sitasi, ijazah…" aria-label="Cari di Portal UT" autocomplete="off">
+  <div class="pt-chips" role="group" aria-label="Filter">
+    <button class="pt-chip" type="button" data-f="" aria-pressed="true">Semua</button>
+    <button class="pt-chip" type="button" data-f="res" aria-pressed="false">Resmi UT</button>
+    <button class="pt-chip" type="button" data-f="kami" aria-pressed="false">Dari kami</button>
+  </div>
+</div>
+<p id="pt-none" hidden>Tidak ada yang cocok. Coba kata lain.</p>
+
+<section class="pt-sec" aria-labelledby="s1"><h2 id="s1">1. Mulai kuliah</h2><p class="sec-d">Akun, jadwal, dan panduan awal.</p>
+<div class="pt-grid">
+  <a class="pt-card" data-k="res" href="https://myut.ut.ac.id" target="_blank" rel="noopener noreferrer"><span class="pt-tag res">Resmi UT</span><b>MyUT</b><p>Sistem informasi akademik UT. Dipakai untuk aktivasi Tuton dan melihat informasi akademik serta nilai resmimu.</p><span class="pt-go">Buka MyUT ↗</span></a>
+  <a class="pt-card" data-k="res" href="https://www.ut.ac.id/kalender-akademik/" target="_blank" rel="noopener noreferrer"><span class="pt-tag res">Resmi UT</span><b>Kalender Akademik</b><p>Tanggal penting per program: pendaftaran, registrasi mata kuliah, dan pembayaran.</p><span class="pt-go">Buka kalender ↗</span></a>
+  <a class="pt-card" data-k="res" href="https://www.ut.ac.id/katalog/" target="_blank" rel="noopener noreferrer"><span class="pt-tag res">Resmi UT</span><b>Katalog UT</b><p>Pedoman sistem penyelenggaraan dan katalog kurikulum per fakultas, lengkap dengan arsip tahun sebelumnya.</p><span class="pt-go">Buka katalog ↗</span></a>
+  <a class="pt-card" data-k="kami" href="/ruangakademikut/blog-ut"><span class="pt-tag kami">Bacaan gratis kami</span><b>Blog &amp; Berita UT</b><p>Panduan dan info terbaru seputar UT: jadwal, registrasi, ujian, tugas, dan Metopen.</p><span class="pt-go">Baca blog →</span></a>
+</div></section>
+
+<section class="pt-sec" aria-labelledby="s2"><h2 id="s2">2. Belajar dan tuton</h2><p class="sec-d">Tempat belajar sehari-hari.</p>
+<div class="pt-grid">
+  <a class="pt-card" data-k="res" href="https://elearning.ut.ac.id" target="_blank" rel="noopener noreferrer"><span class="pt-tag res">Resmi UT</span><b>Tutorial Online (Tuton)</b><p>Portal e-learning UT untuk kegiatan Tuton dan pengumuman. Mahasiswa baru mengaktifkan akun Tuton lewat MyUT.</p><span class="pt-go">Buka e-learning ↗</span></a>
+  <a class="pt-card" data-k="res" href="https://pustaka.ut.ac.id/reader/" target="_blank" rel="noopener noreferrer"><span class="pt-tag res">Resmi UT</span><b>Ruang Baca Virtual</b><p>Buku Materi Pokok (modul) teks lengkap dari Perpustakaan UT. Masuk dengan akun UT.</p><span class="pt-go">Buka ruang baca ↗</span></a>
+  <a class="pt-card" data-k="res" href="https://silayar.ut.ac.id" target="_blank" rel="noopener noreferrer"><span class="pt-tag res">Resmi UT</span><b>Silayar</b><p>Sistem layanan belajar UT: tatap muka (TTM), tutorial web (Tuweb), dan praktik atau praktikum.</p><span class="pt-go">Buka Silayar ↗</span></a>
+</div></section>
+
+<section class="pt-sec" aria-labelledby="s3"><h2 id="s3">3. Tugas dan karya ilmiah</h2><p class="sec-d">Alat bantu menulis yang bisa langsung dipakai.</p>
+<div class="pt-grid">
+  <a class="pt-card" data-k="kami" href="/ruangakademikut/sitasi-apa"><span class="pt-tag kami">Alat gratis kami</span><b>Generator Sitasi APA 7</b><p>Buat sitasi dalam teks dan daftar pustaka gaya APA 7 dari data sumbermu. Diproses di browsermu.</p><span class="pt-go">Buka generator →</span></a>
+  <a class="pt-card" data-k="kami" href="/ruangakademikut/audit"><span class="pt-tag kami">Alat gratis kami</span><b>Audit Dokumen</b><p>Periksa sitasi, daftar pustaka, dan struktur tulisanmu. Ringkasan gratis, dan <span data-fw>700</span> kata pertama terbuka lengkap.</p><span class="pt-go">Periksa dokumen →</span></a>
+</div></section>
+
+<section class="pt-sec" aria-labelledby="s4"><h2 id="s4">4. Ujian dan nilai</h2><p class="sec-d">Hitung nilai dan rencanakan IPK.</p>
+<div class="pt-grid">
+  <a class="pt-card" data-k="kami" href="/ruangakademikut/kalkulator-nilai-ut"><span class="pt-tag kami">Alat gratis kami</span><b>Kalkulator Nilai UT</b><p>Hitung nilai akhir dari UAS dan Tuton/TMK/TTM, lihat huruf mutu dan minimal soal benar. Nilai resmi tetap yang keluar di MyUT.</p><span class="pt-go">Hitung nilai →</span></a>
+  <a class="pt-card" data-k="kami" href="/ruangakademikut/kalkulator-nilai-ut#ipk-sim"><span class="pt-tag kami">Alat gratis kami</span><b>Simulasi &amp; Target IPK</b><p>Simulasikan IPK semester ini dan hitung nilai yang dibutuhkan untuk mencapai target IPK.</p><span class="pt-go">Simulasikan IPK →</span></a>
+  <a class="pt-card" data-k="res" href="https://www.ut.ac.id/kalender-akademik/" target="_blank" rel="noopener noreferrer"><span class="pt-tag res">Resmi UT</span><b>Kalender Akademik</b><p>Cek tanggal penting program kuliahmu sebelum menyusun rencana belajar.</p><span class="pt-go">Buka kalender ↗</span></a>
+</div></section>
+
+<section class="pt-sec" aria-labelledby="s5"><h2 id="s5">5. Lulus dan administrasi</h2><p class="sec-d">Kelulusan, dokumen, dan bantuan resmi.</p>
+<div class="pt-grid">
+  <a class="pt-card" data-k="res" href="https://aksi.ut.ac.id" target="_blank" rel="noopener noreferrer"><span class="pt-tag res">Resmi UT</span><b>AKSI UT</b><p>Administrasi Kelulusan, Sertifikat, dan Ijazah: data alumni, sertifikat, surat keterangan, dan legalisir.</p><span class="pt-go">Buka AKSI UT ↗</span></a>
+  <a class="pt-card" data-k="kami" href="/ruangakademikut/pasfoto-yudisium"><span class="pt-tag kami">Alat gratis kami</span><b>Pasfoto Yudisium</b><p>Ubah fotomu ke ukuran 354 × 472 piksel, JPG, di bawah 1 MB. Diproses di browsermu.</p><span class="pt-go">Buat pasfoto →</span></a>
+  <a class="pt-card" data-k="res" href="https://www.ut.ac.id/en/contact/" target="_blank" rel="noopener noreferrer"><span class="pt-tag res">Resmi UT</span><b>Hallo UT</b><p>Kontak resmi UT: telepon 1500024, SMS, dan portal tiket Hallo UT. Alamat dan nomor kantor UT daerah juga ada di sana.</p><span class="pt-go">Buka halaman kontak ↗</span></a>
+</div></section>
+
+<p class="pt-note"><b>Catatan.</b> Catatan Akademik bukan situs resmi Universitas Terbuka. Tautan berlabel “Resmi UT” membuka situs UT dan alamatnya kami periksa pada 24 Oktober 2026; isi dan aturannya mengikuti UT. Kalau ada tautan yang sudah berubah, kabari admin lewat WhatsApp. Kami tidak menjamin nilai atau kelulusan. Semangat!</p>
+</main>
+<script>
+(function () {
+  var q = document.getElementById("pt-q"), none = document.getElementById("pt-none"), chips = document.querySelectorAll(".pt-chip"), f = "";
+  function apply() {
+    var t = q.value.trim().toLowerCase(), any = false;
+    document.querySelectorAll(".pt-sec").forEach(function (s) {
+      var vis = 0;
+      s.querySelectorAll(".pt-card").forEach(function (c) {
+        var ok = (!f || c.dataset.k === f) && (!t || c.textContent.toLowerCase().indexOf(t) > -1);
+        c.hidden = !ok; if (ok) vis++;
+      });
+      s.hidden = !vis; if (vis) any = true;
+    });
+    none.hidden = any;
+  }
+  q.addEventListener("input", apply);
+  chips.forEach(function (b) { b.addEventListener("click", function () { f = b.dataset.f; chips.forEach(function (x) { x.setAttribute("aria-pressed", x === b); }); apply(); }); });
+})();
+</script>
+<script src="/ruangakademikut/assets/common.js?v=20261201"></script>
+<footer class="ft"><div class="wrap ft-in"><div class="ft-b"><b>Catatan Akademik</b><span>Jakarta Barat. Layanan UT dan Blog.</span><small>© Catatan Akademik. Semua hak dilindungi.</small></div><nav class="ft-n" aria-label="Footer"><a href="/ruangakademikut">Layanan UT</a><a href="/ruangakademikut/portal-ut">Portal UT</a><a href="/ruangakademikut/blog-ut">Blog &amp; Berita UT</a><a href="/ms/masuk">Masuk</a><a href="/ms/privasi">Privasi</a><a href="/ms/ketentuan">Ketentuan</a></nav></div></footer>
+</body></html>

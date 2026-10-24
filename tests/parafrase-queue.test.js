@@ -16,8 +16,8 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 test("antrean: biasa urut waktu bukti, cepat menyalip, dikerjakan tidak tergeser, deadline tidak berpengaruh", async () => {
   const t = await boot();
   try {
-    const A = await paid(t, "a", { deadline: Date.now() + 5 * 86400e3 }); await sleep(5);
-    const B = await paid(t, "b", { deadline: Date.now() + 3600e3 * 30 }); await sleep(5);   // deadline lebih dekat, tetap di belakang A
+    const A = await paid(t, "a", { deadline: Date.now() + 5 * 86400e3 }); await sleep(25);
+    const B = await paid(t, "b", { deadline: Date.now() + 3600e3 * 30 }); await sleep(25);   // deadline lebih dekat, tetap di belakang A
     assert.deepStrictEqual([(await view(t, A)).queue.position, (await view(t, B)).queue.position], [1, 2]);
     const F = await paid(t, "f", { fast: true });                                          // cepat menyalip biasa
     assert.deepStrictEqual([(await view(t, F)).queue.position, (await view(t, A)).queue.position, (await view(t, B)).queue.position], [1, 2, 3]);
