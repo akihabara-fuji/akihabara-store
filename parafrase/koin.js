@@ -11,9 +11,18 @@ const MIN_TOPUP = 1000, MAX_TOPUP = 2000000;
 const KATEGORI = ["Langganan Claude", "VPS dan server", "Domain", "Gaji atau bagi hasil tim", "Lainnya"];
 const err = (status, message, extra) => Object.assign(new Error(message), { status }, extra || {});
 
-function createKoin(db, { settings, now: clock } = {}) {
+function createKoin(db, { settings, emailOf, now: clock } = {}) {
   const T = () => (clock ? clock() : Date.now());
 
+  /* Akun gratis (pemilik/tim): email ada di pengaturan akun_gratis. Tidak ada koin palsu di buku koin, pemakaiannya saja yang tidak memotong saldo. */
+  const isFree = uid => {
+    try {
+      const list = String((settings && settings.getAll().akun_gratis) || "").toLowerCase().split(",").map(x => x.trim()).filter(Boolean);
+      if (!list.length || !emailOf) return false;
+      const e = String(emailOf(uid) || "").toLowerCase();
+      return !!e && list.includes(e);
+    } catch { return false; }
+  };
   const balance = uid => db.prepare("SELECT COALESCE(SUM(delta),0) b FROM coin_ledger WHERE user_id=?").get(String(uid)).b;
 
   /* Dipanggil di dalam transaksi pemanggil (atau lewat wrapper di bawah). */
@@ -31,7 +40,7 @@ function createKoin(db, { settings, now: clock } = {}) {
   const tx = fn => db.transaction(fn)();
 
   /* Pakai koin untuk pesanan. Panggil di dalam transaksi pembuatan pesanan agar pesanan dan potongan koin satu paket. */
-  const debitOrder = (uid, coins, orderId, note, at) => post(uid, -coins, "order", orderId, note, at);
+  const debitOrder = (uid, coins, orderId, note, at) => (isFree(uid) ? { free: true, delta: 0, kind: "order", ref: String(orderId), duplicate: false } : post(uid, -coins, "order", orderId, note, at));
 
   /* Kembalikan koin pesanan yang dibatalkan. Aman dipanggil berulang: hanya sekali. Tidak ada potongan = tidak ada pengembalian. */
   function refundOrder(orderId, note, at) {
@@ -171,7 +180,7 @@ function createKoin(db, { settings, now: clock } = {}) {
       const had = db.prepare("SELECT * FROM sim_unlocks WHERE order_id=?").get(String(orderId));
       if (had) return { already: true, how: had.how, balance: balance(uid) };
       const first = !db.prepare("SELECT 1 FROM sim_unlocks WHERE user_id=?").get(String(uid));
-      if (first || coins <= 0) { db.prepare("INSERT INTO sim_unlocks(order_id,user_id,how,coins,at) VALUES(?,?,?,?,?)").run(String(orderId), String(uid), "gratis", 0, now); return { already: false, how: "gratis", free: true, balance: balance(uid) }; }
+      if (first || coins <= 0 || isFree(uid)) { db.prepare("INSERT INTO sim_unlocks(order_id,user_id,how,coins,at) VALUES(?,?,?,?,?)").run(String(orderId), String(uid), "gratis", 0, now); return { already: false, how: "gratis", free: true, balance: balance(uid) }; }
       post(uid, -coins, "sim", orderId, `Buka tanya jawab simulasi ${orderId}`, now);
       db.prepare("INSERT INTO sim_unlocks(order_id,user_id,how,coins,at) VALUES(?,?,?,?,?)").run(String(orderId), String(uid), "koin", coins, now);
       return { already: false, how: "koin", free: false, balance: balance(uid) };
@@ -188,7 +197,7 @@ function createKoin(db, { settings, now: clock } = {}) {
 
   const history = (uid, limit = 50) => db.prepare("SELECT delta, balance_after, kind, ref, note, created_at FROM coin_ledger WHERE user_id=? ORDER BY id DESC LIMIT ?").all(String(uid), limit);
 
-  return { RP, KATEGORI, balance, debitOrder, refundOrder, adjust, parseRupiah, welcome, createTopup, attachProof, confirmTopup, rejectTopup, expireTopups, summary, withdraw, history, unlockSim, simState, tx };
+  return { RP, KATEGORI, isFree, balance, debitOrder, refundOrder, adjust, parseRupiah, welcome, createTopup, attachProof, confirmTopup, rejectTopup, expireTopups, summary, withdraw, history, unlockSim, simState, tx };
 }
 
 /* Harga koin sebuah pesanan: harga rupiah / 1000. Harga di luar kelipatan Rp1.000 tidak bisa dibayar koin. */

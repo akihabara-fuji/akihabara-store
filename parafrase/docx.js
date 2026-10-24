@@ -162,11 +162,44 @@ function guessDocType(text) {
 }
 
 /* ---------- analisis utama ---------- */
+/* ---------- PDF: teks diambil dengan pdftotext (paket poppler-utils di server). Tanpa tata letak, jadi hanya untuk dianalisis. ---------- */
+const { execFile } = require("child_process");
+const isPdf = buf => Buffer.isBuffer(buf) && buf.length > 8 && buf.slice(0, 4).toString() === "%PDF";
+function pdfToText(buf) {
+  return new Promise((resolve, reject) => {
+    const p = execFile("pdftotext", ["-bbox-layout", "-enc", "UTF-8", "-", "-"], { maxBuffer: 64 * 1024 * 1024, timeout: 40000, encoding: "utf8" }, (e, out) => e ? reject(e) : resolve(out));
+    p.stdin.on("error", () => {}); p.stdin.end(buf);
+  });
+}
+/* Keluaran `pdftotext -bbox-layout`: blok teks poppler ~ satu paragraf. Teks tiap blok digabung, blok berisi nomor halaman saja dibuang. */
+const unXml = t => t.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#0*39;|&apos;/g, "'").replace(/&amp;/g, "&");
+function pdfParagraphs(xml) {
+  const out = [];
+  for (const blk of String(xml || "").split("<block").slice(1)) {
+    const words = [...blk.matchAll(/<word[^>]*>([^<]*)<\/word>/g)].map(m => unXml(m[1]));
+    if (!words.length) continue;
+    const t = words.join(" ").replace(/([a-zà-ÿ])- ([a-zà-ÿ])/g, "$1$2").replace(/\s+/g, " ").trim();
+    if (!t || /^(?:hal(?:aman)?\.?\s*)?\d{1,3}$/i.test(t)) continue;
+    out.push({ idx: out.length, text: t, style: "", inTable: false });
+  }
+  return out;
+}
 async function analyze(buf) {
-  const zip = await openDocx(buf);
-  const xml = await readText(zip, "word/document.xml");
-  const core = await readText(zip, "docProps/core.xml");
-  const paras = extractParagraphs(xml);
+  let paras, core = "";
+  if (isPdf(buf)) {
+    let txt;
+    try { txt = await pdfToText(buf); }
+    catch (e) {
+      if (e && e.code === "ENOENT") throw new DocxError("pdf_tidak_didukung", "Server belum bisa membaca PDF saat ini. Unggah file Word (.docx), atau chat admin.");
+      throw new DocxError("pdf_rusak", "PDF tidak bisa dibaca. Pastikan tidak diberi password, lalu coba lagi atau unggah file Word (.docx).");
+    }
+    paras = pdfParagraphs(txt);
+  } else {
+    const zip = await openDocx(buf);
+    const xml = await readText(zip, "word/document.xml");
+    core = await readText(zip, "docProps/core.xml");
+    paras = extractParagraphs(xml);
+  }
   const nonEmpty = paras.filter(p => p.text.trim());
   if (!nonEmpty.length) throw new DocxError("tanpa_teks", "Dokumen tidak berisi teks yang bisa dibaca. Pastikan isinya bukan gambar atau hasil scan.");
 
@@ -196,4 +229,4 @@ const summary = a => ({
   paragraphs: a.paragraphCount,
 });
 
-module.exports = { analyze, summary, splitSentences, countWords, DocxError, openDocx, parseBody, paragraphNodes, paraText, readText, W };
+module.exports = { isPdf, pdfParagraphs, analyze, summary, splitSentences, countWords, DocxError, openDocx, parseBody, paragraphNodes, paraText, readText, W };

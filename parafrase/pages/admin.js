@@ -155,7 +155,7 @@
       var GROUPS = [
         ["Tugas", "Kartu Tugas di hub dan form Layanan.", ["price_tugas"]],
         ["Diskusi", "Kartu Diskusi di hub dan form Layanan.", ["price_diskusi"]],
-        ["Metopen", "Per tahap dan paket komplit.", ["price_metopen1", "price_metopen2", "price_metopen3", "price_metopen4", "price_metopen_paket"]],
+        ["Metopen", "Per tahap dan paket komplit.", ["price_metopen1", "price_metopen2", "price_metopen3", "price_metopen_paket"]],
         ["Revisi", "Revisi untuk hasil dari luar. Hasil buatan kami gratis sesuai jumlah revisi gratis.", ["price_revisi_tugas", "price_revisi_diskusi", "price_revisi_metopen"]],
         ["Cek & Parafrase Mandiri", "Harga per kata, jalur cepat, revisi, dan batas file.", ["price_per_word", "min_order_price", "fast_lane_enabled", "fast_lane_price", "fast_lane_daily_cap", "revision_free_count", "revision_price_per_word", "long_sentence_words", "preview_open_paragraphs", "avg_words_per_hour"]],
         ["Audit Dokumen", "Audit Ringkas gratis. Audit Lengkap dihitung per kata, ada harga minimum. Batas Drillbit hanyalah acuan di layar murid; ketentuan resmi ikut prodi dan tutor. Empat angka urgensi menentukan tingkat Mendesak/Perhatian/Aman dan dipakai Audit Dokumen DAN Cek & Parafrase sekaligus, jadi keduanya selalu sepakat.", ["audit_per_word", "audit_min", "drillbit_sim_max", "drillbit_ai_max", "urgensi_ai_sedang", "urgensi_ai_tinggi", "urgensi_paragraf_skor", "urgensi_paragraf_persen"]],

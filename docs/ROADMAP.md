@@ -21,7 +21,7 @@ Rentang angka beda per tingkat kesulitan mata kuliah:
 - Sukar: A 70-100, A- 65-<70, B 60-<65, B- 50-<60, C 45-<50, C- 40-<45, D 30-<40, E <30
 Kontribusi tutorial ke nilai akhir: TUTON 30%, TMK 20%, TTM/TUWEB 50%, berlaku jika capaian UAS 30% benar.
 TIDAK TERVERIFIKASI: rumus nilai akhir lengkap dan efek UAS di bawah syarat. Cocokkan dengan contoh nilai asli (daftar mata kuliah huruf+SKS dan IPK resmi) sebelum rilis. IPK = jumlah(bobot x SKS) / jumlah SKS.
-Metopen hanya sampai Tugas 4 (tidak ada Final). Turnitin dan penurunan skor AI dikerjakan di Cek dan Parafrase Mandiri.
+Metopen hanya sampai Tugas 3 (tidak ada Tugas 4 dan Final). Turnitin dan penurunan skor AI dikerjakan di Cek dan Parafrase Mandiri.
 
 ## Penamaan menu
 Layanan UT; Tugas dan Diskusi UT; Bimbingan Metopen UT; Audit Dokumen; Cek dan Parafrase Mandiri; Pengarahan Registrasi UT; Paket Semester; Info dan Tips UT; Cek Pesanan; Kalkulator Nilai dan IPK UT. Jangan pakai klaim "bebas plagiasi".

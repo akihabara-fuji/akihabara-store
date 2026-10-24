@@ -66,6 +66,7 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
     if (wantFast && unpaid.some(u => u.lane === "cepat")) throw Object.assign(new Error("Kamu masih punya pesanan jalur cepat yang belum dibayar. Selesaikan dulu atau pilih jalur biasa."), { status: 409 });
     if (wantFast && !(cfg.fast_lane_enabled && cfg.fast_lane_daily_cap > 0)) throw Object.assign(new Error("Jalur cepat sedang tidak tersedia."), { status: 409 });
     const q = quote(words, wantFast, cfg);
+    if (q.all_free) throw Object.assign(new Error(`Dokumenmu ${words} kata, jadi seluruhnya sudah terbuka gratis (${cfg.free_words} kata pertama). Tidak perlu membayar.`), { status: 400 });
     const title = String(body.title || det.title || "").trim().slice(0, 200);
     const lang = body.language === "en" ? "en" : "id";
     const docType = ["umum", "metopen", "artikel"].includes(body.docType) ? body.docType : det.docType || "umum";
@@ -97,7 +98,7 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
       if (useCoin) { // potong koin dan konfirmasi dalam satu transaksi: gagal di mana pun = tidak ada pesanan dan tidak ada potongan
         db.prepare("UPDATE orders SET user_id=? WHERE id=?").run(String(buyer.id), id);
         coins = chargeCoins(buyer, q.total, id, title || "Cek & Parafrase " + id, now);
-        confirmPayment(id, "koin", now);
+        confirmPayment(id, koin.isFree(buyer.id) ? "gratis" : "koin", now); // akun gratis (pemilik/tim) tidak dihitung sebagai pendapatan
       }
       return { id, total, code, coins };
     });
@@ -107,6 +108,11 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
 
   /* Audit Lengkap: memakai tabel pesanan dan alur QRIS yang sama (doc_type='audit'). Tarif tetap di sini, dihitung di server. */
   const auditRate = cfg => ({ perWord: cfg.audit_per_word, min: cfg.audit_min });
+  /* Audit: kata pertama sebanyak free_words gratis; harga hanya untuk kata setelahnya (minimum tetap berlaku bila ada yang dibayar). */
+  const auditQuote = (words, cfg) => {
+    const { perWord, min } = auditRate(cfg), free = Math.min(words, Math.max(0, Number(cfg.free_words) || 0)), pay = words - free;
+    return { words, free, pay, perWord, min, allFree: pay < 1, total: pay < 1 ? 0 : Math.max(pay * perWord, min) };
+  };
   function createAuditOrder(body, ipHash, now = Date.now(), buyer = null) {
     const useCoin = coinOnly(); if (useCoin) needBuyer(buyer);
     const cfg = settings.getAll();
@@ -120,7 +126,9 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
     const det = JSON.parse(up.detected);
     const words = Number(det.words) || 0;
     const { perWord: AUDIT_PER_WORD, min: AUDIT_MIN } = auditRate(cfg);
-    const base = Math.max(words * AUDIT_PER_WORD, AUDIT_MIN);
+    const aq = auditQuote(words, cfg);
+    if (aq.allFree) throw Object.assign(new Error(`Dokumenmu ${words} kata, jadi seluruh auditnya sudah terbuka gratis (${cfg.free_words} kata pertama). Tidak perlu membayar.`), { status: 400 });
+    const base = aq.total;
     const token = crypto.randomBytes(24).toString("hex");
     const payExp = now + cfg.payment_window_minutes * 60e3;
     const tx = db.transaction(() => {
@@ -143,7 +151,7 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
       if (useCoin) {
         db.prepare("UPDATE orders SET user_id=? WHERE id=?").run(String(buyer.id), id);
         coins = chargeCoins(buyer, base, id, "Audit Dokumen " + id, now);
-        confirmPayment(id, "koin", now);
+        confirmPayment(id, koin.isFree(buyer.id) ? "gratis" : "koin", now); // akun gratis (pemilik/tim) tidak dihitung sebagai pendapatan
       }
       return { id, total, code, coins };
     });
@@ -309,7 +317,7 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
     try {
       const a = await analyze(await fsp.readFile(priv(o.original_file)));
       const findings = db.prepare("SELECT code, para_idx, sent_idx, reason FROM findings WHERE order_id=? ORDER BY seq").all(o.id);
-      res.json(buildPreview(a, findings, secret, o.id, { unlocked: PAID.has(o.status), openParagraphs: settings.get("preview_open_paragraphs"), cfg: settings.getAll(), page: parseInt(req.query.page, 10) || 1, pageSize: parseInt(req.query.size, 10) || 30 }));
+      res.json(buildPreview(a, findings, secret, o.id, { unlocked: PAID.has(o.status), openWords: settings.get("free_words"), openParagraphs: settings.get("preview_open_paragraphs"), cfg: settings.getAll(), page: parseInt(req.query.page, 10) || 1, pageSize: parseInt(req.query.size, 10) || 30 }));
     } catch { res.status(404).json({ error: "Dokumen tidak tersedia (mungkin sudah dihapus)." }); }
   });
 
@@ -475,6 +483,6 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
     } catch (e) { console.error("[parafrase] finalisasi gagal:", e && e.message); res.status(500).json({ error: "Gagal membuat file bersih." }); }
   });
 
-  return { createOrder, createAuditOrder, auditRate, confirmPayment, rejectPayment, expireUnpaid, startWork, sweepRetention, byToken, event, view, priv };
+  return { createOrder, createAuditOrder, auditRate, auditQuote, confirmPayment, rejectPayment, expireUnpaid, startWork, sweepRetention, byToken, event, view, priv };
 
 };

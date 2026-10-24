@@ -33,10 +33,10 @@ module.exports = function mountKoin({ app, express, db, settings, koin, root, sa
   app.get("/ms/koin/me", wrap((req, res) => {
     const u = need(req, res); if (!u) return;
     const tops = db.prepare("SELECT * FROM coin_topups WHERE user_id=? ORDER BY created_at DESC LIMIT 10").all(String(u.id));
-    res.json({ balance: koin.balance(u.id), history: koin.history(u.id, 60).map(r => ({ at: r.created_at, delta: r.delta, balance: r.balance_after, kind: r.kind, note: r.note })), topups: tops.map(view), ...cfgPub() });
+    res.json({ balance: koin.balance(u.id), unlimited: koin.isFree(u.id), history: koin.history(u.id, 60).map(r => ({ at: r.created_at, delta: r.delta, balance: r.balance_after, kind: r.kind, note: r.note })), topups: tops.map(view), ...cfgPub() });
   }));
   /* Hanya saldo, untuk chip di menu. Tanpa login: koin null. */
-  app.get("/ms/koin/saldo", wrap((req, res) => { const u = userFrom && userFrom(req); res.json({ balance: u ? koin.balance(u.id) : null, koinOnly: !!settings.get("bayar_koin_saja") }); }));
+  app.get("/ms/koin/saldo", wrap((req, res) => { const u = userFrom && userFrom(req); const fr = !!(u && koin.isFree(u.id)); res.json({ balance: u ? (fr ? 999999 : koin.balance(u.id)) : null, unlimited: fr, koinOnly: !!settings.get("bayar_koin_saja") }); }));
 
   app.post("/ms/koin/topup", J, wrap((req, res) => {
     if (!sameOrigin(req)) return no(res);

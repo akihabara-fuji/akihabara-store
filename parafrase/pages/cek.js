@@ -20,25 +20,36 @@
 
   var drop = $("drop");
   $("pick").onclick = function () { $("file").click(); };
-  $("file").onchange = function () { if (this.files[0]) send(this.files[0]); this.value = ""; };
+  var picked = null;
+  function choose(f) {
+    showErr("");
+    if (!/\.(docx|pdf)$/i.test(f.name)) { showErr("Hanya file Word (.docx) atau PDF yang diterima."); return; }
+    var c = cfg(); if (c && f.size > c.file_max_mb * 1048576) { showErr("File terlalu besar. Maksimal " + c.file_max_mb + " MB."); return; }
+    picked = f; $("chName").textContent = f.name; $("chMeta").textContent = "(" + Math.max(1, Math.round(f.size / 1024)) + " KB)";
+    $("chosen").classList.remove("hidden"); $("pick").classList.add("hidden"); $("chGo").focus();
+  }
+  function unpick() { picked = null; $("chosen").classList.add("hidden"); $("pick").classList.remove("hidden"); }
+  $("chGo").onclick = function () { if (picked) send(picked); };
+  $("chChange").onclick = function () { $("file").click(); };
+  $("file").onchange = function () { if (this.files[0]) choose(this.files[0]); this.value = ""; };
   ["dragenter", "dragover"].forEach(function (t) { drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.add("over"); }); });
   ["dragleave", "drop"].forEach(function (t) { drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.remove("over"); }); });
-  drop.addEventListener("drop", function (e) { var f = e.dataTransfer.files[0]; if (f) send(f); });
+  drop.addEventListener("drop", function (e) { var f = e.dataTransfer.files[0]; if (f) choose(f); });
   ["goform", "goform2"].forEach(function (id) { $(id).onclick = function () { var d = $("detail"); d.scrollIntoView({ behavior: "smooth", block: "start" }); var w = $("judul"); setTimeout(function () { try { w.focus({ preventScroll: true }); } catch (e) {} }, 500); }; });
-  $("again").onclick = function () { st.up = null; $("s2").classList.add("hidden"); $("s1").classList.remove("hidden"); showErr(""); };
+  $("again").onclick = function () { st.up = null; $("s2").classList.add("hidden"); $("s1").classList.remove("hidden"); showErr(""); unpick(); };
 
   function send(f) {
     showErr("");
-    if (!/\.docx$/i.test(f.name)) { showErr(/\.pdf$/i.test(f.name) ? "File PDF belum bisa diproses karena tata letaknya bisa bergeser. Ubah dulu ke Word (.docx), lalu unggah lagi." : "Hanya file Word (.docx) yang diterima."); return; }
+    if (!/\.(docx|pdf)$/i.test(f.name)) { showErr("Hanya file Word (.docx) atau PDF yang diterima."); return; }
     var c = cfg(); if (c && f.size > c.file_max_mb * 1048576) { showErr("File terlalu besar. Maksimal " + c.file_max_mb + " MB."); return; }
-    $("busy").classList.remove("hidden"); $("pick").disabled = true;
+    window.pfScan.start($("busy"), ["Mengunggah file…", "Sedang memindai dokumen…", "Menandai bagian yang perlu dibenahi…", "Menyusun hasil…"]); $("chGo").disabled = true; $("chChange").disabled = true;
     var fd = new FormData(); fd.append("file", f);
     fetch("/ms/parafrase/upload", { method: "POST", body: fd }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
       .then(function (x) {
         if (!x.ok) { if (x.j.login) { location.href = "/ms/masuk?next=" + encodeURIComponent(location.pathname); return; } showErr(x.j.error || "Unggahan gagal. Coba lagi."); return; }
         applyUpload(x.j);
       }).catch(function () { showErr("Koneksi terputus. Coba unggah lagi."); })
-      .then(function () { $("busy").classList.add("hidden"); $("pick").disabled = false; });
+      .then(function () { window.pfScan.stop($("busy")); $("chGo").disabled = false; $("chChange").disabled = false; });
   }
 
   /* Satu pintu untuk unggahan baru DAN unggahan yang dilanjutkan dari Audit Dokumen (?u=...). Urgensi, urutan paragraf, dan resep
@@ -58,11 +69,11 @@
     });
   }
   function resume(id) {
-    $("busy").classList.remove("hidden"); $("pick").disabled = true;
+    window.pfScan.start($("busy"), ["Membuka dokumen dari Audit…", "Menandai bagian yang perlu dibenahi…"]);
     fetch("/ms/parafrase/upload/" + id, { cache: "no-store" }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
       .then(function (x) { if (!x.ok) { showErr(x.j.error || "Dokumen dari Audit tidak bisa dibuka. Unggah ulang dokumenmu."); return; } applyUpload(x.j); })
       .catch(function () { showErr("Koneksi terputus. Muat ulang halaman atau unggah dokumenmu lagi."); })
-      .then(function () { $("busy").classList.add("hidden"); $("pick").disabled = false; });
+      .then(function () { window.pfScan.stop($("busy")); });
   }
   var qu = (location.search.match(/[?&]u=([a-f0-9]{32})(?:&|$)/) || [])[1];
   if (qu) resume(qu);
@@ -83,10 +94,11 @@
     var c = cfg(), u = st.up; if (!c || !u) return;
     var d = u.detected, words = $("nobib").checked ? d.wordsWithoutBibliography : d.words;
     var fastOn = $("fast").checked && c.fast_lane.enabled && !c.fast_lane.full;
-    var base = Math.max(words * c.price_per_word, c.min_order_price);
-    $("pwords").textContent = rp(words);
-    $("total").textContent = koinOnly() ? KO(base + (fastOn ? c.fast_lane.price : 0)) : "Rp " + rp(base + (fastOn ? c.fast_lane.price : 0));
-    $("pay").textContent = payLabel();
+    var fw = Math.min(words, c.free_words || 0), pay = words - fw;
+    var base = pay < 1 ? 0 : Math.max(pay * c.price_per_word, c.min_order_price);
+    $("pwords").textContent = rp(words) + (fw ? " (" + rp(fw) + " gratis, " + rp(pay) + " dibayar)" : "");
+    $("total").textContent = pay < 1 ? "Gratis" : koinOnly() ? KO(base + (fastOn ? c.fast_lane.price : 0)) : "Rp " + rp(base + (fastOn ? c.fast_lane.price : 0));
+    $("pay").textContent = pay < 1 ? "Kirim gratis" : payLabel();
     var f = c.fast_lane, box = $("fastbox");
     if (!f.enabled) { box.classList.add("hidden"); }
     else { box.classList.remove("hidden"); var dis = f.full; $("fast").disabled = dis; box.classList.toggle("off", dis); if (dis) $("fast").checked = false;
@@ -137,10 +149,19 @@
             return '<span class="' + cls + '"' + (s.locked ? ' aria-hidden="true"' : "") + ">" + esc(s.text) + "</span>" + tag + " ";
           }).join("") + "</p>";
         }).join("");
-        renderOverview(pv); renderExample(pv);
+        renderOverview(pv); renderExample(pv); renderFree(pv);
         $("pg").textContent = "Halaman " + pv.page + " dari " + pv.pages;
         $("prev").disabled = pv.page <= 1; $("next").disabled = pv.page >= pv.pages;
       }).catch(function () { $("doc").innerHTML = '<p class="muted">Pratinjau gagal dimuat.</p>'; });
+  }
+  /* Batas kata gratis: kalimat dari awal dokumen terbuka penuh dengan catatan dan alasannya; sisanya disamarkan sampai dibayar. */
+  function renderFree(pv) {
+    if (!pv.freeWords) return;
+    var box = $("examples"), card = mk("div", "padding:14px 18px;border-radius:18px;border:1px solid var(--border,#2b2b58);margin:12px 0");
+    card.appendChild(mk("b", "display:block;font-size:17px;margin-bottom:4px", rp(pv.openedWords) + " kata pertama dibuka gratis"));
+    card.appendChild(mk("div", "font-size:14px;line-height:1.6;opacity:.9", "Bagian ini terbuka penuh beserta catatan dan alasannya. Bagian setelahnya tampil disamarkan dan terbuka setelah pembayaran. Harga hanya dihitung untuk kata setelah " + rp(pv.freeWords) + " kata pertama."));
+    box.appendChild(card);
+    var dt = $("doc") && $("doc").parentNode; if (dt && dt.tagName === "DETAILS" && !st.openedOnce) { dt.open = true; st.openedOnce = true; }
   }
   function mk(tag, css, txt) { var e = document.createElement(tag); if (css) e.style.cssText = css; if (txt != null) e.textContent = txt; return e; }
   /* Angka aspek yang sama dengan Audit Dokumen (renderer yang sama di common.js). */

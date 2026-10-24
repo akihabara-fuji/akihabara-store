@@ -5,7 +5,7 @@
   function j(u) { return fetch(u, { cache: "no-store", credentials: "same-origin" }).then(function (r) { return r.json(); }); }
   function fmt(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
   Promise.all([j("/ms/auth/me"), j("/ms/koin/saldo")]).then(function (a) {
-    var user = a[0] && a[0].user, bal = a[1] && a[1].balance;
+    var user = a[0] && a[0].user, bal = a[1] && a[1].balance, unl = !!(a[1] && a[1].unlimited);
     if (!user) return;
     var login = document.getElementById("navAcc") || document.querySelector('.nav-r a[href="/ms/masuk"]');
     var m = document.querySelector('.only-m[href="/ms/masuk"]');
@@ -16,8 +16,8 @@
     document.head.appendChild(st);
     var c = document.createElement("a");
     c.id = "koinChip"; c.className = "koin-chip"; c.href = KOIN_URL;
-    c.setAttribute("aria-label", "Saldo koin " + fmt(bal) + ". Buka halaman koin");
-    c.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#f5b942"/><circle cx="12" cy="12" r="7" fill="none" stroke="#8a5b00" stroke-width="1.5"/></svg><span>' + fmt(bal) + " koin</span>";
+    c.setAttribute("aria-label", "Saldo koin " + (unl ? "tanpa batas" : fmt(bal)) + ". Buka halaman koin");
+    c.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#f5b942"/><circle cx="12" cy="12" r="7" fill="none" stroke="#8a5b00" stroke-width="1.5"/></svg><span>' + (unl ? "Tanpa batas" : fmt(bal) + " koin") + "</span>";
     login.parentNode.insertBefore(c, login);
   }).catch(function () {});
 })();

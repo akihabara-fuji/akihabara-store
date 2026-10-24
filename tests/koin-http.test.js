@@ -20,7 +20,7 @@ async function setup() {
   const requireAdmin = (req, res, next) => auth.isCaPath(req.path) ? auth.guard(req, res, next) : res.status(401).json({ error: "nextaja" });
   let pf = null;
   const blog = require("../blog-akun")({ app, express, requireAdmin, sameOrigin, getCookie, SECURE_COOKIE: false, ROOT: root, SITE: "https://contoh.test", getSettings: () => ({}), onRegister: u => (pf ? pf.koin.welcome(u.id) : 0), getBonus: () => (pf ? Number(pf.settings.get("koin_bonus_daftar")) || 0 : 0) });
-  pf = require("../parafrase")({ app, express, requireAdmin, sameOrigin, ROOT: root, db, userFrom: blog.userFrom, users: blog });
+  pf = require("../parafrase")({ app, express, requireAdmin, sameOrigin, ROOT: root, db, userFrom: blog.userFrom, users: { byId: blog.userById, byEmail: blog.userByEmail } });
   require("../admin-ca")({ app, express, db, auth, requireAdmin, blog, settings: pf.settings, orders: pf.orders, koin: pf.koin, traffic: pf.traffic, ROOT: root, UPLOADS: path.join(root, "public", "uploads"), sharp: null, ACAD: "https://contoh.test" });
   const srv = app.listen(0), base = "http://127.0.0.1:" + srv.address().port;
   const call = async (p, { cookie = "", method = "GET", json, form } = {}) => {
@@ -37,6 +37,7 @@ test("satu pintu bayar: Cek & Parafrase dan Audit dibayar koin, saldo kurang dit
   const { srv, call, ck, pf, base } = await setup();
   try {
     assert.strictEqual(pf.settings.get("bayar_koin_saja"), true, "bawaan: semua pesanan dibayar koin");
+    pf.settings.set({ free_words: 0 }); // dokumen uji pendek: tanpa ini seluruhnya masuk kata gratis dan tidak ada yang dibayar
     const mk = async email => { const r = await call("/ms/auth/register", { method: "POST", json: { name: "Uji", email, password: "sandi-uji-12345" } }); return { cookie: ck(r), id: r.body.user.id }; };
     const up = async (path, cookie) => { const fd = new FormData(); fd.append("file", new Blob([await docx("Isi uji untuk pesanan koin.")]), "t.docx"); const r = await call(path, { method: "POST", cookie, form: fd }); return r.body.uploadId; };
     const kaya = await mk("kaya@example.test"), miskin = await mk("miskin@example.test");   // miskin hanya punya bonus 7 koin
@@ -73,6 +74,34 @@ test("satu pintu bayar: Cek & Parafrase dan Audit dibayar koin, saldo kurang dit
     pf.settings.set({ bayar_koin_saja: false });
     const q = await call("/ms/parafrase/order", { method: "POST", cookie: kaya.cookie, json: { ...dok, uploadId: await up("/ms/parafrase/upload", kaya.cookie) } });
     assert.strictEqual(q.status, 200, JSON.stringify(q.body)); assert.ok(q.body.uniqueCode > 0); assert.strictEqual(q.body.paid, undefined); assert.strictEqual(pf.koin.balance(kaya.id), 72);
+  } finally { srv.close(); }
+});
+
+test("akun gratis (pemilik/tim): pesan Cek dan layanan tanpa potongan koin dan tidak dihitung pendapatan; akun biasa tetap membayar", async () => {
+  const { docx } = require("./pf-helper");
+  const { srv, call, ck, pf } = await setup();
+  try {
+    pf.settings.set({ free_words: 0, akun_gratis: "Pemilik@Example.test" });
+    const mk = async email => { const r = await call("/ms/auth/register", { method: "POST", json: { name: "Uji", email, password: "sandi-uji-12345" } }); return { cookie: ck(r), id: r.body.user.id }; };
+    const own = await mk("pemilik@example.test"), biasa = await mk("biasa@example.test");
+    assert.strictEqual(pf.koin.isFree(own.id), true); assert.strictEqual(pf.koin.isFree(biasa.id), false);
+    const saldo = await call("/ms/koin/saldo", { cookie: own.cookie }); assert.strictEqual(saldo.body.unlimited, true);
+
+    const fd = new FormData(); fd.append("file", new Blob([await docx("Isi uji akun gratis.")]), "t.docx");
+    const up = (await call("/ms/parafrase/upload", { method: "POST", cookie: own.cookie, form: fd })).body.uploadId;
+    const o = await call("/ms/parafrase/order", { method: "POST", cookie: own.cookie, json: { uploadId: up, wa: "081234567890", agree: true, deadline: Date.now() + 3 * 864e5 } });
+    assert.strictEqual(o.status, 200, JSON.stringify(o.body));
+    assert.strictEqual(pf.koin.balance(own.id), 7, "saldo (bonus daftar) tidak berkurang");
+    assert.strictEqual(pf.db.prepare("SELECT confirmed_by FROM orders WHERE id=?").get(o.body.orderId).confirmed_by, "gratis");
+
+    const lf = new FormData(); lf.append("service", "tugas"); lf.append("wa", "081234567890"); lf.append("agree", "true"); lf.append("brief", "Tugas 1 Manajemen uji gratis"); lf.append("pay", "koin");
+    const l = await call("/ms/layanan/order", { method: "POST", cookie: own.cookie, form: lf });
+    assert.strictEqual(l.status, 200, JSON.stringify(l.body)); assert.strictEqual(pf.koin.balance(own.id), 7);
+    assert.strictEqual(pf.db.prepare("SELECT confirmed_by FROM orders WHERE id=?").get(l.body.orderId).confirmed_by, "gratis");
+
+    // akun biasa dengan saldo 7 tetap tidak bisa memesan Tugas 35 koin
+    const lf2 = new FormData(); lf2.append("service", "tugas"); lf2.append("wa", "081234567891"); lf2.append("agree", "true"); lf2.append("brief", "Tugas uji akun biasa"); lf2.append("pay", "koin");
+    assert.strictEqual((await call("/ms/layanan/order", { method: "POST", cookie: biasa.cookie, form: lf2 })).status, 402);
   } finally { srv.close(); }
 });
 

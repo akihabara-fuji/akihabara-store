@@ -34,8 +34,9 @@ function maskText(len, seedBytes) {
    opts: { unlocked, openSentences, page, pageSize } */
 function buildPreview(a, findings, secret, id, opts = {}) {
   const unlocked = !!opts.unlocked;
-  const paraMode = !unlocked && Number.isInteger(opts.openParagraphs);
-  const open = unlocked ? Infinity : paraMode ? 0 : Math.max(0, opts.openSentences ?? 1);
+  const wordMode = !unlocked && Number.isInteger(opts.openWords) && opts.openWords > 0;
+  const paraMode = !unlocked && !wordMode && Number.isInteger(opts.openParagraphs);
+  const open = unlocked ? Infinity : (paraMode || wordMode) ? 0 : Math.max(0, opts.openSentences ?? 1);
   const pageSize = Math.min(100, Math.max(5, opts.pageSize || 30));
   const byKey = new Map();
   for (const f of findings) { const k = f.para_idx + ":" + f.sent_idx; (byKey.get(k) || byKey.set(k, []).get(k)).push(f); }
@@ -64,6 +65,18 @@ function buildPreview(a, findings, secret, id, opts = {}) {
   /* Mode paragraf: buka SEMUA kalimat pada N paragraf contoh. Dipilih paragraf yang catatannya paling serius
      (urutan PRIORITY: M, O, K, B, U, H, P, A), seri diambil yang paling awal. Paragraf berkalimat 1 kurang bagus sebagai contoh,
      jadi bila ada pilihan lain dengan kode yang sama, yang berkalimat lebih banyak didahulukan. */
+  /* Mode kata: buka kalimat dari awal dokumen sampai batas kata gratis (kalimat utuh, tidak melewati batas). */
+  const wordOpen = new Set(); let openedWords = 0;
+  if (wordMode) {
+    scan: for (const p of visible) {
+      const ss = splitSentences(p.text);
+      for (let i = 0; i < ss.length; i++) {
+        const n = countWords(ss[i]);
+        if (openedWords + n > opts.openWords) break scan;
+        openedWords += n; wordOpen.add(p.idx + ":" + i);
+      }
+    }
+  }
   const exParas = new Set();
   if (paraMode && opts.openParagraphs > 0) {
     const cand = new Map();
@@ -72,13 +85,13 @@ function buildPreview(a, findings, secret, id, opts = {}) {
     [...cand.values()].sort((x, y) => x.best - y.best || ((nSent.get(y.idx) > 1) - (nSent.get(x.idx) > 1)) || x.idx - y.idx)
       .slice(0, opts.openParagraphs).forEach(c => exParas.add(c.idx));
   }
-  const nOf = new Map([...openKeys].filter(k => byKey.has(k)).sort(order).map((k, i) => [k, i + 1]));
+  const nOf = new Map([...(wordMode ? wordOpen : openKeys)].filter(k => byKey.has(k)).sort(order).map((k, i) => [k, i + 1]));
   const outParas = [];
   visible.forEach((p, vi) => {
     const sents = splitSentences(p.text);
     const inPage = vi >= (page - 1) * pageSize && vi < page * pageSize;
     const segs = sents.map((s, si) => {
-      const isOpen = unlocked || openKeys.has(p.idx + ":" + si) || exParas.has(p.idx);
+      const isOpen = unlocked || openKeys.has(p.idx + ":" + si) || exParas.has(p.idx) || wordOpen.has(p.idx + ":" + si);
       if (!inPage) return null;
       const fs = (byKey.get(p.idx + ":" + si) || []).slice().sort((x, y) => PRIORITY.indexOf(x.code) - PRIORITY.indexOf(y.code));
       const primary = fs.length ? fs[0].code : null;
@@ -124,6 +137,7 @@ function buildPreview(a, findings, secret, id, opts = {}) {
   for (const f of findings) counts[f.code]++;
   return {
     locked: !unlocked,
+    freeWords: wordMode ? opts.openWords : 0, openedWords,
     page, pages, pageSize,
     totalParagraphs: visible.length,
     notes: { total: findings.length, byCode: counts },

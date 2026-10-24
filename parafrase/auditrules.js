@@ -104,6 +104,32 @@ function buildScore(body, counts, refs, M) {
   return { value, level, label, metrics, note: "Skor internal Catatan Akademik dari temuan di dokumenmu. Bukan skor DrillBit atau UT: kemiripan dengan sumber luar hanya bisa dinilai DrillBit resmi." };
 }
 
+/* Struktur dari judul sampai penutup. Hanya yang pasti terbaca dari dokumen: judul, bagian pembuka, bagian isi, dan penutup.
+   Mengembalikan [{sev, cat, where, detail}]. Bagian dicari dari baris pendek yang menyerupai judul bagian (Bab, angka, atau huruf kapital). */
+const SEC = {
+  pembuka: /^(?:bab\s+[ivx\d]+\s*[.:-]?\s*)?(?:[\dA-Z][.)]?\s*)?(pendahuluan|latar\s+belakang|introduction|abstrak|abstract)\b/i,
+  metode: /^(?:bab\s+[ivx\d]+\s*[.:-]?\s*)?(?:[\dA-Z][.)]?\s*)?(metode|metodologi|metode\s+penelitian|method|methods)\b/i,
+  isi: /^(?:bab\s+[ivx\d]+\s*[.:-]?\s*)?(?:[\dA-Z][.)]?\s*)?(pembahasan|hasil|hasil\s+dan\s+pembahasan|analisis|tinjauan\s+pustaka|telaah\s+pustaka|kajian\s+pustaka|landasan\s+teori|results?|discussion)\b/i,
+  penutup: /^(?:bab\s+[ivx\d]+\s*[.:-]?\s*)?(?:[\dA-Z][.)]?\s*)?(kesimpulan|simpulan|penutup|saran|kesimpulan\s+dan\s+saran|conclusions?)\b/i,
+};
+function checkStruktur(a) {
+  const out = [], paras = (a.paragraphs || []).filter(p => p.text.trim());
+  const heads = paras.filter(p => p.text.trim().split(/\s+/).length <= 12 && p.text.length <= 100);
+  const has = k => heads.some(p => SEC[k].test(p.text.trim()));
+  const title = String(a.title || "").trim(), tw = title ? title.split(/\s+/).length : 0;
+  const tp = title && paras.find(p => p.text.trim() === title);
+  const tWhere = tp ? "Paragraf " + (tp.idx + 1) : "Awal dokumen";
+  if (!title) out.push({ sev: "peringatan", cat: "Judul tidak terbaca", where: "Awal dokumen", detail: "Judul dokumen tidak terdeteksi. Tulis judul di baris paling atas, terpisah dari isi, atau beri gaya Judul (Title)." });
+  else if (tw > 20) out.push({ sev: "info", cat: "Judul terlalu panjang", where: tWhere, detail: `Judul terbaca ${tw} kata. Judul yang baik ringkas (umumnya sampai 15 sampai 20 kata) dan memuat variabel atau topik utama.` });
+  else if (tw < 4) out.push({ sev: "info", cat: "Judul terlalu pendek", where: tWhere, detail: `Judul terbaca ${tw} kata. Tambahkan topik, objek, atau konteks agar judul spesifik.` });
+  const type = a.docType || "umum", long = (a.wordsAll || 0) >= 600;
+  if (long && !has("pembuka")) out.push({ sev: "peringatan", cat: "Bagian pembuka tidak ditemukan", where: "Seluruh dokumen", detail: "Tidak ada bagian berjudul Pendahuluan atau Latar Belakang. Dokumen panjang sebaiknya dibuka dengan konteks dan tujuan." });
+  if (long && (type === "metopen" || type === "artikel") && !has("metode")) out.push({ sev: "peringatan", cat: "Bagian metode tidak ditemukan", where: "Seluruh dokumen", detail: "Tidak ada bagian berjudul Metode atau Metode Penelitian." });
+  if (long && !has("isi")) out.push({ sev: "info", cat: "Bagian isi utama tidak ditemukan", where: "Seluruh dokumen", detail: "Tidak ada bagian berjudul Pembahasan, Hasil, Tinjauan Pustaka, atau sejenisnya. Pastikan isi utama diberi judul bagian." });
+  if (long && !has("penutup")) out.push({ sev: "peringatan", cat: "Bagian penutup tidak ditemukan", where: "Seluruh dokumen", detail: "Tidak ada bagian berjudul Kesimpulan, Simpulan, atau Penutup. Dokumen perlu ditutup dengan kesimpulan yang menjawab tujuan." });
+  return out;
+}
+
 /* cfg = pengaturan admin (settings.getAll()). Diteruskan ke analisis supaya ambang (kalimat panjang, tingkat indikasi) SAMA dengan Cek & Parafrase. */
 async function runAudit(a, { fetchFn, cfg = {} } = {}) {
   const paras = a.paragraphs || [];
@@ -155,6 +181,7 @@ async function runAudit(a, { fetchFn, cfg = {} } = {}) {
     if (un) add("info", `${un} DOI belum bisa diverifikasi`, "Daftar pustaka", "TIDAK TERVERIFIKASI: layanan pengecekan tidak menjawab, bukan berarti DOI salah.");
     var refs = { total: bib.length, withDoi: withDoi.length, doiOk: ok, doiNotFound: nf, doiUnverified: un };
   }
+  for (const f of checkStruktur(a)) add(f.sev, f.cat, f.where, f.detail);
   // Standar Bab 4 dan 5: aturan yang SAMA dengan Cek Parafrase (standar.js)
   const hh = { splitSentences: require("./docx").splitSentences, countWords: require("./docx").countWords, findCitations: rules.findCitations, hasCitation: rules.hasCitation, isBody: rules.isBody };
   for (const f of checkStandar(paras, bibIdx == null || bibIdx < 0 ? null : bibIdx, hh)) add(STANDAR_AUDIT[f.rule].sev, STANDAR_AUDIT[f.rule].cat, "Paragraf " + (f.para_idx + 1), f.reason);
@@ -173,4 +200,4 @@ async function runAudit(a, { fetchFn, cfg = {} } = {}) {
   return { findings: F, counts, refs: refsOut, citations: cites.length, score: { ...buildScore(body, counts, refsOut, M), aspects: asp.aspects, ai: asp.ai }, docFindings, bodyAt };
 }
 
-module.exports = { runAudit, extractCitations, extractBibliography, checkDois };
+module.exports = { checkStruktur, runAudit, extractCitations, extractBibliography, checkDois };

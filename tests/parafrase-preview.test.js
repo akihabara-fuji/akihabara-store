@@ -87,7 +87,7 @@ test("HTTP: endpoint pratinjau terkunci, no-store, tidak membocorkan, ID salah 4
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "pf-pv-"));
   const app = express();
   const pf = require("../parafrase")({ app, express, requireAdmin: (q, r, n) => n(), sameOrigin: q => !!q.headers.origin, ROOT: root });
-  pf.settings.set({ preview_open_sentences: 1 }); // hanya 1 kalimat contoh terbuka; sisanya wajib tersamar
+  pf.settings.set({ preview_open_sentences: 1, free_words: 0 }); // hanya 1 kalimat contoh terbuka; sisanya wajib tersamar
   const srv = app.listen(0), base = "http://127.0.0.1:" + srv.address().port;
   try {
     const fd = new FormData(); fd.append("file", new Blob([await makeDocx(BODY)]), "t.docx");

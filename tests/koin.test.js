@@ -109,3 +109,19 @@ test("coinsFor: hanya harga kelipatan Rp1.000", () => {
   const { coinsFor } = require("../parafrase/koin");
   assert.equal(coinsFor(35000), 35); assert.equal(coinsFor(919000), 919); assert.equal(coinsFor(35500), null); assert.equal(coinsFor(0), null);
 });
+
+test("akun gratis: pesanan dan buka simulasi tidak memotong koin, tidak ada koin palsu di buku, batal tidak mengembalikan apa pun", () => {
+  const db = openDb(); const { createKoin } = require("../parafrase/koin");
+  let list = "Dika@Mail.com";
+  const k = createKoin(db, { settings: { getAll: () => ({ akun_gratis: list }) }, emailOf: id => ({ own: "dika@mail.com", mhs: "mhs@mail.com" })[id] });
+  assert.equal(k.isFree("own"), true); assert.equal(k.isFree("mhs"), false);
+  const r = k.debitOrder("own", 35, "NA-2001", "tes");
+  assert.equal(r.free, true); assert.equal(k.balance("own"), 0);
+  assert.equal(db.prepare("SELECT COUNT(*) n FROM coin_ledger").get().n, 0);
+  assert.equal(k.refundOrder("NA-2001"), null); assert.equal(k.balance("own"), 0);
+  k.unlockSim("own", "NA-2002", 4); const s2 = k.unlockSim("own", "NA-2003", 4);
+  assert.equal(s2.free, true); assert.equal(k.balance("own"), 0);
+  assert.throws(() => k.debitOrder("mhs", 5, "NA-2004"), /tidak cukup/); // akun biasa tetap dipotong
+  list = ""; assert.equal(k.isFree("own"), false); // dihapus dari daftar: kembali normal
+  assert.throws(() => k.debitOrder("own", 5, "NA-2005"), /tidak cukup/);
+});

@@ -8,7 +8,7 @@
     window.PF.cfg = c;
     var set = function (sel, v) { document.querySelectorAll(sel).forEach(function (e) { e.textContent = v; }); };
     set("[data-ppw]", rp(c.price_per_word)); set("[data-min]", rp(c.min_order_price)); set("[data-fast]", rp(c.fast_lane.price));
-    set("[data-retention]", c.retention_hours);
+    set("[data-retention]", c.retention_hours); set("[data-fw]", rp(c.free_words || 0));
     document.querySelectorAll("[data-p]").forEach(function (e) { var v = c[e.getAttribute("data-p")]; if (v != null) e.textContent = rp(v); });
     document.querySelectorAll("[data-k]").forEach(function (e) { var v = c[e.getAttribute("data-k")]; if (v != null) e.textContent = window.koinFmt(v); });
     /* Diskon dalam persen, dihitung dari harga sekarang dan harga normal (pengaturan admin). Tidak tampil bila datanya tidak masuk akal. */
@@ -273,3 +273,24 @@ window.renderTriage = function (box, t, opts) {
 };
 /* dropdown sub-menu: tutup saat klik di luar atau tekan Esc */
 (function(){document.addEventListener("click",function(e){document.querySelectorAll(".sub details[open]").forEach(function(d){if(!d.contains(e.target))d.removeAttribute("open")})});document.addEventListener("keydown",function(e){if(e.key==="Escape")document.querySelectorAll(".sub details[open]").forEach(function(d){d.removeAttribute("open")})});document.querySelectorAll(".sub details").forEach(function(d){d.addEventListener("toggle",function(){if(d.open)document.querySelectorAll(".sub details[open]").forEach(function(o){if(o!==d)o.removeAttribute("open")})})})})();
+
+/* Unggah dua langkah (pilih file, lalu tombol Cek file) dan penanda "sedang memindai" yang jelas selama server bekerja. */
+window.pfScan = (function () {
+  var timer = null, styled = false;
+  function css() {
+    if (styled) return; styled = true;
+    var s = document.createElement("style");
+    s.textContent = ".pf-scan{display:flex;flex-direction:column;align-items:center;gap:10px;width:min(440px,100%);margin-top:10px;padding:16px 18px;border-radius:16px;border:1px solid #7c5cff;background:rgba(124,92,255,.10);text-align:center}.pf-scan.hidden{display:none}.pf-spin{width:26px;height:26px;border-radius:50%;border:3px solid rgba(124,92,255,.3);border-top-color:#7c5cff;animation:pfspin .8s linear infinite}.pf-stx{font-weight:600}.pf-bar{width:100%;height:5px;border-radius:99px;background:rgba(124,92,255,.2);overflow:hidden}.pf-bar i{display:block;height:100%;width:40%;border-radius:99px;background:#7c5cff;animation:pfbar 1.4s ease-in-out infinite}.pf-chosen{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:6px}.pf-chosen.hidden{display:none}.pf-chosen b{word-break:break-all}@keyframes pfspin{to{transform:rotate(360deg)}}@keyframes pfbar{0%{margin-left:-40%}100%{margin-left:100%}}@media(prefers-reduced-motion:reduce){.pf-spin,.pf-bar i{animation:none}}";
+    document.head.appendChild(s);
+  }
+  return {
+    start: function (el, steps) {
+      css(); clearInterval(timer); el.className = "pf-scan"; el.setAttribute("role", "status"); el.setAttribute("aria-live", "polite");
+      el.innerHTML = '<span class="pf-spin" aria-hidden="true"></span><span class="pf-stx"></span><div class="pf-bar" aria-hidden="true"><i></i></div>';
+      var tx = el.querySelector(".pf-stx"), i = 0; tx.textContent = steps[0];
+      timer = setInterval(function () { i = Math.min(i + 1, steps.length - 1); tx.textContent = steps[i]; }, 2800);
+      try { el.scrollIntoView({ block: "center", behavior: "smooth" }); } catch (e) {}
+    },
+    stop: function (el) { clearInterval(timer); el.className = "hidden"; el.textContent = ""; }
+  };
+})();
