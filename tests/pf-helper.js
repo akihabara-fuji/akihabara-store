@@ -27,7 +27,7 @@ async function boot(set = {}) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "pf-ord-"));
   const app = express(); let admin = false;
   const m = require("../parafrase")({ app, express, requireAdmin: (q, r, n) => admin ? n() : r.status(401).json({ error: "x" }), sameOrigin: q => !!q.headers.origin, ROOT: root });
-  if (Object.keys(set).length) m.settings.set(set);
+  m.settings.set({ bayar_koin_saja: false, ...set }); // tes alur lama (QRIS per pesanan); alur koin diuji di tests/koin-http.test.js
   const srv = app.listen(0), base = "http://127.0.0.1:" + srv.address().port, H = { origin: "http://x" };
   const J = { ...H, "content-type": "application/json" };
   const upload = async (extra) => { const fd = new FormData(); fd.append("file", new Blob([await docx(extra)]), "t.docx"); return (await (await fetch(base + "/ms/parafrase/upload", { method: "POST", body: fd, headers: H })).json()).uploadId; };

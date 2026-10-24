@@ -32,6 +32,50 @@ async function setup() {
   return { srv, call, ck, pf, base };
 }
 
+test("satu pintu bayar: Cek & Parafrase dan Audit dibayar koin, saldo kurang ditolak, batal mengembalikan koin", async () => {
+  const { docx } = require("./pf-helper");
+  const { srv, call, ck, pf, base } = await setup();
+  try {
+    assert.strictEqual(pf.settings.get("bayar_koin_saja"), true, "bawaan: semua pesanan dibayar koin");
+    const mk = async email => { const r = await call("/ms/auth/register", { method: "POST", json: { name: "Uji", email, password: "sandi-uji-12345" } }); return { cookie: ck(r), id: r.body.user.id }; };
+    const up = async (path, cookie) => { const fd = new FormData(); fd.append("file", new Blob([await docx("Isi uji untuk pesanan koin.")]), "t.docx"); const r = await call(path, { method: "POST", cookie, form: fd }); return r.body.uploadId; };
+    const kaya = await mk("kaya@example.test"), miskin = await mk("miskin@example.test");   // miskin hanya punya bonus 7 koin
+    pf.koin.adjust(kaya.id, 100, "kredit uji pesanan", "uji", undefined, true);
+    const deadline = Date.now() + 3 * 864e5, dok = { wa: "081234567890", agree: true, deadline };
+
+    // tanpa login: ditolak dan diarahkan masuk
+    const anon = await call("/ms/parafrase/order", { method: "POST", json: { ...dok, uploadId: await up("/ms/parafrase/upload", kaya.cookie) } });
+    assert.strictEqual(anon.status, 401); assert.strictEqual(anon.body.login, true);
+
+    // saldo kurang: tidak ada pesanan dan tidak ada potongan
+    const lack = await call("/ms/parafrase/order", { method: "POST", cookie: miskin.cookie, json: { ...dok, uploadId: await up("/ms/parafrase/upload", miskin.cookie) } });
+    assert.strictEqual(lack.status, 402); assert.strictEqual(lack.body.short, 33); assert.strictEqual(pf.koin.balance(miskin.id), 7);
+    assert.strictEqual(pf.db.prepare("SELECT COUNT(*) n FROM orders").get().n, 0);
+
+    // Cek & Parafrase: minimum Rp40.000 = 40 koin, langsung masuk antrean, tanpa kode unik
+    const o = await call("/ms/parafrase/order", { method: "POST", cookie: kaya.cookie, json: { ...dok, uploadId: await up("/ms/parafrase/upload", kaya.cookie) } });
+    assert.strictEqual(o.status, 200, JSON.stringify(o.body)); assert.strictEqual(o.body.paid, "koin"); assert.strictEqual(o.body.coins, 40); assert.strictEqual(o.body.balance, 67); assert.strictEqual(o.body.total % 1000, 0);
+    const row = pf.db.prepare("SELECT * FROM orders WHERE id=?").get(o.body.orderId);
+    assert.strictEqual(row.status, "baru_dibayar"); assert.strictEqual(row.confirmed_by, "koin"); assert.strictEqual(row.unique_code, 0); assert.strictEqual(row.user_id, String(kaya.id));
+
+    // Audit: minimum Rp35.000 = 35 koin, hasil langsung terbuka
+    const a = await call("/ms/audit/order", { method: "POST", cookie: kaya.cookie, json: { uploadId: await up("/ms/audit/upload", kaya.cookie), wa: "081234567890", agree: true } });
+    assert.strictEqual(a.status, 200, JSON.stringify(a.body)); assert.strictEqual(a.body.coins, 35);
+    assert.strictEqual(pf.koin.balance(kaya.id), 32);
+    assert.strictEqual(pf.db.prepare("SELECT status FROM orders WHERE id=?").get(a.body.orderId).status, "terkirim");
+
+    // batal oleh admin: koin kembali
+    const lg = await fetch(base + "/ms/admin/ca/login", { method: "POST", headers: { origin: base, "content-type": "application/json" }, body: JSON.stringify({ username: "pemilik", password: OWNER_PW }) });
+    const cn = await call(`/ms/admin/ca/orders/${o.body.orderId}/cancel`, { method: "POST", cookie: ck(lg), json: { reason: "uji pembatalan" } });
+    assert.strictEqual(cn.status, 200, JSON.stringify(cn.body)); assert.strictEqual(cn.body.coinBack, 40); assert.strictEqual(pf.koin.balance(kaya.id), 72);
+
+    // saklar darurat: bayar_koin_saja = false mengembalikan alur QRIS lama (menunggu bayar + kode unik)
+    pf.settings.set({ bayar_koin_saja: false });
+    const q = await call("/ms/parafrase/order", { method: "POST", cookie: kaya.cookie, json: { ...dok, uploadId: await up("/ms/parafrase/upload", kaya.cookie) } });
+    assert.strictEqual(q.status, 200, JSON.stringify(q.body)); assert.ok(q.body.uniqueCode > 0); assert.strictEqual(q.body.paid, undefined); assert.strictEqual(pf.koin.balance(kaya.id), 72);
+  } finally { srv.close(); }
+});
+
 test("koin: isi koin, bayar layanan, batal, koin kembali sekali; tanpa login atau tanpa izin ditolak", async () => {
   const { srv, call, ck, pf } = await setup();
   try {

@@ -1,6 +1,10 @@
 (function () {
   var $ = function (id) { return document.getElementById(id); };
   var rp = function (n) { return Number(n).toLocaleString("id-ID"); };
+  /* Satu pintu bayar: pesanan dibayar koin (1 koin = Rp1.000, dibulatkan ke atas). bayar_koin_saja = false: alur QRIS lama. */
+  var koinOnly = function () { var c = cfg(); return !c || c.bayar_koin_saja !== false; };
+  var KO = function (r) { return Math.max(1, Math.ceil(r / 1000)).toLocaleString("id-ID") + " koin"; };
+  var payLabel = function () { return koinOnly() ? "Bayar dengan koin" : "Bayar dengan QRIS"; };
   var st = { up: null, page: 1 };
   var NAMES = { M: "Tulis ulang", O: "Beri kutip", K: "Tambah sumber", B: "Lengkapi sitasi", U: "Singkat", H: "Tambah kalimat", P: "Tambah analisis", A: "Variasikan" };
   var ORDER = ["M", "O", "K", "B", "U", "H", "P", "A"];
@@ -81,7 +85,8 @@
     var fastOn = $("fast").checked && c.fast_lane.enabled && !c.fast_lane.full;
     var base = Math.max(words * c.price_per_word, c.min_order_price);
     $("pwords").textContent = rp(words);
-    $("total").textContent = "Rp " + rp(base + (fastOn ? c.fast_lane.price : 0));
+    $("total").textContent = koinOnly() ? KO(base + (fastOn ? c.fast_lane.price : 0)) : "Rp " + rp(base + (fastOn ? c.fast_lane.price : 0));
+    $("pay").textContent = payLabel();
     var f = c.fast_lane, box = $("fastbox");
     if (!f.enabled) { box.classList.add("hidden"); }
     else { box.classList.remove("hidden"); var dis = f.full; $("fast").disabled = dis; box.classList.toggle("off", dis); if (dis) $("fast").checked = false;
@@ -95,7 +100,7 @@
     $("dlwarn").textContent = dlok && dl.getTime() - Date.now() < 86400000 ? "Deadline kurang dari 24 jam, kami sarankan jalur cepat." : "";
     var all = ok && dlok && $("agree").checked && st.up;
     $("pay").disabled = !all;
-    $("payhint").textContent = all ? "Pembayaran QRIS dibuka di langkah berikutnya." : !ok ? "Isi nomor WhatsApp yang benar (mulai 8…)" : !dlok ? "Isi deadline yang belum lewat" : "Centang persetujuan untuk melanjutkan";
+    $("payhint").textContent = all ? (koinOnly() ? "Saldo koinmu dipotong saat kamu menekan tombol, lalu pesanan langsung masuk antrean." : "Pembayaran QRIS dibuka di langkah berikutnya.") : !ok ? "Isi nomor WhatsApp yang benar (mulai 8…)" : !dlok ? "Isi deadline yang belum lewat" : "Centang persetujuan untuk melanjutkan";
   }
   ["wa", "dl", "dljam", "agree"].forEach(function (id) { $(id).addEventListener("input", gate); $(id).addEventListener("change", gate); });
   ["nobib", "fast"].forEach(function (id) { $(id).addEventListener("change", price); });
@@ -109,11 +114,12 @@
       .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
       .then(function (x) {
         if (!x.ok && x.j.login) { location.href = "/ms/masuk?next=" + encodeURIComponent(location.pathname); return; }
+        if (!x.ok && x.j.short) { location.href = "/ruangakademikut/koin?kurang=" + x.j.short + "&next=" + encodeURIComponent(location.pathname + "?u=" + st.up.uploadId); return; }
         if (x.ok) { try { localStorage.setItem("pf_last", x.j.token); } catch (e) {} location.href = x.j.url; return; }
         showErr(x.j.error || "Pesanan gagal dibuat.");
         if (x.j.code === "fast_full") { fetch("/ms/public-config").then(function (r) { return r.json(); }).then(function (c) { window.PF.cfg = c; price(); }); }
       }).catch(function () { showErr("Koneksi terputus. Coba lagi."); })
-      .then(function () { $("pay").textContent = "Bayar dengan QRIS"; gate(); });
+      .then(function () { $("pay").textContent = payLabel(); gate(); });
   };
 
   function esc(s) { return s.replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }

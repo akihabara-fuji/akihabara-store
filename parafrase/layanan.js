@@ -91,10 +91,10 @@ module.exports = function mountLayanan({ app, express, db, settings, orders, roo
         const cfg = settings.getAll(), token = crypto.randomBytes(24).toString("hex");
         const base = free ? 0 : priceOf(b.service);
         /* Bayar pakai koin: 1 koin = Rp1.000. Potongan koin dan pembuatan pesanan satu transaksi, jadi tidak ada pesanan tanpa potongan. */
-        const useCoin = b.pay === "koin" && !free, buyer = useCoin ? (userFrom && userFrom(req)) : null;
-        if (useCoin && !(koin && buyer)) throw bad(401, "Masuk dulu untuk membayar dengan koin.");
-        const coins = useCoin ? coinsFor(base) : null;
-        if (useCoin && !coins) throw bad(400, "Harga layanan ini tidak bisa dibayar dengan koin. Pilih bayar lewat QRIS.");
+        const useCoin = !free && !!koin && (b.pay === "koin" || !!settings.get("bayar_koin_saja")), buyer = useCoin ? (userFrom && userFrom(req)) : null;
+        if (useCoin && !buyer) throw bad(401, "Masuk dulu untuk memesan. Pembayaran memakai koin.", { login: true });
+        const coins = useCoin ? Math.max(1, Math.ceil(base / 1000)) : null; // satu pintu bayar: koin, dibulatkan ke atas per koin
+        if (useCoin && !(base > 0)) throw bad(400, "Harga layanan ini belum diatur.");
         const payExp = now + cfg.payment_window_minutes * 60e3;
         const r = db.transaction(() => {
           const last = db.prepare("SELECT MAX(CAST(SUBSTR(id,4) AS INTEGER)) n FROM orders").get().n || 1000;
@@ -106,7 +106,7 @@ module.exports = function mountLayanan({ app, express, db, settings, orders, roo
             if (!fr.length) throw bad(503, "Sistem pembayaran sedang penuh. Coba lagi beberapa menit lagi.");
             code = fr[crypto.randomInt(fr.length)];
           }
-          const total = base + code, title = labelOf(b.service) + (brief ? ": " + brief.replace(/\s+/g, " ").slice(0, 60) : "");
+          const total = useCoin ? coins * 1000 : base + code, title = labelOf(b.service) + (brief ? ": " + brief.replace(/\s+/g, " ").slice(0, 60) : "");
           db.prepare(`INSERT INTO orders(id,public_token,wa_number,title,language,doc_type,service,brief,word_count,original_file,status,lane,price_per_word,min_price,fast_price,base_total,unique_code,total,deadline_at,pay_expires_at,confirmed_at,confirmed_by,parent_order_id,created_at,updated_at)
                       VALUES(?,?,?,?,?,'layanan',?,?,0,NULL,?, 'biasa',0,0,0,?,?,?,?,?,?,?,?,?,?)`)
             .run(id, token, wa, title, "id", b.service, brief, free || useCoin ? "baru_dibayar" : "menunggu_bayar", base, code, total, now + 7 * 86400e3, payExp, free || useCoin ? now : null, free ? "gratis" : useCoin ? "koin" : null, parent ? parent.id : null, now, now);
@@ -129,7 +129,7 @@ module.exports = function mountLayanan({ app, express, db, settings, orders, roo
         if (att.length) db.prepare("UPDATE orders SET attach_json=? WHERE id=?").run(JSON.stringify(att), r.id);
         res.json({ orderId: r.id, token, total: r.total, free, ...(useCoin ? { paid: "koin", coins, balance: koin.balance(buyer.id) } : {}), url: "/ruangakademikut/pesanan/" + token });
       } catch (e) {
-        if (e.status) return res.status(e.status).json({ error: e.message, ...(e.short ? { short: e.short, balance: e.balance } : {}) });
+        if (e.status) return res.status(e.status).json({ error: e.message, ...(e.login ? { login: true } : {}), ...(e.short ? { short: e.short, balance: e.balance } : {}) });
         console.error("[layanan] pesanan gagal:", e && e.message); res.status(500).json({ error: "Pesanan tidak bisa dibuat. Coba lagi." });
       }
     });

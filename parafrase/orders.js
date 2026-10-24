@@ -17,7 +17,7 @@ const wordtools = require("./wordtools");
 const PAID = new Set(["baru_dibayar", "dianalisis", "dikerjakan", "cek_ulang", "terkirim"]);
 const PROOF_MAX = 5 * 1024 * 1024;
 
-module.exports = function mountOrders({ app, express, db, settings, root, sameOrigin, requireAdmin, secret, notifier }) {
+module.exports = function mountOrders({ app, express, db, settings, root, sameOrigin, requireAdmin, secret, notifier, koin = null, userFrom = null }) {
   const priv = p => path.join(root, "data", "private", p);
   for (const d of ["proofs", "qris"]) fs.mkdirSync(priv(d), { recursive: true });
   const hashIp = ip => crypto.createHmac("sha256", secret).update(String(ip || "")).digest("hex").slice(0, 32);
@@ -33,8 +33,22 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
   const wa62 = raw => { let d = String(raw || "").replace(/\D/g, ""); d = d.replace(/^62/, "").replace(/^0/, ""); return /^8\d{8,12}$/.test(d) ? "62" + d : null; };
   const J = express.json({ limit: "16kb" });
 
+  /* ---------- satu pintu bayar: koin ----------
+     Pesanan dibayar koin (1 koin = Rp1.000, dibulatkan ke atas per pesanan) dan langsung masuk antrean. QRIS hanya dipakai untuk isi koin.
+     Pengaturan bayar_koin_saja = false mengembalikan alur lama (QRIS + bukti per pesanan), mis. bila perlu darurat. */
+  const coinOnly = () => !!(koin && settings.get("bayar_koin_saja"));
+  const needBuyer = buyer => { if (!buyer) throw Object.assign(new Error("Masuk dulu untuk memesan. Pembayaran memakai koin."), { status: 401, login: true }); return buyer; };
+  function chargeCoins(buyer, rupiah, orderId, title, now) {
+    const coins = Math.max(1, Math.ceil(rupiah / 1000));
+    try { koin.debitOrder(buyer.id, coins, orderId, String(title || orderId).slice(0, 120), now); }
+    catch (e) { if (e.status === 402) throw Object.assign(new Error(`Saldo koinmu kurang ${e.short} koin. Isi koin dulu, lalu pesan lagi.`), { status: 402, short: e.short, balance: e.balance }); throw e; }
+    return coins;
+  }
+  const failBody = e => ({ error: e.message, ...(e.code ? { code: e.code } : {}), ...(e.login ? { login: true } : {}), ...(e.short ? { short: e.short, balance: e.balance } : {}) });
+
   /* ---------- buat pesanan ---------- */
-  function createOrder(body, ipHash, now = Date.now()) {
+  function createOrder(body, ipHash, now = Date.now(), buyer = null) {
+    const useCoin = coinOnly(); if (useCoin) needBuyer(buyer);
     const cfg = settings.getAll();
     const up = db.prepare("SELECT * FROM uploads WHERE id=?").get(String(body.uploadId || ""));
     if (!up || up.expires_at < now) throw Object.assign(new Error("Unggahan tidak ditemukan atau kedaluwarsa. Unggah ulang dokumenmu."), { status: 404 });
@@ -66,20 +80,26 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
       const last = db.prepare("SELECT MAX(CAST(SUBSTR(id,4) AS INTEGER)) n FROM orders").get().n || 1000;
       const id = "NA-" + (last + 1);
       let code = 0;
-      if (cfg.unique_code_enabled) {
+      if (cfg.unique_code_enabled && !useCoin) {
         const taken = new Set(db.prepare("SELECT total FROM orders WHERE status IN ('menunggu_bayar','menunggu_verifikasi')").all().map(r => r.total));
         const free = []; for (let c = 1; c <= cfg.unique_code_max; c++) if (!taken.has(q.total + c)) free.push(c);
         if (!free.length) throw Object.assign(new Error("Sistem pembayaran sedang penuh. Coba lagi beberapa menit lagi."), { status: 503 });
         code = free[crypto.randomInt(free.length)];
       }
-      const total = q.total + code;
+      const total = useCoin ? Math.max(1, Math.ceil(q.total / 1000)) * 1000 : q.total + code;
       db.prepare(`INSERT INTO orders(id,public_token,wa_number,title,language,doc_type,word_count,original_file,status,lane,price_per_word,min_price,fast_price,base_total,unique_code,total,deadline_at,pay_expires_at,created_at,updated_at)
                   VALUES(?,?,?,?,?,?,?,?,'menunggu_bayar',?,?,?,?,?,?,?,?,?,?,?)`)
         .run(id, token, wa, title, lang, docType, words, up.path, wantFast ? "cepat" : "biasa", q.price_per_word, q.min_price, q.fast_price, q.base_total, code, total, dl, payExp, now, now);
       if (wantFast) db.prepare("INSERT INTO fast_reservations(order_id,day,status,expires_at,created_at) VALUES(?,?,?,?,?)").run(id, settings.wibDay(now), "reserved", payExp, now);
       db.prepare("UPDATE uploads SET order_id=? WHERE id=?").run(id, up.id);
       event(id, "dibuat", `kata=${words} total=${total} lane=${wantFast ? "cepat" : "biasa"} ip=${ipHash}`, now);
-      return { id, total, code };
+      let coins = 0;
+      if (useCoin) { // potong koin dan konfirmasi dalam satu transaksi: gagal di mana pun = tidak ada pesanan dan tidak ada potongan
+        db.prepare("UPDATE orders SET user_id=? WHERE id=?").run(String(buyer.id), id);
+        coins = chargeCoins(buyer, q.total, id, title || "Cek & Parafrase " + id, now);
+        confirmPayment(id, "koin", now);
+      }
+      return { id, total, code, coins };
     });
     const r = tx();
     return { r, token, payExp, up };
@@ -87,7 +107,8 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
 
   /* Audit Lengkap: memakai tabel pesanan dan alur QRIS yang sama (doc_type='audit'). Tarif tetap di sini, dihitung di server. */
   const auditRate = cfg => ({ perWord: cfg.audit_per_word, min: cfg.audit_min });
-  function createAuditOrder(body, ipHash, now = Date.now()) {
+  function createAuditOrder(body, ipHash, now = Date.now(), buyer = null) {
+    const useCoin = coinOnly(); if (useCoin) needBuyer(buyer);
     const cfg = settings.getAll();
     const up = db.prepare("SELECT * FROM uploads WHERE id=?").get(String(body.uploadId || ""));
     if (!up || up.expires_at < now) throw Object.assign(new Error("Unggahan tidak ditemukan atau kedaluwarsa. Unggah ulang dokumenmu."), { status: 404 });
@@ -106,19 +127,25 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
       const last = db.prepare("SELECT MAX(CAST(SUBSTR(id,4) AS INTEGER)) n FROM orders").get().n || 1000;
       const id = "NA-" + (last + 1);
       let code = 0;
-      if (cfg.unique_code_enabled) {
+      if (cfg.unique_code_enabled && !useCoin) {
         const taken = new Set(db.prepare("SELECT total FROM orders WHERE status IN ('menunggu_bayar','menunggu_verifikasi')").all().map(r => r.total));
         const free = []; for (let c = 1; c <= cfg.unique_code_max; c++) if (!taken.has(base + c)) free.push(c);
         if (!free.length) throw Object.assign(new Error("Sistem pembayaran sedang penuh. Coba lagi beberapa menit lagi."), { status: 503 });
         code = free[crypto.randomInt(free.length)];
       }
-      const total = base + code;
+      const total = useCoin ? Math.max(1, Math.ceil(base / 1000)) * 1000 : base + code;
       db.prepare(`INSERT INTO orders(id,public_token,wa_number,title,language,doc_type,word_count,original_file,status,lane,price_per_word,min_price,fast_price,base_total,unique_code,total,deadline_at,pay_expires_at,created_at,updated_at)
                   VALUES(?,?,?,?,?,'audit',?,?,'menunggu_bayar','biasa',?,?,0,?,?,?,?,?,?,?)`)
         .run(id, token, wa, "Audit: " + String(up.original_name || "dokumen").slice(0, 150), "id", words, up.path, AUDIT_PER_WORD, AUDIT_MIN, base, code, total, now + 7 * 86400e3, payExp, now, now);
       db.prepare("UPDATE uploads SET order_id=? WHERE id=?").run(id, up.id);
       event(id, "dibuat", `audit kata=${words} total=${total} ip=${ipHash}`, now);
-      return { id, total, code };
+      let coins = 0;
+      if (useCoin) {
+        db.prepare("UPDATE orders SET user_id=? WHERE id=?").run(String(buyer.id), id);
+        coins = chargeCoins(buyer, base, id, "Audit Dokumen " + id, now);
+        confirmPayment(id, "koin", now);
+      }
+      return { id, total, code, coins };
     });
     return { r: tx(), token, payExp, up };
   }
@@ -129,15 +156,16 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
     const ipHash = hashIp(req.ip);
     if (limited("o:" + ipHash, 10)) return res.status(429).json({ error: "Terlalu banyak pesanan dari jaringan ini. Coba lagi nanti." });
     try {
-      const { r, token, payExp, up } = createOrder(req.body || {}, ipHash);
+      const buyer = userFrom ? userFrom(req) : null;
+      const { r, token, payExp, up } = createOrder(req.body || {}, ipHash, Date.now(), buyer);
       // Simpan catatan di database (teks asli tetap di server).
       try {
         const buf = await fsp.readFile(priv(up.path)); const a = await analyze(buf);
         saveFindings(db, r.id, analyzeFindings(a.paragraphs, a.bibliographyParagraphIndex, settings.getAll()));
       } catch (e) { console.error("[parafrase] simpan catatan gagal:", e && e.message); }
-      res.json({ orderId: r.id, token, total: r.total, uniqueCode: r.code, expiresAt: payExp, url: "/ruangakademikut/pesanan/" + token });
+      res.json({ orderId: r.id, token, total: r.total, uniqueCode: r.code, expiresAt: payExp, ...(r.coins ? { paid: "koin", coins: r.coins, balance: koin.balance(buyer.id) } : {}), url: "/ruangakademikut/pesanan/" + token });
     } catch (e) {
-      if (e.status) return res.status(e.status).json({ error: e.message, code: e.code });
+      if (e.status) return res.status(e.status).json(failBody(e));
       console.error("[parafrase] buat pesanan gagal:", e && e.message); res.status(500).json({ error: "Pesanan tidak bisa dibuat. Coba lagi." });
     }
   });
