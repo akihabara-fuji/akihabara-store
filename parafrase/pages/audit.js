@@ -70,6 +70,7 @@
     if (d.findings.length > 40) l.appendChild(el("p", "text-align:center;opacity:.7", "dan " + (d.findings.length - 40) + " temuan lain di Audit Lengkap."));
     $("perword").textContent = d.quote.perWord; $("minp").textContent = rp(d.quote.min); $("total").textContent = d.quote.allFree ? "0 (seluruh dokumen sudah terbuka gratis)" : rp(d.quote.total);
     $("fwn").textContent = rp(d.quote.freeWords || 0);
+    $("cekGo").href = "/ruangakademikut/cek-parafrase-mandiri?u=" + encodeURIComponent(upId);
     var nOpen = d.findings.filter(function (f) { return f.open; }).length;
     $("rmeta").textContent += d.quote.allFree ? " · seluruhnya gratis" : " · " + rp(d.quote.freeWords) + " kata pertama dibuka gratis (" + nOpen + " temuan lengkap)";
     $("cta").classList.toggle("hidden", !!d.quote.allFree);
