@@ -27,8 +27,9 @@
     <b>Tarik dan lepas file di sini</b>
     <div style="font-size:14px;color:var(--muted)">File Word (.docx) atau PDF. Maksimal 10 MB.</div>
     <input id="file" type="file" accept=".docx,.pdf,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" class="hidden">
-    <button class="btn" id="pick" type="button" style="margin-top:6px">Mulai Audit (gratis)</button>
-    <div id="busy" class="muted hidden" role="status">Memeriksa dokumenmu, termasuk DOI. Bisa sampai setengah menit…</div>
+    <button class="btn" id="pick" type="button" style="margin-top:6px">Pilih file</button>
+    <div class="pf-chosen hidden" id="chosen"><div>File dipilih: <b id="chName"></b> <span class="muted" id="chMeta"></span></div><div><button class="btn" id="chGo" type="button">Cek file (gratis)</button> <button class="btn" id="chChange" type="button" style="background:transparent;color:inherit;border:1px solid currentColor">Ganti file</button></div></div>
+    <div id="busy" class="hidden"></div>
   </div>
   <div id="err" class="err hidden" role="alert"></div>
   <p class="muted" style="max-width:620px;margin:14px auto 0">Setiap temuan hanya berasal dari isi dokumenmu dan pengecekan DOI nyata. Yang tidak bisa dicek ditandai TIDAK TERVERIFIKASI, tidak ditebak. File disimpan sementara maksimal 2 jam agar bisa dibeli sebagai Audit Lengkap, lalu dihapus otomatis.</p>
@@ -67,6 +68,6 @@
   </div>
 </section>
 
-<script src="/ruangakademikut/assets/common.js?v=20261105"></script><script src="/ruangakademikut/assets/audit.js?v=20261106"></script>
+<script src="/ruangakademikut/assets/common.js?v=20261107"></script><script src="/ruangakademikut/assets/audit.js?v=20261107"></script>
 <footer class="ft"><div class="wrap ft-in"><div class="ft-b"><b>Catatan Akademik</b><span>Jakarta Barat. Layanan UT dan Blog.</span><small>© Catatan Akademik. Semua hak dilindungi.</small></div><nav class="ft-n" aria-label="Footer"><a href="/ruangakademikut">Layanan UT</a><a href="/ruangakademikut/blog-ut">Blog &amp; Berita UT</a><a href="/ms/masuk">Masuk</a><a href="/ms/privasi">Privasi</a><a href="/ms/ketentuan">Ketentuan</a></nav></div></footer>
 </body></html>
