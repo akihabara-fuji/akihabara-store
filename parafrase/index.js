@@ -78,7 +78,7 @@ else if(/\\/(?:ruangakademikut\\/)?(layanan|cek-parafrase-mandiri|audit)(?:[\\/?
   const notifier = createNotifier({ db, settings });
   const orders = mountOrders({ app, express, db, settings, notifier, root: ROOT, sameOrigin: sameOrigin || (() => true), requireAdmin, secret });
   mountAudit({ app, express, db, settings, orders, root: ROOT, sameOrigin: sameOrigin || (() => true), secret });
-  const koin = createKoin(db, { settings });
+  const koin = createKoin(db, { settings, emailOf: id => { const u = users && users.byId && users.byId(id); return u && u.email; } });
   const traffic = createTraffic(db, { secret });
   mountKoin({ app, express, db, settings, koin, root: ROOT, sameOrigin: sameOrigin || (() => true), requireAdmin, userFrom, users, secret });
   mountLayanan({ app, express, db, settings, orders, root: ROOT, sameOrigin: sameOrigin || (() => true), secret, requireAdmin, koin, userFrom });

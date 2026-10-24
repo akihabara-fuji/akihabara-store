@@ -114,7 +114,7 @@ module.exports = function mountLayanan({ app, express, db, settings, orders, roo
           const uid = (buyer || (userFrom && userFrom(req)) || {}).id;
           if (uid) db.prepare("UPDATE orders SET user_id=? WHERE id=?").run(String(uid), id);
           if (useCoin) {
-            try { koin.debitOrder(buyer.id, coins, id, title, now); }
+            try { const dr = koin.debitOrder(buyer.id, coins, id, title, now); if (dr && dr.free) db.prepare("UPDATE orders SET confirmed_by='akun gratis' WHERE id=?").run(id); }
             catch (e) { if (e.status === 402) throw bad(402, `Saldo koinmu kurang ${e.short} koin. Isi koin dulu, lalu pesan lagi.`, { short: e.short, balance: e.balance }); throw e; }
           }
           return { id, total };

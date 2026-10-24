@@ -164,6 +164,7 @@ module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, b
         ["sim_koin_price", "Simulasi presentasi: koin untuk buka tanya jawab"], ["price_semester_min", "Paket Semester: mulai"], ["price_semester_max", "Paket Semester: sampai"], ["price_pengarahan_semester", "Pengarahan registrasi: semester"], ["price_pengarahan_lulus", "Pengarahan: lulus"], ["price_pengarahan_normal", "Pengarahan: normal"]]
         .map(([key, label]) => ({ key, label, price: cfg[key] })),
       cards: texts ? texts.cards().map(c => ({ ...c, shown: !hiddenCards.includes(c.slug) })) : [],
+      freeAccounts: String(cfg.akun_gratis || ""),
       note: "Harga baru hanya berlaku untuk pesanan baru. Pesanan lama tetap memakai harga yang tersimpan saat pesanan dibuat." };
   }));
 

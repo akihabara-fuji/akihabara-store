@@ -53,6 +53,7 @@ const DEFS = {
   qris_image_path:              { type: "str",  re: /^[a-z0-9/_.-]{0,200}$/i, allowEmpty: true, def: "" },
   price_simulasi:               { type: "int",  min: 0, max: 100000000, def: 0, pub: true },        // biaya pesan simulasi (0 = gratis dipesan)
   sim_koin_price:               { type: "int",  min: 0, max: 1000, def: 4, pub: true },             // koin untuk membuka tanya jawab lengkap (pembukaan pertama tiap akun gratis)
+  akun_gratis:                  { type: "str",  re: /^[^\s,@]+@[^\s,@]+(,[^\s,@]+@[^\s,@]+)*$/, allowEmpty: true, def: "" }, // email akun pemilik/tim yang memakai koin tanpa potongan (dipisah koma)
   layanan_nonaktif:             { type: "str",  re: /^[a-z0-9_]+(,[a-z0-9_]+)*$/, allowEmpty: true, def: "", pub: true }, // kode layanan yang ditutup, dipisah koma
 };
 /* Nama tampil tiap layanan (formulir, judul pesanan, daftar admin). Kosong = pakai nama bawaan di layanan.js. Diubah dari panel admin. */

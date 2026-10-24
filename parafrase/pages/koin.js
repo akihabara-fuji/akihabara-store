@@ -67,7 +67,7 @@
       show("load", false);
       if (x.status === 401) { show("need", true); $("login").href = "/ms/masuk?next=" + encodeURIComponent(location.pathname + location.search); return; }
       if (!x.ok) { show("need", false); $("load").textContent = x.j.error || "Gagal memuat."; show("load", true); return; }
-      show("app", true); rate = x.j.rate || 1000; $("bal").textContent = fmt(x.j.balance) + " koin";
+      show("app", true); rate = x.j.rate || 1000; $("bal").textContent = x.j.unlimited ? "Tanpa batas (akun gratis)" : fmt(x.j.balance) + " koin";
       $("mname").textContent = x.j.merchant || "";
       var tb = $("rt").tBodies[0]; tb.textContent = "";
       x.j.history.forEach(function (r) {
