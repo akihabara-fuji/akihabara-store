@@ -38,16 +38,16 @@ module.exports = function mountUploads({ app, db, settings, root, sameOrigin, se
     up(req, res, async err => {
       if (err) return res.status(err.code === "LIMIT_FILE_SIZE" ? 413 : 400).json({ error: err.code === "LIMIT_FILE_SIZE" ? `File terlalu besar (maksimal ${cfg.file_max_mb} MB).` : "Unggahan gagal. Coba lagi." });
       const f = req.file;
-      if (!f) return res.status(400).json({ error: "Pilih satu file Word (.docx)." });
+      if (!f) return res.status(400).json({ error: "Pilih satu file Word (.docx) atau PDF." });
       const name = String(f.originalname || "").slice(0, 200);
-      if (!/\.docx$/i.test(name)) {
+      if (!/\.(docx|pdf)$/i.test(name)) {
         const ext = (name.match(/\.([a-z0-9]{1,5})$/i) || [])[1];
-        return res.status(415).json({ error: `Hanya file Word (.docx) yang diterima${ext ? `, bukan .${ext.toLowerCase()}` : ""}. Punya PDF? Ubah dulu ke .docx supaya tata letak tidak bergeser.` });
+        return res.status(415).json({ error: `Hanya file Word (.docx) atau PDF yang diterima${ext ? `, bukan .${ext.toLowerCase()}` : ""}.` });
       }
       try {
         const a = await analyze(f.buffer);
         const id = crypto.randomBytes(16).toString("hex");
-        const rel = `docs/${id}.docx`;
+        const rel = `docs/${id}.${/\.pdf$/i.test(name) ? "pdf" : "docx"}`;
         await fsp.writeFile(path.join(root, "data", "private", rel), f.buffer, { mode: 0o600 });
         const sha = crypto.createHash("sha256").update(f.buffer).digest("hex");
         const det = summary(a);
@@ -102,7 +102,7 @@ module.exports = function mountUploads({ app, db, settings, root, sameOrigin, se
       const cfg = settings.getAll();
       const e = await getAnalysis(id, cfg);
       if (!e) return res.status(404).json({ error: "Unggahan tidak ditemukan atau sudah kedaluwarsa. Unggah ulang dokumenmu." });
-      res.json(buildPreview(e.a, e.findings, secret, id, { unlocked: false, openParagraphs: cfg.preview_open_paragraphs, cfg, page: parseInt(req.query.page, 10) || 1, pageSize: parseInt(req.query.size, 10) || 30 }));
+      res.json(buildPreview(e.a, e.findings, secret, id, { unlocked: false, openWords: cfg.free_words, openParagraphs: cfg.preview_open_paragraphs, cfg, page: parseInt(req.query.page, 10) || 1, pageSize: parseInt(req.query.size, 10) || 30 }));
     } catch (err) { console.error("[parafrase] preview gagal:", err && err.message); res.status(500).json({ error: "Pratinjau tidak bisa dibuat." }); }
   });
 

@@ -14,7 +14,7 @@
 
   function send(f) {
     showErr("");
-    if (!/\.docx$/i.test(f.name)) { showErr("Hanya file Word (.docx) yang diterima."); return; }
+    if (!/\.(docx|pdf)$/i.test(f.name)) { showErr("Hanya file Word (.docx) atau PDF yang diterima."); return; }
     if (f.size > 10 * 1048576) { showErr("File terlalu besar. Maksimal 10 MB."); return; }
     $("busy").classList.remove("hidden"); $("pick").disabled = true;
     var fd = new FormData(); fd.append("file", f);
@@ -63,10 +63,15 @@
       var row = el("div", "display:flex;gap:12px;align-items:center;padding:12px 14px;margin-bottom:8px;border-radius:14px;border:1px solid #2b2b58");
       row.appendChild(el("span", "flex:none;font-size:12.5px;font-weight:700;padding:3px 10px;border-radius:999px;border:1px solid " + SEV[f.sev][1] + ";color:" + SEV[f.sev][1], SEV[f.sev][0]));
       var mid = el("div", "flex:1"); mid.appendChild(el("div", "", f.cat));
-      mid.appendChild(el("div", "font-size:13px;opacity:.6;filter:blur(5px);user-select:none", "Penjelasan dan saran perbaikan di Audit Lengkap")); row.appendChild(mid);
+      if (f.open) mid.appendChild(el("div", "font-size:13.5px;opacity:.85;margin-top:2px", f.detail));
+      else mid.appendChild(el("div", "font-size:13px;opacity:.6;filter:blur(5px);user-select:none", "Penjelasan dan saran perbaikan di Audit Lengkap")); row.appendChild(mid);
       row.appendChild(el("span", "flex:none;font-size:13px;opacity:.75", f.where)); l.appendChild(row);
     });
     if (d.findings.length > 40) l.appendChild(el("p", "text-align:center;opacity:.7", "dan " + (d.findings.length - 40) + " temuan lain di Audit Lengkap."));
-    $("perword").textContent = d.quote.perWord; $("minp").textContent = rp(d.quote.min); $("total").textContent = rp(d.quote.total);
+    $("perword").textContent = d.quote.perWord; $("minp").textContent = rp(d.quote.min); $("total").textContent = d.quote.allFree ? "0 (seluruh dokumen sudah terbuka gratis)" : rp(d.quote.total);
+    $("fwn").textContent = rp(d.quote.freeWords || 0);
+    var nOpen = d.findings.filter(function (f) { return f.open; }).length;
+    $("rmeta").textContent += d.quote.allFree ? " · seluruhnya gratis" : " · " + rp(d.quote.freeWords) + " kata pertama dibuka gratis (" + nOpen + " temuan lengkap)";
+    $("cta").classList.toggle("hidden", !!d.quote.allFree);
   }
 })();

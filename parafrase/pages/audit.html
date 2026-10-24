@@ -22,12 +22,12 @@
 <section id="s1" class="hero">
   <span class="badge">Audit Dokumen</span>
   <h1>Sitasi dan pustakamu aman? <span class="hook">Cek sebelum tutor yang menemukan.</span></h1>
-  <p class="lead">Unggah dokumen Word. Kami memeriksa sitasi, daftar pustaka, dan DOI yang benar-benar terdaftar. Ringkasan gratis, perlu masuk dengan akun Catatan Akademik.</p>
+  <p class="lead">Unggah dokumen Word atau PDF. Audit mencakup semua bagian, dari judul sampai akhir: struktur, isi, sitasi, daftar pustaka, dan DOI yang benar-benar terdaftar. <span data-fw>700</span> kata pertama dibuka gratis lengkap dengan penjelasannya, perlu masuk dengan akun Catatan Akademik.</p>
   <div class="drop" id="drop">
     <b>Tarik dan lepas file di sini</b>
-    <div style="font-size:14px;color:var(--muted)">Hanya file Word (.docx). Maksimal 10 MB.</div>
-    <input id="file" type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" class="hidden">
-    <button class="btn" id="pick" type="button" style="margin-top:6px">Mulai Audit Ringkas (gratis)</button>
+    <div style="font-size:14px;color:var(--muted)">File Word (.docx) atau PDF. Maksimal 10 MB.</div>
+    <input id="file" type="file" accept=".docx,.pdf,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" class="hidden">
+    <button class="btn" id="pick" type="button" style="margin-top:6px">Mulai Audit (gratis)</button>
     <div id="busy" class="muted hidden" role="status">Memeriksa dokumenmu, termasuk DOI. Bisa sampai setengah menit…</div>
   </div>
   <div id="err" class="err hidden" role="alert"></div>
@@ -49,8 +49,8 @@
     <div>Tulisan masih banyak sorotan? Perbaiki kalimatnya lewat <a href="/ruangakademikut/cek-parafrase-mandiri">Cek &amp; Parafrase Mandiri</a>.</div>
   </div>
   <div id="cta" style="margin:24px auto 0;max-width:760px;padding:18px;border-radius:16px;border:1px solid var(--line,#2b2b58);text-align:left">
-    <b>Buka semua detail (Audit Lengkap)</b>
-    <div class="muted" style="margin:4px 0 10px">Lokasi tepat, penjelasan, dan saran perbaikan tiap temuan. Rp <span id="perword" data-p="audit_per_word">20</span> per kata, minimal Rp <span id="minp" data-p="audit_min">35.000</span>.</div>
+    <b>Buka sisa dokumen (Audit Lengkap)</b>
+    <div class="muted" style="margin:4px 0 10px" id="ctaTxt">Lokasi tepat, penjelasan, dan saran perbaikan untuk semua temuan. Harga dihitung untuk kata setelah <span id="fwn" data-fw>700</span> kata pertama: Rp <span id="perword" data-p="audit_per_word">20</span> per kata, minimal Rp <span id="minp" data-p="audit_min">35.000</span>.</div>
     <div style="font-size:22px;font-weight:700;margin-bottom:10px">Rp <span id="total"></span></div>
     <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px">
       <label for="wa" style="font-weight:600;font-size:14px">Nomor WhatsApp (untuk konfirmasi)</label>
@@ -63,6 +63,6 @@
   </div>
 </section>
 
-<script src="/ruangakademikut/assets/common.js?v=20261102"></script><script src="/ruangakademikut/assets/audit.js?v=20261031"></script>
+<script src="/ruangakademikut/assets/common.js?v=20261105"></script><script src="/ruangakademikut/assets/audit.js?v=20261105"></script>
 <footer class="ft"><div class="wrap ft-in"><div class="ft-b"><b>Catatan Akademik</b><span>Jakarta Barat. Layanan UT dan Blog.</span><small>© Catatan Akademik. Semua hak dilindungi.</small></div><nav class="ft-n" aria-label="Footer"><a href="/ruangakademikut">Layanan UT</a><a href="/ruangakademikut/blog-ut">Blog &amp; Berita UT</a><a href="/ms/masuk">Masuk</a><a href="/ms/privasi">Privasi</a><a href="/ms/ketentuan">Ketentuan</a></nav></div></footer>
 </body></html>

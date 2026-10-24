@@ -256,6 +256,13 @@ const MIGRATIONS = [
   CREATE TABLE pv_uniq (day TEXT NOT NULL, path TEXT NOT NULL, vh TEXT NOT NULL, PRIMARY KEY(day,path,vh)) WITHOUT ROWID;
   CREATE TABLE pv_ref  (day TEXT NOT NULL, ref TEXT NOT NULL, views INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(day,ref)) WITHOUT ROWID;
   `,
+  `
+  /* Metopen hanya sampai Tugas 3: harga baru. Hanya menimpa harga yang sudah pernah disimpan admin; bila belum pernah disimpan, nilai bawaan baru berlaku. */
+  UPDATE settings SET value='300000', updated_by='migrasi', updated_at=CAST(strftime('%s','now') AS INTEGER)*1000 WHERE key='price_metopen1';
+  UPDATE settings SET value='250000', updated_by='migrasi', updated_at=CAST(strftime('%s','now') AS INTEGER)*1000 WHERE key='price_metopen2';
+  UPDATE settings SET value='350000', updated_by='migrasi', updated_at=CAST(strftime('%s','now') AS INTEGER)*1000 WHERE key='price_metopen3';
+  UPDATE settings SET value='799000', updated_by='migrasi', updated_at=CAST(strftime('%s','now') AS INTEGER)*1000 WHERE key='price_metopen_paket';
+  `,
 ];
 
 

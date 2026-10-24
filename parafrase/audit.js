@@ -9,7 +9,7 @@ const fsp = fs.promises;
 const path = require("path");
 const crypto = require("crypto");
 const multer = require("multer");
-const { analyze, DocxError } = require("./docx");
+const { analyze, DocxError, countWords } = require("./docx");
 const { runAudit } = require("./auditrules");
 const { buildTriageBase, withDrillbit, parseDrill, settingsSig } = require("./triage");
 
@@ -29,7 +29,17 @@ module.exports = function mountAudit({ app, express, db, settings, orders, root,
   let running = 0; // batas pekerjaan bersamaan, supaya server tidak berat saat ramai
   const MAX_RUNNING = 3;
   const insert = db.prepare(`INSERT INTO uploads(id,path,original_name,size,sha256,detected,ip_hash,created_at,expires_at) VALUES(?,?,?,?,?,?,?,?,?)`);
-  const quote = words => { const r = orders.auditRate(settings.getAll()); return { words, perWord: r.perWord, min: r.min, total: Math.max(words * r.perWord, r.min) }; };
+  const quote = words => { const q = orders.auditQuote(words, settings.getAll()); return { words, perWord: q.perWord, min: q.min, freeWords: q.free, chargedWords: q.pay, allFree: q.allFree, total: q.total }; };
+
+  /* Penjelasan hanya untuk temuan di paragraf yang seluruhnya masuk batas kata gratis (dari awal dokumen). Sisanya: tingkat, kategori, lokasi. */
+  const openFindings = (findings, a, q) => {
+    const free = new Set(); let n = 0;
+    if (!q.allFree && q.freeWords > 0) for (const p of a.paragraphs) { if (!p.text.trim()) continue; const w = countWords(p.text); if (n + w > q.freeWords) break; n += w; free.add(p.idx); }
+    return findings.map(x => {
+      const m = /^Paragraf (\d+)/.exec(x.where || ""), open = q.allFree || (m && free.has(Number(m[1]) - 1));
+      return { sev: x.sev, cat: x.cat, where: x.where, ...(open ? { open: true, detail: x.detail } : {}) };
+    });
+  };
 
   app.post("/ms/audit/upload", (req, res) => {
     res.set("Cache-Control", "no-store");
@@ -41,9 +51,10 @@ module.exports = function mountAudit({ app, express, db, settings, orders, root,
     up(req, res, async err => {
       if (err) return res.status(err.code === "LIMIT_FILE_SIZE" ? 413 : 400).json({ error: err.code === "LIMIT_FILE_SIZE" ? `File terlalu besar (maksimal ${MAX_MB} MB).` : "Unggahan gagal. Coba lagi." });
       const f = req.file;
-      if (!f) return res.status(400).json({ error: "Pilih satu file Word (.docx)." });
+      if (!f) return res.status(400).json({ error: "Pilih satu file Word (.docx) atau PDF." });
       const name = String(f.originalname || "").slice(0, 200);
-      if (!/\.docx$/i.test(name)) return res.status(415).json({ error: "Hanya file Word (.docx) yang diterima. Punya PDF? Ubah dulu ke .docx." });
+      if (!/\.(docx|pdf)$/i.test(name)) return res.status(415).json({ error: "Hanya file Word (.docx) atau PDF yang diterima." });
+      const isPdfName = /\.pdf$/i.test(name);
       running++;
       try {
         const a = await analyze(f.buffer);
@@ -52,13 +63,14 @@ module.exports = function mountAudit({ app, express, db, settings, orders, root,
         const words = a.wordsAll || 0;
         const triage = withDrillbit(buildTriageBase({ paras: a.paragraphs, bibAt: r.bodyAt, findings: r.docFindings, cfg }), null); // tanpa teks dokumen (gratis)
         // Simpan sementara (2 jam) supaya bisa dibeli sebagai Audit Lengkap; yang tidak dibeli dihapus otomatis oleh purgeExpired.
-        const id = crypto.randomBytes(16).toString("hex"), rel = `docs/${id}.docx`;
+        const id = crypto.randomBytes(16).toString("hex"), rel = `docs/${id}.${isPdfName ? "pdf" : "docx"}`;
         await fsp.writeFile(path.join(root, "data", "private", rel), f.buffer, { mode: 0o600 });
         insert.run(id, rel, name, f.size, crypto.createHash("sha256").update(f.buffer).digest("hex"), JSON.stringify({ kind: "audit", words, wordsWithoutBibliography: a.wordsBody, hasBibliography: !!a.hasBibliography }), h, now, now + UPLOAD_TTL_MS);
         res.json({
           uploadId: id, file: { name, size: f.size }, words, counts: r.counts, refs: r.refs, score: r.score, triage,
           /* Hanya tingkat, kategori, dan lokasi. Penjelasan ada di Audit Lengkap. */
-          findings: r.findings.map(x => ({ sev: x.sev, cat: x.cat, where: x.where })),
+          findings: openFindings(r.findings, a, quote(words)),
+          freeWords: quote(words).freeWords,
           quote: quote(words),
         });
       } catch (e) {

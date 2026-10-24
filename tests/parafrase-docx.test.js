@@ -100,6 +100,7 @@ async function server(extraSettings = {}) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "pf-up-"));
   const app = express();
   const m = require("../parafrase")({ app, express, requireAdmin: (q, r, n) => n(), sameOrigin: q => !!q.headers.origin, ROOT: root });
+  m.settings.set({ free_words: 0 });
   if (Object.keys(extraSettings).length) m.settings.set(extraSettings);
   const srv = app.listen(0);
   return { m, root, srv, base: "http://127.0.0.1:" + srv.address().port };

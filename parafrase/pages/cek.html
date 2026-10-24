@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Cek dan Parafrase Mandiri | Catatan Akademik</title>
-<meta name="description" content="Unggah dokumen Word, lihat bagian yang perlu dibenahi dengan 8 warna, lalu tim Catatan Akademik merevisinya. Pemeriksaan Internal Catatan Akademik.">
+<meta name="description" content="Unggah dokumen Word atau PDF, lihat bagian yang perlu dibenahi dengan 8 warna, lalu tim Catatan Akademik merevisinya. Pemeriksaan Internal Catatan Akademik.">
 <link rel="canonical" href="{{SITE}}/ruangakademikut/cek-parafrase-mandiri">
 <link rel="icon" href="/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Bricolage+Grotesque:wght@500;700&display=swap" rel="stylesheet"><script>try{var t=localStorage.getItem("nx-theme");document.documentElement.dataset.theme=(t==="light"||t==="dark")?t:"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script>
@@ -25,9 +25,9 @@
   <p class="lead">Unggah satu file. Kami membaca judul, bahasa, dan jenisnya sendiri, menandai bagian yang perlu dibenahi, lalu tim kami merevisinya.</p>
   <div class="drop" id="drop">
     <b>Tarik dan lepas file di sini</b>
-    <div style="font-size:14px;color:var(--muted)">Hanya file Word (.docx). Maksimal <span id="maxmb">25</span> MB, tanpa batas jumlah kata.</div>
-    <div class="muted" style="max-width:520px">Punya PDF? Ubah dulu ke Word supaya tata letak tidak bergeser: di Word pilih Buka lalu pilih PDF-nya, atau di Google Docs unggah PDF lalu Unduh sebagai .docx.</div>
-    <input id="file" type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" class="hidden">
+    <div style="font-size:14px;color:var(--muted)">File Word (.docx) atau PDF. Maksimal <span id="maxmb">25</span> MB, tanpa batas jumlah kata.</div>
+    <div class="muted" style="max-width:520px"><span data-fw>700</span> kata pertama dibuka gratis. File PDF dibaca sebagai teks (tanpa tata letak), jadi Word lebih akurat.</div>
+    <input id="file" type="file" accept=".docx,.pdf,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" class="hidden">
     <button class="btn" id="pick" type="button" style="margin-top:6px">Pilih file</button>
     <div id="busy" class="muted hidden" role="status">Membaca dokumenmu…</div>
   </div>
@@ -82,7 +82,8 @@
       <div class="card" style="padding:0;overflow:hidden">
         <div class="hd"><div style="font-size:17px;font-weight:700">Informasi Harga</div><div style="font-size:13px;color:#D6E6F3">Revisi mandiri berwarna</div></div>
         <div class="price">
-          <div class="l"><span style="color:var(--muted)">Harga per kata</span><strong>Rp <span data-ppw>17</span></strong></div>
+          <div class="l"><span style="color:var(--muted)"><span data-fw>700</span> kata pertama</span><strong>Gratis</strong></div>
+          <div class="l"><span style="color:var(--muted)">Harga per kata (setelahnya)</span><strong>Rp <span data-ppw>17</span></strong></div>
           <div class="l"><span style="color:var(--muted)">Total kata</span><strong id="pwords">-</strong></div>
           <div class="l"><span style="color:var(--muted)">Harga minimum</span><strong>Rp <span data-min>30.000</span></strong></div>
           <label class="fast" id="fastbox"><input type="checkbox" id="fast" style="width:18px;height:18px;margin-top:2px"><span><strong style="font-size:14px">Jalur cepat + Rp <span data-fast>30.000</span></strong><br>Pesananmu dikerjakan lebih dulu dari antrean biasa. Tidak menjanjikan durasi pasti. <span id="slot"></span></span></label>
@@ -100,7 +101,7 @@
     </div>
   </div>
 </section>
-<script src="/ruangakademikut/assets/common.js?v=20261102"></script>
-<script src="/ruangakademikut/assets/cek.js?v=20261031"></script>
+<script src="/ruangakademikut/assets/common.js?v=20261105"></script>
+<script src="/ruangakademikut/assets/cek.js?v=20261105"></script>
 <footer class="ft"><div class="wrap ft-in"><div class="ft-b"><b>Catatan Akademik</b><span>Jakarta Barat. Layanan UT dan Blog.</span><small>© Catatan Akademik. Semua hak dilindungi.</small></div><nav class="ft-n" aria-label="Footer"><a href="/ruangakademikut">Layanan UT</a><a href="/ruangakademikut/blog-ut">Blog &amp; Berita UT</a><a href="/ms/masuk">Masuk</a><a href="/ms/privasi">Privasi</a><a href="/ms/ketentuan">Ketentuan</a></nav></div></footer>
 </body></html>

@@ -16,11 +16,11 @@ const simulasi = require("./simulasi");
 const SV = {
   tugas:          { label: "Tugas", price: 35000, kind: "tugas" },
   diskusi:        { label: "Diskusi", price: 20000, kind: "diskusi" },
-  metopen1:       { label: "Metopen Tugas 1", price: 250000, kind: "metopen" },
-  metopen2:       { label: "Metopen Tugas 2", price: 200000, kind: "metopen" },
-  metopen3:       { label: "Metopen Tugas 3", price: 250000, kind: "metopen" },
-  metopen4:       { label: "Metopen Tugas 4", price: 300000, kind: "metopen" },
-  metopen_paket:  { label: "Paket Komplit Metopen", price: 919000, kind: "metopen" },
+  metopen1:       { label: "Metopen Tugas 1", price: 300000, kind: "metopen" },
+  metopen2:       { label: "Metopen Tugas 2", price: 250000, kind: "metopen" },
+  metopen3:       { label: "Metopen Tugas 3", price: 350000, kind: "metopen" },
+  metopen4:       { label: "Metopen Tugas 4 (sudah tidak dijual)", price: 300000, kind: "metopen", hidden: true }, // dipertahankan hanya agar pesanan lama tetap terbaca
+  metopen_paket:  { label: "Paket Komplit Metopen", price: 799000, kind: "metopen" },
   revisi_tugas:   { label: "Revisi Tugas", price: 20000, kind: "revisi", of: "tugas" },
   revisi_diskusi: { label: "Revisi Diskusi", price: 10000, kind: "revisi", of: "diskusi" },
   revisi_metopen: { label: "Revisi Metopen", price: 99000, kind: "revisi", of: "metopen" },
@@ -41,7 +41,7 @@ module.exports = function mountLayanan({ app, express, db, settings, orders, roo
   const ext = n => ((String(n).match(/\.([a-z0-9]{2,5})$/i) || [])[1] || "").toLowerCase();
   const bad = (status, error, extra) => Object.assign(new Error(error), { status }, extra || {});
 
-  app.get("/ms/layanan/config", (req, res) => { res.set("Cache-Control", "public, max-age=5"); res.json(Object.fromEntries(Object.entries(SV).map(([k, v]) => [k, { label: labelOf(k), price: priceOf(k), kind: v.kind, ...(v.of ? { of: v.of } : {}), ...(v.kind === "simulasi" ? { simCoins: settings.get("sim_koin_price") } : {}), ...requirements(k) }]))); });
+  app.get("/ms/layanan/config", (req, res) => { res.set("Cache-Control", "public, max-age=5"); res.json(Object.fromEntries(Object.entries(SV).filter(([, v]) => !v.hidden).map(([k, v]) => [k, { label: labelOf(k), price: priceOf(k), kind: v.kind, ...(v.of ? { of: v.of } : {}), ...(v.kind === "simulasi" ? { simCoins: settings.get("sim_koin_price") } : {}), ...requirements(k) }]))); });
 
   const up = multer({ storage: multer.memoryStorage(), limits: { fileSize: MAX_MB * 1048576, files: MAX_FILES, fields: 8 } }).array("files", MAX_FILES);
   app.post("/ms/layanan/order", (req, res) => {
@@ -54,6 +54,7 @@ module.exports = function mountLayanan({ app, express, db, settings, orders, roo
       try {
         const b = req.body || {}, files = req.files || [];
         const sv = SV[b.service]; if (!sv) throw bad(400, "Pilih jenis layanan.");
+        if (sv.hidden) throw bad(410, "Metopen Tugas 4 sudah tidak tersedia. Metopen UT sekarang sampai Tugas 3.");
         if (String(settings.get("layanan_nonaktif") || "").split(",").includes(b.service)) throw bad(409, `Layanan ${labelOf(b.service)} sedang tidak dibuka. Hubungi admin lewat WhatsApp.`);
         const wa = wa62(b.wa); if (!wa) throw bad(400, "Nomor WhatsApp tidak valid.");
         if (b.agree !== "true") throw bad(400, "Centang persetujuan syarat dan kebijakan privasi.");
