@@ -254,7 +254,7 @@
     const list = all.filter(p => (f === "all" ? stOf(p) !== "trash" : stOf(p) === f) && (!topic || p.topic === topic) && (!tag || (p.tags || []).includes(tag)) && (!s || (p.title + " " + (p.excerpt || "")).toLowerCase().includes(s)));
     const tabs = [["all", "Semua"], ["published", "Terbit"], ["scheduled", "Terjadwal"], ["draft", "Draf"], ["review", "Review"], ["trash", "Sampah"]].map(([k, l]) => `<a href="#/posts?status=${k}" class="${f === k ? "on" : ""}">${l} <span class="n">${cnt(k)}</span></a>`).join("");
     setPage("Artikel Blog", "Kelola semua artikel, draf, dan jadwal publikasi", `
-      <div class="bar"><nav class="tabs" aria-label="Status artikel">${tabs}</nav><span class="grow"></span><a class="btn pri" href="#/posts/new">${ICON.pen}Tulis artikel</a></div>
+      <div class="bar"><nav class="tabs" aria-label="Status artikel">${tabs}</nav><span class="grow"></span><button class="btn" id="impMd" type="button">Impor file .md</button><a class="btn pri" href="#/posts/new">${ICON.pen}Tulis artikel</a></div>
       <div class="card"><div class="hd"><form class="bar" id="pf" style="flex:1"><select class="in" name="topic" style="width:auto"><option value="">Semua kategori</option>${Object.entries(d.topics).map(([k, v]) => `<option value="${k}" ${k === topic ? "selected" : ""}>${esc(v.label)}</option>`).join("")}</select>
         <input class="in grow" name="q" type="search" placeholder="Cari judul artikel…" value="${esc(q.get("q") || "")}"><button class="btn">Cari</button>${tag ? `<a class="btn sm" href="#/posts">Tag #${esc(tag)} ✕</a>` : ""}</form></div>
       <div class="tbl-wrap">${list.length ? `<table class="t"><thead><tr><th>Judul</th><th>Kategori</th><th>Penulis</th><th>Status</th><th>Tanggal</th><th></th></tr></thead><tbody>${list.map(p => {
@@ -263,10 +263,33 @@
           <td class="muted small">${st === "scheduled" ? "Terbit " + dt(p.publishAt) : st === "published" ? "Terbit " + dd(p.publishedAt) : "Diubah " + dt(p.updatedAt)}</td>
           <td><div class="act"><button class="btn sm" data-menu="${p.id}" aria-haspopup="true">Aksi ▾</button></div></td></tr>`;
       }).join("")}</tbody></table>` : '<div class="empty">Tidak ada artikel di filter ini.</div>'}</div></div>`);
+    $("#impMd").onclick = importMarkdown;
     $("#pf").onsubmit = e => { e.preventDefault(); go("posts", { status: f, topic: e.target.topic.value, q: e.target.q.value.trim() }); };
     $("#pf").topic.onchange = () => $("#pf").requestSubmit();
     bindRows();
     $$("[data-menu]").forEach(b => b.onclick = e => { e.stopPropagation(); postMenu(b, all.find(p => p.id === b.dataset.menu)); });
+  }
+  /* Impor file Markdown (.md) menjadi draf. Berkas dibaca di browser; server menyimpan SEMUA sebagai draf, tidak ada yang langsung terbit. */
+  async function importMarkdown() {
+    let picked = [];
+    const ok = await dialog({
+      title: "Impor artikel dari file .md", wide: true, ok: "Impor jadi draf",
+      body: `<p class="small muted" style="margin-top:0">Pilih satu atau banyak file .md. Setiap file menjadi satu <b>draf</b> (tidak ada yang langsung terbit). Judul, slug, meta title, meta description, tag, dan kategori diambil dari bagian awal file:</p>
+        <pre class="small" style="white-space:pre-wrap;background:rgba(127,127,127,.12);padding:10px 12px;border-radius:10px">---\ntitle: Judul artikel\nslug: judul-artikel\nmeta_title: Maks. 60 karakter\nmeta_description: Maks. 155 karakter\ntags: [tuton, uas ut]\ntopic: study\nkeyword: kata kunci utama\n---\n\nIsi artikel (## sub-judul, tabel, tautan)</pre>
+        <input type="file" id="mdFiles" accept=".md,.markdown,.txt,text/markdown,text/plain" multiple><div class="small muted" id="mdSel" style="margin-top:6px">Belum ada file dipilih.</div>`,
+      onOpen: d => { const inp = $("#mdFiles", d); inp.onchange = () => { picked = [...inp.files]; $("#mdSel", d).textContent = picked.length ? picked.length + " file dipilih: " + picked.map(f => f.name).join(", ") : "Belum ada file dipilih."; }; }
+    });
+    if (!ok) return;
+    if (!picked.length) return toast("Pilih minimal satu file .md.", true);
+    try {
+      const files = await Promise.all(picked.map(async f => ({ name: f.name, text: await f.text() })));
+      const r = await api("/ms/admin/posts/import", { json: { files } });
+      const rows = r.results.map(x => x.ok
+        ? `<li><b>✓ <a href="#/posts/${x.id}" data-close>${esc(x.title)}</a></b> <span class="small faint">/blog/${esc(x.slug)} · ${x.words} kata</span>${x.warnings.length ? `<ul class="small" style="margin:4px 0 0">${x.warnings.map(w => `<li>${esc(w)}</li>`).join("")}</ul>` : '<div class="small muted">Tidak ada catatan.</div>'}</li>`
+        : `<li><b>${x.skipped ? "↷" : "✗"} ${esc(x.title || x.name)}</b> <span class="small faint">${esc(x.error)}</span></li>`).join("");
+      route();
+      await dialog({ title: `${r.created} draf dibuat dari ${r.results.length} file`, wide: true, ok: "", cancel: "Tutup", body: `<p class="small muted" style="margin-top:0">Semua berstatus <b>Draf</b>. Klik judul untuk membuka dan memeriksa. Catatan di bawah tiap judul adalah hal yang perlu kamu cek sebelum menerbitkan.</p><ul style="padding-left:18px;display:flex;flex-direction:column;gap:12px">${rows}</ul>`, onOpen: d => $$("[data-close]", d).forEach(a => a.addEventListener("click", () => d.finish(false))) });
+    } catch (e) { fail(e); }
   }
   function postMenu(btn, p) {
     $$(".menu").forEach(m => m.remove());

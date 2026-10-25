@@ -419,6 +419,21 @@ module.exports = function mount(ctx) {
     await saveBlog(); res.json({ ok: true, post: p });
     if (isLive(p)) pingIndex([p.slug]);
   });
+  /* Impor file Markdown: tiap file menjadi SATU draf (tidak pernah langsung terbit). Berkas dibaca di browser dan dikirim sebagai teks,
+     jadi tidak ada unggahan berkas ke server. Judul yang sudah ada dilewati supaya impor ulang tidak menggandakan draf. */
+  const importMd = require("./blog-import");
+  app.post("/ms/admin/posts/import", requireAdmin, express.json({ limit: "3mb" }), async (req, res) => {
+    const files = Array.isArray((req.body || {}).files) ? req.body.files.slice(0, 30) : [];
+    if (!files.length) return res.status(400).json({ error: "Pilih minimal satu file .md." });
+    const acad = onAcadHost(req);
+    const { posts, results } = importMd.buildDrafts(files, {
+      existing: blog.posts.filter(x => !x.trashedAt), uniqueSlug, slugify, cleanTags, str, newId: () => crypto.randomBytes(6).toString("hex"),
+      topics: TOPICS, allowedTopics: acad ? ACAD_TOPICS : null, defaultTopic: acad ? "study" : "social", author: DEFAULT_AUTHOR,
+      by: (req.admin && req.admin.name) || "admin", now: new Date().toISOString(),
+    });
+    if (posts.length) { blog.posts.push(...posts); try { await saveBlog(); } catch { blog.posts.splice(blog.posts.length - posts.length, posts.length); return res.status(500).json({ error: "Draf belum bisa disimpan. Coba lagi sebentar." }); } }
+    res.json({ ok: true, created: posts.length, results });
+  });
   /* Hanya tag (tanpa revisi dan tanpa mengubah tanggal "diperbarui", karena isi artikel tidak berubah). */
   app.post("/ms/admin/posts/:id/tags", requireAdmin, adminJson, async (req, res) => {
     const p = blog.posts.find(x => x.id === req.params.id); if (!p) return res.status(404).json({ error: "Tulisan tidak ditemukan." });
