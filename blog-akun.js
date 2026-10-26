@@ -720,7 +720,7 @@ ${ACAD_ONLY ? '<script defer src="/ruangakademikut/assets/koin-chip.js?v=2026120
       <div class="prose">${bodyHtml}</div>
       ${tags.length ? `<div class="ax-tags" aria-label="Tag">${tags.map(t => `<a href="/blog?tag=${encodeURIComponent(t)}" rel="tag">${esc(tagLabel(t))}</a>`).join("")}</div>` : ""}
       ${communityBlock()}
-      <p class="ax-note">${BRAND} bukan situs resmi Universitas Terbuka. Selalu pegang ketentuan dari tutor dan sumber resmi UT di <a href="https://www.ut.ac.id" rel="noopener" target="_blank">ut.ac.id</a>.</p>
+      <p class="ax-note">${BRAND} adalah layanan belajar independen yang dikelola oleh mahasiswa UT. Bukan situs resmi Universitas Terbuka. Selalu pegang ketentuan dari tutor dan sumber resmi UT di <a href="https://www.ut.ac.id" rel="noopener" target="_blank">ut.ac.id</a>.</p>
       <a class="back" href="${topicLink}">← Kembali ke ${esc(tl(p.topic))}</a>
       ${preview ? "" : commentsBlock(p.slug)}
     </article>
