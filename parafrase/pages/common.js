@@ -125,8 +125,8 @@ window.auditAspects = function (sc, box, opts) {
 };
 
 /* Tingkat bermasalah (persen) untuk Audit Dokumen dan Cek & Parafrase: SATU rumus (parafrase/masalah.js), jadi angkanya sama di dua menu.
-   Arah: makin banyak larangan modul yang ketemu, makin TINGGI persennya dan makin merah. Di atas batas (bawaan 30%) = belum aman. */
-window.PF_FIX_MAX = 30;
+   Arah: makin banyak larangan modul yang ketemu, makin TINGGI persennya dan makin merah. Di atas batas (bawaan 25%) = belum aman. */
+window.PF_FIX_MAX = 25;
 window.auditProblemCard = function (pb, box) {
   if (!pb || !box) return;
   function el(t, css, x) { var e = document.createElement(t); if (css) e.style.cssText = css; if (x != null) e.textContent = x; return e; }

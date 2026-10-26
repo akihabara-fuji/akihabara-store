@@ -1,5 +1,5 @@
 /* Tingkat bermasalah dokumen (persen). SATU rumus untuk Audit Dokumen dan Cek & Parafrase, jadi angkanya selalu sama.
-   Arah: makin banyak larangan modul yang ketemu, makin TINGGI persennya. Di atas batas (bawaan 30%, ketentuan tugas UT) = belum aman.
+   Arah: makin banyak larangan modul yang ketemu, makin TINGGI persennya. Di atas batas (bawaan 25%, penyangga di bawah batas resmi UT 30%) = belum aman.
 
    persen = unit bermasalah / semua unit x 100, dengan unit =
      - kalimat isi (bermasalah bila kena minimal satu aturan; temuan ber-scope "para" menandai semua kalimat di paragrafnya),
@@ -15,7 +15,7 @@ const WHOLE_PARA = new Set(["H", "P"]);
 function wholeParagraph(f) { return f.scope ? f.scope === "para" : (WHOLE_PARA.has(f.code) || f.kind === "uniform"); }
 
 function computeProblem(paras, bibAt, findings, cfg = {}) {
-  const limit = Math.min(100, Math.max(1, Number(cfg.masalah_batas_persen) || 30));
+  const limit = Math.min(100, Math.max(1, Number(cfg.masalah_batas_persen) || 25));
   const body = paras.filter(p => rules.isBody(p, bibAt));
   const sentCount = new Map(); let nSent = 0;
   for (const p of body) { const n = splitSentences(p.text).length; sentCount.set(p.idx, n); nSent += n; }

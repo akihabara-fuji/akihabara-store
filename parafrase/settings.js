@@ -46,7 +46,7 @@ const DEFS = {
   urgensi_ai_tinggi:            { type: "int",  min: 10, max: 100, def: 60 }, // indikasi gaya seragam (%) mulai "tinggi"
   urgensi_paragraf_skor:        { type: "int",  min: 3, max: 30, def: 8 },    // skor paragraf mulai "mendesak"
   urgensi_paragraf_persen:      { type: "int",  min: 1, max: 100, def: 15 },  // % paragraf mendesak yang membuat dokumen "mendesak"
-  masalah_batas_persen:         { type: "int",  min: 1, max: 100, def: 30, pub: true },  // batas tingkat bermasalah (%): di atas ini "belum aman" (ketentuan tugas UT: di bawah 30%)
+  masalah_batas_persen:         { type: "int",  min: 1, max: 100, def: 25, pub: true },  // batas tingkat bermasalah (%): di atas ini "belum aman" (target internal 25% sebagai penyangga batas resmi UT 30%)
   standar_kutipan_max_persen:   { type: "int",  min: 0, max: 100, def: 0 },   // 0 = mati. Modul tidak memberi angka; isi bila sudah ada acuan resmi
   standar_hipotesis_max:        { type: "int",  min: 0, max: 50, def: 0 },    // 0 = mati. Modul tidak memberi angka "terlalu rumit"
   price_semester_min:           { type: "int",  min: 0, max: 100000000, def: 1300000, pub: true },

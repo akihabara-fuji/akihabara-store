@@ -10,8 +10,8 @@ test("tingkat bermasalah: makin banyak temuan makin tinggi persennya (arah tidak
   const many = computeProblem(paras, null, [0, 1, 2, 3].map(i => ({ code: "K", para_idx: i, sent_idx: 0, text: "x" })), cfg);
   const none = computeProblem(paras, null, [], cfg);
   assert.ok(none.pct <= one.pct && one.pct < many.pct, JSON.stringify([none.pct, one.pct, many.pct]));
-  assert.ok(many.pct > 30 && many.status === "belum_aman");
-  assert.ok(none.pct < 30 || none.status !== "belum_aman");
+  assert.ok(many.pct > 25 && many.status === "belum_aman");
+  assert.ok(none.pct < 25 || none.status !== "belum_aman");
 });
 
 test("temuan tingkat paragraf menandai semua kalimat paragraf itu, dan satu kalimat dihitung sekali", () => {
@@ -39,5 +39,5 @@ test("audit: semua larangan modul Bab 4-7 terdeteksi, lengkap dengan kutipan dan
   for (const re of [/H0.*diterima|diterima/i, /generalisasi/i, /informan|Slovin/i, /sebab|kausal|menyebabkan/i]) assert.ok(re.test(rules), String(re));
   assert.ok(r.findings.every(f => f.where && f.detail), "setiap temuan punya lokasi dan cara memperbaiki");
   assert.ok(r.findings.some(f => f.quote), "ada kutipan kalimat");
-  assert.ok(r.score.problem && r.score.problem.pct > 30 && r.score.problem.status === "belum_aman");
+  assert.ok(r.score.problem && r.score.problem.pct > 25 && r.score.problem.status === "belum_aman");
 });
