@@ -26,7 +26,7 @@ test("urutan perbaikan paragraf dibatasi 5 teratas, sisanya terlipat", () => {
 });
 
 test("versi aset dinaikkan agar browser memuat skrip baru", () => {
-  for (const f of ["audit.html", "audit-hasil.html"]) assert.ok(/\?v=20261203/.test(rd(f)), f);
+  for (const f of ["audit.html", "audit-hasil.html"]) assert.ok(/\?v=20261205/.test(rd(f)), f);
 });
 
 test("kartu Drillbit tidak mengingat angka lama, dan panel admin memuat app.js baru", () => {
@@ -34,4 +34,11 @@ test("kartu Drillbit tidak mengingat angka lama, dan panel admin memuat app.js b
   assert.ok(!/localStorage\.setItem\(KEY/.test(c), "angka Drillbit tidak boleh disimpan");
   assert.ok(!/saved\.dbSim/.test(c), "angka lama tidak boleh dipulihkan otomatis");
   assert.ok(/app\.js\?v=12/.test(require("fs").readFileSync(require("path").join(__dirname, "..", "admin-ca", "public", "index.html"), "utf8")), "app.js admin harus naik versi agar tombol Impor .md termuat");
+});
+
+test("poin skor bisa ditekan (rincian muncul setelah ditekan) dan daftar temuan dilipat", () => {
+  const c = rd("common.js");
+  assert.ok(/window\.auditScoreCard = function \(sc, box, findings\)/.test(c), "kartu skor menerima daftar temuan");
+  assert.ok(/createElement\("details"\)/.test(c) && /window\.foldList = /.test(c));
+  for (const f of ["audit.js", "audit-hasil.js"]) { const t = rd(f); assert.ok(/foldList\(/.test(t), f + " melipat daftar temuan"); assert.ok(/auditScoreCard\(d\.score, \$\("score"\), d\.findings\)/.test(t), f + " mengirim temuan ke kartu skor"); }
 });

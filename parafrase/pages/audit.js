@@ -50,7 +50,7 @@
   function el(tag, css, txt) { var e = document.createElement(tag); if (css) e.style.cssText = css; if (txt != null) e.textContent = txt; return e; }
   function render(d) {
     $("rmeta").textContent = d.file.name + " · " + rp(d.words) + " kata";
-    window.auditScoreCard(d.score, $("score"));
+    window.auditScoreCard(d.score, $("score"), d.findings);
     /* Urgensi perbaikan dari mesin yang sama dengan Cek & Parafrase; angka Drillbit milik murid menghitungnya ulang di server. */
     var tOpts = { here: "audit", uploadId: upId };
     window.renderTriage($("triage"), d.triage, tOpts);
@@ -72,6 +72,7 @@
     var l = $("list"); l.innerHTML = "";
     if (!d.findings.length) l.appendChild(el("p", "text-align:center", "Tidak ada temuan dari aturan yang kami periksa. Tetap baca ulang sebelum dikumpulkan."));
     window.renderFindings(l, d.findings, { sev: SEV, visible: 5 });
+    if (d.findings.length) window.foldList(l, "Lihat semua temuan (" + d.findings.length + ")");
     $("perword").textContent = d.quote.perWord; $("minp").textContent = rp(d.quote.min); $("total").textContent = d.quote.allFree ? "0 (seluruh dokumen sudah terbuka gratis)" : rp(d.quote.total);
     $("fwn").textContent = rp(d.quote.freeWords || 0);
     $("cekGo").href = "/ruangakademikut/cek-parafrase-mandiri?u=" + encodeURIComponent(upId);

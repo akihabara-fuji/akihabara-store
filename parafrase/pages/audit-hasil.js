@@ -10,7 +10,7 @@
   fetch("/ms/audit/report/" + token, { cache: "no-store" }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); }).then(function (x) {
     if (!x.ok) return fail(x.j.error || "Hasil tidak bisa dibuka.");
     var d = x.j; $("rmeta").textContent = d.title + " · " + rp(d.words) + " kata";
-    window.auditScoreCard(d.score, $("score"));
+    window.auditScoreCard(d.score, $("score"), d.findings);
     var tOpts = { here: "hasil" };
     window.renderTriage($("triage"), d.triage, tOpts);
     window.auditDrillbit($("dbit"), d.score, {
@@ -28,6 +28,7 @@
     var r = d.refs; $("refs").textContent = r.total ? r.total + " pustaka terbaca · " + r.doiOk + " DOI terverifikasi" + (r.doiNotFound ? " · " + r.doiNotFound + " DOI tidak ditemukan" : "") + (r.doiUnverified ? " · " + r.doiUnverified + " belum bisa dicek" : "") : "Daftar pustaka tidak terbaca.";
     if (!d.findings.length) $("list").appendChild(el("p", "text-align:center", "Tidak ada temuan dari aturan yang kami periksa."));
     window.renderFindings($("list"), d.findings, { sev: SEV, visible: 8, full: true });
+    if (d.findings.length) window.foldList($("list"), "Lihat semua temuan (" + d.findings.length + ")");
     if (d.deleteAt) $("del").textContent = "File dihapus otomatis pada " + new Date(d.deleteAt).toLocaleString("id-ID") + ". Simpan hasil ini sebelum itu.";
   }).catch(function () { fail("Koneksi terputus. Muat ulang halaman."); });
 })();

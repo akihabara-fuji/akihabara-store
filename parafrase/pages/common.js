@@ -110,12 +110,18 @@ window.auditAspects = function (sc, box, opts) {
       if (!compact && (ai.parts || []).length) { var pl = el("div", GRID); (ai.parts || []).forEach(function (m) { pl.appendChild(bar(m.label, m.value, true)); }); blk.appendChild(pl); }
       blk.appendChild(el("p", "margin:8px 0 0;font-size:12.5px;opacity:.7", ai.note));
     }
+    if (!compact) {   /* halaman Audit: blok panjang ini terlipat, terbuka bila judulnya ditekan */
+      var dt = document.createElement("details"), sm = document.createElement("summary"), ttl = blk.firstChild, inn = document.createElement("div");
+      sm.style.cssText = "cursor:pointer;font-weight:700;list-style:none"; sm.textContent = ttl.textContent + "  ▾"; blk.removeChild(ttl);
+      inn.style.cssText = "margin-top:10px"; while (blk.firstChild) inn.appendChild(blk.firstChild);
+      dt.appendChild(sm); dt.appendChild(inn); dt.addEventListener("toggle", function () { sm.textContent = ttl.textContent + (dt.open ? "  ▴" : "  ▾"); }); blk.appendChild(dt);
+    }
     box.appendChild(blk);
   }
 };
 
 /* Kartu Skor Kesiapan untuk Audit Dokumen (dipakai halaman ringkas dan hasil lengkap). */
-window.auditScoreCard = function (sc, box) {
+window.auditScoreCard = function (sc, box, findings) {
   if (!sc || !box) return; box.innerHTML = "";
   var COL = { siap: "#5ee6a8", hampir: "#f3ff4d", perlu: "#ffb454", banyak: "#ff8aa5" }[sc.level] || "#8ec5ff";
   function el(t, css, x) { var e = document.createElement(t); if (css) e.style.cssText = css; if (x != null) e.textContent = x; return e; }
@@ -126,14 +132,37 @@ window.auditScoreCard = function (sc, box) {
   var side = el("div", "flex:1;min-width:240px");
   side.appendChild(el("div", "font-size:12.5px;opacity:.7;text-transform:uppercase;letter-spacing:.06em", "Skor Kesiapan Dokumen"));
   side.appendChild(el("div", "font-size:21px;font-weight:700;margin:2px 0 10px;color:" + COL, sc.label));
+  /* Tiap poin bisa ditekan: rincian (arti angka, cara membenahi, dan temuan terkait) baru muncul setelah ditekan,
+     supaya halaman tidak memanjang. Memakai <details> bawaan browser (bisa dengan keyboard). */
+  var MCAT = { sitasi: /^(Sitasi tidak ada di daftar pustaka|Tahun sitasi berbeda)/i, pustaka: /^Pustaka (tidak dikutip|tanpa tahun)/i, doi: /DOI/i };
+  var HELP = {
+    sitasi: ["Dari semua sitasi di isi, segini persen yang punya pasangan di Daftar Pustaka. Target: 100%.", "Yang kurang: tambahkan sumbernya ke Daftar Pustaka, atau betulkan nama dan tahun di isi bila salah ketik."],
+    pustaka: ["Dari semua sumber di Daftar Pustaka, segini persen yang benar-benar dikutip di isi. Target: 100%.", "Yang kurang: kutip sumbernya di isi, atau hapus dari Daftar Pustaka bila memang tidak dipakai."],
+    doi: ["Dari DOI yang bisa dicek, segini persen yang terdaftar di Crossref. Target: 100%.", "Yang kurang: periksa ulang penulisan DOI. Bila layanan pengecekan sedang tidak menjawab, itu belum berarti DOI-nya salah."],
+    berulang: ["Persen kalimat yang muncul lebih dari sekali di dokumen. Target: 0%.", "Tulis ulang kalimat yang sama persis agar tiap bagian punya isi sendiri."]
+  };
   sc.metrics.forEach(function (m) {
-    var row = el("div", "margin-bottom:8px"), top = el("div", "display:flex;justify-content:space-between;gap:10px;font-size:13.5px");
-    top.appendChild(el("span", "", m.label));
+    var d = document.createElement("details"); d.style.cssText = "margin-bottom:6px;border-radius:12px";
+    var sm = document.createElement("summary"); sm.style.cssText = "cursor:pointer;list-style:none;padding:4px 0";
+    var row = el("div", "margin-bottom:2px"), top = el("div", "display:flex;justify-content:space-between;gap:10px;font-size:13.5px");
+    var lb = el("span", "", m.label); var ar = el("span", "margin-left:6px;opacity:.55;font-size:11px", "▾ rincian"); lb.appendChild(ar);
+    top.appendChild(lb);
     top.appendChild(el("b", "flex:none", m.value == null ? "n/a" : m.value + "%"));
     row.appendChild(top);
     var bar = el("div", "height:6px;border-radius:99px;background:rgba(128,128,160,.22);overflow:hidden;margin-top:3px");
     var good = m.value == null ? 0 : (m.good === "rendah" ? 100 - Math.min(100, m.value * 3) : m.value);
-    bar.appendChild(el("div", "height:100%;width:" + good + "%;background:" + (good >= 85 ? "#5ee6a8" : good >= 60 ? "#f3ff4d" : "#ff8aa5"))); row.appendChild(bar); side.appendChild(row);
+    bar.appendChild(el("div", "height:100%;width:" + good + "%;background:" + (good >= 85 ? "#5ee6a8" : good >= 60 ? "#f3ff4d" : "#ff8aa5"))); row.appendChild(bar);
+    sm.appendChild(row); d.appendChild(sm);
+    var pn = el("div", "padding:8px 2px 10px;font-size:13.5px;line-height:1.6"), h = HELP[m.key] || [];
+    h.forEach(function (t) { pn.appendChild(el("p", "margin:0 0 6px", t)); });
+    var rel = (findings || []).filter(function (f) { return MCAT[m.key] && MCAT[m.key].test(f.cat || ""); });
+    if (MCAT[m.key]) {
+      if (rel.length && window.renderFindings) { var fb = el("div", "margin-top:6px"); pn.appendChild(fb); window.renderFindings(fb, rel, { sev: { kritis: ["Kritis", "#ff8aa5"], peringatan: ["Peringatan", "#f3ff4d"], info: ["Info", "#8ec5ff"] }, visible: 4, full: true }); }
+      else if (m.value != null) pn.appendChild(el("p", "margin:0;opacity:.75", "Tidak ada temuan untuk poin ini."));
+    }
+    d.appendChild(pn);
+    d.addEventListener("toggle", function () { ar.textContent = d.open ? "▴ tutup" : "▾ rincian"; });
+    side.appendChild(d);
   });
   wrap.appendChild(ring); wrap.appendChild(side); box.appendChild(wrap);
   box.appendChild(el("p", "max-width:760px;margin:0 auto 10px;font-size:12.5px;opacity:.7;text-align:center", sc.note));
@@ -357,4 +386,14 @@ window.renderFindings = function (box, findings, opts) {
     rest.forEach(function (g) { more.appendChild(row(g)); });
     box.appendChild(more);
   }
+};
+
+/* Bungkus isi kotak dalam <details> tertutup: rincian panjang hanya terbuka bila ditekan. */
+window.foldList = function (box, label, open) {
+  if (!box || !box.firstChild) return;
+  var d = document.createElement("details"); if (open) d.open = true;
+  var sm = document.createElement("summary"); sm.textContent = label; sm.style.cssText = "cursor:pointer;font-weight:700;padding:12px 16px;border-radius:14px;border:1px solid var(--border,#2b2b58);text-align:center;list-style:none";
+  var inner = document.createElement("div"); inner.style.cssText = "margin-top:12px";
+  while (box.firstChild) inner.appendChild(box.firstChild);
+  d.appendChild(sm); d.appendChild(inner); box.appendChild(d);
 };
