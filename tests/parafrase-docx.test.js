@@ -119,7 +119,7 @@ test("HTTP upload: sukses, tersimpan privat, respons tanpa isi dokumen, harga da
     const j = await r.json();
     assert.ok(j.uploadId.length === 32);
     assert.strictEqual(j.detected.title, "Judul Contoh Tugas Manajemen Operasi");
-    assert.strictEqual(j.quote.total, Math.max(j.detected.wordsWithoutBibliography * 17, 30000));
+    assert.strictEqual(j.quote.total, Math.max(j.detected.wordsWithoutBibliography * 50, 40000));
     assert.ok(!JSON.stringify(j).includes("Komunikasi lintas fungsi"), "isi dokumen bocor ke klien");
     const saved = path.join(root, "data", "private", "docs", j.uploadId + ".docx");
     assert.ok(fs.existsSync(saved));

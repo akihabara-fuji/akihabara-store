@@ -161,7 +161,7 @@ module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, b
     const used = Object.fromEntries(db.prepare("SELECT service, COUNT(*) n FROM orders WHERE doc_type='layanan' GROUP BY service").all().map(x => [x.service, x.n]));
     return { items: Object.entries(SV).filter(([, v]) => !v.hidden).map(([k, v]) => ({ key: k, label: labelFor(settings, k), labelDefault: v.label, labelKey: "label_" + k, kind: v.kind, price: Number.isInteger(cfg["price_" + k]) ? cfg["price_" + k] : v.price, priceKey: "price_" + k, active: !off.includes(k), orders: used[k] || 0 })),
       other: [["price_per_word", "Cek & Parafrase: harga per kata"], ["min_order_price", "Cek & Parafrase: harga minimum"], ["fast_lane_price", "Jalur cepat"], ["audit_per_word", "Audit Dokumen: per kata"], ["audit_min", "Audit Dokumen: minimum"],
-        ["free_words", "Audit dan Cek & Parafrase: jumlah kata gratis (kata pertama dokumen)"], ["sim_koin_price", "Simulasi presentasi: koin untuk buka tanya jawab"], ["price_semester_min", "Paket Semester: mulai"], ["price_semester_max", "Paket Semester: sampai"], ["price_pengarahan_semester", "Pengarahan registrasi: semester"], ["price_pengarahan_lulus", "Pengarahan: lulus"], ["price_pengarahan_normal", "Pengarahan: normal"]]
+        ["free_words", "Audit dan Cek & Parafrase: jumlah kata gratis (kata pertama dokumen)"], ["koin_bonus_daftar", "Bonus koin gratis untuk akun baru (0 = tidak ada)"], ["sim_koin_price", "Simulasi presentasi: koin untuk buka tanya jawab"], ["price_semester_min", "Paket Semester: mulai"], ["price_semester_max", "Paket Semester: sampai"], ["price_pengarahan_semester", "Pengarahan registrasi: semester"], ["price_pengarahan_lulus", "Pengarahan: lulus"], ["price_pengarahan_normal", "Pengarahan: normal"]]
         .map(([key, label]) => ({ key, label, price: cfg[key] })),
       cards: texts ? texts.cards().map(c => ({ ...c, shown: !hiddenCards.includes(c.slug) })) : [],
       freeAccounts: String(cfg.akun_gratis || ""),
@@ -252,6 +252,16 @@ module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, b
     const posts = blog.posts(), files = (await fsp.readdir(UPLOADS).catch(() => [])).filter(f => /^[a-z0-9][a-z0-9._-]*\.(webp|jpe?g|png|gif|avif)$/i.test(f));
     const stats = await Promise.all(files.map(async f => { const s = await fsp.stat(path.join(UPLOADS, f)); const url = `/uploads/${f}`; return { url, size: s.size, at: s.mtimeMs, usedIn: posts.filter(p => p.cover === url || String(p.body || "").includes(url)).map(p => ({ title: p.title, slug: p.slug })) }; }));
     return { items: stats.sort((a, b) => b.at - a.at).slice(0, 400) };
+  }));
+
+  /* hapus gambar: hanya yang tidak dipakai artikel mana pun (termasuk draf dan sampah), supaya tidak ada gambar patah */
+  app.delete("/ms/admin/ca/media/:file", requireAdmin, send(async req => {
+    const f = String(req.params.file || "");
+    if (!/^[a-z0-9][a-z0-9._-]*\.(webp|jpe?g|png|gif|avif)$/i.test(f) || f.includes("..")) throw bad(400, "Nama berkas tidak valid.");
+    const url = `/uploads/${f}`, use = blog.posts().filter(p => p.cover === url || String(p.body || "").includes(url));
+    if (use.length) throw bad(409, `Gambar masih dipakai di: ${use.slice(0, 3).map(p => p.title).join(", ")}. Ganti gambar di artikel itu dulu.`);
+    try { await fsp.unlink(path.join(UPLOADS, f)); } catch (e) { if (e.code === "ENOENT") throw bad(404, "Gambar tidak ditemukan."); throw e; }
+    return { ok: true };
   }));
 
   /* ---------------- admin & peran (hanya pemilik) ---------------- */

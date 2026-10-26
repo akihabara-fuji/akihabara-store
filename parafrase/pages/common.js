@@ -1,6 +1,8 @@
 /* Dipakai semua halaman Ruang Akademik UT: ambil pengaturan publik, isi tombol dan harga. */
 (function () {
   var rp = function (n) { return Number(n).toLocaleString("id-ID"); };
+  /* Harga layanan ditampilkan dalam koin (1 koin = Rp1.000). Angka yang bukan kelipatan Rp1.000 (mis. harga per kata) tetap rupiah. */
+  window.koinFmt = function (n) { n = Number(n); return n > 0 && n % 1000 === 0 ? (n / 1000).toLocaleString("id-ID") + " koin" : "Rp" + n.toLocaleString("id-ID"); };
   window.PF = { rp: rp, cfg: null };
   function fill(c) {
     window.PF.cfg = c;
@@ -8,6 +10,7 @@
     set("[data-ppw]", rp(c.price_per_word)); set("[data-min]", rp(c.min_order_price)); set("[data-fast]", rp(c.fast_lane.price));
     set("[data-retention]", c.retention_hours); set("[data-fw]", rp(c.free_words || 0));
     document.querySelectorAll("[data-p]").forEach(function (e) { var v = c[e.getAttribute("data-p")]; if (v != null) e.textContent = rp(v); });
+    document.querySelectorAll("[data-k]").forEach(function (e) { var v = c[e.getAttribute("data-k")]; if (v != null) e.textContent = window.koinFmt(v); });
     /* Diskon dalam persen, dihitung dari harga sekarang dan harga normal (pengaturan admin). Tidak tampil bila datanya tidak masuk akal. */
     function disc(keys) { var k = String(keys).split(","), now = Number(c[k[0]]), was = Number(c[k[1]]); return was > 0 && now > 0 && now < was ? Math.round((1 - now / was) * 100) : 0; }
     document.querySelectorAll("[data-disc]").forEach(function (e) { var d = disc(e.getAttribute("data-disc")); if (d > 0) { e.textContent = "· diskon " + d + "%"; e.hidden = false; } else e.hidden = true; });

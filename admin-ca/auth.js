@@ -15,7 +15,7 @@ const isCaPath = p => CA_PREFIXES.some(x => p.startsWith(x));
 /* Pemilik boleh semuanya. Editor: konten blog. Admin pesanan (cs): pesanan, pembayaran, pelanggan (lihat). */
 const COMMON = [/^\/ms\/admin\/ca\/(me|logout|password|dashboard)$/];
 const RULES = {
-  editor: [{ re: /^\/ms\/admin\/ca\/traffic$/, get: true }, /^\/ms\/admin\/posts(\/|$)/, /^\/ms\/admin\/tag-suggestions$/, /^\/ms\/admin\/preview(-page)?$/, /^\/ms\/admin\/comments(\/|$)/, /^\/ms\/admin\/ca\/(upload|media)$/, /^\/ms\/admin\/ulasan(\/|$)/],
+  editor: [{ re: /^\/ms\/admin\/ca\/traffic$/, get: true }, /^\/ms\/admin\/posts(\/|$)/, /^\/ms\/admin\/tag-suggestions$/, /^\/ms\/admin\/preview(-page)?$/, /^\/ms\/admin\/comments(\/|$)/, /^\/ms\/admin\/ca\/(upload|media)(\/[^\/]+)?$/, /^\/ms\/admin\/ulasan(\/|$)/],
   cs: [/^\/ms\/admin\/koin\/(queue|topups\/[a-f0-9]+\/(proof|confirm|reject))$/, /^\/ms\/admin\/parafrase\/(orders|queue|outbox)(\/|$)/, /^\/ms\/admin\/layanan(\/|$)/, /^\/ms\/admin\/ca\/(orders|payments)(\/|$)/, /^\/ms\/admin\/orders(\/|$)/, { re: /^\/ms\/admin\/users$/, get: true }],
 };
 function can(role, method, p) {

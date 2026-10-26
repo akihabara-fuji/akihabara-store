@@ -3,13 +3,13 @@
 
 const WA = /^\d{8,15}$/;
 const DEFS = {
-  price_per_word:               { type: "int",  min: 1, max: 1000, def: 17, pub: true },
-  min_order_price:              { type: "int",  min: 0, max: 10000000, def: 30000, pub: true },
+  price_per_word:               { type: "int",  min: 1, max: 1000, def: 50, pub: true },
+  min_order_price:              { type: "int",  min: 0, max: 10000000, def: 40000, pub: true },
   fast_lane_enabled:            { type: "bool", def: true, pub: true },
-  fast_lane_price:              { type: "int",  min: 0, max: 1000000, def: 30000, pub: true },
+  fast_lane_price:              { type: "int",  min: 0, max: 1000000, def: 40000, pub: true },
   fast_lane_daily_cap:          { type: "int",  min: 0, max: 50, def: 5, pub: true },
   revision_free_count:          { type: "int",  min: 0, max: 10, def: 1, pub: true },
-  revision_price_per_word:      { type: "int",  min: 1, max: 1000, def: 17, pub: true },
+  revision_price_per_word:      { type: "int",  min: 1, max: 1000, def: 20, pub: true },
   file_max_mb:                  { type: "int",  min: 1, max: 100, def: 25, pub: true },
   retention_hours:              { type: "int",  min: 1, max: 720, def: 24, pub: true },
   reminder_before_delete_hours: { type: "int",  min: 0, max: 72, def: 3 },
@@ -53,6 +53,8 @@ const DEFS = {
   google_verify_file:           { type: "str",  re: /^google[a-z0-9]{8,40}\.html$/, allowEmpty: true, def: "" },
   qris_image_path:              { type: "str",  re: /^[a-z0-9/_.-]{0,200}$/i, allowEmpty: true, def: "" },
   price_simulasi:               { type: "int",  min: 0, max: 100000000, def: 0, pub: true },        // biaya pesan simulasi (0 = gratis dipesan)
+  bayar_koin_saja:              { type: "bool", def: true, pub: true },                                            // semua pesanan dibayar koin (satu pintu); QRIS hanya untuk isi koin. false = kembali ke QRIS per pesanan
+  koin_bonus_daftar:            { type: "int",  min: 0, max: 100, def: 7, pub: true },               // koin gratis untuk akun baru (0 = tidak ada)
   sim_koin_price:               { type: "int",  min: 0, max: 1000, def: 4, pub: true },             // koin untuk membuka tanya jawab lengkap (pembukaan pertama tiap akun gratis)
   akun_gratis:                  { type: "str",  re: /^[^\s,@]+@[^\s,@]+(,[^\s,@]+@[^\s,@]+)*$/, allowEmpty: true, def: "" }, // email akun pemilik/tim yang memakai koin tanpa potongan (dipisah koma)
   layanan_nonaktif:             { type: "str",  re: /^[a-z0-9_]+(,[a-z0-9_]+)*$/, allowEmpty: true, def: "", pub: true }, // kode layanan yang ditutup, dipisah koma

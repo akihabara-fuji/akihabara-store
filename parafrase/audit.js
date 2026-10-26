@@ -4,6 +4,7 @@
      hasil lengkap terbuka lewat tautan rahasia pesanan, dan file dihapus otomatis sesuai masa simpan.
    Semua temuan dari aturan pasti dan pengecekan DOI nyata, tanpa AI dan tanpa tebakan. */
 "use strict";
+const { U } = require("./acadpaths");
 const fs = require("fs");
 const fsp = fs.promises;
 const path = require("path");
@@ -15,7 +16,7 @@ const { buildTriageBase, withDrillbit, parseDrill, settingsSig } = require("./tr
 
 const MAX_MB = 10, RATE = { max: 10, windowMs: 3600 * 1000 }, UPLOAD_TTL_MS = 2 * 3600 * 1000;
 
-module.exports = function mountAudit({ app, express, db, settings, orders, root, sameOrigin, secret, fetchFn }) {
+module.exports = function mountAudit({ app, express, db, settings, orders, root, sameOrigin, secret, fetchFn, userFrom = null }) {
   const dir = path.join(root, "data", "private", "docs");
   fs.mkdirSync(dir, { recursive: true });
   const hits = new Map();
@@ -88,10 +89,10 @@ module.exports = function mountAudit({ app, express, db, settings, orders, root,
     const now = Date.now(), h = hashIp(req.ip);
     if (limited("o:" + h, 10, now)) return res.status(429).json({ error: "Terlalu banyak pesanan dari jaringan ini. Coba lagi nanti." });
     try {
-      const { r, token, payExp } = orders.createAuditOrder(req.body || {}, h, now);
-      res.json({ orderId: r.id, token, total: r.total, expiresAt: payExp, url: "/ruangakademikut/pesanan/" + token });
+      const { r, token, payExp } = orders.createAuditOrder(req.body || {}, h, now, userFrom ? userFrom(req) : null);
+      res.json({ orderId: r.id, token, total: r.total, expiresAt: payExp, ...(r.coins ? { paid: "koin", coins: r.coins } : {}), url: U("/ruangakademikut/pesanan/") + token });
     } catch (e) {
-      if (e.status) return res.status(e.status).json({ error: e.message });
+      if (e.status) return res.status(e.status).json({ error: e.message, ...(e.login ? { login: true } : {}), ...(e.short ? { short: e.short, balance: e.balance } : {}) });
       console.error("[audit] pesanan gagal:", e && e.message); res.status(500).json({ error: "Pesanan tidak bisa dibuat. Coba lagi." });
     }
   });

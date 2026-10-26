@@ -15,7 +15,7 @@ test("pesanan: harga dari server, kode unik, WA dinormalkan, validasi", async ()
     r = await t.order(id, { total: 1, price: 1, wa: "081234567890" }); assert.strictEqual(r.status, 200);
     const j = await r.json();
     assert.ok(/^NA-\d+$/.test(j.orderId) && j.token.length === 48);
-    assert.strictEqual(j.total, 30000 + j.uniqueCode); // kata sedikit -> minimum; klien tidak bisa menentukan total
+    assert.strictEqual(j.total, 40000 + j.uniqueCode); // kata sedikit -> minimum; klien tidak bisa menentukan total
     assert.ok(j.uniqueCode >= 1 && j.uniqueCode <= 99);
     const row = t.m.db.prepare("SELECT wa_number,status,lane FROM orders WHERE id=?").get(j.orderId);
     assert.deepStrictEqual([row.wa_number, row.status, row.lane], ["6281234567890", "menunggu_bayar", "biasa"]);
@@ -40,7 +40,7 @@ test("jalur cepat: slot dibatasi, penuh ditolak, kedaluwarsa melepas slot", asyn
   const t = await boot({ fast_lane_daily_cap: 1 });
   try {
     let r = await t.order(await t.upload("f1"), { fast: true }); assert.strictEqual(r.status, 200);
-    const j = await r.json(); assert.strictEqual(j.total, 60000 + j.uniqueCode);
+    const j = await r.json(); assert.strictEqual(j.total, 80000 + j.uniqueCode);
     r = await t.order(await t.upload("f2"), { fast: true }); assert.strictEqual(r.status, 409);
     assert.strictEqual((await r.json()).code, "fast_full");
     assert.strictEqual((await t.order(await t.upload("f3"), { fast: false })).status, 200);

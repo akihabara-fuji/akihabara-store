@@ -7,6 +7,7 @@
 const fs = require("fs");
 const fsp = fs.promises;
 const path = require("path");
+const { shortPaths } = require("./parafrase/acadpaths");
 const crypto = require("crypto");
 
 module.exports = function mount(ctx) {
@@ -108,10 +109,7 @@ module.exports = function mount(ctx) {
   const onAcadHost = req => ACAD_ONLY && !!ACAD_HOST && String(req.headers.host || "").toLowerCase() === ACAD_HOST.toLowerCase();
   const BRAND = ACAD_ONLY ? "Catatan Akademik" : "nextaja";
   /* Di domain akademik, nama "nextaja" pada teks halaman diganti nama brand akademik (URL dan alamat email tidak disentuh). */
-  const shortPath = h => h
-    .replace(/\/ruangakademikut\/(cek-parafrase-mandiri|audit|layanan|blog-ut|pesanan)/g, "/$1")
-    .replace(/(https?:\/\/[^"'\s<]+?)\/ruangakademikut(?=["'<\s?#)])/g, "$1/layanan-ut")
-    .replace(/(["'(=])\/ruangakademikut(?=["'<\s?#)])/g, "$1/layanan-ut");
+  const shortPath = shortPaths; // alamat pendek domain akademik (parafrase/acadpaths.js)
   const caBrand = h => String(h)
     .replace(/<link rel="icon"[^>]*>/g, '<link rel="icon" href="/ruangakademikut/assets/ca/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="/ruangakademikut/assets/ca/favicon-32.png">')
     .replace(/<link rel="apple-touch-icon"[^>]*>/g, '<link rel="apple-touch-icon" href="/ruangakademikut/assets/ca/apple-touch-icon.png">')
@@ -119,7 +117,7 @@ module.exports = function mount(ctx) {
     .replace(/(<a [^>]*class="logo"[^>]*>)<b>[^<]*<\/b>/g, '$1<b class="lg"><img src="/ruangakademikut/assets/ca/logo-96.png" alt="" width="34" height="34"></b>')
     .replace("</head>", '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme.css?v=2"></head>')
     .replace("</head>", "<style>.logo b.lg{background:none!important}.logo b.lg img{width:34px;height:34px;object-fit:contain;display:block}</style></head>");
-  const rebrand = h => (ACAD_ONLY ? caBrand(shortPath(String(h).replace(/(?<![\w./@-])nextaja(?![\w-]|\.\w)/gi, BRAND))) : h);
+  const rebrand = h => (ACAD_ONLY ? shortPath(caBrand(String(h).replace(/(?<![\w./@-])nextaja(?![\w-]|\.\w)/gi, BRAND))) : h);
   /* Terjadwal = tampil otomatis saat publishAt lewat (tanpa cron). Draf, review, dan terjadwal yang belum waktunya tidak pernah tampil publik. */
   const isLive = (p, now = Date.now()) => !p.trashedAt && (p.status === "published" || (p.status === "scheduled" && Date.parse(p.publishAt) <= now));
   const published = () => blog.posts.filter(p => isLive(p) && (!ACAD_ONLY || ACAD_TOPICS.includes(p.topic))).sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
@@ -287,6 +285,8 @@ module.exports = function mount(ctx) {
   const needOrigin = (req, res, next) => (sameOrigin(req) ? next() : res.status(403).json({ error: "Permintaan ditolak." }));
 
   app.get("/ms/auth/me", (req, res) => { res.set("Cache-Control", "no-store"); const u = userFrom(req); res.json({ user: u ? pubUser(u) : null }); });
+  /* koin gratis untuk akun baru (diatur di parafrase/koin.js; kosong bila modul koin belum terpasang atau bonus 0) */
+  const welcome = u => { try { return (ctx.onRegister && ctx.onRegister(u)) || 0; } catch (e) { console.error("[bonus daftar]", e.message); return 0; } };
   app.post("/ms/auth/register", json, needOrigin, async (req, res) => {
     const key = "r:" + req.ip;
     if (limited(req, key) || regLimited(req.ip)) return res.status(429).json({ error: "Terlalu banyak percobaan. Coba lagi 15 menit lagi." });
@@ -300,7 +300,7 @@ module.exports = function mount(ctx) {
     db.users.push(u);
     try { await saveDb(); } catch { db.users = db.users.filter(x => x.id !== u.id); return res.status(500).json({ error: "Pendaftaran belum bisa disimpan. Coba lagi sebentar." }); }
     regNote(req.ip); setSession(res, u.id);
-    res.json({ ok: true, user: pubUser(u) });
+    res.json({ ok: true, user: pubUser(u), bonus: welcome(u) });
   });
   app.post("/ms/auth/login", json, needOrigin, (req, res) => {
     const email = str(req.body?.email, 254).toLowerCase(), pw = String(req.body?.password || "");
@@ -324,13 +324,13 @@ module.exports = function mount(ctx) {
       const okIss = t.iss === "accounts.google.com" || t.iss === "https://accounts.google.com";
       if (!r.ok || t.aud !== GOOGLE_ID || !okIss || String(t.email_verified) !== "true" || !t.email || Number(t.exp) * 1000 < Date.now()) { fail(key); return res.status(401).json({ error: "Login Google ditolak. Coba lagi." }); }
       const email = String(t.email).toLowerCase();
-      let u = db.users.find(x => x.email === email);
+      let u = db.users.find(x => x.email === email), bonus = 0;
       if (!u) {
         u = { id: crypto.randomBytes(8).toString("hex"), name: str(t.name || email.split("@")[0], 60), email, google: true, createdAt: new Date().toISOString() };
-        db.users.push(u); await saveDb();
+        db.users.push(u); await saveDb(); bonus = welcome(u);
       }
       fails.delete(key); setSession(res, u.id);
-      res.json({ ok: true, user: pubUser(u) });
+      res.json({ ok: true, user: pubUser(u), bonus });
     } catch { res.status(502).json({ error: "Tidak bisa menghubungi Google. Coba lagi." }); }
   });
   app.post("/ms/auth/logout", (req, res) => { if (!sameOrigin(req)) return res.status(403).json({ error: "Permintaan ditolak." }); res.setHeader("Set-Cookie", "nx_user=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0" + (SECURE_COOKIE ? "; Secure" : "")); res.json({ ok: true }); });
@@ -584,7 +584,7 @@ bg.addEventListener("click",function(){var o=ln.classList.toggle("open");bg.setA
 fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(function(d){if(d.user){var a=document.getElementById("navAcc");a.textContent="Akun saya";a.href="/ms/akun";}}).catch(function(){});
 })();
 </script>
-${ACAD_ONLY ? '<script defer src="/ruangakademikut/assets/koin-chip.js?v=1"></script>' : ""}
+${ACAD_ONLY ? '<script defer src="/ruangakademikut/assets/koin-chip.js?v=20261202"></script>' : ""}
 </body></html>`);
   }
 
@@ -895,6 +895,8 @@ ${ACAD_ONLY ? '<script defer src="/ruangakademikut/assets/koin-chip.js?v=1"></sc
     <p>nextaja menyediakan analisa akun, preset dan template, bantuan akademik, serta jasa housekeeping. Detail, harga, dan jadwal disepakati lewat WhatsApp sebelum pengerjaan.</p>
     <h2>Bantuan akademik</h2>
     <p>Bantuan akademik berupa pendampingan dan referensi untuk membantu kamu belajar. Kami tidak menjamin nilai atau kelulusan. Kamu bertanggung jawab atas karya yang kamu kumpulkan dan atas kepatuhan pada aturan kampusmu.</p>
+    <h2>Koin</h2>
+    <p>Koin dipakai untuk membayar layanan Catatan Akademik dan nilainya tetap: 1 koin = Rp1.000. Koin diisi lewat pembayaran QRIS dan baru masuk saldo setelah admin mengonfirmasi bukti bayar. Koin tidak dapat diuangkan dan tidak dapat dipindahkan ke akun lain. Jika pesanan yang kamu bayar dengan koin dibatalkan, koinnya kembali ke saldomu. Hubungi admin untuk kendala saldo.</p>
     <h2>Akun</h2>
     <p>Jaga kerahasiaan akunmu. Kami bisa menonaktifkan akun yang dipakai untuk menyalahgunakan layanan.</p>
     <h2>Perubahan</h2>
@@ -906,6 +908,7 @@ ${ACAD_ONLY ? '<script defer src="/ruangakademikut/assets/koin-chip.js?v=1"></sc
     const body = `<section class="pg"><div class="wrap narrow">
       <div class="card form">
         <div class="tabs2" role="tablist"><button type="button" data-t="in" aria-pressed="true">Masuk</button><button type="button" data-t="up" aria-pressed="false">Daftar</button></div>
+        ${(ctx.getBonus && ctx.getBonus()) > 0 ? `<p class="small" id="bonus" hidden>Daftar sekarang dan dapat <b>${Number(ctx.getBonus())} koin gratis</b> untuk mencoba layanan.</p>` : ""}
         <form id="f" novalidate>
           <label id="lName" hidden>Nama<input name="name" autocomplete="name" maxlength="60"></label>
           <label>Email<input name="email" type="email" autocomplete="email" required maxlength="254"></label>
@@ -921,7 +924,7 @@ ${ACAD_ONLY ? '<script defer src="/ruangakademikut/assets/koin-chip.js?v=1"></sc
       var w=${JSON.stringify(String((SOCIAL().waNumber) || "6285722227544"))};document.getElementById("wa").href="https://wa.me/"+w+"?text="+encodeURIComponent("Halo admin nextaja, saya lupa sandi akun saya.");
       document.querySelectorAll(".tabs2 button").forEach(function(b){b.addEventListener("click",function(){mode=b.dataset.t;
         document.querySelectorAll(".tabs2 button").forEach(function(x){x.setAttribute("aria-pressed",x===b)});
-        document.getElementById("lName").hidden=mode!=="up";document.getElementById("hint").hidden=mode!=="up";
+        document.getElementById("lName").hidden=mode!=="up";var bn=document.getElementById("bonus");if(bn)bn.hidden=mode!=="up";document.getElementById("hint").hidden=mode!=="up";
         document.getElementById("go").textContent=mode==="up"?"Buat akun":"Masuk";f.password.autocomplete=mode==="up"?"new-password":"current-password";err.textContent="";});});
       document.getElementById("pwT").addEventListener("click",function(){var sh=f.password.type==="password";f.password.type=sh?"text":"password";this.textContent=sh?"Sembunyi":"Lihat";this.setAttribute("aria-pressed",sh);this.setAttribute("aria-label",sh?"Sembunyikan sandi":"Tampilkan sandi")});
       var GID=${JSON.stringify(GOOGLE_ID)};
@@ -980,6 +983,9 @@ ${ACAD_ONLY ? '<script defer src="/ruangakademikut/assets/koin-chip.js?v=1"></sc
     res.type("html").send(layout({ title: `Halaman tidak ditemukan — ${BRAND}`, desc: "Halaman tidak ditemukan.", path: "/404", body, noindex: true }));
   }
 
+  /* halaman statis di sitemap: lastmod = kapan berkas halamannya terakhir berubah (tanggal rilis), bukan tanggal buatan */
+  const SITEMAP_PAGES = { "/ruangakademikut": "hub.html", "/ruangakademikut/cek-parafrase-mandiri": "cek.html", "/ruangakademikut/audit": "audit.html", "/ruangakademikut/layanan": "layanan.html", "/ruangakademikut/kalkulator-nilai-ut": "alat-nilai.html", "/ruangakademikut/pasfoto-yudisium": "alat-pasfoto.html", "/ruangakademikut/sitasi-apa": "sitasi.html", "/ruangakademikut/portal-ut": "portal-ut.html" };
+  const pageMod = file => { try { return fs.statSync(path.join(__dirname, "parafrase", "pages", file)).mtime.toISOString().slice(0, 10); } catch { return undefined; } };
   // untuk sitemap. /blog-ut tidak didaftarkan: isinya sama dengan /blog (kanonis ke /blog).
-  return { userFrom, userById: id => db.users.find(x => x.id === id) || null, userByEmail: e => db.users.find(x => String(x.email || "").toLowerCase() === String(e || "").trim().toLowerCase()) || null, notFound, articlePage, isLive, suggestTags, suggestTopic, tagLabel, posts: () => blog.posts, usersCount: () => db.users.length, TOPICS, ACAD_TOPICS, pageUrls: () => (ACAD_ONLY ? [{ loc: `${SITE}/`, pri: "1.0" }] : []).concat(["/ruangakademikut", "/ruangakademikut/cek-parafrase-mandiri", "/ruangakademikut/audit", "/ruangakademikut/layanan"].map(u => ({ loc: `${SITE}${ACAD_ONLY ? (u === "/ruangakademikut" ? "/layanan-ut" : shortPath(u)) : u}`, pri: "0.7" }))), blogUrls: () => published().map(p => ({ loc: `${SITE}/blog/${p.slug}`, lastmod: String(modifiedAt(p) || "").slice(0, 10), pri: "0.6" })) };
+  return { userFrom, userById: id => db.users.find(x => x.id === id) || null, userByEmail: e => db.users.find(x => String(x.email || "").toLowerCase() === String(e || "").trim().toLowerCase()) || null, notFound, articlePage, isLive, suggestTags, suggestTopic, tagLabel, posts: () => blog.posts, usersCount: () => db.users.length, TOPICS, ACAD_TOPICS, pageUrls: () => (ACAD_ONLY ? [{ loc: `${SITE}/`, lastmod: pageMod("beranda.html"), pri: "1.0" }] : []).concat(Object.entries(SITEMAP_PAGES).map(([u, file]) => ({ loc: `${SITE}${ACAD_ONLY ? (u === "/ruangakademikut" ? "/layanan-ut" : shortPath(u)) : u}`, lastmod: pageMod(file), pri: "0.7" }))), blogUrls: () => published().map(p => ({ loc: `${SITE}/blog/${p.slug}`, lastmod: String(modifiedAt(p) || "").slice(0, 10), pri: "0.6" })) };
 };

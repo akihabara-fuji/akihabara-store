@@ -11,7 +11,7 @@
 set -euo pipefail
 REF="${1:?pakai: update-ca-final.sh <commit>}"
 APP=/var/www/mahyra-serv
-KNOWN=(d3321cb ea4b557 4a8953e 3f29ccc e31a933 08cf5f2 12cfe4a dc31d36 c7f60c8 1b5c15a)   # 4a8953e = rilis CA pertama (live 23 Okt 14:17 WIB)
+KNOWN=(d3321cb ea4b557 4a8953e 3f29ccc e31a933 08cf5f2 12cfe4a dc31d36 c7f60c8 1b5c15a ff9447c 364c113 885a538 42d00d3 bd22865 c9d19fe 8eae0cb bb4db34 8d19856 f375c82 0351240 b126b36 a6b3fe2 dc615b8 82f8872 20d31cf)   # 4a8953e = rilis CA pertama (live 23 Okt 14:17 WIB)
 GH=https://codeload.github.com/akihabara-fuji/akihabara-store/tar.gz
 cd "$APP"
 
@@ -65,12 +65,14 @@ get(){ curl -fsS --resolve "$1:443:127.0.0.1" "https://$1$2"; }
 # isi halaman diambil utuh dulu, baru dicari (pipa "curl | grep -q" memutus curl di tengah jalan dan gagal saat pipefail aktif)
 has(){ local b; b=$(get "$1" "$2") || return 1; [[ "$b" == *"$3"* ]]; }
 CA=catatanakademik.com
-for u in / /blog /blog-ut /layanan-ut /sitemap.xml /robots.txt /admin/ /blog/cara-membagi-waktu-kuliah-ut-sambil-bekerja; do x=$(c $CA "$u"); echo "$CA$u $x"; [ "$x" = 200 ]; done
+for u in / /blog /blog-ut /layanan-ut /kalkulator-nilai-ut /pasfoto-yudisium /sitasi-apa /koin /portal-ut /assets/ut/common.js /sitemap.xml /robots.txt /admin/ /blog/cara-membagi-waktu-kuliah-ut-sambil-bekerja; do x=$(c $CA "$u"); echo "$CA$u $x"; [ "$x" = 200 ]; done
 has $CA /blog 'class="bx-hero"' || { echo "Beranda blog baru tidak tampil"; false; }
 has $CA /admin/ 'Admin · Catatan Akademik' || { echo "Panel admin CA tidak tampil di /admin"; false; }
 has $CA /blog/cara-membagi-waktu-kuliah-ut-sambil-bekerja '<figure><img src="/uploads/' || { echo "Foto di isi artikel hilang"; false; }
 has $CA /sitemap.xml '/layanan-ut<' || { echo "Halaman layanan hilang dari sitemap"; false; }
 has $CA /ms/layanan/config 'metopen' || { echo "Konfigurasi layanan (Metopen) tidak terbaca"; false; }
+for u in /layanan-ut /portal-ut /koin /cek-parafrase-mandiri /audit /kalkulator-nilai-ut /assets/ut/common.js; do b=$(get $CA $u) || { echo "gagal membaca $u"; false; }; [[ "$b" != *ruangakademikut* ]] || { echo "Nama lama /ruangakademikut masih muncul di $u"; false; }; done
+has $CA /portal-ut "Lulus dan administrasi" || { echo "Halaman Portal UT tidak tampil"; false; }
 echo "Isi halaman baru: OK"
 x=$(c $CA /ms/admin/ca/me); echo "API admin CA tanpa login: $x"; [ "$x" = 401 ]
 x=$(c $CA /ms/admin/posts); echo "API blog admin tanpa login: $x"; [ "$x" = 401 ]

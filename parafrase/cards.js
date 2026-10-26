@@ -16,7 +16,7 @@ module.exports = function mountCards({ app, root, requireAdmin }) {
   // gambar bawaan bila admin belum mengunggah; unggahan admin selalu menang
   const DEFAULTS = { cek: "ruang-akademik", semester: "tips-kuliah", metopen: "metodologi", tugas: "tugas-diskusi", diskusi: "tugas-diskusi", audit: "preset-template", revisi: "materi-belajar", pengarahan: "registrasi", info: "jadwal-kalender" };
 
-  app.get("/ruangakademikut/img/:name", (req, res) => {
+  app.get(["/ruangakademikut/img/:name", "/assets/ut/img/:name"], (req, res) => {
     const m = /^([a-z]+)\.webp$/.exec(String(req.params.name));
     if (!m || !SLUGS.includes(m[1])) return res.status(404).end();
     res.set({ "Cache-Control": "no-cache", "X-Content-Type-Options": "nosniff" });

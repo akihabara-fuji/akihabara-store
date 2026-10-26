@@ -297,7 +297,7 @@ app.get("/sitemap.xml", (req, res) => {
   const urls = ACAD === SITE
     ? [{ loc: `${SITE}/`, pri: "1.0" }, { loc: `${SITE}/blog`, pri: "0.8" }, ...extra.pageUrls(), ...extra.blogUrls()]
     : isAcadHost(req)
-      ? [{ loc: `${ACAD}/blog`, pri: "0.8" }, ...extra.pageUrls(), ...extra.blogUrls()]
+      ? [{ loc: `${ACAD}/blog`, lastmod: extra.blogUrls().map(u => u.lastmod).filter(Boolean).sort().pop(), pri: "0.8" }, ...extra.pageUrls(), ...extra.blogUrls()]
       : [{ loc: `${SITE}/`, pri: "1.0" }];
   res.type("application/xml").send(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(u => `  <url><loc>${u.loc}</loc>${u.lastmod ? `<lastmod>${u.lastmod}</lastmod>` : ""}<priority>${u.pri}</priority></url>`).join("\n")}\n</urlset>\n`);
 });
@@ -321,7 +321,7 @@ if (!process.env.CA_ADMIN_PASSWORD) console.warn("[!] CA_ADMIN_PASSWORD belum di
 app.get(/^\/admin\/(parafrase|layanan)\/?$/, (req, res, next) => (ACAD_HOSTS.length && !isAcadHost(req) ? res.redirect(302, `${ACAD}/admin/`) : next()));
 
 /* ---------------- blog + akun customer ---------------- */
-const extra = require("./blog-akun")({ app, express, requireAdmin, sameOrigin, getCookie, SECURE_COOKIE, ROOT, SITE: ACAD, getSettings: () => store.settings, getTexts: () => (typeof pf !== "undefined" ? pf.texts : null) });
+const extra = require("./blog-akun")({ app, express, requireAdmin, sameOrigin, getCookie, SECURE_COOKIE, ROOT, SITE: ACAD, getSettings: () => store.settings, getTexts: () => (typeof pf !== "undefined" ? pf.texts : null), onRegister: u => (typeof pf !== "undefined" && pf.koin ? pf.koin.welcome(u.id) : 0), getBonus: () => (typeof pf !== "undefined" && pf.koin ? Number(pf.settings.get("koin_bonus_daftar")) || 0 : 0) });
 
 /* ---------------- Cek dan Parafrase Mandiri (modul terpisah, lihat parafrase/) ---------------- */
 /* fitur coba (unggah & pesan) wajib login; halaman dan harga tetap terbuka */

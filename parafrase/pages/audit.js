@@ -44,7 +44,7 @@
     var b = this; b.disabled = true; var e = $("oerr"); e.classList.add("hidden");
     fetch("/ms/audit/order", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ uploadId: upId, wa: $("wa").value, agree: $("agree").checked }) })
       .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
-      .then(function (x) { if (x.ok) { location.href = x.j.url; return; } if (x.j.login) { location.href = "/ms/masuk?next=" + encodeURIComponent(location.pathname); return; } e.textContent = x.j.error || "Pesanan gagal. Coba lagi."; e.classList.remove("hidden"); gate(); })
+      .then(function (x) { if (x.ok) { location.href = x.j.url; return; } if (x.j.short) { location.href = "/ruangakademikut/koin?kurang=" + x.j.short + "&next=" + encodeURIComponent(location.pathname); return; } if (x.j.login) { location.href = "/ms/masuk?next=" + encodeURIComponent(location.pathname); return; } e.textContent = x.j.error || "Pesanan gagal. Coba lagi."; e.classList.remove("hidden"); gate(); })
       .catch(function () { e.textContent = "Koneksi terputus. Coba lagi."; e.classList.remove("hidden"); gate(); });
   };
   function el(tag, css, txt) { var e = document.createElement(tag); if (css) e.style.cssText = css; if (txt != null) e.textContent = txt; return e; }

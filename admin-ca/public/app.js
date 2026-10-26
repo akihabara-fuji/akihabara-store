@@ -81,7 +81,7 @@
   function renderLogin() {
     document.title = "Masuk · Admin Catatan Akademik";
     $("#root").innerHTML = `<main class="login"><form class="login-card" id="lf" novalidate>
-      <div class="brand"><img src="/ruangakademikut/assets/ca/logo-96.png" alt="" width="38" height="38"><span>Catatan Akademik</span></div>
+      <div class="brand"><img src="/assets/ut/ca/logo-96.png" alt="" width="38" height="38"><span>Catatan Akademik</span></div>
       <h1>Masuk panel admin</h1><p>Kelola artikel, pesanan, dan pembayaran Catatan Akademik.</p>
       <label class="f">Nama pengguna<input class="in" name="u" autocomplete="username" required autocapitalize="none"></label>
       <label class="f">Sandi<input class="in" name="p" type="password" autocomplete="current-password" required></label>
@@ -108,7 +108,7 @@
         (subs ? GROUP_NAV.map(([k, l]) => `<a class="nav sub" href="#/orders?group=${k}" data-r="orders?group=${k}">${l}<span class="cnt" data-c="${k}"></span></a>`).join("") : "")).join("");
     }).join("");
     $("#root").innerHTML = `<div class="shell">
-      <aside class="side" id="side" aria-label="Menu admin"><a class="brand" href="#/dashboard"><img src="/ruangakademikut/assets/ca/logo-96.png" alt="" width="34" height="34"><span><b>Catatan Akademik</b><small>Admin Panel</small></span></a>
+      <aside class="side" id="side" aria-label="Menu admin"><a class="brand" href="#/dashboard"><img src="/assets/ut/ca/logo-96.png" alt="" width="34" height="34"><span><b>Catatan Akademik</b><small>Admin Panel</small></span></a>
         <nav>${nav}</nav>
         <div class="me"><b>${esc(ME.name)}</b><small>${esc(ME.roleLabel)}${ME.username ? " · " + esc(ME.username) : ""}</small><div class="bar" style="margin-top:10px"><a class="btn sm" href="#/account">Akun</a><button class="btn sm" id="logout">${ICON.out}Keluar</button></div></div>
       </aside>
@@ -353,7 +353,7 @@
               <label class="f">Tag <small>· pisahkan dengan koma, maks 8</small><input class="in" name="tags" maxlength="240" value="${esc((v.tags || []).join(", "))}" placeholder="uas, jadwal-ut, registrasi"></label><div class="bar small" id="tagSug"></div>
               <div class="f" style="font-size:13px;font-weight:600">Gambar sampul</div>
               <div class="cover-box" id="cov" style="${v.cover ? `background-image:url('${esc(v.cover)}')` : ""}">${v.cover ? "" : "Belum ada gambar"}</div>
-              <div class="bar"><label class="btn sm">Unggah gambar<input type="file" id="covF" accept="image/*" hidden></label><button type="button" class="btn sm bad" id="covX">Hapus</button></div>
+              <div class="bar"><label class="btn sm">Unggah gambar<input type="file" id="covF" accept="image/*" hidden></label><button type="button" class="btn sm" id="covP">Pilih dari Media</button><button type="button" class="btn sm bad" id="covX">Hapus</button></div>
               <input type="hidden" name="cover" value="${esc(v.cover || "")}">
               <label class="f">Teks alt sampul <small>· jelaskan isi gambar untuk pembaca layar dan Google</small><input class="in" name="coverAlt" maxlength="160" value="${esc(v.coverAlt || "")}"></label>
               <label class="f">Keterangan foto (caption) <small>· opsional</small><input class="in" name="coverCaption" maxlength="200" value="${esc(v.coverCaption || "")}"></label>
@@ -429,21 +429,35 @@
         ta.setSelectionRange(s, e); return insert(`[${sel || "teks tautan"}](${url})`);
       }
       if (k === "img") {
-        const pick = document.createElement("input"); pick.type = "file"; pick.accept = "image/*";
-        pick.onchange = async () => {
-          const file = pick.files[0]; if (!file) return; const pos = [ta.selectionStart, ta.selectionEnd];
-          const alt = await dialog({ title: "Teks alt foto", input: { label: "Jelaskan isi foto (untuk pembaca layar dan Google)", required: true, min: 5, minMsg: "Tulis minimal 5 huruf yang menjelaskan foto.", max: 120 }, ok: "Unggah & sisipkan" });
-          if (!alt) return;
-          try { const fd = new FormData(); fd.append("file", file); toast("Mengunggah foto…"); const r = await api("/ms/admin/ca/upload", { form: fd }); ta.setSelectionRange(...pos); insert(`\n\n![${alt.replace(/[\[\]()]/g, "")}](${r.url})\n\n`); toast("Foto disisipkan"); } catch (e) { fail(e); }
-        };
-        pick.click();
+        const pos = [ta.selectionStart, ta.selectionEnd], urls = await pickImages();
+        for (const u of urls) {
+          const alt = await dialog({ title: "Teks alt foto", body: `<img src="${esc(u)}" alt="" style="max-width:100%;max-height:160px;border-radius:8px;align-self:flex-start">`, input: { label: "Jelaskan isi foto (untuk pembaca layar dan Google)", required: true, min: 5, minMsg: "Tulis minimal 5 huruf yang menjelaskan foto.", max: 120 }, ok: "Sisipkan" });
+          if (!alt) continue;
+          ta.setSelectionRange(...pos); insert(`\n\n![${alt.replace(/[\[\]()]/g, "")}](${u})\n\n`); pos[0] = pos[1] = ta.selectionEnd; toast("Foto disisipkan");
+        }
       }
     }
+    /* tempel (Ctrl+V) atau seret foto langsung ke kotak tulisan: boleh banyak sekaligus; teks alt diambil dari nama berkas, periksa lagi */
+    const imgFiles = dt => [...((dt && dt.files) || [])].filter(x => /^image\//.test(x.type));
+    async function addFiles(files) {
+      for (const file of files) {
+        try {
+          toast("Mengunggah " + file.name + "…"); const fd = new FormData(); fd.append("file", file); const r = await api("/ms/admin/ca/upload", { form: fd });
+          const base = file.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ").replace(/[\[\]()]/g, "").trim(), alt = base.length >= 5 && /[a-z]{3}/i.test(base) ? base : "Foto artikel";
+          insert(`\n\n![${alt}](${r.url})\n\n`); toast("Foto disisipkan. Periksa teks alt-nya.");
+        } catch (e) { fail(e); }
+      }
+    }
+    ta.addEventListener("paste", e => { const fs = imgFiles(e.clipboardData); if (!fs.length) return; e.preventDefault(); addFiles(fs); });
+    ta.addEventListener("dragover", e => { if (e.dataTransfer && [...e.dataTransfer.types].includes("Files")) e.preventDefault(); });
+    ta.addEventListener("drop", e => { const fs = imgFiles(e.dataTransfer); if (!fs.length) return; e.preventDefault(); addFiles(fs); });
     $(".tb").addEventListener("click", e => { const b = e.target.closest("button"); if (b) doKey(b.dataset.k); });
     ta.addEventListener("keydown", e => { if (!(e.ctrlKey || e.metaKey)) return; const k = { b: "b", i: "i", k: "a" }[e.key.toLowerCase()]; if (k) { e.preventDefault(); doKey(k); } });
     document.addEventListener("keydown", function sk(e) { if (!document.body.contains(f)) return document.removeEventListener("keydown", sk); if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") { e.preventDefault(); save(); } });
 
-    $("#covF").onchange = async e => { const file = e.target.files[0]; if (!file) return; try { const fd = new FormData(); fd.append("file", file); toast("Mengunggah sampul…"); const r = await api("/ms/admin/ca/upload", { form: fd }); f.cover.value = r.url; $("#cov").style.backgroundImage = `url('${r.url}')`; $("#cov").textContent = ""; DIRTY = true; sync(); mark(); } catch (err) { fail(err); } e.target.value = ""; };
+    const setCover = url => { f.cover.value = url; $("#cov").style.backgroundImage = `url('${url}')`; $("#cov").textContent = ""; DIRTY = true; sync(); mark(); };
+    $("#covF").onchange = async e => { const file = e.target.files[0]; if (!file) return; try { const fd = new FormData(); fd.append("file", file); toast("Mengunggah sampul…"); const r = await api("/ms/admin/ca/upload", { form: fd }); setCover(r.url); } catch (err) { fail(err); } e.target.value = ""; };
+    $("#covP").onclick = async () => { const u = (await pickImages())[0]; if (u) setCover(u); };
     $("#covX").onclick = () => { f.cover.value = ""; $("#cov").style.backgroundImage = ""; $("#cov").textContent = "Belum ada gambar"; DIRTY = true; sync(); };
     $("#prevB").onclick = async () => { try { showHtml("Pratinjau artikel", await api("/ms/admin/preview-page", { json: val(), raw: true })); } catch (e) { fail(e); } };
     $("#draftB").onclick = () => { f.status.value = "draft"; $$("input[name=status]", f).forEach(r => { r.checked = r.value === "draft"; }); sync(); save(); };
@@ -496,11 +510,24 @@
       busy(e.target, async () => { try { for (const x of pending) await apply(x); toast(`Tag dipasang di ${pending.length} artikel`); route(); } catch (err) { fail(err); } });
     };
   }
+  /* pustaka foto: pilih gambar yang sudah pernah diunggah, atau unggah satu/beberapa sekaligus. Mengembalikan daftar alamat gambar. */
+  async function pickImages() {
+    let out = [];
+    await dialog({ title: "Pilih foto", wide: true, ok: "", cancel: "Tutup", body: `<div class="bar"><label class="btn pri">Unggah foto baru (boleh banyak)<input type="file" id="pkF" accept="image/*" multiple hidden></label><span class="small faint" id="pkS">Atau klik foto yang sudah pernah diunggah.</span></div><div id="pkG" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;max-height:56vh;overflow:auto"></div>`,
+      onOpen: async d => {
+        const g = $("#pkG", d), s = $("#pkS", d);
+        try { const m = await api("/ms/admin/ca/media"); g.innerHTML = m.items.map(i => `<button type="button" class="btn" data-u="${esc(i.url)}" title="${esc(i.usedIn.length ? "Dipakai: " + i.usedIn.map(u => u.title).join(", ") : "Belum dipakai")}" style="padding:0;height:auto;display:block;overflow:hidden"><img src="${esc(i.url)}" alt="" loading="lazy" style="width:100%;height:96px;object-fit:cover;display:block"><small style="display:block;padding:4px 6px;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(i.url.split("/").pop())}</small></button>`).join("") || '<div class="empty">Belum ada foto.</div>'; } catch (e) { s.textContent = e.message; }
+        g.onclick = e => { const b = e.target.closest("[data-u]"); if (!b) return; out = [b.dataset.u]; d.finish(true); };
+        $("#pkF", d).onchange = async e => { const files = [...e.target.files]; for (let i = 0; i < files.length; i++) { s.textContent = `Mengunggah ${i + 1} dari ${files.length}…`; try { const fd = new FormData(); fd.append("file", files[i]); out.push((await api("/ms/admin/ca/upload", { form: fd })).url); } catch (err) { s.textContent = files[i].name + ": " + err.message; return; } } d.finish(true); };
+      } });
+    return out;
+  }
   async function pMedia() {
     const d = await api("/ms/admin/ca/media");
     setPage("Media", "Gambar yang diunggah untuk artikel", `<div class="bar"><span class="muted small">${d.items.length} gambar. Gambar baru otomatis dikecilkan dan diubah ke WebP.</span><span class="grow"></span><label class="btn pri">Unggah gambar<input type="file" id="mf" accept="image/*" hidden></label></div>
-      <div class="media">${d.items.map(m => `<figure><img src="${esc(m.url)}" alt="" loading="lazy"><figcaption><div class="mono">${esc(m.url.split("/").pop())}</div>${num(Math.round(m.size / 1024))} KB · ${m.usedIn.length ? "dipakai: " + m.usedIn.map(u => esc(u.title)).join(", ") : "belum dipakai"}<div class="bar" style="margin-top:6px"><button class="btn sm" data-copy="${esc(m.url)}">Salin alamat</button></div></figcaption></figure>`).join("") || '<div class="empty">Belum ada gambar.</div>'}</div>`);
+      <div class="media">${d.items.map(m => `<figure><img src="${esc(m.url)}" alt="" loading="lazy"><figcaption><div class="mono">${esc(m.url.split("/").pop())}</div>${num(Math.round(m.size / 1024))} KB · ${m.usedIn.length ? "dipakai: " + m.usedIn.map(u => esc(u.title)).join(", ") : "belum dipakai"}<div class="bar" style="margin-top:6px"><button class="btn sm" data-copy="${esc(m.url)}">Salin alamat</button>${m.usedIn.length ? "" : `<button class="btn sm bad" data-rm="${esc(m.url.split("/").pop())}">Hapus</button>`}</div></figcaption></figure>`).join("") || '<div class="empty">Belum ada gambar.</div>'}</div>`);
     $("#mf").onchange = async e => { const file = e.target.files[0]; if (!file) return; try { const fd = new FormData(); fd.append("file", file); await api("/ms/admin/ca/upload", { form: fd }); toast("Gambar terunggah"); route(); } catch (err) { fail(err); } };
+    $$("[data-rm]").forEach(b => b.onclick = async () => { if (!await confirmAct("Hapus gambar ini?", `<b>${esc(b.dataset.rm)}</b> dihapus permanen dari server. Gambar ini tidak dipakai artikel mana pun.`, "Hapus", "bad")) return; try { await api("/ms/admin/ca/media/" + encodeURIComponent(b.dataset.rm), { method: "DELETE" }); toast("Gambar dihapus"); route(); } catch (e) { fail(e); } });
     $$("[data-copy]").forEach(b => b.onclick = () => navigator.clipboard.writeText(b.dataset.copy).then(() => toast("Alamat disalin"), () => toast(b.dataset.copy)));
   }
   async function pComments() {
@@ -614,14 +641,14 @@
         <button class="btn pri" id="wB" type="button">Catat pengambilan</button></div></div>
       <div class="card"><div class="hd"><h2>Riwayat pengambilan dana</h2></div><div class="tbl-wrap">${d.withdrawals.length ? `<table class="t"><thead><tr><th>Tanggal</th><th>Keperluan</th><th>Catatan</th><th class="num">Jumlah</th><th class="num">Dari saldo titipan</th></tr></thead><tbody>${d.withdrawals.map(w => `<tr><td class="small">${dt(w.at)}</td><td>${esc(w.category)}</td><td class="small">${esc(w.note || "")}</td><td class="num">${rp(w.amount)}</td><td class="num">${w.from_holding ? `<b>${rp(w.from_holding)}</b>` : "–"}</td></tr>`).join("")}</tbody></table>` : '<div class="empty">Belum ada pengambilan.</div>'}</div></div></div>
       <div class="card"><div class="hd"><h2>Penyesuaian saldo manual</h2></div><div class="bd"><p class="small muted">Tambah atau kurangi koin satu akun untuk kasus khusus, misalnya salah pesan. Alasan wajib diisi dan tercatat di riwayat mahasiswa.</p>
-        <div class="bar"><input class="in" id="aE1" placeholder="Email akun" style="min-width:220px"><input class="in" id="aD" placeholder="+10 atau -10" style="width:110px"><input class="in grow" id="aR" placeholder="Alasan (min 5 huruf)" maxlength="150"><button class="btn" id="aB" type="button">Terapkan</button></div><p class="err" id="aErr"></p></div></div>` : "";
+        <div class="bar"><input class="in" id="aE1" placeholder="Email akun" style="min-width:220px"><input class="in" id="aD" placeholder="+10 atau -10" style="width:110px"><input class="in grow" id="aR" placeholder="Alasan (min 5 huruf)" maxlength="150"><label class="bar small"><input type="checkbox" id="aP" checked> Koin gratis (bukan dari uang masuk)</label><button class="btn" id="aB" type="button">Terapkan</button></div><p class="err" id="aErr"></p></div></div>` : "";
     setPage("Koin & Dana", owner ? "Konfirmasi isi koin, saldo titipan, dan dana operasional" : "Konfirmasi isi koin", `${owner ? `<div class="notice info">Semua uang masuk dari koin boleh diambil untuk operasional (VPS, Claude, domain). Yang dicatat hanya bagian mana yang masih saldo titipan mahasiswa, supaya kamu tahu berapa kas yang perlu tersedia saat mereka memakai koinnya.</div>${S.shortfallRp ? `<div class="notice">Kas saat ini kurang <b>${rp(S.shortfallRp)}</b> untuk menutup semua saldo titipan mahasiswa (${rp(S.liabilityRp)}). Tidak masalah selama koin tidak dipakai sekaligus, tapi pemasukan berikutnya perlu menutupnya.</div>` : ""}` : '<div class="notice info">Konfirmasi hanya setelah nominal beserta kode unik terlihat di mutasi QRIS. Satu isi koin hanya bisa dikonfirmasi satu kali.</div>'}${cards}${q}${own}`);
     $$("[data-kp]").forEach(b => b.onclick = () => dialog({ title: "Bukti isi koin", ok: "", cancel: "Tutup", body: `<img src="/ms/admin/koin/topups/${encodeURIComponent(b.dataset.kp)}/proof" alt="Bukti bayar" style="max-width:100%;border-radius:10px"><p class="small muted">Nominal yang harus masuk: <b>${rp(b.dataset.total)}</b></p>` }));
     $$("[data-kok]").forEach(b => b.onclick = async () => { if (!await confirmAct("Konfirmasi isi koin?", `Dana <b>${rp(b.dataset.total)}</b> sudah terlihat di mutasi? Mahasiswa akan menerima <b>${num(b.dataset.coins)} koin</b>.`, "Ya, dana sudah masuk", "ok")) return; busy(b, async () => { try { await api(`/ms/admin/koin/topups/${encodeURIComponent(b.dataset.kok)}/confirm`, { json: {} }); toast("Koin dimasukkan"); } catch (e) { fail(e); } route(); }); });
     $$("[data-kno]").forEach(b => b.onclick = async () => { const why = await dialog({ title: "Tolak bukti isi koin", input: { label: "Alasan (terlihat oleh mahasiswa)", textarea: true, required: true, min: 5, minMsg: "Tulis alasan minimal 5 huruf.", max: 200 }, ok: "Tolak", okClass: "bad" }); if (!why) return; try { await api(`/ms/admin/koin/topups/${encodeURIComponent(b.dataset.kno)}/reject`, { json: { reason: why } }); toast("Bukti ditolak"); route(); } catch (e) { fail(e); } });
     if (owner) {
       $("#wB").onclick = async e => { const n = Number(($("#wA").value || "").replace(/\D/g, "")), free = Math.max(0, S.incomeRp - S.withdrawnRp); if (n > free && n <= S.withdrawableRp && !await confirmAct("Sebagian dari saldo titipan", `Dari <b>${rp(n)}</b>, sekitar <b>${rp(n - free)}</b> berasal dari saldo titipan mahasiswa (koin belum dipakai). Boleh, tapi pastikan kas tersedia saat mereka memakai koinnya. Lanjut catat?`, "Ya, catat")) return; busy(e.target, async () => { try { await api("/ms/admin/koin/withdraw", { json: { amount: $("#wA").value, category: $("#wC").value, note: $("#wN").value } }); toast("Pengambilan dicatat"); route(); } catch (err) { $("#wE").textContent = err.message; } }); };
-      $("#aB").onclick = async e => { const em = $("#aE1").value.trim(), dl = $("#aD").value.trim(); if (!await confirmAct("Terapkan penyesuaian?", `Ubah saldo <b>${esc(em)}</b> sebesar <b>${esc(dl)}</b> koin. Tercatat dengan alasan.`, "Terapkan")) return; busy(e.target, async () => { try { const r = await api("/ms/admin/koin/adjust", { json: { email: em, delta: Number(dl.replace("+", "")), reason: $("#aR").value } }); toast("Saldo " + r.email + " sekarang " + num(r.balance) + " koin"); route(); } catch (err) { $("#aErr").textContent = err.message; } }); };
+      $("#aB").onclick = async e => { const em = $("#aE1").value.trim(), dl = $("#aD").value.trim(); if (!await confirmAct("Terapkan penyesuaian?", `Ubah saldo <b>${esc(em)}</b> sebesar <b>${esc(dl)}</b> koin. Tercatat dengan alasan.`, "Terapkan")) return; busy(e.target, async () => { try { const r = await api("/ms/admin/koin/adjust", { json: { email: em, delta: Number(dl.replace("+", "")), reason: $("#aR").value, promo: $("#aP").checked } }); toast("Saldo " + r.email + " sekarang " + num(r.balance) + " koin"); route(); } catch (err) { $("#aErr").textContent = err.message; } }); };
     }
   }
   function pEmbed(which) {
@@ -734,7 +761,7 @@
     $$("[data-days]").forEach(b => b.onclick = () => go("reports", { from: dayKey(Date.now() - (Number(b.dataset.days) - 1) * 864e5), to: dayKey(Date.now()) }));
   }
   const SET_LABEL = {
-    admin_wa_number: "Nomor WhatsApp admin (62…)", update_group_url: "Tautan grup info WhatsApp", qris_merchant_name: "Nama merchant QRIS", payment_window_minutes: "Batas waktu bayar (menit)", unique_code_enabled: "Pakai kode unik pembayaran", unique_code_max: "Kode unik maksimum",
+    bayar_koin_saja: "Semua pesanan dibayar koin (satu pintu). Matikan = kembali ke QRIS per pesanan", admin_wa_number: "Nomor WhatsApp admin (62…)", update_group_url: "Tautan grup info WhatsApp", qris_merchant_name: "Nama merchant QRIS", payment_window_minutes: "Batas waktu bayar (menit)", unique_code_enabled: "Pakai kode unik pembayaran", unique_code_max: "Kode unik maksimum",
     retention_hours: "Masa simpan file hasil (jam)", reminder_before_delete_hours: "Pengingat sebelum file dihapus (jam)", file_max_mb: "Ukuran file maksimal (MB)", fast_lane_enabled: "Jalur cepat aktif", fast_lane_daily_cap: "Kuota jalur cepat per hari",
     revision_free_count: "Jumlah revisi gratis", revision_price_per_word: "Harga revisi per kata", long_sentence_words: "Batas kalimat panjang (kata)", preview_open_sentences: "Kalimat contoh terbuka di pratinjau (lama)", preview_open_paragraphs: "Paragraf contoh terbuka di pratinjau gratis", avg_words_per_hour: "Kecepatan kerja (kata/jam)",
     drillbit_sim_max: "Batas acuan similarity Drillbit (%)", drillbit_ai_max: "Batas acuan AI Drillbit (%)", urgensi_ai_sedang: "Urgensi: indikasi gaya seragam mulai SEDANG (%)", urgensi_ai_tinggi: "Urgensi: indikasi gaya seragam mulai TINGGI (%)", urgensi_paragraf_skor: "Urgensi: skor paragraf MENDESAK", urgensi_paragraf_persen: "Urgensi: % paragraf mendesak = dokumen MENDESAK", ga_id: "Google Analytics 4 (G-…)", gtm_id: "Google Tag Manager (GTM-…)", google_verify_file: "File verifikasi Google Search Console", qris_image_path: "Lokasi gambar QRIS (diatur lewat unggah)", layanan_nonaktif: "Kode layanan yang ditutup",

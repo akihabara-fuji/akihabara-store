@@ -26,5 +26,5 @@ test("urutan perbaikan paragraf dibatasi 5 teratas, sisanya terlipat", () => {
 });
 
 test("versi aset dinaikkan agar browser memuat skrip baru", () => {
-  for (const f of ["audit.html", "audit-hasil.html"]) assert.ok(/\?v=20261108/.test(rd(f)), f);
+  for (const f of ["audit.html", "audit-hasil.html"]) assert.ok(/\?v=20261202/.test(rd(f)), f);
 });

@@ -52,10 +52,12 @@ function createKoin(db, { settings, emailOf, now: clock } = {}) {
     });
   }
 
-  function adjust(uid, delta, reason, by, at) {
+  /* promo = koin gratis dari admin (hadiah/kredit uji): dicatat seperti bonus daftar, jadi tidak dianggap uang masuk dan tidak menjadi kewajiban kas. */
+  function adjust(uid, delta, reason, by, at, promo) {
     reason = String(reason || "").trim();
     if (reason.length < 5) throw err(400, "Alasan penyesuaian wajib diisi (minimal 5 huruf).");
-    return tx(() => post(uid, delta, "adjust", crypto.randomBytes(8).toString("hex"), `${reason} (oleh ${by || "admin"})`, at));
+    const kind = promo && delta > 0 ? "bonus" : "adjust";
+    return tx(() => post(uid, delta, kind, (kind === "bonus" ? "adm:" : "") + crypto.randomBytes(8).toString("hex"), `${reason} (oleh ${by || "admin"})`, at));
   }
 
   /* ---------- isi koin lewat QRIS manual ---------- */
@@ -138,12 +140,17 @@ function createKoin(db, { settings, emailOf, now: clock } = {}) {
   function summary() {
     const g = sql => db.prepare(sql).get();
     const topupCoins = g("SELECT COALESCE(SUM(delta),0) n FROM coin_ledger WHERE kind='topup'").n;
-    const liability = g("SELECT COALESCE(SUM(delta),0) n FROM coin_ledger").n;
+    /* Koin bonus (gratis) tidak didukung uang: dianggap terpakai lebih dulu. Hanya sisa saldo yang didukung uang yang menjadi kewajiban kas. */
+    const holders = db.prepare(`SELECT SUM(delta) bal,
+      SUM(CASE WHEN kind='bonus' THEN delta ELSE 0 END) bonus,
+      SUM(CASE WHEN kind IN ('order','refund','sim') THEN -delta ELSE 0 END) spent FROM coin_ledger GROUP BY user_id`).all();
+    let liability = 0, promoCoins = 0;
+    for (const h of holders) { const promoLeft = Math.min(Math.max(0, h.bal), Math.max(0, h.bonus - Math.max(0, h.spent))); promoCoins += promoLeft; liability += Math.max(0, h.bal - promoLeft); }
     const withdrawn = g("SELECT COALESCE(SUM(amount),0) n FROM fund_withdrawals").n;
     const cashIn = topupCoins * RP, liabilityRp = liability * RP, incomeRp = cashIn - liabilityRp;
     const cashOnHand = cashIn - withdrawn;
     return {
-      topupRp: cashIn, topupCoins, liabilityRp, liabilityCoins: liability,
+      topupRp: cashIn, topupCoins, liabilityRp, liabilityCoins: liability, promoCoins,
       incomeRp, withdrawnRp: withdrawn,
       cashOnHandRp: cashOnHand,
       withdrawableRp: Math.max(0, cashOnHand),
@@ -181,9 +188,16 @@ function createKoin(db, { settings, emailOf, now: clock } = {}) {
   }
   const simState = (uid, orderId) => ({ unlocked: !!db.prepare("SELECT 1 FROM sim_unlocks WHERE order_id=?").get(String(orderId)), firstFree: !db.prepare("SELECT 1 FROM sim_unlocks WHERE user_id=?").get(String(uid)) });
 
+  /* Bonus daftar: koin gratis sekali per akun (UNIQUE(kind,ref) menjamin tidak bisa ganda). Mengembalikan jumlah koin yang diberikan, 0 bila tidak ada. */
+  function welcome(uid, at) {
+    const n = settings ? Number(settings.get("koin_bonus_daftar")) : 0;
+    if (!Number.isInteger(n) || n <= 0) return 0;
+    return tx(() => { const r = post(uid, n, "bonus", "welcome:" + uid, `Bonus daftar: ${n} koin gratis`, at || T()); return r.duplicate ? 0 : n; });
+  }
+
   const history = (uid, limit = 50) => db.prepare("SELECT delta, balance_after, kind, ref, note, created_at FROM coin_ledger WHERE user_id=? ORDER BY id DESC LIMIT ?").all(String(uid), limit);
 
-  return { RP, KATEGORI, isFree, balance, debitOrder, refundOrder, adjust, parseRupiah, createTopup, attachProof, confirmTopup, rejectTopup, expireTopups, summary, withdraw, history, unlockSim, simState, tx };
+  return { RP, KATEGORI, isFree, balance, debitOrder, refundOrder, adjust, parseRupiah, welcome, createTopup, attachProof, confirmTopup, rejectTopup, expireTopups, summary, withdraw, history, unlockSim, simState, tx };
 }
 
 /* Harga koin sebuah pesanan: harga rupiah / 1000. Harga di luar kelipatan Rp1.000 tidak bisa dibayar koin. */

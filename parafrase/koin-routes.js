@@ -36,7 +36,7 @@ module.exports = function mountKoin({ app, express, db, settings, koin, root, sa
     res.json({ balance: koin.balance(u.id), unlimited: koin.isFree(u.id), history: koin.history(u.id, 60).map(r => ({ at: r.created_at, delta: r.delta, balance: r.balance_after, kind: r.kind, note: r.note })), topups: tops.map(view), ...cfgPub() });
   }));
   /* Hanya saldo, untuk chip di menu. Tanpa login: koin null. */
-  app.get("/ms/koin/saldo", wrap((req, res) => { const u = userFrom && userFrom(req); const fr = !!(u && koin.isFree(u.id)); res.json({ balance: u ? (fr ? 999999 : koin.balance(u.id)) : null, unlimited: fr }); }));
+  app.get("/ms/koin/saldo", wrap((req, res) => { const u = userFrom && userFrom(req); const fr = !!(u && koin.isFree(u.id)); res.json({ balance: u ? (fr ? 999999 : koin.balance(u.id)) : null, unlimited: fr, koinOnly: !!settings.get("bayar_koin_saja") }); }));
 
   app.post("/ms/koin/topup", J, wrap((req, res) => {
     if (!sameOrigin(req)) return no(res);
@@ -119,7 +119,7 @@ module.exports = function mountKoin({ app, express, db, settings, koin, root, sa
     const b = req.body || {}, u = users && users.byEmail && users.byEmail(b.email);
     if (!u) return no(res, 404, "Akun dengan email itu tidak ditemukan.");
     const delta = Number(b.delta); if (!Number.isInteger(delta) || delta === 0 || Math.abs(delta) > 5000) return no(res, 400, "Jumlah koin harus bilangan bulat, bukan 0, maksimal 5.000.");
-    const r = koin.adjust(u.id, delta, b.reason, who(req));
+    const r = koin.adjust(u.id, delta, b.reason, who(req), undefined, b.promo === true);
     res.json({ ok: true, balance: r.balance_after, email: u.email });
   }));
 };
