@@ -26,5 +26,12 @@ test("urutan perbaikan paragraf dibatasi 5 teratas, sisanya terlipat", () => {
 });
 
 test("versi aset dinaikkan agar browser memuat skrip baru", () => {
-  for (const f of ["audit.html", "audit-hasil.html"]) assert.ok(/\?v=20261202/.test(rd(f)), f);
+  for (const f of ["audit.html", "audit-hasil.html"]) assert.ok(/\?v=20261203/.test(rd(f)), f);
+});
+
+test("kartu Drillbit tidak mengingat angka lama, dan panel admin memuat app.js baru", () => {
+  const c = rd("common.js");
+  assert.ok(!/localStorage\.setItem\(KEY/.test(c), "angka Drillbit tidak boleh disimpan");
+  assert.ok(!/saved\.dbSim/.test(c), "angka lama tidak boleh dipulihkan otomatis");
+  assert.ok(/app\.js\?v=12/.test(require("fs").readFileSync(require("path").join(__dirname, "..", "admin-ca", "public", "index.html"), "utf8")), "app.js admin harus naik versi agar tombol Impor .md termuat");
 });

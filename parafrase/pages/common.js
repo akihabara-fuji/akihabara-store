@@ -141,7 +141,7 @@ window.auditScoreCard = function (sc, box) {
 };
 
 /* Angka Drillbit asli: murid menempel angka dari laporan Drillbit resminya. Tidak diverifikasi dan tidak disimpan di server;
-   hanya diingat di browser murid. Batas hanyalah acuan (atur admin). */
+   tidak diingat di mana pun (kosong lagi setiap halaman dibuka). Batas hanyalah acuan (atur admin). */
 /* ctx (opsional): { here: "audit"|"cek"|"hasil", fetch(sim, ai) -> Promise<triage>, onTriage(triage) }.
    Bila ada, angka yang ditempel dikirim ke server (tidak disimpan) dan kartu urgensi dihitung ulang dengan mesin yang sama. */
 window.auditDrillbit = function (box, score, ctx) {
@@ -149,7 +149,7 @@ window.auditDrillbit = function (box, score, ctx) {
   var cfg = (window.PF && window.PF.cfg) || {}, SIM = Number(cfg.drillbit_sim_max) || 25, AI = Number(cfg.drillbit_ai_max) || 20;
   function el(t, css, x) { var e = document.createElement(t); if (css) e.style.cssText = css; if (x != null) e.textContent = x; return e; }
   var KEY = "ca-drillbit", saved = {};
-  try { saved = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) {}
+  try { localStorage.removeItem(KEY); } catch (e) {}   /* angka lama tidak lagi diingat: tiap buka halaman mulai kosong */
   var wrap = el("div", "max-width:760px;margin:0 auto 14px;padding:16px 18px;border-radius:18px;border:1px solid var(--border,#2b2b58);text-align:left");
   wrap.appendChild(el("b", "display:block", "Punya laporan Drillbit resmi dari UT?"));
   wrap.appendChild(el("div", "font-size:13.5px;opacity:.75;margin:2px 0 10px", (ctx && ctx.here === "cek" ? "Tempel dua angkanya, nanti dipakai menentukan urgensi di bawah, sama seperti di Audit Dokumen. Angka ini dari kamu dan tidak kami verifikasi." : "Tempel dua angkanya, nanti digabung dengan skor di atas. Angka ini dari kamu dan tidak kami verifikasi.")));
@@ -178,7 +178,6 @@ window.auditDrillbit = function (box, score, ctx) {
     var s = num(iS.value), a = num(iA.value);
     if (Number.isNaN(s) || Number.isNaN(a)) { err.textContent = "Isi angka 0 sampai 100, contoh 18,5."; return; }
     if (s == null && a == null) { err.textContent = "Isi minimal satu angka dari laporan Drillbit."; return; }
-    try { localStorage.setItem(KEY, JSON.stringify({ dbSim: s, dbAi: a })); } catch (e) {}
     var tiles = el("div", "display:flex;flex-wrap:wrap;gap:10px");
     if (s != null) tiles.appendChild(tile("Similarity (dari laporanmu)", s, SIM));
     if (a != null) tiles.appendChild(tile("Tulisan AI (dari laporanmu)", a, AI));
@@ -193,7 +192,7 @@ window.auditDrillbit = function (box, score, ctx) {
     if (ctx && ctx.fetch && ctx.onTriage) ctx.fetch(s, a).then(ctx.onTriage).catch(function () {});
     out.appendChild(el("p", "margin:6px 0 0;font-size:12.5px;opacity:.7", "Batas acuan diatur admin, bukan aturan resmi UT. Ikuti ketentuan prodi dan tutormu. Angka berasal dari laporan Drillbit yang kamu tempel."));
   }
-  go.onclick = show; if (saved.dbSim != null || saved.dbAi != null) show();
+  go.onclick = show;
 };
 
 /* Arahan "harusnya seperti apa" per kode warna (sama dengan TARGET di hint.js). Dipakai sebagai keterangan saat kursor di atas penanda. */
