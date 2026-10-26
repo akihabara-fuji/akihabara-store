@@ -97,10 +97,19 @@ const ACR = new Set(["UT", "UAS", "UTS", "IPK", "IPS", "TMK", "TTM", "TAPS", "DO
 const ACR_FIX = { MYUT: "MyUT", TUTON: "Tuton", TUWEB: "Tuweb", PRATON: "Praton", METOPEN: "Metopen" };
 function senCase(t) {
   t = String(t).trim(); if (/[a-z]/.test(t)) return t;                       // sudah campuran huruf: biarkan
-  const w = t.toLowerCase().split(/(\s+)/).map(x => { const u = x.toUpperCase(); return ACR.has(u) ? (ACR_FIX[u] || u) : x; }).join("");
+  const parts = t.toLowerCase().split(/(\s+)/);
+  const w = parts.map((x, i) => {
+    const m = /^([^\p{L}\p{N}]*)([\p{L}\p{N}]+)([^\p{L}\p{N}]*)$/u.exec(x); if (!m) return x;
+    const u = m[2].toUpperCase(); if (!ACR.has(u)) return x;
+    // "APA" di awal kalimat tanya ("Apa itu IPK?") bukan gaya sitasi; huruf besar hanya bila diikuti angka/edisi/gaya
+    if (u === "APA" && !/^(?:\d|edisi|style|gaya|7)/.test((parts[i + 2] || "").trim())) return x;
+    return m[1] + (ACR_FIX[u] || u) + m[3];
+  }).join("");
   return w.charAt(0).toUpperCase() + w.slice(1);
 }
 const DROP_H2 = /^(audit lessons|hasil audit|self[- ]?check|tautan internal|tautan & anchor|kanal sosial|gabung komunitas|blok komunitas|catatan (editor|internal|untuk admin|yang harus dicek)|gambar & alt text|alt text|metadata seo|catatan audit|temuan audit|audit (?:otomatis|teknis)|template komunitas|disclaimer|rekomendasi gambar|gambar utama)\b|gambar(?: dan alt text)?$|\((untuk admin|tempel)/i;
+/* Baris kosong di antara baris tabel memutus tabel Markdown (tampil sebagai teks mentah): rapatkan. */
+const fixTables = t => String(t).replace(/(^\|[^\n]*\|[ \t]*)\n(?:[ \t]*\n)+(?=\|)/gm, "$1\n");
 /* Gabungkan semua bagian "Sumber" jadi satu daftar tanpa duplikat. Alamat catatanakademik.com bukan sumber rujukan (itu tautan layanan kita) dan dibuang dari daftar. */
 function mergeSumber(t) {
   const parts = String(t).split(/^(?=##[ \t]+[^#\n])/m), isS = s => /^##[ \t]+Sumber[ \t]*$/im.test(s.split("\n")[0] || "");
@@ -150,6 +159,8 @@ function hermesClean(text) {
   }
   t = keep.join("");
   { const c = (t.match(/\s*\[unverified\]/gi) || []).length; if (c) { t = t.replace(/[ \t]*\[unverified\]/gi, ""); notes.push(`Penanda [unverified] dibuang (${c} tempat). Kalimat itu belum terverifikasi oleh penulis aslinya: baca ulang sebelum terbit.`); } }
+  { const n1 = t; t = fixTables(t); if (t !== n1) notes.push("Tabel yang terputus baris kosong dirapikan."); }
+  { const n1 = t; t = t.split("\n").filter(l => !INTERNAL_LINE.test(l)).join("\n"); if (t !== n1) notes.push("Baris Gambar/Alt text/catatan pemilik dibuang."); }
   { const n0 = t; t = mergeSumber(t); if (t !== n0) notes.push("Bagian Sumber ganda digabung jadi satu daftar."); }
   // baris placeholder dan catatan untuk admin dibuang; judul yang jadi kosong ikut dibuang
   const before = t;
@@ -275,7 +286,7 @@ function scrubInternal(text) {
     if (h && DROP_H2.test(name)) continue;
     out.push(h && /^sources$/i.test(name) ? sec.replace(/^(#{2,3})[ \t]+Sources/i, "$1 Sumber") : sec);
   }
-  return mergeSumber(out.join("").replace(/[ \t]*\[unverified\]/gi, "").split("\n").filter(l => !INTERNAL_LINE.test(l)).join("\n")).replace(/\n{3,}/g, "\n\n");
+  return mergeSumber(fixTables(out.join("")).replace(/[ \t]*\[unverified\]/gi, "").split("\n").filter(l => !INTERNAL_LINE.test(l)).join("\n")).replace(/\n{3,}/g, "\n\n");
 }
 
 module.exports = { scrubInternal, buildDrafts, parseMd, parseFrontMatter, cleanMarkdown, checkDraft, topicKey };
