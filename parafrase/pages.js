@@ -22,7 +22,7 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
     .replace("</head>", (h.includes("/site.css") ? '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme-svc.css?v=2">' : '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme.css?v=2">') + "</head>")
     .replace("</head>", "<style>.logo b.lg{background:none!important;box-shadow:none}.logo b.lg img{width:34px;height:34px;object-fit:contain;display:block}</style></head>")
     );
-  const TRACK = new Set(["beranda.html", "hub.html", "cek.html", "audit.html", "layanan.html", "blog-ut.html", "alat-nilai.html", "alat-pasfoto.html", "sitasi.html", "portal-ut.html"]); // halaman pesanan dan hasil memuat token rahasia: tidak dilacak
+  const TRACK = new Set(["beranda.html", "hub.html", "cek.html", "audit.html", "layanan.html", "blog-ut.html", "alat-nilai.html", "alat-pasfoto.html", "alat-cv.html", "sitasi.html", "portal-ut.html"]); // halaman pesanan dan hasil memuat token rahasia: tidak dilacak
   const blogCards = req => typeof app.locals.renderAcadBlogCards === "function" ? app.locals.renderAcadBlogCards(req) : "";
   /* Satu jalur render untuk halaman publik DAN pratinjau admin. Kamus teks (sitetexts.js) dan kartu tersembunyi diterapkan di sini,
      di server, jadi pengunjung dan Google langsung menerima teks yang sudah diganti. opts: { over: Map pengganti sementara, mark: teks yang disorot } */
@@ -47,7 +47,7 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
   app.get("/ruangakademikut/layanan", page("layanan.html"));
   app.get("/ruangakademikut/blog-ut", page("blog-ut.html"));
   /* Alat gratis: di domain akademik alamat resminya pendek (/kalkulator-nilai-ut); jalur lama /ruangakademikut/... dialihkan 301. */
-  for (const [slug, file] of [["kalkulator-nilai-ut", "alat-nilai.html"], ["pasfoto-yudisium", "alat-pasfoto.html"], ["sitasi-apa", "sitasi.html"], ["koin", "koin.html"], ["portal-ut", "portal-ut.html"]]) {
+  for (const [slug, file] of [["kalkulator-nilai-ut", "alat-nilai.html"], ["pasfoto-yudisium", "alat-pasfoto.html"], ["buat-cv-ats", "alat-cv.html"], ["sitasi-apa", "sitasi.html"], ["koin", "koin.html"], ["portal-ut", "portal-ut.html"]]) {
     if (SHORT) app.get("/ruangakademikut/" + slug, (req, res) => res.redirect(301, "/" + slug));
     app.get(SHORT ? "/" + slug : ["/ruangakademikut/" + slug, "/" + slug], page(file));
   }
@@ -79,7 +79,7 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
   /* Verifikasi Bing Webmaster Tools (kode per akun, bukan rahasia) */
   app.get("/BingSiteAuth.xml", (req, res) => res.type("application/xml").set("Cache-Control", "public, max-age=3600")
     .send('<?xml version="1.0"?>\n<users>\n\t<user>5A51A6D49E191DE95E89EA165A5F3815</user>\n</users>'));
-  const ASSETS = new Set(["site.css", "hub.css", "common.js", "cek.js", "pesanan.js", "admin.js", "audit.js", "audit-hasil.js", "layanan.js", "layanan-admin.js", "blog-ut.js", "nilai-ut.js", "kalkulator.js", "pasfoto.js", "koin.js", "koin-chip.js", "sitasi-apa.js", "sitasi.js"]);
+  const ASSETS = new Set(["site.css", "hub.css", "common.js", "cek.js", "pesanan.js", "admin.js", "audit.js", "audit-hasil.js", "layanan.js", "layanan-admin.js", "blog-ut.js", "nilai-ut.js", "kalkulator.js", "pasfoto.js", "cv.js", "koin.js", "koin-chip.js", "sitasi-apa.js", "sitasi.js"]);
   app.get(["/ruangakademikut/assets/:f", "/assets/ut/:f"], (req, res) => {
     if (!ASSETS.has(req.params.f)) return res.status(404).end();
     sendAsset(res, path.join(dir, req.params.f), "no-cache");

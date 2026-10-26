@@ -19,7 +19,7 @@ function normPath(p) {
 }
 const GROUPS = [
   ["Blog dan artikel", /^\/(blog|ruangakademikut\/blog-ut)/],
-  ["Alat gratis", /\/(kalkulator-nilai-ut|pasfoto-yudisium|sitasi-apa)/],
+  ["Alat gratis", /\/(kalkulator-nilai-ut|pasfoto-yudisium|buat-cv-ats|sitasi-apa)/],
   ["Cek & Parafrase", /cek-parafrase-mandiri/],
   ["Audit Dokumen", /\/audit/],
   ["Layanan dan pesan", /\/(layanan|layanan-ut|pesanan|koin|beranda)|^\/ruangakademikut$/],

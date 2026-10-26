@@ -22,6 +22,7 @@ const PAGES = {
   "blog-ut.html": "Halaman blog",
   "alat-nilai.html": "Kalkulator Nilai UT",
   "alat-pasfoto.html": "Pasfoto Yudisium",
+  "alat-cv.html": "Buat CV ATS",
   "portal-ut.html": "Portal UT",
 };
 const EXTRA_PAGE = "Blog dan akun (menu & footer)";
