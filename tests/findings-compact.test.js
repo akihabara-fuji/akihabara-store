@@ -26,7 +26,7 @@ test("urutan perbaikan paragraf dibatasi 5 teratas, sisanya terlipat", () => {
 });
 
 test("versi aset dinaikkan agar browser memuat skrip baru", () => {
-  for (const f of ["audit.html", "audit-hasil.html"]) assert.ok(/\?v=20261205/.test(rd(f)), f);
+  for (const f of ["audit.html", "audit-hasil.html"]) assert.ok(/\?v=20261208/.test(rd(f)), f);
 });
 
 test("kartu Drillbit tidak mengingat angka lama, dan panel admin memuat app.js baru", () => {
@@ -41,4 +41,11 @@ test("poin skor bisa ditekan (rincian muncul setelah ditekan) dan daftar temuan 
   assert.ok(/window\.auditScoreCard = function \(sc, box, findings\)/.test(c), "kartu skor menerima daftar temuan");
   assert.ok(/createElement\("details"\)/.test(c) && /window\.foldList = /.test(c));
   for (const f of ["audit.js", "audit-hasil.js"]) { const t = rd(f); assert.ok(/foldList\(/.test(t), f + " melipat daftar temuan"); assert.ok(/auditScoreCard\(d\.score, \$\("score"\), d\.findings\)/.test(t), f + " mengirim temuan ke kartu skor"); }
+});
+
+test("kartu skor hanya menampilkan poin yang salah (dengan persen), poin benar dipindah ke daftar bawah", () => {
+  const c = rd("common.js");
+  assert.ok(/bermasalah/.test(c) && /window\.pfWrongPct/.test(c), "persen bermasalah ditampilkan");
+  assert.ok(/window\.auditOkList = /.test(c) && /Yang sudah benar/.test(c));
+  for (const f of ["audit.js", "audit-hasil.js"]) assert.ok(/auditOkList\(d\.score/.test(rd(f)), f + " memanggil daftar Yang sudah benar");
 });

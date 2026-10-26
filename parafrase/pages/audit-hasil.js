@@ -29,6 +29,7 @@
     if (!d.findings.length) $("list").appendChild(el("p", "text-align:center", "Tidak ada temuan dari aturan yang kami periksa."));
     window.renderFindings($("list"), d.findings, { sev: SEV, visible: 8, full: true });
     if (d.findings.length) window.foldList($("list"), "Lihat semua temuan (" + d.findings.length + ")");
+    window.auditOkList(d.score, $("list"));
     if (d.deleteAt) $("del").textContent = "File dihapus otomatis pada " + new Date(d.deleteAt).toLocaleString("id-ID") + ". Simpan hasil ini sebelum itu.";
   }).catch(function () { fail("Koneksi terputus. Muat ulang halaman."); });
 })();

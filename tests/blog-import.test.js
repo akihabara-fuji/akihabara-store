@@ -107,3 +107,70 @@ test("blok label gaya Hermes (**Slug:** ...) dibaca sebagai metadata dan dibuang
   const d3 = parseMd("---\ntitle: Resmi\nslug: slug-resmi\n---\n**Slug:** slug-label\n\n" + isi, "z.md");
   assert.strictEqual(d3.slug, "slug-resmi");
 });
+
+test("draf Hermes berkerangka: penanda dibuang, metadata dibaca, bagian internal dan placeholder hilang, tautan dirapikan", () => {
+  const raw = `# [H1 — JUDUL UTAMA]
+Cara Cek Jadwal UAS UT di MyUT
+
+---
+
+## [METADATA SEO — BUKAN ISI ARTIKEL]
+- **Slug:** \`cara-cek-jadwal-uas-ut\`
+- **SEO title:** \`Cara Cek Jadwal UAS UT di MyUT\`
+- **Meta description:** \`Cara cek jadwal UAS UT lewat MyUT dan kalender akademik.\`
+- **Kata kunci utama:** cara cek jadwal UAS UT
+- **Status:** DRAFT LOKAL — belum diterbitkan
+
+---
+
+## [PEMBUKA — JAWABAN LANGSUNG]
+${"Jadwal UAS UT dicek lewat MyUT dan kalender akademik resmi. ".repeat(8)}
+
+## [H2 — LANGKAH CEK JADWAL DI MYUT]
+${"Masuk ke MyUT lalu buka menu jadwal ujian dan cocokkan dengan kalender akademik. ".repeat(6)}[2][4]
+
+## [CTA — SEMUA LAYANAN CATATAN AKADEMIK]
+Coba [Kalkulator](https://catatanakademik.com/ruangakademikut/kalkulator-nilai-ut), [layanan Metopen](https://catatanakademik.com/layanan-ut/metopen) dan [Audit](https://catatanakademik.com/audit).
+- **Portal UT** → tautan resmi MyUT: <https://catatanakademik.com/portal-ut>
+
+## [SUMBER RESMI]
+- [Pedoman UT](https://www.ut.ac.id/pedoman)
+
+## Gabung komunitas Catatan Akademik UT
+- **Instagram:** **DATA BELUM TERSEDIA** - URL akun belum terbaca.
+> Catatan Akademik bukan situs resmi UT. Kami tidak menjamin nilai atau kelulusan. Semangat!
+
+## Audit Lessons (Dari Eksekusi Sebelumnya)
+- catatan internal yang tidak boleh terbit
+`;
+  const d = parseMd(raw.replace("Jadwal UAS UT dicek", "\u00e2\u0080\u0094 rusak. Jadwal UAS UT dicek"), "x.md");
+  assert.ok(d.ok);
+  assert.strictEqual(d.title, "Cara Cek Jadwal UAS UT di MyUT");
+  assert.strictEqual(d.slug, "cara-cek-jadwal-uas-ut"); assert.strictEqual(d.metaTitle, "Cara Cek Jadwal UAS UT di MyUT");
+  assert.ok(d.metaDesc.startsWith("Cara cek jadwal")); assert.strictEqual(d.keyword, "cara cek jadwal UAS UT");
+  const b = d.body;
+  assert.ok(!/\[(H\d|CTA|PEMBUKA|SUMBER|METADATA)/.test(b), "penanda kerangka tersisa");
+  assert.ok(/^## Langkah cek jadwal di MyUT$/m.test(b), "judul H2 huruf kapital semua dirapikan");
+  assert.ok(/^## Langkah berikutnya$/m.test(b) && /^## Sumber$/m.test(b));
+  assert.ok(!/Audit Lessons|catatan internal|DATA BELUM TERSEDIA|Gabung komunitas|Status:|METADATA/i.test(b), "bagian internal/placeholder tersisa");
+  assert.ok(!/\[2\]\[4\]/.test(b), "penanda kutipan sisa");
+  assert.ok(b.includes("https://catatanakademik.com/kalkulator-nilai-ut") && !b.includes("/ruangakademikut/"));
+  assert.ok(b.includes("https://catatanakademik.com/layanan?s=metopen_paket") && !b.includes("/layanan-ut/metopen"));
+  assert.ok(b.includes("[Portal UT](https://catatanakademik.com/portal-ut)") && !/<https?:/.test(b));
+  assert.ok(!/\u00e2[\u0080-\u00bf]/.test(b) && b.includes("— rusak."), "karakter rusak diperbaiki");
+  assert.ok(/tidak\s+menjamin\s+nilai\s+atau\s+kelulusan/i.test(b), "penafian dipertahankan");
+  const w = checkDraft(d).join(" | ");
+  assert.ok(!/penanda kerangka|DATA BELUM TERSEDIA|catatan internal|CTA/i.test(w), w);
+});
+
+test("label polos dan label bertanda panjang karakter dibaca; klaim yang dinegasikan tidak ditandai; tanpa CTA layanan ditandai", () => {
+  const raw = `# Deadline Tuton UT Terlewat\n\nSlug: \`deadline-tuton-terlewat\`\n\nMeta title (40 karakter): Deadline Tuton UT Terlewat\n\nMeta description: Langkah etis setelah kelas Tuton ditutup.\n\nKata kunci utama: deadline Tuton UT terlewat\n\n## Langkah\n${"Catat bukti, cek status kelas, lalu hubungi tutor. Bukti submit bukan jaminan nilai atau kelulusan. ".repeat(5)}\n\nSumber: [UT](https://www.ut.ac.id/)\n\nKami tidak menjamin nilai atau kelulusan. Semangat!`;
+  const d = parseMd(raw, "y.md");
+  assert.strictEqual(d.slug, "deadline-tuton-terlewat"); assert.strictEqual(d.metaTitle, "Deadline Tuton UT Terlewat"); assert.ok(d.metaDesc.startsWith("Langkah etis"));
+  assert.ok(!/^(Slug|Meta)/m.test(d.body), "label tidak boleh tampil di isi");
+  const w = checkDraft(d).join(" | ");
+  assert.ok(!/klaim yang dilarang/i.test(w), "'bukan jaminan' adalah negasi: " + w);
+  assert.ok(/ajakan \(CTA\) ke layanan kita/.test(w), "tanpa tautan Layanan/Audit/Cek harus ditandai: " + w);
+  const ok = parseMd(raw.replace("Sumber:", "Lihat [Audit](/audit). Sumber:"), "y.md");
+  assert.ok(!/ajakan \(CTA\) ke layanan kita/.test(checkDraft(ok).join(" | ")));
+});

@@ -63,25 +63,94 @@ function toTags(v) { return (Array.isArray(v) ? v : String(v || "").split(",")).
 /* Blok label gaya "**Slug:** isi" di awal file (format draf Hermes), baik sebelum maupun sesudah judul "# ...".
    Barisnya diambil sebagai metadata lalu dibuang dari isi supaya tidak tampil di artikel. Hanya label yang dikenal. */
 const LABELS = [
-  [/^slug$/i, "slug"], [/^meta[ _-]?title$/i, "metaTitle"], [/^meta[ _-]?description$/i, "metaDesc"],
+  [/^slug$/i, "slug"], [/^(meta[ _-]?title|seo[ _-]?title)$/i, "metaTitle"], [/^meta[ _-]?description$/i, "metaDesc"],
   [/^kata[ _-]?kunci[ _-]?utama$/i, "keyword"], [/^kata[ _-]?kunci[ _-]?turunan$/i, "derived"],
   [/^tags?$/i, "tags"], [/^(topik|topic|kategori)$/i, "topic"],
 ];
+/* Label yang dikenali tetapi tidak dipakai: dibuang dari isi supaya tidak tampil di artikel. */
+const IGNORED = /^(meta[ _-]?(title|description)[ _-]?length|status|alt[ _-]?text[^:]*|jumlah[ _-]?kata|panjang[^:]*|tanggal[^:]*|penulis|author|kategori[ _-]?konten)$/i;
 function takeLabelHeader(body) {
   const out = {}; let rest = body, found = false;
   for (;;) {
-    const m = /^\s*(?:[-*]\s+)?\*\*([^*\n:]{2,40}):\*\*[ \t]*(.*?)[ \t]*(?:\n|$)/.exec(rest);
+    // "**Slug:** isi", "- **Slug:** isi", "Slug: isi"; label boleh diberi keterangan "(59 karakter)"
+    const m = /^\s*(?:[-*]\s+)?(?:\*\*([^*\n:]{2,48}?)(?:\s*\([^)\n]*\))?\s*:\*\*|([A-Za-z][A-Za-z _-]{2,30}?)(?:\s*\([^)\n]*\))?\s*:)[ \t]*(.*?)[ \t]*(?:\n|$)/.exec(rest);
     if (!m) break;
-    const hit = LABELS.find(([re]) => re.test(m[1].trim()));
-    if (!hit) break;
-    out[hit[1]] = unquote(m[2].replace(/`/g, "")); found = true; rest = rest.slice(m[0].length);
+    const label = (m[1] || m[2]).trim(), val = m[3];
+    const hit = LABELS.find(([re]) => re.test(label));
+    if (hit) out[hit[1]] = unquote(val.replace(/`/g, ""));
+    else if (!IGNORED.test(label)) break;
+    found = true; rest = rest.slice(m[0].length);
   }
   return { meta: out, body: found ? rest : body, found };
+}
+
+/* ---------- Draf gaya Hermes yang berantakan ----------
+   1) teks rusak karakter (UTF-8 terbaca sebagai Latin-1, mis. "â€”") diperbaiki;
+   2) penanda kerangka "# [H1 — JUDUL]", "## [METADATA SEO]", "## [H2 — ...]", "## [CTA ...]", "## [SUMBER RESMI]" diubah jadi Markdown biasa;
+   3) bagian internal (Audit Lessons, Hasil Audit Otomatis, Tautan Internal, Kanal Sosial, Gabung komunitas) dibuang dari isi,
+      kalimat penafian di dalamnya dipertahankan. Hasilnya dilaporkan di notes agar editor tahu apa yang berubah. */
+const DISCLAIMER = "Catatan Akademik bukan situs resmi Universitas Terbuka. Kami tidak menjamin nilai atau kelulusan. Semangat!";
+function fixMojibake(text) {
+  return String(text || "").replace(/[\u00c2-\u00f4][\u0080-\u00bf]{1,3}/g, m => { try { const r = Buffer.from(m, "latin1").toString("utf8"); return r.includes("\ufffd") ? m : r; } catch { return m; } });
+}
+const ACR = new Set(["UT", "UAS", "UTS", "IPK", "IPS", "TMK", "TTM", "TAPS", "DOI", "MYUT", "APA", "KTPU", "UTM", "UO", "THE", "LKAM", "DNU", "TUTON", "TUWEB", "PRATON", "METOPEN", "H1", "H2", "H3", "SKS", "UPBJ", "PDF", "WA"]);
+const ACR_FIX = { MYUT: "MyUT", TUTON: "Tuton", TUWEB: "Tuweb", PRATON: "Praton", METOPEN: "Metopen" };
+function senCase(t) {
+  t = String(t).trim(); if (/[a-z]/.test(t)) return t;                       // sudah campuran huruf: biarkan
+  const w = t.toLowerCase().split(/(\s+)/).map(x => { const u = x.toUpperCase(); return ACR.has(u) ? (ACR_FIX[u] || u) : x; }).join("");
+  return w.charAt(0).toUpperCase() + w.slice(1);
+}
+const DROP_H2 = /^(audit lessons|hasil audit|self[- ]?check|tautan internal|tautan & anchor|kanal sosial|gabung komunitas|blok komunitas|catatan (editor|internal|untuk admin|yang harus dicek)|gambar & alt text|alt text|metadata seo)\b|\((untuk admin|tempel)/i;
+function hermesClean(text) {
+  const notes = []; let t = fixMojibake(text); if (t !== text) notes.push("Karakter rusak diperbaiki.");
+  t = t.replace(/\r/g, "");
+  // judul kerangka
+  t = t.replace(/^(\s*)#[ \t]*\[H1[^\]\n]*\][ \t]*\n+([^\n#][^\n]*)\n/, (m, a, title) => { notes.push("Penanda [H1] diganti judul."); return `# ${title.trim()}\n`; });
+  // bagian metadata kerangka -> baris label tepat setelah judul
+  let metaLines = "";
+  t = t.replace(/^##[ \t]*\[METADATA[^\]\n]*\][ \t]*\n([\s\S]*?)(?=^##[ \t]|(?![\s\S]))/m, (m, blk) => { metaLines = blk.split("\n").filter(l => /^\s*[-*]\s+\*\*[^*]+:\*\*/.test(l)).join("\n"); notes.push("Bagian metadata kerangka dibaca lalu dibuang dari isi."); return ""; });
+  if (metaLines) t = /^\s*#[ \t]+[^\n]+\n/.test(t) ? t.replace(/^(\s*#[ \t]+[^\n]+\n)/, `$1\n${metaLines}\n\n`) : `${metaLines}\n\n${t}`;
+  // penanda judul bagian
+  t = t.replace(/^(#{2,4})[ \t]*\[(H[2-4])[ \t]*[—–-]+[ \t]*([^\]\n]+)\][ \t]*$/gm, (m, h, lv, txt) => { notes.push("Penanda [" + lv + "] diganti judul."); return "#".repeat(Number(lv[1])) + " " + senCase(txt); });
+  t = t.replace(/^##[ \t]*\[CTA[^\]\n]*\][ \t]*$/gm, "## Langkah berikutnya");
+  t = t.replace(/^##[ \t]*\[SUMBER[^\]\n]*\][ \t]*$/gm, "## Sumber");
+  t = t.replace(/^##[ \t]*Sources[ \t]*$/gm, "## Sumber");
+  t = t.replace(/^#{1,3}[ \t]*\[[A-Z][^\]\n]{2,60}\][ \t]*\n?/gm, "");        // penanda lain (mis. [PEMBUKA — JAWABAN LANGSUNG]) dibuang
+  // buang bagian internal; simpan kalimat penafian
+  let disclaimer = "";
+  const parts = t.split(/^(?=##[ \t]+[^#\n])/m), keep = [];
+  for (const sec of parts) {
+    const h = /^##[ \t]+([^\n]+)/.exec(sec);
+    if (h && DROP_H2.test(h[1].replace(/[*`]/g, "").trim())) {
+      const d = /Catatan Akademik bukan situs resmi[^\n]*/.exec(sec); if (d) disclaimer = d[0].replace(/^[>\s*]+/, "").replace(/\*+/g, "").trim();
+      notes.push("Bagian internal dibuang: " + h[1].replace(/[*`]/g, "").trim().slice(0, 50)); continue;
+    }
+    keep.push(sec);
+  }
+  t = keep.join("");
+  // baris placeholder dan catatan untuk admin dibuang; judul yang jadi kosong ikut dibuang
+  const before = t;
+  t = t.split("\n").filter(l => !/DATA BELUM TERSEDIA|Catatan untuk Admin|Kanal sosial terverifikasi/i.test(l)).join("\n");
+  t = t.replace(/^(#{2,4}[ \t]+[^\n]+)\n+(?=#{1,4}[ \t]|(?![\s\S]))/gm, "");
+  if (t !== before) notes.push("Baris placeholder (DATA BELUM TERSEDIA / catatan admin) dibuang.");
+  // kalimat catatan internal yang terselip di paragraf
+  t = t.replace(/ dan jelaskan bagian yang sudah tersedia/g, "").replace(/;\s*cakupan final perlu dikonfirmasi kepada admin\./g, ".");
+  // penanda kutipan sisa alat riset, mis. "...sendiri.[2][4][5]" (tanpa daftar rujukan, hanya mengganggu pembaca)
+  const t0 = t; t = t.replace(/(?:\[\d{1,2}\])+(?=[\s.,;:)]|$)/g, ""); if (t !== t0) notes.push("Penanda kutipan [1][2] sisa alat riset dibuang.");
+  // tautan: awalan lama /ruangakademikut/ dan dua alamat yang tidak ada
+  t = t.replace(/https?:\/\/(?:www\.)?catatanakademik\.com\/ruangakademikut\//g, "https://catatanakademik.com/")
+       .replace(/https?:\/\/(?:www\.)?catatanakademik\.com\/layanan-ut\/metopen\b/g, "https://catatanakademik.com/layanan?s=metopen_paket")
+       .replace(/https?:\/\/(?:www\.)?catatanakademik\.com\/layanan-ut\/tugas-diskusi\b/g, "https://catatanakademik.com/layanan?s=tugas");
+  // tautan telanjang <https://...> -> [teks](url)
+  t = t.replace(/^(\s*[-*]\s+)\*\*([^*\n]+)\*\*\s*(?:→|->|—|-)\s*([^\n<]*?):\s*<(https?:\/\/[^>\s]+)>[ \t]*$/gm, "$1[$2]($4): $3").replace(/<(https?:\/\/[^>\s]+)>/g, "[$1]($1)");
+  if (disclaimer && /tidak\s+menjamin/i.test(disclaimer) && !/tidak\s+menjamin\s+nilai\s+atau\s+kelulusan/i.test(t)) { t = t.replace(/\s+$/, "") + "\n\n> " + disclaimer + "\n"; notes.push("Penafian dari bagian yang dibuang dipertahankan di akhir."); }
+  return { text: t, notes };
 }
 
 /* name: nama berkas (cadangan judul). Hasil: { ok, error?, title, slug, body, excerpt, tags, topic, metaTitle, metaDesc, keyword, author } */
 function parseMd(text, name = "") {
   text = String(text || "").replace(/^﻿/, "").replace(/\r/g, "");
+  const hc = hermesClean(text); text = hc.text;
   const { fm, rest } = parseFrontMatter(text);
   let body = rest, title = fm.title ? String(fm.title).trim() : "";
   const lab = {}; const eat = () => { const t = takeLabelHeader(body); if (t.found) { Object.assign(lab, t.meta); body = t.body; } };
@@ -99,6 +168,7 @@ function parseMd(text, name = "") {
     excerpt: fm.excerpt ? plain(fm.excerpt) : firstPara.slice(0, 260),
     tags: toTags(fm.tags || lab.tags || lab.derived), topic: fm.topic ? String(fm.topic) : (lab.topic || ""), metaTitle: fm.metaTitle ? String(fm.metaTitle) : (lab.metaTitle || ""),
     metaDesc: fm.metaDesc ? String(fm.metaDesc) : (lab.metaDesc || ""), keyword: fm.keyword ? toTags(fm.keyword).join(", ") : (lab.keyword || ""), author: fm.author ? String(fm.author) : "",
+    notes: hc.notes,
   };
 }
 
@@ -113,7 +183,9 @@ function checkDraft(d) {
   if (!d.metaTitle) w.push("Meta title kosong."); else if (d.metaTitle.length > 60) w.push(`Meta title ${d.metaTitle.length} karakter (disarankan maks. 60).`);
   if (!d.metaDesc) w.push("Meta description kosong."); else if (d.metaDesc.length > 155) w.push(`Meta description ${d.metaDesc.length} karakter (disarankan maks. 155).`);
   if (d.title.length > 70) w.push(`Judul ${d.title.length} karakter, mungkin terpotong di Google.`);
-  const bad = [...new Set((body + " " + d.title).match(/\b(garansi|jaminan|dijamin|pasti lolos|lolos turnitin|nilai aman|cum\s*laude)\b/gi) || [])];
+  const hay = body + " " + d.title, bad = [...new Set([...hay.matchAll(/\b(garansi|jaminan|dijamin|pasti lolos|lolos turnitin|nilai aman|cum\s*laude)\b/gi)]
+    .filter(m => !/(bukan|tidak|tanpa|jangan|tak|bebas dari|menjanjikan|janji|klaim)[^.\n]{0,40}$/i.test(hay.slice(Math.max(0, m.index - 60), m.index)))
+    .map(m => m[0].toLowerCase()))];
   if (bad.length) w.push("Kata klaim yang dilarang: " + bad.join(", ") + ".");
   if (/\b(slot|kuota)\s+(tinggal|terbatas)|hanya\s+\d+\s+(slot|kuota)|terbatas\s+hari\s+ini/i.test(body)) w.push("Ada kesan kelangkaan palsu (slot atau kuota terbatas).");
   if (!/tidak\s+menjamin\s+nilai\s+atau\s+kelulusan/i.test(body)) w.push('Penafian "Kami tidak menjamin nilai atau kelulusan. Semangat!" belum ada.');
@@ -121,6 +193,11 @@ function checkDraft(d) {
   if (!/\]\(https?:\/\/[^)]*\.ut\.ac\.id[^)]*\)|\]\(https?:\/\/(?:www\.)?ut\.ac\.id/i.test(body)) w.push("Belum ada tautan ke sumber resmi UT.");
   if (/<\/?[a-z][^>]*>/i.test(body)) w.push("Ada tag HTML. Di blog ini tag akan tampil sebagai teks biasa.");
   if (/\]\[[^\]]*\]/.test(body)) w.push("Tautan gaya referensi tidak didukung. Pakai [teks](url).");
+  if (!/\]\((?:https?:\/\/(?:www\.)?catatanakademik\.com)?\/(?:ruangakademikut\/)?(?:layanan|audit|cek-parafrase-mandiri)[^)]*\)/i.test(body)) w.push("Belum ada ajakan (CTA) ke layanan kita: Layanan, Audit, atau Cek & Parafrase.");
+  if (/\[(?:H[1-4]|CTA|PEMBUKA|SUMBER|METADATA)\b[^\]\n]*\]/.test(body)) w.push("Masih ada penanda kerangka seperti [H2 — ...] di isi. Hapus sebelum terbit.");
+  if (/DATA BELUM TERSEDIA/i.test(body)) w.push("Masih ada penanda DATA BELUM TERSEDIA di isi. Lengkapi atau hapus sebelum terbit.");
+  if (/CTA dipilih|intent-nya|cakupan final perlu dikonfirmasi|jelaskan bagian yang sudah tersedia|catatan (untuk )?(editor|internal)/i.test(body)) w.push("Ada kalimat catatan internal di isi (bukan untuk pembaca). Hapus sebelum terbit.");
+  if (/[\u00c2\u00e2][\u0080-\u00bf]/.test(body)) w.push("Ada karakter rusak (mis. â€”) di isi.");
   if (d.keyword) { const k = d.keyword.split(",")[0].trim().toLowerCase(); if (k && !d.title.toLowerCase().includes(k) && !(d.metaTitle || "").toLowerCase().includes(k)) w.push(`Kata kunci utama "${k}" tidak ada di judul maupun meta title.`); }
   return w;
 }
@@ -149,7 +226,7 @@ function buildDrafts(files, ctx) {
     };
     if (d.keyword) post.keyword = ctx.str(d.keyword, 120);
     posts.push(post);
-    results.push({ name, ok: true, id: post.id, title: post.title, slug: post.slug, words: (plain(d.body).match(/\S+/g) || []).length, warnings: checkDraft({ ...d, title }) });
+    results.push({ name, ok: true, id: post.id, title: post.title, slug: post.slug, words: (plain(d.body).match(/\S+/g) || []).length, warnings: checkDraft({ ...d, title }), cleaned: d.notes || [] });
   }
   return { posts, results };
 }
