@@ -125,9 +125,15 @@ window.auditAspects = function (sc, box, opts) {
 };
 
 /* Kartu Skor Kesiapan untuk Audit Dokumen (dipakai halaman ringkas dan hasil lengkap). */
+window.PF_FIX_MAX = 30;   /* sasaran: bagian bermasalah diparafrase ulang sampai tersisa maksimal 30% */
 window.auditScoreCard = function (sc, box, findings) {
   if (!sc || !box) return; box.innerHTML = "";
+  /* Persen salah terbesar di aspek isi (paragraf pendek, gaya seragam, dst). Bila ada yang di atas 15%, dokumen belum boleh disebut "siap". */
+  var aspWrong = (sc.aspects || []).map(function (m) { return m.value == null ? null : { label: m.label, w: Math.round((m.good === "rendah" ? m.value : 100 - m.value) * 10) / 10 }; }).filter(function (x) { return x && x.w > 15; }).sort(function (a, b) { return b.w - a.w; });
+  var okLevel = sc.level === "siap" || sc.level === "hampir";
   var COL = { siap: "#5ee6a8", hampir: "#f3ff4d", perlu: "#ffb454", banyak: "#ff8aa5" }[sc.level] || "#8ec5ff";
+  var LABEL = sc.label;
+  if (aspWrong.length && okLevel) { COL = "#ffb454"; LABEL = "Perlu perbaikan"; }
   function el(t, css, x) { var e = document.createElement(t); if (css) e.style.cssText = css; if (x != null) e.textContent = x; return e; }
   var wrap = el("div", "display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:center;padding:18px;border-radius:18px;border:1px solid var(--border,#2b2b58);max-width:760px;margin:0 auto 14px;text-align:left");
   var ring = el("div", "flex:none;width:132px;height:132px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:conic-gradient(" + COL + " " + sc.value * 3.6 + "deg,rgba(128,128,160,.22) 0)");
@@ -135,7 +141,16 @@ window.auditScoreCard = function (sc, box, findings) {
   inner.appendChild(el("b", "font-size:34px;line-height:1;color:" + COL, sc.value)); inner.appendChild(el("span", "font-size:12px;opacity:.7", "dari 100")); ring.appendChild(inner);
   var side = el("div", "flex:1;min-width:240px");
   side.appendChild(el("div", "font-size:12.5px;opacity:.7;text-transform:uppercase;letter-spacing:.06em", "Skor Kesiapan Dokumen"));
-  side.appendChild(el("div", "font-size:21px;font-weight:700;margin:2px 0 10px;color:" + COL, sc.label));
+  side.appendChild(el("div", "font-size:21px;font-weight:700;margin:2px 0 10px;color:" + COL, LABEL));
+  var labelEl = side.lastChild, BASE_COL = COL, BASE_LABEL = LABEL;
+  var noteEl = el("div", "font-size:14px;opacity:.9;margin:6px 0;font-weight:600"); side.appendChild(noteEl);
+  var FIXMSG = "Perlu perbaikan: parafrase ulang bagian yang ditandai sampai tingkat bermasalahnya maksimal " + window.PF_FIX_MAX + "%.";
+  if (aspWrong.length) noteEl.textContent = FIXMSG + " Paling tinggi: " + aspWrong[0].label.toLowerCase() + " (" + String(aspWrong[0].w).replace(".", ",") + "%).";
+  /* Dipanggil kartu Drillbit: angka resmi di atas batas -> label dan catatan di cincin ikut berubah, tidak lagi "Hampir siap". */
+  window.pfRingFix = function (bad, detail) {
+    if (bad) { labelEl.textContent = "Perlu perbaikan"; labelEl.style.color = "#ff8aa5"; noteEl.textContent = FIXMSG + (detail ? " " + detail : ""); }
+    else { labelEl.textContent = BASE_LABEL; labelEl.style.color = BASE_COL; noteEl.textContent = aspWrong.length ? FIXMSG : ""; }
+  };
   /* Tiap poin bisa ditekan: rincian (arti angka, cara membenahi, dan temuan terkait) baru muncul setelah ditekan,
      supaya halaman tidak memanjang. Memakai <details> bawaan browser (bisa dengan keyboard). */
   var MCAT = { sitasi: /^(Sitasi tidak ada di daftar pustaka|Tahun sitasi berbeda)/i, pustaka: /^Pustaka (tidak dikutip|tanpa tahun)/i, doi: /DOI/i };
@@ -150,7 +165,7 @@ window.auditScoreCard = function (sc, box, findings) {
   var shown = sc.metrics.filter(function (m) { return wrongOf(m) > 0; });
   if (!shown.length) {
     var measurable = sc.metrics.some(function (m) { return m.value != null; });
-    side.appendChild(el("div", "font-size:14px;opacity:.85;margin:6px 0", measurable ? "Poin utama (sitasi, pustaka, DOI, kalimat berulang) sudah sesuai target. Rinciannya ada di bagian bawah, di \"Yang sudah benar\"." : "Sitasi, daftar pustaka, dan DOI belum bisa dinilai karena daftar pustaka tidak terbaca di bagian dokumen yang diperiksa."));
+    side.appendChild(el("div", "font-size:14px;opacity:.85;margin:6px 0", measurable ? (aspWrong.length ? "Sitasi, pustaka, DOI, dan kalimat berulang sudah sesuai target (rincian di \"Yang sudah benar\"). Yang perlu dibenahi ada di aspek isi di bawah." : "Poin utama (sitasi, pustaka, DOI, kalimat berulang) sudah sesuai target. Rinciannya ada di bagian bawah, di \"Yang sudah benar\".") : "Sitasi, daftar pustaka, dan DOI belum bisa dinilai karena daftar pustaka tidak terbaca di bagian dokumen yang diperiksa."));
   }
   shown.forEach(function (m) {
     var d = document.createElement("details"); d.style.cssText = "margin-bottom:6px;border-radius:12px";
@@ -218,6 +233,14 @@ window.auditDrillbit = function (box, score, ctx) {
     var s = num(iS.value), a = num(iA.value);
     if (Number.isNaN(s) || Number.isNaN(a)) { err.textContent = "Isi angka 0 sampai 100, contoh 18,5."; return; }
     if (s == null && a == null) { err.textContent = "Isi minimal satu angka dari laporan Drillbit."; return; }
+    var over0 = (s != null && s > SIM) || (a != null && a > AI);
+    if (over0) {
+      var det = [s != null && s > SIM ? "Similarity " + String(s).replace(".", ",") + "% (batas " + SIM + "%)" : "", a != null && a > AI ? "Tulisan AI " + String(a).replace(".", ",") + "% (batas " + AI + "%)" : ""].filter(Boolean).join(", ");
+      var head = el("div", "padding:10px 14px;border-radius:12px;border:1px solid #ff8aa5;background:rgba(255,138,165,.12);margin-bottom:10px;font-weight:700");
+      head.textContent = "Perlu perbaikan: parafrase ulang dengan tingkat maksimal " + window.PF_FIX_MAX + "%. " + det + ".";
+      out.appendChild(head);
+      if (window.pfRingFix) window.pfRingFix(true, det + ".");
+    } else if (window.pfRingFix) window.pfRingFix(false);
     var tiles = el("div", "display:flex;flex-wrap:wrap;gap:10px");
     if (s != null) tiles.appendChild(tile("Similarity (dari laporanmu)", s, SIM));
     if (a != null) tiles.appendChild(tile("Tulisan AI (dari laporanmu)", a, AI));
@@ -227,7 +250,7 @@ window.auditDrillbit = function (box, score, ctx) {
       : !over ? "Angka Drillbit aman, tapi skor audit masih menandai masalah sitasi atau pustaka. Benahi temuan di bawah dulu."
       : ctx && ctx.here === "cek" ? "Ada angka di atas batas acuan. Rombak dulu paragraf yang paling mendesak di bawah, lalu cek ulang di Drillbit resmi."
       : "Ada angka di atas batas acuan. Kurangi kemiripan atau gaya tulisan terlalu seragam lewat Cek & Parafrase Mandiri, lalu cek ulang di Drillbit resmi.";
-    out.appendChild(el("p", "margin:10px 0 4px;font-weight:600", msg));
+    out.appendChild(el("p", "margin:12px 0 4px;font-weight:600", over ? "Rekomendasi: " + msg.replace(/^Ada angka di atas batas acuan\. /, "") : msg));
     if (over && !(ctx && ctx.here === "cek")) { var l = el("a", "", "Buka Cek & Parafrase Mandiri"); l.href = "/ruangakademikut/cek-parafrase-mandiri" + (ctx && ctx.uploadId ? "?u=" + ctx.uploadId : ""); l.style.fontSize = "14px"; out.appendChild(l); }
     if (ctx && ctx.fetch && ctx.onTriage) ctx.fetch(s, a).then(ctx.onTriage).catch(function () {});
     out.appendChild(el("p", "margin:6px 0 0;font-size:12.5px;opacity:.7", "Batas acuan diatur admin, bukan aturan resmi UT. Ikuti ketentuan prodi dan tutormu. Angka berasal dari laporan Drillbit yang kamu tempel."));
