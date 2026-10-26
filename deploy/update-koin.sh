@@ -13,7 +13,7 @@
 set -euo pipefail
 REF="${1:?pakai: update-koin.sh <commit>}"
 APP="${APP:-/var/www/mahyra-serv}"
-KNOWN=(d3321cb ea4b557 4a8953e 3f29ccc e31a933 08cf5f2 12cfe4a dc31d36 c7f60c8 1b5c15a ec8523c 091972e 54d72bc 1574580 b623210 b3ad6ff 40d7848 bc2a821 256add9 1c861f1 8aaef92 4adfff0 ac04263 fbd0646 c5aed04 1366e15 3520907 beee9ca 30de5e8 8430614 e9dc347)
+KNOWN=(d3321cb ea4b557 4a8953e 3f29ccc e31a933 08cf5f2 12cfe4a dc31d36 c7f60c8 1b5c15a ec8523c 091972e 54d72bc 1574580 b623210 b3ad6ff 40d7848 bc2a821 256add9 1c861f1 8aaef92 4adfff0 ac04263 fbd0646 c5aed04 1366e15 3520907 beee9ca 30de5e8 8430614 e9dc347 24d1beb)
 GH="${GH:-https://codeload.github.com/akihabara-fuji/akihabara-store/tar.gz}"
 cd "$APP"
 

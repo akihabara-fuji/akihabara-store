@@ -6,7 +6,7 @@ const path = require("path");
 const multer = require("multer");
 const sharp = require("sharp");
 
-const SLUGS = ["tugas", "diskusi", "metopen", "audit", "revisi", "pengarahan", "cek", "semester", "info"];
+const SLUGS = ["tugas", "diskusi", "metopen", "audit", "revisi", "pengarahan", "cek", "semester", "cv", "info"];
 const MAX = 5 * 1024 * 1024;
 
 module.exports = function mountCards({ app, root, requireAdmin }) {
