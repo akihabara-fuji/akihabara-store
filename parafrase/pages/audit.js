@@ -44,7 +44,7 @@
     var b = this; b.disabled = true; var e = $("oerr"); e.classList.add("hidden");
     fetch("/ms/audit/order", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ uploadId: upId, wa: $("wa").value, agree: $("agree").checked }) })
       .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
-      .then(function (x) { if (x.ok) { location.href = x.j.url; return; } if (x.j.short) { location.href = "/ruangakademikut/koin?kurang=" + x.j.short + "&next=" + encodeURIComponent(location.pathname); return; } if (x.j.login) { location.href = "/ms/masuk?next=" + encodeURIComponent(location.pathname); return; } e.textContent = x.j.error || "Pesanan gagal. Coba lagi."; e.classList.remove("hidden"); gate(); })
+      .then(function (x) { if (x.ok) { location.href = x.j.url; return; } if (x.j.login) { location.href = "/ms/masuk?next=" + encodeURIComponent(location.pathname); return; } e.textContent = x.j.error || "Pesanan gagal. Coba lagi."; e.classList.remove("hidden"); gate(); })
       .catch(function () { e.textContent = "Koneksi terputus. Coba lagi."; e.classList.remove("hidden"); gate(); });
   };
   function el(tag, css, txt) { var e = document.createElement(tag); if (css) e.style.cssText = css; if (txt != null) e.textContent = txt; return e; }
@@ -66,11 +66,11 @@
     window.renderFindings(l, d.findings, { sev: SEV, visible: 5 });
     if (d.findings.length) window.foldList(l, "Lihat semua temuan (" + d.findings.length + ")");
     window.auditOkList(d.score, l);
-    $("perword").textContent = d.quote.perWord; $("minp").textContent = rp(d.quote.min); $("total").textContent = d.quote.allFree ? "0 (seluruh dokumen sudah terbuka gratis)" : rp(d.quote.total);
+    $("perword").textContent = d.quote.perWord; $("minp").textContent = window.koinFmt(d.quote.min); $("total").textContent = d.quote.allFree ? "0 (seluruh dokumen sudah terbuka gratis)" : window.koinFmt(d.quote.total).replace(/^Rp/, "");
     $("fwn").textContent = rp(d.quote.freeWords || 0);
     $("cekGo").href = "/ruangakademikut/cek-parafrase-mandiri?u=" + encodeURIComponent(upId);
     var nOpen = d.findings.filter(function (f) { return f.open; }).length;
-    $("rmeta").textContent += d.quote.allFree ? " · seluruhnya gratis" : " · " + rp(d.quote.freeWords) + " kata pertama dibuka gratis (" + nOpen + " temuan lengkap)";
-    $("cta").classList.toggle("hidden", !!d.quote.allFree);
+    $("rmeta").textContent += d.quote.allFree ? " · seluruhnya gratis" : " · " + nOpen + " dari " + d.findings.length + " temuan dibuka gratis";
+    $("cta").classList.toggle("hidden", !d.findings.some(function (f) { return !f.open; }));
   }
 })();

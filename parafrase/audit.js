@@ -33,8 +33,12 @@ module.exports = function mountAudit({ app, express, db, settings, orders, root,
   const quote = words => { const q = orders.auditQuote(words, settings.getAll()); return { words, perWord: q.perWord, min: q.min, freeWords: q.free, chargedWords: q.pay, allFree: q.allFree, total: q.total }; };
 
   /* Penjelasan hanya untuk temuan di paragraf yang seluruhnya masuk batas kata gratis (dari awal dokumen). Sisanya: tingkat, kategori, lokasi. */
-  /* Audit = diagnosis lengkap: semua temuan terbuka, lengkap dengan kutipan kalimat dan cara memperbaiki. */
-  const openFindings = findings => findings.map(x => ({ sev: x.sev, cat: x.cat, where: x.where, open: true, detail: x.detail, quote: x.quote, code: x.code }));
+  /* Gratis: 5 temuan teratas (urutan sudah dari yang paling parah) terbuka lengkap dengan kutipan dan cara memperbaiki.
+     Sisanya hanya memperlihatkan jenis dan lokasi; kutipan dan cara memperbaiki terbuka setelah Audit Lengkap dibayar. */
+  const FREE_FINDINGS = 5;
+  const openFindings = findings => findings.map((x, i) => i < FREE_FINDINGS
+    ? { sev: x.sev, cat: x.cat, where: x.where, open: true, detail: x.detail, quote: x.quote, code: x.code }
+    : { sev: x.sev, cat: x.cat, where: x.where });
 
   app.post("/ms/audit/upload", (req, res) => {
     res.set("Cache-Control", "no-store");

@@ -33,7 +33,6 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
     if (file === "hub.html" && texts) out = texts.hideCards(out, opts.hidden || hiddenCards());
     if (texts) out = texts.apply(out, opts.over || null, { mark: opts.mark });
     out = (TRACK.has(file) && !opts.preview ? out.replace("</head>", '<script async src="/t.js"></script></head>') : out).replaceAll("{{SITE}}", SITE);
-    if (!opts.preview) out = out.replace("</body>", '<script defer src="/ruangakademikut/assets/koin-chip.js?v=20261202"></script></body>'); // chip koin di samping "Akun saya"
     return shorten(out);
   }
   const page = file => (req, res) => {
@@ -47,11 +46,13 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
   app.get("/ruangakademikut/layanan", page("layanan.html"));
   app.get("/ruangakademikut/blog-ut", page("blog-ut.html"));
   /* Alat gratis: di domain akademik alamat resminya pendek (/kalkulator-nilai-ut); jalur lama /ruangakademikut/... dialihkan 301. */
-  for (const [slug, file] of [["kalkulator-nilai-ut", "alat-nilai.html"], ["pasfoto-yudisium", "alat-pasfoto.html"], ["buat-cv-ats", "alat-cv.html"], ["sampul-tugas", "alat-sampul.html"], ["surat-lamaran", "alat-surat.html"], ["tracker-kelulusan", "alat-tracker.html"], ["kalender-akademik", "alat-kalender.html"], ["panduan-maba", "panduan-maba.html"], ["sitasi-apa", "sitasi.html"], ["koin", "koin.html"], ["portal-ut", "portal-ut.html"]]) {
+  for (const [slug, file] of [["kalkulator-nilai-ut", "alat-nilai.html"], ["pasfoto-yudisium", "alat-pasfoto.html"], ["buat-cv-ats", "alat-cv.html"], ["sampul-tugas", "alat-sampul.html"], ["surat-lamaran", "alat-surat.html"], ["tracker-kelulusan", "alat-tracker.html"], ["kalender-akademik", "alat-kalender.html"], ["panduan-maba", "panduan-maba.html"], ["sitasi-apa", "sitasi.html"], ["portal-ut", "portal-ut.html"]]) {
     if (SHORT) app.get("/ruangakademikut/" + slug, (req, res) => res.redirect(301, "/" + slug));
     app.get(SHORT ? "/" + slug : ["/ruangakademikut/" + slug, "/" + slug], page(file));
   }
   app.get(["/admin/layanan", "/admin/layanan/"], (req, res) => fs.readFile(path.join(dir, "layanan-admin.html"), "utf8", (err, html) => err ? res.status(500).end() : res.set({ "Cache-Control": "no-store", "X-Robots-Tag": "noindex" }).type("html").send(html)));
+  /* Koin sudah tidak dipakai: halaman lama diarahkan ke layanan (semua pembayaran lewat QRIS). */
+  app.get(["/koin", "/ruangakademikut/koin"], (req, res) => res.redirect(302, SHORT ? "/layanan" : "/ruangakademikut/layanan"));
   app.get("/ruangakademikut/audit/hasil/:token", page("audit-hasil.html"));
   app.get(["/ruangakademikut/pesanan", "/ruangakademikut/pesanan/:token"], page("pesanan.html"));
   const CA = new Set(["theme.css", "theme-svc.css", "favicon.ico", "favicon-32.png", "apple-touch-icon.png", "icon-192.png", "icon-512.png", "logo-96.png", "manifest.webmanifest"]);

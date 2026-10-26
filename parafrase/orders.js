@@ -37,7 +37,7 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
   /* ---------- satu pintu bayar: koin ----------
      Pesanan dibayar koin (1 koin = Rp1.000, dibulatkan ke atas per pesanan) dan langsung masuk antrean. QRIS hanya dipakai untuk isi koin.
      Pengaturan bayar_koin_saja = false mengembalikan alur lama (QRIS + bukti per pesanan), mis. bila perlu darurat. */
-  const coinOnly = () => !!(koin && settings.get("bayar_koin_saja"));
+  const coinOnly = () => false; // koin dinonaktifkan: semua pesanan lewat QRIS + bukti bayar
   const needBuyer = buyer => { if (!buyer) throw Object.assign(new Error("Masuk dulu untuk memesan. Pembayaran memakai koin."), { status: 401, login: true }); return buyer; };
   function chargeCoins(buyer, rupiah, orderId, title, now) {
     const coins = Math.max(1, Math.ceil(rupiah / 1000));
@@ -185,7 +185,7 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
     const live = o.doc_type === "layanan" && o.status === "terkirim" && !o.files_deleted_at && (!o.delete_at || o.delete_at > now) && o.result_text;
     if (o.service !== "simulasi") return { resultText: live ? o.result_text : null };
     if (!live) return { resultText: null, sim: null };
-    const unlocked = !!db.prepare("SELECT 1 FROM sim_unlocks WHERE order_id=?").get(o.id);
+    const unlocked = true; // tanpa koin: tanya jawab simulasi langsung terbuka penuh
     const v = require("./simulasi").visible(o.result_text, unlocked);
     return { resultText: null, sim: { talk: v.talk, qa: v.qa, locked: v.locked, total: v.total, coins: settings.getAll().sim_koin_price } };
   };

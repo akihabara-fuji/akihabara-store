@@ -1,15 +1,15 @@
 /* Dipakai semua halaman Ruang Akademik UT: ambil pengaturan publik, isi tombol dan harga. */
 (function () {
   var rp = function (n) { return Number(n).toLocaleString("id-ID"); };
-  /* Harga layanan ditampilkan dalam koin (1 koin = Rp1.000). Angka yang bukan kelipatan Rp1.000 (mis. harga per kata) tetap rupiah. */
-  window.koinFmt = function (n) { n = Number(n); return n > 0 && n % 1000 === 0 ? (n / 1000).toLocaleString("id-ID") + " koin" : "Rp" + n.toLocaleString("id-ID"); };
+  /* Harga ditampilkan singkat: 35000 jadi 35k, 1300000 jadi 1,3 jt. Angka di bawah Rp1.000 (mis. harga per kata) tetap rupiah. Halaman bayar memakai tulisan penuh. */
+  window.koinFmt = function (n) { n = Number(n); if (n >= 1000000 && n % 100000 === 0) return String(n / 1000000).replace(".", ",") + " jt"; return n > 0 && n % 1000 === 0 ? (n / 1000).toLocaleString("id-ID") + "k" : "Rp" + n.toLocaleString("id-ID"); };
   window.PF = { rp: rp, cfg: null };
   function fill(c) {
     window.PF.cfg = c;
     var set = function (sel, v) { document.querySelectorAll(sel).forEach(function (e) { e.textContent = v; }); };
     set("[data-ppw]", rp(c.price_per_word)); set("[data-min]", rp(c.min_order_price)); set("[data-fast]", rp(c.fast_lane.price));
     set("[data-retention]", c.retention_hours); set("[data-fw]", rp(c.free_words || 0));
-    document.querySelectorAll("[data-p]").forEach(function (e) { var v = c[e.getAttribute("data-p")]; if (v != null) e.textContent = rp(v); });
+    document.querySelectorAll("[data-p]").forEach(function (e) { var v = c[e.getAttribute("data-p")]; if (v != null) e.textContent = window.koinFmt(v).replace(/^Rp/, ""); });
     document.querySelectorAll("[data-k]").forEach(function (e) { var v = c[e.getAttribute("data-k")]; if (v != null) e.textContent = window.koinFmt(v); });
     /* Diskon dalam persen, dihitung dari harga sekarang dan harga normal (pengaturan admin). Tidak tampil bila datanya tidak masuk akal. */
     function disc(keys) { var k = String(keys).split(","), now = Number(c[k[0]]), was = Number(c[k[1]]); return was > 0 && now > 0 && now < was ? Math.round((1 - now / was) * 100) : 0; }
@@ -418,7 +418,7 @@ window.auditOkList = function (sc, box) {
     ["Alat mahasiswa", [["Cek dan parafrase mandiri", "/cek-parafrase-mandiri"], ["Audit dokumen", "/audit"], ["Kalkulator nilai UT", "/kalkulator-nilai-ut"], ["Sitasi APA", "/sitasi-apa"], ["Foto yudisium", "/pasfoto-yudisium"], ["Buat CV ATS", "/buat-cv-ats"], ["Surat lamaran kerja", "/surat-lamaran"], ["Sampul dan template tugas", "/sampul-tugas"], ["Tracker kelulusan dan IPK", "/tracker-kelulusan"], ["Kalender akademik", "/kalender-akademik"]]],
     ["Panduan", [["Panduan maba UT", "/panduan-maba"]]],
     ["Info UT", [["Portal UT", "/portal-ut"], ["Blog dan berita UT", "/blog-ut"]]],
-    ["Akun", [["Koin", "/koin"], ["Cek pesanan", "/pesanan"], ["Masuk", "/ms/masuk"]]]
+    ["Akun", [["Cek pesanan", "/pesanan"], ["Masuk", "/ms/masuk"]]]
   ];
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function init() {

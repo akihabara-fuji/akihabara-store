@@ -1,6 +1,6 @@
 (function () {
   var $ = function (id) { return document.getElementById(id); };
-  var rp = function (n) { return n > 0 && n % 1000 === 0 ? (n / 1000).toLocaleString("id-ID") + " koin" : "Rp" + Number(n).toLocaleString("id-ID"); }; // harga layanan: koin (1 koin = Rp1.000)
+  var rp = function (n) { return n >= 1000000 && n % 100000 === 0 ? String(n / 1000000).replace(".", ",") + " jt" : n > 0 && n % 1000 === 0 ? (n / 1000).toLocaleString("id-ID") + "k" : "Rp" + Number(n).toLocaleString("id-ID"); }; // harga singkat: 35k
   var cfg = {}, cur = (new URLSearchParams(location.search).get("s") || "tugas"), files = [], slotFiles = {}, lastStage = "metopen_paket";
   function showErr(m) { var e = $("err"); e.textContent = m || ""; e.classList.toggle("hidden", !m); }
   /* Simulasi presentasi: wajib unggah file penelitian, tanpa harga di formulir. Tanya jawab lengkap dibuka di halaman hasil. */
@@ -13,7 +13,7 @@
     $("blabel").textContent = "Tentang presentasimu";
     $("brief").placeholder = "Tulis judul penelitianmu, jurusan, dan kapan kamu presentasi. Bagian yang paling kamu khawatirkan juga boleh ditulis.";
     $("pick").textContent = "+ Unggah file penelitian (Word atau PDF)";
-    $("price").textContent = "Gratis dipesan. Simulasi presentasi tampil penuh. Tanya jawab dosen tampil cuplikan: membuka lengkapnya gratis untuk pertama kali, berikutnya " + (s.simCoins || 4) + " koin.";
+    $("price").textContent = "Gratis dipesan. Simulasi presentasi tampil penuh. Tanya jawab dosen juga tampil penuh.";
     $("go").textContent = "Kirim untuk disimulasikan"; gate(); payPaint();
   }
   function paint() {
@@ -37,7 +37,7 @@
     var rev = s.kind === "revisi", dis = fam === "diskusi", td = fam === "tugas" || fam === "diskusi";
     $("chips").style.display = "flex";
     $("ttl").textContent = rev ? "Revisi " + FAM[fam] : fam === "metopen" ? "Metopen" : dis ? "Diskusi" : "Tugas";
-    $("ld").textContent = rev ? "Ada masukan dari tutor? Tempel catatannya atau unggah foto atau file catatan tutor. Revisi gratis untuk hasil buatan Catatan Akademik: isi ID pesanan sebelumnya. Kalau setelah revisi hasilnya masih belum sesuai catatan tutor, kamu bisa kembali lagi tanpa biaya (isi ID pesanan revisi terakhir). Untuk file dari luar, revisi berbayar." : "Tulis kebutuhan, lampirkan file soal atau masukan tutor. Bayar pakai koin, hasil dikirim admin ke WhatsApp-mu sesuai status pesanan. Perlu masuk dengan akun Catatan Akademik.";
+    $("ld").textContent = rev ? "Ada masukan dari tutor? Tempel catatannya atau unggah foto atau file catatan tutor. Revisi gratis untuk hasil buatan Catatan Akademik: isi ID pesanan sebelumnya. Kalau setelah revisi hasilnya masih belum sesuai catatan tutor, kamu bisa kembali lagi tanpa biaya (isi ID pesanan revisi terakhir). Untuk file dari luar, revisi berbayar." : "Tulis kebutuhan, lampirkan file soal atau masukan tutor. Bayar lewat QRIS, hasil dikirim admin ke WhatsApp-mu sesuai status pesanan.";
     $("pbox").style.display = (rev || td) ? "flex" : "none";
     $("pbl").textContent = td ? "Revisi dari tutor? Isi ID pesanan sebelumnya (gratis untuk hasil kami)" : "ID pesanan sebelumnya (isi untuk revisi gratis)";
     $("blabel").textContent = rev ? "Masukan dari tutor" : dis ? "Soal diskusi" : "Kebutuhanmu";
@@ -52,24 +52,9 @@
     paintSlots();
     $("go").textContent = "Pesan " + s.label; gate(); payPaint();
   }
-  /* Bayar pakai koin: 1 koin = Rp1.000. Kotak ini hanya muncul untuk akun yang sudah masuk dan harga yang berlaku (bukan revisi gratis). */
-  var bal = null, payMode = "qris", koinOnly = true; // satu pintu bayar: koin (diubah dari /ms/koin/saldo bila admin mengembalikan QRIS)
-  function coinsOf() { var s = cfg[cur], free = $("pid").value.trim() && (s && (s.kind === "revisi" || cur === "tugas" || cur === "diskusi")); return !s || free || !s.price || s.price % 1000 ? 0 : s.price / 1000; }
-  function payPaint() {
-    var box = $("paybox"), c = coinsOf();
-    if (koinOnly && c) { payMode = "koin"; $("payq").parentNode.style.display = "none"; $("payk").style.display = "none"; }
-    if (bal === null && koinOnly && c) { box.style.display = "flex"; $("paykt").textContent = "Harga: " + c + " koin."; $("paykn").textContent = "Masuk dulu untuk membayar dengan koin."; return; }
-    if (bal === null || !c) { box.style.display = "none"; payMode = "qris"; $("go").textContent = $("go").textContent.replace(/ \(.*\)$/, ""); return; }
-    box.style.display = "flex";
-    var kurang = Math.max(0, c - bal);
-    $("paykt").textContent = "Koin: " + c + " koin. Saldomu " + bal + " koin.";
-    $("paykn").textContent = kurang ? "Kurang " + kurang + " koin. Tekan tombol di bawah untuk isi koin (Rp" + String(kurang * 1000).replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " lewat QRIS), lalu kembali ke sini." : "Koin langsung terpotong dan pesanan langsung masuk antrean, tanpa unggah bukti.";
-    if (!box.dataset.set) { box.dataset.set = "1"; payMode = (koinOnly || !kurang) ? "koin" : "qris"; }
-    $("payk").checked = payMode === "koin"; $("payq").checked = payMode === "qris";
-    $("go").textContent = ($("go").textContent.replace(/ \(.*\)$/, "")) + (payMode === "koin" ? (kurang ? " (isi koin dulu)" : " (pakai " + c + " koin)") : "");
-  }
-  document.addEventListener("change", function (e) { if (e.target && e.target.name === "pay") { payMode = e.target.value; payPaint(); } });
-  fetch("/ms/koin/saldo", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) { koinOnly = j.koinOnly !== false; if (typeof j.balance === "number") bal = j.balance; payPaint(); }).catch(function () {});
+  /* Semua pembayaran lewat QRIS (koin sudah dihapus). */
+  var payMode = "qris";
+  function payPaint() {}
   function need() { return (cfg[cur] && cfg[cur].needs) || []; }
   function gate() {
     var wa = $("wa").value.replace(/\D/g, "").replace(/^62/, "").replace(/^0/, ""), n = need(), slots = n.every(function (l) { return slotFiles[l]; }), total = n.length + files.length, sim = cfg[cur] && cfg[cur].kind === "simulasi";
@@ -93,10 +78,8 @@
   $("file").onchange = function () { files = Array.prototype.slice.call(this.files, 0, 5); $("fl").textContent = files.length ? files.map(function (f) { return f.name; }).join(", ") : "Word, PDF, gambar, atau .txt. Maksimal 5 file, 10 MB per file."; gate(); };
   $("go").onclick = function () {
     showErr("");
-    var cc = coinsOf();
-    if (payMode === "koin" && bal !== null && cc && cc > bal) { location.href = "/ruangakademikut/koin?kurang=" + (cc - bal) + "&next=" + encodeURIComponent(location.pathname + location.search); return; }
     var b = this; b.disabled = true;
-    var fd = new FormData(); fd.append("service", ($("pid").value.trim() && cfg["revisi_" + cur]) ? "revisi_" + cur : cur); fd.append("brief", $("brief").value); fd.append("wa", $("wa").value); fd.append("agree", $("agree").checked ? "true" : "false"); if (cc && (koinOnly || (payMode === "koin" && bal !== null))) fd.append("pay", "koin"); fd.append("parentId", $("pid").value);
+    var fd = new FormData(); fd.append("service", ($("pid").value.trim() && cfg["revisi_" + cur]) ? "revisi_" + cur : cur); fd.append("brief", $("brief").value); fd.append("wa", $("wa").value); fd.append("agree", $("agree").checked ? "true" : "false"); fd.append("parentId", $("pid").value);
     need().forEach(function (l) { var f = slotFiles[l]; if (f) fd.append("files", f, l + " - " + f.name); });
     files.forEach(function (f) { fd.append("files", f); });
     fetch("/ms/layanan/order", { method: "POST", body: fd }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })

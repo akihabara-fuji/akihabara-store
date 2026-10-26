@@ -1,10 +1,9 @@
 (function () {
   var $ = function (id) { return document.getElementById(id); };
   var rp = function (n) { return Number(n).toLocaleString("id-ID"); };
-  /* Satu pintu bayar: pesanan dibayar koin (1 koin = Rp1.000, dibulatkan ke atas). bayar_koin_saja = false: alur QRIS lama. */
-  var koinOnly = function () { var c = cfg(); return !c || c.bayar_koin_saja !== false; };
-  var KO = function (r) { return Math.max(1, Math.ceil(r / 1000)).toLocaleString("id-ID") + " koin"; };
-  var payLabel = function () { return koinOnly() ? "Bayar dengan koin" : "Bayar dengan QRIS"; };
+  /* Semua pembayaran lewat QRIS. */
+  var koinOnly = function () { return false; };
+  var payLabel = function () { return "Bayar dengan QRIS"; };
   var st = { up: null, page: 1 };
   var NAMES = { M: "Tulis ulang", O: "Beri kutip", K: "Tambah sumber", B: "Lengkapi sitasi", U: "Singkat", H: "Tambah kalimat", P: "Tambah analisis", A: "Variasikan" };
   var ORDER = ["M", "O", "K", "B", "U", "H", "P", "A"];
@@ -126,7 +125,6 @@
       .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
       .then(function (x) {
         if (!x.ok && x.j.login) { location.href = "/ms/masuk?next=" + encodeURIComponent(location.pathname); return; }
-        if (!x.ok && x.j.short) { location.href = "/ruangakademikut/koin?kurang=" + x.j.short + "&next=" + encodeURIComponent(location.pathname + "?u=" + st.up.uploadId); return; }
         if (x.ok) { try { localStorage.setItem("pf_last", x.j.token); } catch (e) {} location.href = x.j.url; return; }
         showErr(x.j.error || "Pesanan gagal dibuat.");
         if (x.j.code === "fast_full") { fetch("/ms/public-config").then(function (r) { return r.json(); }).then(function (c) { window.PF.cfg = c; price(); }); }

@@ -93,7 +93,7 @@ module.exports = function mountLayanan({ app, express, db, settings, orders, roo
         const cfg = settings.getAll(), token = crypto.randomBytes(24).toString("hex");
         const base = free ? 0 : priceOf(b.service);
         /* Bayar pakai koin: 1 koin = Rp1.000. Potongan koin dan pembuatan pesanan satu transaksi, jadi tidak ada pesanan tanpa potongan. */
-        const useCoin = !free && !!koin && (b.pay === "koin" || !!settings.get("bayar_koin_saja")), buyer = useCoin ? (userFrom && userFrom(req)) : null;
+        const useCoin = false, /* koin dinonaktifkan: semua pesanan lewat QRIS */ buyer = useCoin ? (userFrom && userFrom(req)) : null;
         if (useCoin && !buyer) throw bad(401, "Masuk dulu untuk memesan. Pembayaran memakai koin.", { login: true });
         const coins = useCoin ? Math.max(1, Math.ceil(base / 1000)) : null; // satu pintu bayar: koin, dibulatkan ke atas per koin
         if (useCoin && !(base > 0)) throw bad(400, "Harga layanan ini belum diatur.");
