@@ -181,3 +181,9 @@ textarea.body{border-radius:0 0 10px 10px;min-height:520px;font:15px/1.7 ui-mono
 .stat-a:focus-visible{outline:none}
 .stat-a:focus-visible::after{outline:3px solid var(--acc);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){.stat.is-link{transition:none}.stat.is-link:hover{transform:none}}
+
+/* pilih banyak artikel */
+table.t th.chk,table.t td.chk{width:38px;padding-right:0;text-align:center}
+table.t input[type=checkbox]{width:17px;height:17px;cursor:pointer;accent-color:var(--acc,#3b82f6)}
+.bulk{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 10px;padding:10px 14px;border:1px solid var(--border);border-radius:12px;background:rgba(59,130,246,.12);position:sticky;top:8px;z-index:5}
+.bulk[hidden]{display:none}

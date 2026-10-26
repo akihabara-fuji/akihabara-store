@@ -497,6 +497,18 @@ module.exports = function mount(ctx) {
     const p = blog.posts.find(x => x.id === req.params.id); if (!p) return res.status(404).json({ error: "Tulisan tidak ditemukan." });
     delete p.trashedAt; await saveBlog(); res.json({ ok: true });
   });
+  /* Aksi massal dari daftar artikel: satu kali simpan (satu cadangan), bukan satu per artikel. action: trash | restore | delete (delete hanya untuk yang sudah di sampah). */
+  app.post("/ms/admin/posts/bulk", requireAdmin, adminJson, async (req, res) => {
+    const b = req.body || {}, ids = [...new Set(Array.isArray(b.ids) ? b.ids.map(String) : [])].slice(0, 200);
+    if (!ids.length || !["trash", "restore", "delete"].includes(b.action)) return res.status(400).json({ error: "Pilih artikel dan aksinya dulu." });
+    const sel = blog.posts.filter(p => ids.includes(p.id));
+    let n = 0;
+    if (b.action === "trash") sel.forEach(p => { if (!p.trashedAt) { p.trashedAt = new Date().toISOString(); n++; } });
+    else if (b.action === "restore") sel.forEach(p => { if (p.trashedAt) { delete p.trashedAt; n++; } });
+    else { const gone = new Set(sel.filter(p => p.trashedAt).map(p => p.id)); n = gone.size; blog.posts = blog.posts.filter(p => !gone.has(p.id)); }
+    if (n) await saveBlog();
+    res.json({ ok: true, count: n });
+  });
   app.delete("/ms/admin/posts/:id", requireAdmin, async (req, res) => {
     const i = blog.posts.findIndex(x => x.id === req.params.id && x.trashedAt); if (i < 0) return res.status(400).json({ error: "Hanya tulisan di sampah yang bisa dihapus permanen." });
     blog.posts.splice(i, 1); await saveBlog(); res.json({ ok: true });

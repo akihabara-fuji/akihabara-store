@@ -47,3 +47,20 @@ test("pembaca dihitung sekali per pengunjung, bot dan pratinjau tidak dihitung",
     assert.deepEqual(v.dua, { total: 1, week: 1 });
   } finally { srv.close(); }
 });
+
+test("aksi massal: pindah ke sampah, pulihkan, hapus permanen (sekali simpan)", async () => {
+  const { srv, base } = setup();
+  const post = (b) => fetch(base + "/ms/admin/posts/bulk", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(b) });
+  try {
+    assert.equal((await post({ ids: [], action: "trash" })).status, 400);
+    assert.equal((await post({ ids: ["p1"], action: "aneh" })).status, 400);
+    assert.deepEqual(await (await post({ ids: ["p1", "p2", "nope"], action: "trash" })).json(), { ok: true, count: 2 });
+    let a = await (await fetch(base + "/ms/admin/posts")).json();
+    assert.equal(a.posts.length, 0); assert.equal(a.trash.length, 2);
+    assert.equal((await fetch(base + "/blog/satu", { headers: UA })).status, 404);
+    assert.equal((await (await post({ ids: ["p1"], action: "restore" })).json()).count, 1);
+    assert.equal((await (await post({ ids: ["p1", "p2"], action: "delete" })).json()).count, 1); // hanya yang di sampah (p2)
+    a = await (await fetch(base + "/ms/admin/posts")).json();
+    assert.deepEqual([a.posts.length, a.trash.length], [1, 0]);
+  } finally { srv.close(); }
+});

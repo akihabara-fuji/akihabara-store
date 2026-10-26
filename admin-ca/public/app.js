@@ -257,14 +257,27 @@
       <div class="bar"><nav class="tabs" aria-label="Status artikel">${tabs}</nav><span class="grow"></span><button class="btn" id="impMd" type="button">Impor file .md</button><a class="btn pri" href="#/posts/new">${ICON.pen}Tulis artikel</a></div>
       <div class="card"><div class="hd"><form class="bar" id="pf" style="flex:1"><select class="in" name="topic" style="width:auto"><option value="">Semua kategori</option>${Object.entries(d.topics).map(([k, v]) => `<option value="${k}" ${k === topic ? "selected" : ""}>${esc(v.label)}</option>`).join("")}</select>
         <input class="in grow" name="q" type="search" placeholder="Cari judul artikel…" value="${esc(q.get("q") || "")}"><button class="btn">Cari</button>${tag ? `<a class="btn sm" href="#/posts">Tag #${esc(tag)} ✕</a>` : ""}</form></div>
-      <div class="tbl-wrap">${list.length ? `<table class="t"><thead><tr><th>Judul</th><th>Kategori</th><th>Penulis</th><th>Status</th><th title="Pembaca unik per hari">Dilihat</th><th>Tanggal</th><th></th></tr></thead><tbody>${list.map(p => {
+      <div class="bulk" id="bulk" hidden><b id="bulkN"></b><span class="grow"></span>${f === "trash" ? '<button class="btn sm" data-bulk="restore">Pulihkan</button><button class="btn sm bad" data-bulk="delete">Hapus permanen</button>' : '<button class="btn sm bad" data-bulk="trash">Pindah ke sampah</button>'}<button class="btn sm" id="bulkX">Batal pilih</button></div>
+      <div class="tbl-wrap">${list.length ? `<table class="t"><thead><tr><th class="chk"><input type="checkbox" id="selAll" aria-label="Pilih semua artikel di daftar ini" title="Pilih semua"></th><th>Judul</th><th>Kategori</th><th>Penulis</th><th>Status</th><th title="Pembaca unik per hari">Dilihat</th><th>Tanggal</th><th></th></tr></thead><tbody>${list.map(p => {
         const st = stOf(p), [l, tone] = ST_LABEL[st];
-        return `<tr class="click" data-href="#/posts/${p.id}"><td><b>${esc(p.title)}</b>${p.featured ? ' <span class="badge t-info">Pilihan</span>' : ""}<div class="small faint">/blog/${esc(p.slug)}</div></td><td>${esc((d.topics[p.topic] || {}).label || p.topic)}</td><td>${esc(p.author || "dk")}</td><td>${badge(l, tone)}</td>
+        return `<tr class="click" data-href="#/posts/${p.id}"><td class="chk"><input type="checkbox" class="selOne" value="${p.id}" aria-label="Pilih ${esc(p.title)}"></td><td><b>${esc(p.title)}</b>${p.featured ? ' <span class="badge t-info">Pilihan</span>' : ""}<div class="small faint">/blog/${esc(p.slug)}</div></td><td>${esc((d.topics[p.topic] || {}).label || p.topic)}</td><td>${esc(p.author || "dk")}</td><td>${badge(l, tone)}</td>
           <td class="small"><b>${(p.views ? p.views.total : 0).toLocaleString("id-ID")}</b><div class="faint">${(p.views ? p.views.week : 0).toLocaleString("id-ID")} / 7 hari</div></td>
           <td class="muted small">${st === "scheduled" ? "Terbit " + dt(p.publishAt) : st === "published" ? "Terbit " + dd(p.publishedAt) : "Diubah " + dt(p.updatedAt)}</td>
           <td><div class="act"><button class="btn sm" data-menu="${p.id}" aria-haspopup="true">Aksi ▾</button></div></td></tr>`;
       }).join("")}</tbody></table>` : '<div class="empty">Tidak ada artikel di filter ini.</div>'}</div></div>`);
     $("#impMd").onclick = importMarkdown;
+    const ones = () => $$(".selOne"), chosen = () => ones().filter(c => c.checked).map(c => c.value);
+    const syncBulk = () => { const n = chosen().length, allc = $("#selAll"); $("#bulk").hidden = !n; $("#bulkN").textContent = n + " artikel dipilih"; if (allc) { allc.checked = n > 0 && n === ones().length; allc.indeterminate = n > 0 && n < ones().length; } };
+    ones().forEach(c => { c.onclick = e => e.stopPropagation(); c.onchange = syncBulk; });
+    if ($("#selAll")) { $("#selAll").onclick = e => e.stopPropagation(); $("#selAll").onchange = e => { ones().forEach(c => { c.checked = e.target.checked; }); syncBulk(); }; }
+    $("#bulkX").onclick = () => { ones().forEach(c => { c.checked = false; }); syncBulk(); };
+    $$("[data-bulk]").forEach(b => b.onclick = async () => {
+      const ids = chosen(), a = b.dataset.bulk; if (!ids.length) return;
+      const live = all.filter(p => ids.includes(p.id) && stOf(p) === "published").length;
+      const T = { trash: ["Pindah ke sampah?", `${ids.length} artikel disembunyikan dari situs${live ? ` (${live} di antaranya sedang TERBIT dan akan hilang dari situs)` : ""}. Bisa dipulihkan dalam 30 hari.`, "Pindah ke sampah"], restore: ["Pulihkan artikel?", `${ids.length} artikel dikembalikan ke status sebelumnya.`, "Pulihkan"], delete: ["Hapus permanen?", `${ids.length} artikel dan isinya dihapus selamanya. Tindakan ini tidak bisa dibatalkan.`, "Hapus permanen"] }[a];
+      if (!await confirmAct(T[0], T[1], T[2], a === "restore" ? "pri" : "bad")) return;
+      try { const r = await api("/ms/admin/posts/bulk", { json: { ids, action: a } }); toast(`${r.count} artikel ${{ trash: "dipindah ke sampah", restore: "dipulihkan", delete: "dihapus permanen" }[a]}`); route(); } catch (err) { fail(err); }
+    });
     $("#pf").onsubmit = e => { e.preventDefault(); go("posts", { status: f, topic: e.target.topic.value, q: e.target.q.value.trim() }); };
     $("#pf").topic.onchange = () => $("#pf").requestSubmit();
     bindRows();
