@@ -68,6 +68,7 @@
     window.auditOkList(d.score, l);
     $("perword").textContent = d.quote.perWord; $("minp").textContent = window.koinFmt(d.quote.min); $("total").textContent = d.quote.allFree ? "0 (seluruh dokumen sudah terbuka gratis)" : "Rp " + rp(d.quote.total);
     $("fwn").textContent = rp(d.quote.freeWords || 0);
+    $("cekGo").href = "/ruangakademikut/cek-parafrase-mandiri?u=" + encodeURIComponent(upId);
     var nOpen = d.findings.filter(function (f) { return f.open; }).length;
     $("rmeta").textContent += d.quote.allFree ? " · seluruhnya gratis" : " · " + nOpen + " dari " + d.findings.length + " temuan dibuka gratis";
     $("cta").classList.toggle("hidden", !d.findings.some(function (f) { return !f.open; }));

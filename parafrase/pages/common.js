@@ -294,7 +294,7 @@ window.renderTriage = function (box, t, opts) {
   }
 
   /* jembatan Audit -> Parafrase: dokumen yang sama dibawa, tanpa unggah ulang */
-  if ((opts.here === "audit" || opts.here === "hasil") && t.level !== "aman" && t.level !== "belum") {
+  if (opts.here === "hasil" && t.level !== "aman" && t.level !== "belum") {
     var go = el("a", "display:inline-block;margin-top:12px;padding:11px 18px;border-radius:12px;font-weight:700;text-decoration:none;background:#ffb300;color:#0b1326", "Obati lewat Cek & Parafrase Mandiri →");
     go.href = "/ruangakademikut/cek-parafrase-mandiri" + (opts.uploadId ? "?u=" + encodeURIComponent(opts.uploadId) : "");
     card.appendChild(go);
