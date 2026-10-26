@@ -60,23 +60,45 @@ function cleanMarkdown(body) {
 
 function toTags(v) { return (Array.isArray(v) ? v : String(v || "").split(",")).map(s => String(s).trim()).filter(Boolean); }
 
+/* Blok label gaya "**Slug:** isi" di awal file (format draf Hermes), baik sebelum maupun sesudah judul "# ...".
+   Barisnya diambil sebagai metadata lalu dibuang dari isi supaya tidak tampil di artikel. Hanya label yang dikenal. */
+const LABELS = [
+  [/^slug$/i, "slug"], [/^meta[ _-]?title$/i, "metaTitle"], [/^meta[ _-]?description$/i, "metaDesc"],
+  [/^kata[ _-]?kunci[ _-]?utama$/i, "keyword"], [/^kata[ _-]?kunci[ _-]?turunan$/i, "derived"],
+  [/^tags?$/i, "tags"], [/^(topik|topic|kategori)$/i, "topic"],
+];
+function takeLabelHeader(body) {
+  const out = {}; let rest = body, found = false;
+  for (;;) {
+    const m = /^\s*(?:[-*]\s+)?\*\*([^*\n:]{2,40}):\*\*[ \t]*(.*?)[ \t]*(?:\n|$)/.exec(rest);
+    if (!m) break;
+    const hit = LABELS.find(([re]) => re.test(m[1].trim()));
+    if (!hit) break;
+    out[hit[1]] = unquote(m[2].replace(/`/g, "")); found = true; rest = rest.slice(m[0].length);
+  }
+  return { meta: out, body: found ? rest : body, found };
+}
+
 /* name: nama berkas (cadangan judul). Hasil: { ok, error?, title, slug, body, excerpt, tags, topic, metaTitle, metaDesc, keyword, author } */
 function parseMd(text, name = "") {
   text = String(text || "").replace(/^﻿/, "").replace(/\r/g, "");
   const { fm, rest } = parseFrontMatter(text);
   let body = rest, title = fm.title ? String(fm.title).trim() : "";
+  const lab = {}; const eat = () => { const t = takeLabelHeader(body); if (t.found) { Object.assign(lab, t.meta); body = t.body; } };
+  eat();
   const h1 = /^\s*#[ \t]+(.+?)[ \t]*(?:\n|$)/.exec(body);
   if (h1) { if (!title) title = h1[1].trim(); if (h1[1].trim().toLowerCase() === title.toLowerCase()) body = body.slice(h1[0].length); }
+  eat();
   if (!title) title = String(name).replace(/\.(md|markdown|txt)$/i, "").replace(/[-_]+/g, " ").trim();
   body = cleanMarkdown(body);
   if (!title) return { ok: false, error: "Judul tidak ditemukan. Tulis `title:` di front matter atau baris `# Judul`." };
   if (plain(body).length < 80) return { ok: false, error: "Isi artikel kosong atau terlalu pendek." };
   const firstPara = body.split(/\n\s*\n/).map(plain).find(p => p && !/^\|/.test(p)) || "";
   return {
-    ok: true, title, slug: fm.slug ? String(fm.slug) : "", body,
+    ok: true, title, slug: fm.slug ? String(fm.slug) : (lab.slug || ""), body,
     excerpt: fm.excerpt ? plain(fm.excerpt) : firstPara.slice(0, 260),
-    tags: toTags(fm.tags), topic: fm.topic ? String(fm.topic) : "", metaTitle: fm.metaTitle ? String(fm.metaTitle) : "",
-    metaDesc: fm.metaDesc ? String(fm.metaDesc) : "", keyword: fm.keyword ? toTags(fm.keyword).join(", ") : "", author: fm.author ? String(fm.author) : "",
+    tags: toTags(fm.tags || lab.tags || lab.derived), topic: fm.topic ? String(fm.topic) : (lab.topic || ""), metaTitle: fm.metaTitle ? String(fm.metaTitle) : (lab.metaTitle || ""),
+    metaDesc: fm.metaDesc ? String(fm.metaDesc) : (lab.metaDesc || ""), keyword: fm.keyword ? toTags(fm.keyword).join(", ") : (lab.keyword || ""), author: fm.author ? String(fm.author) : "",
   };
 }
 

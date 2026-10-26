@@ -89,3 +89,21 @@ test("buildDrafts: semua draf, judul kembar dilewati, slug unik antar file, topi
   assert.strictEqual(posts[1].topic, "study");                                                                // topik tak diizinkan -> bawaan
   assert.strictEqual(posts[0].metaTitle, "Strategi UAS UT dan Solusi Nilai Tuton"); assert.deepStrictEqual(posts[0].tags, ["uas-ut", "tuton", "nilai-akhir"]);
 });
+
+test("blok label gaya Hermes (**Slug:** ...) dibaca sebagai metadata dan dibuang dari isi", () => {
+  const isi = "Paragraf pembuka yang cukup panjang untuk lolos batas minimal isi artikel, berisi penjelasan singkat tentang topik yang dibahas di sini.";
+  const teks = "# Judul Uji Label\n\n**Slug:** `judul-uji-label`\n\n**Meta title:** Meta judul uji\n\n**Meta description:** Deskripsi uji singkat.\n\n**Kata kunci utama:** kata uji\n\n**Kata kunci turunan:** satu, dua\n\n---\n\n" + isi + "\n\n**Catatan:** ini bagian isi dan tidak boleh dibuang.";
+  const d = parseMd(teks, "x.md");
+  assert.strictEqual(d.ok, true);
+  assert.strictEqual(d.title, "Judul Uji Label"); assert.strictEqual(d.slug, "judul-uji-label");
+  assert.strictEqual(d.metaTitle, "Meta judul uji"); assert.strictEqual(d.metaDesc, "Deskripsi uji singkat."); assert.strictEqual(d.keyword, "kata uji");
+  assert.deepStrictEqual(d.tags, ["satu", "dua"]);
+  assert.ok(!/Slug:|Meta title:|Kata kunci/.test(d.body), "baris label tidak boleh tersisa di isi: " + d.body.slice(0, 80));
+  assert.ok(d.body.includes("**Catatan:** ini bagian isi"), "label tak dikenal tetap bagian isi");
+  // label sebelum judul H1 juga dibaca
+  const d2 = parseMd("**Slug:** slug-dulu\n\n# Judul Setelah Label\n\n" + isi, "y.md");
+  assert.strictEqual(d2.title, "Judul Setelah Label"); assert.strictEqual(d2.slug, "slug-dulu"); assert.ok(!d2.body.includes("Slug:"));
+  // front matter resmi menang atas blok label
+  const d3 = parseMd("---\ntitle: Resmi\nslug: slug-resmi\n---\n**Slug:** slug-label\n\n" + isi, "z.md");
+  assert.strictEqual(d3.slug, "slug-resmi");
+});
