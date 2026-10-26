@@ -32,12 +32,12 @@ test("Alat Gratis: halaman baru tampil di host akademik tanpa string ruangakadem
   } finally { for (const [k, v] of [["ACAD_URL", keep.A], ["SITE_URL", keep.S]]) v === undefined ? delete process.env[k] : (process.env[k] = v); }
 });
 
-test("Alat Gratis: menu ada di semua halaman yang punya menu Kalkulasi Nilai", () => {
+test("Alat Gratis: menu ada di semua halaman yang punya menu Alat Gratis", () => {
   const dir = path.join(__dirname, "..", "parafrase", "pages");
   let n = 0;
   for (const f of fs.readdirSync(dir).filter(x => x.endsWith(".html"))) {
     const h = fs.readFileSync(path.join(dir, f), "utf8");
-    if (!h.includes(">Kalkulasi Nilai</summary>")) continue; n++;
+    if (!h.includes(">Alat Gratis</summary>")) continue; n++; assert.ok(!h.includes(">Kalkulasi Nilai</summary>"), f + " masih punya menu Kalkulasi Nilai terpisah");
     for (const s of SLUGS) assert.ok(h.includes(`href="/ruangakademikut/${s}"`), f + " tanpa link " + s);
   }
   assert.ok(n >= 15);

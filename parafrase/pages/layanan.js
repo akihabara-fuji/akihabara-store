@@ -37,7 +37,7 @@
     var rev = s.kind === "revisi", dis = fam === "diskusi", td = fam === "tugas" || fam === "diskusi";
     $("chips").style.display = "flex";
     $("ttl").textContent = rev ? "Revisi " + FAM[fam] : fam === "metopen" ? "Metopen" : dis ? "Diskusi" : "Tugas";
-    $("ld").textContent = rev ? "Ada masukan dari tutor? Tempel catatannya atau unggah foto atau file catatan tutor. Revisi gratis untuk hasil buatan Catatan Akademik: isi ID pesanan sebelumnya. Kalau setelah revisi hasilnya masih belum sesuai catatan tutor, kamu bisa kembali lagi tanpa biaya (isi ID pesanan revisi terakhir). Untuk file dari luar, revisi berbayar." : "Tulis kebutuhan, lampirkan file soal atau masukan tutor. Bayar lewat QRIS, hasil dikirim admin ke WhatsApp-mu sesuai status pesanan.";
+    $("ld").textContent = rev ? "Ada masukan dari tutor? Tempel catatannya atau unggah foto atau file catatan tutor. Revisi gratis untuk hasil buatan Catatan Akademik: isi ID pesanan sebelumnya. Kalau setelah revisi hasilnya masih belum sesuai catatan tutor, kamu bisa kembali lagi tanpa biaya (isi ID pesanan revisi terakhir). Untuk file dari luar, revisi berbayar." : "Tulis kebutuhan, lampirkan file soal atau masukan tutor. Bayar lewat QRIS, hasil dikirim admin ke WhatsApp-mu sesuai status pesanan. Perlu masuk dengan akun Catatan Akademik.";
     $("pbox").style.display = (rev || td) ? "flex" : "none";
     $("pbl").textContent = td ? "Revisi dari tutor? Isi ID pesanan sebelumnya (gratis untuk hasil kami)" : "ID pesanan sebelumnya (isi untuk revisi gratis)";
     $("blabel").textContent = rev ? "Masukan dari tutor" : dis ? "Soal diskusi" : "Kebutuhanmu";

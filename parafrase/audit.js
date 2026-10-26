@@ -34,9 +34,9 @@ module.exports = function mountAudit({ app, express, db, settings, orders, root,
 
   /* Penjelasan hanya untuk temuan di paragraf yang seluruhnya masuk batas kata gratis (dari awal dokumen). Sisanya: tingkat, kategori, lokasi. */
   /* Gratis: 5 temuan teratas (urutan sudah dari yang paling parah) terbuka lengkap dengan kutipan dan cara memperbaiki.
-     Sisanya hanya memperlihatkan jenis dan lokasi; kutipan dan cara memperbaiki terbuka setelah Audit Lengkap dibayar. */
+     Dokumen yang seluruhnya masuk kata gratis (<= free_words) terbuka semua. Sisanya hanya memperlihatkan jenis dan lokasi; kutipan dan cara memperbaiki terbuka setelah Audit Lengkap dibayar. */
   const FREE_FINDINGS = 5;
-  const openFindings = findings => findings.map((x, i) => i < FREE_FINDINGS
+  const openFindings = (findings, allFree) => findings.map((x, i) => allFree || i < FREE_FINDINGS
     ? { sev: x.sev, cat: x.cat, where: x.where, open: true, detail: x.detail, quote: x.quote, code: x.code }
     : { sev: x.sev, cat: x.cat, where: x.where });
 
@@ -68,7 +68,7 @@ module.exports = function mountAudit({ app, express, db, settings, orders, root,
         res.json({
           uploadId: id, file: { name, size: f.size }, words, counts: r.counts, refs: r.refs, score: r.score, triage,
           /* Hanya tingkat, kategori, dan lokasi. Penjelasan ada di Audit Lengkap. */
-          findings: openFindings(r.findings),
+          findings: openFindings(r.findings, quote(words).allFree),
           freeWords: quote(words).freeWords,
           quote: quote(words),
         });

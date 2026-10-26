@@ -12,7 +12,8 @@
     if (!/\.(docx|pdf)$/i.test(f.name)) { showErr("Hanya file Word (.docx) atau PDF yang diterima."); return; }
     if (f.size > 10 * 1048576) { showErr("File terlalu besar. Maksimal 10 MB."); return; }
     picked = f; $("chName").textContent = f.name; $("chMeta").textContent = "(" + Math.max(1, Math.round(f.size / 1024)) + " KB)";
-    $("chosen").classList.remove("hidden"); $("pick").classList.add("hidden"); $("chGo").focus();
+    $("chosen").classList.remove("hidden"); $("pick").classList.add("hidden");
+    send(f); /* alur singkat: pilih file langsung diperiksa */
   }
   function unpick() { picked = null; $("chosen").classList.add("hidden"); $("pick").classList.remove("hidden"); }
   $("chGo").onclick = function () { if (picked) send(picked); };
