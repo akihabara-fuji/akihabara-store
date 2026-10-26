@@ -321,7 +321,7 @@ if (!process.env.CA_ADMIN_PASSWORD) console.warn("[!] CA_ADMIN_PASSWORD belum di
 app.get(/^\/admin\/(parafrase|layanan)\/?$/, (req, res, next) => (ACAD_HOSTS.length && !isAcadHost(req) ? res.redirect(302, `${ACAD}/admin/`) : next()));
 
 /* ---------------- blog + akun customer ---------------- */
-const extra = require("./blog-akun")({ app, express, requireAdmin, sameOrigin, getCookie, SECURE_COOKIE, ROOT, SITE: ACAD, getSettings: () => store.settings, getTexts: () => (typeof pf !== "undefined" ? pf.texts : null), onRegister: u => (typeof pf !== "undefined" && pf.koin ? pf.koin.welcome(u.id) : 0), getBonus: () => (typeof pf !== "undefined" && pf.koin ? Number(pf.settings.get("koin_bonus_daftar")) || 0 : 0) });
+const extra = require("./blog-akun")({ app, express, requireAdmin, sameOrigin, getCookie, SECURE_COOKIE, ROOT, SITE: ACAD, getSettings: () => store.settings, getCa: k => (typeof pf !== "undefined" && pf.settings ? pf.settings.get(k) : ""), getTexts: () => (typeof pf !== "undefined" ? pf.texts : null), onRegister: u => (typeof pf !== "undefined" && pf.koin ? pf.koin.welcome(u.id) : 0), getBonus: () => (typeof pf !== "undefined" && pf.koin ? Number(pf.settings.get("koin_bonus_daftar")) || 0 : 0) });
 
 /* ---------------- Cek dan Parafrase Mandiri (modul terpisah, lihat parafrase/) ---------------- */
 /* fitur coba (unggah & pesan) wajib login; halaman dan harga tetap terbuka */

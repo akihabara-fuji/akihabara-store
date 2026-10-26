@@ -23,6 +23,9 @@ const DEFS = {
   payment_window_minutes:       { type: "int",  min: 5, max: 1440, def: 60, pub: true },
   admin_wa_number:              { type: "str",  re: WA, allowEmpty: true, def: "6285722227544", pub: true },
   update_group_url:             { type: "url",  allowEmpty: true, def: "https://chat.whatsapp.com/GABKsK7XnfjHpZe8iC7A7A", pub: true },
+  ca_instagram_url:             { type: "url",  allowEmpty: true, def: "", pub: true },   // tampil otomatis di blok komunitas bawah artikel blog
+  ca_tiktok_url:                { type: "url",  allowEmpty: true, def: "", pub: true },
+  ca_facebook_url:              { type: "url",  allowEmpty: true, def: "", pub: true },
   qris_merchant_name:           { type: "str",  re: /^[\p{L}\p{N} .,&'-]{0,60}$/u, allowEmpty: true, def: "CATATAN TERBUKA", pub: true },
   price_tugas:                  { type: "int",  min: 0, max: 100000000, def: 35000, pub: true },
   price_diskusi:                { type: "int",  min: 0, max: 100000000, def: 20000, pub: true },

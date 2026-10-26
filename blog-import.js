@@ -231,4 +231,20 @@ function buildDrafts(files, ctx) {
   return { posts, results };
 }
 
-module.exports = { buildDrafts, parseMd, parseFrontMatter, cleanMarkdown, checkDraft, topicKey };
+/* Penyaring saat TAMPIL (artikel, pratinjau): bagian dan baris internal tidak pernah sampai ke pembaca, juga untuk draf lama yang
+   sudah terlanjur diimpor. Blok komunitas dibuang karena dipasang otomatis sebagai templat di bawah artikel. */
+const INTERNAL_LINE = /^\s*(?:[-*]\s+)?(?:\*\*)?\s*(?:gambar|alt text(?: sampul| foto)?|catatan pemilik[^:\n]*|catatan (?:admin|editor|internal)[^:\n]*|kanal sosial terverifikasi)\s*:(?:\*\*)?|DATA BELUM TERSEDIA|GAMBAR BELUM TERSEDIA|Catatan untuk Admin/i;
+function scrubInternal(text) {
+  const t = String(text || "").replace(/\r/g, "");
+  const parts = t.split(/^(?=#{2,3}[ \t]+[^#\n])/m);
+  const hasSumber = parts.some(s => /^#{2,3}[ \t]+Sumber\b/i.test(s));
+  const out = [];
+  for (const sec of parts) {
+    const h = /^#{2,3}[ \t]+([^\n]+)/.exec(sec), name = h ? h[1].replace(/[*`]/g, "").trim() : "";
+    if (h && (DROP_H2.test(name) || (/^sources$/i.test(name) && hasSumber))) continue;
+    out.push(h && /^sources$/i.test(name) ? sec.replace(/^(#{2,3})[ \t]+Sources/i, "$1 Sumber") : sec);
+  }
+  return out.join("").split("\n").filter(l => !INTERNAL_LINE.test(l)).join("\n").replace(/\n{3,}/g, "\n\n");
+}
+
+module.exports = { scrubInternal, buildDrafts, parseMd, parseFrontMatter, cleanMarkdown, checkDraft, topicKey };

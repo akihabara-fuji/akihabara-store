@@ -82,6 +82,13 @@
 .bx-arch .blog-ctl button{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:999px;padding:5px 14px;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer}
 @media(max-width:560px){.bx-arch .blog-titles a{grid-template-columns:1fr}.bx-arch .blog-titles .tag{display:none}.bx-arch .blog-tree{padding-left:14px}}
 
+/* blok komunitas otomatis */
+.ax-comm{margin:28px 0 12px;padding:18px;border:1px solid var(--border);border-radius:16px;background:var(--surface)}
+.ax-comm h2{margin:0 0 4px;font-size:18px;color:var(--text)}.ax-comm p{margin:0 0 12px;color:var(--muted);font-size:14px}
+.ax-comm-l{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.ax-comm-l a{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border:1px solid var(--border);border-radius:12px;text-decoration:none;color:var(--text)}
+.ax-comm-l a:hover{border-color:var(--link,#4f8ff7)}.ax-comm-l a span{font-size:12.5px;color:var(--muted)}
+
 /* artikel */
 .ax{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:40px;align-items:start;padding-top:24px;padding-bottom:64px}
 .ax-main{min-width:0;max-width:760px}

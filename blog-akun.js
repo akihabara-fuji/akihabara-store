@@ -557,7 +557,7 @@ module.exports = function mount(ctx) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Bricolage+Grotesque:wght@600;700&display=swap" rel="stylesheet">
 <script>try{var t=localStorage.getItem("nx-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
-<link rel="stylesheet" href="/assets/blog.css?v=10"><link rel="stylesheet" href="/assets/ca-blog.css?v=7"><script async src="/t.js"></script>
+<link rel="stylesheet" href="/assets/blog.css?v=10"><link rel="stylesheet" href="/assets/ca-blog.css?v=8"><script async src="/t.js"></script>
 ${extra}
 </head>
 <body>
@@ -628,9 +628,17 @@ ${ACAD_ONLY ? '<script defer src="/ruangakademikut/assets/koin-chip.js?v=2026120
   });
 
   /* Bagian penutup lama ("Kalau kamu butuh bantuan ...") di dalam isi tulisan diganti bubble WhatsApp di bawah. */
-  const cleanBody = t => String(t || "").replace(/\r/g, "").replace(/\n[ \t]*(?:#{1,3}[ \t]*)?(?:\*\*)?Kalau kamu butuh bantuan(?:\*\*)?[ \t]*\n[\s\S]{0,1600}$/i, "").trimEnd();
+  const cleanBody = t => importMd.scrubInternal(String(t || "")).replace(/\r/g, "").replace(/\n[ \t]*(?:#{1,3}[ \t]*)?(?:\*\*)?Kalau kamu butuh bantuan(?:\*\*)?[ \t]*\n[\s\S]{0,1600}$/i, "").trimEnd();
   /* Halaman artikel. preview=true: pratinjau admin untuk draf/terjadwal (noindex, tanpa komentar, tidak pernah di-cache). */
   const DEFAULT_AUTHOR = "Dika Priyadi";
+  /* Blok komunitas otomatis di bawah tiap artikel (domain akademik). Tautan dari Pengaturan admin; yang kosong tidak ditampilkan. */
+  function communityBlock() {
+    if (!ACAD_ONLY) return "";
+    const g = k => { const v = String((ctx.getCa && ctx.getCa(k)) || "").trim(); return /^https?:\/\//i.test(v) ? v : ""; };
+    const links = [["WhatsApp", g("update_group_url"), "Grup diskusi dan info jadwal"], ["Instagram", g("ca_instagram_url"), "Tips dan pengingat"], ["TikTok", g("ca_tiktok_url"), "Video singkat belajar UT"], ["Facebook", g("ca_facebook_url"), "Kabar terbaru"]].filter(x => x[1]);
+    if (!links.length) return "";
+    return `<aside class="ax-comm" aria-labelledby="axCommH"><h2 id="axCommH">Gabung komunitas ${esc(BRAND)}</h2><p>Biar tidak ketinggalan jadwal dan info penting seputar UT.</p><div class="ax-comm-l">${links.map(([n, u, d]) => `<a href="${esc(u)}" rel="noopener nofollow" target="_blank"><b>${esc(n)}</b><span>${esc(d)}</span></a>`).join("")}</div></aside>`;
+  }
   function articlePage(p, { preview = false } = {}) {
     const plain = String(p.body || "").replace(IMG_MD, " ").replace(/[#*_>`\[\]()!-]/g, " ").replace(/\s+/g, " ").trim();
     const desc = p.metaDesc || p.excerpt || (plain.length > 155 ? plain.slice(0, 152).replace(/\s+\S*$/, "") + "…" : plain) || p.title;
@@ -666,6 +674,7 @@ ${ACAD_ONLY ? '<script defer src="/ruangakademikut/assets/koin-chip.js?v=2026120
       ${toc.length >= 3 ? `<details class="ax-toc ax-toc-in"><summary>Daftar Isi</summary>${tocList}</details>` : ""}
       <div class="prose">${bodyHtml}</div>
       ${tags.length ? `<div class="ax-tags" aria-label="Tag">${tags.map(t => `<a href="/blog?tag=${encodeURIComponent(t)}" rel="tag">${esc(tagLabel(t))}</a>`).join("")}</div>` : ""}
+      ${communityBlock()}
       <p class="ax-note">${BRAND} bukan situs resmi Universitas Terbuka. Selalu pegang ketentuan dari tutor dan sumber resmi UT di <a href="https://www.ut.ac.id" rel="noopener" target="_blank">ut.ac.id</a>.</p>
       <a class="back" href="${topicLink}">← Kembali ke ${esc(tl(p.topic))}</a>
       ${preview ? "" : commentsBlock(p.slug)}

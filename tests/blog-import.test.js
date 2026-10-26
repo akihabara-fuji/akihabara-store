@@ -174,3 +174,11 @@ test("label polos dan label bertanda panjang karakter dibaca; klaim yang dinegas
   const ok = parseMd(raw.replace("Sumber:", "Lihat [Audit](/audit). Sumber:"), "y.md");
   assert.ok(!/ajakan \(CTA\) ke layanan kita/.test(checkDraft(ok).join(" | ")));
 });
+
+test("scrubInternal: bagian dan baris internal tidak tampil, Sources ganda dibuang", () => {
+  const { scrubInternal } = require("../blog-import");
+  const out = scrubInternal("Isi awal.\n\n## Sumber\n- A\n\n## Audit Lessons\nrahasia\n\n## Blok komunitas Catatan Akademik UT\n- WhatsApp: x\n- Instagram: DATA BELUM TERSEDIA\n\nGambar: GAMBAR BELUM TERSEDIA\nAlt text sampul: foto\nCatatan pemilik sebelum terbit: cek\n\n## Sources\n- B\n\n## Bagian biasa\nTetap ada.");
+  assert.ok(/Isi awal/.test(out) && /Bagian biasa/.test(out) && /## Sumber\n- A/.test(out));
+  assert.ok(!/Audit Lessons|rahasia|komunitas|DATA BELUM|Alt text|Catatan pemilik|Sources|- B/.test(out), out);
+  assert.ok(/## Sumber\n- B/.test(scrubInternal("## Sources\n- B")), "tanpa Sumber, Sources diganti nama");
+});
