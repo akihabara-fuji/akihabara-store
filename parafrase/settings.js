@@ -3,7 +3,7 @@
 
 const WA = /^\d{8,15}$/;
 const DEFS = {
-  price_per_word:               { type: "int",  min: 1, max: 1000, def: 50, pub: true },
+  price_per_word:               { type: "int",  min: 1, max: 1000, def: 40, pub: true },
   min_order_price:              { type: "int",  min: 0, max: 10000000, def: 40000, pub: true },
   fast_lane_enabled:            { type: "bool", def: true, pub: true },
   fast_lane_price:              { type: "int",  min: 0, max: 1000000, def: 40000, pub: true },
@@ -15,7 +15,7 @@ const DEFS = {
   reminder_before_delete_hours: { type: "int",  min: 0, max: 72, def: 3 },
   long_sentence_words:          { type: "int",  min: 10, max: 100, def: 35 },
   preview_open_sentences:       { type: "int",  min: 0, max: 8, def: 1 },
-  free_words:                   { type: "int",  min: 0, max: 5000, def: 700, pub: true },  // kata pertama dokumen yang dibuka gratis di Audit dan Cek & Parafrase; harga hanya untuk kata setelahnya
+  free_words:                   { type: "int",  min: 0, max: 5000, def: 500, pub: true },  // kata pertama dokumen yang dibuka gratis di Audit dan Cek & Parafrase; harga hanya untuk kata setelahnya
   preview_open_paragraphs:      { type: "int",  min: 0, max: 3, def: 1 },
   avg_words_per_hour:           { type: "int",  min: 100, max: 20000, def: 1500 },
   unique_code_enabled:          { type: "bool", def: true, pub: true },
@@ -37,7 +37,7 @@ const DEFS = {
   price_revisi_tugas:           { type: "int",  min: 0, max: 100000000, def: 20000, pub: true },
   price_revisi_diskusi:         { type: "int",  min: 0, max: 100000000, def: 10000, pub: true },
   price_revisi_metopen:         { type: "int",  min: 0, max: 100000000, def: 99000, pub: true },
-  audit_per_word:               { type: "int",  min: 0, max: 100000000, def: 20, pub: true },
+  audit_per_word:               { type: "int",  min: 0, max: 100000000, def: 9, pub: true },
   audit_min:                    { type: "int",  min: 0, max: 100000000, def: 35000, pub: true },
   drillbit_sim_max:             { type: "int",  min: 1, max: 100, def: 25, pub: true },
   drillbit_ai_max:              { type: "int",  min: 1, max: 100, def: 20, pub: true },

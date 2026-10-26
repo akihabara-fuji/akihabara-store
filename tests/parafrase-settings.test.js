@@ -18,7 +18,7 @@ test("migrasi: user_version naik dan bisa diulang", () => {
 
 test("default sesuai keputusan", () => {
   const { s } = mk(), v = s.getAll();
-  assert.strictEqual(v.price_per_word, 50);
+  assert.strictEqual(v.price_per_word, 40);
   assert.strictEqual(v.min_order_price, 40000);
   assert.strictEqual(v.fast_lane_price, 40000);
   assert.strictEqual(v.fast_lane_daily_cap, 5);
@@ -41,7 +41,7 @@ test("ubah nilai tercatat di log dengan nilai lama dan baru", () => {
 test("validasi: nilai buruk ditolak dan tidak ada yang tersimpan", () => {
   const { s } = mk();
   assert.throws(() => s.set({ price_per_word: 20, fast_lane_daily_cap: 999 }), /fast_lane_daily_cap/);
-  assert.strictEqual(s.get("price_per_word"), 50);
+  assert.strictEqual(s.get("price_per_word"), 40);
   assert.throws(() => s.set({ price_per_word: "abc" }));
   assert.throws(() => s.set({ price_per_word: 1.5 }));
   assert.throws(() => s.set({ tidak_ada: 1 }), /tidak dikenal/);
@@ -55,7 +55,7 @@ test("publicConfig tidak membocorkan nilai internal", () => {
   const { s } = mk(); const p = s.publicConfig();
   for (const k of ["avg_words_per_hour", "long_sentence_words", "reminder_before_delete_hours", "unique_code_max", "qris_image_path"])
     assert.ok(!(k in p), k);
-  assert.strictEqual(p.price_per_word, 50);
+  assert.strictEqual(p.price_per_word, 40);
   assert.strictEqual(p.fast_lane.remaining, 5);
   assert.strictEqual(p.has_qris, false);
   assert.strictEqual(p.qris_merchant_name, "CATATAN TERBUKA");
@@ -94,7 +94,7 @@ test("HTTP: publik terbuka, admin wajib login, perubahan terlihat murid", async 
   const srv = app.listen(0); const base = "http://127.0.0.1:" + srv.address().port;
   try {
     let r = await fetch(base + "/ms/public-config"); assert.strictEqual(r.status, 200);
-    assert.strictEqual((await r.json()).price_per_word, 50);
+    assert.strictEqual((await r.json()).price_per_word, 40);
     r = await fetch(base + "/ms/admin/parafrase/settings"); assert.strictEqual(r.status, 401);
     r = await fetch(base + "/ms/admin/parafrase/settings", { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify({ values: { fast_lane_daily_cap: 7 } }) });
     assert.strictEqual(r.status, 401);
