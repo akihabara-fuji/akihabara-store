@@ -13,7 +13,7 @@
 set -euo pipefail
 REF="${1:?pakai: update-koin.sh <commit>}"
 APP="${APP:-/var/www/mahyra-serv}"
-KNOWN=(d3321cb ea4b557 4a8953e 3f29ccc e31a933 08cf5f2 12cfe4a dc31d36 c7f60c8 1b5c15a ec8523c 091972e 54d72bc 1574580 b623210 b3ad6ff 40d7848 bc2a821 256add9 1c861f1 8aaef92 4adfff0 ac04263 fbd0646 c5aed04 1366e15 3520907)
+KNOWN=(d3321cb ea4b557 4a8953e 3f29ccc e31a933 08cf5f2 12cfe4a dc31d36 c7f60c8 1b5c15a ec8523c 091972e 54d72bc 1574580 b623210 b3ad6ff 40d7848 bc2a821 256add9 1c861f1 8aaef92 4adfff0 ac04263 fbd0646 c5aed04 1366e15 3520907 beee9ca)
 GH="${GH:-https://codeload.github.com/akihabara-fuji/akihabara-store/tar.gz}"
 cd "$APP"
 
@@ -25,7 +25,7 @@ for k in "${KNOWN[@]}"; do mkdir -p "$T/$k"; curl -fsSL "$GH/$k" | tar xz -C "$T
 dep(){ node -e "const p=require('$1');console.log(JSON.stringify([p.dependencies,p.optionalDependencies]))"; }
 [ "$(dep "$APP/package.json")" = "$(dep "$T/new/package.json")" ] || { echo "BERHENTI: dependensi package.json di VPS beda dengan rilis. Tidak ada yang diubah."; exit 1; }
 
-mapfile -t FILES < <(cd "$T/new" && { ls server.js blog-akun.js blog-import.js blog-seo.js rev-metopen.png; find parafrase admin-ca public/assets/galeri -type f; ls public/assets/ca-blog.css public/assets/blog.css public/assets/admin-blog-seo.css public/assets/admin-blog-seo.js; } | sort)
+mapfile -t FILES < <(cd "$T/new" && { ls server.js blog-akun.js blog-import.js blog-seo.js blog-cover.js rev-metopen.png; find parafrase admin-ca public/assets/galeri public/assets/fonts -type f; ls public/assets/ca-blog.css public/assets/blog.css public/assets/admin-blog-seo.css public/assets/admin-blog-seo.js; } | sort)
 echo "Memeriksa ${#FILES[@]} berkas…"
 bad=0
 for f in "${FILES[@]}"; do

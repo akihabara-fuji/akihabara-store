@@ -1,0 +1,1 @@
+Inter-Bold.otf: Inter (c) The Inter Project Authors, SIL Open Font License 1.1 (https://openfontlicense.org). Dipakai server untuk membuat gambar sampul artikel otomatis.

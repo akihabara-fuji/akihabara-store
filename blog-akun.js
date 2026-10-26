@@ -110,6 +110,12 @@ module.exports = function mount(ctx) {
   const ACAD_HOST = (() => { try { return new URL(process.env.ACAD_URL || "").host; } catch { return ""; } })();
   const onAcadHost = req => ACAD_ONLY && !!ACAD_HOST && String(req.headers.host || "").toLowerCase() === ACAD_HOST.toLowerCase();
   const BRAND = ACAD_ONLY ? "Catatan Akademik" : "nextaja";
+  /* Sampul otomatis (judul + kategori) untuk artikel tanpa foto sampul; khusus domain Catatan Akademik. Lihat blog-cover.js. */
+  const cover = require("./blog-cover");
+  const COVER_OK = ACAD_ONLY && cover.init(path.join(DATA_DIR, "blog-covers"));
+  const COVER_DIR = path.join(DATA_DIR, "blog-covers");
+  const coverOpts = p => ({ title: p.title, topic: p.topic, topicLabel: tl(p.topic), brand: BRAND, host: new URL(SITE).host, seed: p.slug });
+  const autoCover = p => COVER_OK && p.slug ? `/blog/cover/${p.slug}.jpg?v=${cover.keyOf(coverOpts(p))}` : "";
   /* Di domain akademik, nama "nextaja" pada teks halaman diganti nama brand akademik (URL dan alamat email tidak disentuh). */
   const shortPath = shortPaths; // alamat pendek domain akademik (parafrase/acadpaths.js)
   const caBrand = h => String(h)
@@ -147,7 +153,7 @@ module.exports = function mount(ctx) {
   /* ---------- Beranda blog (dipakai /blog dan /blog-ut): cari, filter, artikel pilihan, kartu terbaru, arsip ---------- */
   const shortDate = iso => new Date(iso).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Jakarta" });
   /* hi=true untuk gambar utama di layar pertama (kandidat LCP): dimuat segera dan diprioritaskan, bukan lazy. */
-  const cardCover = (p, hi = false) => p.cover ? `<img src="${esc(p.cover)}" alt="${esc(p.coverAlt || "")}" ${hi ? 'fetchpriority="high" decoding="async"' : 'loading="lazy" decoding="async"'}>` : posterHtml(p);
+  const cardCover = (p, hi = false) => { const src = p.cover || autoCover(p); return src ? `<img src="${esc(src)}" alt="${esc(p.coverAlt || "")}" ${hi ? 'fetchpriority="high" decoding="async"' : 'loading="lazy" decoding="async"'}>` : posterHtml(p); };
   const blogCard = p => `<article class="bx-card"><a href="/blog/${esc(p.slug)}"><div class="bx-cv">${cardCover(p)}</div><div class="bx-b"><span class="bx-tag">${esc(tl(p.topic))}</span><h3>${esc(p.title)}</h3>${p.excerpt ? `<p>${esc(p.excerpt)}</p>` : ""}<div class="bx-ft"><span><time datetime="${esc(p.publishedAt)}">${esc(shortDate(p.publishedAt))}</time> · ${readMin(p)} menit baca</span><span class="bx-go">Baca <i aria-hidden="true">→</i></span></div></div></a></article>`;
   const topicsShown = () => Object.keys(TOPICS).filter(k => !ACAD_ONLY || ACAD_TOPICS.includes(k));
   const topTags = (posts, n) => { const c = new Map(); for (const p of posts) for (const t of p.tags || []) c.set(t, (c.get(t) || 0) + 1); return [...c.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, n).map(x => x[0]); };
@@ -533,7 +539,7 @@ module.exports = function mount(ctx) {
     const f = TOPICS[req.query.f] || req.query.f === "ut" ? req.query.f : "";
     const lim = Math.min(30, Math.max(1, parseInt(req.query.limit, 10) || 3));
     const list = published().filter(p => !f || p.topic === f || (f === "ut" && (p.topic === "updateut" || p.topic === "study"))).slice(0, lim);
-    res.json({ posts: list.map(p => ({ slug: p.slug, title: p.title, excerpt: p.excerpt, topic: tl(p.topic), cover: p.cover, date: p.publishedAt })) });
+    res.json({ posts: list.map(p => ({ slug: p.slug, title: p.title, excerpt: p.excerpt, topic: tl(p.topic), cover: p.cover || autoCover(p), date: p.publishedAt })) });
   });
 
   /* ============================ HALAMAN ============================ */
@@ -596,7 +602,7 @@ ${ACAD_ONLY ? '<script defer src="/ruangakademikut/assets/koin-chip.js?v=2026120
   const topicChip = (key, active) => `<a class="chip${active ? " on" : ""}" href="${key ? "/blog?f=" + key : "/blog"}">${key ? esc(TOPICS[key].label) : "Semua"}</a>`;
   const POSTER_POS = ["50% 8%", "62% 20%", "40% 12%", "70% 30%"], POSTER_Z = [1.05, 1.25, 1.15, 1.4];
   const posterHtml = p => { const h = [...String(p.slug || "")].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7) % 4; return `<span class="cvt" style="--pos:${POSTER_POS[h]};--z:${POSTER_Z[h]}"><i>${esc(tl(p.topic))}</i><b>${esc(BRAND)}</b></span>`; };
-  const coverHtml = p => ACAD_ONLY ? posterHtml(p) : p.cover ? `<img src="${esc(p.cover)}" alt="" loading="lazy">` : `<span class="ph-t">${esc(tl(p.topic))}</span>`;
+  const coverHtml = p => ACAD_ONLY ? cardCover(p) : p.cover ? `<img src="${esc(p.cover)}" alt="" loading="lazy">` : `<span class="ph-t">${esc(tl(p.topic))}</span>`;
 
   app.get("/blog", (req, res) => {
     const { f, tag, q } = blogFilters(req);
@@ -668,7 +674,8 @@ ${ACAD_ONLY ? '<script defer src="/ruangakademikut/assets/koin-chip.js?v=2026120
   function articlePage(p, { preview = false } = {}) {
     const plain = String(p.body || "").replace(IMG_MD, " ").replace(/[#*_>`\[\]()!-]/g, " ").replace(/\s+/g, " ").trim();
     const desc = p.metaDesc || p.excerpt || (plain.length > 155 ? plain.slice(0, 152).replace(/\s+\S*$/, "") + "…" : plain) || p.title;
-    const img = p.cover ? (/^https?:/.test(p.cover) ? p.cover : SITE + p.cover) : SITE + "/icon-512.png";
+    const cvSrc = p.cover || (preview ? "" : autoCover(p));
+    const img = cvSrc ? (/^https?:/.test(cvSrc) ? cvSrc : SITE + cvSrc) : SITE + "/icon-512.png";
     const url = `${SITE}/blog/${p.slug}`;
     const author = p.author || DEFAULT_AUTHOR;
     const pub = p.publishedAt || p.publishAt || new Date().toISOString();
@@ -685,8 +692,8 @@ ${ACAD_ONLY ? '<script defer src="/ruangakademikut/assets/koin-chip.js?v=2026120
     const topicLink = `/blog?f=${encodeURIComponent(p.topic)}`;
     const ld = JSON.stringify([{ "@context": "https://schema.org", "@type": "BlogPosting", headline: p.title.slice(0, 110), datePublished: pub, dateModified: mod, description: desc, image: [img], inLanguage: "id-ID", wordCount: plain ? plain.split(" ").length : 0, ...(tags.length ? { keywords: tags.join(", ") } : {}), articleSection: tl(p.topic), author: { "@type": "Person", name: author }, publisher: { "@type": "Organization", name: BRAND, logo: { "@type": "ImageObject", url: SITE + "/icon-512.png" } }, mainEntityOfPage: { "@type": "WebPage", "@id": url } },
       { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Beranda", item: SITE + "/" }, { "@type": "ListItem", position: 2, name: "Blog", item: SITE + "/blog" }, { "@type": "ListItem", position: 3, name: tl(p.topic), item: SITE + topicLink }, { "@type": "ListItem", position: 4, name: p.title, item: url }] }]).replace(/</g, "\\u003c");
-    const cover = p.cover
-      ? `<figure class="ax-cover"><img src="${esc(p.cover)}" alt="${esc(p.coverAlt || p.title)}" fetchpriority="high" decoding="async">${p.coverCaption ? `<figcaption>${esc(p.coverCaption)}</figcaption>` : ""}</figure>`
+    const coverFig = cvSrc
+      ? `<figure class="ax-cover"><img src="${esc(cvSrc)}" alt="${esc(p.coverAlt || p.title)}" fetchpriority="high" decoding="async">${p.coverCaption ? `<figcaption>${esc(p.coverCaption)}</figcaption>` : ""}</figure>`
       : (ACAD_ONLY ? `<div class="article-cover article-poster" role="img" aria-label="${esc(p.title)}">${posterHtml(p)}</div>` : "");
     const relatedHtml = related.length ? `<section class="ax-box" aria-labelledby="axRelH"><h2 id="axRelH">Artikel Terkait</h2><div class="ax-rels">${related.map(x => `<a class="ax-rel" href="/blog/${esc(x.slug)}"><span class="ax-rel-cv">${cardCover(x)}</span><span><b>${esc(x.title)}</b><small>${esc(tl(x.topic))} · ${esc(shortDate(x.publishedAt))}</small></span></a>`).join("")}</div></section>` : "";
     const statusLabel = { draft: "Draf", review: "Menunggu review", scheduled: `Terjadwal ${p.publishAt ? shortDate(p.publishAt) : ""}`, published: "Terbit" }[p.status] || p.status;
@@ -696,7 +703,7 @@ ${ACAD_ONLY ? '<script defer src="/ruangakademikut/assets/koin-chip.js?v=2026120
       <h1>${esc(p.title)}</h1>
       ${p.excerpt ? `<p class="ax-lead">${esc(p.excerpt)}</p>` : ""}
       <div class="ax-by">Oleh <b>${esc(author)}</b></div>
-      ${cover}
+      ${coverFig}
       ${toc.length >= 3 ? `<details class="ax-toc ax-toc-in"><summary>Daftar Isi</summary>${tocList}</details>` : ""}
       <div class="prose">${bodyHtml}</div>
       ${tags.length ? `<div class="ax-tags" aria-label="Tag">${tags.map(t => `<a href="/blog?tag=${encodeURIComponent(t)}" rel="tag">${esc(tagLabel(t))}</a>`).join("")}</div>` : ""}
@@ -708,8 +715,22 @@ ${ACAD_ONLY ? '<script defer src="/ruangakademikut/assets/koin-chip.js?v=2026120
     <aside class="ax-side">${toc.length >= 3 ? `<nav class="ax-box ax-toc-side" aria-labelledby="axTocH"><h2 id="axTocH">Daftar Isi</h2>${tocList}</nav>` : ""}${relatedHtml}</aside></div>
     <a class="wa-bubble" href="/ruangakademikut"><span>Layanan ${esc(BRAND)}</span><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg></a>`;
     return layout({ title: `${p.metaTitle || p.title} — ${BRAND}`, desc, path: `/blog/${p.slug}`, body, image: img, type: "article", noindex: preview,
-      extra: `${p.cover ? `<meta property="og:image:alt" content="${esc(p.coverAlt || p.title)}"><meta name="twitter:image:alt" content="${esc(p.coverAlt || p.title)}">` : ""}<meta property="article:published_time" content="${esc(pub)}"><meta property="article:modified_time" content="${esc(mod)}">${tags.map(t => `<meta property="article:tag" content="${esc(t)}">`).join("")}${preview ? "" : `<script type="application/ld+json">${ld}</script>`}` });
+      extra: `${cvSrc ? `<meta property="og:image:alt" content="${esc(p.coverAlt || p.title)}"><meta name="twitter:image:alt" content="${esc(p.coverAlt || p.title)}">` : ""}<meta property="article:published_time" content="${esc(pub)}"><meta property="article:modified_time" content="${esc(mod)}">${tags.map(t => `<meta property="article:tag" content="${esc(t)}">`).join("")}${preview ? "" : `<script type="application/ld+json">${ld}</script>`}` });
   }
+  const coverJobs = new Map();
+  app.get("/blog/cover/:slug.jpg", async (req, res) => {
+    const p = COVER_OK && published().find(x => x.slug === req.params.slug);
+    if (!p) return res.status(404).type("text").send("Tidak ada");
+    const file = path.join(COVER_DIR, cover.keyOf(coverOpts(p)) + ".jpg");
+    try {
+      if (!fs.existsSync(file)) {
+        let job = coverJobs.get(file);
+        if (!job) { job = cover.render(coverOpts(p)).then(async b => { await fsp.mkdir(COVER_DIR, { recursive: true }); await fsp.writeFile(file, b); }).finally(() => coverJobs.delete(file)); coverJobs.set(file, job); }
+        await job;
+      }
+      res.set("Cache-Control", "public, max-age=604800").type("jpg").sendFile(file);
+    } catch { res.status(500).type("text").send("Gagal membuat sampul"); }
+  });
   app.get("/blog/:slug", (req, res, next) => {
     const p = published().find(x => x.slug === req.params.slug);
     if (!p) return next();
