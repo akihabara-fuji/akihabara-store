@@ -5,6 +5,7 @@ const fs = require("fs");
 const fsp = fs.promises;
 const path = require("path");
 const crypto = require("crypto");
+const seo = require("../blog-seo");
 const multer = require("multer");
 const { SV, labelFor } = require("../parafrase/layanan");
 
@@ -208,6 +209,7 @@ module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, b
   app.get("/ms/admin/ca/seo", requireAdmin, send(() => {
     // hanya artikel yang tampil di domain akademik (kategori non-akademik disembunyikan di sini)
     const cfg = settings.getAll(), live = blog.posts().filter(p => !p.trashedAt && blog.isLive(p) && blog.ACAD_TOPICS.includes(p.topic));
+    const rivals = seo.cannibal(live);
     const checks = live.map(p => {
       const words = (String(p.body || "").match(/\S+/g) || []).length, issues = [];
       if (!/\b(ut|universitas terbuka)\b/i.test([p.title, p.metaDesc || p.excerpt || ""].join(" "))) issues.push("Judul/ringkasan belum menyebut “UT” atau “Universitas Terbuka”, kata yang dipakai mahasiswa saat mencari. Sebut secara wajar, jangan dijejalkan.");
@@ -217,6 +219,10 @@ module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, b
       if (words >= 300 && !/^\s*##?\s+\S/m.test(p.body || "")) issues.push("Tulisan panjang tanpa sub-judul H2.");
       if (/!\[[^\]\s]*_[^\]\s]*\]\(/.test(p.body || "")) issues.push("Foto di dalam isi memakai nama file sebagai teks alt.");
       if (words < 300) issues.push(`Isi pendek (${words} kata).`);
+      if (seo.slugTooLong(p.slug)) issues.push(`Slug panjang (${p.slug.length} karakter): ringkas jadi 3 sampai 5 kata inti.`);
+      { const tb = seo.timeBound(p.title); if (tb) issues.push(`Judul memuat ${tb === "tanggal" ? "tanggal" : tb === "tahun" ? "tahun" : "nomor sesi"}: cepat kedaluwarsa. Pertimbangkan panduan abadi.`); }
+      for (const o of live) if (o.id !== p.id && seo.bodySimilarity(p.body, o.body) >= 0.6) issues.push(`Isi hampir sama dengan “${String(o.title).slice(0, 60)}” (konten ganda). Pilih satu atau gabungkan.`);
+      for (const c of rivals) { if (c.a.id === p.id || c.b.id === p.id) { const o = c.a.id === p.id ? c.b : c.a; issues.push(`Bersaing dengan “${String(o.title).slice(0, 60)}” (kata kunci mirip ${c.score}%). Gabungkan atau bedakan.`); } }
       return { id: p.id, slug: p.slug, title: p.title, words, issues };
     });
     return { sitemap: `${ACAD}/sitemap.xml`, robots: `${ACAD}/robots.txt`, feed: `${ACAD}/blog/feed.xml`, live: live.length, gaId: cfg.ga_id, gtmId: cfg.gtm_id, googleVerifyFile: cfg.google_verify_file, checks,

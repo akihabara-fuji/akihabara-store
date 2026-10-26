@@ -178,7 +178,30 @@ test("label polos dan label bertanda panjang karakter dibaca; klaim yang dinegas
 test("scrubInternal: bagian dan baris internal tidak tampil, Sources ganda dibuang", () => {
   const { scrubInternal } = require("../blog-import");
   const out = scrubInternal("Isi awal.\n\n## Sumber\n- A\n\n## Audit Lessons\nrahasia\n\n## Blok komunitas Catatan Akademik UT\n- WhatsApp: x\n- Instagram: DATA BELUM TERSEDIA\n\nGambar: GAMBAR BELUM TERSEDIA\nAlt text sampul: foto\nCatatan pemilik sebelum terbit: cek\n\n## Sources\n- B\n\n## Bagian biasa\nTetap ada.");
-  assert.ok(/Isi awal/.test(out) && /Bagian biasa/.test(out) && /## Sumber\n- A/.test(out));
-  assert.ok(!/Audit Lessons|rahasia|komunitas|DATA BELUM|Alt text|Catatan pemilik|Sources|- B/.test(out), out);
-  assert.ok(/## Sumber\n- B/.test(scrubInternal("## Sources\n- B")), "tanpa Sumber, Sources diganti nama");
+  assert.ok(/Isi awal/.test(out) && /Bagian biasa/.test(out) && /## Sumber\n\n- A/.test(out));
+  assert.ok(!/Audit Lessons|rahasia|komunitas|DATA BELUM|Alt text|Catatan pemilik|Sources|unverified/.test(out), out);
+  assert.strictEqual((out.match(/^## Sumber/gm) || []).length, 1, "Sumber ganda digabung");
+  assert.ok(/- A\n- B/.test(out), out);
+  assert.ok(/## Sumber\n\n- B/.test(scrubInternal("## Sources\n- B")), "tanpa Sumber, Sources diganti nama");
+  assert.ok(!/unverified/.test(scrubInternal("Kalimat.[unverified] Lain.")));
+});
+
+test("SEO: kanibalisasi judul, judul berbatas waktu, slug ringkas", () => {
+  const seo = require("../blog-seo");
+  assert.ok(seo.similarity("Deadline Tuton UT terlewat: langkah etis", "Tuton UT terlewat: langkah etis setelah kelas tertutup") >= 0.6);
+  assert.ok(seo.similarity("Cara menghitung IPK UT dari LKAM", "Panduan Metopen UT: struktur dan bobot nilai") < 0.3);
+  assert.strictEqual(seo.timeBound("Deadline Tuton UT 25-26 Oktober"), "tanggal");
+  assert.strictEqual(seo.timeBound("Strategi UAS UT 2026/2027"), "tahun");
+  assert.strictEqual(seo.timeBound("Tugas Tuton Sesi 5 UT"), "sesi");
+  assert.strictEqual(seo.timeBound("Cara cek nilai Tuton UT"), "");
+  assert.ok(seo.slugTooLong("deadline-tugas-ut-makin-dekat-pilih-langkah-yang-etis-tanpa-panik"));
+  const s = seo.shortSlug("deadline-tugas-ut-makin-dekat-pilih-langkah-yang-etis-tanpa-panik");
+  assert.ok(s.split("-").length <= 5 && s.startsWith("deadline-tugas-ut"), s);
+});
+
+test("SEO: isi kembar terdeteksi, isi berbeda tidak", () => {
+  const seo = require("../blog-seo");
+  const a = "Periksa kelas Tuton dan catat semua aktivitas yang masih terbuka lalu pisahkan diskusi tugas kuis dan aktivitas lain karena instruksinya bisa berbeda. Tulis deadline yang tampil di kelasmu bukan tanggal dari grup mahasiswa. Tandai tugas yang sudah dikirim dan yang masih menjadi draf kemudian simpan bukti pengiriman.";
+  assert.ok(seo.bodySimilarity(a, a + " Tambahan kalimat baru di akhir artikel ini saja untuk uji.") >= 0.6);
+  assert.ok(seo.bodySimilarity(a, "Hitung IPK dengan membagi total nilai mutu dikalikan SKS dengan total SKS semester berjalan dan jangan lupa memeriksa LKAM di MyUT sebelum menghitung ulang nilai akhir kamu setiap semester berikutnya dengan teliti.") < 0.2);
 });

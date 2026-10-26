@@ -100,7 +100,28 @@ function senCase(t) {
   const w = t.toLowerCase().split(/(\s+)/).map(x => { const u = x.toUpperCase(); return ACR.has(u) ? (ACR_FIX[u] || u) : x; }).join("");
   return w.charAt(0).toUpperCase() + w.slice(1);
 }
-const DROP_H2 = /^(audit lessons|hasil audit|self[- ]?check|tautan internal|tautan & anchor|kanal sosial|gabung komunitas|blok komunitas|catatan (editor|internal|untuk admin|yang harus dicek)|gambar & alt text|alt text|metadata seo)\b|\((untuk admin|tempel)/i;
+const DROP_H2 = /^(audit lessons|hasil audit|self[- ]?check|tautan internal|tautan & anchor|kanal sosial|gabung komunitas|blok komunitas|catatan (editor|internal|untuk admin|yang harus dicek)|gambar & alt text|alt text|metadata seo|catatan audit|temuan audit|audit (?:otomatis|teknis)|template komunitas|disclaimer|rekomendasi gambar|gambar utama)\b|gambar(?: dan alt text)?$|\((untuk admin|tempel)/i;
+/* Gabungkan semua bagian "Sumber" jadi satu daftar tanpa duplikat. Alamat catatanakademik.com bukan sumber rujukan (itu tautan layanan kita) dan dibuang dari daftar. */
+function mergeSumber(t) {
+  const parts = String(t).split(/^(?=##[ \t]+[^#\n])/m), isS = s => /^##[ \t]+Sumber[ \t]*$/im.test(s.split("\n")[0] || "");
+  if (parts.filter(isS).length === 0) return t;
+  const seen = new Set(), items = [], key = u => u.toLowerCase().replace(/^https?:\/\/(?:www\.)?/, "").replace(/[\/#?]+$/, "");
+  for (const sec of parts.filter(isS)) for (const raw of sec.split("\n").slice(1)) {
+    const l = raw.trim().replace(/^(?:[-*]|\d{1,2}[.)]|\[\d{1,2}\])\s+/, ""); if (!l) continue;
+    let title = "", url = "", m;
+    if ((m = /^\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/.exec(l))) { title = m[1]; url = m[2]; }
+    else if ((m = /^(https?:\/\/\S+)\s*(?:[—–-]+\s*(.*))?$/.exec(l))) { url = m[1]; title = (m[2] || "").trim() || url; }
+    else { const k = "t:" + l.toLowerCase(); if (!seen.has(k)) { seen.add(k); items.push("- " + l); } continue; }
+    if (/catatanakademik\.com/i.test(url) || seen.has(key(url))) continue;
+    seen.add(key(url)); items.push(`- [${title}](${url})`);
+  }
+  let placed = false; const out = [];
+  for (const sec of parts) {
+    if (!isS(sec)) { out.push(sec); continue; }
+    if (!placed && items.length) { out.push("## Sumber\n\n" + items.join("\n") + "\n\n"); placed = true; }
+  }
+  return out.join("").replace(/\n{3,}/g, "\n\n");
+}
 function hermesClean(text) {
   const notes = []; let t = fixMojibake(text); if (t !== text) notes.push("Karakter rusak diperbaiki.");
   t = t.replace(/\r/g, "");
@@ -128,6 +149,8 @@ function hermesClean(text) {
     keep.push(sec);
   }
   t = keep.join("");
+  { const c = (t.match(/\s*\[unverified\]/gi) || []).length; if (c) { t = t.replace(/[ \t]*\[unverified\]/gi, ""); notes.push(`Penanda [unverified] dibuang (${c} tempat). Kalimat itu belum terverifikasi oleh penulis aslinya: baca ulang sebelum terbit.`); } }
+  { const n0 = t; t = mergeSumber(t); if (t !== n0) notes.push("Bagian Sumber ganda digabung jadi satu daftar."); }
   // baris placeholder dan catatan untuk admin dibuang; judul yang jadi kosong ikut dibuang
   const before = t;
   t = t.split("\n").filter(l => !/DATA BELUM TERSEDIA|Catatan untuk Admin|Kanal sosial terverifikasi/i.test(l)).join("\n");
@@ -176,12 +199,15 @@ const TOPIC_ALIAS = { study: "study", "tips kuliah ut": "study", "tips kuliah": 
 const topicKey = v => TOPIC_ALIAS[String(v || "").trim().toLowerCase()] || "";
 
 /* Peringatan untuk diperiksa saat meninjau draf. Tidak menolak apa pun: draf tetap tersimpan. */
+const seo = require("./blog-seo");
 function checkDraft(d) {
   const w = [], body = d.body || "", words = (plain(body).match(/\S+/g) || []).length;
   if (words < 600) w.push(`Cukup pendek (${words} kata). Artikel yang menjawab tuntas biasanya lebih panjang.`);
   if (words >= 300 && !/^##\s+\S/m.test(body.replace(/^#\s+/gm, "## "))) w.push("Belum ada sub-judul H2. Wajib ada sebelum bisa diterbitkan.");
   if (!d.metaTitle) w.push("Meta title kosong."); else if (d.metaTitle.length > 60) w.push(`Meta title ${d.metaTitle.length} karakter (disarankan maks. 60).`);
   if (!d.metaDesc) w.push("Meta description kosong."); else if (d.metaDesc.length > 155) w.push(`Meta description ${d.metaDesc.length} karakter (disarankan maks. 155).`);
+  { const tb = seo.timeBound(d.title); if (tb) w.push(`Judul memuat ${tb === "tanggal" ? "tanggal" : tb === "tahun" ? "tahun" : "nomor sesi"}: artikel cepat kedaluwarsa di Google. Pertimbangkan versi abadi (tanpa ${tb === "tanggal" ? "tanggal" : tb === "tahun" ? "tahun" : "sesi"}) atau gabungkan ke panduan induk.`); }
+  if (d.slug && seo.slugTooLong(d.slug)) w.push(`Slug terlalu panjang (${String(d.slug).length} karakter). Ringkas jadi 3 sampai 5 kata inti.`);
   if (d.title.length > 70) w.push(`Judul ${d.title.length} karakter, mungkin terpotong di Google.`);
   const hay = body + " " + d.title, bad = [...new Set([...hay.matchAll(/\b(garansi|jaminan|dijamin|pasti lolos|lolos turnitin|nilai aman|cum\s*laude)\b/gi)]
     .filter(m => !/(bukan|tidak|tanpa|jangan|tak|bebas dari|menjanjikan|janji|klaim)[^.\n]{0,40}$/i.test(hay.slice(Math.max(0, m.index - 60), m.index)))
@@ -218,7 +244,7 @@ function buildDrafts(files, ctx) {
     if (seen.has(norm(title))) { results.push({ name, ok: false, skipped: true, title, error: "Sudah ada artikel dengan judul yang sama, dilewati." }); continue; }
     seen.add(norm(title));
     const tk = topicKey(d.topic), topic = tk && ctx.topics[tk] && (!ctx.allowedTopics || ctx.allowedTopics.includes(tk)) ? tk : ctx.defaultTopic;
-    const slug = ctx.uniqueSlug(ctx.slugify(d.slug || title)), taken = posts.some(p => p.slug === slug);
+    const slug = ctx.uniqueSlug(ctx.slugify(d.slug || seo.shortSlug(ctx.slugify(title)))), taken = posts.some(p => p.slug === slug);
     const post = {
       id: ctx.newId(), slug: taken ? ctx.uniqueSlug(ctx.slugify((d.slug || title) + "-" + (posts.length + 2))) : slug, createdAt: ctx.now, author: ctx.str(d.author, 60) || ctx.author,
       title, topic, excerpt: ctx.str(d.excerpt, 260), body: d.body, cover: "", status: "draft", updatedAt: ctx.now, updatedBy: ctx.by + " (impor .md)",
@@ -226,7 +252,13 @@ function buildDrafts(files, ctx) {
     };
     if (d.keyword) post.keyword = ctx.str(d.keyword, 120);
     posts.push(post);
-    results.push({ name, ok: true, id: post.id, title: post.title, slug: post.slug, words: (plain(d.body).match(/\S+/g) || []).length, warnings: checkDraft({ ...d, title }), cleaned: d.notes || [] });
+    const warnings = checkDraft({ ...d, title });
+    // kanibalisasi: judul yang menyasar kata kunci sama dengan artikel lain (yang sudah ada, atau satu paket impor ini)
+    const rivals = [...ctx.existing, ...posts.slice(0, -1)].filter(p => p.title && seo.similarity(title, p.title) >= 0.6).slice(0, 3);
+    if (rivals.length) warnings.push(`Bersaing dengan artikel lain untuk kata kunci yang sama: ${rivals.map(p => `“${String(p.title).slice(0, 60)}”`).join("; ")}. Gabungkan jadi satu panduan, atau bedakan sudut dan kata kuncinya.`);
+    const twins = [...ctx.existing, ...posts.slice(0, -1)].filter(p => p.body && seo.bodySimilarity(d.body, p.body) >= 0.6).slice(0, 3);
+    if (twins.length) warnings.push(`Isi hampir sama dengan: ${twins.map(p => `“${String(p.title).slice(0, 60)}”`).join("; ")}. Konten ganda: pilih satu saja atau gabungkan.`);
+    results.push({ name, ok: true, id: post.id, title: post.title, slug: post.slug, words: (plain(d.body).match(/\S+/g) || []).length, warnings, cleaned: d.notes || [] });
   }
   return { posts, results };
 }
@@ -237,14 +269,13 @@ const INTERNAL_LINE = /^\s*(?:[-*]\s+)?(?:\*\*)?\s*(?:gambar|alt text(?: sampul|
 function scrubInternal(text) {
   const t = String(text || "").replace(/\r/g, "");
   const parts = t.split(/^(?=#{2,3}[ \t]+[^#\n])/m);
-  const hasSumber = parts.some(s => /^#{2,3}[ \t]+Sumber\b/i.test(s));
   const out = [];
   for (const sec of parts) {
     const h = /^#{2,3}[ \t]+([^\n]+)/.exec(sec), name = h ? h[1].replace(/[*`]/g, "").trim() : "";
-    if (h && (DROP_H2.test(name) || (/^sources$/i.test(name) && hasSumber))) continue;
+    if (h && DROP_H2.test(name)) continue;
     out.push(h && /^sources$/i.test(name) ? sec.replace(/^(#{2,3})[ \t]+Sources/i, "$1 Sumber") : sec);
   }
-  return out.join("").split("\n").filter(l => !INTERNAL_LINE.test(l)).join("\n").replace(/\n{3,}/g, "\n\n");
+  return mergeSumber(out.join("").replace(/[ \t]*\[unverified\]/gi, "").split("\n").filter(l => !INTERNAL_LINE.test(l)).join("\n")).replace(/\n{3,}/g, "\n\n");
 }
 
 module.exports = { scrubInternal, buildDrafts, parseMd, parseFrontMatter, cleanMarkdown, checkDraft, topicKey };

@@ -25,7 +25,7 @@ for k in "${KNOWN[@]}"; do mkdir -p "$T/$k"; curl -fsSL "$GH/$k" | tar xz -C "$T
 dep(){ node -e "const p=require('$1');console.log(JSON.stringify([p.dependencies,p.optionalDependencies]))"; }
 [ "$(dep "$APP/package.json")" = "$(dep "$T/new/package.json")" ] || { echo "BERHENTI: dependensi package.json di VPS beda dengan rilis. Tidak ada yang diubah."; exit 1; }
 
-mapfile -t FILES < <(cd "$T/new" && { ls server.js blog-akun.js blog-import.js rev-metopen.png; find parafrase admin-ca public/assets/galeri -type f; ls public/assets/ca-blog.css public/assets/blog.css public/assets/admin-blog-seo.css public/assets/admin-blog-seo.js; } | sort)
+mapfile -t FILES < <(cd "$T/new" && { ls server.js blog-akun.js blog-import.js blog-seo.js rev-metopen.png; find parafrase admin-ca public/assets/galeri -type f; ls public/assets/ca-blog.css public/assets/blog.css public/assets/admin-blog-seo.css public/assets/admin-blog-seo.js; } | sort)
 echo "Memeriksa ${#FILES[@]} berkas…"
 bad=0
 for f in "${FILES[@]}"; do
