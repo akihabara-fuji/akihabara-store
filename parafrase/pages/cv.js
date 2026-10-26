@@ -8,8 +8,9 @@
   function blank() {
     return { name: "", role: "", email: "", phone: "", city: "", link: "", summary: "",
       exp: [{ title: "", company: "", city: "", start: "", end: "", bullets: "" }],
-      edu: [{ school: "", major: "", city: "", start: "", end: "", gpa: "" }], skills: "", certs: "", langs: "" };
+      edu: [{ school: "", major: "", city: "", start: "", end: "", gpa: "" }], skills: "", certs: "", langs: "", photo: blankPhoto() };
   }
+  function blankPhoto() { return { on: false, src: "", zoom: 100, ox: 50, oy: 35, shape: "3x4", size: "M", pos: "right" }; }
 
   /* Contoh FIKTIF (nama, perusahaan, dan angka dikarang) supaya orang melihat bentuk isian yang baik. */
   var EX = {
@@ -37,7 +38,7 @@
   };
 
   var S = load() || blank();
-  function load() { try { var j = JSON.parse(localStorage.getItem(KEY) || "null"); return j && j.exp ? j : null; } catch (e) { return null; } }
+  function load() { try { var j = JSON.parse(localStorage.getItem(KEY) || "null"); if (j && j.exp) { j.photo = Object.assign(blankPhoto(), j.photo || {}); return j; } return null; } catch (e) { return null; } }
   var saveT = null;
   function save() { clearTimeout(saveT); saveT = setTimeout(function () { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* mode pribadi: abaikan */ } }, 400); }
 
@@ -58,6 +59,18 @@
       row(inp("name", "Nama lengkap", "Rina Putri Lestari"), inp("role", "Posisi yang dilamar", "Staf Administrasi")) +
       row(inp("email", "Email", "nama@email.com", 0, 0, "email"), inp("phone", "Nomor HP/WA", "0812 3456 7890")) +
       row(inp("city", "Kota", "Jakarta Barat"), inp("link", "LinkedIn / portofolio (opsional)", "linkedin.com/in/nama")) + "</details>";
+    var P = S.photo;
+    h += '<details open class="cvs"><summary>Foto (opsional)</summary>' +
+      '<label class="cvchk"><input type="checkbox" id="phOn"' + (P.on ? " checked" : "") + '> Tampilkan foto di CV</label>' +
+      '<p class="note" style="margin:0 0 10px">Untuk lamaran yang tidak meminta foto, sebaiknya dimatikan. Foto diproses di browser dan tidak dikirim ke server.</p>' +
+      '<div id="phBox"' + (P.on ? "" : " hidden") + '>' +
+      '<label class="cvf"><span>Pilih foto (JPG, PNG, WebP)</span><input type="file" id="phFile" accept="image/jpeg,image/png,image/webp"></label>' +
+      '<div class="cvphed"><canvas id="phC" width="120" height="160" aria-label="Hasil potongan foto"></canvas><div>' +
+      '<label class="cvf"><span>Perbesar</span><input type="range" min="100" max="300" value="' + P.zoom + '" data-ph="zoom"></label>' +
+      '<label class="cvf"><span>Geser kiri / kanan</span><input type="range" min="0" max="100" value="' + P.ox + '" data-ph="ox"></label>' +
+      '<label class="cvf"><span>Geser atas / bawah</span><input type="range" min="0" max="100" value="' + P.oy + '" data-ph="oy"></label></div></div>' +
+      '<div class="cvr3">' + sel("shape", "Bentuk", [["3x4", "Pasfoto 3:4"], ["1x1", "Persegi"], ["round", "Bulat"]]) + sel("size", "Ukuran", [["S", "Kecil"], ["M", "Sedang"], ["L", "Besar"]]) + sel("pos", "Posisi", [["right", "Kanan"], ["left", "Kiri"], ["center", "Tengah (atas)"]]) + "</div>" +
+      '<button type="button" class="cvx" id="phDel">Hapus foto</button></div></details>';
     h += '<details open class="cvs"><summary>Ringkasan profil</summary>' + area("summary", "2–4 kalimat: siapa kamu, pengalaman utama, dan posisi yang dicari", "Lulusan S1 … dengan pengalaman …", 4) + "</details>";
     h += '<details open class="cvs"><summary>Pengalaman kerja</summary>';
     S.exp.forEach(function (x, i) {
@@ -81,7 +94,48 @@
       area("langs", "Bahasa", "Indonesia (Native); Inggris (Menengah)", 2) + "</details>";
     $("#cvForm").innerHTML = h;
   }
+  function sel(k, label, opts) { return '<label class="cvf"><span>' + label + '</span><select data-ph="' + k + '">' + opts.map(function (o) { return '<option value="' + o[0] + '"' + (S.photo[k] === o[0] ? " selected" : "") + ">" + o[1] + "</option>"; }).join("") + "</select></label>"; }
   function row2(a, b) { return '<div class="cvr2">' + a + b + "</div>"; }
+
+  /* ---------- foto: potong sesuai bentuk, zoom, dan geser ---------- */
+  var IMG = null, IMGSRC = "";
+  function ratio() { return S.photo.shape === "3x4" ? 3 / 4 : 1; }
+  function cropURL(w) {
+    var P = S.photo; if (!P.on || !P.src) return null;
+    if (IMGSRC !== P.src) { IMGSRC = P.src; IMG = new Image(); IMG.onload = function () { update(); }; IMG.src = P.src; return null; }
+    if (!IMG || !IMG.complete || !IMG.naturalWidth) return null;
+    var ar = ratio(), iw = IMG.naturalWidth, ih = IMG.naturalHeight, cw, ch;
+    if (iw / ih > ar) { ch = ih; cw = ih * ar; } else { cw = iw; ch = iw / ar; }
+    var z = P.zoom / 100; cw /= z; ch /= z;
+    var x0 = (iw - cw) * P.ox / 100, y0 = (ih - ch) * P.oy / 100;
+    var c = document.createElement("canvas"); c.width = w; c.height = Math.round(w / ar);
+    var g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height); g.drawImage(IMG, x0, y0, cw, ch, 0, 0, c.width, c.height);
+    return c.toDataURL("image/jpeg", 0.9);
+  }
+  function drawMini() {
+    var c = $("#phC"); if (!c) return; var u = cropURL(360), g = c.getContext("2d"), ar = ratio();
+    c.width = 120; c.height = Math.round(120 / ar); g.clearRect(0, 0, c.width, c.height);
+    if (!u) return; var im = new Image(); im.onload = function () { g.drawImage(im, 0, 0, c.width, c.height); }; im.src = u;
+  }
+  function loadPhoto(file) {
+    if (!file) return;
+    if (!/^image\/(jpeg|png|webp)$/.test(file.type)) return toast("Pilih file JPG, PNG, atau WebP.");
+    if (file.size > 15 * 1024 * 1024) return toast("Foto terlalu besar (maksimal 15 MB).");
+    var fr = new FileReader();
+    fr.onload = function () {
+      var im = new Image();
+      im.onload = function () {
+        var k = Math.min(1, 900 / Math.max(im.naturalWidth, im.naturalHeight)), c = document.createElement("canvas");
+        c.width = Math.round(im.naturalWidth * k); c.height = Math.round(im.naturalHeight * k);
+        var g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height); g.drawImage(im, 0, 0, c.width, c.height);
+        S.photo.src = c.toDataURL("image/jpeg", 0.88); S.photo.zoom = 100; S.photo.ox = 50; S.photo.oy = 35; renderForm(); update();
+      };
+      im.onerror = function () { toast("Foto tidak bisa dibaca."); };
+      im.src = fr.result;
+    };
+    fr.readAsDataURL(file);
+  }
+  function dataBytes(u) { var b = atob(u.split(",")[1]), a = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) a[i] = b.charCodeAt(i); return a; }
 
   /* ---------- model CV (dipakai untuk pratinjau, Word, dan pengecek) ---------- */
   function lines(t) { return String(t || "").split(/\n+/).map(function (x) { return x.replace(/^[\s\-–•*]+/, "").trim(); }).filter(Boolean); }
@@ -103,7 +157,8 @@
     var ce = lines(S.certs);
     if (ce.length) sec.push({ t: "SERTIFIKASI DAN PELATIHAN", b: [{ head: "", sub: "", bullets: ce }] });
     if (S.langs.trim()) sec.push({ t: "BAHASA", b: [{ text: S.langs.trim() }] });
-    return { name: S.name.trim(), role: S.role.trim(), contact: contact, sec: sec };
+    var pu = cropURL(360);
+    return { name: S.name.trim(), role: S.role.trim(), contact: contact, sec: sec, photo: pu ? { url: pu, shape: S.photo.shape, size: S.photo.size, pos: S.photo.pos } : null };
   }
   function toText(m) {
     var o = [m.name, m.role, m.contact.join(" | ")];
@@ -112,7 +167,9 @@
   }
   function toHtml(m) {
     if (!m.name && !m.sec.length) return '<p class="cvempty">Isi formulir di samping, atau pilih contoh di atas. CV akan muncul di sini.</p>';
-    var h = '<h1>' + esc(m.name || "Nama Lengkap") + "</h1>" + (m.role ? '<div class="cvrole">' + esc(m.role) + "</div>" : "") + (m.contact.length ? '<div class="cvct">' + m.contact.map(esc).join(" | ") + "</div>" : "");
+    var txt = '<h1>' + esc(m.name || "Nama Lengkap") + "</h1>" + (m.role ? '<div class="cvrole">' + esc(m.role) + "</div>" : "") + (m.contact.length ? '<div class="cvct">' + m.contact.map(esc).join(" | ") + "</div>" : "");
+    var ph = m.photo ? '<img class="cvph s' + m.photo.size + (m.photo.shape === "round" ? " rd" : "") + '" src="' + m.photo.url + '" alt="Foto">' : "";
+    var h = !ph ? txt : m.photo.pos === "center" ? '<div class="cvhdc">' + ph + txt + "</div>" : '<div class="cvhd">' + (m.photo.pos === "left" ? ph : "") + '<div class="cvhdt">' + txt + "</div>" + (m.photo.pos === "right" ? ph : "") + "</div>";
     m.sec.forEach(function (s) {
       h += "<h2>" + esc(s.t) + "</h2>";
       s.b.forEach(function (b) {
@@ -148,6 +205,7 @@
     add(m.sec.some(function (s) { return s.t === "PENDIDIKAN"; }), "Ada bagian pendidikan", "Isi riwayat pendidikan");
     var skn = S.skills.split(/[,;\n]+/).filter(function (x) { return x.trim(); }).length;
     add(skn >= 5, "Keahlian cukup (" + skn + ")", "Tambahkan keahlian: minimal 5, sesuai lowongan");
+    add(!S.photo.on, "Tanpa foto (paling aman untuk ATS)", "Foto aktif: tidak masalah bila lowongan memintanya, matikan bila tidak diminta", true);
     var wc = txt.split(/\s+/).length;
     add(wc >= 150 && wc <= 700, "Panjang CV wajar (" + wc + " kata)", wc < 150 ? "CV masih terlalu singkat (" + wc + " kata)" : "CV " + wc + " kata: ringkas jadi maksimal 2 halaman", true);
     return out;
@@ -168,7 +226,7 @@
     var chips = kw.map(function (w) { var ok = hay.indexOf(" " + w) >= 0; if (ok) hit++; return '<span class="kw ' + (ok ? "ok" : "no") + '">' + (ok ? "✓ " : "+ ") + esc(w) + "</span>"; }).join("");
     box.innerHTML = '<div class="note" style="margin-bottom:6px">Cocok <b>' + hit + " dari " + kw.length + "</b> kata kunci. Tambahkan yang bertanda + hanya bila memang sesuai pengalamanmu.</div>" + chips;
   }
-  function update() { $("#cvPage").innerHTML = toHtml(model()); renderChecks(); save(); }
+  function update() { $("#cvPage").innerHTML = toHtml(model()); renderChecks(); drawMini(); save(); }
 
   /* ---------- Word (.docx) tanpa pustaka: zip "store" + XML minimal ---------- */
   var CT = null;
@@ -200,9 +258,20 @@
   }
   function docx(m) {
     var p = [];
-    p.push(para(m.name || "Nama Lengkap", { b: 1, sz: 36, center: 1, after: 20 }));
-    if (m.role) p.push(para(m.role, { sz: 24, center: 1, after: 20 }));
-    if (m.contact.length) p.push(para(m.contact.join(" | "), { sz: 20, center: 1, after: 120 }));
+    var ph = m.photo, ctr = !ph || ph.pos === "center", dims = { S: 25, M: 32, L: 40 }[ph && ph.size] || 32, wEmu = dims * 36000, hEmu = Math.round(wEmu / (ph && ph.shape === "3x4" ? 0.75 : 1));
+    function pic(anchor) {
+      var ext = '<wp:extent cx="' + wEmu + '" cy="' + hEmu + '"/>', body = '<wp:docPr id="1" name="Foto"/><wp:cNvGraphicFramePr/><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="0" name="foto.jpg"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rId2"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="' + wEmu + '" cy="' + hEmu + '"/></a:xfrm><a:prstGeom prst="' + (ph.shape === "round" ? "ellipse" : "rect") + '"/></pic:spPr></pic:pic></a:graphicData></a:graphic>';
+      return anchor
+        ? '<w:r><w:drawing><wp:anchor distT="0" distB="0" distL="150000" distR="150000" simplePos="0" relativeHeight="251659264" behindDoc="0" locked="0" layoutInCell="1" allowOverlap="1"><wp:simplePos x="0" y="0"/><wp:positionH relativeFrom="margin"><wp:align>' + ph.pos + '</wp:align></wp:positionH><wp:positionV relativeFrom="paragraph"><wp:posOffset>0</wp:posOffset></wp:positionV>' + ext + '<wp:effectExtent l="0" t="0" r="0" b="0"/><wp:wrapSquare wrapText="bothSides"/>' + body + "</wp:anchor></w:drawing></w:r>"
+        : '<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0">' + ext + '<wp:effectExtent l="0" t="0" r="0" b="0"/>' + body + "</wp:inline></w:drawing></w:r>";
+    }
+    if (ph && ctr) p.push('<w:p><w:pPr><w:spacing w:before="0" w:after="60"/><w:jc w:val="center"/></w:pPr>' + pic(false) + "</w:p>");
+    var nameP = para(m.name || "Nama Lengkap", { b: 1, sz: 36, center: ctr, after: 20 });
+    if (ph && !ctr) nameP = nameP.replace("</w:pPr>", "</w:pPr>" + pic(true));
+    p.push(nameP);
+    if (m.role) p.push(para(m.role, { sz: 24, center: ctr, after: 20 }));
+    if (m.contact.length) p.push(para(m.contact.join(" | "), { sz: 20, center: ctr, after: 120 }));
+    if (ph && !ctr) p.push('<w:p><w:pPr><w:spacing w:before="0" w:after="0"/></w:pPr><w:r><w:t></w:t></w:r></w:p>'.replace("<w:r><w:t></w:t></w:r>", ""));
     m.sec.forEach(function (s) {
       p.push(para(s.t, { b: 1, sz: 22, before: 180, after: 80, border: 1 }));
       s.b.forEach(function (b) {
@@ -212,35 +281,43 @@
         (b.bullets || []).forEach(function (x) { p.push(para("• " + x, { hang: 1, after: 20 })); });
       });
     });
-    var body = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>' + p.join("") + '<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="850" w:right="900" w:bottom="850" w:left="900" w:header="708" w:footer="708" w:gutter="0"/></w:sectPr></w:body></w:document>';
-    var enc = new TextEncoder();
+    var body = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"><w:body>' + p.join("") + '<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="850" w:right="900" w:bottom="850" w:left="900" w:header="708" w:footer="708" w:gutter="0"/></w:sectPr></w:body></w:document>';
+    var enc = new TextEncoder(), extra = [];
+    if (ph) extra = [{ n: "word/media/foto.jpg", d: dataBytes(ph.url) }, { n: "word/_rels/document.xml.rels", d: enc.encode('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/foto.jpg"/></Relationships>') }];
     return zip([
-      { n: "[Content_Types].xml", d: enc.encode('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>') },
+      { n: "[Content_Types].xml", d: enc.encode('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="jpg" ContentType="image/jpeg"/><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>') },
       { n: "_rels/.rels", d: enc.encode('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>') },
       { n: "word/document.xml", d: enc.encode(body) }
-    ]);
+    ].concat(extra));
   }
   function fileName() { var n = (S.name || "CV").trim().replace(/[^\w]+/g, "_").replace(/^_+|_+$/g, "") || "CV"; var r = (S.role || "").trim().replace(/[^\w]+/g, "_").replace(/^_+|_+$/g, ""); return "CV_" + n + (r ? "_" + r : ""); }
 
   /* ---------- aksi ---------- */
-  function setAll(d) { S = JSON.parse(JSON.stringify(d)); renderForm(); update(); }
+  function setAll(d, wipePhoto) { var keep = S.photo; S = JSON.parse(JSON.stringify(d)); S.photo = wipePhoto ? blankPhoto() : (keep || blankPhoto()); IMGSRC = wipePhoto ? "" : IMGSRC; renderForm(); update(); }
   document.addEventListener("input", function (e) {
     var t = e.target; if (t.id === "cvJob") return renderChecks();
+    if (t.dataset && t.dataset.ph) { S.photo[t.dataset.ph] = /^(zoom|ox|oy)$/.test(t.dataset.ph) ? +t.value : t.value; return update(); }
     if (!t.dataset || !t.dataset.k) return;
     if (t.dataset.l) S[t.dataset.l][+t.dataset.i][t.dataset.k] = t.value; else S[t.dataset.k] = t.value;
     update();
   });
+  document.addEventListener("change", function (e) {
+    var t = e.target;
+    if (t.id === "phOn") { S.photo.on = t.checked; $("#phBox").hidden = !t.checked; update(); }
+    else if (t.id === "phFile") loadPhoto(t.files[0]);
+  });
   document.addEventListener("click", function (e) {
-    var b = e.target.closest("[data-add],[data-del],[data-ex],#cvPrint,#cvDocx,#cvReset"); if (!b) return;
+    var b = e.target.closest("[data-add],[data-del],[data-ex],#phDel,#cvPrint,#cvDocx,#cvReset"); if (!b) return;
     if (b.dataset.add) { S[b.dataset.add].push(b.dataset.add === "exp" ? { title: "", company: "", city: "", start: "", end: "", bullets: "" } : { school: "", major: "", city: "", start: "", end: "", gpa: "" }); renderForm(); update(); }
     else if (b.dataset.del) { S[b.dataset.del].splice(+b.dataset.i, 1); renderForm(); update(); }
     else if (b.dataset.ex) { if (!S.name.trim() && !S.summary.trim() || confirm("Ganti isi formulir dengan contoh ini? Isian yang ada akan tertimpa.")) setAll(EX[b.dataset.ex]); }
+    else if (b.id === "phDel") { S.photo.src = ""; IMGSRC = ""; renderForm(); update(); }
     else if (b.id === "cvPrint") { if (!model().sec.length) return toast("Isi CV dulu."); window.print(); }
     else if (b.id === "cvDocx") {
       if (!model().sec.length) return toast("Isi CV dulu.");
       var a = document.createElement("a"); a.href = URL.createObjectURL(docx(model())); a.download = fileName() + ".docx"; document.body.appendChild(a); a.click();
       setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
-    } else if (b.id === "cvReset") { if (confirm("Hapus semua isian CV di perangkat ini?")) { try { localStorage.removeItem(KEY); } catch (x) { /* abaikan */ } setAll(blank()); } }
+    } else if (b.id === "cvReset") { if (confirm("Hapus semua isian CV di perangkat ini?")) { try { localStorage.removeItem(KEY); } catch (x) { /* abaikan */ } setAll(blank(), true); } }
   });
   function toast(t) { var n = $("#cvToast"); n.textContent = t; setTimeout(function () { n.textContent = ""; }, 2500); }
 
