@@ -8,7 +8,7 @@ const multer = require("multer");
 const sharp = require("sharp");
 
 const GROUPS = {
-  hero: { label: "Landing nextaja.com", names: { "mascot-hero": "Maskot utama (atas landing)", "mascot-hero-s": "Maskot utama versi ringan (HP)", "mascot-studio": "Maskot bagian Studio", "statue-640": "Patung latar (ukuran kecil)", "statue-1000": "Patung latar (ukuran besar)" } },
+  hero: { label: "Landing Catatan Akademik", names: { "mascot-hero": "Maskot utama (atas landing)", "mascot-hero-s": "Maskot utama versi ringan (HP)", "mascot-studio": "Maskot bagian Studio", "statue-640": "Patung latar (ukuran kecil)", "statue-1000": "Patung latar (ukuran besar)" } },
   portal: { label: "Banner blog dan portal", names: { "blog-berita": "Blog dan berita", "jadwal-kalender": "Info UT: jadwal", "materi-belajar": "Materi belajar", "karir-lowongan": "Karir dan lowongan", "metodologi": "Metodologi penelitian", "preset-template": "Preset dan template", "registrasi": "Registrasi", "ruang-akademik": "Ruang Akademik", "selamat-datang": "Selamat datang", "tentang": "Tentang", "tips-kuliah": "Tips kuliah", "tools-ai": "Tools AI", "tugas-diskusi": "Tugas dan diskusi", "ujian-ut": "Ujian UT", "video-studio": "Video Content Studio" } },
 };
 const MAX = 12 * 1024 * 1024;

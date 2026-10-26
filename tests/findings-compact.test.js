@@ -33,7 +33,7 @@ test("kartu Drillbit tidak mengingat angka lama, dan panel admin memuat app.js b
   const c = rd("common.js");
   assert.ok(!/localStorage\.setItem\(KEY/.test(c), "angka Drillbit tidak boleh disimpan");
   assert.ok(!/saved\.dbSim/.test(c), "angka lama tidak boleh dipulihkan otomatis");
-  assert.ok(/app\.js\?v=12/.test(require("fs").readFileSync(require("path").join(__dirname, "..", "admin-ca", "public", "index.html"), "utf8")), "app.js admin harus naik versi agar tombol Impor .md termuat");
+  assert.ok(/app\.js\?v=13/.test(require("fs").readFileSync(require("path").join(__dirname, "..", "admin-ca", "public", "index.html"), "utf8")), "app.js admin harus naik versi agar tombol Impor .md termuat");
 });
 
 test("poin skor bisa ditekan (rincian muncul setelah ditekan) dan daftar temuan dilipat", () => {

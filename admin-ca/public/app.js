@@ -87,7 +87,7 @@
       <label class="f">Sandi<input class="in" name="p" type="password" autocomplete="current-password" required></label>
       <p class="err" id="le" role="alert"></p>
       <button class="btn pri" type="submit">Masuk</button>
-      <p class="small faint">Panel ini terpisah dari admin nextaja. Akun dibuat oleh pemilik di menu Admin &amp; Peran.</p></form></main>`;
+      <p class="small faint">Panel ini khusus Catatan Akademik. Akun dibuat oleh pemilik di menu Admin &amp; Peran.</p></form></main>`;
     $("#lf").addEventListener("submit", async e => {
       e.preventDefault(); const f = e.target, b = $("button[type=submit]", f); $("#le").textContent = "";
       await busy(b, async () => {
@@ -205,7 +205,7 @@
     const d = await api(`/ms/admin/ca/dashboard?from=${from}&to=${to}`);
     const range = `<select class="in" id="rg" style="width:auto">${[7, 30, 90].map(n => `<option value="${n}" ${n === days ? "selected" : ""}>${n} hari terakhir</option>`).join("")}</select>`;
     const p = d.posts;
-    const warn = ME.ownerPasswordShared ? `<div class="notice">Akun <b>pemilik</b> masih memakai sandi yang sama dengan admin nextaja. Atur <code>CA_ADMIN_PASSWORD</code> di file .env server, atau buat akun pemilik bernama di menu Admin &amp; Peran.</div>` : "";
+    const warn = ME.ownerPasswordShared ? `<div class="notice">Akun <b>pemilik</b> masih memakai sandi yang sama dengan admin server. Atur <code>CA_ADMIN_PASSWORD</code> di file .env server, atau buat akun pemilik bernama di menu Admin &amp; Peran.</div>` : "";
     if (!d.orders) { // peran editor
       setPage("Dashboard", "Ringkasan konten", `${warn}<div class="grid g4">${stat("doc", num(p.published), "Artikel terbit", "", "#/posts?status=published")}${stat("pen", num(p.draft), "Draf", "", "#/posts?status=draft")}${stat("clock", num(p.scheduled), "Terjadwal", "", "#/posts?status=scheduled")}${stat("list", num(p.review), "Menunggu review")}</div>
         <div class="card"><div class="hd"><h2>Artikel terakhir diubah</h2><a class="btn sm pri" href="#/posts/new">Tulis artikel</a></div><div class="tbl-wrap"><table class="t"><tbody>${d.recentPosts.map(x => `<tr class="click" data-href="#/posts/${x.id}"><td>${esc(x.title)}</td><td>${badge({ draft: "Draf", review: "Review", scheduled: "Terjadwal", published: "Terbit" }[x.status] || x.status, x.status === "published" ? "ok" : "mute")}</td><td class="muted">${dt(x.updatedAt)}</td></tr>`).join("") || '<tr><td class="empty">Belum ada artikel.</td></tr>'}</tbody></table></div></div>`);

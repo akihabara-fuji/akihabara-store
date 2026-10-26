@@ -63,7 +63,7 @@
       a.appendChild(h("button", { type: "button", class: "btn o", on: { click: function () { api("/ms/admin/parafrase/orders/" + o.orderId + "/recheck").then(function (j) { showReport(o, j.report); }).catch(function (e) { toast(e.message); }); } } }, "Cek ulang"));
       run(o.status === "terkirim" ? "Kirim ulang hasil" : "Kirim hasil", "g", function () { if (!confirm("Kirim hasil bersih " + o.orderId + " ke murid?")) return null; return api("/ms/admin/parafrase/orders/" + o.orderId + "/finalize", { json: {} }).then(function () { toast("Hasil terkirim: " + o.orderId); }); });
     }
-    a.appendChild(h("a", { class: "btn o", style: "display:inline-flex;align-items:center;text-decoration:none", target: "_blank", rel: "noopener", href: waLink(o, "Halo, soal pesanan " + o.orderId + " di NextAja.") }, "WA murid"));
+    a.appendChild(h("a", { class: "btn o", style: "display:inline-flex;align-items:center;text-decoration:none", target: "_blank", rel: "noopener", href: waLink(o, "Halo, soal pesanan " + o.orderId + " di Catatan Akademik.") }, "WA murid"));
     return a;
   }
   var reportBox = null;
@@ -164,7 +164,7 @@
         ["Pembayaran", "Berlaku untuk semua layanan. Foto QRIS ada di kartu bawah.", ["qris_merchant_name", "payment_window_minutes", "unique_code_enabled", "unique_code_max"]],
         ["Kontak dan file", "WhatsApp admin, grup, ukuran dan masa simpan file.", ["admin_wa_number", "update_group_url", "file_max_mb", "retention_hours", "reminder_before_delete_hours"]],
         ["Analitik Google", "GA4 langsung lewat ID G-… . Bila memakai Tag Manager, isi ID GTM-… dan pasang tag GA4 di dalam GTM (jangan keduanya, nanti terhitung dobel). Kosongkan untuk mematikan. Klik WhatsApp dan klik layanan otomatis tercatat sebagai event.", ["ga_id", "gtm_id"]],
-        ["Google Search Console", "Agar blog dan situs terindeks Google: di Search Console pilih verifikasi Berkas HTML, tempel nama berkasnya (contoh google1a2b3c4d5e6f.html), simpan, lalu klik Verifikasi di Google. Sitemap sudah otomatis di nextaja.com/sitemap.xml.", ["google_verify_file"]],
+        ["Google Search Console", "Agar blog dan situs terindeks Google: di Search Console pilih verifikasi Berkas HTML, tempel nama berkasnya (contoh google1a2b3c4d5e6f.html), simpan, lalu klik Verifikasi di Google. Sitemap sudah otomatis di catatanakademik.com/sitemap.xml.", ["google_verify_file"]],
       ];
       s.appendChild(h("p", { class: "muted" }, "Satu tempat untuk semua harga dan aturan. Urutannya sama dengan menu di halaman Ruang Akademik. Setelah disimpan, hub, form, dan landing langsung memakai angka baru."));
       GROUPS.forEach(function (g) {
@@ -212,7 +212,7 @@
   function renderSite() {
     var s = $("t-site"); s.textContent = "Memuat…";
     api("/ms/admin/site-images").then(function (j) {
-      s.textContent = ""; s.appendChild(h("p", { class: "muted" }, "Ganti gambar landing nextaja.com serta banner blog dan portal dari sini. Foto besar dikecilkan otomatis. Gambar produk, jasa, ulasan, dan sampul tulisan diganti di tab admin masing-masing. Setelah diganti, refresh halaman web."));
+      s.textContent = ""; s.appendChild(h("p", { class: "muted" }, "Ganti gambar landing serta banner blog dan portal dari sini. Foto besar dikecilkan otomatis. Gambar produk, jasa, ulasan, dan sampul tulisan diganti di tab admin masing-masing. Setelah diganti, refresh halaman web."));
       j.groups.forEach(function (g) {
         s.appendChild(h("h3", { style: "margin:18px 0 8px" }, g.label));
         var grid = h("div", { class: "grid" }); s.appendChild(grid);
