@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tracker Kelulusan &amp; IPK Mahasiswa UT (Gratis) | Catatan Akademik</title>
+<meta name="description" content="Pantau SKS lulus, sisa SKS, IPK, estimasi semester, dan nilai yang dibutuhkan untuk mencapai target IPK. Gratis, diproses di browser.">
+<link rel="canonical" href="{{SITE}}/ruangakademikut/tracker-kelulusan">
+<meta property="og:title" content="Tracker Kelulusan &amp; IPK Mahasiswa UT (Gratis) | Catatan Akademik"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Tracker Kelulusan &amp; IPK Mahasiswa UT (Gratis) | Catatan Akademik"><meta name="twitter:description" content="Pantau SKS lulus, sisa SKS, IPK, estimasi semester, dan nilai yang dibutuhkan untuk mencapai target IPK. Gratis, diproses di browser."><meta property="og:description" content="Pantau SKS lulus, sisa SKS, IPK, estimasi semester, dan nilai yang dibutuhkan untuk mencapai target IPK. Gratis, diproses di browser."><meta property="og:url" content="{{SITE}}/ruangakademikut/tracker-kelulusan">
+<link rel="icon" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Bricolage+Grotesque:wght@500;700&display=swap" rel="stylesheet"><script>document.documentElement.classList.add("js");try{var t=localStorage.getItem("nx-theme");document.documentElement.dataset.theme=(t==="light"||t==="dark")?t:"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script>
+<link rel="stylesheet" href="/ruangakademikut/assets/site.css?v=20261202">
+<style>
+.tool{max-width:820px;margin:0 auto;padding:36px 24px 56px}
+.tool h1{margin:0 0 8px}.tool .lead{margin:0 0 22px;text-align:left;max-width:none}
+.tool h2{font-size:20px;margin:28px 0 10px}
+.tool .card{margin:0 0 16px}
+.tool label{font-weight:600;font-size:14px;display:block;margin:0 0 6px}
+.tool input[type=number],.tool select{width:100%;min-height:48px;padding:0 14px;border-radius:12px;border:1px solid var(--dash);background:var(--surface);color:var(--text);font:inherit}
+.tool table{width:100%;border-collapse:collapse;font-size:14.5px}.tool th,.tool td{padding:9px 10px;border-bottom:1px solid var(--border);text-align:left}.tool th{color:var(--muted);font-weight:600;font-size:13px}
+.tool .ok{color:#22c55e;font-weight:700}.tool .bad{color:#ef4444;font-weight:700}
+.tool ul{margin:6px 0 0;padding-left:20px}.tool li{margin:4px 0}
+.tool .note{font-size:13px;color:var(--muted);line-height:1.55}
+.tool a.btn{display:inline-flex;align-items:center;text-decoration:none}
+.tool{max-width:1180px}
+.cvg{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:22px;align-items:start}
+.cvs{border:1px solid var(--border);border-radius:14px;background:var(--surface);margin:0 0 12px;padding:0 16px}
+.cvs>summary{cursor:pointer;font-weight:700;padding:14px 0;list-style:none}.cvs>summary::-webkit-details-marker{display:none}
+.cvs[open]>summary{border-bottom:1px solid var(--border);margin-bottom:12px}
+.cvs[open]{padding-bottom:14px}
+.cvf{display:block;margin:0 0 10px}.cvf>span{display:block;font-size:13px;font-weight:600;margin:0 0 5px;color:var(--muted)}
+.cvf input,.cvf textarea{width:100%;box-sizing:border-box;padding:10px 12px;border-radius:10px;border:1px solid var(--dash);background:var(--bg,transparent);color:var(--text);font:inherit;font-size:14.5px}
+.cvf textarea{resize:vertical;line-height:1.5}
+.cvr{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}.cvr2{display:grid;grid-template-columns:1fr 1fr;gap:0 8px}
+.cvi{border:1px dashed var(--dash);border-radius:12px;padding:12px;margin:0 0 12px}
+.cvih{display:flex;justify-content:space-between;align-items:center;margin:0 0 8px}
+.cvx{background:none;border:0;color:#ef4444;cursor:pointer;font:inherit;font-size:13px;font-weight:600}
+.cvadd{width:100%;justify-content:center}
+.cvside{display:grid;gap:14px}
+.cvbar{display:flex;flex-wrap:wrap;gap:8px}
+.cvbar .btn,.cvbar button{cursor:pointer}
+.cvlist{list-style:none;margin:8px 0 0;padding:0;font-size:13.5px;display:grid;gap:3px}
+.cvlist .ok{color:#22c55e}.cvlist .warn{color:#f59e0b}.cvlist .bad{color:#ef4444}
+.kw{display:inline-block;margin:0 6px 6px 0;padding:3px 10px;border-radius:999px;font-size:12.5px;border:1px solid var(--border)}.kw.ok{color:#22c55e;border-color:#22c55e}.kw.no{color:#f59e0b;border-color:#f59e0b}
+#cvJob{width:100%;box-sizing:border-box;padding:10px 12px;border-radius:10px;border:1px solid var(--dash);background:transparent;color:var(--text);font:inherit;font-size:13.5px;resize:vertical}
+.cvpage{background:#fff;color:#111;font:12.5px/1.45 Arial,Helvetica,sans-serif;padding:30px 32px;border-radius:8px;min-height:420px;box-shadow:0 2px 14px rgba(0,0,0,.25)}
+.cvpage h1{font-size:22px;margin:0 0 2px;text-align:center;color:#111;font-family:Arial,Helvetica,sans-serif;letter-spacing:0}
+.cvpage .cvrole{text-align:center;font-size:13.5px;margin:0 0 2px}.cvpage .cvct{text-align:center;font-size:11.5px;margin:0 0 10px}
+.cvpage h2{font-size:12.5px;margin:14px 0 6px;padding-bottom:2px;border-bottom:1.5px solid #444;color:#111;font-family:Arial,Helvetica,sans-serif;letter-spacing:.02em}
+.cvpage p{margin:0 0 6px;color:#111}.cvpage .cvh{font-weight:700;margin:8px 0 0}.cvpage .cvsub{font-style:italic;font-size:11.5px;margin:0 0 3px;color:#333}
+.cvpage ul{margin:2px 0 4px;padding-left:18px}.cvpage li{margin:1px 0;color:#111}.cvempty{color:#666!important;text-align:center;padding:60px 10px}
+.cvex{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 16px}
+.cvtips{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.cvchk{display:flex;align-items:center;gap:8px;font-weight:600;margin:0 0 8px;cursor:pointer}
+.cvr3{display:grid;grid-template-columns:repeat(3,1fr);gap:0 8px}
+.cvf select{width:100%;box-sizing:border-box;padding:10px 8px;border-radius:10px;border:1px solid var(--dash);background:var(--bg,transparent);color:var(--text);font:inherit;font-size:14px}
+.cvphed{display:grid;grid-template-columns:120px 1fr;gap:14px;align-items:start;margin:0 0 6px}.cvphed canvas{width:120px;border:1px solid var(--border);border-radius:8px;background:#fff}
+.cvhd{display:flex;gap:16px;align-items:center;margin:0 0 4px}.cvhdt{flex:1;min-width:0}.cvhdt h1,.cvhdt .cvrole,.cvhdt .cvct{text-align:left!important}
+.cvhdc{text-align:center}.cvhdc .cvph{display:block;margin:0 auto 6px}
+.cvph{height:auto;object-fit:cover;flex:none}.cvph.sS{width:80px}.cvph.sM{width:100px}.cvph.sL{width:126px}.cvph.rd{border-radius:50%}
+@media(max-width:900px){.cvr3{grid-template-columns:1fr}}
+@media(max-width:900px){.cvg{grid-template-columns:1fr}.cvside{position:static}.cvr,.cvr2{grid-template-columns:1fr}}
+
+</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Tracker Kelulusan & IPK", "description": "Pantau SKS lulus, sisa SKS, IPK, estimasi semester, dan nilai yang dibutuhkan untuk mencapai target IPK. Gratis, diproses di browser.", "url": "{{SITE}}/ruangakademikut/tracker-kelulusan", "applicationCategory": "EducationalApplication", "operatingSystem": "Web", "inLanguage": "id-ID", "publisher": {"@type": "Organization", "name": "Catatan Akademik", "url": "{{SITE}}/"}, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "IDR"}}</script></head><body>
+<header class="nav"><div class="wrap">
+  <a href="/" class="logo" aria-label="Catatan Akademik, ke beranda"><b>C</b><span>Catatan Akademik</span></a>
+  <nav class="links" id="links" aria-label="Menu utama"><a href="/ruangakademikut">Layanan UT</a><a href="/ruangakademikut/blog-ut" class="only-m">Blog &amp; Berita UT</a><a href="/ruangakademikut/pesanan" class="only-m">Cek Pesanan</a><a href="/ms/masuk" class="only-m">Masuk</a></nav>
+  <div class="nav-r"><div class="mode" role="group" aria-label="Mode tampilan"><button type="button" data-m="dark">Gelap</button><button type="button" data-m="light">Terang</button></div><a class="nav-ord" href="/ruangakademikut/pesanan">Cek Pesanan</a><a class="btn btn-sm" href="/ms/masuk">Masuk</a><button class="burger" id="burger" type="button" aria-label="Buka menu" aria-expanded="false">☰</button></div>
+</div></header>
+<div class="sub"><div class="wrap"><details class="dd"><summary class="dds">Layanan</summary><div class="ddp"><a href="/ruangakademikut">Semua Layanan</a><a href="/ruangakademikut/layanan?s=tugas">Tugas</a><a href="/ruangakademikut/layanan?s=diskusi">Diskusi</a><a href="/ruangakademikut/layanan?s=metopen_paket">Metopen</a><a href="/ruangakademikut/layanan?s=simulasi">Simulasi Presentasi</a><a href="/ruangakademikut/pasfoto-yudisium">Pasfoto Yudisium (gratis)</a><a href="/ruangakademikut/buat-cv-ats">Buat CV ATS (gratis)</a></div></details><a href="/ruangakademikut/cek-parafrase-mandiri">Cek &amp; Parafrase</a><a href="/ruangakademikut/audit">Audit</a><details class="dd"><summary class="dds">Kalkulasi Nilai</summary><div class="ddp"><a href="/ruangakademikut/kalkulator-nilai-ut">Kalkulator Nilai Akhir</a><a href="/ruangakademikut/kalkulator-nilai-ut#ipk">Simulasi &amp; Target IPK</a><a href="/ruangakademikut/sitasi-apa">Generator Sitasi APA (gratis)</a></div></details><details class="dd"><summary class="dds on">Alat Gratis</summary><div class="ddp"><a href="/ruangakademikut/buat-cv-ats">Buat CV ATS</a><a href="/ruangakademikut/surat-lamaran">Surat Lamaran</a><a href="/ruangakademikut/sampul-tugas">Sampul &amp; Template Tugas</a><a href="/ruangakademikut/tracker-kelulusan">Tracker Kelulusan &amp; IPK</a><a href="/ruangakademikut/kalender-akademik">Kalender Akademik</a><a href="/ruangakademikut/kalkulator-nilai-ut">Kalkulator Nilai</a><a href="/ruangakademikut/sitasi-apa">Generator Sitasi APA</a><a href="/ruangakademikut/pasfoto-yudisium">Pasfoto Yudisium</a><a href="/ruangakademikut/panduan-maba">Panduan Maba</a></div></details><a href="/ruangakademikut/blog-ut">Blog &amp; Berita UT</a><a href="/ruangakademikut/portal-ut">Portal UT</a></div></div>
+
+<main class="tool">
+<h1>Tracker Kelulusan &amp; IPK</h1>
+<p class="lead">Catat mata kuliah, SKS, dan nilai. Kamu langsung melihat SKS yang sudah lulus, sisa SKS, IPK, perkiraan sisa semester, dan rata-rata nilai yang kamu butuhkan untuk mencapai target IPK. Semua diproses di browser dan disimpan di perangkat ini saja.</p>
+<div class="tr-print">
+<div class="tr-set no-print">
+  <label><span>Total SKS program studimu</span><input type="number" id="trSet-total" data-set="total" min="1" max="250" inputmode="numeric"></label>
+  <label><span>Target IPK akhir</span><input type="text" id="trSet-target" data-set="target" inputmode="decimal" placeholder="3,00"></label>
+  <label><span>Rencana SKS per semester</span><input type="number" id="trSet-per" data-set="perSem" min="1" max="30" inputmode="numeric"></label>
+</div>
+<div class="tr-g" id="trSum"></div>
+<div class="tr-box"><b>Target IPK</b><p class="tr-res" id="trRes" style="margin:6px 0 0"></p></div>
+<div class="tr-box"><b>Daftar mata kuliah</b>
+<table class="tr-t" aria-label="Daftar mata kuliah"><thead><tr><th>Mata kuliah</th><th>SKS</th><th>Nilai</th><th class="no-print"></th></tr></thead><tbody id="trRows"></tbody></table>
+<div class="cvbar no-print" style="margin-top:10px"><button type="button" class="btn" id="trAdd">+ Tambah baris</button><button type="button" class="btn" id="trAdd5">+ 5 baris</button><button type="button" class="btn" id="trCsv">Unduh CSV</button><button type="button" class="btn" id="trPrint">Cetak rekap</button><button type="button" class="btn" id="trReset">Hapus data</button></div>
+<div class="note no-print" id="trToast" role="status" style="margin-top:8px"></div></div>
+</div>
+<details class="cvs"><summary>Tempel banyak sekaligus dari Excel</summary>
+<p class="note">Satu baris per mata kuliah: Nama [tab] SKS [tab] Nilai (huruf). Baris tanpa nilai tetap bisa ditambahkan, cukup nama dan SKS.</p>
+<textarea class="tr-paste" id="trPaste" placeholder="Pengantar Akuntansi    3    A&#10;Manajemen Operasi    3    B+"></textarea>
+<div class="cvbar" style="margin-top:8px"><button type="button" class="btn" id="trImport">Tambahkan ke daftar</button></div></details>
+<h2>Cara membacanya</h2>
+<div class="cvtips">
+  <div class="card"><b>Total SKS</b><p class="note">Jumlah SKS program studimu berbeda-beda. Isi sesuai buku panduan atau akun akademikmu, bukan angka tebakan. Bawaan 144 hanyalah angka awal yang bisa kamu ganti.</p></div>
+  <div class="card"><b>SKS lulus</b><p class="note">Dihitung dari nilai C atau lebih (skala nilai UT di Kalkulator Nilai). Nilai D dan E tidak dihitung lulus.</p></div>
+  <div class="card"><b>Mata kuliah mengulang</b><p class="note">Catat sekali dengan nilai terbaru. Bila nilai lama masih ada di daftar, IPK saat ini ikut menghitungnya, dan estimasi target menganggap mata kuliah D atau E akan diulang.</p></div>
+  <div class="card"><b>Perkiraan, bukan angka resmi</b><p class="note">IPK dan kelulusan resmi hanya yang tercatat di sistem UT. Alat ini membantu merencanakan, bukan menggantikannya.</p></div>
+</div>
+<p class="note" style="margin-top:20px">Butuh bantuan tugas, diskusi, atau metopen? <a href="/ruangakademikut" style="color:var(--link)">Lihat layanan Catatan Akademik</a>.</p>
+</main>
+<script src="/ruangakademikut/assets/common.js?v=20261211"></script><script src="/ruangakademikut/assets/nilai-ut.js"></script><script src="/ruangakademikut/assets/tracker.js?v=20261301"></script>
+<footer class="ft"><div class="wrap ft-in"><div class="ft-b"><b>Catatan Akademik</b><span>Jakarta Barat. Layanan UT dan Blog.</span><small>© Catatan Akademik. Semua hak dilindungi.</small></div><nav class="ft-n" aria-label="Footer"><a href="/ruangakademikut">Layanan UT</a><a href="/ruangakademikut/blog-ut">Blog &amp; Berita UT</a><a href="/ms/masuk">Masuk</a><a href="/ms/privasi">Privasi</a><a href="/ms/ketentuan">Ketentuan</a></nav></div></footer>
+</body></html>

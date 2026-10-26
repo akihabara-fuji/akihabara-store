@@ -13,7 +13,7 @@
 set -euo pipefail
 REF="${1:?pakai: update-koin.sh <commit>}"
 APP="${APP:-/var/www/mahyra-serv}"
-KNOWN=(d3321cb ea4b557 4a8953e 3f29ccc e31a933 08cf5f2 12cfe4a dc31d36 c7f60c8 1b5c15a ec8523c 091972e 54d72bc 1574580 b623210 b3ad6ff 40d7848 bc2a821 256add9 1c861f1 8aaef92 4adfff0 ac04263 fbd0646 c5aed04 1366e15 3520907 beee9ca 30de5e8 8430614 e9dc347 24d1beb)
+KNOWN=(d3321cb ea4b557 4a8953e 3f29ccc e31a933 08cf5f2 12cfe4a dc31d36 c7f60c8 1b5c15a ec8523c 091972e 54d72bc 1574580 b623210 b3ad6ff 40d7848 bc2a821 256add9 1c861f1 8aaef92 4adfff0 ac04263 fbd0646 c5aed04 1366e15 3520907 beee9ca 30de5e8 8430614 e9dc347 24d1beb c8ef2a9)
 GH="${GH:-https://codeload.github.com/akihabara-fuji/akihabara-store/tar.gz}"
 cd "$APP"
 
@@ -69,7 +69,7 @@ c(){ curl -s -o /dev/null -w '%{http_code}' --resolve "$1:443:127.0.0.1" "https:
 get(){ curl -fsS --resolve "$1:443:127.0.0.1" "https://$1$2"; }
 has(){ local b; b=$(get "$1" "$2") || return 1; [[ "$b" == *"$3"* ]]; }
 CA="${CA_HOST:-catatanakademik.com}"
-for u in / /blog /sitemap.xml /robots.txt /admin/ /koin /portal-ut /kalkulator-nilai-ut /ms/layanan/config /ms/galeri /buat-cv-ats; do x=$(c $CA "$u"); echo "$CA$u $x"; [ "$x" = 200 ]; done
+for u in / /blog /sitemap.xml /robots.txt /admin/ /koin /portal-ut /kalkulator-nilai-ut /ms/layanan/config /ms/galeri /buat-cv-ats /sampul-tugas /surat-lamaran /tracker-kelulusan /kalender-akademik /panduan-maba; do x=$(c $CA "$u"); echo "$CA$u $x"; [ "$x" = 200 ]; done
 x=$(c $CA /ruangakademikut/audit); echo "$CA/ruangakademikut/audit $x"; [ "$x" = 200 ] || [ "$x" = 301 ]
 has $CA /admin/ 'Admin · Catatan Akademik' || { echo "Panel admin CA tidak tampil di /admin"; false; }
 has $CA /ms/layanan/config 'metopen' || { echo "Konfigurasi layanan tidak terbaca"; false; }

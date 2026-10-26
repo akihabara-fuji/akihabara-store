@@ -451,7 +451,8 @@ window.auditOkList = function (sc, box) {
 (function () {
   var T = [
     ["Layanan", [["Tugas tutorial", "/layanan?s=tugas"], ["Diskusi", "/layanan?s=diskusi"], ["Metopen UT", "/layanan?s=metopen_paket"], ["Revisi", "/layanan?s=revisi_tugas"], ["Paket Semester", "/layanan-ut"], ["Pengarahan Intensif", "/layanan-ut"]]],
-    ["Alat mahasiswa", [["Cek dan parafrase mandiri", "/cek-parafrase-mandiri"], ["Audit dokumen", "/audit"], ["Kalkulator nilai UT", "/kalkulator-nilai-ut"], ["Sitasi APA", "/sitasi-apa"], ["Foto yudisium", "/pasfoto-yudisium"], ["Buat CV ATS", "/buat-cv-ats"]]],
+    ["Alat mahasiswa", [["Cek dan parafrase mandiri", "/cek-parafrase-mandiri"], ["Audit dokumen", "/audit"], ["Kalkulator nilai UT", "/kalkulator-nilai-ut"], ["Sitasi APA", "/sitasi-apa"], ["Foto yudisium", "/pasfoto-yudisium"], ["Buat CV ATS", "/buat-cv-ats"], ["Surat lamaran kerja", "/surat-lamaran"], ["Sampul dan template tugas", "/sampul-tugas"], ["Tracker kelulusan dan IPK", "/tracker-kelulusan"], ["Kalender akademik", "/kalender-akademik"]]],
+    ["Panduan", [["Panduan maba UT", "/panduan-maba"]]],
     ["Info UT", [["Portal UT", "/portal-ut"], ["Blog dan berita UT", "/blog-ut"]]],
     ["Akun", [["Koin", "/koin"], ["Cek pesanan", "/pesanan"], ["Masuk", "/ms/masuk"]]]
   ];

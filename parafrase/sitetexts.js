@@ -23,6 +23,11 @@ const PAGES = {
   "alat-nilai.html": "Kalkulator Nilai UT",
   "alat-pasfoto.html": "Pasfoto Yudisium",
   "alat-cv.html": "Buat CV ATS",
+  "alat-sampul.html": "Sampul dan Template Tugas UT",
+  "alat-surat.html": "Surat Lamaran Kerja",
+  "alat-tracker.html": "Tracker Kelulusan dan IPK",
+  "alat-kalender.html": "Kalender dan Pengingat Akademik",
+  "panduan-maba.html": "Panduan Maba UT",
   "portal-ut.html": "Portal UT",
 };
 const EXTRA_PAGE = "Blog dan akun (menu & footer)";
