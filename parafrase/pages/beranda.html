@@ -164,7 +164,15 @@ section.s{padding:80px 0 0}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
 .chips a{border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:8px 16px;font-size:13px;font-weight:700;transition:border-color .15s,transform .15s}
 .chips a:hover{border-color:var(--acc);transform:translateY(-1px)}
-.mini{padding:22px;display:flex;flex-direction:column;gap:8px}
+.mini{padding:0 0 22px;display:flex;flex-direction:column;gap:8px;overflow:hidden}.mini>h3,.mini>p,.mini>.pr{margin-left:22px;margin-right:22px}
+.gal{position:relative;aspect-ratio:16/9;overflow:hidden;background:var(--surface2);margin-bottom:6px;touch-action:pan-y}
+.gal-t{display:flex;height:100%;transition:transform .45s cubic-bezier(.3,.8,.3,1)}
+.gal-t img{flex:0 0 100%;width:100%;height:100%;object-fit:cover;display:block}
+.gal-d{position:absolute;left:0;right:0;bottom:8px;display:flex;justify-content:center;gap:5px}
+.gal-d i{width:6px;height:6px;border-radius:50%;background:#fff;opacity:.5;box-shadow:0 0 0 1px rgba(0,0,0,.25);transition:opacity .2s,width .2s}
+.gal-d i.on{opacity:1;width:16px;border-radius:4px}
+.gal-n{position:absolute;right:8px;top:8px;background:rgba(10,10,28,.65);color:#fff;font-size:11px;font-weight:700;border-radius:999px;padding:2px 8px}
+@media(prefers-reduced-motion:reduce){.gal-t{transition:none}}
 .mini h3{margin:0;font-size:18px}.mini p{margin:0;color:var(--muted);font-size:13.5px}
 
 /* produk */
@@ -465,15 +473,15 @@ svg.nx-i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;s
   <div class="wrap">
     <div class="sh"><div><h2>Layanan untuk mahasiswa UT</h2><p>Pilih yang kamu butuhkan. Harga mengikuti pengaturan terbaru dan dikonfirmasi lagi sebelum kamu membayar.</p></div><a class="btn btn-pri" href="/layanan-ut">Semua layanan</a></div>
     <div class="g3">
-      <a class="card mini rv" href="/layanan?s=tugas"><h3>Tugas tutorial</h3><p>Dikerjakan sesuai soal dan ketentuan format. Kamu memeriksa hasilnya sebelum dikirim ke tutor.</p><span class="pr">Mulai <span data-p="price_tugas"></span></span></a>
-      <a class="card mini rv" href="/layanan?s=diskusi"><h3>Diskusi</h3><p>Jawaban diskusi siap tempel, dengan poin utama dan referensi yang bisa dicek.</p><span class="pr">Mulai <span data-p="price_diskusi"></span></span></a>
-      <a class="card mini rv" href="/layanan?s=metopen_paket"><h3>Metopen UT</h3><p>Pendampingan Tugas 1 sampai 3, per tahap atau paket komplit dengan free revisi.</p><span class="pr">Paket <span data-p="price_metopen_paket"></span></span></a>
-      <a class="card mini rv" href="/cek-parafrase-mandiri"><h3>Cek dan parafrase mandiri</h3><p>Unggah dokumen, lihat bagian yang perlu diperbaiki dengan penanda warna.</p><span class="pr"><span data-p="price_per_word"></span> per kata</span></a>
-      <a class="card mini rv" href="/audit"><h3>Audit dokumen</h3><p>Cek sitasi, daftar pustaka, dan DOI otomatis. Ringkasan gratis.</p><span class="pr">Mulai <span data-p="audit_min"></span></span></a>
-      <a class="card mini rv" href="/layanan?s=revisi_tugas"><h3>Revisi</h3><p>Catatan tutor diperbaiki. Gratis untuk hasil buatan kami.</p><span class="pr">Free revisi</span></a>
-      <a class="card mini rv" href="/layanan-ut"><h3>Paket Semester</h3><p>Handle 1 semester: absen, diskusi, tugas, update nilai mingguan.</p><span class="pr"><span data-p="price_semester_min"></span> sampai <span data-p="price_semester_max"></span></span></a>
-      <a class="card mini rv" href="/layanan-ut"><h3>Pengarahan Intensif</h3><p>Tanya apa saja soal UT, registrasi, dan update.</p><span class="pr">1 semester <span data-p="price_pengarahan_semester"></span></span></a>
-      <a class="card mini rv" href="/blog-ut"><h3>Info UT</h3><p>Jadwal, kabar penting, dan panduan terbaru seputar UT.</p><span class="pr">Gratis</span></a>
+      <a class="card mini rv" data-g="tugas" href="/layanan?s=tugas"><h3>Tugas tutorial</h3><p>Dikerjakan sesuai soal dan ketentuan format. Kamu memeriksa hasilnya sebelum dikirim ke tutor.</p><span class="pr">Mulai <span data-p="price_tugas"></span></span></a>
+      <a class="card mini rv" data-g="diskusi" href="/layanan?s=diskusi"><h3>Diskusi</h3><p>Jawaban diskusi siap tempel, dengan poin utama dan referensi yang bisa dicek.</p><span class="pr">Mulai <span data-p="price_diskusi"></span></span></a>
+      <a class="card mini rv" data-g="metopen" href="/layanan?s=metopen_paket"><h3>Metopen UT</h3><p>Pendampingan Tugas 1 sampai 3, per tahap atau paket komplit dengan free revisi.</p><span class="pr">Paket <span data-p="price_metopen_paket"></span></span></a>
+      <a class="card mini rv" data-g="cek" href="/cek-parafrase-mandiri"><h3>Cek dan parafrase mandiri</h3><p>Unggah dokumen, lihat bagian yang perlu diperbaiki dengan penanda warna.</p><span class="pr"><span data-p="price_per_word"></span> per kata</span></a>
+      <a class="card mini rv" data-g="audit" href="/audit"><h3>Audit dokumen</h3><p>Cek sitasi, daftar pustaka, dan DOI otomatis. Ringkasan gratis.</p><span class="pr">Mulai <span data-p="audit_min"></span></span></a>
+      <a class="card mini rv" data-g="revisi" href="/layanan?s=revisi_tugas"><h3>Revisi</h3><p>Catatan tutor diperbaiki. Gratis untuk hasil buatan kami.</p><span class="pr">Free revisi</span></a>
+      <a class="card mini rv" data-g="semester" href="/layanan-ut"><h3>Paket Semester</h3><p>Handle 1 semester: absen, diskusi, tugas, update nilai mingguan.</p><span class="pr"><span data-p="price_semester_min"></span> sampai <span data-p="price_semester_max"></span></span></a>
+      <a class="card mini rv" data-g="pengarahan" href="/layanan-ut"><h3>Pengarahan Intensif</h3><p>Tanya apa saja soal UT, registrasi, dan update.</p><span class="pr">1 semester <span data-p="price_pengarahan_semester"></span></span></a>
+      <a class="card mini rv" data-g="info" href="/blog-ut"><h3>Info UT</h3><p>Jadwal, kabar penting, dan panduan terbaru seputar UT.</p><span class="pr">Gratis</span></a>
     </div>
   </div>
 </section>
@@ -544,6 +552,23 @@ fetch("/ms/public-config",{cache:"no-store"}).then(function(r){return r.json()})
   document.querySelectorAll("[data-p]").forEach(function(e){var v=c[e.dataset.p];if(v!=null)e.textContent=rp(v)});
 }).catch(function(){});
 fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(function(d){if(d.user){var a=$("#navAcc");a.textContent="Akun saya";a.href="/ms/akun";var m=document.querySelector(".only-m");if(m){m.textContent="Akun saya";m.href="/ms/akun";}}}).catch(function(){});
+/* Galeri kartu layanan: foto bergeser seperti galeri HP saat kursor/fokus/sentuh. Daftar foto di /assets/galeri/galeri.json; kartu tanpa foto tetap teks saja. */
+(function(){
+fetch("/ms/galeri").then(function(r){return r.ok?r.json():{}}).catch(function(){return {}}).then(function(man){
+document.querySelectorAll("[data-g]").forEach(function(c){
+var L=man[c.getAttribute("data-g")];if(!L||!L.length)return;
+var g=document.createElement("div");g.className="gal";g.setAttribute("aria-hidden","true");
+g.innerHTML='<div class="gal-t">'+L.map(function(u,i){return '<img src="'+u+'" alt="" loading="lazy" decoding="async" width="720" height="405">'}).join("")+'</div>'+(L.length>1?'<span class="gal-n">1/'+L.length+'</span><div class="gal-d">'+L.map(function(u,i){return '<i'+(i?'':' class="on"')+'></i>'}).join("")+'</div>':"");
+c.insertBefore(g,c.firstChild);
+var i=0,t=g.querySelector(".gal-t"),d=g.querySelectorAll("i"),n=g.querySelector(".gal-n"),tm=null,reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
+function go(k){i=(k+L.length)%L.length;t.style.transform="translateX(-"+i*100+"%)";d.forEach(function(e,j){e.classList.toggle("on",j===i)});if(n)n.textContent=(i+1)+"/"+L.length}
+function start(){if(L.length<2||tm||reduce)return;go(i+1);tm=setInterval(function(){go(i+1)},1100)}
+function stop(){clearInterval(tm);tm=null;go(0)}
+c.addEventListener("mouseenter",start);c.addEventListener("mouseleave",stop);c.addEventListener("focus",start);c.addEventListener("blur",stop);
+var x0=null;g.addEventListener("touchstart",function(e){x0=e.touches[0].clientX},{passive:true});
+g.addEventListener("touchend",function(e){if(x0==null)return;var dx=e.changedTouches[0].clientX-x0;x0=null;if(Math.abs(dx)>30){go(i+(dx<0?1:-1));if(e.cancelable)e.preventDefault()}});
+});});
+})();
 var burger=$("#burger"),links=$("#links");
 burger.addEventListener("click",function(){var o=links.classList.toggle("open");burger.setAttribute("aria-expanded",o)});
 links.addEventListener("click",function(e){if(e.target.closest("a")){links.classList.remove("open");burger.setAttribute("aria-expanded","false")}});

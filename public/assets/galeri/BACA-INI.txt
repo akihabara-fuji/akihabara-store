@@ -1,0 +1,9 @@
+GALERI KARTU LAYANAN (landing page)
+Taruh foto di folder sesuai kartu. Urutan = urutan nama berkas (01.jpg, 02.jpg, ...).
+  tugas      -> Tugas tutorial        diskusi    -> Diskusi
+  metopen    -> Metopen UT            cek        -> Cek dan parafrase mandiri
+  audit      -> Audit dokumen         revisi     -> Revisi
+  semester   -> Paket Semester        pengarahan -> Pengarahan Intensif
+  info       -> Info UT
+Format: .webp / .jpg / .png. Disarankan rasio 16:9, lebar sekitar 800 px, maks 300 KB per foto.
+Kosong = kartu tampil teks saja. Foto tampil otomatis (tidak perlu edit kode); bila belum muncul, restart aplikasi.

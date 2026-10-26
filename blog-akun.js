@@ -135,11 +135,11 @@ module.exports = function mount(ctx) {
     for (const p of posts) { const w = wib(p.publishedAt), k = w.y * 12 + w.m; if (!months.has(k)) months.set(k, { w, weeks: new Map(), n: 0 }); const M = months.get(k), wk = weekOf(w.d); if (!M.weeks.has(wk)) M.weeks.set(wk, []); M.weeks.get(wk).push(p); M.n++; }
     return [...months.entries()].sort((a, b) => b[0] - a[0]).map(([, M], i) => {
       const last = new Date(Date.UTC(M.w.y, M.w.m + 1, 0)).getUTCDate();
-      const weeks = [...M.weeks.entries()].sort((a, b) => b[0] - a[0]).map(([wk, arr]) => {
+      const weeks = [...M.weeks.entries()].sort((a, b) => b[0] - a[0]).map(([wk, arr], wi) => {
         const a = (wk - 1) * 7 + 1, b = wk === 4 ? last : wk * 7;
-        return `<section class="blog-week"><h3>Minggu ke-${wk} <small>${a}\u2013${b} ${BULAN[M.w.m]}</small></h3><ul class="blog-titles">${arr.map(titleRow).join("")}</ul></section>`;
+        return `<details class="blog-week"${i === 0 && wi === 0 ? " open" : ""}><summary><span>Minggu ke-${wk} <small>${a}\u2013${b} ${BULAN[M.w.m]}</small></span><small>${arr.length}</small></summary><ul class="blog-titles">${arr.map(titleRow).join("")}</ul></details>`;
       }).join("");
-      return `<details class="blog-month"${i === 0 ? " open" : ""}><summary><span>${BULAN[M.w.m]} ${M.w.y}</span><small>${M.n} tulisan</small></summary>${weeks}</details>`;
+      return `<details class="blog-month"${i === 0 ? " open" : ""}><summary><span>${BULAN[M.w.m]} ${M.w.y}</span><small>${M.n}</small></summary><div class="blog-tree">${weeks}</div></details>`;
     }).join("");
   };
   /* ---------- Beranda blog (dipakai /blog dan /blog-ut): cari, filter, artikel pilihan, kartu terbaru, arsip ---------- */
@@ -175,7 +175,7 @@ module.exports = function mount(ctx) {
     const head = `<div class="bx-head"><h2>${what}</h2>${filtering ? `<span class="bx-count">${list.length} artikel · <a href="${base}">Hapus filter</a></span>` : ""}</div>`;
     const grid = latest.length ? `<div class="bx-grid">${latest.map(blogCard).join("")}</div>` : `<div class="bx-empty"><b>Belum ada artikel yang cocok.</b><span>Coba kata lain, atau <a href="${base}">lihat semua artikel</a>.</span></div>`;
     const more = filtering && list.length > latest.length ? `<p class="bx-more">Menampilkan ${latest.length} dari ${list.length}. Persempit pencarian untuk hasil yang lebih tepat.</p>` : "";
-    const archive = !filtering && all.length > latest.length + 1 ? `<section class="bx-arch" aria-labelledby="bxArch"><div class="bx-head"><h2 id="bxArch">Arsip artikel</h2><span class="bx-count">${all.length} artikel</span></div>${groupedList(all)}</section>` : "";
+    const archive = !filtering && all.length > latest.length + 1 ? `<section class="bx-arch" aria-labelledby="bxArch"><div class="bx-head"><h2 id="bxArch">Arsip artikel</h2><span class="bx-count">${all.length} artikel</span></div><div class="blog-ctl"><button type="button" data-bx="open">Buka semua</button><button type="button" data-bx="close">Tutup semua</button></div>${groupedList(all)}<script>document.querySelectorAll("[data-bx]").forEach(function(b){b.onclick=function(){document.querySelectorAll(".bx-arch details").forEach(function(d){d.open=b.dataset.bx==="open"})}})</script></section>` : "";
     return `<div class="bx">${hero}<section class="bx-list" aria-live="polite">${head}${grid}${more}</section>${archive}</div>`;
   }
   app.locals.renderAcadBlogCards = req => blogIndex(req, "/blog-ut");
@@ -557,7 +557,7 @@ module.exports = function mount(ctx) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Bricolage+Grotesque:wght@600;700&display=swap" rel="stylesheet">
 <script>try{var t=localStorage.getItem("nx-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
-<link rel="stylesheet" href="/assets/blog.css?v=10"><link rel="stylesheet" href="/assets/ca-blog.css?v=5"><script async src="/t.js"></script>
+<link rel="stylesheet" href="/assets/blog.css?v=10"><link rel="stylesheet" href="/assets/ca-blog.css?v=7"><script async src="/t.js"></script>
 ${extra}
 </head>
 <body>

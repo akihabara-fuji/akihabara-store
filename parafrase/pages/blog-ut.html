@@ -14,7 +14,14 @@
 .blog-month>summary small{font-weight:600;opacity:.65;font-size:.82rem;order:2;margin-left:auto}
 .blog-month>summary::after{order:3;margin-left:10px}
 .blog-month>summary:focus-visible{outline:2px solid var(--acc,#4f8ff7);outline-offset:-2px}
-.blog-week{padding:0 16px 14px}
+.blog-tree{padding:0 12px 10px 22px}
+.blog-week{padding:0 0 0 10px;border-left:2px solid rgba(127,127,127,.3)}
+.blog-week>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;padding:7px 6px;font-size:.82rem;font-weight:700;opacity:.85}
+.blog-week>summary::-webkit-details-marker{display:none}
+.blog-week>summary:before{content:"";width:6px;height:6px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);transition:transform .15s}
+.blog-week[open]>summary:before{transform:rotate(45deg)}
+.blog-week>summary>small:last-child{margin-left:auto;font-size:.72rem;opacity:.7}
+.blog-week>summary:focus-visible{outline:2px solid var(--acc,#4f8ff7);outline-offset:-2px}
 .blog-week h3{margin:6px 0 6px;font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;opacity:.75}
 .blog-week h3 small{font-weight:600;text-transform:none;letter-spacing:0;margin-left:6px;opacity:.8}
 .blog-titles{list-style:none;margin:0;padding:0;display:grid;gap:2px}
@@ -34,6 +41,6 @@
   <div id="bl" class="bx-host"></div>
   <p class="note" style="margin-top:28px">Butuh bantuan mengerjakan tugas, diskusi, atau Metopen? <a href="/ruangakademikut">Lihat layanan Catatan Akademik</a>.</p>
 </main>
-<script src="/ruangakademikut/assets/common.js?v=20261208"></script>
+<script src="/ruangakademikut/assets/common.js?v=20261209"></script>
 <footer class="ft"><div class="wrap ft-in"><div class="ft-b"><b>Catatan Akademik</b><span>Jakarta Barat. Layanan UT dan Blog.</span><small>© Catatan Akademik. Semua hak dilindungi.</small></div><nav class="ft-n" aria-label="Footer"><a href="/ruangakademikut">Layanan UT</a><a href="/blog">Blog</a><a href="/ms/masuk">Masuk</a><a href="/ms/privasi">Privasi</a><a href="/ms/ketentuan">Ketentuan</a></nav></div></footer>
 </body></html>

@@ -342,6 +342,21 @@ if (!ACAD_HOSTS.length) app.use("/admin-ca", caPanel);
 app.use("/admin", express.static(path.join(ROOT, "admin"), { index: "index.html" }));
 /* Berkas unggahan hanya boleh tampil sebagai gambar: tidak ada skrip/HTML yang bisa jalan walau dibuka langsung. */
 app.use("/uploads", express.static(UPLOADS, { maxAge: "30d", immutable: true, setHeaders: res => res.setHeader("Content-Security-Policy", "default-src 'none'; img-src 'self'; sandbox") }));
+/* Galeri kartu layanan di landing: daftar foto dibaca dari public/assets/galeri/<kartu>/ (urut nama berkas). Kosong = kartu teks saja. */
+app.get("/ms/galeri", (req, res) => {
+  res.set("Cache-Control", "no-cache");
+  const out = {};
+  try {
+    const base = path.join(PUB, "assets", "galeri");
+    for (const k of fs.readdirSync(base)) {
+      if (!/^[a-z0-9_-]+$/.test(k)) continue;
+      let fl = [];
+      try { fl = fs.readdirSync(path.join(base, k)).filter(f => /\.(webp|jpe?g|png|avif)$/i.test(f)).sort((a, b) => a.localeCompare(b, "en", { numeric: true })).slice(0, 12); } catch {}
+      if (fl.length) out[k] = fl.map(f => `/assets/galeri/${k}/${encodeURIComponent(f)}`);
+    }
+  } catch {}
+  res.json(out);
+});
 app.use(express.static(PUB, { maxAge: "1h", index: false }));
 /* Paling akhir: 404. API menjawab JSON, halaman menjawab 404 bermerek. */
 app.use((req, res) => (req.path.startsWith("/ms/") ? res.status(404).json({ error: "Tidak ditemukan." }) : extra.notFound(req, res)));

@@ -423,3 +423,47 @@ window.auditOkList = function (sc, box) {
   rows.forEach(function (r) { var row = el("div", "display:flex;justify-content:space-between;gap:10px;padding:4px 0;border-bottom:1px solid var(--border,#2b2b58)"); row.appendChild(el("span", "", "✓ " + r[0])); row.appendChild(el("b", "flex:none;color:#5ee6a8", r[1])); inn.appendChild(row); });
   d.appendChild(sm); d.appendChild(inn); box.appendChild(d);
 };
+
+/* Navigasi bertingkat (gaya menu Navigation): satu pohon untuk semua halaman, dibuka lewat tombol "Navigasi" di header. */
+(function () {
+  var T = [
+    ["Layanan", [["Tugas tutorial", "/layanan?s=tugas"], ["Diskusi", "/layanan?s=diskusi"], ["Metopen UT", "/layanan?s=metopen_paket"], ["Revisi", "/layanan?s=revisi_tugas"], ["Paket Semester", "/layanan-ut"], ["Pengarahan Intensif", "/layanan-ut"]]],
+    ["Alat mahasiswa", [["Cek dan parafrase mandiri", "/cek-parafrase-mandiri"], ["Audit dokumen", "/audit"], ["Kalkulator nilai UT", "/kalkulator-nilai-ut"], ["Sitasi APA", "/sitasi-apa"], ["Foto yudisium", "/pasfoto-yudisium"]]],
+    ["Info UT", [["Portal UT", "/portal-ut"], ["Blog dan berita UT", "/blog-ut"]]],
+    ["Akun", [["Koin", "/koin"], ["Cek pesanan", "/pesanan"], ["Masuk", "/ms/masuk"]]]
+  ];
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function init() {
+    var host = document.querySelector(".nav-r"); if (!host || document.getElementById("pfnavb")) return;
+    var cur = location.pathname.replace(/^\/ruang[a-z]+/, "") || "/";
+    var st = document.createElement("style");
+    st.textContent = "#pfnavb{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:12px;padding:0 12px;height:38px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}" +
+      "#pfnav{position:fixed;inset:0 auto 0 0;width:min(320px,88vw);background:var(--bg);color:var(--text);border-right:1px solid var(--border);z-index:90;transform:translateX(-102%);transition:transform .2s;overflow:auto;padding:16px;box-shadow:0 0 40px rgba(0,0,0,.35)}" +
+      "#pfnav.open{transform:none}#pfnav h2{margin:0 0 12px;font-size:15px;display:flex;justify-content:space-between;align-items:center}" +
+      "#pfnav h2 button{border:0;background:none;color:inherit;font-size:20px;cursor:pointer}" +
+      "#pfnav details{border:1px solid var(--border);border-radius:12px;margin:0 0 8px;background:var(--surface);overflow:hidden}" +
+      "#pfnav summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;padding:11px 12px;font-weight:800;font-size:14px}" +
+      "#pfnav summary::-webkit-details-marker{display:none}" +
+      "#pfnav summary:before{content:'';width:6px;height:6px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(-45deg);transition:transform .15s}" +
+      "#pfnav details[open]>summary:before{transform:rotate(45deg)}" +
+      "#pfnav ul{list-style:none;margin:0;padding:0 8px 8px 22px}#pfnav li a{display:block;padding:8px 10px;border-radius:8px;color:var(--text);text-decoration:none;font-size:13.5px}" +
+      "#pfnav li a:hover{background:rgba(127,127,127,.14)}#pfnav li a.on{background:rgba(124,58,237,.18);font-weight:800}" +
+      "#pfnavx{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:89;display:none}#pfnavx.open{display:block}" +
+      "@media(prefers-reduced-motion:reduce){#pfnav{transition:none}}";
+    document.head.appendChild(st);
+    var b = document.createElement("button"); b.id = "pfnavb"; b.type = "button"; b.textContent = "Navigasi"; b.setAttribute("aria-expanded", "false"); b.setAttribute("aria-controls", "pfnav");
+    host.insertBefore(b, host.firstChild);
+    var p = document.createElement("nav"); p.id = "pfnav"; p.setAttribute("aria-label", "Navigasi situs");
+    p.innerHTML = '<h2>Navigasi <button type="button" aria-label="Tutup navigasi">×</button></h2>' + T.map(function (g) {
+      var hit = g[1].some(function (l) { return l[1].split("?")[0] === cur; });
+      return "<details" + (hit ? " open" : "") + "><summary>" + esc(g[0]) + "</summary><ul>" + g[1].map(function (l) { return '<li><a href="' + esc(l[1]) + '"' + (l[1].split("?")[0] === cur && l[1].indexOf("?") < 0 ? ' class="on" aria-current="page"' : "") + ">" + esc(l[0]) + "</a></li>"; }).join("") + "</ul></details>";
+    }).join("");
+    var x = document.createElement("div"); x.id = "pfnavx";
+    document.body.appendChild(x); document.body.appendChild(p);
+    function set(o) { p.classList.toggle("open", o); x.classList.toggle("open", o); b.setAttribute("aria-expanded", o); if (o) p.querySelector("a,summary").focus(); else b.focus(); }
+    b.onclick = function () { set(!p.classList.contains("open")); };
+    x.onclick = p.querySelector("button").onclick = function () { set(false); };
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && p.classList.contains("open")) set(false); });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
+})();
