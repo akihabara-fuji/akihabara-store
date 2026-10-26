@@ -64,7 +64,7 @@ test("deteksi bahasa dan jenis dokumen", async () => {
 
 test("penolakan file: PDF, .doc lama/berpassword, bukan zip, tanpa document.xml, makro, tanpa teks", async () => {
   const code = async b => { try { await analyze(b); } catch (e) { assert.ok(e instanceof DocxError); return e.code; } return "lolos"; };
-  assert.strictEqual(await code(Buffer.concat([Buffer.from("%PDF-1.7\n"), Buffer.alloc(300)])), "pdf");
+  assert.strictEqual(await code(Buffer.concat([Buffer.from("%PDF-1.7\n"), Buffer.alloc(300)])), "pdf_rusak"); // PDF kini diterima (1db445b); PDF palsu/rusak ditolak sebagai pdf_rusak
   assert.strictEqual(await code(Buffer.concat([Buffer.from([0xd0, 0xcf, 0x11, 0xe0]), Buffer.alloc(300)])), "ole");
   assert.strictEqual(await code(Buffer.from("halo ini teks biasa ".repeat(20))), "bukan_docx");
   const z = new JSZip(); z.file("x.txt", "hai".repeat(50));
@@ -135,8 +135,9 @@ test("HTTP upload: PDF/ekstensi salah/tanpa origin/terlalu besar ditolak", async
   const { srv, base } = await server({ file_max_mb: 1 });
   try {
     const good = await makeDocx(P(ID));
-    let r = await send(base, Buffer.from("%PDF-1.4 " + "x".repeat(300)), "a.pdf"); assert.strictEqual(r.status, 415);
+    let r = await send(base, Buffer.from("halo".repeat(100)), "a.txt"); assert.strictEqual(r.status, 415); // ekstensi selain .docx/.pdf ditolak
     assert.ok((await r.json()).error.includes(".docx"));
+    r = await send(base, Buffer.from("%PDF-1.4 " + "x".repeat(300)), "a.pdf"); assert.strictEqual(r.status, 422); // PDF diterima ekstensinya, tapi isi palsu/rusak ditolak
     r = await send(base, Buffer.from("%PDF-1.4 " + "x".repeat(300)), "a.docx"); assert.strictEqual(r.status, 422);
     r = await send(base, good, "a.docx", {}); assert.strictEqual(r.status, 403);
     r = await send(base, Buffer.alloc(2 * 1024 * 1024, 1), "besar.docx"); assert.strictEqual(r.status, 413);
