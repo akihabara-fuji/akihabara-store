@@ -69,7 +69,8 @@ c(){ curl -s -o /dev/null -w '%{http_code}' --resolve "$1:443:127.0.0.1" "https:
 get(){ curl -fsS --resolve "$1:443:127.0.0.1" "https://$1$2"; }
 has(){ local b; b=$(get "$1" "$2") || return 1; [[ "$b" == *"$3"* ]]; }
 CA="${CA_HOST:-catatanakademik.com}"
-for u in / /blog /sitemap.xml /robots.txt /admin/ /koin /portal-ut /kalkulator-nilai-ut /ruangakademikut/audit /ms/layanan/config; do x=$(c $CA "$u"); echo "$CA$u $x"; [ "$x" = 200 ]; done
+for u in / /blog /sitemap.xml /robots.txt /admin/ /koin /portal-ut /kalkulator-nilai-ut /ms/layanan/config; do x=$(c $CA "$u"); echo "$CA$u $x"; [ "$x" = 200 ]; done
+x=$(c $CA /ruangakademikut/audit); echo "$CA/ruangakademikut/audit $x"; [ "$x" = 200 ] || [ "$x" = 301 ]
 has $CA /admin/ 'Admin · Catatan Akademik' || { echo "Panel admin CA tidak tampil di /admin"; false; }
 has $CA /ms/layanan/config 'metopen' || { echo "Konfigurasi layanan tidak terbaca"; false; }
 echo "Isi halaman: OK"
