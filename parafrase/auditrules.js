@@ -184,20 +184,29 @@ async function runAudit(a, { fetchFn, cfg = {} } = {}) {
   for (const f of checkStruktur(a)) add(f.sev, f.cat, f.where, f.detail);
   // Standar Bab 4 dan 5: aturan yang SAMA dengan Cek Parafrase (standar.js)
   const hh = { splitSentences: require("./docx").splitSentences, countWords: require("./docx").countWords, findCitations: rules.findCitations, hasCitation: rules.hasCitation, isBody: rules.isBody };
-  for (const f of checkStandar(paras, bibIdx == null || bibIdx < 0 ? null : bibIdx, hh)) add(STANDAR_AUDIT[f.rule].sev, STANDAR_AUDIT[f.rule].cat, "Paragraf " + (f.para_idx + 1), f.reason);
+  /* temuan standar per kalimat sekarang masuk lewat docFindings (daftar lengkap di bawah), supaya tidak ganda */
   // Aspek seluruh dokumen dalam persen: memakai temuan yang sama dengan Cek & Parafrase, plus indikasi gaya tulisan seragam.
   const bodyAt = bibIdx == null || bibIdx < 0 ? null : bibIdx;
   const docFindings = rules.analyzeFindings(paras, bodyAt, cfg);
   const asp = computeAspects(paras, bodyAt, docFindings, cfg);
-  if (asp.ai.value != null && asp.ai.level === "tinggi") add("peringatan", "Indikasi gaya tulisan seragam atau otomatis tinggi", "Seluruh dokumen", `Perkiraan ${asp.ai.value}% dari pola tulisan (frasa klise, panjang kalimat seragam, penghubung dan awalan berulang). Ini heuristik, bukan skor Drillbit. Lihat kalimat bertanda abu-abu dan merah muda di Cek & Parafrase.`);
-  else if (asp.ai.value != null && asp.ai.level === "sedang") add("info", "Indikasi gaya tulisan seragam atau otomatis sedang", "Seluruh dokumen", `Perkiraan ${asp.ai.value}% dari pola tulisan. Variasikan awalan dan penghubung kalimat, dan ganti frasa umum dengan analisis yang spesifik.`);
+  if (asp.ai.value != null && asp.ai.level === "tinggi") add("peringatan", "Indikasi gaya tulisan seragam atau otomatis tinggi", "Seluruh dokumen", `Tingkat ${asp.ai.level} dari pola tulisan (frasa klise, panjang kalimat seragam, penghubung dan awalan berulang). Ini heuristik, bukan skor Drillbit. Lihat kalimat bertanda abu-abu dan merah muda di Cek & Parafrase.`);
+  else if (asp.ai.value != null && asp.ai.level === "sedang") add("info", "Indikasi gaya tulisan seragam atau otomatis sedang", "Seluruh dokumen", `Tingkat ${asp.ai.level} dari pola tulisan. Variasikan awalan dan penghubung kalimat, dan ganti frasa umum dengan analisis yang spesifik.`);
+  /* Daftar LENGKAP: temuan tingkat dokumen/pustaka (F) + semua temuan per kalimat dan paragraf (sama dengan Cek & Parafrase). */
+  const CODE_SEV = { O: "kritis", M: "peringatan", K: "peringatan", B: "peringatan", U: "info", H: "info", P: "peringatan", A: "info" };
+  const CODE_CAT = { M: "Kalimat yang sama muncul lebih dari sekali", O: "Kutipan langsung tanpa sitasi", K: "Klaim atau angka tanpa sumber", B: "Sitasi bermasalah", U: "Kalimat terlalu panjang", H: "Paragraf pendek dan kurang berkembang", P: "Paragraf umum tanpa analisis spesifik", A: "Pola tulisan seragam" };
+  const bodyIdx = new Set(body.map(p => p.idx));
+  for (const f of docFindings) {
+    if (!bodyIdx.has(f.para_idx)) continue; // temuan pustaka sudah ada di daftar tingkat dokumen
+    const st = f.rule && STANDAR_AUDIT[f.rule];
+    F.push({ sev: st ? st.sev : CODE_SEV[f.code], cat: st ? st.cat : CODE_CAT[f.code], where: `Paragraf ${f.para_idx + 1}, kalimat ${f.sent_idx + 1}`, detail: f.reason, quote: String(f.text || "").replace(/\s+/g, " ").trim().slice(0, 220), code: f.code, pos: f.para_idx * 1000 + f.sent_idx });
+  }
   const order = { kritis: 0, peringatan: 1, info: 2 };
-  F.sort((x, y) => order[x.sev] - order[y.sev]);
+  F.sort((x, y) => order[x.sev] - order[y.sev] || (x.pos == null ? -1 : x.pos) - (y.pos == null ? -1 : y.pos));
   const count = s => F.filter(f => f.sev === s).length;
   const counts = { kritis: count("kritis"), peringatan: count("peringatan"), info: count("info") };
   const refsOut = refs || { total: 0, withDoi: 0, doiOk: 0, doiNotFound: 0, doiUnverified: 0 };
   // docFindings (temuan Cek & Parafrase) hanya untuk triage di server: jangan disertakan ke respons publik (berisi teks kalimat).
-  return { findings: F, counts, refs: refsOut, citations: cites.length, score: { ...buildScore(body, counts, refsOut, M), aspects: asp.aspects, ai: asp.ai }, docFindings, bodyAt };
+  return { findings: F, counts, refs: refsOut, citations: cites.length, score: { ...buildScore(body, counts, refsOut, M), aspects: asp.aspects, ai: asp.ai, problem: asp.problem }, docFindings, bodyAt };
 }
 
 module.exports = { checkStruktur, runAudit, extractCitations, extractBibliography, checkDois };

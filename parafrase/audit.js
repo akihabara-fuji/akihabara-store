@@ -33,14 +33,8 @@ module.exports = function mountAudit({ app, express, db, settings, orders, root,
   const quote = words => { const q = orders.auditQuote(words, settings.getAll()); return { words, perWord: q.perWord, min: q.min, freeWords: q.free, chargedWords: q.pay, allFree: q.allFree, total: q.total }; };
 
   /* Penjelasan hanya untuk temuan di paragraf yang seluruhnya masuk batas kata gratis (dari awal dokumen). Sisanya: tingkat, kategori, lokasi. */
-  const openFindings = (findings, a, q) => {
-    const free = new Set(); let n = 0;
-    if (!q.allFree && q.freeWords > 0) for (const p of a.paragraphs) { if (!p.text.trim()) continue; const w = countWords(p.text); if (n + w > q.freeWords) break; n += w; free.add(p.idx); }
-    return findings.map(x => {
-      const m = /^Paragraf (\d+)/.exec(x.where || ""), open = q.allFree || (m && free.has(Number(m[1]) - 1));
-      return { sev: x.sev, cat: x.cat, where: x.where, ...(open ? { open: true, detail: x.detail } : {}) };
-    });
-  };
+  /* Audit = diagnosis lengkap: semua temuan terbuka, lengkap dengan kutipan kalimat dan cara memperbaiki. */
+  const openFindings = findings => findings.map(x => ({ sev: x.sev, cat: x.cat, where: x.where, open: true, detail: x.detail, quote: x.quote, code: x.code }));
 
   app.post("/ms/audit/upload", (req, res) => {
     res.set("Cache-Control", "no-store");
@@ -70,7 +64,7 @@ module.exports = function mountAudit({ app, express, db, settings, orders, root,
         res.json({
           uploadId: id, file: { name, size: f.size }, words, counts: r.counts, refs: r.refs, score: r.score, triage,
           /* Hanya tingkat, kategori, dan lokasi. Penjelasan ada di Audit Lengkap. */
-          findings: openFindings(r.findings, a, quote(words)),
+          findings: openFindings(r.findings),
           freeWords: quote(words).freeWords,
           quote: quote(words),
         });

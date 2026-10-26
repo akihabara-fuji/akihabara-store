@@ -146,7 +146,7 @@ test("HTTP: lanjutkan unggahan Audit ke Cek & Parafrase tanpa unggah ulang, urge
     const send = async (path, buf) => { const fd = new FormData(); fd.append("file", new Blob([buf]), "tugas.docx"); const r = await fetch(t.base + path, { method: "POST", body: fd, headers: t.H }); return r.json(); };
     const audit = await send("/ms/audit/upload", await docx("Penting untuk diingat bahwa hal ini menunjukkan bahwa kinerja naik."));
     assert.ok(audit.uploadId && audit.triage && audit.triage.level, JSON.stringify(Object.keys(audit)));
-    assert.ok(!JSON.stringify(audit).includes("koordinasi antardivisi"), "audit gratis tidak membocorkan teks dokumen");
+    assert.ok(!JSON.stringify(audit.triage).includes("koordinasi antardivisi"), "ringkasan urgensi audit tidak membocorkan teks dokumen (kutipan kalimat memang tampil di daftar temuan)");
     const id = audit.uploadId;
     const r1 = await fetch(t.base + "/ms/parafrase/upload/" + id);
     assert.strictEqual(r1.status, 200); assert.strictEqual(r1.headers.get("cache-control"), "no-store");

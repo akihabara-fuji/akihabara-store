@@ -119,7 +119,7 @@ const buildTriage = (input, drill = null) => withDrillbit(buildTriageBase(input)
 
 /* Tanda tangan pengaturan yang memengaruhi temuan dan triage. Cache analisis memakainya supaya perubahan angka oleh admin
    langsung berlaku (bukan menunggu cache habis). */
-const SIG_KEYS = ["long_sentence_words", "drillbit_sim_max", "drillbit_ai_max", "urgensi_ai_sedang", "urgensi_ai_tinggi", "urgensi_paragraf_skor", "urgensi_paragraf_persen", "preview_open_paragraphs"];
+const SIG_KEYS = ["long_sentence_words", "drillbit_sim_max", "drillbit_ai_max", "urgensi_ai_sedang", "urgensi_ai_tinggi", "masalah_batas_persen", "standar_kutipan_max_persen", "standar_hipotesis_max", "urgensi_paragraf_skor", "urgensi_paragraf_persen", "preview_open_paragraphs"];
 const settingsSig = cfg => JSON.stringify(SIG_KEYS.map(k => (cfg || {})[k]));
 
 module.exports = { buildTriage, buildTriageBase, withDrillbit, parseDrill, settingsSig, LEVEL_LABEL, W, LABEL };

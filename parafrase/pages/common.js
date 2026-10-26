@@ -109,8 +109,8 @@ window.auditAspects = function (sc, box, opts) {
       var ai = sc.ai, AC = { tinggi: "#ff8aa5", sedang: "#f3ff4d", rendah: "#5ee6a8" }[ai.level] || "#8ec5ff";
       var hd = el("div", "display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;margin:14px 0 6px;padding-top:12px;border-top:1px solid var(--border,#2b2b58)");
       var tt = el("b", "", "Indikasi gaya tulisan seragam atau otomatis"); tt.appendChild(chips(ai.codes)); hd.appendChild(tt);
-      hd.appendChild(el("b", "font-size:26px;line-height:1;color:" + AC, ai.value == null ? "n/a" : ai.value + "%"));
-      hd.appendChild(el("span", "font-size:13px;opacity:.8", ai.label)); blk.appendChild(hd);
+      hd.appendChild(el("b", "font-size:24px;line-height:1;color:" + AC, ai.value == null ? "n/a" : ai.label));
+      blk.appendChild(hd);
       if (!compact && (ai.parts || []).length) { var pl = el("div", GRID); (ai.parts || []).forEach(function (m) { if (!compact && (m.value == null || m.value <= 15)) return; pl.appendChild(bar(m.label, m.value, true)); }); if (pl.firstChild) blk.appendChild(pl); }
       blk.appendChild(el("p", "margin:8px 0 0;font-size:12.5px;opacity:.7", ai.note));
     }
@@ -124,74 +124,37 @@ window.auditAspects = function (sc, box, opts) {
   }
 };
 
-/* Kartu Skor Kesiapan untuk Audit Dokumen (dipakai halaman ringkas dan hasil lengkap). */
-window.PF_FIX_MAX = 30;   /* sasaran: bagian bermasalah diparafrase ulang sampai tersisa maksimal 30% */
+/* Tingkat bermasalah (persen) untuk Audit Dokumen dan Cek & Parafrase: SATU rumus (parafrase/masalah.js), jadi angkanya sama di dua menu.
+   Arah: makin banyak larangan modul yang ketemu, makin TINGGI persennya dan makin merah. Di atas batas (bawaan 30%) = belum aman. */
+window.PF_FIX_MAX = 30;
+window.auditProblemCard = function (pb, box) {
+  if (!pb || !box) return;
+  function el(t, css, x) { var e = document.createElement(t); if (css) e.style.cssText = css; if (x != null) e.textContent = x; return e; }
+  function f1(n) { return String(n).replace(".", ","); }
+  var none = pb.status === "belum", over = pb.status === "belum_aman", lim = pb.limit || window.PF_FIX_MAX;
+  var COL = none ? "#8ec5ff" : over ? "#ff8aa5" : "#5ee6a8";
+  var wrap = el("div", "display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:center;padding:18px;border-radius:18px;border:1px solid " + COL + ";max-width:760px;margin:0 auto 14px;text-align:left");
+  wrap.id = "problemCard";
+  var ring = el("div", "flex:none;width:132px;height:132px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:conic-gradient(" + COL + " " + Math.min(100, pb.pct) * 3.6 + "deg,rgba(128,128,160,.22) 0)");
+  var inner = el("div", "width:100px;height:100px;border-radius:50%;background:var(--bg,#0a0a1c);display:flex;flex-direction:column;align-items:center;justify-content:center");
+  inner.appendChild(el("b", "font-size:28px;line-height:1;color:" + COL, none ? "n/a" : f1(pb.pct) + "%")); inner.appendChild(el("span", "font-size:11.5px;opacity:.7", "bermasalah")); ring.appendChild(inner);
+  var side = el("div", "flex:1;min-width:240px");
+  side.appendChild(el("div", "font-size:12.5px;opacity:.7;text-transform:uppercase;letter-spacing:.06em", "Tingkat bermasalah (makin kecil makin baik)"));
+  side.appendChild(el("div", "font-size:21px;font-weight:700;margin:2px 0 8px;color:" + COL, none ? "Isi dokumen belum terbaca" : over ? "Belum aman: turunkan sampai " + lim + "% atau kurang" : "Aman: " + lim + "% atau kurang"));
+  var bar = el("div", "position:relative;height:10px;border-radius:99px;background:rgba(128,128,160,.22);margin:6px 0 10px");
+  bar.appendChild(el("div", "height:100%;border-radius:99px;width:" + Math.min(100, pb.pct) + "%;background:" + COL));
+  var mk = el("div", "position:absolute;top:-4px;width:3px;height:18px;background:#5ee6a8;left:" + lim + "%"); mk.title = "Batas " + lim + "%"; bar.appendChild(mk); side.appendChild(bar);
+  var parts = [pb.kalimat.num + " dari " + pb.kalimat.den + " kalimat isi bermasalah"];
+  parts.push(pb.pustaka.tanpaDaftar ? "daftar pustaka tidak ditemukan" : pb.pustaka.num + " dari " + pb.pustaka.den + " pustaka bermasalah");
+  side.appendChild(el("div", "font-size:14px;margin:4px 0", parts.join(" · ")));
+  if (over) side.appendChild(el("div", "font-size:14px;font-weight:600;margin:4px 0", "Perbaiki sekitar " + pb.need + " bagian lagi (kalimat atau pustaka) supaya turun ke " + lim + "%."));
+  side.appendChild(el("div", "font-size:12.5px;opacity:.7;margin-top:8px", pb.note));
+  wrap.appendChild(ring); wrap.appendChild(side); box.appendChild(wrap);
+};
 window.auditScoreCard = function (sc, box, findings) {
   if (!sc || !box) return; box.innerHTML = "";
-  /* Persen salah terbesar di aspek isi (paragraf pendek, gaya seragam, dst). Bila ada yang di atas 15%, dokumen belum boleh disebut "siap". */
-  var aspWrong = (sc.aspects || []).map(function (m) { return m.value == null ? null : { label: m.label, w: Math.round((m.good === "rendah" ? m.value : 100 - m.value) * 10) / 10 }; }).filter(function (x) { return x && x.w > 15; }).sort(function (a, b) { return b.w - a.w; });
-  var okLevel = sc.level === "siap" || sc.level === "hampir";
-  var COL = { siap: "#5ee6a8", hampir: "#f3ff4d", perlu: "#ffb454", banyak: "#ff8aa5" }[sc.level] || "#8ec5ff";
-  var LABEL = sc.label;
-  if (aspWrong.length && okLevel) { COL = "#ffb454"; LABEL = "Perlu perbaikan"; }
-  function el(t, css, x) { var e = document.createElement(t); if (css) e.style.cssText = css; if (x != null) e.textContent = x; return e; }
-  var wrap = el("div", "display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:center;padding:18px;border-radius:18px;border:1px solid var(--border,#2b2b58);max-width:760px;margin:0 auto 14px;text-align:left");
-  var ring = el("div", "flex:none;width:132px;height:132px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:conic-gradient(" + COL + " " + sc.value * 3.6 + "deg,rgba(128,128,160,.22) 0)");
-  var inner = el("div", "width:100px;height:100px;border-radius:50%;background:var(--bg,#0a0a1c);display:flex;flex-direction:column;align-items:center;justify-content:center");
-  inner.appendChild(el("b", "font-size:34px;line-height:1;color:" + COL, sc.value)); inner.appendChild(el("span", "font-size:12px;opacity:.7", "dari 100")); ring.appendChild(inner);
-  var side = el("div", "flex:1;min-width:240px");
-  side.appendChild(el("div", "font-size:12.5px;opacity:.7;text-transform:uppercase;letter-spacing:.06em", "Skor Kesiapan Dokumen"));
-  side.appendChild(el("div", "font-size:21px;font-weight:700;margin:2px 0 10px;color:" + COL, LABEL));
-  var labelEl = side.lastChild, BASE_COL = COL, BASE_LABEL = LABEL;
-  var noteEl = el("div", "font-size:14px;opacity:.9;margin:6px 0;font-weight:600"); side.appendChild(noteEl);
-  var FIXMSG = "Perlu perbaikan: parafrase ulang bagian yang ditandai sampai tingkat bermasalahnya maksimal " + window.PF_FIX_MAX + "%.";
-  if (aspWrong.length) noteEl.textContent = FIXMSG + " Paling tinggi: " + aspWrong[0].label.toLowerCase() + " (" + String(aspWrong[0].w).replace(".", ",") + "%).";
-  /* Dipanggil kartu Drillbit: angka resmi di atas batas -> label dan catatan di cincin ikut berubah, tidak lagi "Hampir siap". */
-  window.pfRingFix = function (bad, detail) {
-    if (bad) { labelEl.textContent = "Perlu perbaikan"; labelEl.style.color = "#ff8aa5"; noteEl.textContent = FIXMSG + (detail ? " " + detail : ""); }
-    else { labelEl.textContent = BASE_LABEL; labelEl.style.color = BASE_COL; noteEl.textContent = aspWrong.length ? FIXMSG : ""; }
-  };
-  /* Tiap poin bisa ditekan: rincian (arti angka, cara membenahi, dan temuan terkait) baru muncul setelah ditekan,
-     supaya halaman tidak memanjang. Memakai <details> bawaan browser (bisa dengan keyboard). */
-  var MCAT = { sitasi: /^(Sitasi tidak ada di daftar pustaka|Tahun sitasi berbeda)/i, pustaka: /^Pustaka (tidak dikutip|tanpa tahun)/i, doi: /DOI/i };
-  var HELP = {
-    sitasi: ["Dari semua sitasi di isi, segini persen yang punya pasangan di Daftar Pustaka. Target: 100%.", "Yang kurang: tambahkan sumbernya ke Daftar Pustaka, atau betulkan nama dan tahun di isi bila salah ketik."],
-    pustaka: ["Dari semua sumber di Daftar Pustaka, segini persen yang benar-benar dikutip di isi. Target: 100%.", "Yang kurang: kutip sumbernya di isi, atau hapus dari Daftar Pustaka bila memang tidak dipakai."],
-    doi: ["Dari DOI yang bisa dicek, segini persen yang terdaftar di Crossref. Target: 100%.", "Yang kurang: periksa ulang penulisan DOI. Bila layanan pengecekan sedang tidak menjawab, itu belum berarti DOI-nya salah."],
-    berulang: ["Persen kalimat yang muncul lebih dari sekali di dokumen. Target: 0%.", "Tulis ulang kalimat yang sama persis agar tiap bagian punya isi sendiri."]
-  };
-  /* Hanya poin yang SALAH yang tampil di sini, lengkap dengan persen salahnya. Poin yang sudah benar dipindah ke bawah (window.auditOkList). */
-  var wrongOf = window.pfWrongPct = function (m, tol) { if (m.value == null) return null; var w = m.good === "rendah" ? m.value : 100 - m.value; return Math.round(w * 10) / 10 <= (tol == null ? 5 : tol) ? 0 : Math.round(w * 10) / 10; };
-  var shown = sc.metrics.filter(function (m) { return wrongOf(m) > 0; });
-  if (!shown.length) {
-    var measurable = sc.metrics.some(function (m) { return m.value != null; });
-    side.appendChild(el("div", "font-size:14px;opacity:.85;margin:6px 0", measurable ? (aspWrong.length ? "Sitasi, pustaka, DOI, dan kalimat berulang sudah sesuai target (rincian di \"Yang sudah benar\"). Yang perlu dibenahi ada di aspek isi di bawah." : "Poin utama (sitasi, pustaka, DOI, kalimat berulang) sudah sesuai target. Rinciannya ada di bagian bawah, di \"Yang sudah benar\".") : "Sitasi, daftar pustaka, dan DOI belum bisa dinilai karena daftar pustaka tidak terbaca di bagian dokumen yang diperiksa."));
-  }
-  shown.forEach(function (m) {
-    var d = document.createElement("details"); d.style.cssText = "margin-bottom:6px;border-radius:12px";
-    var sm = document.createElement("summary"); sm.style.cssText = "cursor:pointer;list-style:none;padding:4px 0";
-    var row = el("div", "margin-bottom:2px"), top = el("div", "display:flex;justify-content:space-between;gap:10px;font-size:13.5px");
-    var lb = el("span", "", m.label); var ar = el("span", "margin-left:6px;opacity:.55;font-size:11px", "▾ rincian"); lb.appendChild(ar);
-    top.appendChild(lb);
-    var wp = wrongOf(m);
-    top.appendChild(el("b", "flex:none;color:" + (wp >= 40 ? "#ff8aa5" : "#f3ff4d"), String(wp).replace(".", ",") + "% bermasalah"));
-    row.appendChild(top);
-    var bar = el("div", "height:6px;border-radius:99px;background:rgba(128,128,160,.22);overflow:hidden;margin-top:3px");
-    bar.appendChild(el("div", "height:100%;width:" + Math.min(100, wp) + "%;background:" + (wp >= 40 ? "#ff8aa5" : "#f3ff4d"))); row.appendChild(bar);
-    sm.appendChild(row); d.appendChild(sm);
-    var pn = el("div", "padding:8px 2px 10px;font-size:13.5px;line-height:1.6"), h = HELP[m.key] || [];
-    h.forEach(function (t) { pn.appendChild(el("p", "margin:0 0 6px", t)); });
-    var rel = (findings || []).filter(function (f) { return MCAT[m.key] && MCAT[m.key].test(f.cat || ""); });
-    if (MCAT[m.key]) {
-      if (rel.length && window.renderFindings) { var fb = el("div", "margin-top:6px"); pn.appendChild(fb); window.renderFindings(fb, rel, { sev: { kritis: ["Kritis", "#ff8aa5"], peringatan: ["Peringatan", "#f3ff4d"], info: ["Info", "#8ec5ff"] }, visible: 4, full: true }); }
-      else if (m.value != null) pn.appendChild(el("p", "margin:0;opacity:.75", "Tidak ada temuan untuk poin ini."));
-    }
-    d.appendChild(pn);
-    d.addEventListener("toggle", function () { ar.textContent = d.open ? "▴ tutup" : "▾ rincian"; });
-    side.appendChild(d);
-  });
-  wrap.appendChild(ring); wrap.appendChild(side); box.appendChild(wrap);
-  box.appendChild(el("p", "max-width:760px;margin:0 auto 10px;font-size:12.5px;opacity:.7;text-align:center", sc.note));
+  window.pfWrongPct = function (m, tol) { if (m.value == null) return null; var w = m.good === "rendah" ? m.value : 100 - m.value; return Math.round(w * 10) / 10 <= (tol == null ? 5 : tol) ? 0 : Math.round(w * 10) / 10; };
+  window.auditProblemCard(sc.problem, box);
   window.auditAspects(sc, box);
 };
 
@@ -403,12 +366,13 @@ window.renderFindings = function (box, findings, opts) {
     top.appendChild(el("span", "flex:none;font-size:13px;opacity:.75;max-width:100%", compactWhere(g.items)));
     wrap.appendChild(top);
     var opened = g.items.filter(function (f) { return FULL || f.open; }), first = opened[0];
+    if (first && first.quote) wrap.appendChild(el("div", "font-size:13px;font-style:italic;opacity:.8;margin-top:6px;padding:6px 10px;border-radius:8px;background:rgba(128,128,160,.14)", "“" + first.quote + "”"));
     wrap.appendChild(first ? el("div", "font-size:13.5px;opacity:.85;margin-top:4px", first.detail) : el("div", "font-size:13px;opacity:.6;filter:blur(5px);user-select:none;margin-top:4px", "Penjelasan dan saran perbaikan di Audit Lengkap"));
     if (n > 1) {
       var d = el("details", "margin-top:6px"), locked = n - opened.length;
       d.appendChild(el("summary", "cursor:pointer;font-size:13px;font-weight:600", "Lihat rincian " + n + " temuan" + (locked ? " (" + locked + " dibuka di Audit Lengkap)" : "")));
       var ul = el("ul", "margin:6px 0 0;padding-left:18px;font-size:13px;line-height:1.55;max-height:260px;overflow-y:auto");
-      g.items.forEach(function (f) { ul.appendChild(el("li", "", f.where + (FULL || f.open ? ": " + f.detail : ": dibuka di Audit Lengkap"))); });
+      g.items.forEach(function (f) { var li = el("li", "", f.where + (FULL || f.open ? ": " + f.detail : ": dibuka di Audit Lengkap")); if ((FULL || f.open) && f.quote) li.appendChild(el("div", "font-style:italic;opacity:.75;margin:2px 0 6px", "“" + f.quote + "”")); ul.appendChild(li); });
       d.appendChild(ul); wrap.appendChild(d);
     }
     return wrap;

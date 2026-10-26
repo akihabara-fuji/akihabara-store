@@ -167,6 +167,7 @@
   /* Angka aspek yang sama dengan Audit Dokumen (renderer yang sama di common.js). */
   function renderOverview(pv) {
     var box = $("overview"); box.innerHTML = ""; if (!pv.overview) return;
+    if (pv.overview.problem) window.auditProblemCard(pv.overview.problem, box);
     window.auditAspects(pv.overview, box, { compact: true });
     box.appendChild(mk("a", "font-size:13.5px", "Skor kesiapan serta penjelasan lengkap sitasi dan daftar pustaka ada di Audit Dokumen →")).href = "/ruangakademikut/audit";
   }

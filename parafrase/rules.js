@@ -16,7 +16,7 @@
    "dibandingkan dengan database jurnal dan internet". */
 "use strict";
 const { splitSentences, countWords } = require("./docx");
-const { checkStandar, STANDAR_CODE } = require("./standar");
+const { checkStandar, STANDAR_CODE, STANDAR_SCOPE } = require("./standar");
 const { TARGET, findAiMarkers, helperFor, rewriteFor } = require("./hint");
 
 const CODES = {
@@ -199,8 +199,10 @@ function analyzeFindings(paras, bibAt, cfg = {}) {
   }
 
   /* Standar Bab 4 dan Bab 5 dipakai bersama oleh Cek Parafrase (di sini) dan Audit Dokumen (auditrules.js). Aturannya satu, di standar.js. */
-  for (const f of checkStandar(paras, bibAt, { splitSentences, countWords, findCitations, hasCitation, isBody }))
+  for (const f of checkStandar(paras, bibAt, { splitSentences, countWords, findCitations, hasCitation, isBody }, cfg)) {
     add(STANDAR_CODE[f.rule], paras.find(p => p.idx === f.para_idx), f.sent_idx, f.text, f.reason);
+    out[out.length - 1].rule = f.rule; out[out.length - 1].scope = STANDAR_SCOPE[f.rule];
+  }
 
   // B: pustaka yang tidak pernah disitasi di teks
   if (hasBib) {
@@ -234,4 +236,4 @@ function saveFindings(db, orderId, findings, now = Date.now()) {
   })();
 }
 
-module.exports = { analyzeFindings, countByCode, saveFindings, findCitations, hasCitation, isBody, CODES, PRIORITY, GENERIC, TRANS, helperFor, rewriteFor };
+module.exports = { parseBibliography, analyzeFindings, countByCode, saveFindings, findCitations, hasCitation, isBody, CODES, PRIORITY, GENERIC, TRANS, helperFor, rewriteFor };

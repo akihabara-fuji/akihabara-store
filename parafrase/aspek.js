@@ -6,6 +6,7 @@
 const { splitSentences, countWords } = require("./docx");
 const rules = require("./rules");
 const { kindOf } = require("./hint");
+const { computeProblem } = require("./masalah");
 
 const MIN_SENTENCES = 12;
 const norm1 = s => String(s || "").toLowerCase().replace(/[^\p{L}\p{N} ]/gu, " ").replace(/\s+/g, " ").trim();
@@ -66,7 +67,7 @@ function computeAspects(paras, bibAt, findings, cfg = {}) {
   }
   ai.codes = ["A"];
   ai.note = "Estimasi heuristik dari pola tulisan, bukan detektor AI dan bukan skor Drillbit atau Turnitin. Tulisan manusia bisa terbaca tinggi dan sebaliknya. Angka resmi hanya dari Drillbit milik UT.";
-  return { aspects, ai };
+  return { aspects, ai, problem: computeProblem(paras, bibAt, findings, cfg) };
 }
 
 module.exports = { computeAspects, MIN_SENTENCES };

@@ -54,14 +54,6 @@
     /* Urgensi perbaikan dari mesin yang sama dengan Cek & Parafrase; angka Drillbit milik murid menghitungnya ulang di server. */
     var tOpts = { here: "audit", uploadId: upId };
     window.renderTriage($("triage"), d.triage, tOpts);
-    window.auditDrillbit($("dbit"), d.score, {
-      here: "audit", uploadId: upId,
-      fetch: function (s, a) {
-        var q = []; if (s != null) q.push("sim=" + encodeURIComponent(String(s))); if (a != null) q.push("ai=" + encodeURIComponent(String(a)));
-        return fetch("/ms/parafrase/upload/" + upId + (q.length ? "?" + q.join("&") : ""), { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) { return j.triage; });
-      },
-      onTriage: function (t) { window.renderTriage($("triage"), t, tOpts); }
-    });
     var c = $("counts"); c.innerHTML = "";
     ["kritis", "peringatan", "info"].forEach(function (k) {
       var b = el("div", "min-width:130px;padding:14px 18px;border-radius:16px;border:1px solid #2b2b58");
