@@ -5,19 +5,25 @@
     "nugasUrl": "https://sahabatanalisis.tech/app",
     "analisaFree": "1x gratis per hari",
     "analisaPrice": "Rp1.000",
-    "heroEyebrow": "Buka setiap hari · Order via WhatsApp",
-    "heroTitle": "Konten makin *estetik*, akun makin *naik*, ruangan makin *bersih*.",
-    "heroLead": "Preset Lightroom, template Canva Instagram, analisa akun & affiliate TikTok, sampai jasa kebersihan profesional — semua di satu tempat.",
+    "showPrices": false,
+    "brand": "nextaja",
+    "tiktok": "@akihabara.fuzi",
+    "instagram": "@deikaru.dz",
+    "facebook": "Next Aja",
+    "facebookUrl": "",
+    "studioSoon": true,
+    "workPhoto": "",
+    "heroEyebrow": "Operasional 8+ tahun, sekarang membangun jasa analisa social media",
+    "heroTitle": "Naik kelas pelan-pelan, dengan *data* yang jujur.",
+    "heroLead": "Analisa akun TikTok dan Instagram, preset dan template IG, bantuan akademik, serta service housekeeping, dari satu tempat.",
     "marquee": [
-      "Preset Lightroom",
-      "Template Canva",
       "Analisa TikTok",
-      "Cek Affiliate",
-      "Deep Cleaning",
-      "Cold Fogging",
-      "Anti Rayap",
-      "Anti Nyamuk",
-      "Sahabat Nugas"
+      "Analisa Instagram",
+      "Akun Affiliator",
+      "Preset IG",
+      "Template IG",
+      "Bantu Akademik",
+      "Service Housekeeping"
     ],
     "categories": [
       {
@@ -38,11 +44,11 @@
       }
     ],
     "theme": {
-      "preset": "violet",
+      "preset": "terra",
       "a1": "",
       "a2": ""
     },
-    "mascot": true
+    "nx": true
   },
   "products": [
     {
@@ -181,76 +187,23 @@
   ],
   "services": [
     {
-      "id": "apt",
-      "name": "Bersih Apartemen",
-      "desc": "Unit studio sampai 3BR.",
-      "icon": "apt",
+      "id": "pest",
+      "name": "Pest control",
+      "desc": "Inspeksi, pengendalian, dan pencegahan. Dikerjakan mitra berizin.",
+      "icon": "rayap",
+      "image": "",
       "g": [
-        "#67e8f9",
-        "#0891b2"
-      ],
-      "active": true
-    },
-    {
-      "id": "kamar",
-      "name": "Bersih Kamar / Kos",
-      "desc": "Kamar tidur, kamar kos, kamar mandi.",
-      "icon": "kamar",
-      "g": [
-        "#a78bfa",
-        "#7c3aed"
-      ],
-      "active": true
-    },
-    {
-      "id": "rumah",
-      "name": "Bersih Rumah",
-      "desc": "Seluruh rumah, rutin atau sekali.",
-      "icon": "rumah",
-      "g": [
-        "#fda4af",
-        "#e11d48"
-      ],
-      "active": true
-    },
-    {
-      "id": "deep",
-      "name": "Deep Cleaning",
-      "desc": "Pindahan, habis renovasi, kotor berat.",
-      "icon": "deep",
-      "g": [
-        "#fde68a",
-        "#d97706"
-      ],
-      "active": true
-    },
-    {
-      "id": "ruang",
-      "name": "Ruangan & Kantor",
-      "desc": "Ruko, kantor kecil, ruang usaha.",
-      "icon": "ruang",
-      "g": [
-        "#93c5fd",
-        "#2563eb"
-      ],
-      "active": true
-    },
-    {
-      "id": "taman",
-      "name": "Taman & Halaman",
-      "desc": "Potong rumput, rapikan tanaman, sapu halaman.",
-      "icon": "taman",
-      "g": [
-        "#86efac",
-        "#16a34a"
+        "#ff6a1a",
+        "#92400e"
       ],
       "active": true
     },
     {
       "id": "fog",
-      "name": "Cold Fogging",
+      "name": "Cold fogging",
       "desc": "Disinfeksi ruangan menyeluruh.",
       "icon": "fog",
+      "image": "",
       "g": [
         "#e2e8f0",
         "#64748b"
@@ -258,39 +211,31 @@
       "active": true
     },
     {
-      "id": "nyamuk",
-      "name": "Anti Nyamuk",
-      "desc": "Fogging & treatment sarang nyamuk.",
-      "icon": "nyamuk",
+      "id": "clean",
+      "name": "Cleaning service",
+      "desc": "Apartemen, rumah, kantor, dan gedung.",
+      "icon": "rumah",
+      "image": "",
       "g": [
-        "#fca5a5",
-        "#dc2626"
+        "#ffa43a",
+        "#ff6a1a"
       ],
       "active": true
     },
     {
-      "id": "rayap",
-      "name": "Anti Rayap",
-      "desc": "Pengecekan & penanganan rayap.",
-      "icon": "rayap",
+      "id": "general",
+      "name": "General cleaning",
+      "desc": "Pembersihan menyeluruh untuk pindahan atau habis renovasi.",
+      "icon": "deep",
+      "image": "",
       "g": [
-        "#d6b48a",
-        "#92400e"
-      ],
-      "active": true
-    },
-    {
-      "id": "sofa",
-      "name": "Sofa & Kasur",
-      "desc": "Cuci sofa, kasur, karpet.",
-      "icon": "sofa",
-      "g": [
-        "#f0abfc",
-        "#c026d3"
+        "#fde68a",
+        "#d97706"
       ],
       "active": true
     }
   ],
+  "reviews": [],
   "faq": [
     {
       "id": "f1",
