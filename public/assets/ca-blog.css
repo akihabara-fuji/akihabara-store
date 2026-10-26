@@ -128,3 +128,5 @@
 @media (max-width:900px){.bx-hero{grid-template-columns:minmax(0,1fr)}.bx-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:560px){.bx-grid{grid-template-columns:minmax(0,1fr)}.bx-search button{padding:0 16px}.bx-arch .blog-titles a{grid-template-columns:56px 1fr}.bx-arch .blog-titles .tag{display:none}.wa-bubble{left:12px;right:12px;justify-content:center}}
 @media (prefers-reduced-motion:reduce){.bx-feat>a,.bx-card>a{transition:none}.bx-feat>a:hover,.bx-card>a:hover{transform:none}}
+
+.ax-views{display:inline-flex;align-items:center;gap:5px}.ax-views svg{flex:none}

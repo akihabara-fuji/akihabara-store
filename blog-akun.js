@@ -91,6 +91,8 @@ module.exports = function mount(ctx) {
     });
     return blogWrite;
   }
+  // sekali jalan: seluruh penulis artikel diseragamkan menjadi "dk" (permintaan pemilik); setelah itu penulis boleh diubah lagi per artikel
+  if (!blog.authorDk) { blog.posts.forEach(x => { x.author = "dk"; }); blog.authorDk = true; saveBlog(); }
   // buang isi sampah yang sudah lewat 30 hari
   const before = blog.posts.length;
   blog.posts = blog.posts.filter(p => !(p.trashedAt && Date.now() - new Date(p.trashedAt).getTime() > TRASH_MS));
@@ -358,7 +360,8 @@ module.exports = function mount(ctx) {
     let topics = TOPICS;
     /* di catatanakademik.com, menu tulis hanya menawarkan topik akademik */
     if (onAcadHost(req)) { topics = Object.fromEntries(Object.entries(TOPICS).filter(([k]) => ACAD_TOPICS.includes(k))); all = all.filter(p => ACAD_TOPICS.includes(p.topic)); }
-    res.json({ topics, posts: all.filter(p => !p.trashedAt), trash: all.filter(p => p.trashedAt) });
+    const withV = a => a.map(p => ({ ...p, views: viewsOf(p.slug) }));
+    res.json({ topics, posts: withV(all.filter(p => !p.trashedAt)), trash: withV(all.filter(p => p.trashedAt)) });
   });
   /* Status tulisan: draft (draf), review (menunggu review editor), scheduled (terbit otomatis di publishAt), published (terbit).
      Field tambahan hanya diubah bila dikirim, supaya editor lama yang belum mengenal field baru tidak menghapusnya. */
@@ -557,7 +560,7 @@ module.exports = function mount(ctx) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Bricolage+Grotesque:wght@600;700&display=swap" rel="stylesheet">
 <script>try{var t=localStorage.getItem("nx-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
-<link rel="stylesheet" href="/assets/blog.css?v=10"><link rel="stylesheet" href="/assets/ca-blog.css?v=8"><script async src="/t.js"></script>
+<link rel="stylesheet" href="/assets/blog.css?v=10"><link rel="stylesheet" href="/assets/ca-blog.css?v=9"><script async src="/t.js"></script>
 ${extra}
 </head>
 <body>
@@ -630,7 +633,7 @@ ${ACAD_ONLY ? '<script defer src="/ruangakademikut/assets/koin-chip.js?v=2026120
   /* Bagian penutup lama ("Kalau kamu butuh bantuan ...") di dalam isi tulisan diganti bubble WhatsApp di bawah. */
   const cleanBody = t => importMd.scrubInternal(String(t || "")).replace(/\r/g, "").replace(/\n[ \t]*(?:#{1,3}[ \t]*)?(?:\*\*)?Kalau kamu butuh bantuan(?:\*\*)?[ \t]*\n[\s\S]{0,1600}$/i, "").trimEnd();
   /* Halaman artikel. preview=true: pratinjau admin untuk draf/terjadwal (noindex, tanpa komentar, tidak pernah di-cache). */
-  const DEFAULT_AUTHOR = "Dika Priyadi";
+  const DEFAULT_AUTHOR = "dk";
   /* Blok komunitas otomatis di bawah tiap artikel (domain akademik). Tautan dari Pengaturan admin; yang kosong tidak ditampilkan. */
   function communityBlock() {
     if (!ACAD_ONLY) return "";
@@ -639,6 +642,29 @@ ${ACAD_ONLY ? '<script defer src="/ruangakademikut/assets/koin-chip.js?v=2026120
     if (!links.length) return "";
     return `<aside class="ax-comm" aria-labelledby="axCommH"><h2 id="axCommH">Gabung komunitas ${esc(BRAND)}</h2><p>Biar tidak ketinggalan jadwal dan info penting seputar UT.</p><div class="ax-comm-l">${links.map(([n, u, d]) => `<a href="${esc(u)}" rel="noopener nofollow" target="_blank"><b>${esc(n)}</b><span>${esc(d)}</span></a>`).join("")}</div></aside>`;
   }
+  /* ============ PENGUNJUNG ARTIKEL ============
+     Dihitung di server saat artikel dibuka: satu pengunjung (IP + browser) dihitung sekali per artikel per hari, bot/crawler dan pratinjau admin tidak dihitung.
+     Disimpan di data/blog-views.json: { slug: { t: total, d: { "YYYY-MM-DD": n } } } (rincian harian hanya 35 hari terakhir). */
+  const VIEWS = path.join(DATA_DIR, "blog-views.json");
+  const views = readJson(VIEWS, {});
+  const dayKey = (t = Date.now()) => new Date(t + 7 * 3600e3).toISOString().slice(0, 10);
+  const seenView = new Map(); let seenDay = dayKey(); let viewTimer = null;
+  const BOT = /bot|crawl|spider|slurp|preview|facebookexternalhit|whatsapp|telegram|curl|wget|python|headless|lighthouse|monitor|uptime|httpclient|go-http|axios|node-fetch/i;
+  function countView(req, slug) {
+    const ua = String(req.headers["user-agent"] || "");
+    if (req.method !== "GET" || !ua || BOT.test(ua)) return;
+    if (req.headers["purpose"] === "prefetch" || req.headers["sec-purpose"]) return;
+    const d = dayKey(); if (d !== seenDay) { seenView.clear(); seenDay = d; }
+    const key = crypto.createHash("sha1").update(`${req.ip}|${ua}|${slug}`).digest("base64").slice(0, 16);
+    if (seenView.has(key)) return; seenView.set(key, 1);
+    const v = views[slug] || (views[slug] = { t: 0, d: {} });
+    v.t++; v.d[d] = (v.d[d] || 0) + 1;
+    const cut = dayKey(Date.now() - 35 * 864e5); for (const k of Object.keys(v.d)) if (k < cut) delete v.d[k];
+    if (!viewTimer) viewTimer = setTimeout(() => { viewTimer = null; writeJson(VIEWS, views).catch(() => {}); }, 5000).unref();
+  }
+  process.on("exit", () => { if (viewTimer) { try { fs.writeFileSync(VIEWS, JSON.stringify(views)); } catch {} } });
+  const viewsOf = slug => { const v = views[slug]; if (!v) return { total: 0, week: 0 }; const cut = dayKey(Date.now() - 6 * 864e5); return { total: v.t || 0, week: Object.entries(v.d || {}).filter(([k]) => k >= cut).reduce((a, [, n]) => a + n, 0) }; };
+  const nf = n => new Intl.NumberFormat("id-ID").format(n);
   function articlePage(p, { preview = false } = {}) {
     const plain = String(p.body || "").replace(IMG_MD, " ").replace(/[#*_>`\[\]()!-]/g, " ").replace(/\s+/g, " ").trim();
     const desc = p.metaDesc || p.excerpt || (plain.length > 155 ? plain.slice(0, 152).replace(/\s+\S*$/, "") + "…" : plain) || p.title;
@@ -666,7 +692,7 @@ ${ACAD_ONLY ? '<script defer src="/ruangakademikut/assets/koin-chip.js?v=2026120
     const statusLabel = { draft: "Draf", review: "Menunggu review", scheduled: `Terjadwal ${p.publishAt ? shortDate(p.publishAt) : ""}`, published: "Terbit" }[p.status] || p.status;
     const body = `${preview ? `<div class="ax-prev" role="status">Pratinjau admin · status: <b>${esc(statusLabel)}</b>. Halaman ini tidak terlihat publik dan tidak diindeks.</div>` : ""}<div class="wrap ax"><article class="ax-main">
       <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Beranda</a><span aria-hidden="true">/</span><a href="/blog">Blog</a><span aria-hidden="true">/</span><a href="${topicLink}">${esc(tl(p.topic))}</a><span aria-hidden="true">/</span><span aria-current="page">${esc(p.title)}</span></nav>
-      <div class="ax-meta"><a class="bx-tag" href="${topicLink}">${esc(tl(p.topic))}</a><time datetime="${esc(pub)}">${esc(shortDate(pub))}</time>${showUpd ? `<span>Diperbarui <time datetime="${esc(mod)}">${esc(shortDate(mod))}</time></span>` : ""}<span>${readMin(p)} menit baca</span></div>
+      <div class="ax-meta"><a class="bx-tag" href="${topicLink}">${esc(tl(p.topic))}</a><time datetime="${esc(pub)}">${esc(shortDate(pub))}</time>${showUpd ? `<span>Diperbarui <time datetime="${esc(mod)}">${esc(shortDate(mod))}</time></span>` : ""}<span>${readMin(p)} menit baca</span><span class="ax-views" title="Jumlah pembaca artikel ini"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/></svg>${nf(viewsOf(p.slug).total)} dilihat</span></div>
       <h1>${esc(p.title)}</h1>
       ${p.excerpt ? `<p class="ax-lead">${esc(p.excerpt)}</p>` : ""}
       <div class="ax-by">Oleh <b>${esc(author)}</b></div>
@@ -687,6 +713,7 @@ ${ACAD_ONLY ? '<script defer src="/ruangakademikut/assets/koin-chip.js?v=2026120
   app.get("/blog/:slug", (req, res, next) => {
     const p = published().find(x => x.slug === req.params.slug);
     if (!p) return next();
+    countView(req, p.slug);
     res.set("Cache-Control", "no-cache").type("html").send(articlePage(p));
   });
 

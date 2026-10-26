@@ -257,9 +257,10 @@
       <div class="bar"><nav class="tabs" aria-label="Status artikel">${tabs}</nav><span class="grow"></span><button class="btn" id="impMd" type="button">Impor file .md</button><a class="btn pri" href="#/posts/new">${ICON.pen}Tulis artikel</a></div>
       <div class="card"><div class="hd"><form class="bar" id="pf" style="flex:1"><select class="in" name="topic" style="width:auto"><option value="">Semua kategori</option>${Object.entries(d.topics).map(([k, v]) => `<option value="${k}" ${k === topic ? "selected" : ""}>${esc(v.label)}</option>`).join("")}</select>
         <input class="in grow" name="q" type="search" placeholder="Cari judul artikel…" value="${esc(q.get("q") || "")}"><button class="btn">Cari</button>${tag ? `<a class="btn sm" href="#/posts">Tag #${esc(tag)} ✕</a>` : ""}</form></div>
-      <div class="tbl-wrap">${list.length ? `<table class="t"><thead><tr><th>Judul</th><th>Kategori</th><th>Penulis</th><th>Status</th><th>Tanggal</th><th></th></tr></thead><tbody>${list.map(p => {
+      <div class="tbl-wrap">${list.length ? `<table class="t"><thead><tr><th>Judul</th><th>Kategori</th><th>Penulis</th><th>Status</th><th title="Pembaca unik per hari">Dilihat</th><th>Tanggal</th><th></th></tr></thead><tbody>${list.map(p => {
         const st = stOf(p), [l, tone] = ST_LABEL[st];
-        return `<tr class="click" data-href="#/posts/${p.id}"><td><b>${esc(p.title)}</b>${p.featured ? ' <span class="badge t-info">Pilihan</span>' : ""}<div class="small faint">/blog/${esc(p.slug)}</div></td><td>${esc((d.topics[p.topic] || {}).label || p.topic)}</td><td>${esc(p.author || "Dika Priyadi")}</td><td>${badge(l, tone)}</td>
+        return `<tr class="click" data-href="#/posts/${p.id}"><td><b>${esc(p.title)}</b>${p.featured ? ' <span class="badge t-info">Pilihan</span>' : ""}<div class="small faint">/blog/${esc(p.slug)}</div></td><td>${esc((d.topics[p.topic] || {}).label || p.topic)}</td><td>${esc(p.author || "dk")}</td><td>${badge(l, tone)}</td>
+          <td class="small"><b>${(p.views ? p.views.total : 0).toLocaleString("id-ID")}</b><div class="faint">${(p.views ? p.views.week : 0).toLocaleString("id-ID")} / 7 hari</div></td>
           <td class="muted small">${st === "scheduled" ? "Terbit " + dt(p.publishAt) : st === "published" ? "Terbit " + dd(p.publishedAt) : "Diubah " + dt(p.updatedAt)}</td>
           <td><div class="act"><button class="btn sm" data-menu="${p.id}" aria-haspopup="true">Aksi ▾</button></div></td></tr>`;
       }).join("")}</tbody></table>` : '<div class="empty">Tidak ada artikel di filter ini.</div>'}</div></div>`);
@@ -329,7 +330,7 @@
     const live = p && (p.status === "published" || (p.status === "scheduled" && Date.parse(p.publishAt) <= Date.now()));
     const st = p ? (stOf(p) === "published" ? "published" : p.status) : "draft";
     const localAt = v => { if (!v) return ""; const x = new Date(Date.parse(v) + 7 * 3600e3); return x.toISOString().slice(0, 16); };
-    const v = p || { title: "", slug: "", topic: Object.keys(d.topics)[0], excerpt: "", body: "", cover: "", tags: [], author: "Dika Priyadi", coverAlt: "", coverCaption: "", metaTitle: "", metaDesc: "" };
+    const v = p || { title: "", slug: "", topic: Object.keys(d.topics)[0], excerpt: "", body: "", cover: "", tags: [], author: "dk", coverAlt: "", coverCaption: "", metaTitle: "", metaDesc: "" };
     const TB = [["P", "Paragraf biasa", "p"], ["H2", "Sub-judul H2", "h2"], ["H3", "Sub-judul H3", "h3"], ["H4", "Sub-judul H4", "h4"], "|", ["B", "Tebal (Ctrl+B)", "b"], ["I", "Miring (Ctrl+I)", "i"], "|", ["•", "Daftar poin", "ul"], ["1.", "Daftar bernomor", "ol"], ["❝", "Kutipan", "q"], ["🔗", "Tautan (Ctrl+K)", "a"], ["🖼", "Sisipkan foto", "img"], ["▦", "Tabel", "tbl"], "|", ["↶", "Urungkan (Ctrl+Z)", "undo"], ["↷", "Ulangi (Ctrl+Y)", "redo"]];
     setPage(p ? "Edit Artikel" : "Tulis Artikel", p ? `Terakhir diubah ${dt(p.updatedAt)}${p.updatedBy ? " oleh " + esc(p.updatedBy) : ""}` : "Artikel baru", `
       <form class="ed" id="ef" novalidate>
@@ -349,7 +350,7 @@
               <fieldset style="border:0;padding:0;margin:0"><legend class="f" style="font-size:13px;font-weight:600;margin-bottom:6px">Status</legend><div class="radio">
                 ${[["draft", "Draf"], ["review", "Menunggu review"], ["scheduled", "Jadwalkan"], ["published", "Terbitkan"]].map(([k, l]) => `<label><input type="radio" name="status" value="${k}" ${st === k ? "checked" : ""}> ${l}</label>`).join("")}</div></fieldset>
               <label class="f" id="whenL">Tanggal & jam terbit (WIB)<input class="in" type="datetime-local" name="publishAt" value="${esc(localAt(v.publishAt))}"></label>
-              <label class="f">Penulis<input class="in" name="author" maxlength="60" value="${esc(v.author || "Dika Priyadi")}"></label>
+              <label class="f">Penulis<input class="in" name="author" maxlength="60" value="${esc(v.author || "dk")}"></label>
               <label class="f">Tag <small>· pisahkan dengan koma, maks 8</small><input class="in" name="tags" maxlength="240" value="${esc((v.tags || []).join(", "))}" placeholder="uas, jadwal-ut, registrasi"></label><div class="bar small" id="tagSug"></div>
               <div class="f" style="font-size:13px;font-weight:600">Gambar sampul</div>
               <div class="cover-box" id="cov" style="${v.cover ? `background-image:url('${esc(v.cover)}')` : ""}">${v.cover ? "" : "Belum ada gambar"}</div>
