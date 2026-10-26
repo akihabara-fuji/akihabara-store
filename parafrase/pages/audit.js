@@ -71,15 +71,7 @@
     $("refs").textContent = r.total ? r.total + " pustaka terbaca · " + r.doiOk + " DOI terverifikasi" + (r.doiNotFound ? " · " + r.doiNotFound + " DOI tidak ditemukan" : "") + (r.doiUnverified ? " · " + r.doiUnverified + " belum bisa dicek" : "") : "Daftar pustaka tidak terbaca.";
     var l = $("list"); l.innerHTML = "";
     if (!d.findings.length) l.appendChild(el("p", "text-align:center", "Tidak ada temuan dari aturan yang kami periksa. Tetap baca ulang sebelum dikumpulkan."));
-    d.findings.slice(0, 40).forEach(function (f) {
-      var row = el("div", "display:flex;gap:12px;align-items:center;padding:12px 14px;margin-bottom:8px;border-radius:14px;border:1px solid #2b2b58");
-      row.appendChild(el("span", "flex:none;font-size:12.5px;font-weight:700;padding:3px 10px;border-radius:999px;border:1px solid " + SEV[f.sev][1] + ";color:" + SEV[f.sev][1], SEV[f.sev][0]));
-      var mid = el("div", "flex:1"); mid.appendChild(el("div", "", f.cat));
-      if (f.open) mid.appendChild(el("div", "font-size:13.5px;opacity:.85;margin-top:2px", f.detail));
-      else mid.appendChild(el("div", "font-size:13px;opacity:.6;filter:blur(5px);user-select:none", "Penjelasan dan saran perbaikan di Audit Lengkap")); row.appendChild(mid);
-      row.appendChild(el("span", "flex:none;font-size:13px;opacity:.75", f.where)); l.appendChild(row);
-    });
-    if (d.findings.length > 40) l.appendChild(el("p", "text-align:center;opacity:.7", "dan " + (d.findings.length - 40) + " temuan lain di Audit Lengkap."));
+    window.renderFindings(l, d.findings, { sev: SEV, visible: 5 });
     $("perword").textContent = d.quote.perWord; $("minp").textContent = rp(d.quote.min); $("total").textContent = d.quote.allFree ? "0 (seluruh dokumen sudah terbuka gratis)" : rp(d.quote.total);
     $("fwn").textContent = rp(d.quote.freeWords || 0);
     $("cekGo").href = "/ruangakademikut/cek-parafrase-mandiri?u=" + encodeURIComponent(upId);

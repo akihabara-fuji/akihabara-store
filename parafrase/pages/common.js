@@ -95,8 +95,8 @@ window.auditAspects = function (sc, box, opts) {
       var w = value == null ? 0 : Math.min(100, value), bad = rendahBagus ? w : 100 - w;
       tr.appendChild(el("div", "height:100%;width:" + w + "%;background:" + (bad <= 15 ? "#5ee6a8" : bad <= 40 ? "#f3ff4d" : "#ff8aa5"))); row.appendChild(tr); return row;
     }
-    var list = blk;
-    if (compact) { list = el("div", "display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:0 28px"); blk.appendChild(list); }
+    var GRID = "display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:0 28px"; /* 2 kolom di layar lebar agar halaman tidak memanjang */
+    var list = el("div", GRID); blk.appendChild(list);
     sc.aspects.forEach(function (m) { list.appendChild(bar(m.label, m.value, m.good === "rendah", m.codes)); });
     if (sc.ai) {
       var ai = sc.ai, AC = { tinggi: "#ff8aa5", sedang: "#f3ff4d", rendah: "#5ee6a8" }[ai.level] || "#8ec5ff";
@@ -104,7 +104,7 @@ window.auditAspects = function (sc, box, opts) {
       var tt = el("b", "", "Indikasi gaya tulisan seragam atau otomatis"); tt.appendChild(chips(ai.codes)); hd.appendChild(tt);
       hd.appendChild(el("b", "font-size:26px;line-height:1;color:" + AC, ai.value == null ? "n/a" : ai.value + "%"));
       hd.appendChild(el("span", "font-size:13px;opacity:.8", ai.label)); blk.appendChild(hd);
-      if (!compact) (ai.parts || []).forEach(function (m) { blk.appendChild(bar(m.label, m.value, true)); });
+      if (!compact && (ai.parts || []).length) { var pl = el("div", GRID); (ai.parts || []).forEach(function (m) { pl.appendChild(bar(m.label, m.value, true)); }); blk.appendChild(pl); }
       blk.appendChild(el("p", "margin:8px 0 0;font-size:12.5px;opacity:.7", ai.note));
     }
     box.appendChild(blk);
@@ -227,7 +227,7 @@ window.renderTriage = function (box, t, opts) {
   if (ps.length) {
     card.appendChild(el("div", "font-weight:700;margin:12px 0 6px", "Urutan perbaikan: paragraf yang dirombak lebih dulu"));
     var list = el("ol", "margin:0;padding:0;list-style:none;display:grid;gap:6px");
-    ps.forEach(function (p) {
+    function addP(list, p) {
       var li = el("li", "display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;padding:9px 12px;border-radius:12px;border:1px solid var(--border,#2b2b58)");
       li.appendChild(el("b", "flex:none;min-width:84px", "Paragraf " + p.no));
       li.appendChild(el("span", "flex:none;font-size:12px;font-weight:700;padding:1px 9px;border-radius:999px;border:1px solid " + (COL[p.level] || c) + ";color:" + (COL[p.level] || c), LVL[p.level] || p.level));
@@ -235,8 +235,16 @@ window.renderTriage = function (box, t, opts) {
       li.appendChild(el("span", "flex:none;font-size:13px;font-weight:600", "→ " + (p.fix && p.fix.action || "Perbaiki")));
       if (p.excerpt) li.appendChild(el("div", "flex-basis:100%;font-size:12.5px;opacity:.65", "“" + p.excerpt + "…”"));
       list.appendChild(li);
-    });
+    }
+    var TOPN = 5;
+    ps.slice(0, TOPN).forEach(function (p) { addP(list, p); });
     card.appendChild(list);
+    if (ps.length > TOPN) {
+      var more = el("details", "margin-top:6px"), list2 = el("ol", "margin:6px 0 0;padding:0;list-style:none;display:grid;gap:6px;max-height:340px;overflow-y:auto");
+      more.appendChild(el("summary", "cursor:pointer;font-weight:600;font-size:13.5px", "Lihat " + (ps.length - TOPN) + " paragraf lainnya"));
+      ps.slice(TOPN).forEach(function (p) { addP(list2, p); });
+      more.appendChild(list2); card.appendChild(more);
+    }
     if (!opts.here || opts.here === "audit") card.appendChild(el("p", "margin:6px 0 0;font-size:12.5px;opacity:.7", "Nomor paragraf = urutan paragraf yang berisi teks di dokumenmu (paragraf kosong tidak dihitung). Isi kalimatnya dibuka di Cek & Parafrase Mandiri."));
   }
 
@@ -291,3 +299,60 @@ window.pfScan = (function () {
     stop: function (el) { clearInterval(timer); el.className = "hidden"; el.textContent = ""; }
   };
 })();
+
+/* Daftar temuan Audit yang ringkas: temuan sejenis digabung jadi satu baris ("Pustaka tanpa tahun · 20 temuan · no. 12-31"),
+   hanya beberapa jenis pertama yang tampil, sisanya terlipat. Halaman tidak memanjang walau temuannya ratusan.
+   opts: { sev: {kritis:[label,warna],...}, visible: jumlah jenis yang tampil, full: true bila semua temuan sudah dibuka (hasil berbayar) } */
+window.renderFindings = function (box, findings, opts) {
+  opts = opts || {}; var SEV = opts.sev || {}, VISIBLE = opts.visible || 6, FULL = !!opts.full, BORDER = "var(--border,#2b2b58)";
+  function el(tag, css, x) { var e = document.createElement(tag); if (css) e.style.cssText = css; if (x != null) e.textContent = x; return e; }
+  var rank = { kritis: 0, peringatan: 1, info: 2 }, groups = [], idx = {};
+  (findings || []).forEach(function (f) {
+    var k = f.sev + "|" + f.cat;
+    if (!idx[k]) { idx[k] = { sev: f.sev, cat: f.cat, items: [] }; groups.push(idx[k]); }
+    idx[k].items.push(f);
+  });
+  groups = groups.map(function (g, i) { return { g: g, i: i }; }).sort(function (a, b) { return (rank[a.g.sev] - rank[b.g.sev]) || (a.i - b.i); }).map(function (x) { return x.g; });
+
+  /* "Pustaka no. 47", "Pustaka no. 48", ... -> "Pustaka no. 47-53, 60"; lokasi tak berangka -> "N lokasi" */
+  function compactWhere(items) {
+    var wh = items.map(function (f) { return String(f.where || ""); });
+    if (wh.length === 1) return wh[0];
+    var parts = wh.map(function (w) { return /^(.*?)(\d+)$/.exec(w); });
+    if (parts.every(Boolean) && parts.every(function (p) { return p[1] === parts[0][1]; })) {
+      var nums = parts.map(function (p) { return +p[2]; }).filter(function (n, i, a) { return a.indexOf(n) === i; }).sort(function (a, b) { return a - b; }), out = [], s = nums[0], prev = s;
+      for (var i = 1; i <= nums.length; i++) {
+        if (nums[i] === prev + 1) { prev = nums[i]; continue; }
+        out.push(s === prev ? "" + s : s + "-" + prev); s = nums[i]; prev = nums[i];
+      }
+      return parts[0][1] + (out.length > 5 ? out.slice(0, 5).join(", ") + ", ... (" + nums.length + " lokasi)" : out.join(", "));
+    }
+    return wh.length + " lokasi";
+  }
+  function badge(sev) { var c = (SEV[sev] || ["", "#ccc"])[1]; return el("span", "flex:none;font-size:12.5px;font-weight:700;padding:3px 10px;border-radius:999px;border:1px solid " + c + ";color:" + c, (SEV[sev] || [sev])[0]); }
+  function row(g) {
+    var n = g.items.length, wrap = el("div", "padding:12px 14px;margin-bottom:8px;border-radius:14px;border:1px solid " + BORDER);
+    var top = el("div", "display:flex;gap:10px;align-items:center;flex-wrap:wrap");
+    top.appendChild(badge(g.sev));
+    top.appendChild(el("b", "flex:1;min-width:160px", g.cat + (n > 1 ? " · " + n + " temuan" : "")));
+    top.appendChild(el("span", "flex:none;font-size:13px;opacity:.75;max-width:100%", compactWhere(g.items)));
+    wrap.appendChild(top);
+    var opened = g.items.filter(function (f) { return FULL || f.open; }), first = opened[0];
+    wrap.appendChild(first ? el("div", "font-size:13.5px;opacity:.85;margin-top:4px", first.detail) : el("div", "font-size:13px;opacity:.6;filter:blur(5px);user-select:none;margin-top:4px", "Penjelasan dan saran perbaikan di Audit Lengkap"));
+    if (n > 1) {
+      var d = el("details", "margin-top:6px"), locked = n - opened.length;
+      d.appendChild(el("summary", "cursor:pointer;font-size:13px;font-weight:600", "Lihat rincian " + n + " temuan" + (locked ? " (" + locked + " dibuka di Audit Lengkap)" : "")));
+      var ul = el("ul", "margin:6px 0 0;padding-left:18px;font-size:13px;line-height:1.55;max-height:260px;overflow-y:auto");
+      g.items.forEach(function (f) { ul.appendChild(el("li", "", f.where + (FULL || f.open ? ": " + f.detail : ": dibuka di Audit Lengkap"))); });
+      d.appendChild(ul); wrap.appendChild(d);
+    }
+    return wrap;
+  }
+  groups.slice(0, VISIBLE).forEach(function (g) { box.appendChild(row(g)); });
+  if (groups.length > VISIBLE) {
+    var more = el("details", "margin-bottom:8px"), rest = groups.slice(VISIBLE);
+    more.appendChild(el("summary", "cursor:pointer;font-weight:600;padding:8px 2px", rest.length + " jenis temuan lain (" + rest.reduce(function (a, g) { return a + g.items.length; }, 0) + " temuan)"));
+    rest.forEach(function (g) { more.appendChild(row(g)); });
+    box.appendChild(more);
+  }
+};
