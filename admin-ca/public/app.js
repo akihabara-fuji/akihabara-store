@@ -367,7 +367,7 @@
               <label class="f">Tag <small>· pisahkan dengan koma, maks 8</small><input class="in" name="tags" maxlength="240" value="${esc((v.tags || []).join(", "))}" placeholder="uas, jadwal-ut, registrasi"></label><div class="bar small" id="tagSug"></div>
               <div class="f" style="font-size:13px;font-weight:600">Gambar sampul</div>
               <div class="cover-box" id="cov" style="${v.cover ? `background-image:url('${esc(v.cover)}')` : ""}">${v.cover ? "" : "Belum ada gambar"}</div>
-              <div class="bar"><label class="btn sm">Unggah gambar<input type="file" id="covF" accept="image/*" hidden></label><button type="button" class="btn sm" id="covP">Pilih dari Media</button><button type="button" class="btn sm bad" id="covX">Hapus</button></div>
+              <div class="bar"><label class="btn sm">Unggah gambar<input type="file" id="covF" accept="image/*" hidden></label><button type="button" class="btn sm" id="covP">Pilih dari Media</button><button type="button" class="btn sm" id="covC">Atur crop</button><button type="button" class="btn sm bad" id="covX">Hapus</button></div>
               <input type="hidden" name="cover" value="${esc(v.cover || "")}">
               <label class="f">Teks alt sampul <small>· jelaskan isi gambar untuk pembaca layar dan Google</small><input class="in" name="coverAlt" maxlength="160" value="${esc(v.coverAlt || "")}"></label>
               <label class="f">Keterangan foto (caption) <small>· opsional</small><input class="in" name="coverCaption" maxlength="200" value="${esc(v.coverCaption || "")}"></label>
@@ -470,8 +470,9 @@
     document.addEventListener("keydown", function sk(e) { if (!document.body.contains(f)) return document.removeEventListener("keydown", sk); if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") { e.preventDefault(); save(); } });
 
     const setCover = url => { f.cover.value = url; $("#cov").style.backgroundImage = `url('${url}')`; $("#cov").textContent = ""; DIRTY = true; sync(); mark(); };
-    $("#covF").onchange = async e => { const file = e.target.files[0]; if (!file) return; try { const fd = new FormData(); fd.append("file", file); toast("Mengunggah sampul…"); const r = await api("/ms/admin/ca/upload", { form: fd }); setCover(r.url); } catch (err) { fail(err); } e.target.value = ""; };
-    $("#covP").onclick = async () => { const u = (await pickImages())[0]; if (u) setCover(u); };
+    $("#covF").onchange = async e => { const file = e.target.files[0]; if (!file) return; try { const fd = new FormData(); fd.append("file", file); toast("Mengunggah sampul…"); const r = await api("/ms/admin/ca/upload", { form: fd }); const c = await cropCover(r.url); if (c) setCover(c); } catch (err) { fail(err); } e.target.value = ""; };
+    $("#covP").onclick = async () => { const u = (await pickImages())[0]; if (!u) return; const c = await cropCover(u); if (c) setCover(c); };
+    $("#covC").onclick = async () => { if (!f.cover.value) return toast("Pilih gambar sampul dulu.", true); const c = await cropCover(f.cover.value); if (c) setCover(c); };
     $("#covX").onclick = () => { f.cover.value = ""; $("#cov").style.backgroundImage = ""; $("#cov").textContent = "Belum ada gambar"; DIRTY = true; sync(); };
     $("#prevB").onclick = async () => { try { showHtml("Pratinjau artikel", await api("/ms/admin/preview-page", { json: val(), raw: true })); } catch (e) { fail(e); } };
     $("#draftB").onclick = () => { f.status.value = "draft"; $$("input[name=status]", f).forEach(r => { r.checked = r.value === "draft"; }); sync(); save(); };
@@ -523,6 +524,46 @@
       if (!await confirmAct("Pasang semua saran tag?", `${pending.length} artikel akan mendapat tag sesuai saran. Isi dan tanggal artikel tidak berubah; tag bisa diubah lagi di editor.`, "Pasang semua")) return;
       busy(e.target, async () => { try { for (const x of pending) await apply(x); toast(`Tag dipasang di ${pending.length} artikel`); route(); } catch (err) { fail(err); } });
     };
+  }
+  /* Atur gambar sampul: geser kotak, zoom, atau Otomatis. Hasilnya file baru di Media; mengembalikan alamat gambar (asli bila "tanpa crop"), atau "" bila dibatalkan. */
+  async function cropCover(url) {
+    const img = await new Promise(ok => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = url; });
+    if (!img || !img.naturalWidth) { toast("Gambar tidak bisa dibuka.", true); return ""; }
+    const W = img.naturalWidth, H = img.naturalHeight, RATIOS = { "3:2": 1.5, "16:9": 16 / 9, "1.91:1": 1.91, "1:1": 1 };
+    const st = { ratio: "3:2", zoom: 1, cx: .5, cy: .5, original: false };
+    const box = () => { const r = RATIOS[st.ratio], fw = Math.min(W, H * r) / st.zoom, w = fw / W, h = fw / r / H; return { w, h, x: Math.min(Math.max(0, st.cx - w / 2), 1 - w), y: Math.min(Math.max(0, st.cy - h / 2), 1 - h) }; };
+    const rect = () => { const b = box(); st.cx = b.x + b.w / 2; st.cy = b.y + b.h / 2; return b; };
+    let dlgEl = null;
+    const prev = (el, outerR) => { el.style.setProperty("--ar", outerR); const b = rect(), r = RATIOS[st.ratio], wide = Math.max(100, 100 * r / outerR); el.firstElementChild.style.cssText = `position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:${wide}%;aspect-ratio:${r};background:url('${url}') no-repeat;background-size:${100 / b.w}% ${100 / b.h}%;background-position:${b.w < 1 ? b.x / (1 - b.w) * 100 : 0}% ${b.h < 1 ? b.y / (1 - b.h) * 100 : 0}%`; };
+    const paint = () => {
+      const b = rect(), fr = $("#cpF", dlgEl); fr.style.cssText = `left:${b.x * 100}%;top:${b.y * 100}%;width:${b.w * 100}%;height:${b.h * 100}%`;
+      $$("[data-r]", dlgEl).forEach(c => c.classList.toggle("on", c.dataset.r === st.ratio)); $("#cpZ", dlgEl).value = Math.round(st.zoom * 100);
+      prev($("#cpP1", dlgEl), RATIOS[st.ratio]); prev($("#cpP2", dlgEl), 1.5); prev($("#cpP3", dlgEl), 1.91);
+    };
+    const ok = await dialog({ title: "Atur gambar sampul", wide: true, ok: "Pakai gambar ini", cancel: "Batal", body: `<div class="small faint">Geser kotak kuning untuk memilih bagian yang tampil. Gambar asli di Media tidak berubah.</div>
+      <div class="cp-stage" id="cpS" style="width:min(100%,calc(38vh * ${W / H}));aspect-ratio:${W}/${H}"><img src="${esc(url)}" alt="" draggable="false"><div class="cp-fr" id="cpF"><span class="cp-hint">Tarik untuk geser</span></div></div>
+      <div class="bar">${Object.keys(RATIOS).map(k => `<button type="button" class="btn sm cp-chip" data-r="${k}">${k}${{ "3:2": " Artikel", "1.91:1": " Bagikan" }[k] || ""}</button>`).join("")}<button type="button" class="btn sm" id="cpA" style="margin-left:auto">✨ Otomatis</button></div>
+      <label class="f cp-z">Zoom <input type="range" id="cpZ" min="100" max="400" step="5" value="100"></label>
+      <div class="cp-pv"><div><b>Di artikel</b><span class="cp-pvb" id="cpP1"><i></i></span></div><div><b>Kartu blog</b><span class="cp-pvb a32" id="cpP2"><i></i></span></div><div><b>Dibagikan (WA/Google)</b><span class="cp-pvb a191" id="cpP3"><i></i></span></div></div>
+      <div class="bar"><button type="button" class="btn sm" id="cpR">Atur ulang</button><button type="button" class="btn sm" id="cpO">Pakai tanpa crop</button></div>`,
+      onOpen: d => {
+        dlgEl = d; const S = $("#cpS", d), F = $("#cpF", d);
+        $$("[data-r]", d).forEach(c => c.onclick = () => { st.ratio = c.dataset.r; paint(); });
+        $("#cpZ", d).oninput = e => { st.zoom = Number(e.target.value) / 100; paint(); };
+        S.addEventListener("wheel", e => { e.preventDefault(); st.zoom = Math.min(4, Math.max(1, st.zoom * (e.deltaY < 0 ? 1.08 : 0.93))); paint(); }, { passive: false });
+        const at = e => { const r = S.getBoundingClientRect(); return [(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height]; };
+        let drag = null;
+        S.addEventListener("pointerdown", e => { const [px, py] = at(e); const b = box(); if (!(px >= b.x && px <= b.x + b.w && py >= b.y && py <= b.y + b.h)) { st.cx = px; st.cy = py; paint(); } drag = { px: at(e)[0], py: at(e)[1], cx: st.cx, cy: st.cy }; S.setPointerCapture(e.pointerId); F.classList.add("drag"); });
+        S.addEventListener("pointermove", e => { if (!drag) return; const [px, py] = at(e); st.cx = drag.cx + (px - drag.px); st.cy = drag.cy + (py - drag.py); paint(); });
+        const end = () => { drag = null; F.classList.remove("drag"); }; S.addEventListener("pointerup", end); S.addEventListener("pointercancel", end);
+        $("#cpR", d).onclick = () => { st.zoom = 1; st.cx = st.cy = .5; paint(); };
+        $("#cpO", d).onclick = () => { st.original = true; d.finish(true); };
+        $("#cpA", d).onclick = e => busy(e.currentTarget, async () => { try { const r = (await api("/ms/admin/ca/crop-auto", { json: { src: url, ratio: st.ratio } })).rect; const fw = r.w * W; st.zoom = Math.max(1, Math.min(4, Math.min(W, H * RATIOS[st.ratio]) / fw)); st.cx = r.x + r.w / 2; st.cy = r.y + r.h / 2; paint(); } catch (err) { fail(err); } });
+        paint();
+      } });
+    if (!ok) return "";
+    if (st.original) return url;
+    try { toast("Memotong gambar…"); return (await api("/ms/admin/ca/crop", { json: { src: url, ratio: st.ratio, rect: box() } })).url; } catch (err) { fail(err); return ""; }
   }
   /* pustaka foto: pilih gambar yang sudah pernah diunggah, atau unggah satu/beberapa sekaligus. Mengembalikan daftar alamat gambar. */
   async function pickImages() {

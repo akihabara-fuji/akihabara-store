@@ -251,6 +251,38 @@ module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, b
       res.json({ ok: true, url: `/uploads/${name}.${ext}` });
     } catch { res.status(400).json({ error: "Gambar tidak bisa dibaca. Coba file lain." }); }
   }));
+  /* Crop gambar sampul: hasilnya file baru (asli di Media tidak berubah), supaya tampil sama di artikel, kartu, dan pratinjau bagikan. */
+  const RATIOS = { "3:2": 3 / 2, "16:9": 16 / 9, "1.91:1": 1.91, "1:1": 1 };
+  const srcFile = u => { const m = /^\/uploads\/([a-z0-9][a-z0-9._-]*\.(?:webp|jpe?g|png|avif|gif))$/i.exec(String(u || "")); if (!m) throw bad(400, "Alamat gambar tidak valid."); return path.join(UPLOADS, m[1]); };
+  const needSharp = () => { if (!sharp) throw bad(501, "Crop butuh modul gambar di server yang belum aktif."); };
+  const readImg = async u => { try { return await fsp.readFile(srcFile(u)); } catch (e) { if (e.status) throw e; throw bad(404, "Gambar tidak ditemukan di Media."); } };
+  app.post("/ms/admin/ca/crop-auto", requireAdmin, J, send(async req => {
+    needSharp(); const r = RATIOS[String((req.body || {}).ratio)]; if (!r) throw bad(400, "Rasio tidak dikenal.");
+    const buf = await readImg((req.body || {}).src);
+    const meta = await sharp(buf, { limitInputPixels: 60e6 }).rotate().metadata();
+    const { width: W0, height: H0 } = (await sharp(buf, { limitInputPixels: 60e6 }).rotate().toBuffer({ resolveWithObject: true })).info;
+    const W = W0 || meta.width, H = H0 || meta.height; if (!W || !H) throw bad(400, "Gambar tidak bisa dibaca.");
+    const cw = W / H > r ? H * r : W, ch = W / H > r ? H : W / r;
+    const tw = 1200, th = Math.round(tw / r), sc = Math.max(tw / W, th / H);
+    const { info } = await sharp(buf, { limitInputPixels: 60e6 }).rotate().resize(tw, th, { fit: "cover", position: sharp.strategy.attention }).toBuffer({ resolveWithObject: true });
+    const x = Math.min(Math.max(0, (info.cropOffsetLeft || 0) / sc), W - cw), y = Math.min(Math.max(0, (info.cropOffsetTop || 0) / sc), H - ch);
+    return { rect: { x: x / W, y: y / H, w: cw / W, h: ch / H } };
+  }));
+  app.post("/ms/admin/ca/crop", requireAdmin, J, send(async req => {
+    needSharp(); const b = req.body || {}, r = RATIOS[String(b.ratio)]; if (!r) throw bad(400, "Rasio tidak dikenal.");
+    const rc = b.rect || {}, n = k => Number(rc[k]); if (![n("x"), n("y"), n("w"), n("h")].every(Number.isFinite)) throw bad(400, "Area crop tidak valid.");
+    const buf = await readImg(b.src);
+    const img = sharp(buf, { limitInputPixels: 60e6 }).rotate(), { data, info } = await img.toBuffer({ resolveWithObject: true });
+    const W = info.width, H = info.height;
+    let w = Math.round(Math.min(1, Math.max(0.02, n("w"))) * W), h = Math.round(Math.min(1, Math.max(0.02, n("h"))) * H);
+    w = Math.min(w, W); h = Math.min(h, H);
+    const left = Math.round(Math.min(Math.max(0, n("x") * W), W - w)), top = Math.round(Math.min(Math.max(0, n("y") * H), H - h));
+    if (Math.abs(w / h - r) / r > 0.06) throw bad(400, "Bentuk area crop tidak sesuai rasio.");
+    const out = await sharp(data, { limitInputPixels: 60e6 }).extract({ left, top, width: w, height: h }).resize({ width: 1600, withoutEnlargement: true }).webp({ quality: 84 }).toBuffer();
+    const name = `${Date.now().toString(36)}-${crypto.randomBytes(4).toString("hex")}-crop`;
+    await fsp.writeFile(path.join(UPLOADS, `${name}.webp`), out);
+    return { ok: true, url: `/uploads/${name}.webp` };
+  }));
   app.get("/ms/admin/ca/media", requireAdmin, send(async () => {
     const posts = blog.posts(), files = (await fsp.readdir(UPLOADS).catch(() => [])).filter(f => /^[a-z0-9][a-z0-9._-]*\.(webp|jpe?g|png|gif|avif)$/i.test(f));
     const stats = await Promise.all(files.map(async f => { const s = await fsp.stat(path.join(UPLOADS, f)); const url = `/uploads/${f}`; return { url, size: s.size, at: s.mtimeMs, usedIn: posts.filter(p => p.cover === url || String(p.body || "").includes(url)).map(p => ({ title: p.title, slug: p.slug })) }; }));
