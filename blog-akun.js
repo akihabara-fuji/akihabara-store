@@ -280,6 +280,8 @@ module.exports = function mount(ctx) {
   const setSession = (res, uid) => res.setHeader("Set-Cookie", `nx_user=${makeToken(uid)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${SESSION_MS / 1000}${SECURE_COOKIE ? "; Secure" : ""}`);
   const hashPw = (pw, salt) => crypto.scryptSync(pw, salt, 64).toString("hex");
   const checkPw = (pw, u) => { if (!u.hash || !u.salt) return false; const a = Buffer.from(hashPw(pw, u.salt), "hex"), b = Buffer.from(u.hash, "hex"); return a.length === b.length && crypto.timingSafeEqual(a, b); };
+  /* Persetujuan email info/promosi: akun Gmail dan login Google wajib setuju; disimpan dengan waktunya. */
+  const isGmail = e => /@(gmail|googlemail)\.com$/i.test(String(e || ""));
   const EMAIL = /^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{2,}$/;
   const pubUser = u => ({ id: u.id, name: u.name, email: u.email });
   const fails = new Map();
@@ -303,8 +305,10 @@ module.exports = function mount(ctx) {
     if (!EMAIL.test(email)) return res.status(400).json({ error: "Email tidak valid." });
     if (pw.length < 8 || pw.length > 100) return res.status(400).json({ error: "Sandi minimal 8 karakter." });
     if (db.users.some(u => u.email === email)) { fail(key); return res.status(409).json({ error: "Email ini sudah terdaftar. Coba masuk." }); }
+    const promo = req.body?.promo === true;
+    if (isGmail(email) && !promo) return res.status(400).json({ error: "Akun Gmail wajib mencentang persetujuan menerima email info dan promosi.", needPromo: true });
     const salt = crypto.randomBytes(16).toString("hex");
-    const u = { id: crypto.randomBytes(8).toString("hex"), name, email, salt, hash: hashPw(pw, salt), createdAt: new Date().toISOString() };
+    const u = { id: crypto.randomBytes(8).toString("hex"), name, email, salt, hash: hashPw(pw, salt), createdAt: new Date().toISOString(), ...(promo ? { promo: { at: new Date().toISOString(), via: "daftar" } } : {}) };
     db.users.push(u);
     try { await saveDb(); } catch { db.users = db.users.filter(x => x.id !== u.id); return res.status(500).json({ error: "Pendaftaran belum bisa disimpan. Coba lagi sebentar." }); }
     regNote(req.ip); setSession(res, u.id);
@@ -333,8 +337,11 @@ module.exports = function mount(ctx) {
       if (!r.ok || t.aud !== GOOGLE_ID || !okIss || String(t.email_verified) !== "true" || !t.email || Number(t.exp) * 1000 < Date.now()) { fail(key); return res.status(401).json({ error: "Login Google ditolak. Coba lagi." }); }
       const email = String(t.email).toLowerCase();
       let u = db.users.find(x => x.email === email), bonus = 0;
+      const promo = req.body?.promo === true;
+      if (!(u && u.promo) && !promo) return res.status(400).json({ error: "Centang persetujuan menerima email info dan promosi dulu untuk masuk dengan Google.", needPromo: true });
+      if (u && !u.promo) { u.promo = { at: new Date().toISOString(), via: "google" }; await saveDb(); }
       if (!u) {
-        u = { id: crypto.randomBytes(8).toString("hex"), name: str(t.name || email.split("@")[0], 60), email, google: true, createdAt: new Date().toISOString() };
+        u = { id: crypto.randomBytes(8).toString("hex"), name: str(t.name || email.split("@")[0], 60), email, google: true, createdAt: new Date().toISOString(), promo: { at: new Date().toISOString(), via: "google" } };
         db.users.push(u); await saveDb(); bonus = welcome(u);
       }
       fails.delete(key); setSession(res, u.id);
@@ -980,11 +987,12 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
         <form id="f" novalidate>
           <label id="lName" hidden>Nama<input name="name" autocomplete="name" maxlength="60"></label>
           <label>Email<input name="email" type="email" autocomplete="email" required maxlength="254"></label>
+          <label id="lPromo" class="small" hidden style="display:flex;gap:8px;align-items:flex-start"><input type="checkbox" name="promo" style="width:auto;margin-top:3px"><span>Saya setuju menerima email info dan promosi dari Catatan Akademik. <b>Wajib untuk akun Gmail.</b> Bisa berhenti kapan saja.</span></label>
           <label>Sandi<span class="pw"><input name="password" type="password" autocomplete="current-password" required minlength="8" maxlength="100"><button type="button" id="pwT" aria-label="Tampilkan sandi" aria-pressed="false">Lihat</button></span><small id="hint" hidden>Minimal 8 karakter.</small></label>
           <p class="err" id="err" role="alert"></p>
           <button class="btn btn-pri" id="go" type="submit">Masuk</button>
         </form>
-        <div id="gWrap" hidden><div class="or"><span>atau</span></div><div id="gBtn" style="display:flex;justify-content:center"></div></div>
+        <div id="gWrap" hidden><div class="or"><span>atau</span></div><label class="small" style="display:flex;gap:8px;align-items:flex-start;margin-bottom:10px"><input type="checkbox" id="gPromo" style="width:auto;margin-top:3px"><span>Saya setuju menerima email info dan promosi dari Catatan Akademik (wajib untuk masuk dengan Google).</span></label><div id="gBtn" style="display:flex;justify-content:center;opacity:.4;pointer-events:none"></div></div>
         <p class="small">Lupa sandi? <a id="wa" href="#" target="_blank" rel="noopener">Hubungi admin lewat WhatsApp</a> dan minta sandi sementara.</p>
       </div></div></section>
       <script>
@@ -992,19 +1000,19 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
       var w=${JSON.stringify(String((SOCIAL().waNumber) || "6285722227544"))};document.getElementById("wa").href="https://wa.me/"+w+"?text="+encodeURIComponent("Halo admin nextaja, saya lupa sandi akun saya.");
       document.querySelectorAll(".tabs2 button").forEach(function(b){b.addEventListener("click",function(){mode=b.dataset.t;
         document.querySelectorAll(".tabs2 button").forEach(function(x){x.setAttribute("aria-pressed",x===b)});
-        document.getElementById("lName").hidden=mode!=="up";var bn=document.getElementById("bonus");if(bn)bn.hidden=mode!=="up";document.getElementById("hint").hidden=mode!=="up";
+        document.getElementById("lName").hidden=mode!=="up";document.getElementById("lPromo").hidden=mode!=="up";var bn=document.getElementById("bonus");if(bn)bn.hidden=mode!=="up";document.getElementById("hint").hidden=mode!=="up";
         document.getElementById("go").textContent=mode==="up"?"Buat akun":"Masuk";f.password.autocomplete=mode==="up"?"new-password":"current-password";err.textContent="";});});
       document.getElementById("pwT").addEventListener("click",function(){var sh=f.password.type==="password";f.password.type=sh?"text":"password";this.textContent=sh?"Sembunyi":"Lihat";this.setAttribute("aria-pressed",sh);this.setAttribute("aria-label",sh?"Sembunyikan sandi":"Tampilkan sandi")});
       var GID=${JSON.stringify(GOOGLE_ID)};
       if(GID){var sc=document.createElement("script");sc.src="https://accounts.google.com/gsi/client";sc.async=true;sc.onload=function(){
         google.accounts.id.initialize({client_id:GID,callback:function(r){err.textContent="";
-          fetch("/ms/auth/google",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({credential:r.credential})})
+          fetch("/ms/auth/google",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({credential:r.credential,promo:document.getElementById("gPromo").checked})})
           .then(function(x){return x.json().then(function(j){return {ok:x.ok,j:j}})}).then(function(x){if(x.ok)location.href=NEXT;else err.textContent=x.j.error||"Gagal. Coba lagi.";})
           .catch(function(){err.textContent="Tidak bisa terhubung. Coba lagi.";});}});
         google.accounts.id.renderButton(document.getElementById("gBtn"),{theme:"outline",size:"large",text:"continue_with",shape:"pill",width:300,locale:"id"});
-        document.getElementById("gWrap").hidden=false;};document.head.appendChild(sc);}
+        document.getElementById("gWrap").hidden=false;document.getElementById("gPromo").addEventListener("change",function(){var b=document.getElementById("gBtn");b.style.opacity=this.checked?"1":".4";b.style.pointerEvents=this.checked?"auto":"none";});};document.head.appendChild(sc);}
       f.addEventListener("submit",function(e){e.preventDefault();err.textContent="";var go=document.getElementById("go");if(go.disabled)return;var lbl=go.textContent;go.disabled=true;go.textContent="Memproses...";
-        var d={email:f.email.value,password:f.password.value};if(mode==="up")d.name=f.name.value;
+        var d={email:f.email.value,password:f.password.value};if(mode==="up"){d.name=f.name.value;d.promo=f.promo.checked;if(/@(gmail|googlemail)\\.com$/i.test(f.email.value.trim())&&!d.promo){err.textContent="Akun Gmail wajib mencentang persetujuan email info dan promosi.";go.disabled=false;go.textContent=lbl;return;}}
         fetch("/ms/auth/"+(mode==="up"?"register":"login"),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)})
         .then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j}})}).then(function(x){if(x.ok)location.href=NEXT;else err.textContent=x.j.error||"Gagal. Coba lagi.";})
         .catch(function(){err.textContent="Tidak bisa terhubung. Coba lagi.";}).then(function(){go.disabled=false;go.textContent=lbl;});});})();

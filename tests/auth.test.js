@@ -111,3 +111,22 @@ test("halaman masuk: skrip bisa di-parse dan ?next= dibatasi ke jalur sendiri", 
     assert.ok(/id="go"/.test(h.t) && /go\.disabled=true/.test(h.t), "tombol dikunci saat memproses");
   } finally { t.close(); }
 });
+
+test("persetujuan email info/promosi: wajib untuk Gmail, opsional untuk email lain, tersimpan dengan waktunya", async () => {
+  const t = await boot();
+  try {
+    const no = await t.post("/ms/auth/register", { name: "Uji", email: "uji.gmail@gmail.com", password: "sandiuji123" });
+    assert.strictEqual(no.r.status, 400); assert.strictEqual(no.j.needPromo, true);
+    const no2 = await t.post("/ms/auth/register", { name: "Uji", email: "uji.gmail@gmail.com", password: "sandiuji123", promo: "true" });
+    assert.strictEqual(no2.r.status, 400, "harus boolean true, bukan string");
+    const ok = await t.post("/ms/auth/register", { name: "Uji", email: "uji.gmail@gmail.com", password: "sandiuji123", promo: true });
+    assert.strictEqual(ok.r.status, 200);
+    const other = await t.post("/ms/auth/register", { name: "Uji2", email: "uji2@example.test", password: "sandiuji123" });
+    assert.strictEqual(other.r.status, 200, "email non-Gmail tidak wajib");
+    const users = JSON.parse(fs.readFileSync(path.join(t.root, "data", "users.json"), "utf8")).users;
+    const g = users.find(u => u.email === "uji.gmail@gmail.com"), o = users.find(u => u.email === "uji2@example.test");
+    assert.ok(g.promo && g.promo.at && g.promo.via === "daftar"); assert.ok(!o.promo);
+    const t2 = await boot(); const page = (await t2.call("/ms/masuk")).t; t2.close();
+    assert.ok(page.includes('id="gPromo"') && page.includes('name="promo"'), "halaman masuk punya kotak centang");
+  } finally { t.close(); }
+});
