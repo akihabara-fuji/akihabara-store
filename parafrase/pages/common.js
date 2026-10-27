@@ -2,15 +2,15 @@
 (function () {
   var rp = function (n) { return Number(n).toLocaleString("id-ID"); };
   /* Harga ditampilkan singkat: 35000 jadi 35k, 1300000 jadi 1,3 jt. Angka di bawah Rp1.000 (mis. harga per kata) tetap rupiah. Halaman bayar memakai tulisan penuh. */
-  window.koinFmt = function (n) { n = Number(n); if (n >= 1000000 && n % 100000 === 0) return String(n / 1000000).replace(".", ",") + " jt"; return n > 0 && n % 1000 === 0 ? (n / 1000).toLocaleString("id-ID") + "k" : "Rp" + n.toLocaleString("id-ID"); };
+  window.priceFmt = function (n) { n = Number(n); if (n >= 1000000 && n % 100000 === 0) return String(n / 1000000).replace(".", ",") + " jt"; return n > 0 && n % 1000 === 0 ? (n / 1000).toLocaleString("id-ID") + "k" : "Rp" + n.toLocaleString("id-ID"); };
   window.PF = { rp: rp, cfg: null };
   function fill(c) {
     window.PF.cfg = c;
     var set = function (sel, v) { document.querySelectorAll(sel).forEach(function (e) { e.textContent = v; }); };
     set("[data-ppw]", rp(c.price_per_word)); set("[data-min]", rp(c.min_order_price)); set("[data-fast]", rp(c.fast_lane.price));
     set("[data-retention]", c.retention_hours); set("[data-fw]", rp(c.free_words || 0));
-    document.querySelectorAll("[data-p]").forEach(function (e) { var v = c[e.getAttribute("data-p")]; if (v != null) e.textContent = window.koinFmt(v).replace(/^Rp/, ""); });
-    document.querySelectorAll("[data-k]").forEach(function (e) { var v = c[e.getAttribute("data-k")]; if (v != null) e.textContent = window.koinFmt(v); });
+    document.querySelectorAll("[data-p]").forEach(function (e) { var v = c[e.getAttribute("data-p")]; if (v != null) e.textContent = window.priceFmt(v).replace(/^Rp/, ""); });
+    document.querySelectorAll("[data-k]").forEach(function (e) { var v = c[e.getAttribute("data-k")]; if (v != null) e.textContent = window.priceFmt(v); });
     /* Diskon dalam persen, dihitung dari harga sekarang dan harga normal (pengaturan admin). Tidak tampil bila datanya tidak masuk akal. */
     function disc(keys) { var k = String(keys).split(","), now = Number(c[k[0]]), was = Number(c[k[1]]); return was > 0 && now > 0 && now < was ? Math.round((1 - now / was) * 100) : 0; }
     document.querySelectorAll("[data-disc]").forEach(function (e) { var d = disc(e.getAttribute("data-disc")); if (d > 0) { e.textContent = "· diskon " + d + "%"; e.hidden = false; } else e.hidden = true; });

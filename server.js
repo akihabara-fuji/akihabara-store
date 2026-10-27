@@ -321,19 +321,17 @@ if (!process.env.CA_ADMIN_PASSWORD) console.warn("[!] CA_ADMIN_PASSWORD belum di
 app.get(/^\/admin\/(parafrase|layanan)\/?$/, (req, res, next) => (ACAD_HOSTS.length && !isAcadHost(req) ? res.redirect(302, `${ACAD}/admin/`) : next()));
 
 /* ---------------- blog + akun customer ---------------- */
-const extra = require("./blog-akun")({ app, express, requireAdmin, sameOrigin, getCookie, SECURE_COOKIE, ROOT, SITE: ACAD, getSettings: () => store.settings, getCa: k => (typeof pf !== "undefined" && pf.settings ? pf.settings.get(k) : ""), getTexts: () => (typeof pf !== "undefined" ? pf.texts : null), onRegister: u => (typeof pf !== "undefined" && pf.koin ? pf.koin.welcome(u.id) : 0), getBonus: () => (typeof pf !== "undefined" && pf.koin ? Number(pf.settings.get("koin_bonus_daftar")) || 0 : 0) });
+const extra = require("./blog-akun")({ app, express, requireAdmin, sameOrigin, getCookie, SECURE_COOKIE, ROOT, SITE: ACAD, getSettings: () => store.settings, getCa: k => (typeof pf !== "undefined" && pf.settings ? pf.settings.get(k) : ""), getTexts: () => (typeof pf !== "undefined" ? pf.texts : null), });
 
 /* ---------------- Cek dan Parafrase Mandiri (modul terpisah, lihat parafrase/) ---------------- */
-/* fitur coba (unggah & pesan) wajib login; halaman dan harga tetap terbuka */
-const needLogin = (req, res, next) => (extra.userFrom(req) ? next() : res.status(401).json({ error: "Masuk dulu untuk mencoba fitur ini.", login: true }));
-app.post("/ms/parafrase/upload", needLogin);
+/* unggah dan audit gratis tanpa akun; login baru diminta saat memesan/membayar */
+const needLogin = (req, res, next) => (extra.userFrom(req) ? next() : res.status(401).json({ error: "Masuk dulu untuk memesan.", login: true }));
 app.post("/ms/parafrase/order", needLogin);
 app.post("/ms/layanan/order", needLogin);
 app.post("/ms/audit/order", needLogin);
-app.post("/ms/audit/upload", needLogin);
 const pf = require("./parafrase")({ app, express, requireAdmin, sameOrigin, ROOT, db: caDb, userFrom: extra.userFrom, users: { byId: extra.userById, byEmail: extra.userByEmail } });
 recordHit = (q, s) => { if (!ACAD_HOSTS.length || isAcadHost(q)) pf.traffic.record(q, s); };
-require("./admin-ca")({ app, express, db: caDb, auth: caAuth, requireAdmin, blog: extra, settings: pf.settings, orders: pf.orders, koin: pf.koin, traffic: pf.traffic, texts: pf.texts, pages: pf.pages, ROOT, UPLOADS, sharp, ACAD });
+require("./admin-ca")({ app, express, db: caDb, auth: caAuth, requireAdmin, blog: extra, settings: pf.settings, orders: pf.orders, traffic: pf.traffic, texts: pf.texts, pages: pf.pages, ROOT, UPLOADS, sharp, ACAD });
 
 /* /admin: di domain akademik = panel Catatan Akademik; di domain lain = panel toko nextaja. Satu domain (dev) -> panel CA di /admin-ca/. */
 const caPanel = express.static(path.join(ROOT, "admin-ca", "public"), { index: "index.html", maxAge: 0 });

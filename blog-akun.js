@@ -295,8 +295,6 @@ module.exports = function mount(ctx) {
   const needOrigin = (req, res, next) => (sameOrigin(req) ? next() : res.status(403).json({ error: "Permintaan ditolak." }));
 
   app.get("/ms/auth/me", (req, res) => { res.set("Cache-Control", "no-store"); const u = userFrom(req); res.json({ user: u ? pubUser(u) : null }); });
-  /* Koin sudah dihapus: akun baru tidak lagi mendapat bonus koin. */
-  const welcome = () => 0;
   app.post("/ms/auth/register", json, needOrigin, async (req, res) => {
     const key = "r:" + req.ip;
     if (limited(req, key) || regLimited(req.ip)) return res.status(429).json({ error: "Terlalu banyak percobaan. Coba lagi 15 menit lagi." });
@@ -312,7 +310,7 @@ module.exports = function mount(ctx) {
     db.users.push(u);
     try { await saveDb(); } catch { db.users = db.users.filter(x => x.id !== u.id); return res.status(500).json({ error: "Pendaftaran belum bisa disimpan. Coba lagi sebentar." }); }
     regNote(req.ip); setSession(res, u.id);
-    res.json({ ok: true, user: pubUser(u), bonus: welcome(u) });
+    res.json({ ok: true, user: pubUser(u) });
   });
   app.post("/ms/auth/login", json, needOrigin, (req, res) => {
     const email = str(req.body?.email, 254).toLowerCase(), pw = String(req.body?.password || "");
@@ -336,16 +334,16 @@ module.exports = function mount(ctx) {
       const okIss = t.iss === "accounts.google.com" || t.iss === "https://accounts.google.com";
       if (!r.ok || t.aud !== GOOGLE_ID || !okIss || String(t.email_verified) !== "true" || !t.email || Number(t.exp) * 1000 < Date.now()) { fail(key); return res.status(401).json({ error: "Login Google ditolak. Coba lagi." }); }
       const email = String(t.email).toLowerCase();
-      let u = db.users.find(x => x.email === email), bonus = 0;
+      let u = db.users.find(x => x.email === email);
       const promo = req.body?.promo === true;
       if (!(u && u.promo) && !promo) return res.status(400).json({ error: "Centang persetujuan menerima email info dan promosi dulu untuk masuk dengan Google.", needPromo: true });
       if (u && !u.promo) { u.promo = { at: new Date().toISOString(), via: "google" }; await saveDb(); }
       if (!u) {
         u = { id: crypto.randomBytes(8).toString("hex"), name: str(t.name || email.split("@")[0], 60), email, google: true, createdAt: new Date().toISOString(), promo: { at: new Date().toISOString(), via: "google" } };
-        db.users.push(u); await saveDb(); bonus = welcome(u);
+        db.users.push(u); await saveDb();
       }
       fails.delete(key); setSession(res, u.id);
-      res.json({ ok: true, user: pubUser(u), bonus });
+      res.json({ ok: true, user: pubUser(u) });
     } catch { res.status(502).json({ error: "Tidak bisa menghubungi Google. Coba lagi." }); }
   });
   app.post("/ms/auth/logout", (req, res) => { if (!sameOrigin(req)) return res.status(403).json({ error: "Permintaan ditolak." }); res.setHeader("Set-Cookie", "nx_user=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0" + (SECURE_COOKIE ? "; Secure" : "")); res.json({ ok: true }); });

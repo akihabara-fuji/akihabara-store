@@ -10,7 +10,7 @@ const { shortPaths } = require("../parafrase/acadpaths");
 
 const PAGES = ["/beranda", "/ruangakademikut", "/ruangakademikut/cek-parafrase-mandiri", "/ruangakademikut/audit", "/ruangakademikut/layanan", "/ruangakademikut/blog-ut", "/ruangakademikut/pesanan",
   "/ruangakademikut/audit/hasil/x", "/kalkulator-nilai-ut", "/pasfoto-yudisium", "/sitasi-apa", "/portal-ut"];
-const ASSETS = ["site.css", "common.js", "cek.js", "audit.js", "audit-hasil.js", "layanan.js", "pesanan.js", "koin.js", "koin-chip.js", "kalkulator.js", "nilai-ut.js", "pasfoto.js", "sitasi.js", "sitasi-apa.js", "blog-ut.js"];
+const ASSETS = ["site.css", "common.js", "cek.js", "audit.js", "audit-hasil.js", "layanan.js", "pesanan.js", "kalkulator.js", "nilai-ut.js", "pasfoto.js", "sitasi.js", "sitasi-apa.js", "blog-ut.js"];
 
 async function boot() {
   const app = express(); mountPages({ app, express });
@@ -19,7 +19,7 @@ async function boot() {
 }
 
 test("shortPaths: halaman, aset, gambar, dan hub ditulis ulang tanpa /ruangakademikut", () => {
-  assert.strictEqual(shortPaths('<a href="/ruangakademikut/koin?kurang=5">'), '<a href="/koin?kurang=5">');
+  assert.strictEqual(shortPaths('<a href="/ruangakademikut/layanan?s=tugas">'), '<a href="/layanan?s=tugas">');
   assert.strictEqual(shortPaths('"/ruangakademikut/assets/common.js?v=1"'), '"/assets/ut/common.js?v=1"');
   assert.strictEqual(shortPaths('"/ruangakademikut/img/x.webp"'), '"/assets/ut/img/x.webp"');
   assert.strictEqual(shortPaths('href="/ruangakademikut"'), 'href="/layanan-ut"');
@@ -34,7 +34,7 @@ test("domain akademik: tidak ada /ruangakademikut di halaman publik maupun JS-ny
     for (const f of ASSETS) { const r = await t.get("/assets/ut/" + f); assert.strictEqual(r.status, 200, f); assert.ok(!/ruangakademikut/i.test(await r.text()), "aset " + f); }
     const man = await t.get("/assets/ut/ca/manifest.webmanifest"); assert.strictEqual(man.status, 200); assert.ok(!/ruangakademikut/i.test(await man.text()));
     for (const f of ["theme.css", "logo-96.png", "favicon.ico"]) assert.strictEqual((await t.get("/assets/ut/ca/" + f)).status, 200, f);
-    // jalur lama: aset tetap ada (cache browser lama), halaman alat dan koin dialihkan 301
+    // jalur lama: aset tetap ada (cache browser lama), halaman alat dialihkan 301
     assert.strictEqual((await t.get("/ruangakademikut/assets/common.js")).status, 200);
     for (const s of ["portal-ut", "sitasi-apa", "kalkulator-nilai-ut", "pasfoto-yudisium"]) { const r = await t.get("/ruangakademikut/" + s); assert.strictEqual(r.status, 301, s); assert.strictEqual(r.headers.get("location"), "/" + s); }
   } finally { t.srv.close(); }

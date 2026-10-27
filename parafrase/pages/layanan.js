@@ -37,7 +37,7 @@
     var rev = s.kind === "revisi", dis = fam === "diskusi", td = fam === "tugas" || fam === "diskusi";
     $("chips").style.display = "flex";
     $("ttl").textContent = rev ? "Revisi " + FAM[fam] : fam === "metopen" ? "Metopen" : dis ? "Diskusi" : "Tugas";
-    $("ld").textContent = rev ? "Ada masukan dari tutor? Tempel catatannya atau unggah foto atau file catatan tutor. Revisi gratis untuk hasil buatan Catatan Akademik: isi ID pesanan sebelumnya. Kalau setelah revisi hasilnya masih belum sesuai catatan tutor, kamu bisa kembali lagi tanpa biaya (isi ID pesanan revisi terakhir). Untuk file dari luar, revisi berbayar." : "Tulis kebutuhan, lampirkan file soal atau masukan tutor. Bayar lewat QRIS, hasil dikirim admin ke WhatsApp-mu sesuai status pesanan. Perlu masuk dengan akun Catatan Akademik.";
+    $("ld").textContent = rev ? "Ada masukan dari tutor? Tempel catatannya atau unggah foto atau file catatan tutor. Revisi gratis untuk hasil buatan Catatan Akademik: isi ID pesanan sebelumnya. Kalau setelah revisi hasilnya masih belum sesuai catatan tutor, kamu bisa kembali lagi tanpa biaya (isi ID pesanan revisi terakhir). Untuk file dari luar, revisi berbayar." : "Tulis kebutuhan, lampirkan file soal atau masukan tutor. Bayar lewat QRIS, hasil dikirim admin ke WhatsApp-mu sesuai status pesanan. Masuk dengan akun hanya diminta saat kamu memesan.";
     $("pbox").style.display = (rev || td) ? "flex" : "none";
     $("pbl").textContent = td ? "Revisi dari tutor? Isi ID pesanan sebelumnya (gratis untuk hasil kami)" : "ID pesanan sebelumnya (isi untuk revisi gratis)";
     $("blabel").textContent = rev ? "Masukan dari tutor" : dis ? "Soal diskusi" : "Kebutuhanmu";
@@ -52,7 +52,7 @@
     paintSlots();
     $("go").textContent = "Pesan " + s.label; gate(); payPaint();
   }
-  /* Semua pembayaran lewat QRIS (koin sudah dihapus). */
+  /* Semua pembayaran lewat QRIS. */
   var payMode = "qris";
   function payPaint() {}
   function need() { return (cfg[cur] && cfg[cur].needs) || []; }
@@ -83,8 +83,20 @@
     need().forEach(function (l) { var f = slotFiles[l]; if (f) fd.append("files", f, l + " - " + f.name); });
     files.forEach(function (f) { fd.append("files", f); });
     fetch("/ms/layanan/order", { method: "POST", body: fd }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
-      .then(function (x) { if (x.ok) { location.href = x.j.url; return; } if (x.j.login) { location.href = "/ms/masuk?next=" + encodeURIComponent(location.pathname + location.search); return; } showErr(x.j.error || "Pesanan gagal. Coba lagi."); gate(); })
+      .then(function (x) { if (x.ok) { location.href = x.j.url; return; } if (x.j.login) { try { sessionStorage.setItem("ca_layanan_lanjut", JSON.stringify({ t: Date.now(), cur: cur, brief: $("brief").value, wa: $("wa").value, pid: $("pid").value })); } catch (e) {} location.href = "/ms/masuk?next=" + encodeURIComponent(location.pathname + location.search); return; } showErr(x.j.error || "Pesanan gagal. Coba lagi."); gate(); })
       .catch(function () { showErr("Koneksi terputus. Coba lagi."); gate(); });
   };
-  fetch("/ms/layanan/config").then(function (r) { return r.json(); }).then(function (j) { cfg = j; if (!cfg[cur]) cur = "tugas"; paint(); });
+  fetch("/ms/layanan/config").then(function (r) { return r.json(); }).then(function (j) {
+    cfg = j; if (!cfg[cur]) cur = "tugas";
+    /* Kembali dari halaman masuk: isi teks pesanan dipulihkan. File tidak bisa disimpan browser, jadi lampirkan lagi. */
+    try {
+      var sv = JSON.parse(sessionStorage.getItem("ca_layanan_lanjut") || "null"); sessionStorage.removeItem("ca_layanan_lanjut");
+      if (sv && Date.now() - sv.t < 2 * 3600 * 1000) {
+        if (cfg[sv.cur]) cur = sv.cur;
+        paint(); $("brief").value = sv.brief || ""; $("wa").value = sv.wa || ""; $("pid").value = sv.pid || "";
+        $("fl").textContent = "Kamu sudah masuk. Tulisanmu dipulihkan; lampirkan lagi file yang tadi, lalu tekan Pesan."; gate(); return;
+      }
+    } catch (e) {}
+    paint();
+  });
 })();

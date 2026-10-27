@@ -17,28 +17,6 @@
     }
     sec("Simulasi presentasi", sim.talk || "Belum ada isi.", "Susunan yang bisa kamu pakai untuk berlatih. Sesuaikan dengan gayamu dan cocokkan dengan penelitianmu sendiri.");
     var qc = sec("Tanya jawab dosen", sim.qa, sim.locked ? "Cuplikan. Ada " + sim.total + " pertanyaan lengkap dengan arahan jawabannya." : sim.total + " pertanyaan dan arahan jawabannya.");
-    if (!sim.locked) return;
-    var fade = document.createElement("div"); fade.className = "muted"; fade.textContent = "Selebihnya terkunci."; qc.appendChild(fade);
-    var btn = document.createElement("button"); btn.type = "button"; btn.className = "btn"; btn.textContent = "Buka semua tanya jawab"; qc.appendChild(btn);
-    var msg = document.createElement("div"); msg.className = "err hidden"; msg.style.margin = "0"; qc.appendChild(msg);
-    var me = null;
-    function err(t, href, label) { msg.textContent = t || ""; msg.classList.toggle("hidden", !t); if (href) { var a = document.createElement("a"); a.href = href; a.textContent = " " + label; msg.appendChild(a); } }
-    fetch("/ms/koin/simulasi/" + token, { cache: "no-store", credentials: "same-origin" }).then(function (r) { return r.json().then(function (j) { return { s: r.status, j: j }; }); }).then(function (x) {
-      if (x.s === 401) { btn.textContent = "Masuk untuk membuka tanya jawab"; me = "login"; return; }
-      if (x.s !== 200) { btn.disabled = true; err(x.j.error || "Tanya jawab tidak bisa dibuka dari akun ini."); return; }
-      me = x.j; btn.textContent = x.j.free ? "Buka semua tanya jawab (gratis, pertama kali)" : "Buka semua tanya jawab (" + x.j.coins + " koin)";
-      if (!x.j.free) { var b = document.createElement("div"); b.className = "muted"; b.textContent = "Saldo koinmu " + x.j.balance + " koin."; qc.insertBefore(b, btn); }
-    }).catch(function () {});
-    btn.onclick = function () {
-      if (me === "login") { location.href = "/ms/masuk?next=" + encodeURIComponent(location.pathname); return; }
-      btn.disabled = true; err("");
-      fetch("/ms/koin/simulasi/" + token + "/buka", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}", credentials: "same-origin" }).then(function (r) { return r.json().then(function (j) { return { s: r.status, j: j }; }); }).then(function (x) {
-        if (x.s === 200) { location.reload(); return; }
-        btn.disabled = false;
-        if (x.s === 402) err(x.j.error, "/ruangakademikut/koin?kurang=" + x.j.short + "&next=" + encodeURIComponent(location.pathname), "Isi koin");
-        else err(x.j.error || "Gagal membuka. Coba lagi.");
-      }).catch(function () { btn.disabled = false; err("Koneksi terputus. Coba lagi."); });
-    };
   }
   var rp = function (n) { return "Rp " + Number(n).toLocaleString("id-ID"); };
   var m = location.pathname.match(/\/pesanan\/([a-f0-9]{48})\/?$/);

@@ -27,7 +27,7 @@ async function boot(set = {}) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "pf-ord-"));
   const app = express(); let admin = false;
   const m = require("../parafrase")({ app, express, requireAdmin: (q, r, n) => admin ? n() : r.status(401).json({ error: "x" }), sameOrigin: q => !!q.headers.origin, ROOT: root });
-  m.settings.set({ bayar_koin_saja: false, free_words: 0, ...set }); // tes lama: alur QRIS per pesanan dan tanpa kata gratis; alur koin dan kata gratis diuji di berkas tes masing-masing
+  m.settings.set({ free_words: 0, ...set }); // tes lama: alur QRIS per pesanan dan tanpa kata gratis; alur koin dan kata gratis diuji di berkas tes masing-masing
   const srv = app.listen(0), base = "http://127.0.0.1:" + srv.address().port, H = { origin: "http://x" };
   const J = { ...H, "content-type": "application/json" };
   const upload = async (extra) => { const fd = new FormData(); fd.append("file", new Blob([await docx(extra)]), "t.docx"); return (await (await fetch(base + "/ms/parafrase/upload", { method: "POST", body: fd, headers: H })).json()).uploadId; };

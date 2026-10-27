@@ -8,7 +8,7 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
   const dir = path.join(__dirname, "pages");
   // Tautan pesanan memuat token rahasia: jangan bocor lewat Referer ke pihak ketiga (mis. Google Fonts), dan jangan boleh di-iframe.
   const ADM = /^\/admin\/(parafrase|layanan)(\/|\?|$)/; // halaman admin boleh dibingkai oleh /admin (satu asal), halaman murid tidak
-  app.use(["/ruangakademikut", "/ms/parafrase", "/ms/admin/parafrase", "/admin/parafrase", "/admin/layanan", "/ms/layanan", "/ms/koin", "/ms/admin/koin"], (req, res, next) => {
+  app.use(["/ruangakademikut", "/ms/parafrase", "/ms/admin/parafrase", "/admin/parafrase", "/admin/layanan", "/ms/layanan"], (req, res, next) => {
     res.set({ "Referrer-Policy": "no-referrer", "X-Content-Type-Options": "nosniff", "X-Frame-Options": ADM.test(req.originalUrl) ? "SAMEORIGIN" : "DENY", "Content-Security-Policy": ADM.test(req.originalUrl) ? "frame-ancestors 'self'" : "frame-ancestors 'none'" });
     next();
   });
@@ -80,7 +80,7 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
   /* Verifikasi Bing Webmaster Tools (kode per akun, bukan rahasia) */
   app.get("/BingSiteAuth.xml", (req, res) => res.type("application/xml").set("Cache-Control", "public, max-age=3600")
     .send('<?xml version="1.0"?>\n<users>\n\t<user>5A51A6D49E191DE95E89EA165A5F3815</user>\n</users>'));
-  const ASSETS = new Set(["site.css", "hub.css", "common.js", "cek.js", "pesanan.js", "admin.js", "audit.js", "audit-hasil.js", "layanan.js", "layanan-admin.js", "blog-ut.js", "nilai-ut.js", "kalkulator.js", "pasfoto.js", "cv.js", "wordlib.js", "sampul.js", "surat.js", "tracker.js", "kalender.js", "maba.js", "logo-ut.png", "koin.js", "koin-chip.js", "sitasi-apa.js", "sitasi.js"]);
+  const ASSETS = new Set(["site.css", "hub.css", "common.js", "cek.js", "pesanan.js", "admin.js", "audit.js", "audit-hasil.js", "layanan.js", "layanan-admin.js", "blog-ut.js", "nilai-ut.js", "kalkulator.js", "pasfoto.js", "cv.js", "wordlib.js", "sampul.js", "surat.js", "tracker.js", "kalender.js", "maba.js", "logo-ut.png", "sitasi-apa.js", "sitasi.js"]);
   app.get(["/ruangakademikut/assets/:f", "/assets/ut/:f"], (req, res) => {
     if (!ASSETS.has(req.params.f)) return res.status(404).end();
     sendAsset(res, path.join(dir, req.params.f), "no-cache");

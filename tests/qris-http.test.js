@@ -1,5 +1,5 @@
 "use strict";
-/* Koin sudah dihapus: semua pesanan lewat QRIS + bukti bayar, tanpa login dan tanpa potongan saldo. */
+/* Semua pesanan lewat QRIS + bukti bayar. Unggah dan audit gratis tanpa login; login diminta saat memesan. */
 const test = require("node:test");
 const assert = require("node:assert");
 const fs = require("fs"), os = require("os"), path = require("path");
@@ -19,9 +19,9 @@ async function setup() {
   auth.mount(app, express);
   const requireAdmin = (req, res, next) => auth.isCaPath(req.path) ? auth.guard(req, res, next) : res.status(401).json({ error: "nextaja" });
   let pf = null;
-  const blog = require("../blog-akun")({ app, express, requireAdmin, sameOrigin, getCookie, SECURE_COOKIE: false, ROOT: root, SITE: "https://contoh.test", getSettings: () => ({}), onRegister: u => (pf ? pf.koin.welcome(u.id) : 0), getBonus: () => (pf ? Number(pf.settings.get("koin_bonus_daftar")) || 0 : 0) });
+  const blog = require("../blog-akun")({ app, express, requireAdmin, sameOrigin, getCookie, SECURE_COOKIE: false, ROOT: root, SITE: "https://contoh.test", getSettings: () => ({}) });
   pf = require("../parafrase")({ app, express, requireAdmin, sameOrigin, ROOT: root, db, userFrom: blog.userFrom, users: { byId: blog.userById, byEmail: blog.userByEmail } });
-  require("../admin-ca")({ app, express, db, auth, requireAdmin, blog, settings: pf.settings, orders: pf.orders, koin: pf.koin, traffic: pf.traffic, ROOT: root, UPLOADS: path.join(root, "public", "uploads"), sharp: null, ACAD: "https://contoh.test" });
+  require("../admin-ca")({ app, express, db, auth, requireAdmin, blog, settings: pf.settings, orders: pf.orders, traffic: pf.traffic, ROOT: root, UPLOADS: path.join(root, "public", "uploads"), sharp: null, ACAD: "https://contoh.test" });
   const srv = app.listen(0), base = "http://127.0.0.1:" + srv.address().port;
   const call = async (p, { cookie = "", method = "GET", json, form } = {}) => {
     const r = await fetch(base + p, { method, headers: { origin: base, cookie, ...(json ? { "content-type": "application/json" } : {}) }, body: json ? JSON.stringify(json) : form, redirect: "manual" });
@@ -33,11 +33,11 @@ async function setup() {
 }
 
 
-test("tanpa koin: pesanan Cek & Parafrase dan Audit dibuat tanpa login, bayar QRIS (menunggu_bayar), /koin dialihkan", async () => {
+test("pesanan Cek & Parafrase dan Audit dibuat lewat QRIS, bayar QRIS (menunggu_bayar), /koin dialihkan", async () => {
   const { docx } = require("./pf-helper");
   const { srv, call, pf } = await setup();
   try {
-    pf.settings.set({ free_words: 0, bayar_koin_saja: true }); // pengaturan lama "koin saja" harus diabaikan
+    pf.settings.set({ free_words: 0 });
     const up = async path => { const fd = new FormData(); fd.append("file", new Blob([await docx("Isi uji untuk pesanan rupiah.")]), "t.docx"); const r = await call(path, { method: "POST", form: fd }); return r.body.uploadId; };
     const dok = { wa: "081234567890", agree: true, deadline: Date.now() + 3 * 864e5 };
     const o = await call("/ms/parafrase/order", { method: "POST", json: { ...dok, uploadId: await up("/ms/parafrase/upload") } });

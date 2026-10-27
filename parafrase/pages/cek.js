@@ -2,7 +2,6 @@
   var $ = function (id) { return document.getElementById(id); };
   var rp = function (n) { return Number(n).toLocaleString("id-ID"); };
   /* Semua pembayaran lewat QRIS. */
-  var koinOnly = function () { return false; };
   var payLabel = function () { return "Bayar dengan QRIS"; };
   var st = { up: null, page: 1 };
   var NAMES = { M: "Tulis ulang", O: "Beri kutip", K: "Tambah sumber", B: "Lengkapi sitasi", U: "Singkat", H: "Tambah kalimat", P: "Tambah analisis", A: "Variasikan" };
@@ -96,7 +95,7 @@
     var fw = Math.min(words, c.free_words || 0), pay = words - fw;
     var base = pay < 1 ? 0 : Math.max(pay * c.price_per_word, c.min_order_price);
     $("pwords").textContent = rp(words) + (fw ? " (" + rp(fw) + " gratis, " + rp(pay) + " dibayar)" : "");
-    $("total").textContent = pay < 1 ? "Gratis" : koinOnly() ? KO(base + (fastOn ? c.fast_lane.price : 0)) : "Rp " + rp(base + (fastOn ? c.fast_lane.price : 0));
+    $("total").textContent = pay < 1 ? "Gratis" : "Rp " + rp(base + (fastOn ? c.fast_lane.price : 0));
     $("pay").textContent = pay < 1 ? "Kirim gratis" : payLabel();
     var f = c.fast_lane, box = $("fastbox");
     if (!f.enabled) { box.classList.add("hidden"); }
@@ -111,7 +110,7 @@
     $("dlwarn").textContent = dlok && dl.getTime() - Date.now() < 86400000 ? "Deadline kurang dari 24 jam, kami sarankan jalur cepat." : "";
     var all = ok && dlok && $("agree").checked && st.up;
     $("pay").disabled = !all;
-    $("payhint").textContent = all ? (koinOnly() ? "Saldo koinmu dipotong saat kamu menekan tombol, lalu pesanan langsung masuk antrean." : "Pembayaran QRIS dibuka di langkah berikutnya.") : !ok ? "Isi nomor WhatsApp yang benar (mulai 8…)" : !dlok ? "Isi deadline yang belum lewat" : "Centang persetujuan untuk melanjutkan";
+    $("payhint").textContent = all ? "Pembayaran QRIS dibuka di langkah berikutnya." : !ok ? "Isi nomor WhatsApp yang benar (mulai 8…)" : !dlok ? "Isi deadline yang belum lewat" : "Centang persetujuan untuk melanjutkan";
   }
   ["wa", "dl", "dljam", "agree"].forEach(function (id) { $(id).addEventListener("input", gate); $(id).addEventListener("change", gate); });
   ["nobib", "fast"].forEach(function (id) { $(id).addEventListener("change", price); });
@@ -124,7 +123,7 @@
       excludeBib: $("nobib").checked, fast: $("fast").checked, deadline: dl.getTime(), agree: $("agree").checked }) })
       .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
       .then(function (x) {
-        if (!x.ok && x.j.login) { location.href = "/ms/masuk?next=" + encodeURIComponent(location.pathname); return; }
+        if (!x.ok && x.j.login) { location.href = "/ms/masuk?next=" + encodeURIComponent(location.pathname + (st.up && st.up.uploadId ? "?u=" + st.up.uploadId : "")); return; }
         if (x.ok) { try { localStorage.setItem("pf_last", x.j.token); } catch (e) {} location.href = x.j.url; return; }
         showErr(x.j.error || "Pesanan gagal dibuat.");
         if (x.j.code === "fast_full") { fetch("/ms/public-config").then(function (r) { return r.json(); }).then(function (c) { window.PF.cfg = c; price(); }); }

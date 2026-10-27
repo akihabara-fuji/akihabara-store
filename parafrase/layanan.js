@@ -11,7 +11,6 @@ const crypto = require("crypto");
 const multer = require("multer");
 const { requirements, checkStage } = require("./metopen");
 const { checkFree } = require("./revisi");
-const { coinsFor } = require("./koin");
 const simulasi = require("./simulasi");
 
 const SV = {
@@ -30,7 +29,7 @@ const SV = {
 const MAX_FILES = 5, MAX_MB = 10;
 const MAGIC = { docx: b => b.slice(0, 2).toString() === "PK", pdf: b => b.slice(0, 4).toString() === "%PDF", png: b => b.slice(0, 4).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47])), jpg: b => b[0] === 0xff && b[1] === 0xd8, jpeg: b => b[0] === 0xff && b[1] === 0xd8, txt: b => !b.includes(0) };
 
-module.exports = function mountLayanan({ app, express, db, settings, orders, root, sameOrigin, secret, requireAdmin, koin, userFrom }) {
+module.exports = function mountLayanan({ app, express, db, settings, orders, root, sameOrigin, secret, requireAdmin, userFrom }) {
   const priceOf = k => { const v = settings.get("price_" + k); return Number.isInteger(v) ? v : SV[k].price; };
   const labelOf = k => labelFor(settings, k); // nama tampil: bisa diubah admin (label_<kode>), bawaan dari SV
   const priv = p => path.join(root, "data", "private", p);
@@ -42,7 +41,7 @@ module.exports = function mountLayanan({ app, express, db, settings, orders, roo
   const ext = n => ((String(n).match(/\.([a-z0-9]{2,5})$/i) || [])[1] || "").toLowerCase();
   const bad = (status, error, extra) => Object.assign(new Error(error), { status }, extra || {});
 
-  app.get("/ms/layanan/config", (req, res) => { res.set("Cache-Control", "public, max-age=5"); res.json(Object.fromEntries(Object.entries(SV).filter(([, v]) => !v.hidden).map(([k, v]) => [k, { label: labelOf(k), price: priceOf(k), kind: v.kind, ...(v.of ? { of: v.of } : {}), ...(v.kind === "simulasi" ? { simCoins: settings.get("sim_koin_price") } : {}), ...requirements(k) }]))); });
+  app.get("/ms/layanan/config", (req, res) => { res.set("Cache-Control", "public, max-age=5"); res.json(Object.fromEntries(Object.entries(SV).filter(([, v]) => !v.hidden).map(([k, v]) => [k, { label: labelOf(k), price: priceOf(k), kind: v.kind, ...(v.of ? { of: v.of } : {}), ...requirements(k) }]))); });
 
   const up = multer({ storage: multer.memoryStorage(), limits: { fileSize: MAX_MB * 1048576, files: MAX_FILES, fields: 8 } }).array("files", MAX_FILES);
   app.post("/ms/layanan/order", (req, res) => {
@@ -92,33 +91,24 @@ module.exports = function mountLayanan({ app, express, db, settings, orders, roo
         }
         const cfg = settings.getAll(), token = crypto.randomBytes(24).toString("hex");
         const base = free ? 0 : priceOf(b.service);
-        /* Bayar pakai koin: 1 koin = Rp1.000. Potongan koin dan pembuatan pesanan satu transaksi, jadi tidak ada pesanan tanpa potongan. */
-        const useCoin = false, /* koin dinonaktifkan: semua pesanan lewat QRIS */ buyer = useCoin ? (userFrom && userFrom(req)) : null;
-        if (useCoin && !buyer) throw bad(401, "Masuk dulu untuk memesan. Pembayaran memakai koin.", { login: true });
-        const coins = useCoin ? Math.max(1, Math.ceil(base / 1000)) : null; // satu pintu bayar: koin, dibulatkan ke atas per koin
-        if (useCoin && !(base > 0)) throw bad(400, "Harga layanan ini belum diatur.");
         const payExp = now + cfg.payment_window_minutes * 60e3;
         const r = db.transaction(() => {
           const last = db.prepare("SELECT MAX(CAST(SUBSTR(id,4) AS INTEGER)) n FROM orders").get().n || 1000;
           const id = "NA-" + (last + 1);
           let code = 0;
-          if (!free && !useCoin && cfg.unique_code_enabled) {
+          if (!free && cfg.unique_code_enabled) {
             const taken = new Set(db.prepare("SELECT total FROM orders WHERE status IN ('menunggu_bayar','menunggu_verifikasi')").all().map(x => x.total));
             const fr = []; for (let c = 1; c <= cfg.unique_code_max; c++) if (!taken.has(base + c)) fr.push(c);
             if (!fr.length) throw bad(503, "Sistem pembayaran sedang penuh. Coba lagi beberapa menit lagi.");
             code = fr[crypto.randomInt(fr.length)];
           }
-          const total = useCoin ? coins * 1000 : base + code, title = labelOf(b.service) + (brief ? ": " + brief.replace(/\s+/g, " ").slice(0, 60) : "");
+          const total = base + code, title = labelOf(b.service) + (brief ? ": " + brief.replace(/\s+/g, " ").slice(0, 60) : "");
           db.prepare(`INSERT INTO orders(id,public_token,wa_number,title,language,doc_type,service,brief,word_count,original_file,status,lane,price_per_word,min_price,fast_price,base_total,unique_code,total,deadline_at,pay_expires_at,confirmed_at,confirmed_by,parent_order_id,created_at,updated_at)
                       VALUES(?,?,?,?,?,'layanan',?,?,0,NULL,?, 'biasa',0,0,0,?,?,?,?,?,?,?,?,?,?)`)
-            .run(id, token, wa, title, "id", b.service, brief, free || useCoin ? "baru_dibayar" : "menunggu_bayar", base, code, total, now + 7 * 86400e3, payExp, free || useCoin ? now : null, free || (useCoin && koin.isFree(buyer.id)) ? "gratis" : useCoin ? "koin" : null, parent ? parent.id : null, now, now);
-          orders.event(id, "dibuat", `layanan=${b.service} total=${total} gratis=${free} koin=${coins || 0} ip=${h}`, now);
-          const uid = (buyer || (userFrom && userFrom(req)) || {}).id;
+            .run(id, token, wa, title, "id", b.service, brief, free ? "baru_dibayar" : "menunggu_bayar", base, code, total, now + 7 * 86400e3, payExp, free ? now : null, free ? "gratis" : null, parent ? parent.id : null, now, now);
+          orders.event(id, "dibuat", `layanan=${b.service} total=${total} gratis=${free} ip=${h}`, now);
+          const uid = (userFrom && userFrom(req) || {}).id;
           if (uid) db.prepare("UPDATE orders SET user_id=? WHERE id=?").run(String(uid), id);
-          if (useCoin) {
-            try { const dr = koin.debitOrder(buyer.id, coins, id, title, now); if (dr && dr.free) db.prepare("UPDATE orders SET confirmed_by='gratis' WHERE id=?").run(id); } // 'gratis' = tidak dihitung pendapatan (admin-ca isPaid)
-            catch (e) { if (e.status === 402) throw bad(402, `Saldo koinmu kurang ${e.short} koin. Isi koin dulu, lalu pesan lagi.`, { short: e.short, balance: e.balance }); throw e; }
-          }
           return { id, total };
         })();
         const att = [];
@@ -129,9 +119,9 @@ module.exports = function mountLayanan({ app, express, db, settings, orders, roo
           att.push({ name: safeName(files[i].originalname), path: rel, size: files[i].size });
         }
         if (att.length) db.prepare("UPDATE orders SET attach_json=? WHERE id=?").run(JSON.stringify(att), r.id);
-        res.json({ orderId: r.id, token, total: r.total, free, ...(useCoin ? { paid: "koin", coins, balance: koin.balance(buyer.id) } : {}), url: U("/ruangakademikut/pesanan/") + token });
+        res.json({ orderId: r.id, token, total: r.total, free, url: U("/ruangakademikut/pesanan/") + token });
       } catch (e) {
-        if (e.status) return res.status(e.status).json({ error: e.message, ...(e.login ? { login: true } : {}), ...(e.short ? { short: e.short, balance: e.balance } : {}) });
+        if (e.status) return res.status(e.status).json({ error: e.message, ...(e.login ? { login: true } : {}) });
         console.error("[layanan] pesanan gagal:", e && e.message); res.status(500).json({ error: "Pesanan tidak bisa dibuat. Coba lagi." });
       }
     });

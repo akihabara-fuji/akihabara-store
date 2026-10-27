@@ -2,7 +2,9 @@
   var $ = function (id) { return document.getElementById(id); };
   var rp = function (n) { return Number(n).toLocaleString("id-ID"); };
   var SEV = { kritis: ["Kritis", "#ff8aa5"], peringatan: ["Peringatan", "#f3ff4d"], info: ["Info", "#8ec5ff"] };
-  var upId = null;
+  var upId = null, lastRes = null;
+  var KEY = "ca_audit_lanjut";
+  function goLogin() { try { sessionStorage.setItem(KEY, JSON.stringify({ t: Date.now(), j: lastRes, wa: $("wa").value })); } catch (e) {} location.href = "/ms/masuk?next=" + encodeURIComponent(location.pathname); }
   function showErr(m) { var e = $("err"); e.textContent = m || ""; e.classList.toggle("hidden", !m); }
   var drop = $("drop");
   $("pick").onclick = function () { $("file").click(); };
@@ -34,7 +36,7 @@
     fetch("/ms/audit/upload", { method: "POST", body: fd }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
       .then(function (x) {
         if (!x.ok) { if (x.j.login) { location.href = "/ms/masuk?next=" + encodeURIComponent(location.pathname); return; } showErr(x.j.error || "Audit gagal. Coba lagi."); return; }
-        upId = x.j.uploadId; render(x.j); $("s1").classList.add("hidden"); $("s2").classList.remove("hidden"); window.scrollTo(0, 0);
+        upId = x.j.uploadId; lastRes = x.j; render(x.j); $("s1").classList.add("hidden"); $("s2").classList.remove("hidden"); window.scrollTo(0, 0);
       }).catch(function () { showErr("Koneksi terputus. Coba lagi."); })
       .then(function () { window.pfScan.stop($("busy")); $("chGo").disabled = false; $("chChange").disabled = false; });
   }
@@ -45,7 +47,7 @@
     var b = this; b.disabled = true; var e = $("oerr"); e.classList.add("hidden");
     fetch("/ms/audit/order", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ uploadId: upId, wa: $("wa").value, agree: $("agree").checked }) })
       .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
-      .then(function (x) { if (x.ok) { location.href = x.j.url; return; } if (x.j.login) { location.href = "/ms/masuk?next=" + encodeURIComponent(location.pathname); return; } e.textContent = x.j.error || "Pesanan gagal. Coba lagi."; e.classList.remove("hidden"); gate(); })
+      .then(function (x) { if (x.ok) { location.href = x.j.url; return; } if (x.j.login) { goLogin(); return; } e.textContent = x.j.error || "Pesanan gagal. Coba lagi."; e.classList.remove("hidden"); gate(); })
       .catch(function () { e.textContent = "Koneksi terputus. Coba lagi."; e.classList.remove("hidden"); gate(); });
   };
   function el(tag, css, txt) { var e = document.createElement(tag); if (css) e.style.cssText = css; if (txt != null) e.textContent = txt; return e; }
@@ -67,11 +69,19 @@
     window.renderFindings(l, d.findings, { sev: SEV, visible: 5 });
     if (d.findings.length) window.foldList(l, "Lihat semua temuan (" + d.findings.length + ")");
     window.auditOkList(d.score, l);
-    $("perword").textContent = d.quote.perWord; $("minp").textContent = window.koinFmt(d.quote.min); $("total").textContent = d.quote.allFree ? "0 (seluruh dokumen sudah terbuka gratis)" : "Rp " + rp(d.quote.total);
+    $("perword").textContent = d.quote.perWord; $("minp").textContent = window.priceFmt(d.quote.min); $("total").textContent = d.quote.allFree ? "0 (seluruh dokumen sudah terbuka gratis)" : "Rp " + rp(d.quote.total);
     $("fwn").textContent = rp(d.quote.freeWords || 0);
     $("cekGo").href = "/ruangakademikut/cek-parafrase-mandiri?u=" + encodeURIComponent(upId);
     var nOpen = d.findings.filter(function (f) { return f.open; }).length;
     $("rmeta").textContent += d.quote.allFree ? " · seluruhnya gratis" : " · " + nOpen + " dari " + d.findings.length + " temuan dibuka gratis";
     $("cta").classList.toggle("hidden", !d.findings.some(function (f) { return !f.open; }));
   }
+  /* Kembali dari halaman masuk: pulihkan hasil audit supaya pembeli tinggal lanjut bayar (berlaku 2 jam, sama dengan masa simpan file). */
+  try {
+    var sv = JSON.parse(sessionStorage.getItem(KEY) || "null"); sessionStorage.removeItem(KEY);
+    if (sv && sv.j && sv.j.uploadId && Date.now() - sv.t < 2 * 3600 * 1000) {
+      upId = sv.j.uploadId; lastRes = sv.j; render(sv.j); $("s1").classList.add("hidden"); $("s2").classList.remove("hidden");
+      if (sv.wa) $("wa").value = sv.wa; gate();
+    }
+  } catch (e) {}
 })();
