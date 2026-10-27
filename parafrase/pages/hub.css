@@ -55,3 +55,15 @@
 .hub .pb .price.soon-p{font-size:14px}
 .hub .btn.cta{min-height:42px;padding:0 20px;font-size:14px}
 .hub .btn.cta.o{background:transparent}
+
+/* kategori, cara kerja, testimoni */
+.kat{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px;position:sticky;top:0;z-index:5;padding:8px 0;background:var(--bg)}
+.kat button{padding:8px 16px;border:1px solid var(--border);border-radius:999px;background:var(--surface);color:var(--text);font:inherit;font-size:13px;font-weight:700;cursor:pointer;min-height:40px}
+.kat button.on{background:var(--acc);color:var(--on-accent,#111);border-color:var(--acc)}
+.kat button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.cards>[hidden]{display:none}
+.cr,.ts{margin:34px 0 8px}.cr h2,.ts h2{font-size:22px;margin:0 0 14px}
+.cr-l{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.cr-l li{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;font-size:14px;display:flex;flex-direction:column;gap:6px}.cr-l b{font-size:24px;color:var(--acc)}
+.ts-l{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.ts-c{margin:0;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px}.ts-c blockquote{margin:0 0 10px;font-size:14.5px;line-height:1.55}.ts-c figcaption{font-size:12.5px;color:var(--muted)}
+@media(max-width:900px){.cr-l,.ts-l{grid-template-columns:1fr 1fr}}@media(max-width:560px){.cr-l,.ts-l{grid-template-columns:1fr}}

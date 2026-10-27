@@ -166,6 +166,7 @@ section.s{padding:80px 0 0}
 .chips a:hover{border-color:var(--acc);transform:translateY(-1px)}
 .mini{padding:0 0 22px;display:flex;flex-direction:column;gap:8px;overflow:hidden}.mini>h3,.mini>p,.mini>.pr{margin-left:22px;margin-right:22px}
 .gal{position:relative;aspect-ratio:16/9;overflow:hidden;background:var(--surface2);margin-bottom:6px;touch-action:pan-y}
+.gal.cv{aspect-ratio:4/3}
 .gal-t{display:flex;height:100%;transition:transform .45s cubic-bezier(.3,.8,.3,1)}
 .gal-t img{flex:0 0 100%;width:100%;height:100%;object-fit:cover;display:block}
 .gal-d{position:absolute;left:0;right:0;bottom:8px;display:flex;justify-content:center;gap:5px}
@@ -556,10 +557,11 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
 (function(){
 fetch("/ms/galeri").then(function(r){return r.ok?r.json():{}}).catch(function(){return {}}).then(function(man){
 document.querySelectorAll("[data-g]").forEach(function(c){
-var L=man[c.getAttribute("data-g")];if(!L||!L.length)return;
-var g=document.createElement("div");g.className="gal";g.setAttribute("aria-hidden","true");
+var L=man[c.getAttribute("data-g")],cv=false;if(!L||!L.length){L=["/ruangakademikut/img/"+c.getAttribute("data-g")+".webp"];cv=true}
+var g=document.createElement("div");g.className="gal"+(cv?" cv":"");g.setAttribute("aria-hidden","true");
 g.innerHTML='<div class="gal-t">'+L.map(function(u,i){return '<img src="'+u+'" alt="" loading="lazy" decoding="async" width="720" height="405">'}).join("")+'</div>'+(L.length>1?'<span class="gal-n">1/'+L.length+'</span><div class="gal-d">'+L.map(function(u,i){return '<i'+(i?'':' class="on"')+'></i>'}).join("")+'</div>':"");
 c.insertBefore(g,c.firstChild);
+if(cv){var im=g.querySelector("img");im.onerror=function(){g.remove()}}
 var i=0,t=g.querySelector(".gal-t"),d=g.querySelectorAll("i"),n=g.querySelector(".gal-n"),tm=null,reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
 function go(k){i=(k+L.length)%L.length;t.style.transform="translateX(-"+i*100+"%)";d.forEach(function(e,j){e.classList.toggle("on",j===i)});if(n)n.textContent=(i+1)+"/"+L.length}
 function start(){if(L.length<2||tm||reduce)return;go(i+1);tm=setInterval(function(){go(i+1)},1100)}
