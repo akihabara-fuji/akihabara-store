@@ -90,7 +90,7 @@
 .ax-comm-l a:hover{border-color:var(--link,#4f8ff7)}.ax-comm-l a span{font-size:12.5px;color:var(--muted)}
 
 /* artikel */
-.ax{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:40px;align-items:start;padding-top:24px;padding-bottom:64px}
+.ax{display:grid;grid-template-columns:210px minmax(0,1fr) 290px;gap:36px;align-items:start;padding-top:24px;padding-bottom:64px}
 .ax-main{min-width:0;max-width:760px}
 .ax .crumbs{display:flex;flex-wrap:wrap;gap:6px;color:var(--muted);font-size:13px}.ax .crumbs a{color:var(--link)}
 .ax-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin:18px 0 0;color:var(--muted);font-size:13.5px}
@@ -124,9 +124,27 @@
 .wa-bubble{position:fixed;right:16px;bottom:16px;z-index:50;display:inline-flex;align-items:center;gap:8px;padding:12px 18px;border-radius:999px;background:var(--btn,#1d4ed8);color:#fff;font:700 14px Onest,sans-serif;text-decoration:none;box-shadow:0 8px 24px rgba(0,0,0,.35)}
 
 @media (max-width:1100px){.bx-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media (max-width:1023px){.ax{grid-template-columns:minmax(0,1fr)}.ax-side{position:static}.ax-toc-side{display:none}.ax-toc-in{display:block}}
+@media (max-width:1023px){.ax-side{position:static}.ax-toc-in{display:block}}
 @media (max-width:900px){.bx-hero{grid-template-columns:minmax(0,1fr)}.bx-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:560px){.bx-grid{grid-template-columns:minmax(0,1fr)}.bx-search button{padding:0 16px}.bx-arch .blog-titles a{grid-template-columns:56px 1fr}.bx-arch .blog-titles .tag{display:none}.wa-bubble{left:12px;right:12px;justify-content:center}}
 @media (prefers-reduced-motion:reduce){.bx-feat>a,.bx-card>a{transition:none}.bx-feat>a:hover,.bx-card>a:hover{transform:none}}
 
 .ax-views{display:inline-flex;align-items:center;gap:5px}.ax-views svg{flex:none}
+
+/* Navigator artikel: "Di artikel ini" di kiri, navigasi situs di kanan, laci di HP */
+.ax-notoc{grid-template-columns:minmax(0,1fr) 290px}
+.ax-left{position:sticky;top:84px;align-self:start;font-size:14px;max-height:calc(100vh - 110px);overflow:auto}
+.ax-left h2{margin:0 0 10px;font:700 13px Onest,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.ax-left li{list-style:none}.ax-left ol{list-style:none;margin:0;padding:0;border-left:2px solid var(--border);display:grid;gap:2px}.ax-left li.l3{margin-left:12px}
+.ax-left a{display:block;padding:5px 0 5px 12px;margin-left:-2px;border-left:2px solid transparent;color:var(--muted);text-decoration:none;line-height:1.4}
+.ax-left a:hover{color:var(--text)}.ax-left a.on{border-left-color:var(--acc);color:var(--text);font-weight:700}
+.ax-navt details{border-top:1px solid var(--border);padding:6px 0}.ax-navt details:first-of-type{border-top:0}
+.ax-navt summary,.ax-drawer summary{cursor:pointer;font-weight:700;list-style:none;padding:6px 0;min-height:32px}.ax-navt summary::-webkit-details-marker,.ax-drawer summary::-webkit-details-marker{display:none}
+.ax-navt ul,.ax-drawer ul{list-style:none;margin:0;padding:0 0 4px 10px}.ax-navt li a,.ax-drawer li a{display:block;padding:5px 0;color:var(--muted);text-decoration:none;font-size:14px}
+.ax-navt li a:hover,.ax-drawer li a:hover{color:var(--text)}.ax-navt li a.on,.ax-drawer li a.on{color:var(--acc);font-weight:700}
+.ax-navbtn{display:none}.ax-drawer[hidden]{display:none}
+@media (max-width:1023px){.ax,.ax-notoc{grid-template-columns:minmax(0,1fr)}.ax-left{display:none}.ax-navt{display:none}
+.ax-navbtn{display:flex;align-items:center;position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:70;padding:12px 8px;border:1px solid var(--border);border-right:0;border-radius:12px 0 0 12px;background:var(--surface);color:var(--text);font:700 13px Onest,sans-serif;writing-mode:vertical-rl;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.25)}
+.ax-drawer{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.5);display:flex;justify-content:flex-end}.ax-drawer[hidden]{display:none}
+.ax-drawer-in{width:min(320px,88vw);height:100%;overflow:auto;background:var(--bg);color:var(--text);padding:16px 18px;border-left:1px solid var(--border)}.ax-drawer-in h2{margin:0 0 10px;font:700 16px Onest,sans-serif}
+.ax-drawer-x{float:right;border:0;background:none;color:inherit;font-size:26px;line-height:1;cursor:pointer;min-width:44px;min-height:44px}}
