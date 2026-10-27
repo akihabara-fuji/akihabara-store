@@ -295,8 +295,8 @@ module.exports = function mount(ctx) {
   const needOrigin = (req, res, next) => (sameOrigin(req) ? next() : res.status(403).json({ error: "Permintaan ditolak." }));
 
   app.get("/ms/auth/me", (req, res) => { res.set("Cache-Control", "no-store"); const u = userFrom(req); res.json({ user: u ? pubUser(u) : null }); });
-  /* koin gratis untuk akun baru (diatur di parafrase/koin.js; kosong bila modul koin belum terpasang atau bonus 0) */
-  const welcome = u => { try { return (ctx.onRegister && ctx.onRegister(u)) || 0; } catch (e) { console.error("[bonus daftar]", e.message); return 0; } };
+  /* Koin sudah dihapus: akun baru tidak lagi mendapat bonus koin. */
+  const welcome = () => 0;
   app.post("/ms/auth/register", json, needOrigin, async (req, res) => {
     const key = "r:" + req.ip;
     if (limited(req, key) || regLimited(req.ip)) return res.status(429).json({ error: "Terlalu banyak percobaan. Coba lagi 15 menit lagi." });
@@ -982,8 +982,8 @@ var links=[].slice.call(document.querySelectorAll(".ax-left a")),hs=links.map(fu
     <p>nextaja menyediakan analisa akun, preset dan template, bantuan akademik, serta jasa housekeeping. Detail, harga, dan jadwal disepakati lewat WhatsApp sebelum pengerjaan.</p>
     <h2>Bantuan akademik</h2>
     <p>Bantuan akademik berupa pendampingan dan referensi untuk membantu kamu belajar. Kami tidak menjamin nilai atau kelulusan. Kamu bertanggung jawab atas karya yang kamu kumpulkan dan atas kepatuhan pada aturan kampusmu.</p>
-    <h2>Koin</h2>
-    <p>Koin dipakai untuk membayar layanan Catatan Akademik dan nilainya tetap: 1 koin = Rp1.000. Koin diisi lewat pembayaran QRIS dan baru masuk saldo setelah admin mengonfirmasi bukti bayar. Koin tidak dapat diuangkan dan tidak dapat dipindahkan ke akun lain. Jika pesanan yang kamu bayar dengan koin dibatalkan, koinnya kembali ke saldomu. Hubungi admin untuk kendala saldo.</p>
+    <h2>Pembayaran</h2>
+    <p>Pembayaran memakai QRIS dengan nominal rupiah yang tertera di halaman pesanan. Pesanan diproses setelah kamu mengunggah bukti bayar dan admin mengonfirmasinya. Jika pembayaran tidak bisa diverifikasi karena kendala dari pihak kami, dananya dikembalikan.</p>
     <h2>Akun</h2>
     <p>Jaga kerahasiaan akunmu. Kami bisa menonaktifkan akun yang dipakai untuk menyalahgunakan layanan.</p>
     <h2>Perubahan</h2>
@@ -995,7 +995,6 @@ var links=[].slice.call(document.querySelectorAll(".ax-left a")),hs=links.map(fu
     const body = `<section class="pg"><div class="wrap narrow">
       <div class="card form">
         <div class="tabs2" role="tablist"><button type="button" data-t="in" aria-pressed="true">Masuk</button><button type="button" data-t="up" aria-pressed="false">Daftar</button></div>
-        ${(ctx.getBonus && ctx.getBonus()) > 0 ? `<p class="small" id="bonus" hidden>Daftar sekarang dan dapat <b>${Number(ctx.getBonus())} koin gratis</b> untuk mencoba layanan.</p>` : ""}
         <form id="f" novalidate>
           <label id="lName" hidden>Nama<input name="name" autocomplete="name" maxlength="60"></label>
           <label>Email<input name="email" type="email" autocomplete="email" required maxlength="254"></label>
@@ -1012,7 +1011,7 @@ var links=[].slice.call(document.querySelectorAll(".ax-left a")),hs=links.map(fu
       var w=${JSON.stringify(String((SOCIAL().waNumber) || "6285722227544"))};document.getElementById("wa").href="https://wa.me/"+w+"?text="+encodeURIComponent("Halo admin nextaja, saya lupa sandi akun saya.");
       document.querySelectorAll(".tabs2 button").forEach(function(b){b.addEventListener("click",function(){mode=b.dataset.t;
         document.querySelectorAll(".tabs2 button").forEach(function(x){x.setAttribute("aria-pressed",x===b)});
-        document.getElementById("lName").hidden=mode!=="up";document.getElementById("lPromo").hidden=mode!=="up";var bn=document.getElementById("bonus");if(bn)bn.hidden=mode!=="up";document.getElementById("hint").hidden=mode!=="up";
+        document.getElementById("lName").hidden=mode!=="up";document.getElementById("lPromo").hidden=mode!=="up";document.getElementById("hint").hidden=mode!=="up";
         document.getElementById("go").textContent=mode==="up"?"Buat akun":"Masuk";f.password.autocomplete=mode==="up"?"new-password":"current-password";err.textContent="";});});
       document.getElementById("pwT").addEventListener("click",function(){var sh=f.password.type==="password";f.password.type=sh?"text":"password";this.textContent=sh?"Sembunyi":"Lihat";this.setAttribute("aria-pressed",sh);this.setAttribute("aria-label",sh?"Sembunyikan sandi":"Tampilkan sandi")});
       var GID=${JSON.stringify(GOOGLE_ID)};
