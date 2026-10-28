@@ -141,9 +141,9 @@ window.auditProblemCard = function (pb, box) {
   var inner = el("div", "width:100px;height:100px;border-radius:50%;background:var(--bg,#0a0a1c);display:flex;flex-direction:column;align-items:center;justify-content:center");
   inner.appendChild(el("b", "font-size:28px;line-height:1;color:" + COL, none ? "n/a" : f1(pb.pct) + "%")); inner.appendChild(el("span", "font-size:11.5px;opacity:.7", "bermasalah")); ring.appendChild(inner);
   var side = el("div", "flex:1;min-width:240px");
-  if (over) { var wn = el("div", "display:flex;gap:8px;align-items:center;color:" + COL + ";font-size:12.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase"); wn.appendChild(window.pfWarnIcon(18)); wn.appendChild(el("span", "", "Belum aman · di atas batas " + lim + "%")); side.appendChild(wn); }
+  if (over) { var wn = el("div", "display:flex;gap:8px;align-items:center;color:" + COL + ";font-size:12.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase"); wn.appendChild(window.pfWarnIcon(18)); wn.appendChild(el("span", "", "Di atas batas modul · " + lim + "%")); side.appendChild(wn); }
   else side.appendChild(el("div", "font-size:12.5px;opacity:.7;text-transform:uppercase;letter-spacing:.06em", "Tingkat bermasalah (makin kecil makin baik)"));
-  side.appendChild(el("div", "font-size:21px;font-weight:700;margin:2px 0 8px;color:" + COL, none ? "Isi dokumen belum terbaca" : over ? "Belum aman: turunkan sampai " + lim + "% atau kurang" : "Aman: " + lim + "% atau kurang"));
+  side.appendChild(el("div", "font-size:21px;font-weight:700;margin:2px 0 8px;color:" + COL, none ? "Isi dokumen belum terbaca" : over ? "Di atas batas modul: turunkan sampai " + lim + "% atau kurang" : "Di bawah batas modul: " + lim + "% atau kurang"));
   var bar = el("div", "position:relative;height:10px;border-radius:99px;background:rgba(128,128,160,.22);margin:6px 0 10px");
   bar.appendChild(el("div", "height:100%;border-radius:99px;width:" + Math.min(100, pb.pct) + "%;background:" + COL));
   var mk = el("div", "position:absolute;top:-4px;width:3px;height:18px;background:#5ee6a8;left:" + lim + "%"); mk.title = "Batas " + lim + "%"; bar.appendChild(mk); side.appendChild(bar);
@@ -160,6 +160,9 @@ window.auditProblemCard = function (pb, box) {
     side.appendChild(el("div", "font-size:12.5px;line-height:1.55;margin-top:6px;opacity:.85", "Dari mana: aturan modul Metopen dan aturan sitasi umum. Rumus: (kalimat bermasalah + pustaka bermasalah) ÷ (semua kalimat isi + semua entri pustaka) = " + (pb.num != null ? pb.num : pb.kalimat.num + pb.pustaka.num) + " ÷ " + (pb.den != null ? pb.den : pb.kalimat.den + pb.pustaka.den) + "."));
   }
   side.appendChild(el("div", "font-size:12.5px;font-weight:700;margin-top:8px;color:#ffb347", "Angka ini dihitung Catatan Akademik. BUKAN hasil Drillbit dan BUKAN penilaian resmi UT."));
+  /* Skor modul bukan prediksi hasil AI/Similarity UT (4 dokumen uji: skor modul 12-20%, AI Drillbit sekitar 33-52%) */
+  var nw = el("div", "font-size:12.5px;margin-top:6px;line-height:1.55;opacity:.9", "Skor ini hanya menilai aturan modul, misalnya paragraf terlalu pendek, sitasi, dan daftar pustaka. Skor ini tidak memprediksi hasil AI atau Similarity di UT: pada 4 dokumen uji kami, skor modul 12 sampai 20% sementara AI Drillbit sekitar 33 sampai 52%. Punya laporan Drillbit dari UT? ");
+  var nl = el("a", "color:var(--link,#9db4ff);font-weight:700", "Bedah laporan UT-mu"); nl.href = "/ruangakademikut/bedah-laporan"; nw.appendChild(nl); side.appendChild(nw);
   side.appendChild(el("div", "font-size:12.5px;opacity:.7;margin-top:4px", pb.note));
   wrap.appendChild(ring); wrap.appendChild(side); box.appendChild(wrap);
   var T = window.__pfTri; if (over && T && T.t && T.t.level === "aman") window.renderTriage(T.box, T.t, T.opts);   /* satu kesimpulan: persen di atas batas = tidak "relatif aman" */

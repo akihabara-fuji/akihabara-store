@@ -17,7 +17,7 @@ const { kindOf, GUIDE, GUIDE_BY_CODE, GUIDE_TEKNIK, GUIDE_CEK_RESMI } = require(
 const W = { M: 5, O: 4, P: 3, A_ai: 3, A_uniform: 3, K: 2, B: 2, A_trans: 2, A_awalan: 2, U: 1, H: 1 };
 const LABEL = { M: "kalimat berulang", O: "kutipan tanpa sitasi", P: "paragraf umum", A_ai: "frasa gaya seragam", A_uniform: "panjang kalimat seragam", K: "klaim tanpa sumber", B: "sitasi bermasalah", A_trans: "penghubung berulang", A_awalan: "awalan kalimat sama", U: "kalimat terlalu panjang", H: "paragraf pendek" };
 const ACTION = { M: "Tulis ulang", O: "Beri tanda kutip dan sitasi", P: "Tambah analisis", A_ai: "Ganti dengan kata sendiri", A_uniform: "Variasikan panjang kalimat", K: "Tambah sumber", B: "Lengkapi sitasi", A_trans: "Variasikan penghubung", A_awalan: "Variasikan awalan", U: "Singkat", H: "Tambah kalimat" };
-const LEVEL_LABEL = { mendesak: "Mendesak diperbaiki", perhatian: "Perlu perhatian", aman: "Relatif aman", belum: "Belum bisa dinilai" };
+const LEVEL_LABEL = { mendesak: "Mendesak diperbaiki", perhatian: "Perlu perhatian", aman: "Belum ada yang mendesak", belum: "Belum bisa dinilai" };
 const keyOf = f => (f.code === "A" ? "A_" + (kindOf(f) || "trans") : f.code);
 const r1 = n => Math.round(n * 10) / 10;
 const num = (v, d) => { const n = Number(v); return Number.isFinite(n) ? n : d; };
