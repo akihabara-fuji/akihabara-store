@@ -13,3 +13,4 @@ data/parafrase.db
 data/parafrase.db-wal
 data/parafrase.db-shm
 data/private/
+data/indexnow.key
