@@ -19,11 +19,11 @@
   }
   function dt(ms) { return ms ? new Date(ms).toLocaleString("id-ID", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "-"; }
   var STAT = { menunggu_bayar: "Menunggu bayar", menunggu_verifikasi: "Menunggu verifikasi", baru_dibayar: "Baru dibayar", dikerjakan: "Dikerjakan", cek_ulang: "Cek ulang", terkirim: "Terkirim", kedaluwarsa: "Kedaluwarsa" };
-  var TABS = [["verif", "Verifikasi bayar"], ["lay", "Tugas, Diskusi, Metopen, Revisi"], ["queue", "Cek & Parafrase"], ["audit", "Audit Dokumen"], ["all", "Semua pesanan"], ["set", "QRIS & Pengaturan"], ["img", "Gambar kartu"], ["site", "Gambar situs"], ["wa", "Pesan WhatsApp"]]; // Ulasan pelanggan pindah ke menu Testimoni di panel CA
+  var TABS = [["verif", "Verifikasi bayar"], ["lay", "Tugas, Diskusi, Metopen, Revisi"], ["queue", "Cek & Parafrase"], ["audit", "Audit Dokumen"], ["bedah", "Bedah Laporan"], ["all", "Semua pesanan"], ["set", "QRIS & Pengaturan"], ["img", "Gambar kartu"], ["site", "Gambar situs"], ["wa", "Pesan WhatsApp"]]; // Ulasan pelanggan pindah ke menu Testimoni di panel CA
   var cur = "verif";
   var EMBED = /[?&]embed=1/.test(location.search);
   if (EMBED) document.documentElement.classList.add("embed");
-  var TYPE = { layanan: "Layanan", audit: "Audit", umum: "Cek & Parafrase", metopen: "Cek & Parafrase", artikel: "Cek & Parafrase" };
+  var TYPE = { layanan: "Layanan", audit: "Audit", bedah: "Bedah Laporan", umum: "Cek & Parafrase", metopen: "Cek & Parafrase", artikel: "Cek & Parafrase" };
 
   /* Login sekarang lewat panel admin Catatan Akademik (akun & peran sendiri), bukan sandi admin nextaja. */
   function showLogin() { try { (EMBED ? window.top : window).location.href = "/admin/#/login"; } catch (e) { location.href = "/admin/#/login"; } }
@@ -42,7 +42,7 @@
   function go(t) {
     cur = t; TABS.forEach(function (x) { $("t-" + x[0]).classList.toggle("hidden", x[0] !== t); });
     [].forEach.call($("tabs").children, function (b) { b.classList.toggle("on", b.getAttribute("data-t") === t); });
-    ({ queue: renderQueue, verif: renderVerif, all: renderAll, audit: renderAuditList, lay: renderLay, set: renderSettings, wa: renderWa, img: renderImg, site: renderSite, ul: renderUlasan })[t]();
+    ({ queue: renderQueue, verif: renderVerif, all: renderAll, audit: renderAuditList, bedah: renderBedah, lay: renderLay, set: renderSettings, wa: renderWa, img: renderImg, site: renderSite, ul: renderUlasan })[t]();
   }
   function waLink(o, text) { return "https://wa.me/" + o.wa + (text ? "?text=" + encodeURIComponent(text) : ""); }
 
@@ -97,7 +97,7 @@
     var s = $("t-queue"); s.textContent = "Memuat…";
     api("/ms/admin/parafrase/queue").then(function (j) {
       s.textContent = ""; s.appendChild(h("p", { class: "muted" }, "Urutan: Dikerjakan tidak tergeser, lalu jalur cepat, lalu biasa. Dalam jalur yang sama mengikuti waktu bukti bayar diunggah. Deadline tidak memengaruhi urutan. Kecepatan rata-rata untuk perkiraan: " + j.avgWordsPerHour + " kata/jam."));
-      s.appendChild(orderTable(j.queue.filter(function (o) { return o.docType !== "layanan" && o.docType !== "audit"; }), true));
+      s.appendChild(orderTable(j.queue.filter(function (o) { return o.docType !== "layanan" && o.docType !== "audit" && o.docType !== "bedah"; }), true));
     }).catch(function (e) { s.textContent = e.message; });
   }
   function renderVerif() {
@@ -123,6 +123,30 @@
     api("/ms/admin/parafrase/orders").then(function (j) { s.textContent = ""; s.appendChild(orderTable(j.orders, false)); }).catch(function (e) { s.textContent = e.message; });
   }
 
+  function renderBedah() {
+    var s = $("t-bedah"); s.textContent = "Memuat…";
+    Promise.all([api("/ms/admin/parafrase/orders"), api("/ms/admin/bedah/kalibrasi")]).then(function (r) {
+      var j = r[0], k = r[1];
+      s.textContent = "";
+      s.appendChild(h("p", { class: "muted" }, "Bedah Laporan Penelitian UT berjalan otomatis. Pembayaran dikonfirmasi di tab Verifikasi bayar; hasil langsung terbuka untuk pelanggan setelah lunas."));
+      var live = k.items.filter(function (x) { return !x.revoked_at; });
+      var box = h("div", { class: "card", style: "margin-bottom:14px" }, [
+        h("b", {}, "Data kalibrasi (hanya yang berizin)"),
+        h("div", {}, "Set lengkap (file asli + laporan AI + laporan Similarity): " + k.beta.sets + " dari " + k.beta.quota + ". Total berizin: " + live.length + ". Yang dicabut mahasiswa otomatis terhapus."),
+        h("div", { style: "display:flex;gap:10px;flex-wrap:wrap;margin-top:8px" }, [
+          h("a", { class: "btn", href: "/ms/admin/bedah/ringkasan.json" }, "Unduh ringkasan (tanpa identitas)"),
+          h("a", { class: "btn", href: "/ms/admin/bedah/kalibrasi.zip" }, "Unduh paket lengkap (file apa adanya, berisi NIM di laporan)")]),
+        h("div", { class: "muted", style: "margin-top:6px" }, "Kirim ringkasan atau paket ini ke chat Claude untuk dianalisa. Paket berisi file asli mahasiswa, jadi kirim hanya yang berizin dan jangan disebar.")]);
+      s.appendChild(box);
+      if (live.length) {
+        var t = h("table", { class: "tbl" }, [h("tr", {}, ["Kode", "Masuk", "Kata isi", "AI UT", "Similarity UT", "Lengkap"].map(function (x) { return h("th", {}, x); }))]);
+        live.forEach(function (x) { t.appendChild(h("tr", {}, [x.id, dt(x.created_at), x.words, x.ai_pct == null ? "-" : x.ai_pct + "%", x.sim_pct == null ? "-" : x.sim_pct + "%", x.has_ai && x.has_sim ? "ya" : "belum"].map(function (c) { return h("td", {}, String(c)); }))); });
+        s.appendChild(t);
+      }
+      s.appendChild(h("h3", {}, "Pesanan"));
+      s.appendChild(orderTable(j.orders.filter(function (o) { return o.docType === "bedah"; }), false));
+    }).catch(function (e) { s.textContent = e.message; });
+  }
   function renderAuditList() {
     var s = $("t-audit"); s.textContent = "Memuat…";
     api("/ms/admin/parafrase/orders").then(function (j) {
@@ -145,7 +169,7 @@
   }
   function upErr(e) { toast(/Failed to fetch|NetworkError|413/.test(e.message) ? "Foto terlalu besar atau koneksi putus. Coba foto yang lebih kecil." : e.message); }
 
-  var LABEL = { price_semester_min: "Paket Semester, mulai dari (Rp)", price_semester_max: "Paket Semester, sampai (Rp)", ga_id: "ID pengukuran GA4 (G-…)", gtm_id: "ID Google Tag Manager (GTM-…)", google_verify_file: "Nama berkas verifikasi Google", drillbit_sim_max: "Batas acuan similarity Drillbit (%)", drillbit_ai_max: "Batas acuan AI Drillbit (%)", price_tugas: "Tugas (Rp)", price_diskusi: "Diskusi (Rp)", price_metopen1: "Metopen Tugas 1 (Rp)", price_metopen2: "Metopen Tugas 2 (Rp)", price_metopen3: "Metopen Tugas 3 (Rp)", price_metopen4: "Metopen Tugas 4 (Rp)", price_metopen_paket: "Paket Komplit Metopen (Rp)", price_revisi_tugas: "Revisi Tugas dari luar (Rp)", price_revisi_diskusi: "Revisi Diskusi dari luar (Rp)", price_revisi_metopen: "Revisi Metopen dari luar (Rp)", audit_per_word: "Audit Lengkap per kata (Rp)", audit_min: "Audit Lengkap harga minimum (Rp)", price_pengarahan_semester: "Pengarahan 1 semester (Rp)", price_pengarahan_lulus: "Pengarahan sampai lulus (Rp)", price_pengarahan_normal: "Harga normal (dicoret) sampai lulus (Rp)", price_per_word: "Harga per kata (Rp)", min_order_price: "Harga minimum per dokumen (Rp)", fast_lane_enabled: "Jalur cepat aktif", fast_lane_price: "Biaya jalur cepat (Rp)", fast_lane_daily_cap: "Kuota jalur cepat per hari", revision_free_count: "Jumlah revisi gratis (Cek & Parafrase)", revision_price_per_word: "Harga revisi berikutnya per kata (Rp)", file_max_mb: "Ukuran file maks (MB)", retention_hours: "File dihapus setelah (jam)", reminder_before_delete_hours: "Pengingat sebelum dihapus (jam)", long_sentence_words: "Kalimat panjang mulai (kata)", preview_open_paragraphs: "Paragraf contoh terbuka (pratinjau gratis)", avg_words_per_hour: "Kecepatan rata-rata (kata/jam)", unique_code_enabled: "Kode unik aktif", unique_code_max: "Kode unik maksimum", payment_window_minutes: "Batas waktu bayar (menit)", admin_wa_number: "WhatsApp admin (62…)", update_group_url: "Tautan grup Ruang Akademik UT", ca_instagram_url: "Instagram komunitas (bawah artikel blog)", ca_tiktok_url: "TikTok komunitas (bawah artikel blog)", ca_facebook_url: "Facebook komunitas (bawah artikel blog)", qris_merchant_name: "Nama penerima QRIS", urgensi_ai_sedang: "Urgensi: indikasi gaya seragam mulai SEDANG (%)", urgensi_ai_tinggi: "Urgensi: indikasi gaya seragam mulai TINGGI (%)", urgensi_paragraf_skor: "Urgensi: skor paragraf yang dianggap MENDESAK", urgensi_paragraf_persen: "Urgensi: % paragraf mendesak yang membuat dokumen MENDESAK" };
+  var LABEL = { price_semester_min: "Paket Semester, mulai dari (Rp)", price_semester_max: "Paket Semester, sampai (Rp)", ga_id: "ID pengukuran GA4 (G-…)", gtm_id: "ID Google Tag Manager (GTM-…)", google_verify_file: "Nama berkas verifikasi Google", drillbit_sim_max: "Batas acuan similarity Drillbit (%)", drillbit_ai_max: "Batas acuan AI Drillbit (%)", price_tugas: "Tugas (Rp)", price_diskusi: "Diskusi (Rp)", price_metopen1: "Metopen Tugas 1 (Rp)", price_metopen2: "Metopen Tugas 2 (Rp)", price_metopen3: "Metopen Tugas 3 (Rp)", price_metopen4: "Metopen Tugas 4 (Rp)", price_metopen_paket: "Paket Komplit Metopen (Rp)", price_revisi_tugas: "Revisi Tugas dari luar (Rp)", price_revisi_diskusi: "Revisi Diskusi dari luar (Rp)", price_revisi_metopen: "Revisi Metopen dari luar (Rp)", bedah_harga: "Bedah Laporan, sampai batas kata (Rp)", bedah_harga_besar: "Bedah Laporan, di atas batas kata (Rp)", bedah_batas_kata: "Bedah Laporan, batas kata isi", bedah_gratis_temuan: "Bedah Laporan, temuan gratis (jumlah)", bedah_kuota_beta: "Bedah Laporan, kuota beta set lengkap", audit_per_word: "Audit Lengkap per kata (Rp)", audit_min: "Audit Lengkap harga minimum (Rp)", price_pengarahan_semester: "Pengarahan 1 semester (Rp)", price_pengarahan_lulus: "Pengarahan sampai lulus (Rp)", price_pengarahan_normal: "Harga normal (dicoret) sampai lulus (Rp)", price_per_word: "Harga per kata (Rp)", min_order_price: "Harga minimum per dokumen (Rp)", fast_lane_enabled: "Jalur cepat aktif", fast_lane_price: "Biaya jalur cepat (Rp)", fast_lane_daily_cap: "Kuota jalur cepat per hari", revision_free_count: "Jumlah revisi gratis (Cek & Parafrase)", revision_price_per_word: "Harga revisi berikutnya per kata (Rp)", file_max_mb: "Ukuran file maks (MB)", retention_hours: "File dihapus setelah (jam)", reminder_before_delete_hours: "Pengingat sebelum dihapus (jam)", long_sentence_words: "Kalimat panjang mulai (kata)", preview_open_paragraphs: "Paragraf contoh terbuka (pratinjau gratis)", avg_words_per_hour: "Kecepatan rata-rata (kata/jam)", unique_code_enabled: "Kode unik aktif", unique_code_max: "Kode unik maksimum", payment_window_minutes: "Batas waktu bayar (menit)", admin_wa_number: "WhatsApp admin (62…)", update_group_url: "Tautan grup Ruang Akademik UT", ca_instagram_url: "Instagram komunitas (bawah artikel blog)", ca_tiktok_url: "TikTok komunitas (bawah artikel blog)", ca_facebook_url: "Facebook komunitas (bawah artikel blog)", qris_merchant_name: "Nama penerima QRIS", urgensi_ai_sedang: "Urgensi: indikasi gaya seragam mulai SEDANG (%)", urgensi_ai_tinggi: "Urgensi: indikasi gaya seragam mulai TINGGI (%)", urgensi_paragraf_skor: "Urgensi: skor paragraf yang dianggap MENDESAK", urgensi_paragraf_persen: "Urgensi: % paragraf mendesak yang membuat dokumen MENDESAK" };
   function renderSettings() {
     var s = $("t-set"); s.textContent = "Memuat…";
     api("/ms/admin/parafrase/settings").then(function (j) {
@@ -159,6 +183,7 @@
         ["Revisi", "Revisi untuk hasil dari luar. Hasil buatan kami gratis sesuai jumlah revisi gratis.", ["price_revisi_tugas", "price_revisi_diskusi", "price_revisi_metopen"]],
         ["Cek & Parafrase Mandiri", "Harga per kata, jalur cepat, revisi, dan batas file.", ["price_per_word", "min_order_price", "fast_lane_enabled", "fast_lane_price", "fast_lane_daily_cap", "revision_free_count", "revision_price_per_word", "long_sentence_words", "preview_open_paragraphs", "avg_words_per_hour"]],
         ["Audit Dokumen", "Audit Ringkas gratis. Audit Lengkap dihitung per kata, ada harga minimum. Batas Drillbit hanyalah acuan di layar murid; ketentuan resmi ikut prodi dan tutor. Empat angka urgensi menentukan tingkat Mendesak/Perhatian/Aman dan dipakai Audit Dokumen DAN Cek & Parafrase sekaligus, jadi keduanya selalu sepakat.", ["audit_per_word", "audit_min", "drillbit_sim_max", "drillbit_ai_max", "urgensi_ai_sedang", "urgensi_ai_tinggi", "urgensi_paragraf_skor", "urgensi_paragraf_persen"]],
+        ["Bedah Laporan Penelitian UT", "Dua tingkat harga menurut jumlah kata isi (tanpa sampul, daftar isi, daftar pustaka), jatah temuan gratis, dan kuota beta set kalibrasi.", ["bedah_harga", "bedah_harga_besar", "bedah_batas_kata", "bedah_gratis_temuan", "bedah_kuota_beta"]],
         ["Paket Semester", "Rentang harga di kartu Paket Semester pada hub.", ["price_semester_min", "price_semester_max"]],
         ["Pengarahan Intensif", "Kartu Pengarahan di hub.", ["price_pengarahan_semester", "price_pengarahan_lulus", "price_pengarahan_normal"]],
         ["Pembayaran", "Berlaku untuk semua layanan. Foto QRIS ada di kartu bawah.", ["qris_merchant_name", "payment_window_minutes", "unique_code_enabled", "unique_code_max"]],

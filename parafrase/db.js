@@ -263,6 +263,22 @@ const MIGRATIONS = [
   UPDATE settings SET value='350000', updated_by='migrasi', updated_at=CAST(strftime('%s','now') AS INTEGER)*1000 WHERE key='price_metopen3';
   UPDATE settings SET value='799000', updated_by='migrasi', updated_at=CAST(strftime('%s','now') AS INTEGER)*1000 WHERE key='price_metopen_paket';
   `,
+  `
+  /* Bedah Laporan Penelitian UT: set kalibrasi (file asli + laporan Drillbit) yang dikumpulkan HANYA bila mahasiswa memberi izin. */
+  CREATE TABLE kalibrasi (
+    id          TEXT PRIMARY KEY,
+    created_at  INTEGER NOT NULL,
+    words       INTEGER,
+    has_ai      INTEGER NOT NULL DEFAULT 0,
+    has_sim     INTEGER NOT NULL DEFAULT 0,
+    ai_pct      REAL,
+    sim_pct     REAL,
+    ext         TEXT,
+    summary     TEXT NOT NULL,              -- JSON ringkasan tanpa identitas
+    revoked_at  INTEGER
+  );
+  CREATE INDEX kalibrasi_at ON kalibrasi(created_at);
+  `,
 ];
 
 

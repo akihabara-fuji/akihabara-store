@@ -40,6 +40,11 @@ const DEFS = {
   price_revisi_metopen:         { type: "int",  min: 0, max: 100000000, def: 99000, pub: true },
   audit_per_word:               { type: "int",  min: 0, max: 100000000, def: 9, pub: true },
   audit_min:                    { type: "int",  min: 0, max: 100000000, def: 35000, pub: true },
+  bedah_harga:                  { type: "int",  min: 0, max: 100000000, def: 15000, pub: true },   // Bedah Laporan Penelitian UT: semua temuan + file Word berwarna (sampai batas kata)
+  bedah_harga_besar:            { type: "int",  min: 0, max: 100000000, def: 20000, pub: true },   // dokumen di atas batas kata
+  bedah_batas_kata:             { type: "int",  min: 100, max: 100000, def: 2000, pub: true },     // dihitung dari isi: tanpa sampul, daftar isi, daftar pustaka
+  bedah_gratis_temuan:          { type: "int",  min: 0, max: 100, def: 10, pub: true },            // temuan terberat yang terbuka lengkap gratis
+  bedah_kuota_beta:             { type: "int",  min: 0, max: 100000, def: 30, pub: true },         // gratis selama set kalibrasi berizin belum mencapai ini
   drillbit_sim_max:             { type: "int",  min: 1, max: 100, def: 25, pub: true },
   drillbit_ai_max:              { type: "int",  min: 1, max: 100, def: 20, pub: true },
   /* Urgensi perbaikan (triage.js): dipakai Audit Dokumen dan Cek & Parafrase sekaligus, jadi keduanya selalu sepakat. */

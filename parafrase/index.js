@@ -14,6 +14,7 @@ const mountUlasan = require("./ulasan");
 const mountPages = require("./pages");
 const createTexts = require("./sitetexts");
 const mountAudit = require("./audit");
+const mountBedah = require("./bedah");
 const mountLayanan = require("./layanan");
 const mountOrders = require("./orders");
 const createTraffic = require("./traffic").create;
@@ -76,6 +77,7 @@ else if(/\\/(?:ruangakademikut\\/)?(layanan|cek-parafrase-mandiri|audit)(?:[\\/?
   const notifier = createNotifier({ db, settings });
   const orders = mountOrders({ app, express, db, settings, notifier, root: ROOT, sameOrigin: sameOrigin || (() => true), requireAdmin, secret, userFrom });
   mountAudit({ app, express, db, settings, orders, root: ROOT, sameOrigin: sameOrigin || (() => true), secret, userFrom });
+  mountBedah({ app, express, db, settings, orders, root: ROOT, sameOrigin: sameOrigin || (() => true), secret, requireAdmin, userFrom });
   const traffic = createTraffic(db, { secret });
   mountLayanan({ app, express, db, settings, orders, root: ROOT, sameOrigin: sameOrigin || (() => true), secret, requireAdmin, userFrom });
   const t = setInterval(() => { uploads.purgeExpired().catch(() => {}); orders.expireUnpaid().catch(() => {}); orders.sweepRetention().catch(() => {}); }, 10 * 60 * 1000); t.unref();
