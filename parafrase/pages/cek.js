@@ -163,8 +163,8 @@
   function mk(tag, css, txt) { var e = document.createElement(tag); if (css) e.style.cssText = css; if (txt != null) e.textContent = txt; return e; }
   /* Angka aspek yang sama dengan Audit Dokumen (renderer yang sama di common.js). */
   function renderOverview(pv) {
-    var box = $("overview"); box.innerHTML = ""; if (!pv.overview) return;
-    if (pv.overview.problem) window.auditProblemCard(pv.overview.problem, box);
+    var box = $("overview"); box.innerHTML = ""; if ($("pbox")) $("pbox").innerHTML = ""; if (!pv.overview) return;
+    if (pv.overview.problem) window.auditProblemCard(pv.overview.problem, $("pbox") || box);
     window.auditAspects(pv.overview, box, { compact: true });
     box.appendChild(mk("a", "font-size:13.5px", "Skor kesiapan serta penjelasan lengkap sitasi dan daftar pustaka ada di Audit Dokumen →")).href = "/ruangakademikut/audit";
   }

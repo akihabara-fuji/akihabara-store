@@ -127,19 +127,22 @@ window.auditAspects = function (sc, box, opts) {
 /* Tingkat bermasalah (persen) untuk Audit Dokumen dan Cek & Parafrase: SATU rumus (parafrase/masalah.js), jadi angkanya sama di dua menu.
    Arah: makin banyak larangan modul yang ketemu, makin TINGGI persennya dan makin merah. Di atas batas (bawaan 25%) = belum aman. */
 window.PF_FIX_MAX = 25;
+window.pfWarnIcon = function (sz) { var s = document.createElementNS("http://www.w3.org/2000/svg", "svg"); s.setAttribute("width", sz || 16); s.setAttribute("height", sz || 16); s.setAttribute("viewBox", "0 0 24 24"); s.setAttribute("fill", "none"); s.setAttribute("stroke", "currentColor"); s.setAttribute("stroke-width", "2.4"); s.setAttribute("stroke-linecap", "round"); s.setAttribute("stroke-linejoin", "round"); s.setAttribute("aria-hidden", "true"); s.style.flex = "none"; var a = document.createElementNS("http://www.w3.org/2000/svg", "path"); a.setAttribute("d", "M12 3 2 20h20L12 3zM12 10v5M12 18v.5"); s.appendChild(a); return s; };
 window.auditProblemCard = function (pb, box) {
   if (!pb || !box) return;
   function el(t, css, x) { var e = document.createElement(t); if (css) e.style.cssText = css; if (x != null) e.textContent = x; return e; }
   function f1(n) { return String(n).replace(".", ","); }
   var none = pb.status === "belum", over = pb.status === "belum_aman", lim = pb.limit || window.PF_FIX_MAX;
+  window.PF_PB = { over: over, lim: lim };
   var COL = none ? "#8ec5ff" : over ? "#ff8aa5" : "#5ee6a8";
-  var wrap = el("div", "display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:center;padding:18px;border-radius:18px;border:1px solid " + COL + ";max-width:760px;margin:0 auto 14px;text-align:left");
+  var wrap = el("div", "display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:center;padding:18px;border-radius:18px;border:" + (over ? "2px" : "1px") + " solid " + COL + ";" + (over ? "background:rgba(255,138,165,.08);" : "") + "max-width:760px;margin:0 auto 14px;text-align:left");
   wrap.id = "problemCard";
   var ring = el("div", "flex:none;width:132px;height:132px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:conic-gradient(" + COL + " " + Math.min(100, pb.pct) * 3.6 + "deg,rgba(128,128,160,.22) 0)");
   var inner = el("div", "width:100px;height:100px;border-radius:50%;background:var(--bg,#0a0a1c);display:flex;flex-direction:column;align-items:center;justify-content:center");
   inner.appendChild(el("b", "font-size:28px;line-height:1;color:" + COL, none ? "n/a" : f1(pb.pct) + "%")); inner.appendChild(el("span", "font-size:11.5px;opacity:.7", "bermasalah")); ring.appendChild(inner);
   var side = el("div", "flex:1;min-width:240px");
-  side.appendChild(el("div", "font-size:12.5px;opacity:.7;text-transform:uppercase;letter-spacing:.06em", "Tingkat bermasalah (makin kecil makin baik)"));
+  if (over) { var wn = el("div", "display:flex;gap:8px;align-items:center;color:" + COL + ";font-size:12.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase"); wn.appendChild(window.pfWarnIcon(18)); wn.appendChild(el("span", "", "Belum aman · di atas batas " + lim + "%")); side.appendChild(wn); }
+  else side.appendChild(el("div", "font-size:12.5px;opacity:.7;text-transform:uppercase;letter-spacing:.06em", "Tingkat bermasalah (makin kecil makin baik)"));
   side.appendChild(el("div", "font-size:21px;font-weight:700;margin:2px 0 8px;color:" + COL, none ? "Isi dokumen belum terbaca" : over ? "Belum aman: turunkan sampai " + lim + "% atau kurang" : "Aman: " + lim + "% atau kurang"));
   var bar = el("div", "position:relative;height:10px;border-radius:99px;background:rgba(128,128,160,.22);margin:6px 0 10px");
   bar.appendChild(el("div", "height:100%;border-radius:99px;width:" + Math.min(100, pb.pct) + "%;background:" + COL));
@@ -150,6 +153,7 @@ window.auditProblemCard = function (pb, box) {
   if (over) side.appendChild(el("div", "font-size:14px;font-weight:600;margin:4px 0", "Perbaiki sekitar " + pb.need + " bagian lagi (kalimat atau pustaka) supaya turun ke " + lim + "%."));
   side.appendChild(el("div", "font-size:12.5px;opacity:.7;margin-top:8px", pb.note));
   wrap.appendChild(ring); wrap.appendChild(side); box.appendChild(wrap);
+  var T = window.__pfTri; if (over && T && T.t && T.t.level === "aman") window.renderTriage(T.box, T.t, T.opts);   /* satu kesimpulan: persen di atas batas = tidak "relatif aman" */
 };
 window.auditScoreCard = function (sc, box, findings) {
   if (!sc || !box) return; box.innerHTML = "";
@@ -238,8 +242,11 @@ window.PF_TARGET = {
    opts: { here: "audit"|"cek"|"hasil", uploadId } */
 window.renderTriage = function (box, t, opts) {
   if (!box) return; box.innerHTML = ""; if (!t) return; opts = opts || {};
+  window.__pfTri = { box: box, t: t, opts: opts };
+  var PBO = window.PF_PB && window.PF_PB.over;
+  if (PBO && t.level === "aman") { t = Object.assign({}, t, { level: "perhatian", label: "Perlu perhatian", headline: "Mengikuti persen bermasalah di atas: masih di atas batas " + window.PF_PB.lim + "%.", next: "Perbaiki dulu bagian yang ditandai merah, lalu periksa ulang." }); }
   function el(tag, css, x) { var e = document.createElement(tag); if (css) e.style.cssText = css; if (x != null) e.textContent = x; return e; }
-  var COL = { mendesak: "#ff8aa5", perhatian: "#f3ff4d", aman: "#5ee6a8", belum: "#8ec5ff" }, LVL = { mendesak: "Mendesak", perhatian: "Perhatian", ringan: "Ringan" };
+  var COL = { mendesak: "#ff8aa5", perhatian: "#ffb347", aman: "#5ee6a8", belum: "#8ec5ff" }, LVL = { mendesak: "Mendesak", perhatian: "Perhatian", ringan: "Ringan" };
   var c = COL[t.level] || "#8ec5ff";
   var card = el("section", "max-width:760px;margin:0 auto 14px;padding:16px 18px;border-radius:18px;border:1px solid var(--border,#2b2b58);border-left:6px solid " + c + ";text-align:left");
   card.setAttribute("aria-label", "Urgensi perbaikan dokumen");
@@ -258,7 +265,9 @@ window.renderTriage = function (box, t, opts) {
     function addP(list, p) {
       var li = el("li", "display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;padding:9px 12px;border-radius:12px;border:1px solid var(--border,#2b2b58)");
       li.appendChild(el("b", "flex:none;min-width:84px", "Paragraf " + p.no));
-      li.appendChild(el("span", "flex:none;font-size:12px;font-weight:700;padding:1px 9px;border-radius:999px;border:1px solid " + (COL[p.level] || c) + ";color:" + (COL[p.level] || c), LVL[p.level] || p.level));
+      var pc = PBO || p.level === "mendesak" ? COL.mendesak : (COL[p.level] || c);
+      li.style.borderLeft = "5px solid " + pc; li.style.background = (PBO || p.level === "mendesak") ? "rgba(255,138,165,.07)" : "transparent";
+      var pill = el("span", "flex:none;display:inline-flex;gap:5px;align-items:center;font-size:12px;font-weight:700;padding:2px 10px;border-radius:999px;border:1px solid " + pc + ";color:" + pc, ""); pill.appendChild(window.pfWarnIcon(14)); pill.appendChild(document.createTextNode(PBO || p.level === "mendesak" ? (p.level === "mendesak" ? "Mendesak" : "Perlu perbaikan") : (LVL[p.level] || ""))); li.appendChild(pill);
       var d = el("span", "flex:1;min-width:200px;font-size:13.5px", p.reasons.join(", ")); li.appendChild(d);
       li.appendChild(el("span", "flex:none;font-size:13px;font-weight:600", "→ " + (p.fix && p.fix.action || "Perbaiki")));
       if (p.excerpt) li.appendChild(el("div", "flex-basis:100%;font-size:12.5px;opacity:.65", "“" + p.excerpt + "…”"));

@@ -33,7 +33,7 @@
 .cvih{display:flex;justify-content:space-between;align-items:center;margin:0 0 8px}
 .cvx{background:none;border:0;color:#ef4444;cursor:pointer;font:inherit;font-size:13px;font-weight:600}
 .cvadd{width:100%;justify-content:center}
-.cvside{display:grid;gap:14px}
+.cvside{display:grid;gap:14px}@media(min-width:901px){.cvside{position:sticky;top:76px;max-height:calc(100vh - 90px);overflow-y:auto;align-self:start;padding-right:2px}}
 .cvbar{display:flex;flex-wrap:wrap;gap:8px}
 .cvbar .btn,.cvbar button{cursor:pointer}
 .cvlist{list-style:none;margin:8px 0 0;padding:0;font-size:13.5px;display:grid;gap:3px}
@@ -57,7 +57,7 @@
 .cvph{height:auto;object-fit:cover;flex:none}.cvph.sS{width:80px}.cvph.sM{width:100px}.cvph.sL{width:126px}.cvph.rd{border-radius:50%}
 @media(max-width:900px){.cvr3{grid-template-columns:1fr}}
 @media(max-width:900px){.cvg{grid-template-columns:1fr}.cvside{position:static}.cvr,.cvr2{grid-template-columns:1fr}}
-@media print{body>*:not(main){display:none!important}.tool>*:not(.cvg){display:none!important}#cvForm,.cvside>*:not(#cvPage){display:none!important}.tool{padding:0;max-width:none}.cvg{display:block}.cvpage{box-shadow:none;padding:0;border-radius:0;min-height:0}html,body{background:#fff!important}@page{size:A4;margin:14mm}}
+@media print{body>*:not(main){display:none!important}.tool>*:not(.cvg){display:none!important}#cvForm,.cvextra,.cvside>*:not(#cvPage){display:none!important}.tool{padding:0;max-width:none}.cvg{display:block}.cvpage{box-shadow:none;padding:0;border-radius:0;min-height:0}html,body{background:#fff!important}@page{size:A4;margin:14mm}}
 
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Buat CV ATS","description":"Pembuat CV ATS gratis: pratinjau langsung, pengecek ATS, unduh PDF dan Word, diproses di browser.","url":"{{SITE}}/ruangakademikut/buat-cv-ats","applicationCategory":"BusinessApplication","operatingSystem":"Web","inLanguage":"id-ID","publisher":{"@type":"Organization","name":"Catatan Akademik","url":"{{SITE}}/"},"offers":{"@type":"Offer","price":"0","priceCurrency":"IDR"}}</script></head><body>
@@ -77,7 +77,13 @@
   <button type="button" class="btn ghost" data-ex="konten">Social Media</button>
   <span class="note">Contoh bersifat fiktif. Ganti dengan datamu sendiri.</span></div>
 <div class="cvg">
-  <div id="cvForm"></div>
+  <div class="cvleft"><div id="cvForm"></div>
+  <div class="cvextra" style="display:grid;gap:14px;margin-top:14px">
+    <div class="card"><b>Kesiapan ATS: <span id="cvScore">0 / 0</span></b><ul class="cvlist" id="cvChecks"></ul></div>
+    <div class="card"><b>Cocokkan dengan lowongan</b>
+      <p class="note" style="margin:4px 0 8px">Tempel deskripsi dan kualifikasi lowongan. Kami hanya menunjukkan kata kunci yang muncul di lowongan.</p>
+      <textarea id="cvJob" rows="4" placeholder="Tempel teks lowongan di sini…"></textarea><div id="cvKw" style="margin-top:8px"></div></div>
+  </div></div>
   <div class="cvside">
     <div class="card"><div class="cvbar">
       <button type="button" class="btn pri" id="cvPrint">Simpan PDF</button>
@@ -85,10 +91,6 @@
       <button type="button" id="cvReset" style="background:none;border:0;color:var(--muted);text-decoration:underline;font:inherit;font-size:13px;cursor:pointer;padding:8px 4px">Hapus data</button></div>
       <div class="note" id="cvToast" role="status" style="margin-top:8px"></div>
       <p class="note" style="margin:8px 0 0">Untuk PDF: klik Simpan PDF, lalu pilih "Simpan sebagai PDF" di tujuan printer. PDF dari browser berisi teks asli sehingga terbaca ATS. Isian disimpan di perangkat ini saja.</p></div>
-    <div class="card"><b>Kesiapan ATS: <span id="cvScore">0 / 0</span></b><ul class="cvlist" id="cvChecks"></ul></div>
-    <div class="card"><b>Cocokkan dengan lowongan</b>
-      <p class="note" style="margin:4px 0 8px">Tempel deskripsi dan kualifikasi lowongan. Kami hanya menunjukkan kata kunci yang muncul di lowongan.</p>
-      <textarea id="cvJob" rows="4" placeholder="Tempel teks lowongan di sini…"></textarea><div id="cvKw" style="margin-top:8px"></div></div>
     <div class="cvpage" id="cvPage" aria-label="Pratinjau CV"></div>
   </div>
 </div>
