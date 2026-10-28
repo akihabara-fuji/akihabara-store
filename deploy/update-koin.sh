@@ -14,6 +14,8 @@ set -euo pipefail
 REF="${1:?pakai: update-koin.sh <commit>}"
 APP="${APP:-/var/www/mahyra-serv}"
 KNOWN=(d3321cb ea4b557 4a8953e 3f29ccc e31a933 08cf5f2 12cfe4a dc31d36 c7f60c8 1b5c15a ec8523c 091972e 54d72bc 1574580 b623210 b3ad6ff 40d7848 bc2a821 256add9 1c861f1 8aaef92 4adfff0 ac04263 fbd0646 c5aed04 1366e15 3520907 beee9ca 30de5e8 8430614 e9dc347 24d1beb c8ef2a9 6c293b0 1dd323d 394b043 453b928 07d62b2 25df56b feabda8 cc24c43 728e5dd a5060eb bef8f54 c2a6ac3 4e42d58 825ff86 2857817 8b3ca4a 2857817 697e6cf 0253bf6)
+# Versi yang pernah sukses dirilis oleh skrip ini dicatat otomatis di VPS dan ikut dianggap dikenal: tidak perlu menambah daftar KNOWN lagi.
+REL=/root/.koin-released; [ -f "$REL" ] && while read -r k; do [ -n "$k" ] && KNOWN+=("$k"); done < "$REL"
 GH="${GH:-https://codeload.github.com/akihabara-fuji/akihabara-store/tar.gz}"
 cd "$APP"
 
@@ -82,6 +84,7 @@ for u in /ms/admin/ca/me /ms/admin/posts /ms/admin/ca/orders; do x=$(c $CA $u); 
 x=$(c $CA /halaman-tidak-ada); echo "404: $x"; [ "$x" = 404 ]
 trap - ERR
 relock
+echo "$REF" >> "$REL"
 
 echo
 echo "SELESAI. Cek manual: login https://$CA/admin/ -> Blog -> 'Impor file .md' (1 contoh jadi draf) -> Preview; /ruangakademikut/audit mode gelap; /koin harus dialihkan ke /layanan."
