@@ -81,7 +81,7 @@ test("bedah: izin data menyimpan set, kode mencabut dan menghapus", async () => 
   assert.strictEqual((await fetch(b.base + "/ms/admin/bedah/kalibrasi.zip")).status, 401);
   b.setAdmin(true);
   const l = await (await fetch(b.base + "/ms/admin/bedah/kalibrasi")).json();
-  assert.deepStrictEqual(l.items, []); assert.strictEqual(l.beta.quota, 30);
+  assert.deepStrictEqual(l.items, []); assert.strictEqual(l.beta.sets, 0);
   b.srv.close();
 });
 

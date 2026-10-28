@@ -82,7 +82,7 @@ module.exports = function mountBedah({ app, express, db, settings, orders, root,
   let running = 0; const MAX_RUNNING = 3;
   const insert = db.prepare(`INSERT INTO uploads(id,path,original_name,size,sha256,detected,ip_hash,created_at,expires_at) VALUES(?,?,?,?,?,?,?,?,?)`);
   const setCount = () => db.prepare("SELECT COUNT(*) n FROM kalibrasi WHERE revoked_at IS NULL AND has_ai=1 AND has_sim=1").get().n;
-  const beta = () => { const q = Number(settings.get("bedah_kuota_beta")) || 0, n = setCount(); return { sets: n, quota: q, open: n < q }; };
+  const beta = () => ({ sets: setCount() });
 
   /* Analisis satu dokumen: temuan modul, persen, kata isi, dan pemetaan blok UT. */
   async function analyseDoc(buf, aiRes, cfg) {
@@ -183,7 +183,6 @@ module.exports = function mountBedah({ app, express, db, settings, orders, root,
     res.json({ ok: true });
   });
 
-  app.get("/ms/bedah/beta", (req, res) => { res.set("Cache-Control", "no-store"); res.json(beta()); });
 
   app.post("/ms/bedah/order", express.json({ limit: "8kb" }), (req, res) => {
     res.set("Cache-Control", "no-store");

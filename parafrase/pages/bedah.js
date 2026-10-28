@@ -12,11 +12,6 @@
     var m = { "data-bg": c.bedah_gratis_temuan, "data-bh": c.bedah_harga, "data-bb": c.bedah_harga_besar, "data-bk": c.bedah_batas_kata };
     Object.keys(m).forEach(function (a) { if (m[a] == null) return; document.querySelectorAll("[" + a + "]").forEach(function (n) { n.textContent = rp(m[a]); }); });
   }).catch(function () {});
-  function loadBeta() {
-    fetch("/ms/bedah/beta").then(function (r) { return r.ok ? r.json() : null; }).then(function (b) {
-      if (b && b.quota) $("betaTxt").textContent = "Beta: " + b.sets + " dari " + b.quota + " set lengkap terkumpul.";
-    }).catch(function () {});
-  }
 
   /* ---------- unggah ---------- */
   var chosen = { orig: null };
@@ -173,5 +168,5 @@
       b.appendChild(el("h3", "margin:14px 0 6px", "Semua temuan (" + j.total + ")"));
       j.findings.forEach(function (f) { b.appendChild(findingNode(f, false)); });
     }).catch(function () { $("pload").textContent = "Koneksi terputus. Muat ulang halaman."; });
-  } else loadBeta();
+  };
 })();
