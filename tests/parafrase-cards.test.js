@@ -32,6 +32,8 @@ test("gambar kartu: admin saja yang bisa unggah/hapus, nama dibatasi, hasil webp
     for (const bad of ["rahasia.webp", "..%2Fx.webp", "tugas.png", "tugas"]) assert.strictEqual((await fetch(base + "/ruangakademikut/img/" + bad)).status, 404, bad);
     const list = await (await fetch(base + "/ms/admin/parafrase/card-images")).json();
     assert.strictEqual(list.slugs.find(s => s.slug === "tugas").has, true);
+    const bd = list.slugs.find(s => s.slug === "bedah");
+    assert.ok(bd && /Bedah Laporan/.test(bd.label), "kartu menu baru otomatis ada di daftar gambar");
     assert.strictEqual((await fetch(base + "/ms/admin/parafrase/card-images/tugas", { method: "DELETE" })).status, 200);
     assert.strictEqual((await fetch(base + "/ruangakademikut/img/tugas.webp")).status, 404);
   } finally { srv.close(); }

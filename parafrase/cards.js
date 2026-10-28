@@ -6,7 +6,18 @@ const path = require("path");
 const multer = require("multer");
 const sharp = require("sharp");
 
-const SLUGS = ["tugas", "diskusi", "metopen", "audit", "revisi", "pengarahan", "cek", "semester", "cv", "info"];
+const BASE = ["tugas", "diskusi", "metopen", "audit", "revisi", "pengarahan", "cek", "semester", "cv", "info"];
+/* kartu baru di menu (data-slug="...") otomatis ikut: nama diambil dari judul <h2> kartunya */
+const SLUGS = BASE.slice();
+const LABELS = {};
+try {
+  const dirP = path.join(__dirname, "pages");
+  for (const f of fs.readdirSync(dirP).filter(n => n.endsWith(".html"))) {
+    const html = fs.readFileSync(path.join(dirP, f), "utf8");
+    const re = /<article[^>]*data-slug="([a-z]+)"[^>]*>[\s\S]*?<h2>([^<]+)<\/h2>/g; let m;
+    while ((m = re.exec(html))) { if (!SLUGS.includes(m[1])) SLUGS.push(m[1]); if (!LABELS[m[1]]) LABELS[m[1]] = m[2].replace(/&amp;/g, "&").trim(); }
+  }
+} catch {}
 const MAX = 5 * 1024 * 1024;
 
 module.exports = function mountCards({ app, root, requireAdmin }) {
@@ -30,7 +41,7 @@ module.exports = function mountCards({ app, root, requireAdmin }) {
 
   app.get("/ms/admin/parafrase/card-images", requireAdmin, (req, res) => {
     res.set("Cache-Control", "no-store");
-    res.json({ slugs: SLUGS.map(s => ({ slug: s, has: fs.existsSync(file(s)) })) });
+    res.json({ slugs: SLUGS.map(s => ({ slug: s, label: LABELS[s] || null, has: fs.existsSync(file(s)) })) });
   });
 
   app.post("/ms/admin/parafrase/card-images/:slug", requireAdmin, (req, res) => {

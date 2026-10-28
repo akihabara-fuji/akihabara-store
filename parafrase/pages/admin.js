@@ -226,7 +226,7 @@
         var f = h("input", { type: "file", accept: "image/png,image/jpeg,image/webp", class: "hidden" });
         f.addEventListener("change", function () { var f0 = f.files[0]; if (!f0) return; toast("Mengunggah…"); shrink(f0, 1600).then(function (f1) { var fd = new FormData(); fd.append("img", f1); return api("/ms/admin/parafrase/card-images/" + x.slug, { method: "POST", body: fd }); }).then(function () { toast("Gambar dipasang"); renderImg(); }).catch(upErr); });
         g.appendChild(h("div", { class: "card", style: "display:flex;flex-direction:column;gap:10px" }, [
-          h("b", {}, CARDNAME[x.slug] || x.slug),
+          h("b", {}, CARDNAME[x.slug] || x.label || x.slug),
           x.has ? h("img", { class: "proof", alt: "", src: "/ruangakademikut/img/" + x.slug + ".webp?t=" + Date.now(), style: "max-width:100%" }) : h("div", { class: "muted" }, "Belum ada gambar."),
           f,
           h("div", { class: "act" }, [h("button", { class: "btn", type: "button", on: { click: function () { f.click(); } } }, x.has ? "Ganti gambar" : "Unggah gambar"),
