@@ -18,8 +18,12 @@ GH="${GH:-https://codeload.github.com/akihabara-fuji/akihabara-store/tar.gz}"
 cd "$APP"
 
 T=$(mktemp -d); trap 'rm -rf "$T"' EXIT
-mkdir -p "$T/new"; curl -fsSL "$GH/$REF" | tar xz -C "$T/new" --strip-components=1
-for k in "${KNOWN[@]}"; do mkdir -p "$T/$k"; curl -fsSL "$GH/$k" | tar xz -C "$T/$k" --strip-components=1; done
+# Unduhan disimpan di cache (commit tidak pernah berubah) dan diulang otomatis bila koneksi ke GitHub putus-putus.
+# Bila gagal di tengah jalan, jalankan lagi: yang sudah terunduh tidak diunduh ulang.
+CACHE=/var/cache/update-koin; mkdir -p "$CACHE"
+dl(){ local f="$CACHE/$1.tar.gz"; if [ ! -s "$f" ]; then curl -fsSL --retry 8 --retry-delay 4 --retry-all-errors --connect-timeout 25 -o "$f.part" "$GH/$1" || { rm -f "$f.part"; echo "BERHENTI: gagal mengunduh $1 dari GitHub. Tidak ada yang diubah. Jalankan lagi sebentar lagi."; exit 1; }; mv "$f.part" "$f"; fi; mkdir -p "$2"; tar xzf "$f" -C "$2" --strip-components=1; }
+dl "$REF" "$T/new"
+for k in "${KNOWN[@]}"; do dl "$k" "$T/$k"; done
 
 # dependensi harus sama (rilis ini tidak menambah paket)
 dep(){ node -e "const p=require('$1');console.log(JSON.stringify([p.dependencies,p.optionalDependencies]))"; }
