@@ -21,7 +21,7 @@ test("Alat Gratis: halaman baru tampil di host akademik tanpa string ruangakadem
         assert.strictEqual(r.status, 200, s);
         assert.ok(html.includes(`<link rel="canonical" href="https://akademik.example/${s}">`), s);
         assert.ok(!html.includes("ruangakademikut"), s + " masih memuat ruangakademikut");
-        assert.ok(html.includes("Portal &amp; Alat UT") && html.includes("Audit &amp; Parafrase"), s + " tanpa menu utama");
+        assert.ok(html.includes("Portal &amp; Alat UT") && html.includes("Audit, Parafrase, Bedah UT"), s + " tanpa menu utama");
       }
       for (const j of JS) {
         const r = await fetch(`${b}/assets/ut/${j}?v=1`); assert.strictEqual(r.status, 200, j);
