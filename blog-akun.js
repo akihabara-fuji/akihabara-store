@@ -758,7 +758,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
     const NAVT = [["Blog", [["Semua artikel", "/blog"], ...topicsShown().map(k => [TOPICS[k].label, "/blog?f=" + k])]]];
     if (ACAD_ONLY) NAVT.push(
       ["Layanan", [["Tugas tutorial", "/ruangakademikut/layanan?s=tugas"], ["Diskusi", "/ruangakademikut/layanan?s=diskusi"], ["Metopen UT", "/ruangakademikut/layanan?s=metopen_paket"], ["Simulasi Presentasi", "/ruangakademikut/layanan?s=simulasi"]]],
-      ["Cek & Audit", [["Cek & Parafrase", "/ruangakademikut/cek-parafrase-mandiri"], ["Audit dokumen", "/ruangakademikut/audit"]]],
+      ["Cek & Audit", [["Cek & Parafrase", "/ruangakademikut/cek-parafrase-mandiri"], ["Audit dokumen", "/ruangakademikut/audit"], ["Bedah Laporan Penelitian UT", "/ruangakademikut/bedah-laporan"]]],
       ["Alat Gratis", [["Kalkulator Nilai & IPK", "/ruangakademikut/kalkulator-nilai-ut"], ["Generator Sitasi APA", "/ruangakademikut/sitasi-apa"], ["Tracker Kelulusan & IPK", "/ruangakademikut/tracker-kelulusan"], ["Kalender Akademik", "/ruangakademikut/kalender-akademik"], ["Buat CV ATS", "/ruangakademikut/buat-cv-ats"], ["Surat Lamaran", "/ruangakademikut/surat-lamaran"], ["Sampul & Template Tugas", "/ruangakademikut/sampul-tugas"], ["Pasfoto Yudisium", "/ruangakademikut/pasfoto-yudisium"], ["Panduan Maba", "/ruangakademikut/panduan-maba"]]],
       ["Portal UT", [["Portal UT", "/ruangakademikut/portal-ut"]]]);
     const navTree = NAVT.map(([g, ls], i) => `<details${i === 0 ? " open" : ""}><summary>${esc(g)}</summary><ul>${ls.map(([n, h]) => `<li><a href="${esc(h)}"${h === "/blog?f=" + p.topic ? ' aria-current="page" class="on"' : ""}>${esc(n)}</a></li>`).join("")}</ul></details>`).join("");

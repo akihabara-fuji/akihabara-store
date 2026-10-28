@@ -315,6 +315,42 @@
 
 
   /* ================= GAMBAR SITUS: ganti foto landing dan kartu layanan tanpa buka VPS ================= */
+  /* jendela atur potongan (crop) 4:3 untuk foto kartu: geser kotak, tarik sudut kanan bawah, atau pakai slider zoom */
+  async function cropFile(file) {
+    const url = URL.createObjectURL(file), img = new Image();
+    const ok = await new Promise(r => { img.onload = () => r(true); img.onerror = () => r(false); img.src = url; });
+    if (!ok || !img.naturalWidth) { URL.revokeObjectURL(url); return file; }
+    const W = img.naturalWidth, H = img.naturalHeight, sc = Math.min(560 / W, 340 / H, 1), dw = Math.round(W * sc), dh = Math.round(H * sc), R = 4 / 3;
+    const maxW = Math.min(dw, dh * R), minW = Math.min(60, maxW);
+    const st = { w: maxW, x: (dw - maxW) / 2, y: (dh - maxW / R) / 2 };
+    const clamp = () => { st.w = Math.max(minW, Math.min(maxW, st.w)); st.x = Math.max(0, Math.min(dw - st.w, st.x)); st.y = Math.max(0, Math.min(dh - st.w / R, st.y)); };
+    const body = `<p class="small muted" style="margin:0 0 8px">Geser kotak untuk memilih bagian foto. Tarik sudut kanan bawah untuk memperbesar atau memperkecil. Rasio terkunci 4:3.</p>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start"><div id="crStage" style="position:relative;width:${dw}px;height:${dh}px;max-width:100%;touch-action:none;user-select:none;background:#000;overflow:hidden"><img src="${url}" alt="" draggable="false" style="width:100%;height:100%;display:block"><div id="crBox" style="position:absolute;border:2px solid #fff;box-shadow:0 0 0 999px rgba(5,8,25,.62);cursor:move;box-sizing:border-box"><div id="crH" style="position:absolute;right:-9px;bottom:-9px;width:18px;height:18px;background:#fff;border-radius:4px;cursor:nwse-resize"></div></div></div>
+      <div style="width:200px"><div class="small muted" style="margin-bottom:6px">Pratinjau di kartu</div><canvas id="crPv" width="200" height="150" style="width:200px;height:150px;border-radius:10px;background:#000"></canvas></div></div>
+      <label class="f" style="margin-top:10px">Zoom<input id="crZ" type="range" min="10" max="100" value="100"></label>`;
+    const pv = d => { const c = $("#crPv", d).getContext("2d"); c.clearRect(0, 0, 200, 150); c.drawImage(img, st.x / sc, st.y / sc, st.w / sc, st.w / R / sc, 0, 0, 200, 150); };
+    const draw = d => { clamp(); const b = $("#crBox", d); b.style.left = st.x + "px"; b.style.top = st.y + "px"; b.style.width = st.w + "px"; b.style.height = st.w / R + "px"; $("#crZ", d).value = Math.round(st.w / maxW * 100); pv(d); };
+    const res = await dialog({ title: "Atur potongan foto", body, ok: "Potong dan simpan", wide: false, onOpen: d => {
+      let mode = null, sx = 0, sy = 0, o = null;
+      const box = $("#crBox", d), h = $("#crH", d);
+      box.addEventListener("pointerdown", e => { mode = e.target === h ? "rs" : "mv"; sx = e.clientX; sy = e.clientY; o = { ...st }; box.setPointerCapture(e.pointerId); e.preventDefault(); });
+      box.addEventListener("pointermove", e => { if (!mode) return; const dx = e.clientX - sx, dy = e.clientY - sy;
+        if (mode === "mv") { st.x = o.x + dx; st.y = o.y + dy; } else { const nw = o.w + Math.max(dx, dy * R); st.w = Math.min(nw, dw - o.x, (dh - o.y) * R); }
+        draw(d); });
+      const end = () => { mode = null; }; box.addEventListener("pointerup", end); box.addEventListener("pointercancel", end);
+      $("#crZ", d).addEventListener("input", e => { const cx = st.x + st.w / 2, cy = st.y + st.w / R / 2; st.w = maxW * (Number(e.target.value) / 100); st.x = cx - st.w / 2; st.y = cy - st.w / R / 2; draw(d); });
+      draw(d);
+    } });
+    let out = null;
+    if (res) {
+      const w = Math.min(1600, Math.round(st.w / sc)), c = document.createElement("canvas"); c.width = w; c.height = Math.round(w / R);
+      c.getContext("2d").drawImage(img, st.x / sc, st.y / sc, st.w / sc, st.w / R / sc, 0, 0, c.width, c.height);
+      const blob = await new Promise(r => c.toBlob(r, "image/jpeg", 0.92));
+      if (blob) out = new File([blob], "kartu.jpg", { type: "image/jpeg" });
+    }
+    URL.revokeObjectURL(url);
+    return out;
+  }
   async function pImages() {
     const CARD = { cek: "Cek & Parafrase Mandiri", semester: "Paket Semester", tugas: "Tugas tutorial", diskusi: "Diskusi", metopen: "Metopen UT", audit: "Audit dokumen", revisi: "Revisi", pengarahan: "Pengarahan Intensif", cv: "Buat CV ATS", info: "Info UT" };
     const [s, c] = await Promise.all([api("/ms/admin/site-images"), api("/ms/admin/parafrase/card-images")]);
@@ -324,7 +360,7 @@
       ${sec("Kartu layanan", "Foto di kartu Layanan (beranda dan halaman Layanan UT). Rasio 4:3, otomatis dipotong dan dikecilkan.", c.slugs.map(x => tile("card/" + x.slug, CARD[x.slug] || x.label || x.slug, `/ruangakademikut/img/${x.slug}.webp`, x.has, "card")).join(""))}
       ${s.groups.map(g => sec(g.label, "Maks 12 MB. Format JPG, PNG, atau WebP.", g.items.map(i => tile(g.group + "/" + i.name, i.label, `/site-img/${g.group}/${i.name}.webp`, i.has, "site")).join(""))).join("")}`);
     const url = (id, kind) => kind === "card" ? "/ms/admin/parafrase/card-images/" + id.split("/")[1] : "/ms/admin/site-images/" + id;
-    $$("[data-up]").forEach(i => i.onchange = async () => { const f = i.files[0]; if (!f) return; const fd = new FormData(); fd.append("img", f); toast("Mengunggah…"); try { await api(url(i.dataset.up, i.dataset.kind), { form: fd }); toast("Foto tersimpan, langsung tayang"); route(); } catch (e) { toast(e.message, true); } });
+    $$("[data-up]").forEach(i => i.onchange = async () => { let f = i.files[0]; if (!f) return; if (i.dataset.kind === "card") { f = await cropFile(f); i.value = ""; if (!f) return; } const fd = new FormData(); fd.append("img", f); toast("Mengunggah…"); try { await api(url(i.dataset.up, i.dataset.kind), { form: fd }); toast("Foto tersimpan, langsung tayang"); route(); } catch (e) { toast(e.message, true); } });
     $$("[data-rm]").forEach(b => b.onclick = async () => { if (!await confirmAct("Kembalikan gambar bawaan?", "Foto yang kamu unggah dihapus dan gambar bawaan dipakai lagi.", "Kembalikan")) return; try { await api(url(b.dataset.rm, b.dataset.kind), { method: "DELETE" }); toast("Dikembalikan"); route(); } catch (e) { toast(e.message, true); } });
   }
 
