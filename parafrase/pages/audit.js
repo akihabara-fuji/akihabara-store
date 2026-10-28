@@ -77,6 +77,11 @@
       var go = el("a", "display:inline-block;padding:12px 22px;border-radius:12px;background:#7c3aed;color:#fff;font-weight:800;text-decoration:none", "Buka audit lengkap"); go.href = "#cta";
       lk.appendChild(go); l.appendChild(lk);
     }
+    /* Menekan "Lihat semua temuan" saat sebagian masih terkunci: beri tahu jelas bahwa perlu bayar dulu (bukan diam saja) */
+    if (nLocked) {
+      var fs = l.querySelector("details > summary");
+      if (fs) fs.addEventListener("click", function () { payNotice(nLocked); });
+    }
     window.auditOkList(d.score, l);
     var Q = d.quote, cfgp = (window.PF && window.PF.cfg) || {};
     $("perword").textContent = Q.perWord; $("minp").textContent = "Rp " + rp(Q.min);
@@ -89,6 +94,20 @@
     $("rmeta").textContent += d.quote.allFree ? " · seluruhnya gratis" : " · " + nOpen + " dari " + d.findings.length + " temuan dibuka gratis";
     $("cta").classList.toggle("hidden", !d.findings.some(function (f) { return !f.open; }));
     loadMap(d);
+  }
+  /* Pemberitahuan melayang: perlu pembayaran dulu untuk membuka temuan yang terkunci */
+  var payTimer = null;
+  function payNotice(n) {
+    var o = document.getElementById("payNote"); if (o) o.remove();
+    var b = el("div", "position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:60;max-width:min(520px,calc(100% - 24px));display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;padding:14px 18px;border-radius:16px;background:#2a2010;border:1px solid #ffb347;color:#fff;box-shadow:0 10px 30px rgba(0,0,0,.45);font-size:14px;line-height:1.5");
+    b.id = "payNote"; b.setAttribute("role", "status");
+    b.appendChild(el("span", "", "Silakan lakukan pembayaran terlebih dahulu untuk membuka " + n + " temuan lainnya."));
+    var go = el("button", "padding:9px 16px;border-radius:10px;border:0;background:#ffb347;color:#0a0f26;font-weight:800;cursor:pointer", "Lihat harga");
+    go.type = "button"; go.addEventListener("click", function () { b.remove(); var t = document.getElementById("cta"); if (t) t.scrollIntoView({ behavior: "smooth", block: "center" }); });
+    var x = el("button", "padding:6px 10px;border-radius:10px;border:1px solid #6b5a33;background:transparent;color:#fff;cursor:pointer", "Tutup");
+    x.type = "button"; x.addEventListener("click", function () { b.remove(); });
+    b.appendChild(go); b.appendChild(x); document.body.appendChild(b);
+    clearTimeout(payTimer); payTimer = setTimeout(function () { if (b.parentNode) b.remove(); }, 8000);
   }
   /* Peta warna kalimat dari 500 kata pertama (mesin pratinjau yang sama dengan Cek & Parafrase); sisanya tersamar dari server. */
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
