@@ -94,7 +94,7 @@
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function loadMap(d) {
     var card = $("amapCard"); card.style.display = "none"; if (!upId) return;
-    fetch("/ms/parafrase/preview/" + upId + "?page=1", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (pv) {
+    fetch("/ms/parafrase/preview/" + upId + "?page=focus", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (pv) {
       if (!pv || !pv.paragraphs || !pv.paragraphs.length) return;
       $("amap").innerHTML = pv.paragraphs.map(function (p) {
         return "<p>" + p.segments.map(function (s) {
@@ -104,10 +104,12 @@
         }).join("") + "</p>";
       }).join("");
       card.style.display = "";
+      $("amapTxt").textContent = pv.focus && pv.focus.moved ? "Bagian ini dipilih karena paling banyak masalahnya (mulai paragraf " + pv.focus.paraNo + "). Sorotan warna menunjukkan kalimat yang bermasalah; bagian lain dikaburkan sampai dibuka." : "Sorotan warna menunjukkan kalimat yang bermasalah. Bagian setelahnya dikaburkan sampai dibuka.";
       var more = !!$("amap").querySelector(".locked") || pv.pages > 1 || $("amap").scrollHeight > $("amap").clientHeight + 4;
       if (d.quote && d.quote.allFree) more = false;
       $("amapMore").style.display = more ? "flex" : "none";
       if (!more) $("amap").style.maxHeight = "none";
+      var fo = $("amap").querySelector(".seg:not(.locked)"); if (fo && pv.focus && pv.focus.moved) { var pe = fo.closest("p") || fo; $("amap").scrollTop = Math.max(0, pe.offsetTop - $("amap").offsetTop - 24); }
     }).catch(function () {});
   }
   /* Kembali dari halaman masuk: pulihkan hasil audit supaya pembeli tinggal lanjut bayar (berlaku 2 jam, sama dengan masa simpan file). */

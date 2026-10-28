@@ -137,3 +137,20 @@ test("ringkasan aspek ikut di pratinjau dengan kode warna, dan mode lama openSen
   assert.ok(pv.overview && pv.overview.aspects.length === 6 && pv.overview.ai && pv.overview.aspects.every(x => Array.isArray(x.codes) && x.codes.length));
   assert.deepStrictEqual(pv.overview.aspects.find(x => x.key === "kalimat_berulang").codes, ["M"]);
 });
+
+test("500 kata gratis dibuka di bagian yang paling banyak catatannya, bukan di sampul", () => {
+  const { buildPreview } = require("../parafrase/preview");
+  const mk = (idx, text) => ({ idx, text, style: "", inTable: false });
+  const filler = "kata ".repeat(40).trim() + ".";
+  const paras = [mk(0, "PROPOSAL PENELITIAN."), mk(1, "Disusun oleh Nama NIM.")];
+  for (let i = 2; i < 40; i++) paras.push(mk(i, filler));
+  const findings = [];
+  for (let i = 30; i < 38; i++) findings.push({ para_idx: i, sent_idx: 0, code: "M", reason: "berulang" });
+  const pv = buildPreview({ paragraphs: paras, bibliographyParagraphIndex: -1 }, findings, "rahasia", "a".repeat(32), { unlocked: false, openWords: 100, page: 1, pageSize: 30, focus: true, cfg: {} });
+  assert.ok(pv.focus && pv.focus.moved && pv.focus.paraNo >= 31, "mulai di bagian bermasalah: " + JSON.stringify(pv.focus));
+  assert.ok(pv.openedWords <= 100 && pv.openedWords > 0);
+  const opened = pv.paragraphs.flatMap(p => p.segments).filter(s => !s.locked && s.primary);
+  assert.ok(opened.length >= 1, "ada sorotan di bagian terbuka");
+  const cover = pv.paragraphs.find(p => p.idx === 0);
+  assert.ok(!cover || cover.segments.every(s => s.locked), "sampul tidak ikut terbuka");
+});

@@ -57,7 +57,7 @@
     return "/ms/parafrase/upload/" + st.up.uploadId + (q.length ? "?" + q.join("&") : "");
   }
   function applyUpload(j) {
-    st.up = j; st.page = 1; fill(); $("s1").classList.add("hidden"); $("s2").classList.remove("hidden"); window.scrollTo(0, 0); loadPreview();
+    st.up = j; st.page = 1; st.focusDone = false; fill(); $("s1").classList.add("hidden"); $("s2").classList.remove("hidden"); window.scrollTo(0, 0); loadPreview();
     var tOpts = { here: "cek" };
     window.renderTriage($("triage"), j.triage, tOpts);
     window.auditDrillbit($("dbit"), null, {
@@ -135,10 +135,10 @@
   function loadPreview() {
     if (!st.up) return;
     $("doc").innerHTML = '<p class="muted">Memuat pratinjau…</p>';
-    fetch("/ms/parafrase/preview/" + st.up.uploadId + "?page=" + st.page).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+    fetch("/ms/parafrase/preview/" + st.up.uploadId + "?page=" + (st.focusDone ? st.page : "focus")).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
       .then(function (x) {
         if (!x.ok) { $("doc").innerHTML = '<p class="muted">' + esc(x.j.error || "Pratinjau tidak tersedia.") + "</p>"; return; }
-        var pv = x.j; st.pages = pv.pages; st.page = pv.page;
+        var pv = x.j; st.pages = pv.pages; st.page = pv.page; st.focusDone = true;
         $("doc").innerHTML = pv.paragraphs.map(function (p) {
           return '<p><span class="pn" title="Paragraf ke-' + p.no + ' (sama dengan nomor di Urutan perbaikan)" style="display:inline-block;min-width:22px;margin-right:6px;font-size:11px;font-weight:700;opacity:.55">' + p.no + "</span>" + p.segments.map(function (s) {
             var cls = "seg" + (s.primary ? " s-" + s.primary : "") + (s.locked ? " locked" : "");
@@ -155,7 +155,7 @@
   function renderFree(pv) {
     if (!pv.freeWords) return;
     var box = $("examples"), card = mk("div", "padding:14px 18px;border-radius:18px;border:1px solid var(--border,#2b2b58);margin:12px 0");
-    card.appendChild(mk("b", "display:block;font-size:17px;margin-bottom:4px", rp(pv.openedWords) + " kata pertama dibuka gratis"));
+    card.appendChild(mk("b", "display:block;font-size:17px;margin-bottom:4px", rp(pv.openedWords) + " kata dibuka gratis" + (pv.focus && pv.focus.moved ? ", dipilih dari bagian yang paling banyak masalahnya (mulai paragraf " + pv.focus.paraNo + ")" : "")));
     card.appendChild(mk("div", "font-size:14px;line-height:1.6;opacity:.9", "Bagian ini terbuka penuh beserta catatan dan alasannya. Bagian setelahnya tampil disamarkan dan terbuka setelah pembayaran. Harga hanya dihitung untuk kata setelah " + rp(pv.freeWords) + " kata pertama."));
     box.appendChild(card);
     var dt = $("doc") && $("doc").parentNode; if (dt && dt.tagName === "DETAILS" && !st.openedOnce) { dt.open = true; st.openedOnce = true; }

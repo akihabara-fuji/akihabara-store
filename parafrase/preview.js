@@ -43,7 +43,7 @@ function buildPreview(a, findings, secret, id, opts = {}) {
 
   const visible = a.paragraphs.filter(p => p.text.trim());
   const pages = Math.max(1, Math.ceil(visible.length / pageSize));
-  const page = Math.min(pages, Math.max(1, opts.page | 0 || 1));
+  let page = Math.min(pages, Math.max(1, opts.page | 0 || 1));
 
   // Kalimat contoh: N kalimat bercatatan yang BERAGAM jenisnya. Yang pertama adalah catatan paling awal di dokumen,
   // berikutnya bergantian antar kode warna (belum terpakai dulu), lalu hasilnya diurutkan sesuai posisi di dokumen.
@@ -65,18 +65,25 @@ function buildPreview(a, findings, secret, id, opts = {}) {
   /* Mode paragraf: buka SEMUA kalimat pada N paragraf contoh. Dipilih paragraf yang catatannya paling serius
      (urutan PRIORITY: M, O, K, B, U, H, P, A), seri diambil yang paling awal. Paragraf berkalimat 1 kurang bagus sebagai contoh,
      jadi bila ada pilihan lain dengan kode yang sama, yang berkalimat lebih banyak didahulukan. */
-  /* Mode kata: buka kalimat dari awal dokumen sampai batas kata gratis (kalimat utuh, tidak melewati batas). */
-  const wordOpen = new Set(); let openedWords = 0;
+  /* Mode kata: buka kalimat utuh sampai batas kata gratis, tetapi dimulai dari bagian dokumen yang PALING BANYAK catatannya
+     (bukan dari sampul), supaya yang terbuka gratis benar-benar memperlihatkan kesalahan. Tanpa catatan: dari awal isi (setelah sampul). */
+  const wordOpen = new Set(); let openedWords = 0, focusVi = 0, focused = false;
   if (wordMode) {
-    scan: for (const p of visible) {
-      const ss = splitSentences(p.text);
-      for (let i = 0; i < ss.length; i++) {
-        const n = countWords(ss[i]);
-        if (openedWords + n > opts.openWords) break scan;
-        openedWords += n; wordOpen.add(p.idx + ":" + i);
-      }
-    }
+    const units = [];
+    visible.forEach((p, vi) => splitSentences(p.text).forEach((sx, i) => units.push({ key: p.idx + ":" + i, w: countWords(sx), vi, flag: byKey.has(p.idx + ":" + i), long: countWords(p.text) >= 12 })));
+    const span = from => { let w = 0, j = from; while (j < units.length && w + units[j].w <= opts.openWords) { w += units[j].w; j++; } return { to: j, w }; };
+    let start = 0;
+    if (units.some(u => u.flag)) {
+      let bestScore = -1, cum = 0;
+      const pre = units.map(u => (cum += u.flag ? 1 : 0));
+      for (let i = 0; i < units.length; i++) { const e = span(i).to; const sc = pre[Math.max(i, e - 1)] - (i ? pre[i - 1] : 0); if (sc > bestScore) { bestScore = sc; start = i; } }
+      const firstFlag = units.findIndex((u, i) => i >= start && u.flag); if (firstFlag >= 0) start = firstFlag;
+    } else { const b = units.findIndex(u => u.long); start = b >= 0 ? b : 0; }
+    const { to } = span(start);
+    for (let k = start; k < to; k++) { wordOpen.add(units[k].key); openedWords += units[k].w; }
+    if (units[start]) { focusVi = units[start].vi; focused = focusVi > 0; }
   }
+  if (wordMode && opts.focus) page = Math.min(pages, Math.floor(focusVi / pageSize) + 1);
   const exParas = new Set();
   if (paraMode && opts.openParagraphs > 0) {
     const cand = new Map();
@@ -137,7 +144,7 @@ function buildPreview(a, findings, secret, id, opts = {}) {
   for (const f of findings) counts[f.code]++;
   return {
     locked: !unlocked,
-    freeWords: wordMode ? opts.openWords : 0, openedWords,
+    freeWords: wordMode ? opts.openWords : 0, openedWords, focus: wordMode ? { moved: focused, paraNo: focusVi + 1 } : null,
     page, pages, pageSize,
     totalParagraphs: visible.length,
     notes: { total: findings.length, byCode: counts },
