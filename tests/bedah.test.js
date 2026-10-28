@@ -12,13 +12,12 @@ async function up(b, extra, izin) {
   return { status: r.status, j: await r.json() };
 }
 
-test("bedah: harga dua tingkat dari pengaturan admin", async () => {
+test("bedah: harga per blok 500 kata dari pengaturan admin", async () => {
   const b = await boot(); const q = b.m.orders.bedahQuote;
   const c = b.m.settings.getAll();
-  assert.strictEqual(q(1999, c).total, 15000); assert.strictEqual(q(2000, c).total, 15000);
-  assert.strictEqual(q(2001, c).total, 20000); assert.strictEqual(q(2001, c).big, true);
-  b.m.settings.set({ bedah_harga: 17000, bedah_harga_besar: 22000, bedah_batas_kata: 300 });
-  assert.strictEqual(q(300, b.m.settings.getAll()).total, 17000); assert.strictEqual(q(301, b.m.settings.getAll()).total, 22000);
+  for (const [w, t] of [[1, 5000], [500, 5000], [501, 10000], [1000, 10000], [1500, 15000], [2000, 20000], [2337, 25000]]) assert.strictEqual(q(w, c).total, t, w + " kata");
+  b.m.settings.set({ bedah_harga_per_blok: 7000, bedah_blok_kata: 300 });
+  assert.strictEqual(q(300, b.m.settings.getAll()).total, 7000); assert.strictEqual(q(301, b.m.settings.getAll()).total, 14000);
   b.srv.close();
 });
 
@@ -31,7 +30,7 @@ test("bedah: unggah file asli saja, temuan gratis dibatasi dan sisanya terkunci 
   assert.strictEqual(j.locked.length, j.totalFindings - 1);
   for (const x of j.locked) { assert.ok(!("text" in x) && !("reason" in x) && !("helper" in x), "terkunci tidak membawa teks"); assert.ok(x.code && x.where); }
   assert.ok(j.open[0].text && j.open[0].reason && (j.open[0].helper || j.open[0].target));
-  assert.strictEqual(j.quote.total, 15000); assert.strictEqual(j.ut, null); assert.strictEqual(j.sim, null);
+  assert.strictEqual(j.quote.total, 5000); assert.strictEqual(j.ut, null); assert.strictEqual(j.sim, null);
   assert.ok(typeof j.problem.pct === "number");
   b.srv.close();
 });
@@ -52,7 +51,7 @@ test("bedah: pesan, bayar, lalu hasil lengkap dan unduhan Word terbuka; sebelum 
   const b = await boot();
   const { j } = await up(b, "Menurut para ahli, hal ini sangat penting dalam kehidupan sehari-hari dan berbagai aspek.");
   const o = await (await fetch(b.base + "/ms/bedah/order", { method: "POST", headers: b.J, body: JSON.stringify({ uploadId: j.uploadId, wa: "081234567899", agree: true }) })).json();
-  assert.ok(o.token && o.total >= 15000 && o.total <= 15099, "harga paket + kode unik");
+  assert.ok(o.token && o.total >= 5000 && o.total <= 5099, "harga paket + kode unik");
   assert.strictEqual((await fetch(b.base + "/ms/bedah/report/" + o.token)).status, 402);
   assert.strictEqual((await fetch(b.base + "/ms/bedah/download/" + o.token)).status, 402);
   b.setAdmin(true);

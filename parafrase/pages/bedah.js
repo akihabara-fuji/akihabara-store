@@ -9,7 +9,7 @@
 
   /* harga di hook dari pengaturan admin */
   fetch("/ms/public-config").then(function (r) { return r.ok ? r.json() : {}; }).then(function (c) {
-    var m = { "data-bg": c.bedah_gratis_temuan, "data-bh": c.bedah_harga, "data-bb": c.bedah_harga_besar, "data-bk": c.bedah_batas_kata };
+    var m = { "data-bg": c.bedah_gratis_temuan, "data-bh": c.bedah_harga_per_blok, "data-bk": c.bedah_blok_kata };
     Object.keys(m).forEach(function (a) { if (m[a] == null) return; document.querySelectorAll("[" + a + "]").forEach(function (n) { n.textContent = rp(m[a]); }); });
   }).catch(function () {});
 
@@ -129,7 +129,7 @@
       var go = el("a", "", "Buka semua temuan dan unduh file Word berwarna", "btn"); go.href = "#cta"; lk.appendChild(go);
     }
     var q = j.quote; $("pWords").textContent = rp(j.words); $("pFree").textContent = q.free + " temuan"; $("pAll").textContent = j.totalFindings + " temuan";
-    $("pTier").textContent = q.big ? "Di atas " + rp(q.limit) + " kata" : "Sampai " + rp(q.limit) + " kata"; $("total").textContent = "Rp " + rp(q.total); $("buyAmt").textContent = " · Rp " + rp(q.total);
+    $("pTier").textContent = q.blocks + " × " + rp(q.blockWords) + " kata (sampai " + rp(q.limit) + " kata)"; $("total").textContent = "Rp " + rp(q.total); $("buyAmt").textContent = " · Rp " + rp(q.total);
     $("kodeCard").style.display = j.kode ? "" : "none"; if (j.kode) $("kodeVal").textContent = j.kode;
     gate();
   }

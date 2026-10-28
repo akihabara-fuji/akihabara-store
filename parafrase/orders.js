@@ -94,8 +94,9 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
   /* Bedah Laporan Penelitian UT (doc_type='bedah'): sepuluh temuan terberat gratis; semua temuan + Word berwarna berbayar tetap.
      Dua tingkat harga menurut jumlah kata isi (tanpa sampul, daftar isi, daftar pustaka). Semua angka dari pengaturan admin. */
   const bedahQuote = (words, cfg) => {
-    const big = words > (Number(cfg.bedah_batas_kata) || 2000), total = big ? cfg.bedah_harga_besar : cfg.bedah_harga;
-    return { words, big, limit: Number(cfg.bedah_batas_kata) || 2000, total, free: Number(cfg.bedah_gratis_temuan) || 0 };
+    const blockWords = Number(cfg.bedah_blok_kata) || 500, per = Number(cfg.bedah_harga_per_blok) || 0;
+    const blocks = Math.max(1, Math.ceil((Number(words) || 0) / blockWords));
+    return { words, blocks, blockWords, limit: blocks * blockWords, total: blocks * per, free: Number(cfg.bedah_gratis_temuan) || 0 };
   };
   function createBedahOrder(body, ipHash, now = Date.now(), buyer = null) {
     const cfg = settings.getAll();
