@@ -108,6 +108,8 @@ module.exports = function mount(ctx) {
   }
   /* Domain akademik (ACAD_URL beda dari situs utama): hanya topik akademik/UT yang tampil. Tulisan lain tidak dihapus, hanya disembunyikan. */
   const ACAD_ONLY = !!process.env.ACAD_URL && process.env.ACAD_URL.replace(/\/+$/, "") !== (process.env.SITE_URL || "https://nextaja.com").replace(/\/+$/, "");
+  /* Domain akademik: penulis tercatat "Tim Catatan Akademik" (bukan inisial lama "dk"); dijalankan sekali. */
+  if (ACAD_ONLY && !blog.authorTim) { blog.posts.forEach(x => { if (!x.author || x.author === "dk") x.author = "Tim Catatan Akademik"; }); blog.authorTim = true; saveBlog(); }
   const ACAD_TOPICS = Object.keys(TOPICS); // semua kategori boleh dipilih penulis; yang tampil sebagai filter hanya yang sudah punya artikel
   const ACAD_HOST = (() => { try { return new URL(process.env.ACAD_URL || "").host; } catch { return ""; } })();
   const onAcadHost = req => ACAD_ONLY && !!ACAD_HOST && String(req.headers.host || "").toLowerCase() === ACAD_HOST.toLowerCase();
@@ -686,7 +688,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
   /* Bagian penutup lama ("Kalau kamu butuh bantuan ...") di dalam isi tulisan diganti bubble WhatsApp di bawah. */
   const cleanBody = t => importMd.scrubInternal(importMd.htmlToMd(String(t || ""))).replace(/\r/g, "").replace(/\n[ \t]*(?:#{1,3}[ \t]*)?(?:\*\*)?Kalau kamu butuh bantuan(?:\*\*)?[ \t]*\n[\s\S]{0,1600}$/i, "").trimEnd();
   /* Halaman artikel. preview=true: pratinjau admin untuk draf/terjadwal (noindex, tanpa komentar, tidak pernah di-cache). */
-  const DEFAULT_AUTHOR = "dk";
+  const DEFAULT_AUTHOR = ACAD_ONLY ? "Tim Catatan Akademik" : "dk";
   /* Blok komunitas otomatis di bawah tiap artikel (domain akademik). Tautan dari Pengaturan admin; yang kosong tidak ditampilkan. */
   function communityBlock() {
     if (!ACAD_ONLY) return "";

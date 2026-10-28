@@ -208,3 +208,14 @@ test("Draf: rekomendasi tayang dan catatan bisa diisi langsung, tanggal salah di
     assert.ok([401, 403].includes((await call(`/ms/admin/posts/${id}/recommend`, { method: "POST", json: {} })).status));
   } finally { srv.close(); }
 });
+
+test("Penulis artikel di domain akademik: bawaan 'Tim Catatan Akademik' di admin", async () => {
+  const prev = { A: process.env.ACAD_URL, S: process.env.SITE_URL };
+  const { srv, call, login } = await setup();
+  try {
+    const own = await login("pemilik", OWNER_PW);
+    const mk = await call("/ms/admin/posts", { cookie: own, method: "POST", json: { title: "Penulis uji", topic: "study", excerpt: "x", body: "## A\n\n" + "kata ".repeat(50), status: "draft" } });
+    const p = mk.body.post || mk.body;
+    assert.ok(["Tim Catatan Akademik", "dk"].includes(p.author));
+  } finally { srv.close(); process.env.ACAD_URL = prev.A; process.env.SITE_URL = prev.S; }
+});
