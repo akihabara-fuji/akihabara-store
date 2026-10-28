@@ -15,9 +15,10 @@ test("landing: satu H1 berkata kunci, sub-judul bukan H1, kartu Audit/Cek di baw
     assert.strictEqual(status, 200);
     assert.strictEqual(tags(html, "h1"), 1);
     assert.match(html, /<h1[^>]*>Layanan Tugas, Diskusi, Metopen &amp; Audit Dokumen untuk Mahasiswa UT<\/h1>/);
-    assert.match(html, /<p class="sl" id="heroTitle">Tugas UT kamu aman/);
+    assert.match(html, /<p class="sl" id="heroTitle">Tugas UT kamu <em>lebih siap dikumpulkan/);
     assert.ok(html.indexOf("Audit dan cek parafrase dokumen</h2>") > 0 && html.indexOf("Audit dan cek parafrase dokumen</h2>") < html.indexOf("<h3>Audit Dokumen</h3>"), "H2 mendahului H3 kartu");
     assert.match(html, /href="\/tentang"/);
+    assert.ok(!/aman dari|di bawah 25%/.test(html.replace(/<[^>]+>/g, " ")), "beranda tidak menjanjikan hasil similarity");
     assert.match(html, /rel="preload" as="image" href="\/site-img\/hero\/model-ut\.webp"/);
     assert.ok(!/id="ulasan">/.test(html), "tanpa testimoni asli bagiannya tetap tersembunyi");
   } finally { srv.close(); }
