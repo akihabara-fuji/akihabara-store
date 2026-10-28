@@ -219,6 +219,13 @@
         ${stat("card", num(o.konfirmasi), "Menunggu konfirmasi bayar", "Klik untuk membuka antrean", "#/payments")}
         ${stat("list", num(o.proses), "Sedang diproses", `${num(o.selesai)} selesai · ${num(o.batal)} batal/kedaluwarsa`, "#/orders?group=proses")}
       </div>
+      ${d.traffic ? `<div class="grid g4">
+        ${stat("chart", num(d.traffic.views), "Tayangan", "dari statistik web", "#/traffic")}
+        ${stat("users", num(d.traffic.visitors), "Pengunjung", "dihitung per hari", "#/traffic")}
+        ${stat("search", num(d.traffic.auditViews), "Tayangan halaman Audit", "orang yang membuka Audit", "#/traffic")}
+        ${stat("card", num(d.traffic.paidAudit), "Pesanan audit berbayar", d.traffic.conv != null ? `konversi ${String(d.traffic.conv).replace(".", ",")}% dari pengunjung Audit` : "konversi tampil bila pengunjung Audit cukup", "#/orders?kind=audit")}
+      </div>
+      <div class="card"><div class="hd"><h2>Tayangan per halaman</h2><a class="small" href="#/traffic">Detail →</a></div><div class="bd" style="display:flex;flex-direction:column;gap:8px">${d.traffic.groups.map(x => `<div style="display:flex;justify-content:space-between;padding:10px;border-radius:10px;background:var(--surface2,rgba(127,127,127,.1))"><span>${esc(x.name)}</span><b>${num(x.views)}</b></div>`).join("") || '<div class="muted">Belum ada data.</div>'}</div></div>` : ""}
       <div class="grid g-main">
         <div class="card"><div class="hd"><h2>Aktivitas ${days} hari terakhir</h2><span class="muted small">Pendapatan terkonfirmasi: <b>${rp(d.revenue)}</b> (${num(d.paidCount)} pesanan)</span></div><div class="bd">${lineChart(d.series, [["orders", "Pesanan dibuat", "--s1"], ["paid", "Pesanan dibayar", "--s2"]])}<p class="small faint" style="margin:8px 0 0">${esc(d.definitions.revenue)}</p></div></div>
         <div class="card"><div class="hd"><h2>Aktivitas terbaru</h2><a class="small" href="#/log">Semua log</a></div><div class="bd"><ul class="timeline">${d.activity.map(a => `<li><div>${actLine(a)}<div class="small faint">${dt(a.at)}</div></div></li>`).join("") || '<li class="muted">Belum ada aktivitas.</li>'}</ul></div></div>
@@ -267,6 +274,15 @@
     setPage("Studio Posting Sosmed", "Siapkan caption dan gambar dari artikel, lalu posting sendiri", `
       <div class="notice info">Studio menyiapkan caption dan gambar. Posting tetap kamu lakukan sendiri di aplikasi Instagram, Facebook, dan TikTok. Kirim otomatis butuh izin resmi tiap platform dan belum dipasang.</div>
       <div class="card"><div class="bd"><label class="f">Sumber artikel<select class="in" id="stP">${posts.map(x => `<option value="${x.id}" ${x.id === p.id ? "selected" : ""}>${esc(x.title)}${x.status === "published" ? "" : " (draf)"}</option>`).join("")}</select></label></div></div>
+      <div class="card"><div class="hd"><h2>Kalender posting</h2><span class="muted small">Jadwal terbit artikel dan tanggal rekomendasi draf, 14 hari ke depan. Isi manual: Studio tidak mengirim otomatis.</span></div><div class="bd"><div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;font-size:12px">${(() => {
+        const day = t => new Date(t + 7 * 3600e3).toISOString().slice(0, 10), ev = {};
+        d.posts.forEach(x => { const k = x.status === "scheduled" && x.publishAt ? day(Date.parse(x.publishAt)) : x.recommendedAt; if (k) (ev[k] = ev[k] || []).push(x); });
+        const t0 = Date.now(), cells = []; const dow = new Date(t0 + 7 * 3600e3).getUTCDay(), pad = (dow + 6) % 7;
+        const names = ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"].map(n => `<div class="muted" style="text-align:center">${n}</div>`).join("");
+        for (let i = 0; i < pad; i++) cells.push('<div></div>');
+        for (let i = 0; i < 14; i++) { const k = day(t0 + i * 864e5), list = ev[k] || []; cells.push(`<div style="min-height:58px;border-radius:8px;padding:6px;background:${list.length ? "var(--tint1,rgba(124,58,237,.14))" : "var(--surface2,rgba(127,127,127,.08))"}"><div class="muted">${k.slice(8)}/${k.slice(5, 7)}</div>${list.slice(0, 2).map(x => `<a href="#/studio?p=${x.id}" style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(x.title)}">${esc(x.title)}</a>`).join("")}</div>`); }
+        return names + cells.join("");
+      })()}</div></div></div>
       <div class="grid g2">
         <div class="card"><div class="hd"><h2>Caption</h2></div><div class="bd" style="display:flex;flex-direction:column;gap:12px">
           ${[["ig", "Instagram"], ["fb", "Facebook"], ["tt", "TikTok"]].map(([k, l]) => `<label class="f">${l}<textarea class="in" id="cap-${k}" rows="${k === "tt" ? 3 : 8}">${esc(CAP[k])}</textarea></label><div class="bar"><button type="button" class="btn sm" data-copy="cap-${k}">Salin caption ${l}</button></div>`).join("")}

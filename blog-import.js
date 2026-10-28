@@ -289,4 +289,24 @@ function scrubInternal(text) {
   return mergeSumber(fixTables(out.join("")).replace(/[ \t]*\[unverified\]/gi, "").split("\n").filter(l => !INTERNAL_LINE.test(l)).join("\n")).replace(/\n{3,}/g, "\n\n");
 }
 
-module.exports = { scrubInternal, buildDrafts, parseMd, parseFrontMatter, cleanMarkdown, checkDraft, topicKey };
+/* Isi artikel yang tersimpan sebagai HTML (<p>, <h2>, <strong>, <a>, <li>) diubah ke format tulisan situs, supaya tidak tampil sebagai teks tag mentah.
+   Isi yang tidak memuat tag HTML tidak diubah sama sekali. */
+const HTML_HINT = /<\/?(?:p|h[1-6]|ul|ol|li|blockquote|div)(?:\s[^>]*)?>/i;
+function htmlToMd(text) {
+  const t = String(text || "");
+  if (!HTML_HINT.test(t)) return t;
+  const dec = x => x.replace(/&nbsp;/g, " ").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;|&apos;/g, "'").replace(/&amp;/g, "&");
+  let o = t.replace(/\r/g, "");
+  o = o.replace(/<a\s[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi, (m, u, l) => `[${l.replace(/<[^>]+>/g, "").trim()}](${u})`);
+  o = o.replace(/<(strong|b)(?:\s[^>]*)?>([\s\S]*?)<\/\1>/gi, "**$2**").replace(/<(em|i)(?:\s[^>]*)?>([\s\S]*?)<\/\1>/gi, "*$2*");
+  o = o.replace(/<h([1-6])(?:\s[^>]*)?>([\s\S]*?)<\/h\1>/gi, (m, n, x) => `\n\n${"#".repeat(Math.max(2, +n))} ${x.replace(/<[^>]+>/g, "").trim()}\n\n`);
+  o = o.replace(/<ol(?:\s[^>]*)?>([\s\S]*?)<\/ol>/gi, (m, x) => { let i = 0; return "\n\n" + x.replace(/<li(?:\s[^>]*)?>([\s\S]*?)<\/li>/gi, (mm, y) => `${++i}. ${y.replace(/<[^>]+>/g, "").trim()}\n`) + "\n"; });
+  o = o.replace(/<li(?:\s[^>]*)?>([\s\S]*?)<\/li>/gi, (m, y) => `\n- ${y.replace(/<[^>]+>/g, "").trim()}\n`);
+  o = o.replace(/<blockquote(?:\s[^>]*)?>([\s\S]*?)<\/blockquote>/gi, (m, x) => "\n\n> " + x.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim() + "\n\n");
+  o = o.replace(/<br\s*\/?>/gi, "\n").replace(/<\/(?:p|div|ul|ol)>/gi, "\n\n").replace(/<(?:p|div|ul|ol)(?:\s[^>]*)?>/gi, "\n\n");
+  o = o.replace(/<(?!\/?(?:\s|$))[^>\n]*>/g, "");
+  o = dec(o).replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
+  return o;
+}
+
+module.exports = { htmlToMd, scrubInternal, buildDrafts, parseMd, parseFrontMatter, cleanMarkdown, checkDraft, topicKey };

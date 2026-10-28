@@ -68,6 +68,14 @@
     if (!d.findings.length) l.appendChild(el("p", "text-align:center", "Tidak ada temuan dari aturan yang kami periksa. Tetap baca ulang sebelum dikumpulkan."));
     window.renderFindings(l, d.findings, { sev: SEV, visible: 5 });
     if (d.findings.length) window.foldList(l, "Lihat semua temuan (" + d.findings.length + ")");
+    var nLocked = d.findings.filter(function (f) { return !f.open; }).length;
+    if (nLocked) {
+      var lk = el("div", "margin-top:14px;padding:22px;border-radius:16px;border:1px solid #7c5cff;background:rgba(124,92,255,.10);text-align:center");
+      lk.appendChild(el("b", "display:block;font-size:19px", nLocked + " temuan lainnya terkunci"));
+      lk.appendChild(el("div", "margin:6px auto 14px;max-width:460px;font-size:14px;opacity:.85", "Buka semua temuan beserta saran perbaikannya. Rp" + d.quote.perWord + " per kata, " + rp(d.quote.freeWords || 0) + " kata pertama gratis."));
+      var go = el("a", "display:inline-block;padding:12px 22px;border-radius:12px;background:#7c3aed;color:#fff;font-weight:800;text-decoration:none", "Buka audit lengkap"); go.href = "#cta";
+      lk.appendChild(go); l.appendChild(lk);
+    }
     window.auditOkList(d.score, l);
     $("perword").textContent = d.quote.perWord; $("minp").textContent = window.priceFmt(d.quote.min); $("total").textContent = d.quote.allFree ? "0 (seluruh dokumen sudah terbuka gratis)" : "Rp " + rp(d.quote.total);
     $("fwn").textContent = rp(d.quote.freeWords || 0);

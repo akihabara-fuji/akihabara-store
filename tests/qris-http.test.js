@@ -49,7 +49,7 @@ test("pesanan Cek & Parafrase dan Audit dibuat lewat QRIS, bayar QRIS (menunggu_
     else assert.ok(a.status !== 401 && a.status !== 402, "audit tidak minta login atau saldo: " + a.status + JSON.stringify(a.body));
     const fd = new FormData(); fd.append("file", new Blob([await docx("Penting untuk diingat bahwa hal ini menunjukkan bahwa kinerja naik.")]), "t.docx");
     const au = await call("/ms/audit/upload", { method: "POST", form: fd });
-    assert.ok(au.body.findings.filter(f => f.open).length <= 5, "gratis: paling banyak 5 temuan terbuka");
+    assert.ok(au.body.findings.filter(f => f.open).length <= 1, "gratis: paling banyak 1 temuan terbuka");
     assert.ok(au.body.findings.filter(f => !f.open).every(f => !f.detail && !f.quote), "temuan terkunci tidak membocorkan isi");
     const k = await call("/koin"); assert.strictEqual(k.status, 302);
   } finally { srv.close(); }

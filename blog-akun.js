@@ -406,7 +406,7 @@ module.exports = function mount(ctx) {
     const title = str(b.title, 140);
     if (!title) throw new Error("Judul wajib diisi.");
     const status = STATUSES_POST.includes(b.status) ? b.status : "draft";
-    const body = String(b.body ?? (current ? current.body : "") ?? "").slice(0, 60000);
+    const body = importMd.htmlToMd(String(b.body ?? (current ? current.body : "") ?? "")).slice(0, 60000);
     let publishAt = current ? current.publishAt : undefined;
     if (status === "scheduled") {
       const t = Date.parse(b.publishAt);
@@ -602,7 +602,7 @@ module.exports = function mount(ctx) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Bricolage+Grotesque:wght@600;700&display=swap" rel="stylesheet">
 <script>try{var t=localStorage.getItem("nx-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
-<link rel="stylesheet" href="/assets/blog.css?v=10"><link rel="stylesheet" href="/assets/ca-blog.css?v=13"><script async src="/t.js"></script>
+<link rel="stylesheet" href="/assets/blog.css?v=10"><link rel="stylesheet" href="/assets/ca-blog.css?v=14"><script async src="/t.js"></script>
 ${extra}
 </head>
 <body>
@@ -672,7 +672,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
   });
 
   /* Bagian penutup lama ("Kalau kamu butuh bantuan ...") di dalam isi tulisan diganti bubble WhatsApp di bawah. */
-  const cleanBody = t => importMd.scrubInternal(String(t || "")).replace(/\r/g, "").replace(/\n[ \t]*(?:#{1,3}[ \t]*)?(?:\*\*)?Kalau kamu butuh bantuan(?:\*\*)?[ \t]*\n[\s\S]{0,1600}$/i, "").trimEnd();
+  const cleanBody = t => importMd.scrubInternal(importMd.htmlToMd(String(t || ""))).replace(/\r/g, "").replace(/\n[ \t]*(?:#{1,3}[ \t]*)?(?:\*\*)?Kalau kamu butuh bantuan(?:\*\*)?[ \t]*\n[\s\S]{0,1600}$/i, "").trimEnd();
   /* Halaman artikel. preview=true: pratinjau admin untuk draf/terjadwal (noindex, tanpa komentar, tidak pernah di-cache). */
   const DEFAULT_AUTHOR = "dk";
   /* Blok komunitas otomatis di bawah tiap artikel (domain akademik). Tautan dari Pengaturan admin; yang kosong tidak ditampilkan. */
@@ -734,6 +734,8 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
     const hookTop = hk ? `<div class="ax-hook" role="note"><div><b>${esc(hk.top)}</b><span>${esc(hk.sub)}</span></div><a class="ax-hook-b" href="${esc(hk.href)}">${esc(hk.btn)}</a></div>` : "";
     const hookSide = hk ? `<section class="ax-box ax-hook-side" aria-label="Rekomendasi layanan"><small>Rekomendasi untuk artikel ini</small><h2>${esc(hk.name)}</h2><p>${esc(hk.side)}</p><a class="ax-hook-b" href="${esc(hk.href)}">${esc(hk.btn)}</a></section>` : "";
     const relatedHtml = related.length ? `<section class="ax-box" aria-labelledby="axRelH"><h2 id="axRelH">Artikel Terkait</h2><div class="ax-rels">${related.map(x => `<a class="ax-rel" href="/blog/${esc(x.slug)}"><span class="ax-rel-cv">${cardCover(x)}</span><span><b>${esc(x.title)}</b><small>${esc(tl(x.topic))} · ${esc(shortDate(x.publishedAt))}</small></span></a>`).join("")}</div></section>` : "";
+    const readAlso = related.length ? `<section class="ax-also" aria-labelledby="axAlsoH"><h2 id="axAlsoH">Baca juga</h2><p class="ax-also-s">Dipilih otomatis dari tag dan kategori yang sama.</p><div class="ax-also-g">${related.slice(0, 3).map(x => `<a class="ax-also-c" href="/blog/${esc(x.slug)}"><span class="ax-also-cv">${cardCover(x)}</span><b>${esc(x.title)}</b></a>`).join("")}</div><a class="ax-also-all" href="/blog">Lihat semua artikel →</a></section>` : "";
+    const otherSvc = ACAD_ONLY ? `<section class="ax-box" aria-label="Layanan lain"><h2>Layanan lain</h2><div class="ax-svc"><a href="/cek-parafrase-mandiri">Cek &amp; Parafrase</a><a href="/layanan?s=tugas">Tugas &amp; Diskusi</a><a href="/layanan?s=metopen_paket">Metopen UT</a><a href="/ruangakademikut/portal-ut">Portal &amp; Alat UT</a></div></section>` : "";
     /* Navigator situs di samping isi artikel: pohon menu di kanan, "Di artikel ini" di kiri. Di HP kanan jadi laci. */
     const NAVT = [["Blog", [["Semua artikel", "/blog"], ...Object.keys(TOPICS).map(k => [TOPICS[k].label, "/blog?f=" + k])]]];
     if (ACAD_ONLY) NAVT.push(
@@ -753,12 +755,13 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
       ${toc.length >= 3 ? `<details class="ax-toc ax-toc-in"><summary>Daftar Isi</summary>${tocList}</details>` : ""}
       <div class="prose">${bodyHtml}</div>
       ${tags.length ? `<div class="ax-tags" aria-label="Tag">${tags.map(t => `<a href="/blog?tag=${encodeURIComponent(t)}" rel="tag">${esc(tagLabel(t))}</a>`).join("")}</div>` : ""}
+      ${readAlso}
       ${communityBlock()}
       <p class="ax-note">${BRAND} adalah layanan belajar independen yang dikelola oleh mahasiswa UT. Bukan situs resmi Universitas Terbuka. Selalu pegang ketentuan dari tutor dan sumber resmi UT di <a href="https://www.ut.ac.id" rel="noopener" target="_blank">ut.ac.id</a>.</p>
       <a class="back" href="${topicLink}">← Kembali ke ${esc(tl(p.topic))}</a>
       ${preview ? "" : commentsBlock(p.slug)}
     </article>
-    <aside class="ax-side">${hookSide}<nav class="ax-box ax-navt" id="axNav" aria-label="Navigasi situs"><h2>Navigasi</h2>${navTree}</nav>${relatedHtml}</aside></div>
+    <aside class="ax-side">${hookSide}${otherSvc}<nav class="ax-box ax-navt" id="axNav" aria-label="Navigasi situs"><h2>Navigasi</h2>${navTree}</nav></aside></div>
     <button type="button" class="ax-navbtn" id="axNavBtn" aria-controls="axDrawer" aria-expanded="false" aria-label="Buka navigasi situs">Navigasi</button>
     <div class="ax-drawer" id="axDrawer" role="dialog" aria-label="Navigasi situs" hidden><div class="ax-drawer-in"><button type="button" class="ax-drawer-x" id="axNavX" aria-label="Tutup navigasi">×</button><h2>Navigasi</h2>${navTree}</div></div>
     <script>(function(){var b=document.getElementById("axNavBtn"),d=document.getElementById("axDrawer"),x=document.getElementById("axNavX");if(b&&d){var set=function(o){d.hidden=!o;b.setAttribute("aria-expanded",o);document.body.style.overflow=o?"hidden":"";if(!o)b.focus();};b.addEventListener("click",function(){set(true)});x.addEventListener("click",function(){set(false)});d.addEventListener("click",function(e){if(e.target===d)set(false)});document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!d.hidden)set(false)});}
@@ -1091,7 +1094,7 @@ var links=[].slice.call(document.querySelectorAll(".ax-left a")),hs=links.map(fu
   }
 
   /* halaman statis di sitemap: lastmod = kapan berkas halamannya terakhir berubah (tanggal rilis), bukan tanggal buatan */
-  const SITEMAP_PAGES = { "/ruangakademikut": "hub.html", "/ruangakademikut/cek-parafrase-mandiri": "cek.html", "/ruangakademikut/audit": "audit.html", "/ruangakademikut/layanan": "layanan.html", "/ruangakademikut/kalkulator-nilai-ut": "alat-nilai.html", "/ruangakademikut/pasfoto-yudisium": "alat-pasfoto.html", "/ruangakademikut/buat-cv-ats": "alat-cv.html", "/ruangakademikut/sampul-tugas": "alat-sampul.html", "/ruangakademikut/surat-lamaran": "alat-surat.html", "/ruangakademikut/tracker-kelulusan": "alat-tracker.html", "/ruangakademikut/kalender-akademik": "alat-kalender.html", "/ruangakademikut/panduan-maba": "panduan-maba.html", "/ruangakademikut/sitasi-apa": "sitasi.html", "/ruangakademikut/portal-ut": "portal-ut.html" };
+  const SITEMAP_PAGES = { "/ruangakademikut": "hub.html", "/ruangakademikut/cek-parafrase-mandiri": "cek.html", "/ruangakademikut/audit": "audit.html", "/ruangakademikut/audit-parafrase": "audit-parafrase.html", "/ruangakademikut/layanan": "layanan.html", "/ruangakademikut/kalkulator-nilai-ut": "alat-nilai.html", "/ruangakademikut/pasfoto-yudisium": "alat-pasfoto.html", "/ruangakademikut/buat-cv-ats": "alat-cv.html", "/ruangakademikut/sampul-tugas": "alat-sampul.html", "/ruangakademikut/surat-lamaran": "alat-surat.html", "/ruangakademikut/tracker-kelulusan": "alat-tracker.html", "/ruangakademikut/kalender-akademik": "alat-kalender.html", "/ruangakademikut/panduan-maba": "panduan-maba.html", "/ruangakademikut/sitasi-apa": "sitasi.html", "/ruangakademikut/portal-ut": "portal-ut.html" };
   const pageMod = file => { try { return fs.statSync(path.join(__dirname, "parafrase", "pages", file)).mtime.toISOString().slice(0, 10); } catch { return undefined; } };
   // untuk sitemap. /blog-ut tidak didaftarkan: isinya sama dengan /blog (kanonis ke /blog).
   return { userFrom, userById: id => db.users.find(x => x.id === id) || null, userByEmail: e => db.users.find(x => String(x.email || "").toLowerCase() === String(e || "").trim().toLowerCase()) || null, notFound, articlePage, isLive, suggestTags, suggestTopic, tagLabel, posts: () => blog.posts, usersCount: () => db.users.length, TOPICS, ACAD_TOPICS, pageUrls: () => (ACAD_ONLY ? [{ loc: `${SITE}/`, lastmod: pageMod("beranda.html"), pri: "1.0" }] : []).concat(Object.entries(SITEMAP_PAGES).map(([u, file]) => ({ loc: `${SITE}${ACAD_ONLY ? (u === "/ruangakademikut" ? "/layanan-ut" : shortPath(u)) : u}`, lastmod: pageMod(file), pri: "0.7" }))), blogUrls: () => published().map(p => ({ loc: `${SITE}/blog/${p.slug}`, lastmod: String(modifiedAt(p) || "").slice(0, 10), pri: "0.6" })) };

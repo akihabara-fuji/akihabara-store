@@ -155,3 +155,11 @@
 .ax-hook-b{display:inline-block;padding:10px 18px;border-radius:12px;background:#2563eb;color:#fff;font-weight:700;font-size:14px;text-decoration:none;text-align:center}
 .ax-hook-side{border-color:var(--link)}.ax-hook-side small{display:block;font-size:11.5px;font-weight:700;color:var(--link);text-transform:uppercase;letter-spacing:.4px}
 .ax-hook-side h2{margin:6px 0 8px}.ax-hook-side p{margin:0 0 14px;color:var(--muted);font-size:14px;line-height:1.6}.ax-hook-side .ax-hook-b{display:block}
+
+/* Baca juga (bawah artikel) dan Layanan lain (samping) */
+.ax-also{margin:34px 0 8px;padding-top:24px;border-top:1px solid var(--border)}.ax-also h2{margin:0 0 4px;font:700 22px Onest,sans-serif;color:var(--text)}.ax-also-s{margin:0 0 14px;font-size:13px;color:var(--muted)}
+.ax-also-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.ax-also-c{display:flex;flex-direction:column;border-radius:14px;border:1px solid var(--border);background:var(--surface);overflow:hidden;text-decoration:none;color:var(--text)}
+.ax-also-cv{display:block;aspect-ratio:16/9;background:var(--surface2,#1d1736);overflow:hidden}.ax-also-cv img{width:100%;height:100%;object-fit:cover;display:block}
+.ax-also-c b{padding:12px;font-size:14px;line-height:1.4}.ax-also-all{display:inline-block;margin-top:14px;font-size:14px;font-weight:700;color:var(--link);text-decoration:none}
+.ax-svc{display:flex;flex-direction:column;gap:8px}.ax-svc a{padding:10px 12px;border-radius:10px;background:var(--surface2,rgba(127,127,127,.12));color:var(--text);text-decoration:none;font-size:14px}

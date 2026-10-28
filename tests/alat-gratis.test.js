@@ -21,7 +21,7 @@ test("Alat Gratis: halaman baru tampil di host akademik tanpa string ruangakadem
         assert.strictEqual(r.status, 200, s);
         assert.ok(html.includes(`<link rel="canonical" href="https://akademik.example/${s}">`), s);
         assert.ok(!html.includes("ruangakademikut"), s + " masih memuat ruangakademikut");
-        assert.ok(html.includes("Alat Gratis"), s + " tanpa menu Alat Gratis");
+        assert.ok(html.includes("Portal &amp; Alat UT") && html.includes("Audit &amp; Parafrase"), s + " tanpa menu utama");
       }
       for (const j of JS) {
         const r = await fetch(`${b}/assets/ut/${j}?v=1`); assert.strictEqual(r.status, 200, j);
@@ -37,8 +37,10 @@ test("Alat Gratis: menu ada di semua halaman yang punya menu Alat Gratis", () =>
   let n = 0;
   for (const f of fs.readdirSync(dir).filter(x => x.endsWith(".html"))) {
     const h = fs.readFileSync(path.join(dir, f), "utf8");
-    if (!h.includes(">Alat Gratis</summary>")) continue; n++; assert.ok(!h.includes(">Kalkulasi Nilai</summary>"), f + " masih punya menu Kalkulasi Nilai terpisah");
-    for (const s of SLUGS) assert.ok(h.includes(`href="/ruangakademikut/${s}"`), f + " tanpa link " + s);
+    if (!h.includes('class="sub"')) continue; n++;
+    assert.ok(h.includes('href="/ruangakademikut/audit-parafrase"') && h.includes('href="/ruangakademikut/portal-ut"') && h.includes('href="/ruangakademikut/blog-ut"'), f + " menu utama tidak lengkap");
   }
+  const portal = fs.readFileSync(path.join(dir, "portal-ut.html"), "utf8");
+  for (const s of SLUGS) assert.ok(portal.includes(`href="/ruangakademikut/${s}`), "portal tanpa alat " + s);
   assert.ok(n >= 15);
 });

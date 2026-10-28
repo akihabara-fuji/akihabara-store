@@ -44,8 +44,9 @@ test("hub: tanpa kartu Tips, ada slogan DP di atas, semua layanan UT", async () 
   const srv = app.listen(0);
   try {
     const t = await (await fetch("http://127.0.0.1:" + srv.address().port + "/ruangakademikut")).text();
-    assert.ok(!t.includes("Tips Jawaban")); assert.ok(!t.includes("Sahabat Nugas")); assert.ok(t.includes("price_semester_min")); assert.ok(!t.includes("Harga via chat admin")); assert.ok(t.includes("Info UT") && t.includes("Baca info UT") && t.includes("/blog?f=updateut"));
+    assert.ok(!t.includes("Tips Jawaban")); assert.ok(!t.includes("Sahabat Nugas")); assert.ok(t.includes("price_semester_min")); assert.ok(!t.includes("Harga via chat admin")); assert.ok(t.includes("Info UT") && t.includes("/blog-ut"));
     assert.ok(t.indexOf("Bisa DP dulu") > 0);
-    for (const n of ["Cek dan Parafrase Mandiri", "Paket Semester Lengkap", ">Metopen<", ">Tugas<", ">Diskusi<", ">Audit<", "/blog"]) assert.ok(t.includes(n), n);
+    assert.ok(!t.includes("<h2>Audit Dokumen</h2>") && !t.includes("<h2>Cek dan Parafrase Mandiri</h2>"));
+    for (const n of ["Paket Semester Lengkap", ">Metopen<", ">Tugas<", ">Diskusi<", "/audit-parafrase"]) assert.ok(t.includes(n), n);
   } finally { srv.close(); }
 });

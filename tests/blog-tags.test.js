@@ -77,11 +77,10 @@ test("LCP: gambar kartu pilihan dimuat segera (fetchpriority=high, bukan lazy); 
   } finally { t.srv.close(); }
 });
 
-test("halaman blog-ut: tidak ada sub-navbar layanan; menu utama menandai Blog aktif", async () => {
+test("halaman blog-ut: satu menu Blog & Berita UT, aktif, dengan menu utama sama seperti halaman lain", async () => {
   const html = fs.readFileSync(path.join(__dirname, "..", "parafrase", "pages", "blog-ut.html"), "utf8");
-  assert.ok(!html.includes('class="sub"'), "sub-navbar layanan harus tidak ada di halaman blog");
-  assert.ok(!/Cek Pesanan|Revisi|Audit/.test(html.split("<main")[0].split("</header>")[1] || ""), "tidak ada menu transaksi di bawah header");
-  assert.match(html, /<a class="on" href="\/blog" aria-current="page">Blog<\/a>/);
+  assert.match(html, /<a class="on" href="\/ruangakademikut\/blog-ut">Blog &amp; Berita UT<\/a>/);
+  assert.ok(html.includes('href="/ruangakademikut/audit-parafrase"'));
 });
 
 test("memasang tag tidak mengubah tanggal isi dan tidak membuat revisi", async () => {

@@ -22,7 +22,7 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
     .replace("</head>", (h.includes("/site.css") ? '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme-svc.css?v=2">' : '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme.css?v=2">') + "</head>")
     .replace("</head>", "<style>.logo b.lg{background:none!important;box-shadow:none}.logo b.lg img{width:34px;height:34px;object-fit:contain;display:block}</style></head>")
     );
-  const TRACK = new Set(["beranda.html", "hub.html", "cek.html", "audit.html", "layanan.html", "blog-ut.html", "alat-nilai.html", "alat-pasfoto.html", "alat-cv.html", "alat-sampul.html", "alat-surat.html", "alat-tracker.html", "alat-kalender.html", "panduan-maba.html", "sitasi.html", "portal-ut.html"]); // halaman pesanan dan hasil memuat token rahasia: tidak dilacak
+  const TRACK = new Set(["beranda.html", "hub.html", "audit-parafrase.html", "cek.html", "audit.html", "layanan.html", "blog-ut.html", "alat-nilai.html", "alat-pasfoto.html", "alat-cv.html", "alat-sampul.html", "alat-surat.html", "alat-tracker.html", "alat-kalender.html", "panduan-maba.html", "sitasi.html", "portal-ut.html"]); // halaman pesanan dan hasil memuat token rahasia: tidak dilacak
   const blogCards = req => typeof app.locals.renderAcadBlogCards === "function" ? app.locals.renderAcadBlogCards(req) : "";
   /* Satu jalur render untuk halaman publik DAN pratinjau admin. Kamus teks (sitetexts.js) dan kartu tersembunyi diterapkan di sini,
      di server, jadi pengunjung dan Google langsung menerima teks yang sudah diganti. opts: { over: Map pengganti sementara, mark: teks yang disorot } */
@@ -43,6 +43,7 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
   app.get("/beranda", page("beranda.html")); // landing domain akademik (nginx: / -> /beranda)
   app.get("/ruangakademikut/cek-parafrase-mandiri", page("cek.html"));
   app.get("/ruangakademikut/audit", page("audit.html"));
+  app.get(SHORT ? ["/ruangakademikut/audit-parafrase", "/audit-parafrase"] : "/ruangakademikut/audit-parafrase", page("audit-parafrase.html"));
   app.get("/ruangakademikut/layanan", page("layanan.html"));
   app.get("/ruangakademikut/blog-ut", page("blog-ut.html"));
   /* Alat gratis: di domain akademik alamat resminya pendek (/kalkulator-nilai-ut); jalur lama /ruangakademikut/... dialihkan 301. */

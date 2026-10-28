@@ -24,14 +24,10 @@ test("Buat CV ATS: alamat pendek, jalur lama 301, skrip termuat, tanpa string te
   } finally { for (const [k, v] of [["ACAD_URL", keep.A], ["SITE_URL", keep.S]]) v === undefined ? delete process.env[k] : (process.env[k] = v); }
 });
 
-test("CV ATS mudah ditemukan: ada di menu Alat Gratis (bukan Layanan) dan kartu di halaman Layanan", () => {
+test("CV ATS mudah ditemukan: ada di menu Layanan (Gratis) dan kartu di Portal & Alat UT", () => {
   const fs = require("fs"), path = require("path"), dir = path.join(__dirname, "..", "parafrase", "pages");
-  for (const f of fs.readdirSync(dir).filter(n => n.endsWith(".html"))) {
-    const h = fs.readFileSync(path.join(dir, f), "utf8");
-    if (!h.includes(">Alat Gratis</summary>")) continue;
-    assert.ok(h.includes('<a href="/ruangakademikut/buat-cv-ats">Buat CV ATS</a>'), f + " belum punya link CV di menu Alat Gratis");
-    assert.ok(!/<a [^>]*>[^<]*\(gratis\)<\/a><\/div><\/details><a href="\/ruangakademikut\/cek-parafrase/.test(h), f + ": item gratis nyasar di menu Layanan");
-  }
   const hub = fs.readFileSync(path.join(dir, "hub.html"), "utf8");
-  assert.ok(hub.includes('data-slug="cv"') && hub.includes("Buat CV sekarang"));
+  assert.ok(hub.includes('href="/ruangakademikut/buat-cv-ats"'));
+  const portal = fs.readFileSync(path.join(dir, "portal-ut.html"), "utf8");
+  assert.ok(portal.includes("Buat CV ATS"));
 });

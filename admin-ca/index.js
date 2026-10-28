@@ -103,7 +103,14 @@ module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, b
     const acts = db.prepare("SELECT at, admin AS who, action, target FROM ca_admin_log WHERE action NOT LIKE 'login%' ORDER BY at DESC LIMIT 10").all().map(x => ({ ...x, label: /\/posts/.test(x.action) ? postTitle(x.target) : null, src: "admin" }))
       .concat(db.prepare("SELECT at, order_id AS target, type AS action FROM order_events ORDER BY at DESC LIMIT 10").all().map(x => ({ ...x, who: "sistem", src: "pesanan" })))
       .sort((a, b) => b.at - a.at).slice(0, 12);
-    return { range: r, posts: p, ...insights(posts, now, true), orders: cnt, newToday, revenue: paid.reduce((a, x) => a + x.total, 0), paidCount: paid.length, customers: blog.usersCount(), series: days.map(d => series[d]), recent, activity: acts,
+    let tr = null; try {
+      const t = traffic.summary(Math.max(1, Math.round((r.to - r.from) / 864e5) + 1));
+      const au = t.pages.filter(x => /\/audit/.test(x.path) && !/hasil/.test(x.path));
+      const auditViews = au.reduce((a, x) => a + x.views, 0), auditVisitors = au.reduce((a, x) => a + x.visitors, 0);
+      const paidAudit = db.prepare("SELECT COUNT(*) n FROM orders WHERE doc_type='audit' AND confirmed_at BETWEEN ? AND ? AND COALESCE(confirmed_by,'')<>'gratis' AND status<>'dikembalikan'").get(r.from, r.to).n;
+      tr = { views: t.total.views, visitors: t.total.visitors, auditViews, paidAudit, conv: auditVisitors >= 30 ? Math.round(paidAudit / auditVisitors * 1000) / 10 : null, groups: t.groups.slice(0, 6), pages: t.pages.slice(0, 6) };
+    } catch { /* statistik opsional */ }
+    return { range: r, posts: p, traffic: tr, ...insights(posts, now, true), orders: cnt, newToday, revenue: paid.reduce((a, x) => a + x.total, 0), paidCount: paid.length, customers: blog.usersCount(), series: days.map(d => series[d]), recent, activity: acts,
       definitions: { revenue: "Jumlah total pesanan yang pembayarannya dikonfirmasi admin dalam rentang (WIB), tanpa pesanan gratis dan dana dikembalikan.", orders: "Pesanan dibuat dalam rentang." } };
   }));
 
