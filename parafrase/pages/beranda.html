@@ -18,6 +18,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.webmanifest">
+<link rel="preload" as="image" href="/site-img/hero/model-ut.webp" fetchpriority="high">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Bricolage+Grotesque:wght@500;700&display=swap" rel="stylesheet">
@@ -364,8 +365,9 @@ a.mini:hover:after{transform:translateX(6px)}
 .nx-hc{position:relative;z-index:3;width:58%;padding:40px 0 112px clamp(16px,4vw,56px)}
 .nx-eb{align-self:flex-start;display:inline-flex;gap:8px;align-items:center;border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:6px 14px;font-size:13.5px;color:var(--muted)}
 .nx-eb::before{content:"";width:8px;height:8px;border-radius:9px;background:var(--nx-gold)}
-.hero.hx h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:clamp(34px,5vw,56px);line-height:1.08;letter-spacing:-.02em;margin:16px 0 14px;text-wrap:balance}
-.hero.hx h1 em{font-style:normal;font-weight:700;color:var(--nx-blue2)}
+.hero.hx h1.kw{font:700 clamp(13px,1.1vw,15px)/1.4 Onest,sans-serif;letter-spacing:.02em;color:var(--muted);margin:14px 0 0;text-wrap:balance}
+.hero.hx .sl{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:clamp(34px,5vw,56px);line-height:1.08;letter-spacing:-.02em;margin:16px 0 14px;text-wrap:balance}
+.hero.hx .sl em{font-style:normal;font-weight:700;color:var(--nx-blue2)}
 .nx-lead{color:var(--muted);font-size:17.5px;max-width:560px;margin:0 0 24px}
 .nx-two{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:560px}
 .nx-door{display:flex;flex-direction:column;gap:6px;border-radius:20px;padding:18px 20px;text-decoration:none;min-height:112px;position:relative;transition:box-shadow .2s;will-change:transform}
@@ -399,7 +401,7 @@ a.mini:hover:after{transform:translateX(6px)}
 svg.nx-i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 @media(max-width:980px){.hero.hx .nx-bg{width:70%}.hero.hx::after{background:linear-gradient(90deg,var(--surface) 0%,var(--surface) 30%,transparent 80%)}.nx-fc{display:none}.nx-strip{gap:16px;padding:0 24px}.nx-hc{padding-left:24px}}
 @media(max-width:860px){.hero.hx{min-height:0;display:flex;align-items:stretch;flex-direction:column;width:100%;margin:0;border-radius:0}.hero.hx .nx-bg{position:relative;display:block;width:100%;height:340px;order:2}.hero.hx::after{display:none}.nx-hc{width:100%;padding:26px 20px 20px;order:1}.nx-fc{display:none}.nx-strip{position:relative;order:3;height:auto;grid-template-columns:1fr;justify-items:start;gap:14px;padding:18px 20px 76px}.nx-strip .nx-rt{margin-left:0}.nx-two{grid-template-columns:1fr}.nx-chip{width:calc(33.3% - 7px)}}
-@media(min-width:981px){.hero.hx{min-height:min(calc(100svh - 108px),760px);display:flex;align-items:stretch}.nx-hc{display:flex;flex-direction:column;justify-content:center;padding-top:clamp(28px,5vh,64px);padding-bottom:clamp(120px,15vh,160px)}.hero.hx h1{font-size:clamp(44px,3.6vw,68px);line-height:1.05}.nx-lead{font-size:clamp(17px,1.2vw,21px);max-width:620px;line-height:1.55}.nx-door{min-height:120px;padding:20px 22px}.nx-chip{width:96px;padding:14px 6px}.nx-strip{height:88px}.nx-fc{width:clamp(232px,15vw,280px)}.hero.hx .nx-bg{height:calc(100% - 88px)}}
+@media(min-width:981px){.hero.hx{min-height:min(calc(100svh - 108px),760px);display:flex;align-items:stretch}.nx-hc{display:flex;flex-direction:column;justify-content:center;padding-top:clamp(28px,5vh,64px);padding-bottom:clamp(120px,15vh,160px)}.hero.hx .sl{font-size:clamp(44px,3.6vw,68px);line-height:1.05}.nx-lead{font-size:clamp(17px,1.2vw,21px);max-width:620px;line-height:1.55}.nx-door{min-height:120px;padding:20px 22px}.nx-chip{width:96px;padding:14px 6px}.nx-strip{height:88px}.nx-fc{width:clamp(232px,15vw,280px)}.hero.hx .nx-bg{height:calc(100% - 88px)}}
 @media(prefers-reduced-motion:reduce){.nx-door,.nx-chip,.nx-t b{transition:none}}
 .stats3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:26px 8px;text-align:center}.stats3>div{display:flex;flex-direction:column;gap:4px;border-right:1px solid var(--border)}.stats3>div:last-child{border:0}.stats3 b{font:600 clamp(30px,4vw,46px)/1.1 "Bricolage Grotesque",sans-serif;font-variant-numeric:tabular-nums}.stats3 span{color:var(--muted);font-size:14px}
 .mini .pr{margin-top:auto;font-weight:700;color:var(--acc);font-size:14px}
@@ -454,7 +456,8 @@ svg.nx-i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;s
   <img class="nx-bg" data-d="-10" data-s="1.06" src="/site-img/hero/model-ut.webp" width="820" height="983" alt="Mahasiswi membawa buku dan tablet di kampus" fetchpriority="high" decoding="async">
   <div class="nx-hc">
     <span class="nx-eb fx" style="--d:.05s">Bukan situs resmi UT · dikelola mahasiswa UT</span>
-    <h1 id="heroTitle">Tugas UT kamu aman dari <em>revisi dan similarity tinggi.</em></h1>
+    <h1 class="kw fx" style="--d:.1s">Layanan Tugas, Diskusi, Metopen &amp; Audit Dokumen untuk Mahasiswa UT</h1>
+    <p class="sl" id="heroTitle">Tugas UT kamu aman dari <em>revisi dan similarity tinggi.</em></p>
     <p class="nx-lead fx" style="--d:.5s">Cek dokumenmu gratis <span data-p="free_words">500</span> kata pertama, lihat berapa persen yang bermasalah, lalu perbaiki sampai di bawah 25%.</p>
     <div class="nx-two">
       <a class="nx-door nx-d1" href="/audit"><span class="nx-t"><svg class="nx-i" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.4 7.6-8 9-4.6-1.4-8-4.5-8-9V6z"/></svg>Cek dokumen gratis<b>→</b></span><small><span data-p="free_words">500</span> kata pertama gratis, lihat skornya sekarang</small></a>
@@ -482,14 +485,14 @@ svg.nx-i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;s
   <div><b data-to="17400" data-plus="1">17.400+</b><span>File sudah dikerjakan</span></div>
 </div></div></section>
 
-<section class="s" id="cek"><div class="wrap"><div class="g2">
+<section class="s" id="cek"><div class="wrap"><div class="sh"><div><h2>Audit dan cek parafrase dokumen</h2><p>Mulai dari sini: lihat skor masalah dokumenmu, lalu perbaiki.</p></div></div><div class="g2">
   <a class="card mini rv" data-g="audit" href="/audit"><div class="tx"><small style="display:block;margin:0 22px 4px;font-weight:700;letter-spacing:.5px;color:#34d399">GRATIS <span data-p="free_words">500</span> KATA</small><h3>Audit Dokumen</h3><p>Skor masalah dokumenmu dihitung dari semua temuan: sitasi, struktur, kalimat bermasalah. Target di bawah 25%.</p><span class="pr">Cek gratis sekarang · lengkap <span data-p="audit_per_word">9</span> per kata</span></div></a>
   <a class="card mini rv" data-g="cek" href="/cek-parafrase-mandiri"><div class="tx"><small style="display:block;margin:0 22px 4px;font-weight:700;letter-spacing:.5px;color:#fbbf24">JALUR CEPAT</small><h3>Cek &amp; Parafrase</h3><p>Kalimat bermasalah ditandai, lalu diparafrase tanpa mengubah makna. Hasil dikirim ke WhatsApp.</p><span class="pr">Unggah dokumen · <span data-p="price_per_word"></span> per kata</span></div></a>
 </div></div></section>
 
 <section class="s" id="layanan">
   <div class="wrap">
-    <div class="sh"><div><h2>Layanan untuk mahasiswa UT</h2><p>Pilih yang kamu butuhkan. Harga mengikuti pengaturan terbaru dan dikonfirmasi lagi sebelum kamu membayar.</p></div><a class="btn btn-pri" href="/layanan-ut">Semua layanan</a></div>
+    <div class="sh"><div><h2>Layanan pendampingan akademik</h2><p>Pilih yang kamu butuhkan. Harga mengikuti pengaturan terbaru dan dikonfirmasi lagi sebelum kamu membayar.</p></div><a class="btn btn-pri" href="/layanan-ut">Semua layanan</a></div>
     <div class="g3">
       <a class="card mini rv" data-g="tugas" href="/layanan?s=tugas"><h3>Tugas tutorial</h3><p>Dikerjakan sesuai soal dan ketentuan format. Kamu memeriksa hasilnya sebelum dikirim ke tutor.</p><span class="pr">Mulai <span data-p="price_tugas"></span></span></a>
       <a class="card mini rv" data-g="diskusi" href="/layanan?s=diskusi"><h3>Diskusi</h3><p>Jawaban diskusi siap tempel, dengan poin utama dan referensi yang bisa dicek.</p><span class="pr">Mulai <span data-p="price_diskusi"></span></span></a>
@@ -503,7 +506,7 @@ svg.nx-i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;s
 </section>
 
 <section class="s" id="portal"><div class="wrap">
-  <div class="card rv" style="padding:26px"><div class="sh" style="margin-bottom:14px"><div><h2>Portal &amp; Alat UT</h2><p>Tautan resmi UT dan alat gratis kami, di satu tempat.</p></div><a class="btn btn-ghost btn-sm" href="/ruangakademikut/portal-ut">Buka semua</a></div>
+  <div class="card rv" style="padding:26px"><div class="sh" style="margin-bottom:14px"><div><h2>Portal &amp; Alat Bantu Belajar UT</h2><p>Tautan resmi UT dan alat gratis kami, di satu tempat.</p></div><a class="btn btn-ghost btn-sm" href="/ruangakademikut/portal-ut">Buka semua</a></div>
   <div style="display:flex;gap:10px;flex-wrap:wrap;font-size:14px">
     <a class="btn btn-ghost btn-sm" href="/ruangakademikut/portal-ut">MyUT dan Tuton</a><a class="btn btn-ghost btn-sm" href="/ruangakademikut/kalender-akademik">Kalender Akademik</a><a class="btn btn-ghost btn-sm" href="/ruangakademikut/kalkulator-nilai-ut">Kalkulator Nilai</a><a class="btn btn-ghost btn-sm" href="/ruangakademikut/sitasi-apa">Generator Sitasi APA</a><a class="btn btn-ghost btn-sm" href="/ruangakademikut/pasfoto-yudisium">Pasfoto Yudisium</a><a class="btn btn-ghost btn-sm" href="/ruangakademikut/buat-cv-ats">Buat CV ATS</a>
   </div></div>
@@ -550,7 +553,7 @@ svg.nx-i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;s
 <footer>
   <div class="wrap">
     <div><b>Catatan Akademik</b> · Jakarta Barat<br>© <span id="yr"></span> Semua hak dilindungi.<br>Catatan Akademik adalah layanan belajar independen yang dikelola oleh mahasiswa UT. Bukan situs resmi dan tidak terafiliasi dengan Universitas Terbuka.</div>
-    <nav aria-label="Footer"><a href="/layanan-ut">Layanan UT</a><a href="/blog-ut">Blog &amp; Berita UT</a><a href="/pesanan">Cek Pesanan</a><a href="/ms/privasi">Privasi</a><a href="/ms/ketentuan">Ketentuan</a></nav>
+    <nav aria-label="Footer"><a href="/layanan-ut">Layanan UT</a><a href="/blog-ut">Blog &amp; Berita UT</a><a href="/ruangakademikut/tentang">Tentang</a><a href="/pesanan">Cek Pesanan</a><a href="/ms/privasi">Privasi</a><a href="/ms/ketentuan">Ketentuan</a></nav>
   </div>
 </footer>
 
@@ -629,7 +632,7 @@ function RM2(){return matchMedia("(prefers-reduced-motion:reduce)").matches}
 /* ulasan 3D: kartu miring mengikuti kursor, gambar chat keluar saat disorot */
 (function(){var sec=$("#ulasan"),box=$("#ulList");if(!sec||!box)return;
   fetch("/ms/ulasan").then(function(r){return r.json()}).then(function(j){var a=(j.items||[]).slice(0,6);if(!a.length)return;
-    a.forEach(function(x){var c=document.createElement("div");c.className="rc"+(x.img?" has":"");
+    box.innerHTML="";a.forEach(function(x){var c=document.createElement("div");c.className="rc"+(x.img?" has":"");
       var q=document.createElement("q");q.textContent=x.teks;c.appendChild(q);
       var w=document.createElement("div");w.className="who";w.textContent=x.nama;if(x.ket){var m=document.createElement("small");m.textContent=x.ket;w.appendChild(m)}c.appendChild(w);
       if(x.img){var sh=document.createElement("div");sh.className="shot";var im=document.createElement("img");im.loading="lazy";im.alt="Tangkapan layar chat dari "+x.nama;im.src=x.img;sh.appendChild(im);c.appendChild(sh);

@@ -20,6 +20,7 @@ module.exports = function mountUlasan({ app, root, requireAdmin }) {
   const clip = (v, n) => String(v == null ? "" : v).replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, "").trim().slice(0, n);
   const pub = it => ({ id: it.id, nama: it.nama, ket: it.ket, teks: it.teks, img: it.img ? `/ms/ulasan/img/${it.id}.webp?v=${it.at}` : "" });
 
+  app.locals.ulasanPublic = () => items.filter(i => i.tampil).sort((a, b) => b.at - a.at).map(pub);
   app.get("/ms/ulasan", (req, res) => {
     res.set("Cache-Control", "public, max-age=30");
     res.json({ items: items.filter(i => i.tampil).sort((a, b) => b.at - a.at).map(pub) });

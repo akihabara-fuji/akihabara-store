@@ -23,7 +23,7 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
     .replace("</head>", (h.includes("/site.css") ? '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme-svc.css?v=2">' : '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme.css?v=2">') + "</head>")
     .replace("</head>", "<style>.logo b.lg{background:none!important;box-shadow:none}.logo b.lg img{width:34px;height:34px;object-fit:contain;display:block}</style></head>")
     );
-  const TRACK = new Set(["beranda.html", "hub.html", "audit-parafrase.html", "cek.html", "audit.html", "layanan.html", "blog-ut.html", "alat-nilai.html", "alat-pasfoto.html", "alat-cv.html", "alat-sampul.html", "alat-surat.html", "alat-tracker.html", "alat-kalender.html", "panduan-maba.html", "sitasi.html", "portal-ut.html"]); // halaman pesanan dan hasil memuat token rahasia: tidak dilacak
+  const TRACK = new Set(["beranda.html", "hub.html", "audit-parafrase.html", "tentang.html", "cek.html", "audit.html", "layanan.html", "blog-ut.html", "alat-nilai.html", "alat-pasfoto.html", "alat-cv.html", "alat-sampul.html", "alat-surat.html", "alat-tracker.html", "alat-kalender.html", "panduan-maba.html", "sitasi.html", "portal-ut.html"]); // halaman pesanan dan hasil memuat token rahasia: tidak dilacak
   const blogCards = req => typeof app.locals.renderAcadBlogCards === "function" ? app.locals.renderAcadBlogCards(req) : "";
   /* Satu jalur render untuk halaman publik DAN pratinjau admin. Kamus teks (sitetexts.js) dan kartu tersembunyi diterapkan di sini,
      di server, jadi pengunjung dan Google langsung menerima teks yang sudah diganti. opts: { over: Map pengganti sementara, mark: teks yang disorot } */
@@ -31,6 +31,15 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
   function render(file, req, opts = {}) {
     let out = fs.readFileSync(path.join(dir, file), "utf8");
     if (file === "blog-ut.html") out = out.replace('<div id="bl" class="bx-host"></div>', `<div id="bl" class="bx-host">${blogCards(req)}</div>`);
+    if (file === "beranda.html" && typeof app.locals.ulasanPublic === "function" && !opts.preview) {
+      /* Testimoni asli ditulis di HTML awal (bukan hanya lewat JavaScript) supaya terbaca mesin pencari. Skrip halaman membangunnya ulang untuk efek tilt. */
+      const E = v => String(v == null ? "" : v).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+      const items = app.locals.ulasanPublic().slice(0, 6);
+      if (items.length) {
+        const cards = items.map(x => `<div class="rc${x.img ? " has" : ""}"><q>${E(x.teks)}</q><div class="who">${E(x.nama)}${x.ket ? `<small>${E(x.ket)}</small>` : ""}</div>${x.img ? `<div class="shot"><img loading="lazy" alt="Tangkapan layar chat dari ${E(x.nama)}" src="${E(x.img)}"></div>` : ""}</div>`).join("");
+        out = out.replace('<section class="s" id="ulasan" hidden>', '<section class="s" id="ulasan">').replace('<div class="ul3" id="ulList"></div>', `<div class="ul3" id="ulList">${cards}</div>`);
+      }
+    }
     if (file === "hub.html" && texts) out = texts.hideCards(out, opts.hidden || hiddenCards());
     if (texts) out = texts.apply(out, opts.over || null, { mark: opts.mark, edit: opts.edit });
     out = (TRACK.has(file) && !opts.preview ? out.replace("</head>", '<script async src="/t.js"></script></head>') : out).replaceAll("{{SITE}}", SITE);
@@ -45,6 +54,7 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
   app.get("/ruangakademikut/cek-parafrase-mandiri", page("cek.html"));
   app.get("/ruangakademikut/audit", page("audit.html"));
   app.get(SHORT ? ["/ruangakademikut/audit-parafrase", "/audit-parafrase"] : "/ruangakademikut/audit-parafrase", page("audit-parafrase.html"));
+  app.get(SHORT ? ["/ruangakademikut/tentang", "/tentang"] : "/ruangakademikut/tentang", page("tentang.html"));
   app.get("/ruangakademikut/layanan", page("layanan.html"));
   app.get("/ruangakademikut/blog-ut", page("blog-ut.html"));
   /* Alat gratis: di domain akademik alamat resminya pendek (/kalkulator-nilai-ut); jalur lama /ruangakademikut/... dialihkan 301. */

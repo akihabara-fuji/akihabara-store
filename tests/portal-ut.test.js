@@ -9,7 +9,7 @@ const mountPages = require("../parafrase/pages");
 const { shortPaths } = require("../parafrase/acadpaths");
 
 const PAGES = ["/beranda", "/ruangakademikut", "/ruangakademikut/cek-parafrase-mandiri", "/ruangakademikut/audit", "/ruangakademikut/layanan", "/ruangakademikut/blog-ut", "/ruangakademikut/pesanan",
-  "/ruangakademikut/audit/hasil/x", "/kalkulator-nilai-ut", "/pasfoto-yudisium", "/sitasi-apa", "/portal-ut"];
+  "/ruangakademikut/audit/hasil/x", "/kalkulator-nilai-ut", "/pasfoto-yudisium", "/sitasi-apa", "/portal-ut", "/tentang"];
 const ASSETS = ["site.css", "common.js", "cek.js", "audit.js", "audit-hasil.js", "layanan.js", "pesanan.js", "kalkulator.js", "nilai-ut.js", "pasfoto.js", "sitasi.js", "sitasi-apa.js", "blog-ut.js"];
 
 async function boot() {
