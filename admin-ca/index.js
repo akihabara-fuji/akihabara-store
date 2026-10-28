@@ -235,7 +235,7 @@ module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, b
   /* ---------------- SEO ---------------- */
   app.get("/ms/admin/ca/seo", requireAdmin, send(() => {
     // hanya artikel yang tampil di domain akademik (kategori non-akademik disembunyikan di sini)
-    const cfg = settings.getAll(), live = blog.posts().filter(p => !p.trashedAt && blog.isLive(p) && blog.ACAD_TOPICS.includes(p.topic));
+    const cfg = settings.getAll(), live = blog.posts().filter(p => !p.trashedAt && blog.isLive(p) && ["study", "updateut"].includes(p.topic));
     const rivals = seo.cannibal(live);
     const checks = live.map(p => {
       const words = (String(p.body || "").match(/\S+/g) || []).length, issues = [];

@@ -49,8 +49,23 @@ test("pesanan Cek & Parafrase dan Audit dibuat lewat QRIS, bayar QRIS (menunggu_
     else assert.ok(a.status !== 401 && a.status !== 402, "audit tidak minta login atau saldo: " + a.status + JSON.stringify(a.body));
     const fd = new FormData(); fd.append("file", new Blob([await docx("Penting untuk diingat bahwa hal ini menunjukkan bahwa kinerja naik.")]), "t.docx");
     const au = await call("/ms/audit/upload", { method: "POST", form: fd });
-    assert.ok(au.body.findings.filter(f => f.open).length <= 1, "gratis: paling banyak 1 temuan terbuka");
+    assert.ok(au.body.findings.every(f => !f.open || f.quote !== undefined), "temuan terbuka punya kutipan");
     assert.ok(au.body.findings.filter(f => !f.open).every(f => !f.detail && !f.quote), "temuan terkunci tidak membocorkan isi");
     const k = await call("/koin"); assert.strictEqual(k.status, 302);
+  } finally { srv.close(); }
+});
+
+test("audit gratis: temuan dalam 500 kata pertama terbuka semua; di luar batas terkunci tanpa isi", async () => {
+  const { docx } = require("./pf-helper");
+  const { srv, call, pf } = await setup();
+  try {
+    pf.settings.set({ free_words: 500 });
+    const up = async extra => { const fd = new FormData(); fd.append("file", new Blob([await docx(extra)]), "t.docx"); return (await call("/ms/audit/upload", { method: "POST", form: fd })).body; };
+    const kecil = await up("Penting untuk diingat bahwa hal ini menunjukkan bahwa kinerja naik.");
+    assert.ok(kecil.findings.length > 0 && kecil.findings.every(f => f.open && f.detail), "dokumen pendek: semua terbuka");
+    const panjang = await up("Penting untuk diingat bahwa hal ini menunjukkan bahwa kinerja naik. " + "kata ".repeat(700));
+    const terkunci = panjang.findings.filter(f => !f.open);
+    assert.ok(terkunci.length > 0, "ada temuan terkunci di luar 500 kata");
+    assert.ok(terkunci.every(f => !f.detail && !f.quote && !f.code), "temuan terkunci tidak membocorkan isi");
   } finally { srv.close(); }
 });

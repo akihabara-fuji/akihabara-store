@@ -38,6 +38,8 @@ module.exports = function mount(ctx) {
     ai: { label: "AI & Info Lain", ask: "AI, teknologi, dan info lain" },
     viral: { label: "Berita viral hari ini", ask: "Berita viral hari ini" },
     updateut: { label: "Info UT", ask: "Info terbaru seputar UT" },
+    karier: { label: "Karier & Lowongan", ask: "CV, lamaran, dan info kerja" },
+    produktif: { label: "Produktivitas", ask: "Manajemen waktu dan kebiasaan belajar" },
   };
   const tl = k => (TOPICS[k] || { label: "Lainnya" }).label;
   /* Tag topik untuk mahasiswa UT: nama tampil + aturan saran (kata kunci di judul/ringkasan/isi). Saran hanya usulan;
@@ -63,7 +65,7 @@ module.exports = function mount(ctx) {
   /* Saran kategori (hanya untuk dua kategori akademik): pengumuman/jadwal = Info UT; cara/tips/panduan belajar = Tips Kuliah UT.
      Hanya usulan untuk admin; tidak mengubah apa pun sendiri. */
   function suggestTopic(p) {
-    if (!ACAD_TOPICS.includes(p.topic)) return null;
+    if (!["study", "updateut"].includes(p.topic)) return null;
     const t = String(p.title || "");
     const s = /^(update|pengumuman|info)\b|terverifikasi|\bper \d{1,2}\b|\b(jadwal|kalender akademik)\b/i.test(t) ? "updateut"
       : /\b(cara|tips|kerangka|kesalahan|checklist|persiapan|sitasi|panduan belajar|trik|langkah)\b/i.test(t) ? "study" : null;
@@ -106,7 +108,7 @@ module.exports = function mount(ctx) {
   }
   /* Domain akademik (ACAD_URL beda dari situs utama): hanya topik akademik/UT yang tampil. Tulisan lain tidak dihapus, hanya disembunyikan. */
   const ACAD_ONLY = !!process.env.ACAD_URL && process.env.ACAD_URL.replace(/\/+$/, "") !== (process.env.SITE_URL || "https://nextaja.com").replace(/\/+$/, "");
-  const ACAD_TOPICS = ["study", "updateut"];
+  const ACAD_TOPICS = Object.keys(TOPICS); // semua kategori boleh dipilih penulis; yang tampil sebagai filter hanya yang sudah punya artikel
   const ACAD_HOST = (() => { try { return new URL(process.env.ACAD_URL || "").host; } catch { return ""; } })();
   const onAcadHost = req => ACAD_ONLY && !!ACAD_HOST && String(req.headers.host || "").toLowerCase() === ACAD_HOST.toLowerCase();
   const BRAND = ACAD_ONLY ? "Catatan Akademik" : "nextaja";
@@ -155,7 +157,7 @@ module.exports = function mount(ctx) {
   /* hi=true untuk gambar utama di layar pertama (kandidat LCP): dimuat segera dan diprioritaskan, bukan lazy. */
   const cardCover = (p, hi = false) => { const src = p.cover || autoCover(p); return src ? `<img src="${esc(src)}" alt="${esc(p.coverAlt || "")}" ${hi ? 'fetchpriority="high" decoding="async"' : 'loading="lazy" decoding="async"'}>` : posterHtml(p); };
   const blogCard = p => `<article class="bx-card"><a href="/blog/${esc(p.slug)}"><div class="bx-cv">${cardCover(p)}</div><div class="bx-b"><span class="bx-tag">${esc(tl(p.topic))}</span><h3>${esc(p.title)}</h3>${p.excerpt ? `<p>${esc(p.excerpt)}</p>` : ""}<div class="bx-ft"><span><time datetime="${esc(p.publishedAt)}">${esc(shortDate(p.publishedAt))}</time> · ${readMin(p)} menit baca</span><span class="bx-go">Baca <i aria-hidden="true">→</i></span></div></div></a></article>`;
-  const topicsShown = () => Object.keys(TOPICS).filter(k => !ACAD_ONLY || ACAD_TOPICS.includes(k));
+  const topicsShown = () => Object.keys(TOPICS).filter(k => !ACAD_ONLY || k === "study" || k === "updateut" || blog.posts.some(p => p.topic === k && isLive(p)));
   const topTags = (posts, n) => { const c = new Map(); for (const p of posts) for (const t of p.tags || []) c.set(t, (c.get(t) || 0) + 1); return [...c.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, n).map(x => x[0]); };
   function blogFilters(req) {
     const f = TOPICS[req.query.f] && topicsShown().includes(req.query.f) ? req.query.f : "";
@@ -602,7 +604,7 @@ module.exports = function mount(ctx) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Bricolage+Grotesque:wght@600;700&display=swap" rel="stylesheet">
 <script>try{var t=localStorage.getItem("nx-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
-<link rel="stylesheet" href="/assets/blog.css?v=10"><link rel="stylesheet" href="/assets/ca-blog.css?v=14"><script async src="/t.js"></script>
+<link rel="stylesheet" href="/assets/blog.css?v=10"><link rel="stylesheet" href="/assets/ca-blog.css?v=15"><script async src="/t.js"></script>
 ${extra}
 </head>
 <body>
@@ -719,6 +721,10 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
     const bodyHtml = renderBody(cleanBody(p.body));
     const toc = [...bodyHtml.matchAll(/<h([23]) id="([^"]+)">([\s\S]*?)<\/h\1>/g)].map(m => ({ lv: m[1], id: m[2], t: m[3].replace(/<[^>]+>/g, "") }));
     const tocList = `<ol>${toc.map(h => `<li class="l${h.lv}"><a href="#${h.id}">${h.t}</a></li>`).join("")}</ol>`;
+    /* Daftar isi samping: hanya 4 judul utama (H2) yang terlihat; sisanya di balik tombol "Baca lainnya". */
+    const li = h => `<li class="l${h.lv}"><a href="#${h.id}">${h.t}</a></li>`;
+    const mains = toc.filter(h => h.lv === "2"), shown = new Set(mains.slice(0, 4)), rest = toc.filter(h => !shown.has(h));
+    const tocSide = `<ol>${toc.filter(h => shown.has(h)).map(li).join("")}</ol>${rest.length ? `<details class="ax-more"><summary>Baca lainnya</summary><ol>${rest.map(li).join("")}</ol></details>` : ""}`;
     const tags = (p.tags || []).filter(Boolean);
     const overlap = x => (x.tags || []).filter(t => tags.includes(t)).length;
     // terkait: tag yang sama dulu, lalu kategori yang sama, lalu terbaru (selalu terisi bila ada artikel lain)
@@ -737,7 +743,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
     const readAlso = related.length ? `<section class="ax-also" aria-labelledby="axAlsoH"><h2 id="axAlsoH">Baca juga</h2><p class="ax-also-s">Dipilih otomatis dari tag dan kategori yang sama.</p><div class="ax-also-g">${related.slice(0, 3).map(x => `<a class="ax-also-c" href="/blog/${esc(x.slug)}"><span class="ax-also-cv">${cardCover(x)}</span><b>${esc(x.title)}</b></a>`).join("")}</div><a class="ax-also-all" href="/blog">Lihat semua artikel →</a></section>` : "";
     const otherSvc = ACAD_ONLY ? `<section class="ax-box" aria-label="Layanan lain"><h2>Layanan lain</h2><div class="ax-svc"><a href="/cek-parafrase-mandiri">Cek &amp; Parafrase</a><a href="/layanan?s=tugas">Tugas &amp; Diskusi</a><a href="/layanan?s=metopen_paket">Metopen UT</a><a href="/ruangakademikut/portal-ut">Portal &amp; Alat UT</a></div></section>` : "";
     /* Navigator situs di samping isi artikel: pohon menu di kanan, "Di artikel ini" di kiri. Di HP kanan jadi laci. */
-    const NAVT = [["Blog", [["Semua artikel", "/blog"], ...Object.keys(TOPICS).map(k => [TOPICS[k].label, "/blog?f=" + k])]]];
+    const NAVT = [["Blog", [["Semua artikel", "/blog"], ...topicsShown().map(k => [TOPICS[k].label, "/blog?f=" + k])]]];
     if (ACAD_ONLY) NAVT.push(
       ["Layanan", [["Tugas tutorial", "/ruangakademikut/layanan?s=tugas"], ["Diskusi", "/ruangakademikut/layanan?s=diskusi"], ["Metopen UT", "/ruangakademikut/layanan?s=metopen_paket"], ["Simulasi Presentasi", "/ruangakademikut/layanan?s=simulasi"]]],
       ["Cek & Audit", [["Cek & Parafrase", "/ruangakademikut/cek-parafrase-mandiri"], ["Audit dokumen", "/ruangakademikut/audit"]]],
@@ -745,7 +751,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
       ["Portal UT", [["Portal UT", "/ruangakademikut/portal-ut"]]]);
     const navTree = NAVT.map(([g, ls], i) => `<details${i === 0 ? " open" : ""}><summary>${esc(g)}</summary><ul>${ls.map(([n, h]) => `<li><a href="${esc(h)}"${h === "/blog?f=" + p.topic ? ' aria-current="page" class="on"' : ""}>${esc(n)}</a></li>`).join("")}</ul></details>`).join("");
     const statusLabel = { draft: "Draf", review: "Menunggu review", scheduled: `Terjadwal ${p.publishAt ? shortDate(p.publishAt) : ""}`, published: "Terbit" }[p.status] || p.status;
-    const body = `${preview ? `<div class="ax-prev" role="status">Pratinjau admin · status: <b>${esc(statusLabel)}</b>. Halaman ini tidak terlihat publik dan tidak diindeks.</div>` : ""}<div class="wrap ax${toc.length >= 3 ? "" : " ax-notoc"}">${toc.length >= 3 ? `<aside class="ax-left"><nav class="ax-toc ax-toc-side" aria-labelledby="axTocH"><h2 id="axTocH">Di artikel ini</h2>${tocList}</nav></aside>` : ""}<article class="ax-main">
+    const body = `${preview ? `<div class="ax-prev" role="status">Pratinjau admin · status: <b>${esc(statusLabel)}</b>. Halaman ini tidak terlihat publik dan tidak diindeks.</div>` : ""}<div class="wrap ax${toc.length >= 3 ? "" : " ax-notoc"}">${toc.length >= 3 ? `<aside class="ax-left"><nav class="ax-toc ax-toc-side" aria-labelledby="axTocH"><h2 id="axTocH">Di artikel ini</h2>${tocSide}</nav></aside>` : ""}<article class="ax-main">
       <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Beranda</a><span aria-hidden="true">/</span><a href="/blog">Blog</a><span aria-hidden="true">/</span><a href="${topicLink}">${esc(tl(p.topic))}</a><span aria-hidden="true">/</span><span aria-current="page">${esc(p.title)}</span></nav>
       <div class="ax-meta"><a class="bx-tag" href="${topicLink}">${esc(tl(p.topic))}</a><time datetime="${esc(pub)}">${esc(shortDate(pub))}</time>${showUpd ? `<span>Diperbarui <time datetime="${esc(mod)}">${esc(shortDate(mod))}</time></span>` : ""}<span>${readMin(p)} menit baca</span><span class="ax-views" title="Jumlah pembaca artikel ini"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/></svg>${nf(viewsOf(p.slug).total)} dilihat</span></div>
       ${hookTop}<h1>${esc(p.title)}</h1>

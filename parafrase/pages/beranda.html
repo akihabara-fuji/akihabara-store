@@ -49,7 +49,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:'Onest',system-
 h1,h2,h3,.disp{font-family:'Bricolage Grotesque','Onest',sans-serif;letter-spacing:-.01em}
 a{color:inherit;text-decoration:none}
 img{max-width:100%;display:block}
-.wrap{max-width:1232px;margin:0 auto;padding:0 24px}
+.wrap{max-width:none;margin:0 auto;padding:0 clamp(16px,4vw,56px)}
 .eyebrow{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--acc)}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;padding:13px 24px;font-weight:700;font-size:15px;border:1px solid transparent;cursor:pointer;font-family:inherit;transition:transform .15s,box-shadow .2s,background .2s,translate .25s ease-out}
 .btn:hover{transform:translateY(-1px)}.btn:active{transform:translateY(1px) scale(.98)}.btn[disabled],.btn[aria-disabled=true]{opacity:.5;pointer-events:none}
@@ -135,7 +135,7 @@ img{max-width:100%;display:block}
 @media(max-width:640px){.nav-r .btn-pri,.nav-r .btn-ghost{display:none}.hero{padding-top:28px}.f2{right:4px;bottom:0}.banner{padding:28px}.band{margin:56px 8px 0;border-radius:24px;padding:48px 0}section.s.band{padding:48px 0}}
 /* kartu blog, ulasan, foto kerja */
 .bp{overflow:hidden;display:flex;flex-direction:column}
-.bp .cv{position:relative;overflow:hidden;flex:none;aspect-ratio:4/5;font-size:18px;background:linear-gradient(135deg,var(--acc),var(--acc2));display:flex;align-items:center;justify-content:center;color:var(--on-accent);font-family:'Bricolage Grotesque',sans-serif;font-weight:700;padding:12px;text-align:center}.bp .cv img{width:100%;height:100%;object-fit:cover}.bp .pb{padding:18px;display:flex;flex-direction:column;gap:6px}.bp h3{margin:0;font-size:16px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.bp p{margin:0;color:var(--muted);font-size:13.5px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.bp .pb{padding:14px 16px 18px}@media(max-width:900px){#blogList.g4{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.bp .pb{padding:12px 12px 16px}.bp p{display:none}}
+.bp .cv{position:relative;overflow:hidden;flex:none;aspect-ratio:40/21;padding:0!important;font-size:18px;background:linear-gradient(135deg,var(--acc),var(--acc2));display:flex;align-items:center;justify-content:center;color:var(--on-accent);font-family:'Bricolage Grotesque',sans-serif;font-weight:700;padding:12px;text-align:center}.bp .cv img{width:100%;height:100%;object-fit:cover}.bp .pb{padding:18px;display:flex;flex-direction:column;gap:6px}.bp h3{margin:0;font-size:16px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.bp p{margin:0;color:var(--muted);font-size:13.5px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.bp .pb{padding:14px 16px 18px}@media(max-width:900px){#blogList.g4{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.bp .pb{padding:12px 12px 16px}.bp p{display:none}}
 .rev{padding:18px;display:flex;flex-direction:column;gap:12px}.rev img{width:100%;border-radius:14px;border:1px solid var(--border);max-height:420px;object-fit:cover;object-position:top}.rev q{font-size:15px;line-height:1.6;quotes:"“" "”"}.rev .who{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:13px;color:var(--muted)}
 #workPh img{width:100%;height:100%;object-fit:cover}#workPh.has{padding:0;overflow:hidden}
 
@@ -347,11 +347,11 @@ a.mini:hover:after{transform:translateX(6px)}
 @media(max-width:480px){.logo span{white-space:nowrap;font-size:15px}.logo{gap:8px}.nav .mode button{padding-inline:9px}}
 </style>
 <style>
-.hero.hx{--nx-blue:#6d28d9;--nx-blue2:var(--acc);--nx-gold:#f5b700;--nx-glow:rgba(168,85,247,.26);--nx-shadow:0 10px 30px rgba(20,10,60,.16);display:block;position:relative;min-height:600px;padding:0;width:min(1184px,calc(100% - 24px));margin:12px auto 0;border-radius:32px;overflow:hidden;background:var(--surface);border:1px solid var(--border);isolation:isolate}
+.hero.hx{--nx-blue:#6d28d9;--nx-blue2:var(--acc);--nx-gold:#f5b700;--nx-glow:rgba(168,85,247,.26);--nx-shadow:0 10px 30px rgba(20,10,60,.16);display:block;position:relative;min-height:600px;padding:0;width:100%;margin:0;border-radius:0;overflow:hidden;background:var(--surface);border:0;border-bottom:1px solid var(--border);isolation:isolate}
 .hero.hx::before{content:"";position:absolute;inset:0;z-index:1;background:radial-gradient(380px circle at var(--mx,70%) var(--my,30%),var(--nx-glow),transparent 70%);pointer-events:none}
 .hero.hx .nx-bg{position:absolute;right:0;top:0;height:calc(100% - 78px);width:56%;object-fit:cover;object-position:50% 8%;z-index:0;will-change:transform}
 .hero.hx::after{content:"";position:absolute;inset:0 0 78px;background:linear-gradient(90deg,var(--surface) 0%,var(--surface) 44%,transparent 62%);z-index:1;pointer-events:none}
-.nx-hc{position:relative;z-index:3;width:58%;padding:40px 0 112px 44px}
+.nx-hc{position:relative;z-index:3;width:58%;padding:40px 0 112px clamp(16px,4vw,56px)}
 .nx-eb{align-self:flex-start;display:inline-flex;gap:8px;align-items:center;border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:6px 14px;font-size:13.5px;color:var(--muted)}
 .nx-eb::before{content:"";width:8px;height:8px;border-radius:9px;background:var(--nx-gold)}
 .hero.hx h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:clamp(34px,5vw,56px);line-height:1.08;letter-spacing:-.02em;margin:16px 0 14px;text-wrap:balance}
@@ -377,7 +377,7 @@ a.mini:hover:after{transform:translateX(6px)}
 .nx-fc b{display:block;font:700 14px "Bricolage Grotesque",sans-serif}
 .nx-fc small{display:block;color:var(--muted);font-size:12px;line-height:1.3}
 /* kartu mengambang: satu kolom rapi, tepi kanan sama dengan padding strip, tidak menimpa teks */
-.nx-fc{right:44px;width:232px;transform:none!important}
+.nx-fc{right:clamp(16px,4vw,56px);width:232px;transform:none!important}
 .nx-c1{top:calc((100% - 88px)/2 - 148px)}.nx-c2{top:calc((100% - 88px)/2 - 74px)}.nx-c3{top:calc((100% - 88px)/2)}.nx-c4{top:calc((100% - 88px)/2 + 74px)}.nx-c5{top:calc((100% - 88px)/2 + 148px)}
 .nx-fc{height:62px}
 .nx-strip{position:absolute;z-index:5;left:0;right:0;bottom:0;height:78px;background:#0a0a1c;color:#f3f0ff;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:center;gap:24px;padding:0 44px}
@@ -388,12 +388,12 @@ a.mini:hover:after{transform:translateX(6px)}
 .nx-strip .nx-rt{white-space:nowrap;margin-left:0;color:#e4e0ff;font-size:13px;font-weight:600}
 svg.nx-i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 @media(max-width:980px){.hero.hx .nx-bg{width:70%}.hero.hx::after{background:linear-gradient(90deg,var(--surface) 0%,var(--surface) 30%,transparent 80%)}.nx-fc{display:none}.nx-strip{gap:16px;padding:0 24px}.nx-hc{padding-left:24px}}
-@media(max-width:860px){.hero.hx{min-height:0;display:flex;align-items:stretch;flex-direction:column;width:calc(100% - 16px);margin:8px auto 0;border-radius:24px}.hero.hx .nx-bg{position:relative;display:block;width:100%;height:340px;order:2}.hero.hx::after{display:none}.nx-hc{width:100%;padding:26px 20px 20px;order:1}.nx-fc{display:none}.nx-strip{position:relative;order:3;height:auto;grid-template-columns:1fr;justify-items:start;gap:14px;padding:18px 20px 76px}.nx-strip .nx-rt{margin-left:0}.nx-two{grid-template-columns:1fr}.nx-chip{width:calc(33.3% - 7px)}}
+@media(max-width:860px){.hero.hx{min-height:0;display:flex;align-items:stretch;flex-direction:column;width:100%;margin:0;border-radius:0}.hero.hx .nx-bg{position:relative;display:block;width:100%;height:340px;order:2}.hero.hx::after{display:none}.nx-hc{width:100%;padding:26px 20px 20px;order:1}.nx-fc{display:none}.nx-strip{position:relative;order:3;height:auto;grid-template-columns:1fr;justify-items:start;gap:14px;padding:18px 20px 76px}.nx-strip .nx-rt{margin-left:0}.nx-two{grid-template-columns:1fr}.nx-chip{width:calc(33.3% - 7px)}}
 @media(min-width:981px){.hero.hx{min-height:min(calc(100svh - 108px),760px);display:flex;align-items:stretch}.nx-hc{display:flex;flex-direction:column;justify-content:center;padding-top:clamp(28px,5vh,64px);padding-bottom:clamp(120px,15vh,160px)}.hero.hx h1{font-size:clamp(44px,3.6vw,68px);line-height:1.05}.nx-lead{font-size:clamp(17px,1.2vw,21px);max-width:620px;line-height:1.55}.nx-door{min-height:120px;padding:20px 22px}.nx-chip{width:96px;padding:14px 6px}.nx-strip{height:88px}.nx-fc{width:clamp(232px,15vw,280px)}.hero.hx .nx-bg{height:calc(100% - 88px)}}
 @media(prefers-reduced-motion:reduce){.nx-door,.nx-chip,.nx-t b{transition:none}}
 .stats3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:26px 8px;text-align:center}.stats3>div{display:flex;flex-direction:column;gap:4px;border-right:1px solid var(--border)}.stats3>div:last-child{border:0}.stats3 b{font:600 clamp(30px,4vw,46px)/1.1 "Bricolage Grotesque",sans-serif;font-variant-numeric:tabular-nums}.stats3 span{color:var(--muted);font-size:14px}
 .mini .pr{margin-top:auto;font-weight:700;color:var(--acc);font-size:14px}
-.cvt{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;padding:14px;color:#fff;background:#0a0a1c;overflow:hidden;text-align:left}
+.cvk{position:absolute;top:10px;left:10px;padding:4px 10px;border-radius:999px;background:rgba(10,10,28,.55);color:#fff;font:700 11px Inter,sans-serif}.cvt{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;padding:14px;color:#fff;background:#0a0a1c;overflow:hidden;text-align:left}
 .cvt:before{content:"";position:absolute;inset:0;background:url(/assets/hero/model-ut.jpg) var(--pos,50% 10%)/cover no-repeat;transform:scale(var(--z,1.05))}
 .cvt:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,10,28,.3),rgba(10,10,28,0) 38%,rgba(10,10,28,.8) 100%)}
 .cvt i,.cvt b{position:relative;z-index:1;font-style:normal}
@@ -472,9 +472,9 @@ svg.nx-i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;s
   <div><b data-to="17400" data-plus="1">17.400+</b><span>File sudah dikerjakan</span></div>
 </div></div></section>
 
-<section class="s" id="cek"><div class="wrap"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px">
-  <div class="card rv" style="padding:28px"><small style="font-weight:700;letter-spacing:.5px;color:#34d399">GRATIS <span data-p="free_words">500</span> KATA</small><h2 style="margin:8px 0">Audit Dokumen</h2><p style="color:var(--muted);line-height:1.6;margin:0 0 16px">Skor masalah dokumenmu dihitung dari semua temuan: sitasi, struktur, kalimat bermasalah. Target di bawah 25%.</p><a class="btn" href="/audit">Cek gratis sekarang</a><div style="margin-top:12px;font-size:13px;color:var(--muted)">Audit lengkap: Rp<span data-p="audit_per_word">9</span> per kata</div></div>
-  <div class="card rv" style="padding:28px"><small style="font-weight:700;letter-spacing:.5px;color:#fbbf24">JALUR CEPAT TERSEDIA</small><h2 style="margin:8px 0">Cek &amp; Parafrase</h2><p style="color:var(--muted);line-height:1.6;margin:0 0 16px">Kalimat bermasalah ditandai, lalu diparafrase tanpa mengubah makna. Hasil dikirim ke WhatsApp.</p><a class="btn btn-ghost" href="/cek-parafrase-mandiri">Unggah dokumen</a><div style="margin-top:12px;font-size:13px;color:var(--muted)">Rp<span data-p="price_per_word">40</span> per kata</div></div>
+<section class="s" id="cek"><div class="wrap"><div class="g2">
+  <a class="card mini rv" data-g="audit" href="/audit"><small style="display:block;margin:0 22px 4px;font-weight:700;letter-spacing:.5px;color:#34d399">GRATIS <span data-p="free_words">500</span> KATA</small><h3>Audit Dokumen</h3><p>Skor masalah dokumenmu dihitung dari semua temuan: sitasi, struktur, kalimat bermasalah. Target di bawah 25%.</p><span class="pr">Cek gratis sekarang · lengkap <span data-p="audit_per_word">9</span> per kata</span></a>
+  <a class="card mini rv" data-g="cek" href="/cek-parafrase-mandiri"><small style="display:block;margin:0 22px 4px;font-weight:700;letter-spacing:.5px;color:#fbbf24">JALUR CEPAT</small><h3>Cek &amp; Parafrase</h3><p>Kalimat bermasalah ditandai, lalu diparafrase tanpa mengubah makna. Hasil dikirim ke WhatsApp.</p><span class="pr">Unggah dokumen · <span data-p="price_per_word"></span> per kata</span></a>
 </div></div></section>
 
 <section class="s" id="layanan">
@@ -484,8 +484,6 @@ svg.nx-i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;s
       <a class="card mini rv" data-g="tugas" href="/layanan?s=tugas"><h3>Tugas tutorial</h3><p>Dikerjakan sesuai soal dan ketentuan format. Kamu memeriksa hasilnya sebelum dikirim ke tutor.</p><span class="pr">Mulai <span data-p="price_tugas"></span></span></a>
       <a class="card mini rv" data-g="diskusi" href="/layanan?s=diskusi"><h3>Diskusi</h3><p>Jawaban diskusi siap tempel, dengan poin utama dan referensi yang bisa dicek.</p><span class="pr">Mulai <span data-p="price_diskusi"></span></span></a>
       <a class="card mini rv" data-g="metopen" href="/layanan?s=metopen_paket"><h3>Metopen UT</h3><p>Pendampingan Tugas 1 sampai 3, per tahap atau paket komplit dengan free revisi.</p><span class="pr">Paket <span data-p="price_metopen_paket"></span></span></a>
-      <a class="card mini rv" data-g="cek" href="/cek-parafrase-mandiri"><h3>Cek dan parafrase mandiri</h3><p>Unggah dokumen, lihat bagian yang perlu diperbaiki dengan penanda warna.</p><span class="pr"><span data-p="price_per_word"></span> per kata</span></a>
-      <a class="card mini rv" data-g="audit" href="/audit"><h3>Audit dokumen</h3><p>Lihat berapa persen tugasmu bermasalah, plus sitasi, pustaka, dan DOI. temuan teratas gratis.</p><span class="pr">Mulai <span data-p="audit_min"></span></span></a>
       <a class="card mini rv" data-g="revisi" href="/layanan?s=revisi_tugas"><h3>Revisi</h3><p>Catatan tutor diperbaiki. Gratis untuk hasil buatan kami.</p><span class="pr">Free revisi</span></a>
       <a class="card mini rv" data-g="semester" href="/layanan-ut"><h3>Paket Semester</h3><p>Handle 1 semester: absen, diskusi, tugas, update nilai mingguan.</p><span class="pr"><span data-p="price_semester_min"></span> sampai <span data-p="price_semester_max"></span></span></a>
       <a class="card mini rv" data-g="pengarahan" href="/layanan-ut"><h3>Pengarahan Intensif</h3><p>Tanya apa saja soal UT, registrasi, dan update.</p><span class="pr">1 semester <span data-p="price_pengarahan_semester"></span></span></a>
@@ -510,7 +508,7 @@ svg.nx-i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;s
 
 <section class="s" id="blog" hidden>
   <div class="wrap">
-    <div class="sh"><div><h2>Tulisan terbaru</h2><p>Tips kuliah dan info UT yang sudah diperiksa.</p></div><a class="btn btn-ghost btn-sm" href="/blog-ut">Lihat semua</a></div>
+    <div class="sh"><div><h2>Tulisan terbaru</h2><p>Tips kuliah, info UT, dan topik lain dari Catatan Akademik.</p></div><a class="btn btn-ghost btn-sm" href="/blog-ut">Lihat semua</a></div>
     <div class="g4" id="blogList"></div>
   </div>
 </section>
@@ -596,9 +594,9 @@ function reveal(){var els=document.querySelectorAll(".rv:not(.in)");
 document.querySelectorAll(".sh").forEach(function(e){e.classList.add("rv")});
 reveal();
 var POS=["50% 8%","62% 20%","40% 12%","70% 30%"],ZM=[1.05,1.25,1.15,1.4];
-fetch("/ms/blog/latest?f=ut&limit=4",{cache:"no-cache"}).then(function(r){return r.json()}).then(function(d){
+fetch("/ms/blog/latest?limit=4",{cache:"no-cache"}).then(function(r){return r.json()}).then(function(d){
   var l=d.posts||[];if(!l.length)return;
-  $("#blogList").innerHTML=l.map(function(p,i){return '<a class="card bp rv" href="/blog/'+esc(p.slug)+'"><div class="cv"><span class="cvt" style="--pos:'+POS[i%4]+';--z:'+ZM[i%4]+'"><i>'+esc(p.topic)+'</i><b>Catatan Akademik</b></span></div><div class="pb"><h3>'+esc(p.title)+'</h3><p>'+esc(p.excerpt)+'</p></div></a>'}).join("");
+  $("#blogList").innerHTML=l.map(function(p){return '<a class="card bp rv" href="/blog/'+esc(p.slug)+'"><div class="cv">'+(p.cover?'<img src="'+esc(p.cover)+'" alt="" loading="lazy" decoding="async">':'<span class="cvt"><i>'+esc(p.topic)+'</i><b>Catatan Akademik</b></span>')+'</div><div class="pb"><h3>'+esc(p.title)+'</h3><p>'+esc(p.excerpt)+'</p></div></a>'}).join("");
   $("#blog").hidden=false;reveal();}).catch(function(){});
 var RM=matchMedia("(prefers-reduced-motion:reduce)").matches;
 var FINE=matchMedia("(hover:hover) and (pointer:fine)").matches;

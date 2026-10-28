@@ -33,12 +33,15 @@ module.exports = function mountAudit({ app, express, db, settings, orders, root,
   const quote = words => { const q = orders.auditQuote(words, settings.getAll()); return { words, perWord: q.perWord, min: q.min, freeWords: q.free, chargedWords: q.pay, allFree: q.allFree, total: q.total }; };
 
   /* Penjelasan hanya untuk temuan di paragraf yang seluruhnya masuk batas kata gratis (dari awal dokumen). Sisanya: tingkat, kategori, lokasi. */
-  /* Gratis: 1 temuan teratas (urutan sudah dari yang paling parah) terbuka lengkap dengan kutipan dan cara memperbaiki, sisanya dikunci.
-     Dokumen yang seluruhnya masuk kata gratis (<= free_words) terbuka semua. Sisanya hanya memperlihatkan jenis dan lokasi; kutipan dan cara memperbaiki terbuka setelah Audit Lengkap dibayar. */
-  const FREE_FINDINGS = 1;
-  const openFindings = (findings, allFree) => findings.map((x, i) => allFree || i < FREE_FINDINGS
-    ? { sev: x.sev, cat: x.cat, where: x.where, open: true, detail: x.detail, quote: x.quote, code: x.code }
-    : { sev: x.sev, cat: x.cat, where: x.where });
+  /* Gratis: semua temuan yang letaknya di paragraf yang seluruhnya masuk batas kata gratis (dari awal dokumen) terbuka lengkap dengan kutipan dan cara memperbaiki.
+     Temuan di luar batas itu, dan temuan tingkat dokumen tanpa lokasi paragraf, dikunci: server hanya mengirim tingkat, kategori, dan lokasi; kutipan dan catatan perbaikan terbuka setelah Audit Lengkap dibayar. */
+  const openFindings = (findings, allFree, paragraphs, freeWords) => {
+    let used = 0, lastFree = -1, n = 0;
+    for (const p of (paragraphs || []).filter(q => String(q.text || "").trim())) { used += String(p.text).trim().split(/\s+/).length; if (used > freeWords) break; lastFree = n++; }
+    return findings.map(x => allFree || (x.pos != null && Math.floor(x.pos / 1000) <= lastFree)
+      ? { sev: x.sev, cat: x.cat, where: x.where, open: true, detail: x.detail, quote: x.quote, code: x.code }
+      : { sev: x.sev, cat: x.cat, where: x.where });
+  };
 
   app.post("/ms/audit/upload", (req, res) => {
     res.set("Cache-Control", "no-store");
@@ -68,7 +71,7 @@ module.exports = function mountAudit({ app, express, db, settings, orders, root,
         res.json({
           uploadId: id, file: { name, size: f.size }, words, counts: r.counts, refs: r.refs, score: r.score, triage,
           /* Hanya tingkat, kategori, dan lokasi. Penjelasan ada di Audit Lengkap. */
-          findings: openFindings(r.findings, quote(words).allFree),
+          findings: openFindings(r.findings, quote(words).allFree, a.paragraphs, quote(words).freeWords),
           freeWords: quote(words).freeWords,
           quote: quote(words),
         });
