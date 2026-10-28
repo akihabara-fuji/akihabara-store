@@ -773,8 +773,8 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
       ${toc.length >= 3 ? `<details class="ax-toc ax-toc-in"><summary>Daftar Isi</summary>${tocList}</details>` : ""}
       <div class="prose">${bodyHtml}</div>
       ${tags.length ? `<div class="ax-tags" aria-label="Tag">${tags.map(t => `<a href="/blog?tag=${encodeURIComponent(t)}" rel="tag">${esc(tagLabel(t))}</a>`).join("")}</div>` : ""}
-      ${readAlso}
       ${communityBlock()}
+      ${readAlso}
       <p class="ax-note">${BRAND} adalah layanan belajar independen yang dikelola oleh mahasiswa UT. Bukan situs resmi Universitas Terbuka. Selalu pegang ketentuan dari tutor dan sumber resmi UT di <a href="https://www.ut.ac.id" rel="noopener" target="_blank">ut.ac.id</a>.</p>
       <a class="back" href="${topicLink}">← Kembali ke ${esc(tl(p.topic))}</a>
       ${preview ? "" : commentsBlock(p.slug)}
