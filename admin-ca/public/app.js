@@ -143,7 +143,7 @@
     [/^studio$/, ED, pStudio], [/^images$/, ED, pImages], [/^tema$/, OWN, pTema], [/^taxonomy$/, ED, pTaxonomy], [/^media$/, ED, pMedia], [/^comments$/, ED, pComments],
     [/^orders$/, CS, pOrders], [/^orders\/([A-Za-z0-9-]+)$/, CS, m => pOrder(m[1])], [/^payments$/, CS, pPayments],
     [/^tools\/(parafrase|layanan)$/, CS, m => pEmbed(m[1])], [/^customers$/, CS, pCustomers],
-    [/^testimonials$/, ED, pTestimonials], [/^editor$/, OWN, pEditor], [/^texts$/, OWN, pTexts], [/^services$/, OWN, pServices], [/^reports$/, OWN, pReports], [/^settings$/, OWN, pSettings], [/^seo$/, OWN, pSeo], [/^admins$/, OWN, pAdmins], [/^log$/, OWN, pLog], [/^account$/, ALL, pAccount],
+    [/^testimonials$/, ED, pTestimonials], [/^editor$/, OWN, pPageEditor], [/^texts$/, OWN, pTexts], [/^services$/, OWN, pServices], [/^reports$/, OWN, pReports], [/^settings$/, OWN, pSettings], [/^seo$/, OWN, pSeo], [/^admins$/, OWN, pAdmins], [/^log$/, OWN, pLog], [/^account$/, ALL, pAccount],
   ];
   const params = () => new URLSearchParams((location.hash.split("?")[1]) || "");
   const go = (path, q) => { const s = q ? "?" + new URLSearchParams(Object.entries(q).filter(([, v]) => v !== "" && v != null)).toString() : ""; location.hash = "#/" + path + (s === "?" ? "" : s); };
@@ -853,7 +853,7 @@
 
   /* ================= TAMPILAN SITUS: teks & nama, testimoni ================= */
   /* ================= EDITOR HALAMAN (klik bagian web lalu ganti) ================= */
-  async function pEditor() {
+  async function pPageEditor() {
     const d = await api("/ms/admin/ca/texts"), files = Object.entries(d.files || {}).filter(([f]) => !/^(audit-hasil|pesanan)\.html$/.test(f));
     if (window.__edMsg) window.removeEventListener("message", window.__edMsg);
     setPage("Editor Halaman", "Klik teks atau foto langsung di halaman, lalu ubah di panel kanan. Tersimpan dan tayang saat kamu menekan Simpan", `
