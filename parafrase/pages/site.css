@@ -126,3 +126,12 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;line-height:
 .nav-ord{font-size:14px;font-weight:600;color:var(--muted);text-decoration:none;padding:6px 4px}.nav-ord:hover{color:var(--text)}
 @media(max-width:980px){.nav-ord{display:none}}
 @media(max-width:560px){.sub .wrap{gap:8px 16px}.ddp{position:static;margin-top:8px;box-shadow:none;min-width:0}.dd[open]{flex-basis:100%}}
+
+/* Menu Layanan: panel lebar berisi semua layanan, harga dari pengaturan admin */
+.ddp.mega{flex-direction:row;flex-wrap:wrap;gap:6px 28px;min-width:0;width:min(760px,calc(100vw - 32px));padding:18px;box-sizing:border-box}
+.ddp.mega .mg{flex:1 1 200px;min-width:0;display:flex;flex-direction:column}
+.ddp.mega .mg b{font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin:2px 12px 6px}.ddp.mega .mg b+a~b{margin-top:12px}
+.ddp.mega a{display:flex;justify-content:space-between;align-items:baseline;gap:10px;overflow-wrap:anywhere}
+.ddp.mega a em{font-style:normal;font-size:12.5px;font-weight:600;color:var(--link);white-space:nowrap}
+.ddp.mega .mg-all{flex:1 1 100%;justify-content:center;margin-top:6px;background:var(--surface2);font-weight:700;color:var(--link)}
+@media(max-width:560px){.ddp.mega{width:auto;padding:10px}.ddp.mega a em{white-space:normal}}
