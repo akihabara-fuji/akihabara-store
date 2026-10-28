@@ -72,13 +72,17 @@
     if (nLocked) {
       var lk = el("div", "margin-top:14px;padding:22px;border-radius:16px;border:1px solid #7c5cff;background:rgba(124,92,255,.10);text-align:center");
       lk.appendChild(el("b", "display:block;font-size:19px", nLocked + " temuan lainnya terkunci"));
-      lk.appendChild(el("div", "margin:6px auto 14px;max-width:460px;font-size:14px;opacity:.85", "Buka semua temuan beserta saran perbaikannya. Rp" + d.quote.perWord + " per kata, " + rp(d.quote.freeWords || 0) + " kata pertama gratis."));
+      lk.appendChild(el("div", "margin:6px auto 14px;max-width:460px;font-size:14px;opacity:.85", "Buka semua temuan beserta saran perbaikannya. Rp" + d.quote.perWord + " per kata setelah " + rp(d.quote.freeWords || 0) + " kata pertama gratis, mulai Rp " + rp(d.quote.min) + "."));
       var go = el("a", "display:inline-block;padding:12px 22px;border-radius:12px;background:#7c3aed;color:#fff;font-weight:800;text-decoration:none", "Buka audit lengkap"); go.href = "#cta";
       lk.appendChild(go); l.appendChild(lk);
     }
     window.auditOkList(d.score, l);
-    $("perword").textContent = d.quote.perWord; $("minp").textContent = window.priceFmt(d.quote.min); $("total").textContent = d.quote.allFree ? "0 (seluruh dokumen sudah terbuka gratis)" : "Rp " + rp(d.quote.total);
-    $("fwn").textContent = rp(d.quote.freeWords || 0);
+    var Q = d.quote, cfgp = (window.PF && window.PF.cfg) || {};
+    $("perword").textContent = Q.perWord; $("minp").textContent = "Rp " + rp(Q.min);
+    $("pWords").textContent = rp(Q.words) + " kata"; $("pFree").textContent = rp(Q.freeWords || 0) + " kata"; $("pPay").textContent = rp(Q.chargedWords || 0) + " kata";
+    var calc = (Q.chargedWords || 0) * Q.perWord; $("pCalcLbl").textContent = "Hitungan " + rp(Q.chargedWords || 0) + " x Rp " + rp(Q.perWord); $("pCalc").textContent = "Rp " + rp(calc);
+    $("total").textContent = Q.allFree ? "Gratis" : "Rp " + rp(Q.total); $("buyAmt").textContent = Q.allFree ? "" : " · Rp " + rp(Q.total);
+    $("pNote").textContent = Q.allFree ? "Seluruh dokumen sudah terbuka gratis, tidak perlu membayar." : (calc < Q.min ? "Hitungan di bawah harga minimum, jadi dikenakan harga minimum. " : "") + "Termasuk semua temuan dokumen ini." + (cfgp.unique_code_enabled === false ? "" : " Di halaman pembayaran ditambah kode unik beberapa rupiah agar pembayaranmu terverifikasi otomatis.");
     $("cekGo").href = "/ruangakademikut/cek-parafrase-mandiri?u=" + encodeURIComponent(upId);
     var nOpen = d.findings.filter(function (f) { return f.open; }).length;
     $("rmeta").textContent += d.quote.allFree ? " · seluruhnya gratis" : " · " + nOpen + " dari " + d.findings.length + " temuan dibuka gratis";

@@ -297,7 +297,7 @@ window.renderTriage = function (box, t, opts) {
       if (r.note) d.appendChild(el("div", "font-size:13px;opacity:.8;margin:4px 0 2px", r.note));
       card.appendChild(d);
     }
-    rx.forEach(function (r, i) { recipe(r, i === 0 && t.level !== "aman"); });
+    rx.forEach(function (r) { recipe(r, false); });
     if (t.teknik) recipe(t.teknik, false);
     if (t.cekResmi) card.appendChild(el("p", "margin:8px 0 0;font-size:13px;opacity:.8", t.cekResmi));
   }

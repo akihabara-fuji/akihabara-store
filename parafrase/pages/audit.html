@@ -55,15 +55,24 @@
   </div>
   <div id="cta" style="margin:24px auto 0;max-width:760px;padding:18px;border-radius:16px;border:1px solid var(--line,#2b2b58);text-align:left">
     <b>Buka semua temuan (Audit Lengkap)</b>
-    <div class="muted" style="margin:4px 0 10px" id="ctaTxt">Lokasi tepat, penjelasan, dan saran perbaikan untuk semua temuan. Harga dihitung untuk kata setelah <span id="fwn" data-fw>500</span> kata pertama: Rp <span id="perword" data-p="audit_per_word">9</span> per kata, minimal <span id="minp" data-p="audit_min">35k</span>.</div>
-    <div style="font-size:22px;font-weight:700;margin-bottom:10px"><span id="total"></span></div>
+    <div class="muted" style="margin:4px 0 10px" id="ctaTxt">Lokasi tepat, penjelasan, dan saran perbaikan untuk semua temuan dokumen ini.</div>
+    <div id="priceBox" style="padding:6px 14px;border-radius:12px;border:1px solid var(--border,#2b2b58);margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--border,#2b2b58);font-size:14px"><span style="color:var(--muted)">Total kata dokumen</span><strong id="pWords">-</strong></div>
+      <div style="display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--border,#2b2b58);font-size:14px"><span style="color:var(--muted)">Gratis (kata pertama)</span><strong id="pFree" style="color:#5ee6a8">-</strong></div>
+      <div style="display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--border,#2b2b58);font-size:14px"><span style="color:var(--muted)">Kata yang dihitung</span><strong id="pPay">-</strong></div>
+      <div style="display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--border,#2b2b58);font-size:14px"><span style="color:var(--muted)">Harga per kata</span><strong>Rp <span id="perword" data-p="audit_per_word">9</span></strong></div>
+      <div style="display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--border,#2b2b58);font-size:14px" id="pCalcRow"><span style="color:var(--muted)" id="pCalcLbl">Hitungan</span><strong id="pCalc">-</strong></div>
+      <div style="display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--border,#2b2b58);font-size:14px"><span style="color:var(--muted)">Harga minimum</span><strong id="minp" data-p="audit_min">35k</strong></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0 6px"><span style="font-weight:600">Total bayar</span><span id="total" style="font-size:26px;font-weight:700"></span></div>
+      <div class="muted" id="pNote" style="font-size:12.5px;padding:2px 0 8px"></div>
+    </div>
     <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px">
       <label for="wa" style="font-weight:600;font-size:14px">Nomor WhatsApp (untuk konfirmasi)</label>
       <input id="wa" type="text" inputmode="tel" placeholder="08xx" autocomplete="tel" style="padding:12px 14px;border-radius:12px;border:1px solid currentColor;background:transparent;color:inherit;font:inherit">
       <label style="display:flex;gap:8px;align-items:flex-start;font-size:13.5px"><input id="agree" type="checkbox"> <span>Saya setuju dengan <a href="/ms/ketentuan">syarat</a> dan <a href="/ms/privasi">kebijakan privasi</a>.</span></label>
       <div id="oerr" class="err hidden" role="alert"></div>
     </div>
-    <button class="btn" id="buy" type="button" disabled>Beli Audit Lengkap</button>
+    <button class="btn" id="buy" type="button" disabled>Beli Audit Lengkap<span id="buyAmt"></span></button>
     <button class="btn" id="again" type="button" style="margin-left:8px;background:transparent;color:inherit;border:1px solid currentColor">Periksa ulang dokumen lain</button>
   </div>
 </section>
