@@ -187,13 +187,13 @@ section.s{padding:80px 0 0}
 .mini h3{margin:0 22px;font-size:18px}.mini p{margin:0 22px;color:var(--muted);font-size:13.5px}
 /* ukuran rapi di layar lebar: foto kartu tidak ikut membesar */
 .gal{aspect-ratio:16/9;max-height:230px}.gal.cv{aspect-ratio:16/10}
-#cek .mini{flex-direction:row;align-items:stretch;padding:0;gap:0}
-#cek .mini .gal{flex:0 0 38%;max-height:none;aspect-ratio:auto;min-height:210px;margin:0}
-#cek .mini .tx{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:8px;padding:22px 26px}
+#cek .g2{grid-template-columns:repeat(3,minmax(0,1fr))}#cek .mini{flex-direction:column;align-items:stretch;padding:0;gap:0}
+#cek .mini .gal{flex:none;max-height:none;aspect-ratio:16/10;min-height:0;margin:0}
+#cek .mini .tx{flex:1;display:flex;flex-direction:column;justify-content:flex-start;align-items:flex-start;gap:8px;padding:20px 22px}
 #cek .mini .tx>*,#cek .mini .tx h3,#cek .mini .tx p,#cek .mini .tx small{margin:0!important}
 #cek .mini .tx h3{font-size:22px}
 #cek .mini .tx .pr{display:inline-block;margin-top:6px;padding:10px 16px;border-radius:12px;background:var(--acc);color:var(--on-accent);font-weight:800;font-size:14px}
-@media(max-width:700px){#cek .mini{flex-direction:column}#cek .mini .gal{flex:none;min-height:0;aspect-ratio:16/10}}
+@media(max-width:900px){#cek .g2{grid-template-columns:1fr}}
 @media(min-width:1100px){#layanan .g3{grid-template-columns:repeat(4,minmax(0,1fr))}}
 
 /* produk */
@@ -488,6 +488,7 @@ svg.nx-i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;s
 <section class="s" id="cek"><div class="wrap"><div class="sh"><div><h2>Audit dan cek parafrase dokumen</h2><p>Mulai dari sini: lihat skor masalah dokumenmu, lalu perbaiki.</p></div></div><div class="g2">
   <a class="card mini rv" data-g="audit" href="/audit"><div class="tx"><small style="display:block;margin:0 22px 4px;font-weight:700;letter-spacing:.5px;color:#34d399">GRATIS <span data-p="free_words">500</span> KATA</small><h3>Audit Dokumen</h3><p>Skor masalah dokumenmu dihitung dari semua temuan: sitasi, struktur, kalimat bermasalah. Ini skala kami, bukan angka Drillbit.</p><span class="pr">Cek gratis sekarang · lengkap <span data-p="audit_per_word">9</span> per kata</span></div></a>
   <a class="card mini rv" data-g="cek" href="/cek-parafrase-mandiri"><div class="tx"><small style="display:block;margin:0 22px 4px;font-weight:700;letter-spacing:.5px;color:#fbbf24">JALUR CEPAT</small><h3>Cek &amp; Parafrase</h3><p>Kalimat bermasalah ditandai, lalu diparafrase tanpa mengubah makna. Hasil dikirim ke WhatsApp.</p><span class="pr">Unggah dokumen · <span data-p="price_per_word"></span> per kata</span></div></a>
+  <a class="card mini rv" data-g="bedah" href="/bedah-laporan"><div class="tx"><small style="display:block;margin:0 22px 4px;font-weight:700;letter-spacing:.5px;color:#22d3ee">BARU</small><h3>Bedah Laporan Penelitian UT</h3><p>Unggah file asli dan laporan Drillbit dari UT. Lihat kalimat yang ditandai UT, 10 temuan terberat gratis lengkap dengan contoh perbaikan.</p><span class="pr">Mulai <span data-p="bedah_harga_per_blok">5k</span> per 500 kata</span></div></a>
 </div></div></section>
 
 <section class="s" id="layanan">

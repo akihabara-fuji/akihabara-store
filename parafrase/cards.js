@@ -25,7 +25,7 @@ module.exports = function mountCards({ app, root, requireAdmin }) {
   fs.mkdirSync(dir, { recursive: true });
   const file = slug => path.join(dir, slug + ".webp");
   // gambar bawaan bila admin belum mengunggah; unggahan admin selalu menang
-  const DEFAULTS = { audit: "tools-ai", cv: "karir-lowongan", cek: "ruang-akademik", semester: "tips-kuliah", metopen: "metodologi", tugas: "tugas-diskusi", diskusi: "tugas-diskusi", revisi: "materi-belajar", pengarahan: "registrasi", info: "jadwal-kalender" };
+  const DEFAULTS = { audit: "tools-ai", cv: "karir-lowongan", cek: "ruang-akademik", semester: "tips-kuliah", metopen: "metodologi", tugas: "tugas-diskusi", diskusi: "tugas-diskusi", revisi: "materi-belajar", pengarahan: "registrasi", info: "jadwal-kalender", bedah: "ujian-ut" };
 
   app.get(["/ruangakademikut/img/:name", "/assets/ut/img/:name"], (req, res) => {
     const m = /^([a-z]+)\.webp$/.exec(String(req.params.name));
