@@ -35,7 +35,7 @@
   const NAV = [
     { items: [["dashboard", "Dashboard", "home", ALL], ["traffic", "Pengunjung & Konten", "chart", ED]] },
     { h: "Konten", items: [["posts", "Artikel Blog", "doc", ED], ["posts/new", "Tulis Artikel", "pen", ED], ["taxonomy", "Kategori & Tag", "tag", ED], ["media", "Media", "img", ED], ["comments", "Komentar", "chat", ED], ["studio", "Studio Posting Sosmed", "send", ED]] },
-    { h: "Tampilan Situs", items: [["testimonials", "Testimoni", "chat", ED], ["texts", "Teks & Nama", "pen", OWN]] },
+    { h: "Tampilan Situs", items: [["images", "Gambar Situs", "img", ED], ["testimonials", "Testimoni", "chat", ED], ["texts", "Teks & Nama", "pen", OWN]] },
     { h: "Pesanan", items: [["orders", "Pesanan Layanan", "box", CS, true], ["payments", "Konfirmasi Pembayaran", "card", CS], ["tools/parafrase", "Antrean Cek & Parafrase", "list", CS], ["tools/layanan", "Kirim Hasil Layanan", "send", CS]] },
     { h: "Pengguna", items: [["customers", "Pelanggan", "users", CS]] },
     { h: "Lainnya", items: [["services", "Layanan & Harga", "price", OWN], ["reports", "Laporan & Statistik", "chart", OWN], ["settings", "Pengaturan Website", "cog", OWN], ["seo", "SEO & Sitemap", "search", OWN], ["admins", "Admin & Peran", "shield", OWN], ["log", "Log Aktivitas", "clock", OWN]] },
@@ -140,7 +140,7 @@
   /* ---------------- router ---------------- */
   const ROUTES = [
     [/^dashboard$/, ALL, pDashboard], [/^traffic$/, ED, pTraffic], [/^posts$/, ED, pPosts], [/^posts\/new$/, ED, () => pEditor(null)], [/^posts\/([a-f0-9]+)$/, ED, m => pEditor(m[1])],
-    [/^studio$/, ED, pStudio], [/^taxonomy$/, ED, pTaxonomy], [/^media$/, ED, pMedia], [/^comments$/, ED, pComments],
+    [/^studio$/, ED, pStudio], [/^images$/, ED, pImages], [/^taxonomy$/, ED, pTaxonomy], [/^media$/, ED, pMedia], [/^comments$/, ED, pComments],
     [/^orders$/, CS, pOrders], [/^orders\/([A-Za-z0-9-]+)$/, CS, m => pOrder(m[1])], [/^payments$/, CS, pPayments],
     [/^tools\/(parafrase|layanan)$/, CS, m => pEmbed(m[1])], [/^customers$/, CS, pCustomers],
     [/^testimonials$/, ED, pTestimonials], [/^texts$/, OWN, pTexts], [/^services$/, OWN, pServices], [/^reports$/, OWN, pReports], [/^settings$/, OWN, pSettings], [/^seo$/, OWN, pSeo], [/^admins$/, OWN, pAdmins], [/^log$/, OWN, pLog], [/^account$/, ALL, pAccount],
@@ -295,6 +295,21 @@
     let im = null; draw(null);
     if (p.cover) { const i = new Image(); i.onload = () => { im = i; draw(im); }; i.src = p.cover; }
     $("#stT").oninput = () => draw(im);
+  }
+
+
+  /* ================= GAMBAR SITUS: ganti foto landing dan kartu layanan tanpa buka VPS ================= */
+  async function pImages() {
+    const CARD = { cek: "Cek & Parafrase Mandiri", semester: "Paket Semester", tugas: "Tugas tutorial", diskusi: "Diskusi", metopen: "Metopen UT", audit: "Audit dokumen", revisi: "Revisi", pengarahan: "Pengarahan Intensif", cv: "Buat CV ATS", info: "Info UT" };
+    const [s, c] = await Promise.all([api("/ms/admin/site-images"), api("/ms/admin/parafrase/card-images")]);
+    const tile = (id, label, src, has, kind) => `<div class="card" style="padding:12px;display:flex;flex-direction:column;gap:8px"><div style="aspect-ratio:4/3;border-radius:10px;background:var(--surface2,#eee) center/cover no-repeat url('${esc(src)}?t=${Date.now()}')"></div><b style="font-size:14px">${esc(label)}</b><div class="small muted">${has ? "Foto kamu dipakai" : "Memakai gambar bawaan"}</div><div class="bar"><label class="btn sm" style="cursor:pointer">Ganti foto<input type="file" accept="image/*" hidden data-up="${esc(id)}" data-kind="${kind}"></label>${has ? `<button type="button" class="btn sm bad" data-rm="${esc(id)}" data-kind="${kind}">Kembalikan bawaan</button>` : ""}</div></div>`;
+    const sec = (title, note, tiles) => `<div class="card"><div class="hd"><h2>${esc(title)}</h2></div><div class="bd"><p class="small muted" style="margin:0 0 12px">${esc(note)}</p><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px">${tiles}</div></div></div>`;
+    setPage("Gambar Situs", "Ganti foto di landing dan kartu layanan, langsung tayang", `
+      ${sec("Kartu layanan", "Foto di kartu Layanan (beranda dan halaman Layanan UT). Rasio 4:3, otomatis dipotong dan dikecilkan.", c.slugs.map(x => tile("card/" + x.slug, CARD[x.slug] || x.slug, `/ruangakademikut/img/${x.slug}.webp`, x.has, "card")).join(""))}
+      ${s.groups.map(g => sec(g.label, "Maks 12 MB. Format JPG, PNG, atau WebP.", g.items.map(i => tile(g.group + "/" + i.name, i.label, `/site-img/${g.group}/${i.name}.webp`, i.has, "site")).join(""))).join("")}`);
+    const url = (id, kind) => kind === "card" ? "/ms/admin/parafrase/card-images/" + id.split("/")[1] : "/ms/admin/site-images/" + id;
+    $$("[data-up]").forEach(i => i.onchange = async () => { const f = i.files[0]; if (!f) return; const fd = new FormData(); fd.append("img", f); toast("Mengunggah…"); try { await api(url(i.dataset.up, i.dataset.kind), { form: fd }); toast("Foto tersimpan, langsung tayang"); route(); } catch (e) { toast(e.message, true); } });
+    $$("[data-rm]").forEach(b => b.onclick = async () => { if (!await confirmAct("Kembalikan gambar bawaan?", "Foto yang kamu unggah dihapus dan gambar bawaan dipakai lagi.", "Kembalikan")) return; try { await api(url(b.dataset.rm, b.dataset.kind), { method: "DELETE" }); toast("Dikembalikan"); route(); } catch (e) { toast(e.message, true); } });
   }
 
   /* ================= ARTIKEL ================= */
