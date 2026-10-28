@@ -37,6 +37,6 @@ fetch("/ms/ulasan").then(function(r){return r.ok?r.json():{}}).then(function(j){
 it.forEach(function(u){var f=document.createElement("figure");f.className="ts-c";var q=document.createElement("blockquote");q.textContent=u.teks||"";f.appendChild(q);var c=document.createElement("figcaption");c.textContent=(u.nama||"")+(u.ket?" · "+u.ket:"");f.appendChild(c);box.appendChild(f)});document.getElementById("tsBox").hidden=false}).catch(function(){});
 })();
 </script>
-<script src="/ruangakademikut/assets/common.js?v=20261212"></script>
+<script src="/ruangakademikut/assets/common.js?v=20261213"></script>
 <footer class="ft"><div class="wrap ft-in"><div class="ft-b"><b>Catatan Akademik</b><span>Jakarta Barat. Layanan UT dan Blog.</span><small>© Catatan Akademik. Semua hak dilindungi.</small></div><nav class="ft-n" aria-label="Footer"><a href="/ruangakademikut">Layanan UT</a><a href="/ruangakademikut/blog-ut">Blog &amp; Berita UT</a><a href="/ruangakademikut/tentang">Tentang</a><a href="/ms/masuk">Masuk</a><a href="/ms/privasi">Privasi</a><a href="/ms/ketentuan">Ketentuan</a></nav></div></footer>
 </body></html>

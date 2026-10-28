@@ -151,7 +151,16 @@ window.auditProblemCard = function (pb, box) {
   parts.push(pb.pustaka.tanpaDaftar ? "daftar pustaka tidak ditemukan" : pb.pustaka.num + " dari " + pb.pustaka.den + " pustaka bermasalah");
   side.appendChild(el("div", "font-size:14px;margin:4px 0", parts.join(" · ")));
   if (over) side.appendChild(el("div", "font-size:14px;font-weight:600;margin:4px 0", "Perbaiki sekitar " + pb.need + " bagian lagi (kalimat atau pustaka) supaya turun ke " + lim + "%."));
-  side.appendChild(el("div", "font-size:12.5px;opacity:.7;margin-top:8px", pb.note));
+  if (!none) {
+    var gr = pb.pct <= 10 ? ["A", "Aman", "#5ee6a8"] : pb.pct <= 25 ? ["B", "Perlu diperbaiki", "#8ec5ff"] : pb.pct <= 40 ? ["C", "Banyak catatan", "#ffb347"] : ["D", "Mendesak", "#ff8aa5"];
+    var tags = el("div", "display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0 2px");
+    tags.appendChild(el("span", "font-size:11px;font-weight:800;padding:3px 9px;border-radius:99px;background:#7ee0a5;color:#0a0f26", "PASTI · bisa dicek satu per satu"));
+    var gp = el("span", "font-size:11px;font-weight:800;padding:3px 9px;border-radius:99px;border:1px solid " + gr[2] + ";color:" + gr[2], "Grade Catatan Akademik " + gr[0] + " · " + gr[1]); gp.title = "Skala kita sendiri (A 0-10, B 11-25, C 26-40, D 41+), bukan grade Drillbit"; tags.appendChild(gp);
+    side.appendChild(tags);
+    side.appendChild(el("div", "font-size:12.5px;line-height:1.55;margin-top:6px;opacity:.85", "Dari mana: aturan modul Metopen dan aturan sitasi umum. Rumus: (kalimat bermasalah + pustaka bermasalah) ÷ (semua kalimat isi + semua entri pustaka) = " + (pb.num != null ? pb.num : pb.kalimat.num + pb.pustaka.num) + " ÷ " + (pb.den != null ? pb.den : pb.kalimat.den + pb.pustaka.den) + "."));
+  }
+  side.appendChild(el("div", "font-size:12.5px;font-weight:700;margin-top:8px;color:#ffb347", "Angka ini dihitung Catatan Akademik. BUKAN hasil Drillbit dan BUKAN penilaian resmi UT."));
+  side.appendChild(el("div", "font-size:12.5px;opacity:.7;margin-top:4px", pb.note));
   wrap.appendChild(ring); wrap.appendChild(side); box.appendChild(wrap);
   var T = window.__pfTri; if (over && T && T.t && T.t.level === "aman") window.renderTriage(T.box, T.t, T.opts);   /* satu kesimpulan: persen di atas batas = tidak "relatif aman" */
 };
