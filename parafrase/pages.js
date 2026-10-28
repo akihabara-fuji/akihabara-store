@@ -3,6 +3,7 @@
 const path = require("path");
 const { SHORT, shortPaths } = require("./acadpaths");
 const fs = require("fs");
+const tema = require("./tema");
 
 module.exports = function mountPages({ app, express, texts = null, settings = null }) {
   const dir = path.join(__dirname, "pages");
@@ -33,7 +34,7 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
     if (file === "hub.html" && texts) out = texts.hideCards(out, opts.hidden || hiddenCards());
     if (texts) out = texts.apply(out, opts.over || null, { mark: opts.mark, edit: opts.edit });
     out = (TRACK.has(file) && !opts.preview ? out.replace("</head>", '<script async src="/t.js"></script></head>') : out).replaceAll("{{SITE}}", SITE);
-    return shorten(out);
+    return tema.inject(shorten(out), settings ? settings.get("ca_tema") : "");
   }
   const page = file => (req, res) => {
     let out; try { out = render(file, req); } catch { return res.status(500).type("text").send("Halaman tidak tersedia."); }

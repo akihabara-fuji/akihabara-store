@@ -35,7 +35,7 @@
   const NAV = [
     { items: [["dashboard", "Dashboard", "home", ALL], ["traffic", "Pengunjung & Konten", "chart", ED]] },
     { h: "Konten", items: [["posts", "Artikel Blog", "doc", ED], ["posts/new", "Tulis Artikel", "pen", ED], ["taxonomy", "Kategori & Tag", "tag", ED], ["media", "Media", "img", ED], ["comments", "Komentar", "chat", ED], ["studio", "Studio Posting Sosmed", "send", ED]] },
-    { h: "Tampilan Situs", items: [["editor", "Editor Halaman", "pen", OWN], ["images", "Gambar Situs", "img", ED], ["testimonials", "Testimoni", "chat", ED], ["texts", "Teks & Nama", "pen", OWN]] },
+    { h: "Tampilan Situs", items: [["editor", "Editor Halaman", "pen", OWN], ["images", "Gambar Situs", "img", ED], ["testimonials", "Testimoni", "chat", ED], ["texts", "Teks & Nama", "pen", OWN], ["tema", "Tema & Font", "img", OWN]] },
     { h: "Pesanan", items: [["orders", "Pesanan Layanan", "box", CS, true], ["payments", "Konfirmasi Pembayaran", "card", CS], ["tools/parafrase", "Antrean Cek & Parafrase", "list", CS], ["tools/layanan", "Kirim Hasil Layanan", "send", CS]] },
     { h: "Pengguna", items: [["customers", "Pelanggan", "users", CS]] },
     { h: "Lainnya", items: [["services", "Layanan & Harga", "price", OWN], ["reports", "Laporan & Statistik", "chart", OWN], ["settings", "Pengaturan Website", "cog", OWN], ["seo", "SEO & Sitemap", "search", OWN], ["admins", "Admin & Peran", "shield", OWN], ["log", "Log Aktivitas", "clock", OWN]] },
@@ -140,7 +140,7 @@
   /* ---------------- router ---------------- */
   const ROUTES = [
     [/^dashboard$/, ALL, pDashboard], [/^traffic$/, ED, pTraffic], [/^posts$/, ED, pPosts], [/^posts\/new$/, ED, () => pEditor(null)], [/^posts\/([a-f0-9]+)$/, ED, m => pEditor(m[1])],
-    [/^studio$/, ED, pStudio], [/^images$/, ED, pImages], [/^taxonomy$/, ED, pTaxonomy], [/^media$/, ED, pMedia], [/^comments$/, ED, pComments],
+    [/^studio$/, ED, pStudio], [/^images$/, ED, pImages], [/^tema$/, OWN, pTema], [/^taxonomy$/, ED, pTaxonomy], [/^media$/, ED, pMedia], [/^comments$/, ED, pComments],
     [/^orders$/, CS, pOrders], [/^orders\/([A-Za-z0-9-]+)$/, CS, m => pOrder(m[1])], [/^payments$/, CS, pPayments],
     [/^tools\/(parafrase|layanan)$/, CS, m => pEmbed(m[1])], [/^customers$/, CS, pCustomers],
     [/^testimonials$/, ED, pTestimonials], [/^editor$/, OWN, pEditor], [/^texts$/, OWN, pTexts], [/^services$/, OWN, pServices], [/^reports$/, OWN, pReports], [/^settings$/, OWN, pSettings], [/^seo$/, OWN, pSeo], [/^admins$/, OWN, pAdmins], [/^log$/, OWN, pLog], [/^account$/, ALL, pAccount],
@@ -326,6 +326,28 @@
     const url = (id, kind) => kind === "card" ? "/ms/admin/parafrase/card-images/" + id.split("/")[1] : "/ms/admin/site-images/" + id;
     $$("[data-up]").forEach(i => i.onchange = async () => { const f = i.files[0]; if (!f) return; const fd = new FormData(); fd.append("img", f); toast("Mengunggah…"); try { await api(url(i.dataset.up, i.dataset.kind), { form: fd }); toast("Foto tersimpan, langsung tayang"); route(); } catch (e) { toast(e.message, true); } });
     $$("[data-rm]").forEach(b => b.onclick = async () => { if (!await confirmAct("Kembalikan gambar bawaan?", "Foto yang kamu unggah dihapus dan gambar bawaan dipakai lagi.", "Kembalikan")) return; try { await api(url(b.dataset.rm, b.dataset.kind), { method: "DELETE" }); toast("Dikembalikan"); route(); } catch (e) { toast(e.message, true); } });
+  }
+
+  /* ================= TEMA & FONT ================= */
+  async function pTema() {
+    const d = await api("/ms/admin/ca/tema"), P = d.presets;
+    let sel = d.current;
+    const fams = [...new Set(P.flatMap(p => [p.hf, p.bf]))].map(n => "family=" + n.replace(/ /g, "+") + ":wght@400;700").join("&");
+    if (!document.getElementById("temaFonts")) { const l = document.createElement("link"); l.id = "temaFonts"; l.rel = "stylesheet"; l.href = "https://fonts.googleapis.com/css2?" + fams + "&display=swap"; document.head.appendChild(l); }
+    const mini = (p, dark) => { const bg = dark ? p.bd : p.bl, tx = dark ? p.td : p.tl, ac = dark ? p.pd : p.pl, on = dark ? p.bd : "#fff";
+      return `<div style="flex:1 1 150px;border-radius:12px;background:${bg};color:${tx};padding:12px;border:1px solid rgba(128,128,128,.3)"><div style="font-size:10px;opacity:.7;margin-bottom:6px">${dark ? "Gelap" : "Terang"}</div><div style="font-family:'${esc(p.hf)}',serif;font-weight:700;font-size:15px;line-height:1.15;margin-bottom:6px">Tugas UT kamu aman dari <span style="color:${ac}">revisi.</span></div><div style="font-family:'${esc(p.bf)}',sans-serif;font-size:11px;opacity:.85;margin-bottom:8px">Cek dokumenmu gratis 500 kata pertama.</div><span style="display:inline-block;padding:5px 10px;border-radius:8px;background:${ac};color:${on};font-family:'${esc(p.bf)}',sans-serif;font-size:10px;font-weight:700">Cek gratis</span></div>`; };
+    const dot = (c, b) => `<i style="width:16px;height:16px;border-radius:50%;background:${c};display:inline-block;${b ? "border:1px solid #999" : ""}"></i>`;
+    const draw = () => {
+      $("#tmL").innerHTML = P.map(p => `<label class="card" style="display:flex;gap:10px;align-items:center;padding:10px 12px;margin-bottom:8px;cursor:pointer;${p.id === sel ? "outline:2px solid var(--pri,#7c3aed)" : ""}"><input type="radio" name="tm" value="${p.id}" ${p.id === sel ? "checked" : ""}><span style="display:flex;gap:4px">${dot(p.pl)}${dot(p.pd)}${dot(p.bl, 1)}${dot(p.bd, 1)}</span><span><b>${esc(p.nama)}</b><br><span class="small muted">${esc(p.hf)} + ${esc(p.bf)}</span></span></label>`).join("");
+      $$("[name=tm]").forEach(r => r.onchange = () => { sel = r.value; draw(); });
+      $("#tmR").innerHTML = P.map(p => `<div class="card" style="padding:14px;${p.id === sel ? "outline:2px solid var(--pri,#7c3aed)" : ""}"><div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:8px"><b>${esc(p.nama)}</b>${p.id === d.current ? '<span class="small muted">sedang tayang</span>' : ""}</div><div style="display:flex;gap:8px;flex-wrap:wrap">${mini(p, 0)}${mini(p, 1)}</div></div>`).join("");
+    };
+    setPage("Tema & Font", "Pilih paket warna dan font untuk seluruh halaman publik, langsung tayang", `<div class="notice info">Pengunjung tetap bisa memilih mode <b>Terang</b> atau <b>Gelap</b> sendiri. Tiap paket punya aksen terpisah untuk kedua mode supaya teks tetap terbaca. Font hanya dimuat untuk paket yang dipilih.</div>
+      <div style="display:grid;grid-template-columns:minmax(260px,330px) minmax(0,1fr);gap:16px;align-items:start"><div class="card"><div class="hd"><h2>Paket tema</h2></div><div class="bd"><div id="tmL"></div><div class="bar" style="margin-top:12px"><button class="btn pri" id="tmS" type="button">Simpan dan tayang</button><button class="btn" id="tmB" type="button">Kembali ke bawaan</button></div></div></div><div id="tmR" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px"></div></div>`);
+    draw();
+    const save = async id => { try { await api("/ms/admin/ca/tema", { json: { id } }); d.current = id; sel = id; draw(); toast("Tema tayang. Muat ulang halaman publik untuk melihatnya."); } catch (e) { fail(e); } };
+    $("#tmS").onclick = () => save(sel);
+    $("#tmB").onclick = async () => { if (await confirmAct("Kembali ke bawaan?", "Warna dan font situs kembali ke tampilan awal.", "Kembalikan")) save("bawaan"); };
   }
 
   /* ================= ARTIKEL ================= */

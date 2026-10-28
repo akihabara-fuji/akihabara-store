@@ -171,3 +171,21 @@ test("Editor Halaman: halaman asli dengan teks yang bisa diklik, halaman terlara
     assert.ok(anon.status === 401 || anon.status === 403, "tanpa login ditolak");
   } finally { srv.close(); }
 });
+
+test("Tema & Font: daftar paket, simpan ID paket, ID asing dan tanpa login ditolak", async () => {
+  const { srv, call, login } = await setup();
+  try {
+    const own = await login("pemilik", OWNER_PW);
+    const g = await call("/ms/admin/ca/tema", { cookie: own });
+    assert.strictEqual(g.status, 200);
+    assert.strictEqual(g.body.current, "bawaan");
+    assert.strictEqual(g.body.presets.length, 6);
+    const bad = await call("/ms/admin/ca/tema", { cookie: own, method: "POST", json: { id: "<x>" } });
+    assert.strictEqual(bad.status, 400);
+    const ok = await call("/ms/admin/ca/tema", { cookie: own, method: "POST", json: { id: "hijau" } });
+    assert.strictEqual(ok.status, 200);
+    assert.strictEqual((await call("/ms/admin/ca/tema", { cookie: own })).body.current, "hijau");
+    const anon = await call("/ms/admin/ca/tema", { method: "POST", json: { id: "merah" } });
+    assert.ok(anon.status === 401 || anon.status === 403);
+  } finally { srv.close(); }
+});

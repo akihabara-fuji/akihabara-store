@@ -27,6 +27,7 @@ const DEFS = {
   ca_tiktok_url:                { type: "url",  allowEmpty: true, def: "", pub: true },
   ca_facebook_url:              { type: "url",  allowEmpty: true, def: "", pub: true },
   qris_merchant_name:           { type: "str",  re: /^[\p{L}\p{N} .,&'-]{0,60}$/u, allowEmpty: true, def: "CATATAN TERBUKA", pub: true },
+  ca_tema:                      { type: "str",  re: /^[a-z]{3,12}$/, def: "bawaan" },   // ID paket tema (parafrase/tema.js); ID asing dibaca sebagai bawaan
   price_tugas:                  { type: "int",  min: 0, max: 100000000, def: 35000, pub: true },
   price_diskusi:                { type: "int",  min: 0, max: 100000000, def: 20000, pub: true },
   price_metopen1:               { type: "int",  min: 0, max: 100000000, def: 300000, pub: true },

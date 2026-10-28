@@ -127,7 +127,9 @@ module.exports = function mount(ctx) {
     .replace(/(<a [^>]*class="logo"[^>]*>)<b>[^<]*<\/b>/g, '$1<b class="lg"><img src="/ruangakademikut/assets/ca/logo-96.png" alt="" width="34" height="34"></b>')
     .replace("</head>", '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme.css?v=2"></head>')
     .replace("</head>", "<style>.logo b.lg{background:none!important}.logo b.lg img{width:34px;height:34px;object-fit:contain;display:block}</style></head>");
-  const rebrand = h => (ACAD_ONLY ? shortPath(caBrand(String(h).replace(/(?<![\w./@-])nextaja(?![\w-]|\.\w)/gi, BRAND))) : h);
+  const TEMA = require("./parafrase/tema");
+  /* Tema dipasang paling akhir: shortPath menyisipkan theme.css tepat sebelum </head>, jadi tema harus sesudahnya. */
+  const rebrand = h => (ACAD_ONLY ? TEMA.inject(shortPath(caBrand(String(h).replace(/(?<![\w./@-])nextaja(?![\w-]|\.\w)/gi, BRAND))), ctx.getCa && ctx.getCa("ca_tema")) : h);
   /* Terjadwal = tampil otomatis saat publishAt lewat (tanpa cron). Draf, review, dan terjadwal yang belum waktunya tidak pernah tampil publik. */
   const isLive = (p, now = Date.now()) => !p.trashedAt && (p.status === "published" || (p.status === "scheduled" && Date.parse(p.publishAt) <= now));
   const published = () => blog.posts.filter(p => isLive(p) && (!ACAD_ONLY || ACAD_TOPICS.includes(p.topic))).sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));

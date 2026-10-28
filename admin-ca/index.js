@@ -196,6 +196,17 @@ module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, b
       note: "Harga baru hanya berlaku untuk pesanan baru. Pesanan lama tetap memakai harga yang tersimpan saat pesanan dibuat." };
   }));
 
+  /* ---------------- tema & font (parafrase/tema.js): hanya ID paket yang disimpan ---------------- */
+  if (settings) {
+    const tema = require("../parafrase/tema");
+    app.get("/ms/admin/ca/tema", requireAdmin, send(() => ({ current: tema.id(settings.get("ca_tema")), presets: Object.entries(tema.PRESETS).map(([id, p]) => ({ id, ...p })) })));
+    app.post("/ms/admin/ca/tema", requireAdmin, J, send(req => {
+      const v = req.body && req.body.id;
+      if (typeof v !== "string" || !Object.prototype.hasOwnProperty.call(tema.PRESETS, v)) throw bad(400, "Paket tema tidak dikenal.");
+      settings.set({ ca_tema: v }, req.admin.name || req.admin.username || "admin");
+      return { current: v };
+    }));
+  }
   /* ---------------- teks & nama situs (kamus teks: parafrase/sitetexts.js) ---------------- */
   if (texts) {
     const who = req => req.admin.name || req.admin.username || "admin";

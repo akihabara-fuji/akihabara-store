@@ -562,7 +562,7 @@ setWa();
 fetch("/ms/public-config",{cache:"no-store"}).then(function(r){return r.json()}).then(function(c){
   if(!c)return;if(c.admin_wa_number)setWa(c.admin_wa_number);
   document.querySelectorAll("[data-group]").forEach(function(a){if(c.update_group_url){a.href=c.update_group_url;a.target="_blank";a.rel="noopener"}else a.hidden=true});
-  document.querySelectorAll("[data-p]").forEach(function(e){var v=c[e.dataset.p];if(v!=null)e.textContent=rp(v)});
+  document.querySelectorAll("[data-p]").forEach(function(e){var v=c[e.dataset.p];if(v!=null)e.textContent=e.dataset.p==="free_words"?String(v):rp(v)});
 }).catch(function(){});
 fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(function(d){if(d.user){var a=$("#navAcc");a.textContent="Akun saya";a.href="/ms/akun";var m=document.querySelector(".only-m");if(m){m.textContent="Akun saya";m.href="/ms/akun";}}}).catch(function(){});
 /* Galeri kartu layanan: foto bergeser seperti galeri HP saat kursor/fokus/sentuh. Daftar foto di /assets/galeri/galeri.json; kartu tanpa foto tetap teks saja. */
