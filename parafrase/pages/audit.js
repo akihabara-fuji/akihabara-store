@@ -53,7 +53,8 @@
   function el(tag, css, txt) { var e = document.createElement(tag); if (css) e.style.cssText = css; if (txt != null) e.textContent = txt; return e; }
   function render(d) {
     $("rmeta").textContent = d.file.name + " · " + rp(d.words) + " kata";
-    window.auditScoreCard(d.score, $("score"), d.findings);
+    window.auditScoreCard(d.score, $("score"), d.findings, { compact: true });
+    (function () { var sc = $("score"), asp = sc.children[1]; if (!asp) return; var dt = document.createElement("details"), sm = document.createElement("summary"); sm.style.cssText = "cursor:pointer;font-weight:600;margin:0 0 8px"; sm.textContent = "Lihat rincian aspek isi dokumen"; dt.appendChild(sm); sc.replaceChild(dt, asp); dt.appendChild(asp); })();
     /* Urgensi perbaikan dari mesin yang sama dengan Cek & Parafrase; angka Drillbit milik murid menghitungnya ulang di server. */
     var tOpts = { here: "audit", uploadId: upId };
     window.renderTriage($("triage"), d.triage, tOpts);
@@ -87,6 +88,27 @@
     var nOpen = d.findings.filter(function (f) { return f.open; }).length;
     $("rmeta").textContent += d.quote.allFree ? " · seluruhnya gratis" : " · " + nOpen + " dari " + d.findings.length + " temuan dibuka gratis";
     $("cta").classList.toggle("hidden", !d.findings.some(function (f) { return !f.open; }));
+    loadMap(d);
+  }
+  /* Peta warna kalimat dari 500 kata pertama (mesin pratinjau yang sama dengan Cek & Parafrase); sisanya tersamar dari server. */
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function loadMap(d) {
+    var card = $("amapCard"); card.style.display = "none"; if (!upId) return;
+    fetch("/ms/parafrase/preview/" + upId + "?page=1", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (pv) {
+      if (!pv || !pv.paragraphs || !pv.paragraphs.length) return;
+      $("amap").innerHTML = pv.paragraphs.map(function (p) {
+        return "<p>" + p.segments.map(function (s) {
+          var cls = "seg" + (s.primary ? " s-" + s.primary : "") + (s.locked ? " locked" : "");
+          var tag = s.primary ? '<sup class="t c-' + s.primary + '" style="background:none">[' + (s.n ? "contoh " + s.n + " · " : "") + s.codes.join("·") + "]</sup>" : "";
+          return '<span class="' + cls + '"' + (s.locked ? ' aria-hidden="true"' : "") + ">" + esc(s.text) + "</span>" + tag + " ";
+        }).join("") + "</p>";
+      }).join("");
+      card.style.display = "";
+      var more = !!$("amap").querySelector(".locked") || pv.pages > 1 || $("amap").scrollHeight > $("amap").clientHeight + 4;
+      if (d.quote && d.quote.allFree) more = false;
+      $("amapMore").style.display = more ? "flex" : "none";
+      if (!more) $("amap").style.maxHeight = "none";
+    }).catch(function () {});
   }
   /* Kembali dari halaman masuk: pulihkan hasil audit supaya pembeli tinggal lanjut bayar (berlaku 2 jam, sama dengan masa simpan file). */
   try {

@@ -155,11 +155,11 @@ window.auditProblemCard = function (pb, box) {
   wrap.appendChild(ring); wrap.appendChild(side); box.appendChild(wrap);
   var T = window.__pfTri; if (over && T && T.t && T.t.level === "aman") window.renderTriage(T.box, T.t, T.opts);   /* satu kesimpulan: persen di atas batas = tidak "relatif aman" */
 };
-window.auditScoreCard = function (sc, box, findings) {
+window.auditScoreCard = function (sc, box, findings, opts) {
   if (!sc || !box) return; box.innerHTML = "";
   window.pfWrongPct = function (m, tol) { if (m.value == null) return null; var w = m.good === "rendah" ? m.value : 100 - m.value; return Math.round(w * 10) / 10 <= (tol == null ? 5 : tol) ? 0 : Math.round(w * 10) / 10; };
   window.auditProblemCard(sc.problem, box);
-  window.auditAspects(sc, box);
+  window.auditAspects(sc, box, opts);
 };
 
 /* Angka Drillbit asli: murid menempel angka dari laporan Drillbit resminya. Tidak diverifikasi dan tidak disimpan di server;

@@ -35,48 +35,68 @@
   <p class="muted" style="max-width:620px;margin:14px auto 0">Setiap temuan hanya berasal dari isi dokumenmu dan pengecekan DOI nyata. Yang tidak bisa dicek ditandai TIDAK TERVERIFIKASI, tidak ditebak. File disimpan sementara maksimal 2 jam agar bisa dibeli sebagai Audit Lengkap, lalu dihapus otomatis.</p>
 </section>
 
-<section id="s2" class="hero hidden">
-  <h2 id="rt" style="font-size:28px;margin:14px 0 10px">Hasil Audit Ringkas</h2>
-  <p class="lead" id="rmeta"></p>
-  <div id="score"></div>
-  <div id="dbit"></div>
-  <div id="triage"></div>
-  <div id="counts" style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:18px 0"></div>
-  <div id="refs" class="muted" style="margin-bottom:12px"></div>
-  <div id="list" style="max-width:760px;margin:0 auto;text-align:left"></div>
-  <div id="next" style="margin:24px auto 0;max-width:760px;padding:16px 18px;border-radius:16px;border:1px solid var(--line,#2b2b58);text-align:left;line-height:1.8">
-    <b>Langkah berikutnya</b>
-    <div>Sitasi atau daftar pustaka berantakan? Rapikan dengan <a href="/ruangakademikut/sitasi-apa">Generator Sitasi APA (gratis)</a>.</div>
-  </div>
-  <div id="toCek" style="margin:16px auto 0;max-width:760px;padding:20px 22px;border-radius:18px;border:1px solid #7c5cff;background:rgba(124,92,255,.10);text-align:left">
-    <b style="display:block;font-size:19px;margin-bottom:6px">Sudah tahu bagian yang perlu dibenahi. Sekarang rapikan.</b>
-    <div style="line-height:1.6;margin-bottom:12px">Lanjutkan dokumen yang sama ke Cek &amp; Parafrase, tanpa unggah ulang. <span data-fw>500</span> kata pertama dibuka gratis: kamu lihat kalimat mana yang bermasalah, kenapa, dan contoh cara memperbaikinya. Lalu tim kami yang membenahinya, dengan tahap review sebelum dikirim.</div>
-    <a class="btn" id="cekGo" href="/ruangakademikut/cek-parafrase-mandiri">Perbaiki di Cek &amp; Parafrase →</a>
-  </div>
-  <div id="cta" style="margin:24px auto 0;max-width:760px;padding:18px;border-radius:16px;border:1px solid var(--line,#2b2b58);text-align:left">
-    <b>Buka semua temuan (Audit Lengkap)</b>
-    <div class="muted" style="margin:4px 0 10px" id="ctaTxt">Lokasi tepat, penjelasan, dan saran perbaikan untuk semua temuan dokumen ini.</div>
-    <div id="priceBox" style="padding:6px 14px;border-radius:12px;border:1px solid var(--border,#2b2b58);margin-bottom:12px">
-      <div style="display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--border,#2b2b58);font-size:14px"><span style="color:var(--muted)">Total kata dokumen</span><strong id="pWords">-</strong></div>
-      <div style="display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--border,#2b2b58);font-size:14px"><span style="color:var(--muted)">Gratis (kata pertama)</span><strong id="pFree" style="color:#5ee6a8">-</strong></div>
-      <div style="display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--border,#2b2b58);font-size:14px"><span style="color:var(--muted)">Kata yang dihitung</span><strong id="pPay">-</strong></div>
-      <div style="display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--border,#2b2b58);font-size:14px"><span style="color:var(--muted)">Harga per kata</span><strong>Rp <span id="perword" data-p="audit_per_word">9</span></strong></div>
-      <div style="display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--border,#2b2b58);font-size:14px" id="pCalcRow"><span style="color:var(--muted)" id="pCalcLbl">Hitungan</span><strong id="pCalc">-</strong></div>
-      <div style="display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--border,#2b2b58);font-size:14px"><span style="color:var(--muted)">Harga minimum</span><strong id="minp" data-p="audit_min">35k</strong></div>
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0 6px"><span style="font-weight:600">Total bayar</span><span id="total" style="font-size:26px;font-weight:700"></span></div>
-      <div class="muted" id="pNote" style="font-size:12.5px;padding:2px 0 8px"></div>
+<section id="s2" class="wrap hidden">
+  <div class="cols">
+    <div class="main">
+      <div class="card" style="display:flex;flex-direction:column;gap:14px;text-align:left">
+        <h2 id="rt" style="margin:0;font-size:28px">Hasil Audit</h2>
+        <div id="rmeta" class="muted"></div>
+        <div id="score"></div>
+      </div>
+      <div class="card" id="amapCard" style="display:none;text-align:left">
+        <h2 style="margin:0 0 4px;font-size:22px"><span data-fw>500</span> kata pertama dibuka gratis</h2>
+        <p class="muted" id="amapTxt" style="margin:0 0 10px">Sorotan warna menunjukkan kalimat yang bermasalah. Bagian setelahnya dikaburkan sampai dibuka.</p>
+        <div style="position:relative">
+          <div class="doc" id="amap" aria-label="Pratinjau dokumen" style="max-height:420px;overflow:hidden;line-height:2;font-size:15px;padding:16px"></div>
+          <div id="amapMore" style="display:none;position:absolute;left:0;right:0;bottom:0;height:150px;border-radius:0 0 12px 12px;background:linear-gradient(to bottom,transparent,var(--bg,#0a0f26) 78%);align-items:flex-end;justify-content:center;padding-bottom:14px">
+            <a class="btn" href="#cta" id="amapGo">Lihat lebih banyak kesalahan yang harus diperbaiki</a>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="text-align:left;display:flex;flex-direction:column;gap:12px">
+        <h2 style="margin:0;font-size:22px">Hal yang harus diperbaiki</h2>
+        <div id="dbit"></div>
+        <div id="triage"></div>
+        <div id="counts" style="display:flex;flex-wrap:wrap;gap:12px;margin:4px 0"></div>
+        <div id="refs" class="muted"></div>
+        <div id="list"></div>
+        <div id="next" style="padding:14px 16px;border-radius:14px;border:1px solid var(--line,#2b2b58);line-height:1.8">
+          <b>Langkah berikutnya</b>
+          <div>Sitasi atau daftar pustaka berantakan? Rapikan dengan <a href="/ruangakademikut/sitasi-apa">Generator Sitasi APA (gratis)</a>.</div>
+        </div>
+      </div>
+      <div id="toCek" style="padding:20px 22px;border-radius:18px;border:1px solid #7c5cff;background:rgba(124,92,255,.10);text-align:left">
+        <b style="display:block;font-size:19px;margin-bottom:6px">Sudah tahu bagian yang perlu dibenahi. Sekarang rapikan.</b>
+        <div style="line-height:1.6;margin-bottom:12px">Lanjutkan dokumen yang sama ke Cek &amp; Parafrase, tanpa unggah ulang. <span data-fw>500</span> kata pertama dibuka gratis: kamu lihat kalimat mana yang bermasalah, kenapa, dan contoh cara memperbaikinya. Lalu tim kami yang membenahinya, dengan tahap review sebelum dikirim.</div>
+        <a class="btn" id="cekGo" href="/ruangakademikut/cek-parafrase-mandiri">Perbaiki di Cek &amp; Parafrase →</a>
+      </div>
     </div>
-    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px">
-      <label for="wa" style="font-weight:600;font-size:14px">Nomor WhatsApp (untuk konfirmasi)</label>
-      <input id="wa" type="text" inputmode="tel" placeholder="08xx" autocomplete="tel" style="padding:12px 14px;border-radius:12px;border:1px solid currentColor;background:transparent;color:inherit;font:inherit">
-      <label style="display:flex;gap:8px;align-items:flex-start;font-size:13.5px"><input id="agree" type="checkbox"> <span>Saya setuju dengan <a href="/ms/ketentuan">syarat</a> dan <a href="/ms/privasi">kebijakan privasi</a>.</span></label>
-      <div id="oerr" class="err hidden" role="alert"></div>
+    <div class="side" id="cta" style="scroll-margin-top:90px;position:sticky;top:84px">
+      <div class="card" style="padding:0;overflow:hidden">
+        <div class="hd"><div style="font-size:17px;font-weight:700">Informasi Harga</div><div style="font-size:13px;color:#D6E6F3">Audit Lengkap: semua temuan dibuka</div></div>
+        <div class="price" id="priceBox">
+          <div class="l"><span style="color:var(--muted)">Total kata dokumen</span><strong id="pWords">-</strong></div>
+          <div class="l"><span style="color:var(--muted)">Gratis (kata pertama)</span><strong id="pFree" style="color:#5ee6a8">-</strong></div>
+          <div class="l"><span style="color:var(--muted)">Kata yang dihitung</span><strong id="pPay">-</strong></div>
+          <div class="l"><span style="color:var(--muted)">Harga per kata</span><strong>Rp <span id="perword" data-p="audit_per_word">9</span></strong></div>
+          <div class="l" id="pCalcRow"><span style="color:var(--muted)" id="pCalcLbl">Hitungan</span><strong id="pCalc">-</strong></div>
+          <div class="l"><span style="color:var(--muted)">Harga minimum</span><strong id="minp" data-p="audit_min">35k</strong></div>
+          <div class="tot"><span style="font-weight:600">Total bayar</span><span id="total" style="font-size:24px;font-weight:700">-</span></div>
+          <div class="muted" id="pNote" style="font-size:12.5px"></div>
+        </div>
+        <div style="padding:0 22px 22px;display:flex;flex-direction:column;gap:10px">
+          <label for="wa" style="font-weight:600;font-size:14px">Nomor WhatsApp (untuk konfirmasi)</label>
+          <input id="wa" type="text" inputmode="tel" placeholder="08xx" autocomplete="tel" style="padding:12px 14px;border-radius:12px;border:1px solid currentColor;background:transparent;color:inherit;font:inherit">
+          <label style="display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.5"><input type="checkbox" id="agree" style="width:18px;height:18px;margin-top:2px"><span>Saya setuju dengan <a href="/ms/ketentuan">syarat</a> dan <a href="/ms/privasi">kebijakan privasi</a>.</span></label>
+          <div id="oerr" class="err hidden" role="alert" style="margin:0"></div>
+          <button class="btn" id="buy" type="button" disabled>Beli Audit Lengkap<span id="buyAmt"></span></button>
+          <button class="btn" id="again" type="button" style="background:transparent;color:inherit;border:1px solid currentColor">Periksa ulang dokumen lain</button>
+        </div>
+      </div>
     </div>
-    <button class="btn" id="buy" type="button" disabled>Beli Audit Lengkap<span id="buyAmt"></span></button>
-    <button class="btn" id="again" type="button" style="margin-left:8px;background:transparent;color:inherit;border:1px solid currentColor">Periksa ulang dokumen lain</button>
   </div>
 </section>
 
-<script src="/ruangakademikut/assets/common.js?v=20261211"></script><script src="/ruangakademikut/assets/audit.js?v=20261210"></script>
+<script src="/ruangakademikut/assets/common.js?v=20261212"></script><script src="/ruangakademikut/assets/audit.js?v=20261212"></script>
 <footer class="ft"><div class="wrap ft-in"><div class="ft-b"><b>Catatan Akademik</b><span>Jakarta Barat. Layanan UT dan Blog.</span><small>© Catatan Akademik. Semua hak dilindungi.</small></div><nav class="ft-n" aria-label="Footer"><a href="/ruangakademikut">Layanan UT</a><a href="/ruangakademikut/blog-ut">Blog &amp; Berita UT</a><a href="/ruangakademikut/tentang">Tentang</a><a href="/ms/masuk">Masuk</a><a href="/ms/privasi">Privasi</a><a href="/ms/ketentuan">Ketentuan</a></nav></div></footer>
 </body></html>
