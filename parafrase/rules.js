@@ -59,15 +59,35 @@ function findCitations(text) {
 const hasCitation = t => findCitations(t).some(c => !c.noYear);
 
 /* ---------- daftar pustaka ---------- */
+/* Awal entri pustaka: "Nama, I." / "Nama & Nama (2020)" / "Nama (2020)", dengan tahun di 160 karakter pertama. Selain itu baris lanjutan (PDF memecah satu entri jadi beberapa baris). */
+const BIB_START = new RegExp(`^${NAME}(?:\\s*,\\s*(?:\\p{Lu}\\.\\s*)+|\\s*,\\s*\\p{Lu}[\\p{L}.'’ -]*\\(|\\s+(?:&|dan|and)\\s+${NAME}|\\s+et\\s+al|\\s*\\()`, "u");
+const BIB_END = /^\s*(lampiran|appendix|appendices)\b/i;
+const isBibStart = t => BIB_START.test(t) && new RegExp(`\\b${YEAR}\\b`).test(t.slice(0, 160));
+
 function parseBibliography(paras, bibAt) {
   const keys = new Set(), entries = [];
   if (bibAt == null) return { keys, entries };
+  // 1) kumpulkan baris sampai judul Lampiran (Lampiran bukan daftar pustaka)
+  const lines = [];
   for (let i = bibAt + 1; i < paras.length; i++) {
     const t = paras[i].text.trim(); if (!t) continue;
+    if (countWords(t) <= 8 && BIB_END.test(t)) break;
+    lines.push({ idx: i, t });
+  }
+  // 2) PDF memecah entri per baris: bila banyak baris bukan awal entri, gabungkan baris lanjutan ke entri sebelumnya
+  const starts = lines.filter(l => isBibStart(l.t)).length;
+  const wrapped = lines.length >= 4 && starts >= 1 && (lines.length - starts) / lines.length >= 0.3;
+  const units = [];
+  for (const l of lines) {
+    if (wrapped && units.length && !isBibStart(l.t)) units[units.length - 1].t += " " + l.t;
+    else units.push({ idx: l.idx, t: l.t });
+  }
+  for (const u of units) {
+    const t = u.t;
     const y = t.match(new RegExp(`\\((${YEAR})\\)|\\b(${YEAR})\\b`));
     const s = t.match(new RegExp(`^(${NAME})`, "u"));
-    if (!y || !s) { entries.push({ idx: i, surname: "", year: "" }); continue; }
-    const e = { idx: i, surname: norm(s[1]), year: (y[1] || y[2]).slice(0, 4) };
+    if (!y || !s) { entries.push({ idx: u.idx, surname: "", year: "" }); continue; }
+    const e = { idx: u.idx, surname: norm(s[1]), year: (y[1] || y[2]).slice(0, 4) };
     entries.push(e); keys.add(e.surname + e.year);
   }
   return { keys, entries };
