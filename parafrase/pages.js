@@ -31,7 +31,7 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
     let out = fs.readFileSync(path.join(dir, file), "utf8");
     if (file === "blog-ut.html") out = out.replace('<div id="bl" class="bx-host"></div>', `<div id="bl" class="bx-host">${blogCards(req)}</div>`);
     if (file === "hub.html" && texts) out = texts.hideCards(out, opts.hidden || hiddenCards());
-    if (texts) out = texts.apply(out, opts.over || null, { mark: opts.mark });
+    if (texts) out = texts.apply(out, opts.over || null, { mark: opts.mark, edit: opts.edit });
     out = (TRACK.has(file) && !opts.preview ? out.replace("</head>", '<script async src="/t.js"></script></head>') : out).replaceAll("{{SITE}}", SITE);
     return shorten(out);
   }

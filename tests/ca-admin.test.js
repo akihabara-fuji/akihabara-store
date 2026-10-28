@@ -24,7 +24,7 @@ async function setup() {
   const requireAdmin = (req, res, next) => auth.isCaPath(req.path) ? auth.guard(req, res, next) : (getCookie(req, "ms_admin") === "ok" ? next() : res.status(401).json({ error: "nextaja" }));
   const blog = require("../blog-akun")({ app, express, requireAdmin, sameOrigin, getCookie, SECURE_COOKIE: false, ROOT: root, SITE: "https://contoh.test", getSettings: () => ({}) });
   const pf = require("../parafrase")({ app, express, requireAdmin, sameOrigin, ROOT: root, db });
-  require("../admin-ca")({ app, express, db, auth, requireAdmin, blog, settings: pf.settings, orders: pf.orders, ROOT: root, UPLOADS: path.join(root, "public", "uploads"), sharp: null, ACAD: "https://contoh.test" });
+  require("../admin-ca")({ app, express, db, auth, requireAdmin, blog, settings: pf.settings, orders: pf.orders, texts: pf.texts, pages: pf.pages, ROOT: root, UPLOADS: path.join(root, "public", "uploads"), sharp: null, ACAD: "https://contoh.test" });
   const srv = app.listen(0), base = "http://127.0.0.1:" + srv.address().port;
   const call = async (p, { cookie = "", method = "GET", json } = {}) => {
     const r = await fetch(base + p, { method, headers: { origin: base, cookie, ...(json ? { "content-type": "application/json" } : {}) }, body: json ? JSON.stringify(json) : undefined, redirect: "manual" });
@@ -155,5 +155,19 @@ test("SEO admin: hanya artikel akademik diperiksa; judul/ringkasan tanpa 'UT' di
     const by = Object.fromEntries(s.body.checks.map(c => [c.title, c.issues.some(i => /belum menyebut/.test(i))]));
     assert.deepStrictEqual(by, { "Cara membagi waktu kuliah sambil bekerja": true, "Jadwal UAS UT semester ini": false });
     assert.strictEqual(s.body.checks.length, 2, "artikel non-akademik tidak ikut diperiksa");
+  } finally { srv.close(); }
+});
+
+test("Editor Halaman: halaman asli dengan teks yang bisa diklik, halaman terlarang ditolak", async () => {
+  const { srv, call, login } = await setup();
+  try {
+    const own = await login("pemilik", OWNER_PW);
+    const r = await call("/ms/admin/ca/editor/page", { cookie: own, method: "POST", json: { page: "beranda.html" } });
+    assert.strictEqual(r.status, 200);
+    assert.ok(r.body.html.includes('data-ed="') && r.body.html.includes("postMessage"), "teks ditandai dan skrip editor terpasang");
+    const x = await call("/ms/admin/ca/editor/page", { cookie: own, method: "POST", json: { page: "pesanan.html" } });
+    assert.strictEqual(x.status, 400);
+    const anon = await call("/ms/admin/ca/editor/page", { method: "POST", json: { page: "beranda.html" } });
+    assert.ok(anon.status === 401 || anon.status === 403, "tanpa login ditolak");
   } finally { srv.close(); }
 });

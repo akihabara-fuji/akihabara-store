@@ -35,7 +35,7 @@
   const NAV = [
     { items: [["dashboard", "Dashboard", "home", ALL], ["traffic", "Pengunjung & Konten", "chart", ED]] },
     { h: "Konten", items: [["posts", "Artikel Blog", "doc", ED], ["posts/new", "Tulis Artikel", "pen", ED], ["taxonomy", "Kategori & Tag", "tag", ED], ["media", "Media", "img", ED], ["comments", "Komentar", "chat", ED], ["studio", "Studio Posting Sosmed", "send", ED]] },
-    { h: "Tampilan Situs", items: [["images", "Gambar Situs", "img", ED], ["testimonials", "Testimoni", "chat", ED], ["texts", "Teks & Nama", "pen", OWN]] },
+    { h: "Tampilan Situs", items: [["editor", "Editor Halaman", "pen", OWN], ["images", "Gambar Situs", "img", ED], ["testimonials", "Testimoni", "chat", ED], ["texts", "Teks & Nama", "pen", OWN]] },
     { h: "Pesanan", items: [["orders", "Pesanan Layanan", "box", CS, true], ["payments", "Konfirmasi Pembayaran", "card", CS], ["tools/parafrase", "Antrean Cek & Parafrase", "list", CS], ["tools/layanan", "Kirim Hasil Layanan", "send", CS]] },
     { h: "Pengguna", items: [["customers", "Pelanggan", "users", CS]] },
     { h: "Lainnya", items: [["services", "Layanan & Harga", "price", OWN], ["reports", "Laporan & Statistik", "chart", OWN], ["settings", "Pengaturan Website", "cog", OWN], ["seo", "SEO & Sitemap", "search", OWN], ["admins", "Admin & Peran", "shield", OWN], ["log", "Log Aktivitas", "clock", OWN]] },
@@ -143,7 +143,7 @@
     [/^studio$/, ED, pStudio], [/^images$/, ED, pImages], [/^taxonomy$/, ED, pTaxonomy], [/^media$/, ED, pMedia], [/^comments$/, ED, pComments],
     [/^orders$/, CS, pOrders], [/^orders\/([A-Za-z0-9-]+)$/, CS, m => pOrder(m[1])], [/^payments$/, CS, pPayments],
     [/^tools\/(parafrase|layanan)$/, CS, m => pEmbed(m[1])], [/^customers$/, CS, pCustomers],
-    [/^testimonials$/, ED, pTestimonials], [/^texts$/, OWN, pTexts], [/^services$/, OWN, pServices], [/^reports$/, OWN, pReports], [/^settings$/, OWN, pSettings], [/^seo$/, OWN, pSeo], [/^admins$/, OWN, pAdmins], [/^log$/, OWN, pLog], [/^account$/, ALL, pAccount],
+    [/^testimonials$/, ED, pTestimonials], [/^editor$/, OWN, pEditor], [/^texts$/, OWN, pTexts], [/^services$/, OWN, pServices], [/^reports$/, OWN, pReports], [/^settings$/, OWN, pSettings], [/^seo$/, OWN, pSeo], [/^admins$/, OWN, pAdmins], [/^log$/, OWN, pLog], [/^account$/, ALL, pAccount],
   ];
   const params = () => new URLSearchParams((location.hash.split("?")[1]) || "");
   const go = (path, q) => { const s = q ? "?" + new URLSearchParams(Object.entries(q).filter(([, v]) => v !== "" && v != null)).toString() : ""; location.hash = "#/" + path + (s === "?" ? "" : s); };
@@ -789,6 +789,46 @@
   const saveSettings = values => api("/ms/admin/parafrase/settings", { method: "PUT", json: { values } });
 
   /* ================= TAMPILAN SITUS: teks & nama, testimoni ================= */
+  /* ================= EDITOR HALAMAN (klik bagian web lalu ganti) ================= */
+  async function pEditor() {
+    const d = await api("/ms/admin/ca/texts"), files = Object.entries(d.files || {}).filter(([f]) => !/^(audit-hasil|pesanan)\.html$/.test(f));
+    if (window.__edMsg) window.removeEventListener("message", window.__edMsg);
+    setPage("Editor Halaman", "Klik teks atau foto langsung di halaman, lalu ubah di panel kanan. Tersimpan dan tayang saat kamu menekan Simpan", `
+      <div class="bar"><select class="in" id="edP" style="max-width:300px" aria-label="Halaman">${files.map(([f, l]) => `<option value="${esc(f)}">${esc(l)}</option>`).join("")}</select><span class="grow"></span><button class="btn sm" id="edM" type="button">HP</button><button class="btn sm pri" id="edD" type="button">Desktop</button></div>
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start" id="edG">
+        <div class="card" style="padding:0;overflow:hidden;background:#e9e9f2"><div id="edW" style="margin:0 auto;width:100%;transition:width .2s"><iframe id="edF" title="Pratinjau halaman" style="width:100%;height:78vh;border:0;background:#fff" sandbox="allow-same-origin allow-scripts"></iframe></div></div>
+        <div class="card" style="position:sticky;top:12px"><div class="hd"><h2>Yang dipilih</h2></div><div class="bd" id="edB"><p class="muted small" style="margin:0">Belum ada. Klik teks atau foto di halaman.</p></div></div>
+      </div>
+      <p class="small muted">Teks yang sama di banyak tempat (mis. nama menu) berubah bersamaan. Harga dan teks yang diisi otomatis oleh sistem tidak bisa diklik. Isi artikel diubah di menu Artikel.</p>`);
+    const F = $("#edF"), B = $("#edB");
+    const load = async keep => {
+      const y = keep && F.contentWindow ? F.contentWindow.scrollY : 0;
+      try { const r = await api("/ms/admin/ca/editor/page", { method: "POST", json: { page: $("#edP").value } }); F.onload = () => { if (y) try { F.contentWindow.scrollTo(0, y) } catch {} }; F.srcdoc = r.html; } catch (e) { toast(e.message || "Halaman gagal dimuat", true); }
+    };
+    $("#edP").onchange = () => { B.innerHTML = '<p class="muted small" style="margin:0">Belum ada. Klik teks atau foto di halaman.</p>'; load(false); };
+    $("#edM").onclick = () => { $("#edW").style.width = "390px"; $("#edM").classList.add("pri"); $("#edD").classList.remove("pri"); };
+    $("#edD").onclick = () => { $("#edW").style.width = "100%"; $("#edD").classList.add("pri"); $("#edM").classList.remove("pri"); };
+    const showText = m => {
+      const it = d.items.find(i => i.orig === m.orig) || {};
+      B.innerHTML = `<label class="small muted" for="edT">Teks (maks ${d.max} huruf, tanpa tanda &lt; &gt;)</label><textarea class="in" id="edT" rows="5" maxlength="${d.max}" style="margin:6px 0 10px"></textarea>
+        <p class="small muted" style="margin:0 0 10px">Berlaku di ${m.count} tempat di halaman ini dan halaman lain yang memakai teks yang sama.${it.value != null ? " Teks asli: <b>" + esc(m.orig) + "</b>" : ""}</p>
+        <div class="bar"><button class="btn pri" id="edS" type="button">Simpan</button><button class="btn" id="edR" type="button">Kembalikan</button></div>`;
+      $("#edT").value = m.value;
+      $("#edS").onclick = async () => { try { await api("/ms/admin/ca/texts", { method: "POST", json: { orig: m.orig, value: $("#edT").value } }); toast("Tersimpan dan tayang"); const n = await api("/ms/admin/ca/texts"); d.items = n.items; load(true); } catch (e) { toast(e.message || "Gagal menyimpan", true); } };
+      $("#edR").onclick = async () => { try { await api("/ms/admin/ca/texts/reset", { method: "POST", json: { orig: m.orig } }); toast("Dikembalikan ke teks bawaan"); const n = await api("/ms/admin/ca/texts"); d.items = n.items; load(true); } catch (e) { toast(e.message || "Gagal", true); } };
+    };
+    const showImg = m => {
+      const url = m.kind === "card" ? "/ms/admin/parafrase/card-images/" + m.id : "/ms/admin/site-images/" + m.id;
+      B.innerHTML = `<p style="margin:0 0 10px"><b>${esc(m.label)}</b></p><p class="small muted" style="margin:0 0 10px">Pilih foto baru (JPG, PNG, atau WebP, maks 12 MB). Otomatis dikecilkan dan langsung tayang.</p>
+        <input class="in" type="file" id="edU" accept="image/jpeg,image/png,image/webp" aria-label="Pilih foto"><div class="bar" style="margin-top:10px"><button class="btn" id="edX" type="button">Kembalikan foto bawaan</button></div>`;
+      $("#edU").onchange = async () => { const f = $("#edU").files[0]; if (!f) return; const fd = new FormData(); fd.append("img", f); toast("Mengunggah…"); try { await api(url, { method: "POST", form: fd }); toast("Foto diganti"); load(true); } catch (e) { toast(e.message || "Gagal mengunggah", true); } };
+      $("#edX").onclick = async () => { if (!await confirmAct("Kembalikan foto bawaan?", "Foto yang kamu unggah dihapus dan foto bawaan dipakai lagi.", "Kembalikan")) return; try { await api(url, { method: "DELETE" }); toast("Foto bawaan dipakai lagi"); load(true); } catch (e) { toast(e.message || "Gagal", true); } };
+    };
+    window.__edMsg = ev => { const m = ev.data; if (!m || !m.ed || ev.source !== F.contentWindow) return; if (m.ed === "text") showText(m); else if (m.ed === "img") showImg(m); };
+    window.addEventListener("message", window.__edMsg);
+    load(false);
+  }
+
   async function pTexts() {
     const d = await api("/ms/admin/ca/texts"), files = d.files || {}, fileOf = label => Object.keys(files).find(k => files[k] === label);
     const state = { q: "", page: "", only: false };

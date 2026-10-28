@@ -63,7 +63,7 @@ module.exports = function createTexts({ db, dir }) {
   /* ---------- terapkan penggantian pada HTML ---------- */
   function apply(html, over = null, opts = {}) {
     const m = over || load();
-    if (!m.size) return html;
+    if (!m.size && !opts.edit) return html;
     let last = "";
     return String(html).replace(TOKEN, (all, prot, tag, text) => {
       if (prot) return all;
@@ -74,6 +74,10 @@ module.exports = function createTexts({ db, dir }) {
       }
       if (!editableAfter(last)) return all;
       const k = norm(text);
+      if (opts.edit && isCandidate(k) && !/^<(?:title|option)\b/i.test(last)) {
+        const lead0 = text.match(/^\s*/)[0], trail0 = text.match(/\s*$/)[0], shown = m.has(k) ? m.get(k) : k;
+        return lead0 + `<span data-ed="${encode(k)}" class="ed-t">${encode(shown)}</span>` + trail0;
+      }
       if (!isCandidate(k) || !m.has(k)) return all;
       const lead = text.match(/^\s*/)[0], trail = text.match(/\s*$/)[0], val = encode(m.get(k));
       return lead + (opts.mark === k ? `<mark style="background:#ffe066;color:#111;padding:0 2px;border-radius:3px">${val}</mark>` : val) + trail;

@@ -212,6 +212,27 @@ module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, b
     }));
   }
 
+  /* ---------------- editor halaman visual: halaman asli dengan teks yang bisa diklik (papan 4 di mock) ---------------- */
+  if (texts && pages) {
+    const EDITOR_JS = `(function(){var st=document.createElement("style");st.textContent="[data-ed]{cursor:pointer}[data-ed]:hover{outline:2px solid #7c3aed;outline-offset:2px;background:rgba(124,58,237,.14)}.ed-sel{outline:3px solid #7c3aed!important;outline-offset:2px}img.nx-bg,[data-g]{cursor:pointer}img.nx-bg:hover,[data-g]:hover .gal{outline:3px solid #7c3aed;outline-offset:-3px}";document.head.appendChild(st);
+function sel(el){document.querySelectorAll(".ed-sel").forEach(function(x){x.classList.remove("ed-sel")});el.classList.add("ed-sel")}
+document.addEventListener("click",function(e){var t=e.target.closest("[data-ed]"),im=e.target.closest("img.nx-bg"),g=e.target.closest("[data-g]");
+if(!t&&!im&&!g){if(e.target.closest("a,button,summary,label"))e.preventDefault();return}
+e.preventDefault();e.stopPropagation();
+if(t){sel(t);var o=t.getAttribute("data-ed"),n=0;document.querySelectorAll("[data-ed]").forEach(function(x){if(x.getAttribute("data-ed")===o)n++});parent.postMessage({ed:"text",orig:o,value:t.textContent,count:n},"*")}
+else if(im){sel(im);parent.postMessage({ed:"img",kind:"site",id:"hero/model-ut",label:"Foto utama di atas landing"},"*")}
+else{sel(g);var h=g.querySelector("h3");parent.postMessage({ed:"img",kind:"card",id:g.getAttribute("data-g"),label:"Foto kartu "+(h?h.textContent:g.getAttribute("data-g"))},"*")}
+},true);
+document.addEventListener("submit",function(e){e.preventDefault()},true);
+})();`;
+    app.post("/ms/admin/ca/editor/page", requireAdmin, J, send(req => {
+      const file = String((req.body || {}).page || "");
+      if (!Object.keys(texts.PAGES).includes(file) || /^(audit-hasil|pesanan)\.html$/.test(file)) throw bad(400, "Halaman tidak dikenal.");
+      const html = pages.render(file, req, { edit: true, preview: true });
+      return { html: html.includes("</body>") ? html.replace("</body>", `<script>${EDITOR_JS}</script></body>`) : html + `<script>${EDITOR_JS}</script>` };
+    }));
+  }
+
   /* ---------------- laporan ---------------- */
   app.get("/ms/admin/ca/report", requireAdmin, send(req => {
     const r = range(req.query, 30);

@@ -8,7 +8,7 @@ const multer = require("multer");
 const sharp = require("sharp");
 
 const GROUPS = {
-  hero: { label: "Landing Catatan Akademik", names: { "mascot-hero": "Maskot utama (atas landing)", "mascot-hero-s": "Maskot utama versi ringan (HP)", "mascot-studio": "Maskot bagian Studio", "statue-640": "Patung latar (ukuran kecil)", "statue-1000": "Patung latar (ukuran besar)" } },
+  hero: { label: "Landing Catatan Akademik", names: { "mascot-hero": "Maskot utama (atas landing)", "mascot-hero-s": "Maskot utama versi ringan (HP)", "mascot-studio": "Maskot bagian Studio", "statue-640": "Patung latar (ukuran kecil)", "statue-1000": "Patung latar (ukuran besar)", "model-ut": "Foto utama (mahasiswi di atas landing)" } },
   portal: { label: "Banner blog dan portal", names: { "blog-berita": "Blog dan berita", "jadwal-kalender": "Info UT: jadwal", "materi-belajar": "Materi belajar", "karir-lowongan": "Karir dan lowongan", "metodologi": "Metodologi penelitian", "preset-template": "Preset dan template", "registrasi": "Registrasi", "ruang-akademik": "Ruang Akademik", "selamat-datang": "Selamat datang", "tentang": "Tentang", "tips-kuliah": "Tips kuliah", "tools-ai": "Tools AI", "tugas-diskusi": "Tugas dan diskusi", "ujian-ut": "Ujian UT", "video-studio": "Video Content Studio" } },
 };
 const MAX = 12 * 1024 * 1024;
@@ -25,7 +25,10 @@ module.exports = function mountSiteImg({ app, root, requireAdmin }) {
     res.set({ "Cache-Control": "no-cache", "X-Content-Type-Options": "nosniff" });
     res.sendFile(file(g, m[1]), err => {
       if (!err || res.headersSent) return;
-      res.sendFile(path.join(root, "public", "assets", g, m[1] + ".webp"), e2 => { if (e2 && !res.headersSent) res.status(404).end(); });
+      res.sendFile(path.join(root, "public", "assets", g, m[1] + ".webp"), e2 => {
+        if (!e2 || res.headersSent) return;
+        res.sendFile(path.join(root, "public", "assets", g, m[1] + ".jpg"), e3 => { if (e3 && !res.headersSent) res.status(404).end(); });
+      });
     });
   });
 

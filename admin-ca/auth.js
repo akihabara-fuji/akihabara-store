@@ -60,7 +60,7 @@ module.exports = function createCaAuth({ db, getCookie, sameOrigin, SECURE_COOKI
     if (req.method !== "GET" && !sameOrigin(req)) return res.status(403).json({ error: "Permintaan ditolak." });
     if (!can(who.role, req.method, req.path)) return res.status(403).json({ error: `Akses ditolak untuk peran ${ROLES[who.role] || who.role}.` });
     req.admin = who;
-    if (req.method !== "GET") res.on("finish", () => log(who, `${req.method} ${req.path}`, req.params && (req.params.id || req.params.slug), res.statusCode, req.ip));
+    if (req.method !== "GET" && !/\/(texts\/preview|editor\/page)$/.test(req.path)) res.on("finish", () => log(who, `${req.method} ${req.path}`, req.params && (req.params.id || req.params.slug), res.statusCode, req.ip));
     next();
   }
 
