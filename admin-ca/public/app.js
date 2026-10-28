@@ -343,7 +343,7 @@
     const live = p && (p.status === "published" || (p.status === "scheduled" && Date.parse(p.publishAt) <= Date.now()));
     const st = p ? (stOf(p) === "published" ? "published" : p.status) : "draft";
     const localAt = v => { if (!v) return ""; const x = new Date(Date.parse(v) + 7 * 3600e3); return x.toISOString().slice(0, 16); };
-    const v = p || { title: "", slug: "", topic: Object.keys(d.topics)[0], excerpt: "", body: "", cover: "", tags: [], author: "dk", coverAlt: "", coverCaption: "", metaTitle: "", metaDesc: "" };
+    const v = p || { title: "", slug: "", topic: Object.keys(d.topics)[0], excerpt: "", body: "", cover: "", tags: [], author: "dk", coverAlt: "", coverCaption: "", metaTitle: "", metaDesc: "", hookService: "", hookText: "", recommendedAt: "", recommendedWhy: "" };
     const TB = [["P", "Paragraf biasa", "p"], ["H2", "Sub-judul H2", "h2"], ["H3", "Sub-judul H3", "h3"], ["H4", "Sub-judul H4", "h4"], "|", ["B", "Tebal (Ctrl+B)", "b"], ["I", "Miring (Ctrl+I)", "i"], "|", ["•", "Daftar poin", "ul"], ["1.", "Daftar bernomor", "ol"], ["❝", "Kutipan", "q"], ["🔗", "Tautan (Ctrl+K)", "a"], ["🖼", "Sisipkan foto", "img"], ["▦", "Tabel", "tbl"], "|", ["↶", "Urungkan (Ctrl+Z)", "undo"], ["↷", "Ulangi (Ctrl+Y)", "redo"]];
     setPage(p ? "Edit Artikel" : "Tulis Artikel", p ? `Terakhir diubah ${dt(p.updatedAt)}${p.updatedBy ? " oleh " + esc(p.updatedBy) : ""}` : "Artikel baru", `
       <form class="ed" id="ef" novalidate>
@@ -371,6 +371,12 @@
               <input type="hidden" name="cover" value="${esc(v.cover || "")}">
               <label class="f">Teks alt sampul <small>· jelaskan isi gambar untuk pembaca layar dan Google</small><input class="in" name="coverAlt" maxlength="160" value="${esc(v.coverAlt || "")}"></label>
               <label class="f">Keterangan foto (caption) <small>· opsional</small><input class="in" name="coverCaption" maxlength="200" value="${esc(v.coverCaption || "")}"></label>
+              <div class="f" style="font-size:13px;font-weight:600">Hook layanan di artikel</div>
+              <label class="f">Layanan yang diajak <small>· otomatis dari isi artikel</small><select class="in" name="hookService">${[["", "Otomatis"], ["audit", "Audit Dokumen"], ["tugas", "Tugas tutorial"], ["diskusi", "Diskusi"], ["metopen", "Metopen UT"], ["off", "Matikan hook"]].map(([k, l]) => `<option value="${k}" ${(v.hookService || "") === k ? "selected" : ""}>${l}</option>`).join("")}</select></label>
+              <label class="f">Kalimat ajakan <small>· opsional, kosong = bawaan</small><input class="in" name="hookText" maxlength="120" value="${esc(v.hookText || "")}"></label>
+              <div class="f" style="font-size:13px;font-weight:600">Jadwal terbit yang disarankan</div>
+              <label class="f">Tanggal rekomendasi <small>· isi dari tanggal penting UT yang sudah terverifikasi</small><input class="in" type="date" name="recommendedAt" value="${esc(v.recommendedAt || "")}"></label>
+              <label class="f">Alasan <small>· mis. sebelum tuton dibuka</small><input class="in" name="recommendedWhy" maxlength="160" value="${esc(v.recommendedWhy || "")}"></label>
               ${p ? `<button type="button" class="btn sm" id="revB">Riwayat revisi</button>` : ""}
             </div>
             <div class="bd" data-pane="seo" hidden style="flex-direction:column;gap:12px">
@@ -389,7 +395,7 @@
         </div>
       </form>`);
     const f = $("#ef"), ta = $("#body"), key = "ca-draft-" + (id || "new");
-    const val = () => ({ id: id || undefined, title: f.elements.title.value.trim(), slug: f.slug.value.trim(), topic: f.topic.value, body: ta.value, excerpt: f.excerpt.value.trim(), status: f.status.value, publishAt: f.publishAt.value ? new Date(f.publishAt.value + ":00+07:00").toISOString() : "", author: f.author.value.trim(), tags: f.tags.value, cover: f.cover.value, coverAlt: f.coverAlt.value.trim(), coverCaption: f.coverCaption.value.trim(), metaTitle: f.metaTitle.value.trim(), metaDesc: f.metaDesc.value.trim() });
+    const val = () => ({ id: id || undefined, title: f.elements.title.value.trim(), slug: f.slug.value.trim(), topic: f.topic.value, body: ta.value, excerpt: f.excerpt.value.trim(), status: f.status.value, publishAt: f.publishAt.value ? new Date(f.publishAt.value + ":00+07:00").toISOString() : "", author: f.author.value.trim(), tags: f.tags.value, cover: f.cover.value, coverAlt: f.coverAlt.value.trim(), coverCaption: f.coverCaption.value.trim(), metaTitle: f.metaTitle.value.trim(), metaDesc: f.metaDesc.value.trim(), hookService: f.hookService.value, hookText: f.hookText.value.trim(), recommendedAt: f.recommendedAt.value, recommendedWhy: f.recommendedWhy.value.trim() });
     const LBL = { draft: "Simpan draf", review: "Kirim ke review", scheduled: "Jadwalkan", published: live ? "Perbarui artikel" : "Terbitkan" };
     const sync = () => {
       const s = f.status.value; $("#saveB").textContent = LBL[s]; $("#whenL").hidden = s !== "scheduled";
@@ -416,7 +422,7 @@
     // pemulihan draf lokal (hanya di browser ini) bila lebih baru dari versi server
     try { const loc = JSON.parse(store(key) || "null"); if (loc && (!p || loc.at > Date.parse(p.updatedAt)) && (loc.v.body !== v.body || loc.v.title !== v.title)) {
       if (await dialog({ title: "Pulihkan draf lokal?", body: `<p>Ada perubahan yang belum disimpan dari ${esc(dt(loc.at))} di browser ini.</p>`, ok: "Pulihkan", cancel: "Abaikan" })) {
-        ["title", "slug", "excerpt", "author", "tags", "coverAlt", "coverCaption", "metaTitle", "metaDesc"].forEach(k => { if (f[k] && !f[k].disabled && loc.v[k] != null) f[k].value = loc.v[k]; }); ta.value = loc.v.body || ""; DIRTY = true; sync();
+        ["title", "slug", "excerpt", "author", "tags", "coverAlt", "coverCaption", "metaTitle", "metaDesc", "hookText", "recommendedAt", "recommendedWhy"].forEach(k => { if (f[k] && !f[k].disabled && loc.v[k] != null) f[k].value = loc.v[k]; }); ta.value = loc.v.body || ""; DIRTY = true; sync();
       } else store(key, null);
     } } catch (e) { store(key, null); }
 

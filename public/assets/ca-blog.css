@@ -148,3 +148,10 @@
 .ax-drawer{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.5);display:flex;justify-content:flex-end}.ax-drawer[hidden]{display:none}
 .ax-drawer-in{width:min(320px,88vw);height:100%;overflow:auto;background:var(--bg);color:var(--text);padding:16px 18px;border-left:1px solid var(--border)}.ax-drawer-in h2{margin:0 0 10px;font:700 16px Onest,sans-serif}
 .ax-drawer-x{float:right;border:0;background:none;color:inherit;font-size:26px;line-height:1;cursor:pointer;min-width:44px;min-height:44px}}
+
+/* Hook layanan di artikel: blok atas dan kartu rekomendasi di samping */
+.ax-hook{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;margin:0 0 20px;padding:14px 18px;border-radius:16px;border:1px solid var(--link);background:var(--surface)}
+.ax-hook>div{flex:1 1 260px;min-width:0;display:flex;flex-direction:column;gap:3px}.ax-hook b{font-size:16px;color:var(--text)}.ax-hook span{font-size:13.5px;color:var(--muted)}
+.ax-hook-b{display:inline-block;padding:10px 18px;border-radius:12px;background:var(--link);color:#fff;font-weight:700;font-size:14px;text-decoration:none;text-align:center}
+.ax-hook-side{border-color:var(--link)}.ax-hook-side small{display:block;font-size:11.5px;font-weight:700;color:var(--link);text-transform:uppercase;letter-spacing:.4px}
+.ax-hook-side h2{margin:6px 0 8px}.ax-hook-side p{margin:0 0 14px;color:var(--muted);font-size:14px;line-height:1.6}.ax-hook-side .ax-hook-b{display:block}

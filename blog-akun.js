@@ -377,6 +377,21 @@ module.exports = function mount(ctx) {
   /* Status tulisan: draft (draf), review (menunggu review editor), scheduled (terbit otomatis di publishAt), published (terbit).
      Field tambahan hanya diubah bila dikirim, supaya editor lama yang belum mengenal field baru tidak menghapusnya. */
   const STATUSES_POST = ["draft", "review", "scheduled", "published"];
+  /* Hook layanan di artikel: ajakan ke satu layanan yang paling nyambung. Otomatis dari isi artikel; admin bisa pilih layanan lain, ubah kalimat, atau matikan per artikel. */
+  const HOOKS = {
+    audit: { name: "Audit Dokumen", top: "Takut tugasmu kena similarity tinggi?", sub: "Cek 500 kata pertama gratis, lihat skornya sekarang.", btn: "Cek gratis", href: "/ruangakademikut/audit", side: "Periksa sitasi dan kalimat bermasalah sebelum dikumpulkan.", re: /plagiar|plagiat|similarity|parafrase|sitasi|kutipan|referensi|daftar pustaka|turnitin|orisinal/i },
+    metopen: { name: "Metopen UT", top: "Bingung menyusun tugas metopen?", sub: "Pendampingan Tugas 1 sampai 3, per tahap atau paket.", btn: "Lihat metopen", href: "/ruangakademikut/layanan?s=metopen_paket", side: "Pendampingan Tugas 1 sampai 3, per tahap atau paket komplit.", re: /metopen|metodologi penelitian|proposal|rumusan masalah|kerangka teori|skripsi/i },
+    diskusi: { name: "Diskusi", top: "Diskusi tuton belum terjawab?", sub: "Jawaban siap tempel dengan poin utama dan referensi yang bisa dicek.", btn: "Pesan diskusi", href: "/ruangakademikut/layanan?s=diskusi", side: "Jawaban diskusi siap tempel, dengan referensi yang bisa dicek.", re: /diskusi|tuton|tutorial online|forum/i },
+    tugas: { name: "Tugas tutorial", top: "Tugas tutorial mepet deadline?", sub: "Dikerjakan sesuai soal dan format, kamu periksa dulu sebelum dikirim.", btn: "Pesan tugas", href: "/ruangakademikut/layanan?s=tugas", side: "Dikerjakan sesuai soal dan ketentuan format.", re: /tugas|deadline|nilai|ujian|uas|uts|jawaban/i },
+  };
+  const HOOK_KEYS = Object.keys(HOOKS);
+  function hookFor(p) {
+    if (p.hookService === "off") return null;
+    const text = [p.title, (p.tags || []).join(" "), p.excerpt || ""].join(" ");
+    const key = HOOKS[p.hookService] ? p.hookService : (HOOK_KEYS.find(k => HOOKS[k].re.test(text)) || "audit");
+    const h = HOOKS[key];
+    return { ...h, key, top: p.hookText || h.top };
+  }
   const cleanTags = v => [...new Set((Array.isArray(v) ? v : String(v || "").split(",")).map(t => str(t, 30).toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9 -]/g, "").trim().replace(/\s+/g, "-")).filter(Boolean))].slice(0, 8);
   const REV_DIR = path.join(DATA_DIR, "blog-revisions");
   const revFile = id => path.join(REV_DIR, `${String(id).replace(/[^a-f0-9]/gi, "")}.json`);
@@ -425,6 +440,10 @@ module.exports = function mount(ctx) {
     if ("coverCaption" in b) p.coverCaption = str(b.coverCaption, 200);
     if ("metaTitle" in b) p.metaTitle = str(b.metaTitle, 70);
     if ("metaDesc" in b) p.metaDesc = str(b.metaDesc, 170);
+    if ("hookService" in b) p.hookService = HOOK_KEYS.includes(b.hookService) || b.hookService === "off" ? b.hookService : "";
+    if ("hookText" in b) p.hookText = str(b.hookText, 120);
+    if ("recommendedAt" in b) p.recommendedAt = /^\d{4}-\d{2}-\d{2}$/.test(b.recommendedAt) ? b.recommendedAt : "";
+    if ("recommendedWhy" in b) p.recommendedWhy = str(b.recommendedWhy, 160);
     if (v.status === "scheduled") { p.publishAt = v.publishAt; p.publishedAt = v.publishAt; } else delete p.publishAt;
     if (v.status === "published" && (!p.publishedAt || Date.parse(p.publishedAt) > Date.now())) p.publishedAt = now;
     // slug hanya boleh diubah selama belum pernah tayang (URL yang sudah tayang tidak diganti)
@@ -583,7 +602,7 @@ module.exports = function mount(ctx) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Bricolage+Grotesque:wght@600;700&display=swap" rel="stylesheet">
 <script>try{var t=localStorage.getItem("nx-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
-<link rel="stylesheet" href="/assets/blog.css?v=10"><link rel="stylesheet" href="/assets/ca-blog.css?v=11"><script async src="/t.js"></script>
+<link rel="stylesheet" href="/assets/blog.css?v=10"><link rel="stylesheet" href="/assets/ca-blog.css?v=12"><script async src="/t.js"></script>
 ${extra}
 </head>
 <body>
@@ -711,6 +730,9 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
     const coverFig = cvSrc
       ? `<figure class="ax-cover"><img src="${esc(cvSrc)}" alt="${esc(p.coverAlt || p.title)}" fetchpriority="high" decoding="async">${p.coverCaption ? `<figcaption>${esc(p.coverCaption)}</figcaption>` : ""}</figure>`
       : (ACAD_ONLY ? `<div class="article-cover article-poster" role="img" aria-label="${esc(p.title)}">${posterHtml(p)}</div>` : "");
+    const hk = ACAD_ONLY ? hookFor(p) : null;
+    const hookTop = hk ? `<div class="ax-hook" role="note"><div><b>${esc(hk.top)}</b><span>${esc(hk.sub)}</span></div><a class="ax-hook-b" href="${esc(hk.href)}">${esc(hk.btn)}</a></div>` : "";
+    const hookSide = hk ? `<section class="ax-box ax-hook-side" aria-label="Rekomendasi layanan"><small>Rekomendasi untuk artikel ini</small><h2>${esc(hk.name)}</h2><p>${esc(hk.side)}</p><a class="ax-hook-b" href="${esc(hk.href)}">${esc(hk.btn)}</a></section>` : "";
     const relatedHtml = related.length ? `<section class="ax-box" aria-labelledby="axRelH"><h2 id="axRelH">Artikel Terkait</h2><div class="ax-rels">${related.map(x => `<a class="ax-rel" href="/blog/${esc(x.slug)}"><span class="ax-rel-cv">${cardCover(x)}</span><span><b>${esc(x.title)}</b><small>${esc(tl(x.topic))} · ${esc(shortDate(x.publishedAt))}</small></span></a>`).join("")}</div></section>` : "";
     /* Navigator situs di samping isi artikel: pohon menu di kanan, "Di artikel ini" di kiri. Di HP kanan jadi laci. */
     const NAVT = [["Blog", [["Semua artikel", "/blog"], ...Object.keys(TOPICS).map(k => [TOPICS[k].label, "/blog?f=" + k])]]];
@@ -724,7 +746,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
     const body = `${preview ? `<div class="ax-prev" role="status">Pratinjau admin · status: <b>${esc(statusLabel)}</b>. Halaman ini tidak terlihat publik dan tidak diindeks.</div>` : ""}<div class="wrap ax${toc.length >= 3 ? "" : " ax-notoc"}">${toc.length >= 3 ? `<aside class="ax-left"><nav class="ax-toc ax-toc-side" aria-labelledby="axTocH"><h2 id="axTocH">Di artikel ini</h2>${tocList}</nav></aside>` : ""}<article class="ax-main">
       <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Beranda</a><span aria-hidden="true">/</span><a href="/blog">Blog</a><span aria-hidden="true">/</span><a href="${topicLink}">${esc(tl(p.topic))}</a><span aria-hidden="true">/</span><span aria-current="page">${esc(p.title)}</span></nav>
       <div class="ax-meta"><a class="bx-tag" href="${topicLink}">${esc(tl(p.topic))}</a><time datetime="${esc(pub)}">${esc(shortDate(pub))}</time>${showUpd ? `<span>Diperbarui <time datetime="${esc(mod)}">${esc(shortDate(mod))}</time></span>` : ""}<span>${readMin(p)} menit baca</span><span class="ax-views" title="Jumlah pembaca artikel ini"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/></svg>${nf(viewsOf(p.slug).total)} dilihat</span></div>
-      <h1>${esc(p.title)}</h1>
+      ${hookTop}<h1>${esc(p.title)}</h1>
       ${p.excerpt ? `<p class="ax-lead">${esc(p.excerpt)}</p>` : ""}
       <div class="ax-by">Oleh <b>${esc(author)}</b></div>
       ${coverFig}
@@ -736,7 +758,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
       <a class="back" href="${topicLink}">← Kembali ke ${esc(tl(p.topic))}</a>
       ${preview ? "" : commentsBlock(p.slug)}
     </article>
-    <aside class="ax-side"><nav class="ax-box ax-navt" id="axNav" aria-label="Navigasi situs"><h2>Navigasi</h2>${navTree}</nav>${relatedHtml}</aside></div>
+    <aside class="ax-side">${hookSide}<nav class="ax-box ax-navt" id="axNav" aria-label="Navigasi situs"><h2>Navigasi</h2>${navTree}</nav>${relatedHtml}</aside></div>
     <button type="button" class="ax-navbtn" id="axNavBtn" aria-controls="axDrawer" aria-expanded="false" aria-label="Buka navigasi situs">Navigasi</button>
     <div class="ax-drawer" id="axDrawer" role="dialog" aria-label="Navigasi situs" hidden><div class="ax-drawer-in"><button type="button" class="ax-drawer-x" id="axNavX" aria-label="Tutup navigasi">×</button><h2>Navigasi</h2>${navTree}</div></div>
     <script>(function(){var b=document.getElementById("axNavBtn"),d=document.getElementById("axDrawer"),x=document.getElementById("axNavX");if(b&&d){var set=function(o){d.hidden=!o;b.setAttribute("aria-expanded",o);document.body.style.overflow=o?"hidden":"";if(!o)b.focus();};b.addEventListener("click",function(){set(true)});x.addEventListener("click",function(){set(false)});d.addEventListener("click",function(e){if(e.target===d)set(false)});document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!d.hidden)set(false)});}
