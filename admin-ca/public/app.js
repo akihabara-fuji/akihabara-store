@@ -34,7 +34,7 @@
   const GROUP_NAV = [["bayar", "Menunggu pembayaran"], ["konfirmasi", "Menunggu konfirmasi"], ["proses", "Sedang diproses"], ["revisi", "Perlu revisi"], ["selesai", "Selesai"], ["batal", "Dibatalkan"]];
   const NAV = [
     { items: [["dashboard", "Dashboard", "home", ALL], ["traffic", "Pengunjung & Konten", "chart", ED]] },
-    { h: "Konten", items: [["posts", "Artikel Blog", "doc", ED], ["posts/new", "Tulis Artikel", "pen", ED], ["taxonomy", "Kategori & Tag", "tag", ED], ["media", "Media", "img", ED], ["comments", "Komentar", "chat", ED]] },
+    { h: "Konten", items: [["posts", "Artikel Blog", "doc", ED], ["posts/new", "Tulis Artikel", "pen", ED], ["taxonomy", "Kategori & Tag", "tag", ED], ["media", "Media", "img", ED], ["comments", "Komentar", "chat", ED], ["studio", "Studio Posting Sosmed", "send", ED]] },
     { h: "Tampilan Situs", items: [["testimonials", "Testimoni", "chat", ED], ["texts", "Teks & Nama", "pen", OWN]] },
     { h: "Pesanan", items: [["orders", "Pesanan Layanan", "box", CS, true], ["payments", "Konfirmasi Pembayaran", "card", CS], ["tools/parafrase", "Antrean Cek & Parafrase", "list", CS], ["tools/layanan", "Kirim Hasil Layanan", "send", CS]] },
     { h: "Pengguna", items: [["customers", "Pelanggan", "users", CS]] },
@@ -140,7 +140,7 @@
   /* ---------------- router ---------------- */
   const ROUTES = [
     [/^dashboard$/, ALL, pDashboard], [/^traffic$/, ED, pTraffic], [/^posts$/, ED, pPosts], [/^posts\/new$/, ED, () => pEditor(null)], [/^posts\/([a-f0-9]+)$/, ED, m => pEditor(m[1])],
-    [/^taxonomy$/, ED, pTaxonomy], [/^media$/, ED, pMedia], [/^comments$/, ED, pComments],
+    [/^studio$/, ED, pStudio], [/^taxonomy$/, ED, pTaxonomy], [/^media$/, ED, pMedia], [/^comments$/, ED, pComments],
     [/^orders$/, CS, pOrders], [/^orders\/([A-Za-z0-9-]+)$/, CS, m => pOrder(m[1])], [/^payments$/, CS, pPayments],
     [/^tools\/(parafrase|layanan)$/, CS, m => pEmbed(m[1])], [/^customers$/, CS, pCustomers],
     [/^testimonials$/, ED, pTestimonials], [/^texts$/, OWN, pTexts], [/^services$/, OWN, pServices], [/^reports$/, OWN, pReports], [/^settings$/, OWN, pSettings], [/^seo$/, OWN, pSeo], [/^admins$/, OWN, pAdmins], [/^log$/, OWN, pLog], [/^account$/, ALL, pAccount],
@@ -223,6 +223,10 @@
         <div class="card"><div class="hd"><h2>Aktivitas ${days} hari terakhir</h2><span class="muted small">Pendapatan terkonfirmasi: <b>${rp(d.revenue)}</b> (${num(d.paidCount)} pesanan)</span></div><div class="bd">${lineChart(d.series, [["orders", "Pesanan dibuat", "--s1"], ["paid", "Pesanan dibayar", "--s2"]])}<p class="small faint" style="margin:8px 0 0">${esc(d.definitions.revenue)}</p></div></div>
         <div class="card"><div class="hd"><h2>Aktivitas terbaru</h2><a class="small" href="#/log">Semua log</a></div><div class="bd"><ul class="timeline">${d.activity.map(a => `<li><div>${actLine(a)}<div class="small faint">${dt(a.at)}</div></div></li>`).join("") || '<li class="muted">Belum ada aktivitas.</li>'}</ul></div></div>
       </div>
+      <div class="grid g2">
+        <div class="card"><div class="hd"><h2>Rekomendasi dari data</h2></div><div class="bd" style="display:flex;flex-direction:column;gap:10px">${(d.recommendations || []).map(x => `<div class="notice info" style="margin:0"><b>${esc(x.title)}</b><div class="small">${esc(x.why)}</div><div class="small">${esc(x.tip)}</div><a class="small" href="${esc(x.href)}">Buka →</a></div>`).join("") || '<div class="muted">Belum ada saran. Rekomendasi muncul bila datanya cukup.</div>'}</div></div>
+        <div class="card"><div class="hd"><h2>Audit kesehatan web</h2></div><div class="bd"><ul class="timeline">${(d.health || []).map(x => `<li><div><a href="${esc(x.href)}">${x.level === "ok" ? "✓" : "!"} ${esc(x.text)}</a></div></li>`).join("")}</ul></div></div>
+      </div>
       <div class="card"><div class="hd"><h2>Pesanan terbaru</h2><a class="small" href="#/orders">Lihat semua pesanan →</a></div><div class="tbl-wrap">${orderTable(d.recent)}</div></div>`);
     $("#rg").onchange = e => go("dashboard", { days: e.target.value });
     bindRows();
@@ -241,6 +245,57 @@
   }
   function bindRows(root = $("#page")) { $$("tr[data-href]", root).forEach(tr => tr.addEventListener("click", e => { if (!e.target.closest("a,button,select,input")) location.hash = tr.dataset.href; })); }
   const orderTable = items => items.length ? `<table class="t"><thead><tr><th>ID Pesanan</th><th>Layanan</th><th>Pelanggan (WA)</th><th class="num">Total</th><th>Status</th><th>Tanggal</th></tr></thead><tbody>${items.map(o => `<tr class="click" data-href="#/orders/${esc(o.id)}"><td class="mono"><a href="#/orders/${esc(o.id)}">${esc(o.id)}</a></td><td>${esc(o.service)}</td><td class="mono">${esc(o.wa)}</td><td class="num">${rp(o.total)}</td><td>${badge(o.statusLabel, o.tone)}</td><td class="muted">${dt(o.createdAt)}</td></tr>`).join("")}</tbody></table>` : '<div class="empty">Belum ada pesanan.</div>';
+
+
+  /* ================= STUDIO POSTING SOSMED =================
+     Menyiapkan caption dan gambar dari artikel. Kamu posting sendiri ke Instagram, Facebook, dan TikTok: tidak ada kirim otomatis. */
+  async function pStudio() {
+    const d = await loadBlog(), posts = d.posts.filter(x => !x.trashedAt && x.status !== "review").sort((x, y) => new Date(y.updatedAt) - new Date(x.updatedAt));
+    const q = params(), sel = q.get("p") || (posts[0] && posts[0].id);
+    const p = posts.find(x => x.id === sel);
+    if (!p) return setPage("Studio Posting Sosmed", "Siapkan konten dari artikel", `<div class="card"><div class="empty">Belum ada artikel. <a href="#/posts/new">Tulis artikel</a></div></div>`);
+    const url = `${location.origin}/blog/${p.slug}`;
+    const heads = [...String(p.body || "").matchAll(/^##\s+(.+)$/gm)].map(m => m[1].replace(/[*_`]/g, "").trim()).slice(0, 4);
+    const tags = (p.tags || []).slice(0, 5).map(t => "#" + t.replace(/-/g, "")).join(" ");
+    const base = (p.excerpt || "").trim();
+    const hookLine = p.hookText || p.title;
+    const CAP = {
+      ig: [hookLine, "", base, heads.length ? "\n" + heads.map(h => "• " + h).join("\n") : "", "", "Baca selengkapnya: link di bio (" + url + ")", "", "#catatanakademik #universitasterbuka #mahasiswaut " + tags].filter((x, i, arr) => !(x === "" && arr[i - 1] === "")).join("\n").trim(),
+      fb: [hookLine, "", base, heads.length ? "\n" + heads.map(h => "• " + h).join("\n") : "", "", "Baca selengkapnya: " + url].join("\n").replace(/\n{3,}/g, "\n\n").trim(),
+      tt: [hookLine, base.slice(0, 120), "#catatanakademik #universitasterbuka #mahasiswaut " + tags].filter(Boolean).join(" ").trim(),
+    };
+    setPage("Studio Posting Sosmed", "Siapkan caption dan gambar dari artikel, lalu posting sendiri", `
+      <div class="notice info">Studio menyiapkan caption dan gambar. Posting tetap kamu lakukan sendiri di aplikasi Instagram, Facebook, dan TikTok. Kirim otomatis butuh izin resmi tiap platform dan belum dipasang.</div>
+      <div class="card"><div class="bd"><label class="f">Sumber artikel<select class="in" id="stP">${posts.map(x => `<option value="${x.id}" ${x.id === p.id ? "selected" : ""}>${esc(x.title)}${x.status === "published" ? "" : " (draf)"}</option>`).join("")}</select></label></div></div>
+      <div class="grid g2">
+        <div class="card"><div class="hd"><h2>Caption</h2></div><div class="bd" style="display:flex;flex-direction:column;gap:12px">
+          ${[["ig", "Instagram"], ["fb", "Facebook"], ["tt", "TikTok"]].map(([k, l]) => `<label class="f">${l}<textarea class="in" id="cap-${k}" rows="${k === "tt" ? 3 : 8}">${esc(CAP[k])}</textarea></label><div class="bar"><button type="button" class="btn sm" data-copy="cap-${k}">Salin caption ${l}</button></div>`).join("")}
+          ${p.status === "published" ? "" : '<div class="small muted">Artikel ini masih draf: tautan di caption baru bisa dibuka setelah terbit.</div>'}</div></div>
+        <div class="card"><div class="hd"><h2>Gambar</h2></div><div class="bd" style="display:flex;flex-direction:column;gap:12px">
+          <canvas id="stC" width="1080" height="1350" style="width:100%;max-width:360px;border-radius:12px;border:1px solid var(--border)"></canvas>
+          <label class="f">Teks di gambar<input class="in" id="stT" maxlength="90" value="${esc(p.hookText || p.title)}"></label>
+          <div class="bar"><a class="btn sm pri" id="stDl" download="${esc(p.slug)}-sosmed.png">Unduh gambar (1080×1350)</a></div>
+          ${p.cover ? "" : '<div class="small muted">Artikel belum punya gambar sampul, jadi latar polos. Tambahkan sampul di editor untuk hasil lebih baik.</div>'}</div></div>
+      </div>`);
+    $("#stP").onchange = e => go("studio", { p: e.target.value });
+    $$("[data-copy]").forEach(b => b.onclick = async () => { try { await navigator.clipboard.writeText($("#" + b.dataset.copy).value); toast("Caption disalin"); } catch { $("#" + b.dataset.copy).select(); toast("Tekan Ctrl+C untuk menyalin"); } });
+    const cv = $("#stC"), cx = cv.getContext("2d");
+    const draw = img => {
+      cx.fillStyle = "#13122a"; cx.fillRect(0, 0, 1080, 1350);
+      if (img) { const r = Math.max(1080 / img.width, 1350 / img.height), w = img.width * r, h = img.height * r; cx.drawImage(img, (1080 - w) / 2, (1350 - h) / 2, w, h); }
+      const g = cx.createLinearGradient(0, 500, 0, 1350); g.addColorStop(0, "rgba(11,11,26,0)"); g.addColorStop(1, "rgba(11,11,26,.92)"); cx.fillStyle = g; cx.fillRect(0, 500, 1080, 850);
+      cx.fillStyle = "#fff"; cx.font = "800 70px system-ui,sans-serif"; cx.textBaseline = "alphabetic";
+      const words = ($("#stT").value || "").split(/\s+/), lines = []; let cur = "";
+      for (const w of words) { const t = cur ? cur + " " + w : w; if (cx.measureText(t).width > 940 && cur) { lines.push(cur); cur = w; } else cur = t; }
+      if (cur) lines.push(cur);
+      const L = lines.slice(0, 5), y0 = 1190 - (L.length - 1) * 84; L.forEach((l, i) => cx.fillText(l, 70, y0 + i * 84));
+      cx.fillStyle = "#c4b5fd"; cx.font = "700 34px system-ui,sans-serif"; cx.fillText("Catatan Akademik", 70, 1290);
+      try { $("#stDl").href = cv.toDataURL("image/png"); } catch { $("#stDl").removeAttribute("href"); }
+    };
+    let im = null; draw(null);
+    if (p.cover) { const i = new Image(); i.onload = () => { im = i; draw(im); }; i.src = p.cover; }
+    $("#stT").oninput = () => draw(im);
+  }
 
   /* ================= ARTIKEL ================= */
   let BLOG = null;

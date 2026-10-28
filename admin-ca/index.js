@@ -59,6 +59,29 @@ module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, b
     title: o.title, wa: o.wa_number, total: o.total, uniqueCode: o.unique_code, lane: o.lane, createdAt: o.created_at, proofAt: o.proof_uploaded_at, confirmedAt: o.confirmed_at, confirmedBy: o.confirmed_by, parent: o.parent_order_id, deadlineAt: o.deadline_at });
   const isPaid = o => !!o.confirmed_at && o.confirmed_by !== "gratis";
 
+
+  /* Rekomendasi dan audit kesehatan web: dihitung dari data yang sudah ada, muncul hanya bila datanya cukup. Tidak ada angka karangan. */
+  function insights(posts, now, withOrders) {
+    const live = x => !x.trashedAt && blog.isLive(x, now), drafts = posts.filter(x => !x.trashedAt && !blog.isLive(x, now) && x.status !== "scheduled");
+    const noDate = drafts.filter(x => !x.recommendedAt), noImg = drafts.filter(x => !x.cover), liveNoAlt = posts.filter(x => live(x) && x.cover && !x.coverAlt);
+    const recs = [];
+    if (withOrders) {
+      try {
+        const t = traffic.summary(30), views = t.pages.filter(x => /\/audit/.test(x.path) && !/hasil/.test(x.path)).reduce((a, x) => a + x.views, 0);
+        const paid = db.prepare("SELECT COUNT(*) n FROM orders WHERE doc_type='audit' AND confirmed_at IS NOT NULL AND COALESCE(confirmed_by,'')<>'gratis'").get().n;
+        if (views >= 30 && paid / views < 0.05) recs.push({ title: "Banyak yang membuka Audit tapi sedikit yang memesan.", why: `${views} tayangan halaman Audit dalam 30 hari, ${paid} pesanan audit berbayar sepanjang waktu. Ini titik terbesar calon pelanggan hilang.`, tip: "Coba ubah kalimat tombol dan perlihatkan lebih banyak temuan sebelum bagian yang diburamkan.", href: "#/seo" });
+        const top = t.pages.find(x => /^\/blog\//.test(x.path) && x.views >= 20);
+        if (top) recs.push({ title: `Artikel “${top.label || top.path}” ramai dibaca.`, why: `${top.views} tayangan dalam 30 hari.`, tip: "Pastikan hook layanannya tepat dan jadikan bahan konten sosmed.", href: "#/studio" });
+      } catch { /* statistik opsional */ }
+    }
+    if (noDate.length) recs.push({ title: `${noDate.length} draf belum punya tanggal terbit yang disarankan.`, why: "Draf tanpa tanggal mudah menumpuk.", tip: "Isi tanggal rekomendasi dari tanggal penting UT yang sudah terverifikasi.", href: "#/posts?status=draft" });
+    return { recommendations: recs, health: [
+      { level: noImg.length ? "warn" : "ok", text: noImg.length ? `${noImg.length} draf belum punya gambar sampul` : "Semua draf sudah punya gambar sampul", href: "#/posts?status=draft" },
+      { level: noDate.length ? "warn" : "ok", text: noDate.length ? `${noDate.length} draf belum punya tanggal rekomendasi` : "Semua draf sudah punya tanggal rekomendasi", href: "#/posts?status=draft" },
+      { level: liveNoAlt.length ? "warn" : "ok", text: liveNoAlt.length ? `${liveNoAlt.length} artikel terbit dengan gambar tanpa teks alternatif` : "Gambar artikel terbit sudah bersama teks alternatif", href: "#/posts?status=published" },
+    ] };
+  }
+
   /* ---------------- dashboard ---------------- */
   app.get("/ms/admin/ca/dashboard", requireAdmin, send(req => {
     const r = range(req.query, 30), posts = blog.posts(), now = Date.now();
@@ -80,7 +103,7 @@ module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, b
     const acts = db.prepare("SELECT at, admin AS who, action, target FROM ca_admin_log WHERE action NOT LIKE 'login%' ORDER BY at DESC LIMIT 10").all().map(x => ({ ...x, label: /\/posts/.test(x.action) ? postTitle(x.target) : null, src: "admin" }))
       .concat(db.prepare("SELECT at, order_id AS target, type AS action FROM order_events ORDER BY at DESC LIMIT 10").all().map(x => ({ ...x, who: "sistem", src: "pesanan" })))
       .sort((a, b) => b.at - a.at).slice(0, 12);
-    return { range: r, posts: p, orders: cnt, newToday, revenue: paid.reduce((a, x) => a + x.total, 0), paidCount: paid.length, customers: blog.usersCount(), series: days.map(d => series[d]), recent, activity: acts,
+    return { range: r, posts: p, ...insights(posts, now, true), orders: cnt, newToday, revenue: paid.reduce((a, x) => a + x.total, 0), paidCount: paid.length, customers: blog.usersCount(), series: days.map(d => series[d]), recent, activity: acts,
       definitions: { revenue: "Jumlah total pesanan yang pembayarannya dikonfirmasi admin dalam rentang (WIB), tanpa pesanan gratis dan dana dikembalikan.", orders: "Pesanan dibuat dalam rentang." } };
   }));
 
