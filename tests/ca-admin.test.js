@@ -189,3 +189,22 @@ test("Tema & Font: daftar paket, simpan ID paket, ID asing dan tanpa login ditol
     assert.ok(anon.status === 401 || anon.status === 403);
   } finally { srv.close(); }
 });
+
+test("Draf: rekomendasi tayang dan catatan bisa diisi langsung, tanggal salah ditolak, kosong menghapus", async () => {
+  const { srv, call, login } = await setup();
+  try {
+    const own = await login("pemilik", OWNER_PW);
+    const mk = await call("/ms/admin/posts", { cookie: own, method: "POST", json: { title: "Draf uji rekomendasi", topic: "study", excerpt: "x", body: "## A\n\n" + "kata ".repeat(50), status: "draft" } });
+    const id = (mk.body.post || mk.body).id;
+    const r = await call(`/ms/admin/posts/${id}/recommend`, { cookie: own, method: "POST", json: { recommendedAt: "2026-11-03", recommendedWhy: "Sebelum tuton dibuka" } });
+    assert.strictEqual(r.status, 200);
+    assert.deepStrictEqual([r.body.recommendedAt, r.body.recommendedWhy], ["2026-11-03", "Sebelum tuton dibuka"]);
+    assert.strictEqual((await call(`/ms/admin/posts/${id}/recommend`, { cookie: own, method: "POST", json: { recommendedAt: "03/11/2026" } })).status, 400);
+    const only = await call(`/ms/admin/posts/${id}/recommend`, { cookie: own, method: "POST", json: { recommendedWhy: "Awal pekan" } });
+    assert.strictEqual(only.body.recommendedAt, "2026-11-03", "mengubah catatan tidak menghapus tanggal");
+    const clr = await call(`/ms/admin/posts/${id}/recommend`, { cookie: own, method: "POST", json: { recommendedAt: "" } });
+    assert.strictEqual(clr.body.recommendedAt, "");
+    assert.strictEqual((await call(`/ms/admin/posts/nope/recommend`, { cookie: own, method: "POST", json: {} })).status, 404);
+    assert.ok([401, 403].includes((await call(`/ms/admin/posts/${id}/recommend`, { method: "POST", json: {} })).status));
+  } finally { srv.close(); }
+});

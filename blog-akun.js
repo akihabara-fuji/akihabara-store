@@ -487,6 +487,14 @@ module.exports = function mount(ctx) {
     if (!TOPICS[t] || (onAcadHost(req) && !ACAD_TOPICS.includes(t))) return res.status(400).json({ error: "Kategori tidak dikenal." });
     p.topic = t; await saveBlog(); res.json({ ok: true, topic: t });
   });
+  /* Rekomendasi tayang diisi langsung dari daftar draf: tanggal (boleh kosong) dan catatan alasan. */
+  app.post("/ms/admin/posts/:id/recommend", requireAdmin, adminJson, async (req, res) => {
+    const p = blog.posts.find(x => x.id === req.params.id); if (!p) return res.status(404).json({ error: "Tulisan tidak ditemukan." });
+    const b = req.body || {};
+    if ("recommendedAt" in b) { const d = String(b.recommendedAt || ""); if (d && !/^\d{4}-\d{2}-\d{2}$/.test(d)) return res.status(400).json({ error: "Format tanggal tidak benar." }); p.recommendedAt = d; }
+    if ("recommendedWhy" in b) p.recommendedWhy = str(b.recommendedWhy, 160);
+    await saveBlog(); res.json({ ok: true, recommendedAt: p.recommendedAt || "", recommendedWhy: p.recommendedWhy || "" });
+  });
   app.post("/ms/admin/posts/:id/featured", requireAdmin, async (req, res) => {
     const p = blog.posts.find(x => x.id === req.params.id); if (!p) return res.status(404).json({ error: "Tulisan tidak ditemukan." });
     const on = !p.featured; blog.posts.forEach(x => { delete x.featured; }); if (on) p.featured = true;
