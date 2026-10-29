@@ -2,7 +2,7 @@
    Mahasiswa mengunggah file asli + laporan Drillbit resmi dari UT (AI dan/atau Similarity). Server membaca angka dan blok yang
    ditandai UT (drillbit.js), memetakannya ke dokumen asli, dan menjalankan aturan modul yang sama dengan Cek & Parafrase
    (label 8 warna, rules.js). Angka dari laporan = "dibaca dari file yang diunggah", bukan hitungan kita dan belum diverifikasi UT.
-   Gratis: sejumlah temuan terberat (bedah_gratis_temuan) lengkap dengan contoh perbaikan. Berbayar: semua temuan + Word berwarna,
+   Gratis: rekomendasi pada kata isi pertama (bedah_gratis_kata), sisanya diburamkan tanpa teks dari server. Berbayar: semua temuan + Word berwarna,
    lewat tabel pesanan dan QRIS yang sudah ada (doc_type='bedah'). Teks temuan di luar jatah gratis tidak dikirim ke browser. */
 "use strict";
 const fs = require("fs");
@@ -19,18 +19,30 @@ const { helperFor, rewriteFor } = require("./hint");
 const drillbit = require("./drillbit");
 const wordtools = require("./wordtools");
 const utdiag = require("./utdiag");
+const banding = require("./banding");
 
 const MAX_MB = 10, RATE = { max: 10, windowMs: 3600 * 1000 }, UPLOAD_TTL_MS = 2 * 3600 * 1000;
 const PAID = new Set(["baru_dibayar", "dianalisis", "dikerjakan", "cek_ulang", "terkirim"]);
 const COLOR_NAME = Object.fromEntries(Object.entries(rules.CODES).map(([k, v]) => [k, v.color]));
 
 /* Kata isi: tanpa sampul (baris pendek), daftar isi, tabel, judul, dan daftar pustaka. */
-function bodyWords(paras, bibAt) {
+function bodyStart(paras) {
   let start = 0;
   paras.forEach((p, i) => { if (i < paras.length * 0.5 && /\.{4,}\s*\d{1,3}\s*$/.test(String(p.text || ""))) start = i + 1; }); // baris daftar isi
+  return start;
+}
+function bodyWords(paras, bibAt) {
+  const start = bodyStart(paras);
   let n = 0;
   for (const p of paras) if (p.idx >= start && rules.isBody(p, bibAt)) n += countWords(p.text);
   return n;
+}
+
+/* Jumlah kata isi sebelum tiap paragraf (urutan dokumen), untuk menentukan bagian yang terbuka gratis. */
+function wordOffsets(paras, bibAt) {
+  const m = new Map(), start = bodyStart(paras); let n = 0;
+  for (const p of paras) { m.set(p.idx, n); if (p.idx >= start && rules.isBody(p, bibAt)) n += countWords(p.text); }
+  return m;
 }
 
 /* Satu temuan per kalimat (kode terberat). Kalimat yang ada di blok yang ditandai UT diutamakan, lalu menurut berat kode dan posisi. */
@@ -178,8 +190,9 @@ module.exports = function mountBedah({ app, express, db, settings, orders, root,
         if (ai && ai.confidence === "rendah") warn.push("Sorotan biru pada laporan AI tidak terbaca utuh, jadi blok ditampilkan sebagai angka dan tidak dipetakan ke kalimat.");
         const r = await analyseDoc(f.buffer, ai && ai.confidence !== "rendah" ? ai : null, cfg);
         const bq = orders.bedahQuote(r.words, cfg), utKey = utIndex(r.map), ranked = rankFindings(r.findings, utKey);
-        const openN = Math.max(0, bq.free), items = utItems(r.a.paragraphs, r.map.hits);
-        const open = items.slice(0, openN), locked = items.slice(openN).map(x => ({ n: x.n, block: x.block, where: x.where }));
+        const items = utItems(r.a.paragraphs, r.map.hits), off = wordOffsets(r.a.paragraphs, r.bibAt);
+        const isOpen = x => (off.get(x.para_idx) || 0) < bq.freeWords;
+        const open = items.filter(isOpen), locked = items.filter(x => !isOpen(x)).map(x => ({ n: x.n, block: x.block, where: x.where, words: countWords(x.text) }));
         const by = {}; for (const x of ranked) by[x.code] = (by[x.code] || 0) + 1; // hanya untuk ringkasan kalibrasi internal
         /* Peta seluruh dokumen: hanya tanda UT. */
         let docMap = null;
@@ -268,6 +281,38 @@ module.exports = function mountBedah({ app, express, db, settings, orders, root,
       if (e.status) return res.status(e.status).json({ error: e.message });
       console.error("[bedah] laporan gagal:", e && e.message); res.status(500).json({ error: "Hasil tidak bisa dibuat. Hubungi admin dengan ID pesananmu." });
     } finally { running--; }
+  });
+  /* Pembanding: bandingkan kalimat yang ditandai UT di dokumen asli dengan hasil parafrase (Word/PDF baru). Hanya untuk pesanan Bedah yang sudah dibayar.
+     File baru dibaca di memori dan tidak disimpan. */
+  app.post("/ms/bedah/banding/:token", (req, res) => {
+    res.set("Cache-Control", "no-store");
+    if (!sameOrigin(req)) return res.status(403).json({ error: "Permintaan ditolak." });
+    const now = Date.now();
+    if (limited("b:" + hashIp(req.ip), 20, now)) return res.status(429).json({ error: "Terlalu banyak permintaan. Coba lagi nanti." });
+    if (running >= MAX_RUNNING) return res.status(503).json({ error: "Sedang ramai. Coba lagi beberapa detik lagi." });
+    const up = multer({ storage: multer.memoryStorage(), limits: { fileSize: MAX_MB * 1024 * 1024, files: 1, fields: 2 } }).single("file");
+    up(req, res, async err => {
+      if (err) return res.status(err.code === "LIMIT_FILE_SIZE" ? 413 : 400).json({ error: err.code === "LIMIT_FILE_SIZE" ? `File terlalu besar (maksimal ${MAX_MB} MB).` : "Unggahan gagal. Coba lagi." });
+      const f = req.file;
+      if (!f) return res.status(400).json({ error: "Pilih hasil parafrase (Word .docx atau PDF)." });
+      if (!/\.(docx|pdf)$/i.test(String(f.originalname || ""))) return res.status(415).json({ error: "Hasil parafrase harus Word (.docx) atau PDF." });
+      running++;
+      try {
+        const c = await paidContext(req.params.token, now);
+        const items = utItems(c.r.a.paragraphs, c.saved.hits || []);
+        if (!items.length) return res.status(422).json({ error: "Tidak ada kalimat yang ditandai UT untuk dibandingkan di pesanan ini." });
+        const n = await analyze(f.buffer), nb = n.bibliographyParagraphIndex == null || n.bibliographyParagraphIndex < 0 ? null : n.bibliographyParagraphIndex;
+        const pool = []; for (const p of n.paragraphs) if (rules.isBody(p, nb)) for (const t of splitSentences(p.text || "")) if (countWords(t) >= 4) pool.push({ text: t.trim(), where: "Paragraf " + (p.idx + 1), pos: p.idx / Math.max(1, n.paragraphs.length) });
+        if (!pool.length) return res.status(422).json({ error: "Isi dokumen baru tidak terbaca. Pastikan ini file hasil parafrase (bukan sampul atau gambar)." });
+        const out = banding.compare(items.map(x => ({ n: x.n, block: x.block, where: x.where, text: x.text, pos: x.para_idx / Math.max(1, c.r.a.paragraphs.length) })), pool);
+        orders.event(c.o.id, "bedah_banding", `kalimat=${items.length}`);
+        res.json({ title: c.o.title, file: String(f.originalname).slice(0, 120), ...out });
+      } catch (e) {
+        if (e instanceof DocxError) return res.status(422).json({ error: e.message, code: e.code });
+        if (e.status) return res.status(e.status).json({ error: e.message });
+        console.error("[bedah] banding gagal:", e && e.message); res.status(500).json({ error: "Perbandingan gagal. Coba lagi atau hubungi admin dengan ID pesananmu." });
+      } finally { running--; }
+    });
   });
   app.get("/ms/bedah/download/:token", async (req, res) => {
     res.set("Cache-Control", "no-store");

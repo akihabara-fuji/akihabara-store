@@ -91,12 +91,13 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
   }
 
   /* Audit Lengkap: memakai tabel pesanan dan alur QRIS yang sama (doc_type='audit'). Tarif tetap di sini, dihitung di server. */
-  /* Bedah Laporan Penelitian UT (doc_type='bedah'): sepuluh temuan terberat gratis; semua temuan + Word berwarna berbayar tetap.
-     Dua tingkat harga menurut jumlah kata isi (tanpa sampul, daftar isi, daftar pustaka). Semua angka dari pengaturan admin. */
+  /* Bedah Laporan Penelitian UT (doc_type='bedah'): rekomendasi pada kata isi pertama gratis, sisanya diburamkan sampai dibayar.
+     Harga dihitung per kata (bedah_harga_per_1000 / 1000) untuk kata di luar jatah gratis, lalu dibulatkan ke atas (bedah_pembulatan).
+     Kata isi: tanpa sampul, daftar isi, daftar pustaka. Semua angka dari pengaturan admin. */
   const bedahQuote = (words, cfg) => {
-    const blockWords = Number(cfg.bedah_blok_kata) || 500, per = Number(cfg.bedah_harga_per_blok) || 0;
-    const blocks = Math.max(1, Math.ceil((Number(words) || 0) / blockWords));
-    return { words, blocks, blockWords, limit: blocks * blockWords, total: blocks * per, free: Number(cfg.bedah_gratis_temuan) || 0 };
+    const w = Math.max(0, Number(words) || 0), free = Math.max(0, Number(cfg.bedah_gratis_kata) || 0), perK = Math.max(0, Number(cfg.bedah_harga_per_1000) || 0), round = Math.max(1, Number(cfg.bedah_pembulatan) || 1);
+    const paidWords = Math.max(0, w - free), raw = paidWords * perK / 1000;
+    return { words: w, freeWords: free, paidWords, perK, round, raw: Math.round(raw), total: paidWords ? Math.ceil(raw / round) * round : 0 };
   };
   function createBedahOrder(body, ipHash, now = Date.now(), buyer = null) {
     const cfg = settings.getAll();

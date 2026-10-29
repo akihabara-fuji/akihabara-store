@@ -22,17 +22,18 @@ async function up(b, extra, izin, noAi) {
   return { status: r.status, j: await r.json() };
 }
 
-test("bedah: harga per blok 500 kata dari pengaturan admin", async () => {
+test("bedah: harga per kata di luar 500 kata gratis, dibulatkan ke atas ke ribuan", async () => {
   const b = await boot(); const q = b.m.orders.bedahQuote;
   const c = b.m.settings.getAll();
-  for (const [w, t] of [[1, 5000], [500, 5000], [501, 10000], [1000, 10000], [1500, 15000], [2000, 20000], [2337, 25000]]) assert.strictEqual(q(w, c).total, t, w + " kata");
-  b.m.settings.set({ bedah_harga_per_blok: 7000, bedah_blok_kata: 300 });
-  assert.strictEqual(q(300, b.m.settings.getAll()).total, 7000); assert.strictEqual(q(301, b.m.settings.getAll()).total, 14000);
+  for (const [w, t] of [[1, 0], [500, 0], [501, 1000], [1000, 5000], [1001, 6000], [1500, 10000], [4310, 39000], [2950, 25000]]) assert.strictEqual(q(w, c).total, t, w + " kata");
+  assert.strictEqual(q(4310, c).raw, 38100); assert.strictEqual(q(4310, c).paidWords, 3810); assert.strictEqual(q(4310, c).freeWords, 500);
+  b.m.settings.set({ bedah_harga_per_1000: 12000, bedah_gratis_kata: 200, bedah_pembulatan: 500 });
+  assert.strictEqual(q(1200, b.m.settings.getAll()).total, 12000); assert.strictEqual(q(1201, b.m.settings.getAll()).total, 12500);
   b.srv.close();
 });
 
 test("bedah: wajib laporan AI; hanya kalimat yang ditandai UT, gratis dibatasi dan sisanya terkunci tanpa teks", async () => {
-  const b = await boot({ bedah_gratis_temuan: 1 });
+  const b = await boot({ bedah_gratis_kata: 12 });
   const no = await up(b, "x", false, true); assert.strictEqual(no.status, 400);
   const { status, j } = await up(b, "Seiring perkembangan zaman, hal ini sangat penting dalam kehidupan sehari-hari.");
   assert.strictEqual(status, 200);
@@ -42,7 +43,7 @@ test("bedah: wajib laporan AI; hanya kalimat yang ditandai UT, gratis dibatasi d
   for (const x of j.locked) { assert.ok(!("text" in x) && !("tags" in x), "terkunci tidak membawa teks"); assert.ok(x.block && x.where); }
   assert.ok(j.open[0].text && j.open[0].tags.length && j.open[0].tags[0].fix && j.open[0].tags[0].jangan && j.open[0].tags[0].bukti);
   assert.ok(!("problem" in j) && !("labels" in j), "tidak ada temuan modul di Bedah");
-  assert.strictEqual(j.quote.total, 5000); assert.strictEqual(j.ut.pct, 40); assert.strictEqual(j.sim, null);
+  assert.strictEqual(j.quote.freeWords, 12); assert.strictEqual(j.quote.total, 1000); assert.strictEqual(j.ut.pct, 40); assert.strictEqual(j.sim, null);
   assert.ok(Array.isArray(j.protokol) && j.protokol.length >= 3);
   assert.ok(j.docMap.some(p => p.s.some(x => x.u === 1)));
   b.srv.close();
@@ -61,10 +62,10 @@ test("bedah: file bukan PDF di kolom laporan ditolak, jenis salah dilewati denga
 });
 
 test("bedah: pesan, bayar, lalu hasil lengkap dan unduhan Word terbuka; sebelum bayar tertutup", async () => {
-  const b = await boot();
+  const b = await boot({ bedah_gratis_kata: 0 });
   const { j } = await up(b, "Menurut para ahli, hal ini sangat penting dalam kehidupan sehari-hari dan berbagai aspek.");
   const o = await (await fetch(b.base + "/ms/bedah/order", { method: "POST", headers: b.J, body: JSON.stringify({ uploadId: j.uploadId, wa: "081234567899", agree: true }) })).json();
-  assert.ok(o.token && o.total >= 5000 && o.total <= 5099, "harga paket + kode unik");
+  assert.ok(o.token && o.total >= 1000 && o.total <= 1099, "harga per kata dibulatkan + kode unik");
   assert.strictEqual((await fetch(b.base + "/ms/bedah/report/" + o.token)).status, 402);
   assert.strictEqual((await fetch(b.base + "/ms/bedah/download/" + o.token)).status, 402);
   b.setAdmin(true);

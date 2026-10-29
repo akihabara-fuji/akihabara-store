@@ -40,9 +40,9 @@ const DEFS = {
   price_revisi_metopen:         { type: "int",  min: 0, max: 100000000, def: 99000, pub: true },
   audit_per_word:               { type: "int",  min: 0, max: 100000000, def: 9, pub: true },
   audit_min:                    { type: "int",  min: 0, max: 100000000, def: 35000, pub: true },
-  bedah_harga_per_blok:         { type: "int",  min: 0, max: 100000000, def: 5000, pub: true },    // Bedah Laporan Penelitian UT: harga per blok kata isi (semua temuan + file Word berwarna)
-  bedah_blok_kata:              { type: "int",  min: 100, max: 100000, def: 500, pub: true },      // ukuran blok; kata dihitung dari isi: tanpa sampul, daftar isi, daftar pustaka
-  bedah_gratis_temuan:          { type: "int",  min: 0, max: 100, def: 10, pub: true },            // temuan terberat yang terbuka lengkap gratis
+  bedah_gratis_kata:            { type: "int",  min: 0, max: 100000, def: 500, pub: true },        // Bedah: kata isi pertama yang rekomendasinya terbuka gratis (sisanya diburamkan)
+  bedah_harga_per_1000:         { type: "int",  min: 0, max: 100000000, def: 10000, pub: true },   // Bedah: harga per 1.000 kata isi di luar jatah gratis (dihitung per kata)
+  bedah_pembulatan:             { type: "int",  min: 1, max: 100000, def: 1000, pub: true },       // total dibulatkan ke atas ke kelipatan ini (Rp)
   drillbit_sim_max:             { type: "int",  min: 1, max: 100, def: 25, pub: true },
   drillbit_ai_max:              { type: "int",  min: 1, max: 100, def: 20, pub: true },
   /* Urgensi perbaikan (triage.js): dipakai Audit Dokumen dan Cek & Parafrase sekaligus, jadi keduanya selalu sepakat. */
