@@ -13,6 +13,18 @@
     Object.keys(m).forEach(function (a) { if (m[a] == null) return; document.querySelectorAll("[" + a + "]").forEach(function (n) { n.textContent = rp(m[a]); }); });
   }).catch(function () {});
 
+  /* "Baca lengkap" untuk teks panduan, dan "Baca selanjutnya" untuk daftar panjang: halaman tetap pendek, tidak perlu scroll panjang. */
+  (function () {
+    var l = $("pbList"), b = $("pbMore"); if (!l || !b) return;
+    l.classList.add("bd-clamp");
+    b.onclick = function () { var open = l.classList.toggle("bd-clamp"); b.textContent = open ? "Baca lengkap" : "Ringkas"; b.setAttribute("aria-expanded", open ? "false" : "true"); };
+  })();
+  function pager(list, per, box, build) {
+    box.innerHTML = ""; var shown = 0, holder = el("div"), btn = el("button", "margin-top:10px", "", "btn"); btn.type = "button"; box.appendChild(holder); box.appendChild(btn);
+    function more() { list.slice(shown, shown + per).forEach(function (x) { holder.appendChild(build(x)); }); shown = Math.min(list.length, shown + per); var left = list.length - shown; btn.style.display = left > 0 ? "" : "none"; btn.textContent = "Baca selanjutnya (" + Math.min(per, left) + " dari " + left + " tersisa)"; }
+    btn.onclick = more; more();
+  }
+
   /* ---------- unggah ---------- */
   var chosen = { orig: null };
   function ok(f, pdfOnly) {
@@ -36,10 +48,10 @@
       .then(function (x) {
         $("busy").classList.add("hidden"); $("go").disabled = false;
         if (!x.ok) { showErr(x.j.error || "Gagal. Coba lagi."); return; }
-        upId = x.j.uploadId; lastRes = x.j; render(x.j); $("s1").classList.add("hidden"); $("s2").classList.remove("hidden"); window.scrollTo(0, 0);
+        upId = x.j.uploadId; lastRes = x.j; render(x.j); $("perbaiki").classList.add("hidden"); $("s1").classList.add("hidden"); $("s2").classList.remove("hidden"); window.scrollTo(0, 0);
       }).catch(function () { $("busy").classList.add("hidden"); $("go").disabled = false; showErr("Koneksi terputus. Coba lagi."); });
   };
-  $("again").onclick = function () { $("s2").classList.add("hidden"); $("s1").classList.remove("hidden"); showErr(""); };
+  $("again").onclick = function () { $("s2").classList.add("hidden"); $("perbaiki").classList.remove("hidden"); $("s1").classList.remove("hidden"); showErr(""); };
 
   /* ---------- komponen ---------- */
   function ring(col, big, sub, pct, dashed) {
@@ -95,7 +107,8 @@
   var LBL = { proposisi: "proposisi/hipotesis", sintesis: "ringkasan penelitian orang lain", definisi: "definisi buku teks", umum: "kalimat umum tanpa detail", blok: "ikut satu blok" };
   function protokolBox(list, box) {
     box.innerHTML = ""; box.appendChild(el("b", "display:block;margin-bottom:6px", "Aturan revisi (kesempatan unggah di UT terbatas)"));
-    var ol = el("ol", "margin:0;padding-left:20px;line-height:1.7;font-size:14px"); (list || []).forEach(function (x) { ol.appendChild(el("li", "", x)); }); box.appendChild(ol);
+    var ol = el("ol", "margin:0;padding-left:20px;line-height:1.7;font-size:14px"); (list || []).forEach(function (x, i) { var li = el("li", "", x); if (i >= 2) li.style.display = "none"; ol.appendChild(li); }); box.appendChild(ol);
+    if ((list || []).length > 2) { var mb = el("button", "margin-top:6px;background:none;border:0;color:inherit;text-decoration:underline;cursor:pointer;font:inherit;font-size:13.5px", "Baca lengkap"); mb.type = "button"; var openR = false; mb.onclick = function () { openR = !openR; ol.querySelectorAll("li").forEach(function (li, i) { if (i >= 2) li.style.display = openR ? "" : "none"; }); mb.textContent = openR ? "Ringkas" : "Baca lengkap"; }; box.appendChild(mb); }
   }
   function blockList(bl, box) {
     box.innerHTML = ""; if (!bl || !bl.length) return;
@@ -156,12 +169,12 @@
     var sc = $("simCard"); sc.style.display = j.sim ? "" : "none"; if (j.sim) simBody(j.sim, $("simBody"));
     $("fTitle").textContent = "Kalimat yang ditandai UT · " + j.open.length + " dari " + j.totalFindings + " terbuka (" + rp(j.quote.freeWords) + " kata pertama gratis)";
     protokolBox(j.protokol, $("pfLegend")); $("legend").textContent = "Setiap kalimat diberi diagnosis dari pola yang terbukti di data uji: apa yang diperbaiki, apa yang jangan dilakukan, dan buktinya.";
-    var fl = $("flist"); fl.innerHTML = ""; j.open.forEach(function (f) { fl.appendChild(findingNode(f, false)); });
+    pager(j.open, 5, $("flist"), function (f) { return findingNode(f, false); });
     var lk = $("locked"); lk.innerHTML = "";
     if (j.locked.length) {
       lk.appendChild(el("div", "font-weight:800;margin:10px 0 4px", j.locked.length + " kalimat lagi terkunci (diburamkan)"));
-      j.locked.slice(0, 6).forEach(function (f) { lk.appendChild(findingNode(f, true)); });
-      if (j.locked.length > 6) lk.appendChild(el("div", "margin:6px 0 8px", "… dan " + (j.locked.length - 6) + " kalimat lain."));
+      j.locked.slice(0, 2).forEach(function (f) { lk.appendChild(findingNode(f, true)); });
+      if (j.locked.length > 2) lk.appendChild(el("div", "margin:6px 0 8px", "… dan " + (j.locked.length - 2) + " kalimat lain."));
       var go = el("a", "", "Buka semua rekomendasi dan unduh file Word bertanda", "btn"); go.href = "#cta"; lk.appendChild(go);
     }
     var q = j.quote; $("pWords").textContent = rp(j.words); $("pFree").textContent = rp(q.freeWords) + " kata"; $("pAll").textContent = j.totalFindings + " kalimat";
@@ -230,7 +243,7 @@
   /* ---------- hasil lengkap (sesudah bayar) ---------- */
   var tk = (location.search.match(/[?&]t=([0-9a-f]{20,})/) || [])[1];
   if (tk) {
-    $("s1").classList.add("hidden"); $("s3").classList.remove("hidden");
+    $("s1").classList.add("hidden"); $("perbaiki").classList.add("hidden"); $("s3").classList.remove("hidden");
     fetch("/ms/bedah/report/" + tk, { cache: "no-store" }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); }).then(function (x) {
       $("pload").classList.add("hidden");
       if (!x.ok) { $("pbody").appendChild(el("div", "color:#ff8aa5", x.j.error || "Hasil tidak bisa dibuka.")); return; }
@@ -241,7 +254,7 @@
       var pk = el("div", "margin:10px 0"); protokolBox(j.protokol, pk); b.appendChild(pk);
       var bl = el("div"); blockList(j.blocks, bl); b.appendChild(bl);
       b.appendChild(el("h3", "margin:14px 0 6px", "Semua kalimat yang ditandai UT (" + j.total + ")"));
-      j.findings.forEach(function (f) { b.appendChild(findingNode(f, false)); });
+      var fp = el("div"); b.appendChild(fp); pager(j.findings, 5, fp, function (f) { return findingNode(f, false); });
       if (j.sim) { var sb = el("div", "margin-top:14px"); sb.appendChild(el("h3", "margin:0 0 6px", "Laporan Similarity")); var sx = el("div"); simBody(j.sim, sx); sb.appendChild(sx); b.appendChild(sb); }
     }).catch(function () { $("pload").textContent = "Koneksi terputus. Muat ulang halaman."; });
   };
