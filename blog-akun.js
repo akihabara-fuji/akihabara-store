@@ -163,14 +163,16 @@ module.exports = function mount(ctx) {
   /* hi=true untuk gambar utama di layar pertama (kandidat LCP): dimuat segera dan diprioritaskan, bukan lazy. */
   const cardCover = (p, hi = false) => { const src = p.cover || autoCover(p); return src ? `<img src="${esc(src)}" alt="${esc(p.coverAlt || "")}" ${hi ? 'fetchpriority="high" decoding="async"' : 'loading="lazy" decoding="async"'}>` : posterHtml(p); };
   const blogCard = p => `<article class="bx-card"><a href="/blog/${esc(p.slug)}"><div class="bx-cv">${cardCover(p)}</div><div class="bx-b"><span class="bx-tag">${esc(tl(p.topic))}</span><h3>${esc(p.title)}</h3>${p.excerpt ? `<p>${esc(p.excerpt)}</p>` : ""}<div class="bx-ft"><span><time datetime="${esc(p.publishedAt)}">${esc(shortDate(p.publishedAt))}</time> · ${readMin(p)} menit baca</span><span class="bx-go">Baca <i aria-hidden="true">→</i></span></div></div></a></article>`;
-  const topicsShown = () => Object.keys(TOPICS).filter(k => !ACAD_ONLY || k === "study" || k === "updateut" || blog.posts.some(p => p.topic === k && isLive(p)));
+  /* Daftar publik (kartu, filter, tag, terkait, RSS ringkas): di domain akademik topik di luar fokus UT tidak ditampilkan. Alamat langsung artikelnya tetap bisa dibuka (noindex), jadi tidak ada tautan lama yang putus. */
+  const listed = () => published().filter(p => !OFF_TOPIC.includes(p.topic));
+  const topicsShown = () => Object.keys(TOPICS).filter(k => !ACAD_ONLY || k === "study" || k === "updateut" || (!OFF_TOPIC.includes(k) && blog.posts.some(p => p.topic === k && isLive(p))));
   const topTags = (posts, n) => { const c = new Map(); for (const p of posts) for (const t of p.tags || []) c.set(t, (c.get(t) || 0) + 1); return [...c.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, n).map(x => x[0]); };
   function blogFilters(req) {
     const f = TOPICS[req.query.f] && topicsShown().includes(req.query.f) ? req.query.f : "";
     return { f, tag: str(req.query.tag, 40).toLowerCase(), q: str(req.query.q, 80) };
   }
   function blogIndex(req, base) {
-    const { f, tag, q } = blogFilters(req), all = published();
+    const { f, tag, q } = blogFilters(req), all = listed();
     const list = all.filter(p => (!f || p.topic === f) && (!tag || (p.tags || []).includes(tag)) && matches(p, q));
     const filtering = !!(f || tag || q);
     const featured = filtering ? null : (all.find(p => p.featured) || all.find(p => p.cover) || all[0]);
@@ -199,7 +201,7 @@ module.exports = function mount(ctx) {
   app.get("/ms/blog/list-html", (req, res) => {
     res.set("Cache-Control", "no-cache");
     const f = TOPICS[req.query.f] || req.query.f === "ut" ? req.query.f : "";
-    const list = published().filter(p => !f || p.topic === f || (f === "ut" && (p.topic === "updateut" || p.topic === "study")));
+    const list = listed().filter(p => !f || p.topic === f || (f === "ut" && (p.topic === "updateut" || p.topic === "study")));
     res.json({ n: list.length, html: groupedList(list) });
   });
 
@@ -608,7 +610,7 @@ module.exports = function mount(ctx) {
     res.set("Cache-Control", "no-cache");
     const f = TOPICS[req.query.f] || req.query.f === "ut" ? req.query.f : "";
     const lim = Math.min(30, Math.max(1, parseInt(req.query.limit, 10) || 3));
-    const list = published().filter(p => !f || p.topic === f || (f === "ut" && (p.topic === "updateut" || p.topic === "study"))).slice(0, lim);
+    const list = listed().filter(p => !f || p.topic === f || (f === "ut" && (p.topic === "updateut" || p.topic === "study"))).slice(0, lim);
     res.json({ posts: list.map(p => ({ slug: p.slug, title: p.title, excerpt: p.excerpt, topic: tl(p.topic), cover: p.cover || autoCover(p), date: p.publishedAt })) });
   });
 
@@ -679,7 +681,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
     const body = `<section class="pg"><div class="wrap">${blogIndex(req, "/blog")}</div></section>`;
     const blogTitle = `${heading} — Blog ${ACAD_ONLY ? "Catatan Akademik" : "nextaja"}`;
     // halaman tag punya judul & deskripsi sendiri (bukan salinan beranda blog)
-    const tagCount = tag ? published().filter(p => (p.tags || []).includes(tag)).length : 0;
+    const tagCount = tag ? listed().filter(p => (p.tags || []).includes(tag)).length : 0;
     const blogDesc = tag ? `${tagCount} artikel Catatan Akademik tentang ${tagLabel(tag)} untuk mahasiswa Universitas Terbuka: panduan, tips, dan info terbaru.`
       : ACAD_ONLY ? "Info dan panduan kuliah Universitas Terbuka: jadwal, registrasi, ujian, tugas, Metopen, dan tips belajar dari Catatan Akademik." : "Catatan tentang belajar, social media, AI, dan berita viral hari ini dari nextaja.";
     // halaman pencarian dan tag kosong tidak diindeks; filter kategori/tag yang berisi tetap boleh
@@ -695,7 +697,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
   app.get("/tugas-ut", (req, res, next) => {
     if (!ACAD_ONLY) return next();
     const groups = CLUSTER.map(([label]) => ({ label, items: [] }));
-    for (const p of published()) { const i = clusterOf(p); if (i >= 0) groups[i].items.push(p); }
+    for (const p of listed()) { const i = clusterOf(p); if (i >= 0) groups[i].items.push(p); }
     const all = groups.flatMap(g => g.items);
     const mod = all.map(p => String(modifiedAt(p) || "").slice(0, 10)).filter(Boolean).sort().pop();
     const tools = [["Audit Dokumen", "/ruangakademikut/audit", "Skor masalah dokumen menurut aturan modul, 500 kata pertama gratis."], ["Cek &amp; Parafrase Mandiri", "/ruangakademikut/cek-parafrase-mandiri", "Tandai kalimat yang terlalu mirip, lalu parafrase tanpa mengubah makna."], ["Bedah Laporan Penelitian UT", "/ruangakademikut/bedah-laporan", "Unggah laporan Drillbit dari UT, lihat kalimat yang ditandai dan cara memperbaikinya."], ["Kalkulator nilai UT", "/ruangakademikut/kalkulator-nilai-ut", "Hitung estimasi nilai akhir dan target IPK. Nilai resmi tetap dari MyUT."], ["Tracker Kelulusan &amp; IPK", "/ruangakademikut/tracker-kelulusan", "Pantau SKS dan IPK menuju kelulusan."], ["Kalender Akademik", "/ruangakademikut/kalender-akademik", "Jadwal dan tenggat yang sering terlewat."]];
@@ -790,7 +792,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
     const overlap = x => (x.tags || []).filter(t => tags.includes(t)).length;
     // terkait: tag yang sama dulu, lalu kategori yang sama, lalu terbaru (selalu terisi bila ada artikel lain)
     const score = x => overlap(x) * 2 + (x.topic === p.topic ? 1 : 0);
-    const related = published().filter(x => x.slug !== p.slug).sort((a, b) => score(b) - score(a) || new Date(b.publishedAt) - new Date(a.publishedAt)).slice(0, 4);
+    const related = listed().filter(x => x.slug !== p.slug).sort((a, b) => score(b) - score(a) || new Date(b.publishedAt) - new Date(a.publishedAt)).slice(0, 4);
     const topicLink = `/blog?f=${encodeURIComponent(p.topic)}`;
     const ld = JSON.stringify([{ "@context": "https://schema.org", "@type": "BlogPosting", headline: p.title.slice(0, 110), datePublished: pub, dateModified: mod, description: desc, image: [img], inLanguage: "id-ID", wordCount: plain ? plain.split(" ").length : 0, ...(tags.length ? { keywords: tags.join(", ") } : {}), articleSection: tl(p.topic), author: ACAD_ONLY && author === "Tim Catatan Akademik" ? { "@type": "Organization", name: author, url: `${SITE}/ruangakademikut/tentang` } : { "@type": "Person", name: author }, publisher: { "@type": "Organization", name: BRAND, logo: { "@type": "ImageObject", url: SITE + "/icon-512.png" } }, mainEntityOfPage: { "@type": "WebPage", "@id": url } },
       { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Beranda", item: SITE + "/" }, { "@type": "ListItem", position: 2, name: "Blog", item: SITE + "/blog" }, { "@type": "ListItem", position: 3, name: tl(p.topic), item: SITE + topicLink }, { "@type": "ListItem", position: 4, name: p.title, item: url }] }]).replace(/</g, "\\u003c");
@@ -855,6 +857,14 @@ var links=[].slice.call(document.querySelectorAll(".ax-left a")),hs=links.map(fu
       }
       res.set("Cache-Control", "public, max-age=604800").type("jpg").sendFile(file);
     } catch { res.status(500).type("text").send("Gagal membuat sampul"); }
+  });
+  /* Redirect 301 untuk artikel yang digabung: seed/redirects.json = { "slug-lama": "slug-tujuan" }. Hanya dipakai di domain akademik.
+     Slug lama diarahkan walau artikelnya masih ada, jadi cukup hapus/arsipkan artikel lama di admin kapan saja. */
+  const REDIR = (() => { if (!ACAD_ONLY) return {}; try { return JSON.parse(fs.readFileSync(path.join(ROOT, "seed", "redirects.json"), "utf8")); } catch { return {}; } })();
+  app.get("/blog/:slug", (req, res, next) => {
+    const to = Object.prototype.hasOwnProperty.call(REDIR, req.params.slug) ? String(REDIR[req.params.slug]) : "";
+    if (/^[a-z0-9-]{1,90}$/.test(to) && to !== req.params.slug) return res.redirect(301, "/blog/" + to);
+    next();
   });
   app.get("/blog/:slug", (req, res, next) => {
     const p = published().find(x => x.slug === req.params.slug);
@@ -1154,7 +1164,7 @@ var links=[].slice.call(document.querySelectorAll(".ax-left a")),hs=links.map(fu
   function notFound(req, res) {
     res.status(404).set("Cache-Control", "no-store");
     if (ACAD_ONLY && !onAcadHost(req)) return res.type("html").send('<!doctype html><html lang="id"><meta charset="utf-8"><meta name="robots" content="noindex"><title>Halaman tidak ditemukan</title><body style="font-family:system-ui;padding:40px"><h1>Halaman tidak ditemukan</h1><p><a href="/">Kembali ke beranda</a></p></body></html>');
-    const latest = published().slice(0, 4);
+    const latest = listed().slice(0, 4);
     const body = `<section class="pg"><div class="wrap nf">
       <span class="bx-eyebrow">Error 404</span><h1>Halaman tidak ditemukan</h1>
       <p class="bx-lead">Alamat yang kamu buka tidak ada atau sudah dipindah. Coba cari artikelnya, atau buka salah satu halaman di bawah.</p>
