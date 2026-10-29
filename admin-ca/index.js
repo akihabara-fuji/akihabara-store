@@ -97,9 +97,9 @@ module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, b
     const live = blog.posts().filter(x => !x.trashedAt && blog.isLive(x)), now = Date.now();
     const off = live.filter(x => ["social", "ai", "viral"].includes(x.topic));
     if (off.length) add("warn", `${off.length} artikel terbit di luar fokus UT (sosmed, AI, viral). Disembunyikan dari daftar blog dan noindex; arsipkan bila tidak dipakai.`, "#/posts");
-    const byDay = {}; for (const x of live) { const d = String(x.publishedAt || "").slice(0, 10); if (d && now - Date.parse(x.publishedAt) < 14 * 864e5) byDay[d] = (byDay[d] || 0) + 1; }
+    const byDay = {}; for (const x of live) { const d = String(x.publishedAt || "").slice(0, 10); if (d && now - Date.parse(x.publishedAt) < 7 * 864e5) byDay[d] = (byDay[d] || 0) + 1; }
     const burst = Object.entries(byDay).filter(([, n]) => n >= 5).map(([d, n]) => `${d} (${n})`);
-    if (burst.length) add("warn", `Artikel terbit serentak dalam 14 hari terakhir: ${burst.join(", ")}. Sebar 2–3 per minggu dengan status Terjadwal.`, "#/posts");
+    if (burst.length) add("warn", `Artikel terbit serentak dalam 7 hari terakhir: ${burst.join(", ")}. Sebar 2–3 per minggu dengan status Terjadwal.`, "#/posts");
     const pairs = [], acad = live.filter(x => !["social", "ai", "viral"].includes(x.topic));
     for (let i = 0; i < acad.length && pairs.length < 5; i++) for (let j = i + 1; j < acad.length && pairs.length < 5; j++) if (seo.similarity(acad[i].title, acad[j].title) >= 0.6) pairs.push(`“${String(acad[i].title).slice(0, 48)}” dan “${String(acad[j].title).slice(0, 48)}”`);
     if (pairs.length) add("warn", `Judul yang bersaing untuk kata kunci sama: ${pairs.join("; ")}. Gabungkan lewat redirect 301.`, "#/posts");
