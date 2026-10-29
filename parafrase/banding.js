@@ -86,4 +86,23 @@ function compare(items, pool) {
   return { blocks, summary: { sentences: count, blocks: bc, total: items.length } };
 }
 
-module.exports = { compare, judge, similarity, newDetail };
+/* Banding dua laporan UT (sebelum vs sesudah revisi): tiap kalimat yang ditandai di laporan pertama dicari padanannya
+   di kalimat yang ditandai laporan kedua. Ada padanan = masih ditandai; tidak ada = hilang; kalimat kedua tanpa padanan = baru. */
+const SAMA = 0.6;
+function compareReports(oldItems, newItems) {
+  const used = new Set(), rows = [];
+  for (const o of oldItems) {
+    let best = -1, bs = 0;
+    newItems.forEach((x, i) => { const sc = similarity(o.text, x.text).score; if (sc > bs) { bs = sc; best = i; } });
+    const masih = best >= 0 && bs >= SAMA; if (masih) used.add(best);
+    rows.push({ block: o.block, where: o.where, text: o.text, status: masih ? "masih" : "hilang", now: masih ? newItems[best].text : null, nowBlock: masih ? newItems[best].block : null });
+  }
+  const baru = newItems.map((x, i) => ({ x, i })).filter(({ x, i }) => !used.has(i) && !oldItems.some(o => similarity(o.text, x.text).score >= SAMA))
+    .map(({ x }) => ({ block: x.block, where: x.where, text: x.text, status: "baru" }));
+  const c = { hilang: 0, masih: 0, baru: baru.length }; for (const r of rows) c[r.status]++;
+  const byBlock = new Map(); for (const r of rows) { if (!byBlock.has(r.block)) byBlock.set(r.block, { hilang: 0, masih: 0 }); byBlock.get(r.block)[r.status]++; }
+  const blocks = [...byBlock.entries()].sort((a, b) => a[0] - b[0]).map(([block, v]) => ({ block, ...v, status: v.masih ? (v.hilang ? "sebagian" : "masih") : "hilang" }));
+  return { rows, baru, blocks, summary: { before: oldItems.length, after: newItems.length, ...c } };
+}
+
+module.exports = { compareReports, compare, judge, similarity, newDetail };

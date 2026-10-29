@@ -19,10 +19,10 @@ test("antrean: biasa urut waktu bukti, cepat menyalip, dikerjakan tidak tergeser
     const A = await paid(t, "a", { deadline: Date.now() + 5 * 86400e3 }); await sleep(25);
     const B = await paid(t, "b", { deadline: Date.now() + 3600e3 * 30 }); await sleep(25);   // deadline lebih dekat, tetap di belakang A
     assert.deepStrictEqual([(await view(t, A)).queue.position, (await view(t, B)).queue.position], [1, 2]);
-    const F = await paid(t, "f", { fast: true });                                          // cepat menyalip biasa
+    await sleep(25); const F = await paid(t, "f", { fast: true });                                          // cepat menyalip biasa
     assert.deepStrictEqual([(await view(t, F)).queue.position, (await view(t, A)).queue.position, (await view(t, B)).queue.position], [1, 2, 3]);
     t.m.orders.startWork(A.orderId);                                                       // A dikerjakan: tidak boleh tergeser
-    const F2 = await paid(t, "f2", { fast: true });
+    await sleep(25); const F2 = await paid(t, "f2", { fast: true });
     const pos = async j => (await view(t, j)).queue.position;
     assert.deepStrictEqual([await pos(A), await pos(F), await pos(F2), await pos(B)], [1, 2, 3, 4]);
     assert.strictEqual((await view(t, A)).queue.working, true);

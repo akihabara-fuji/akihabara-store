@@ -314,6 +314,38 @@ module.exports = function mountBedah({ app, express, db, settings, orders, root,
       } finally { running--; }
     });
   });
+  /* Banding laporan UT pertama vs kedua (PDF AI Drillbit baru). Hanya pesanan yang sudah dibayar. File tidak disimpan. */
+  app.post("/ms/bedah/banding-laporan/:token", (req, res) => {
+    res.set("Cache-Control", "no-store");
+    if (!sameOrigin(req)) return res.status(403).json({ error: "Permintaan ditolak." });
+    const now = Date.now();
+    if (limited("bl:" + hashIp(req.ip), 10, now)) return res.status(429).json({ error: "Terlalu banyak permintaan. Coba lagi nanti." });
+    if (running >= MAX_RUNNING) return res.status(503).json({ error: "Sedang ramai. Coba lagi beberapa detik lagi." });
+    const up = multer({ storage: multer.memoryStorage(), limits: { fileSize: MAX_MB * 1024 * 1024, files: 1, fields: 2 } }).single("file");
+    up(req, res, async err => {
+      if (err) return res.status(err.code === "LIMIT_FILE_SIZE" ? 413 : 400).json({ error: err.code === "LIMIT_FILE_SIZE" ? `File terlalu besar (maksimal ${MAX_MB} MB).` : "Unggahan gagal. Coba lagi." });
+      const f = req.file;
+      if (!f || !/\.pdf$/i.test(String(f.originalname || ""))) return res.status(415).json({ error: "Unggah laporan AI kedua dari UT dalam bentuk PDF." });
+      running++;
+      try {
+        const c = await paidContext(req.params.token, now);
+        const before = utItems(c.r.a.paragraphs, c.saved.hits || []);
+        if (!before.length) return res.status(422).json({ error: "Pesanan ini tidak punya kalimat yang ditandai UT untuk dibandingkan." });
+        if (await drillbit.detectKind(f.buffer) !== "ai") return res.status(422).json({ error: "File ini bukan laporan AI Drillbit. Unggah PDF laporan AI kedua." });
+        const ai = await drillbit.parseAi(f.buffer);
+        if (!ai || !ai.ok || !ai.blocks || !ai.blocks.length) return res.status(422).json({ error: "Laporan kedua tidak memuat blok yang ditandai, atau formatnya tidak terbaca." });
+        // laporan kedua milik dokumen hasil revisi, jadi teks blok dipakai langsung (bukan dipetakan ke dokumen asli)
+        const after = []; for (const b of ai.blocks) for (const t of splitSentences(String(b.text || "").replace(/\s+/g, " ").trim())) if (countWords(t) >= 4) after.push({ block: b.n, where: "Blok " + b.n, text: t.trim() });
+        const out = banding.compareReports(before.map(x => ({ block: x.block, where: x.where, text: x.text })), after);
+        orders.event(c.o.id, "bedah_banding_laporan", `sebelum=${before.length} sesudah=${after.length}`);
+        res.json({ title: c.o.title, ...out });
+      } catch (e) {
+        if (e instanceof DocxError) return res.status(422).json({ error: e.message, code: e.code });
+        if (e.status) return res.status(e.status).json({ error: e.message });
+        console.error("[bedah] banding laporan gagal:", e && e.message); res.status(500).json({ error: "Perbandingan laporan gagal. Coba lagi atau hubungi admin dengan ID pesananmu." });
+      } finally { running--; }
+    });
+  });
   app.get("/ms/bedah/download/:token", async (req, res) => {
     res.set("Cache-Control", "no-store");
     const now = Date.now();
