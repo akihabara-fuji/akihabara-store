@@ -495,6 +495,27 @@ module.exports = function mount(ctx) {
       console.log(`[blog] draf bawaan: ${posts.length} masuk`);
     } catch (e) { console.error("[blog] draf bawaan gagal:", e && e.message); }
   }, 3000);
+  /* Rapikan artikel yang sudah dialihkan (seed/redirects.json): artikel lamanya diarsipkan (masuk Sampah, bisa dipulihkan dari admin)
+     dan baris daftar "- [judul](.../blog/slug-lama)" dihapus dari artikel lain. Dijalankan SEKALI per isi redirects.json (dicatat di blog-seeded.json).
+     Cadangan blog.json dibuat otomatis oleh saveBlog. */
+  if (ACAD_ONLY) setTimeout(async () => {
+    try {
+      const keys = Object.keys(REDIR).sort(); if (!keys.length) return;
+      const MARK = path.join(DATA_DIR, "blog-seeded.json"), done = new Set(readJson(MARK, [])), tag = "migrasi-redirect:" + keys.join(",");
+      if (done.has(tag)) return;
+      const now = new Date().toISOString(); let arch = 0, lines = 0;
+      for (const k of keys) { const old = blog.posts.find(x => x.slug === k && !x.trashedAt); if (old) { old.trashedAt = now; arch++; } }
+      for (const x of blog.posts) {
+        if (!x.body || x.trashedAt) continue;
+        let b = x.body;
+        for (const k of keys) b = b.replace(new RegExp("^[ \\t]*[-*][ \\t]*\\[[^\\]\\n]*\\]\\([^)\\n]*/blog/" + k.replace(/[^a-z0-9-]/g, "") + "\\)[ \\t]*\\n?", "gm"), () => { lines++; return ""; });
+        if (b !== x.body) x.body = b;
+      }
+      if (arch || lines) await saveBlog();
+      done.add(tag); fs.writeFileSync(MARK, JSON.stringify([...done]));
+      console.log(`[blog] migrasi redirect: ${arch} diarsipkan, ${lines} tautan dibersihkan`);
+    } catch (e) { console.error("[blog] migrasi redirect gagal:", e && e.message); }
+  }, 5000);
   /* Hanya tag (tanpa revisi dan tanpa mengubah tanggal "diperbarui", karena isi artikel tidak berubah). */
   app.post("/ms/admin/posts/:id/tags", requireAdmin, adminJson, async (req, res) => {
     const p = blog.posts.find(x => x.id === req.params.id); if (!p) return res.status(404).json({ error: "Tulisan tidak ditemukan." });
