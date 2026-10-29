@@ -116,3 +116,15 @@ test("bedah: kata isi tanpa sampul dan daftar isi; temuan diurutkan terberat dul
   const r = rankFindings([{ code: "A", para_idx: 5, sent_idx: 0 }, { code: "K", para_idx: 9, sent_idx: 0 }, { code: "K", para_idx: 2, sent_idx: 0 }, { code: "M", para_idx: 7, sent_idx: 1 }, { code: "A", para_idx: 2, sent_idx: 0 }]);
   assert.deepStrictEqual(r.map(f => f.code + f.para_idx), ["M7", "K2", "K9", "A5"]);
 });
+
+test("rankFindings: temuan di blok yang ditandai UT diutamakan", () => {
+  const f = [{ code: "M", para_idx: 7, sent_idx: 0 }, { code: "A", para_idx: 5, sent_idx: 0 }, { code: "K", para_idx: 9, sent_idx: 0 }];
+  const r = rankFindings(f, new Map([["5:0", 1], ["9:0", 2]]));
+  assert.deepStrictEqual(r.map(x => x.code + x.para_idx), ["K9", "A5", "M7"]);
+});
+
+test("rankFindings: temuan di blok yang ditandai UT diutamakan", () => {
+  const f = [{ code: "M", para_idx: 7, sent_idx: 0 }, { code: "A", para_idx: 5, sent_idx: 0 }, { code: "K", para_idx: 9, sent_idx: 0 }];
+  const r = rankFindings(f, new Map([["5:0", 1], ["9:0", 2]]));
+  assert.deepStrictEqual(r.map(x => x.code + x.para_idx), ["K9", "A5", "M7"]);
+});

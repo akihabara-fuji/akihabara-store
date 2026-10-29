@@ -32,21 +32,34 @@ function bodyWords(paras, bibAt) {
   return n;
 }
 
-/* Satu temuan per kalimat (kode terberat), diurutkan dari yang paling berat lalu menurut posisi. */
-function rankFindings(findings) {
+/* Satu temuan per kalimat (kode terberat). Kalimat yang ada di blok yang ditandai UT diutamakan, lalu menurut berat kode dan posisi. */
+function rankFindings(findings, utKey) {
   const best = new Map();
   for (const f of findings) {
     const k = f.para_idx + ":" + f.sent_idx, cur = best.get(k);
     if (!cur || rules.PRIORITY.indexOf(f.code) < rules.PRIORITY.indexOf(cur.code)) best.set(k, f);
   }
-  return [...best.values()].sort((a, b) => rules.PRIORITY.indexOf(a.code) - rules.PRIORITY.indexOf(b.code) || a.para_idx - b.para_idx || a.sent_idx - b.sent_idx);
+  const inUt = f => (utKey && utKey.has(f.para_idx + ":" + f.sent_idx) ? 0 : 1);
+  return [...best.values()].sort((a, b) => inUt(a) - inUt(b) || rules.PRIORITY.indexOf(a.code) - rules.PRIORITY.indexOf(b.code) || a.para_idx - b.para_idx || a.sent_idx - b.sent_idx);
 }
+
+/* Rekomendasi dua kalimat untuk kalimat yang berada di blok yang ditandai UT, per jenis temuan. Saran umum, bukan jaminan skor turun. */
+const UT_REC = {
+  M: "Kalimat ini sangat mirip sumber dan ikut di blok yang ditandai UT. Tulis ulang dengan susunan dan bahasamu sendiri, lalu beri sitasi bila idenya dari sumber.",
+  O: "Kalimat ini terlihat dikutip dan ikut di blok yang ditandai UT. Beri tanda kutip dengan sumber dan halaman, atau parafrase sepenuhnya dengan kata-katamu.",
+  K: "Klaim di kalimat ini belum bersumber dan ikut di blok yang ditandai UT. Tambahkan sitasi yang bisa diverifikasi, lalu kaitkan dengan datamu sendiri.",
+  B: "Sitasi di kalimat ini belum lengkap dan ikut di blok yang ditandai UT. Lengkapi penulis, tahun, dan daftar pustakanya, lalu tulis ulang kalimatnya dengan bahasamu.",
+  U: "Kalimat ini terlalu panjang dan ikut di blok yang ditandai UT. Pecah menjadi dua kalimat dan ganti bagian umum dengan detail penelitianmu.",
+  H: "Paragraf ini singkat dan kurang berkembang, dan ikut di blok yang ditandai UT. Tambahkan penjelasan, contoh, atau data penelitianmu sendiri.",
+  P: "Kalimat ini belum ada analisisnya dan ikut di blok yang ditandai UT. Tambahkan pendapat atau pembahasanmu tentang artinya bagi penelitianmu.",
+  A: "Pola kalimat ini seragam dan ikut di blok yang ditandai UT. Variasikan panjang dan awal kalimat, lalu masukkan detail spesifik dari kasusmu.",
+};
 
 function describe(f, utByKey) {
   const ut = utByKey.get(f.para_idx + ":" + f.sent_idx);
   const rw = rewriteFor(f.code, f.text);
   return { code: f.code, color: COLOR_NAME[f.code], action: rules.CODES[f.code].action, target: rules.CODES[f.code].target, where: "Paragraf " + (f.para_idx + 1),
-    text: f.text, reason: f.reason, example: rw || null, helper: helperFor(f.code, f.text, f.reason), ut: ut || null };
+    text: f.text, reason: f.reason, example: rw || null, helper: helperFor(f.code, f.text, f.reason), ut: ut || null, utRec: ut ? UT_REC[f.code] || null : null };
 }
 
 const BLOCK_GUIDE = [
@@ -136,7 +149,7 @@ module.exports = function mountBedah({ app, express, db, settings, orders, root,
         if (sim && !sim.ok) { warn.push(sim.error); sim = null; }
         if (ai && ai.confidence === "rendah") warn.push("Sorotan biru pada laporan AI tidak terbaca utuh, jadi blok ditampilkan sebagai angka dan tidak dipetakan ke kalimat.");
         const r = await analyseDoc(f.buffer, ai && ai.confidence !== "rendah" ? ai : null, cfg);
-        const bq = orders.bedahQuote(r.words, cfg), ranked = rankFindings(r.findings), utKey = utIndex(r.map);
+        const bq = orders.bedahQuote(r.words, cfg), utKey = utIndex(r.map), ranked = rankFindings(r.findings, utKey);
         const openN = Math.max(0, bq.free);
         const open = ranked.slice(0, openN).map((x, i) => ({ n: i + 1, ...describe(x, utKey) }));
         const locked = ranked.slice(openN).map(x => ({ code: x.code, color: COLOR_NAME[x.code], where: "Paragraf " + (x.para_idx + 1), ut: utKey.get(x.para_idx + ":" + x.sent_idx) || null }));
@@ -217,7 +230,7 @@ module.exports = function mountBedah({ app, express, db, settings, orders, root,
     running++;
     try {
       const c = await paidContext(req.params.token, now);
-      const ranked = rankFindings(c.r.findings), hitsMap = new Map((c.saved.hits || []).map(h => [h.para_idx + ":" + h.sent_idx, h.block]));
+      const hitsMap = new Map((c.saved.hits || []).map(h => [h.para_idx + ":" + h.sent_idx, h.block])), ranked = rankFindings(c.r.findings, hitsMap);
       const utSentences = (c.saved.hits || []).map(h => { const p = c.r.a.paragraphs.find(q => q.idx === h.para_idx); const s = p ? splitSentences(p.text)[h.sent_idx] : null; return s ? { block: h.block, where: "Paragraf " + (h.para_idx + 1), text: s } : null; }).filter(Boolean);
       res.json({ title: c.o.title, words: c.r.words, problem: c.r.problem, total: ranked.length, findings: ranked.map((x, i) => ({ n: i + 1, ...describe(x, hitsMap) })),
         ut: c.saved.ai ? { ...c.saved.ai, sentences: utSentences } : null, sim: c.saved.sim || null, guide: BLOCK_GUIDE, deleteAt: c.o.delete_at });
@@ -232,7 +245,7 @@ module.exports = function mountBedah({ app, express, db, settings, orders, root,
     if (limited("d:" + hashIp(req.ip), 30, now)) return res.status(429).json({ error: "Terlalu banyak permintaan." });
     try {
       const c = await paidContext(req.params.token, now);
-      const ranked = rankFindings(c.r.findings);
+      const ranked = rankFindings(c.r.findings, new Map((c.saved.hits || []).map(h => [h.para_idx + ":" + h.sent_idx, h.block])));
       const rows = ranked.map((x, i) => ({ seq: i + 1, code: x.code, para_idx: x.para_idx, sent_idx: x.sent_idx, text: x.text, reason: x.reason }));
       const pdf = isPdf(c.buf);
       const out = pdf ? await reportDocx({ title: c.o.title, note: "File aslimu PDF, jadi laporan ini berupa daftar temuan. Unggah .docx bila ingin warna langsung di dokumenmu." }, ranked.map((x, i) => ({ n: i + 1, ...describe(x, new Map()) })))

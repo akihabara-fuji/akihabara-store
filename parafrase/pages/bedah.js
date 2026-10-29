@@ -80,6 +80,7 @@
     d.appendChild(el("div", "margin-top:6px;font-size:13.5px", "Alasan: " + f.reason));
     if (f.example) { var ex = el("div", "margin-top:6px;font-size:13.5px"); ex.appendChild(el("b", "", "Contoh perbaikan: ")); ex.appendChild(el("span", "", f.example, "seg s-H")); d.appendChild(ex); }
     if (f.helper) d.appendChild(el("div", "margin-top:6px;font-size:13.5px", "Cara memperbaiki: " + f.helper));
+    if (f.utRec) d.appendChild(el("div", "margin-top:6px;font-size:13.5px;padding:8px 10px;border-radius:10px;border:1px dashed #26c6da", "Rekomendasi untuk blok UT: " + f.utRec));
     else d.appendChild(el("div", "margin-top:6px;font-size:13.5px", f.target));
     return d;
   }
