@@ -82,6 +82,16 @@ else if(/\\/(?:ruangakademikut\\/)?(layanan|cek-parafrase-mandiri|audit)(?:[\\/?
   /* Tautan pendek grup WhatsApp: /grup?dari=menu|banner|artikel|panduan. Klik dihitung per asal (tanpa IP, tanpa cookie), lalu dialihkan ke tautan di pengaturan. */
   const SRC = new Set(["menu", "banner", "artikel", "panduan", "beranda", "alat"]);
   const clickGrup = db.prepare("INSERT INTO pv_day(day,path,views) VALUES(?,?,1) ON CONFLICT(day,path) DO UPDATE SET views=views+1");
+  /* Hitung pemakaian alat tanpa menyimpan isian atau identitas: hanya jumlah per hari. Dibatasi 30 kiriman per menit per alamat. */
+  const EV = new Set(["kalkulator", "checklist"]), evHit = new Map();
+  app.post("/ms/ev", (req, res) => {
+    const e = String(req.query.e || ""), ip = String(req.ip || ""), m = Math.floor(Date.now() / 6e4), k = ip + m;
+    if (evHit.size > 5000) evHit.clear();
+    evHit.set(k, (evHit.get(k) || 0) + 1);
+    if (!EV.has(e) || evHit.get(k) > 30 || /bot|crawl|spider|curl|python|headless/i.test(String(req.headers["user-agent"] || ""))) return res.status(204).end();
+    try { clickGrup.run(new Date(Date.now() + 7 * 3600e3).toISOString().slice(0, 10), "/event/" + e); } catch { /* abaikan */ }
+    res.status(204).end();
+  });
   app.get(["/grup", "/ruangakademikut/grup"], (req, res) => {
     const url = String(settings.get("update_group_url") || "");
     if (!/^https:\/\/chat\.whatsapp\.com\//.test(url)) return res.redirect(302, "/panduan-maba");

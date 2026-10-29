@@ -19,6 +19,7 @@ function normPath(p) {
 }
 const GROUPS = [
   ["Klik grup WhatsApp", /^\/klik-grup\//],
+  ["Pemakaian alat", /^\/event\//],
   ["Blog dan artikel", /^\/(blog|ruangakademikut\/blog-ut)/],
   ["Alat gratis", /\/(kalkulator-nilai-ut|pasfoto-yudisium|buat-cv-ats|sampul-tugas|surat-lamaran|tracker-kelulusan|kalender-akademik|panduan-maba|sitasi-apa)/],
   ["Cek & Parafrase", /cek-parafrase-mandiri/],

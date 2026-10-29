@@ -87,7 +87,7 @@
     box.hidden = false; box.classList.remove("pop"); void box.offsetWidth; box.classList.add("pop");
   }
   function sembunyi() { $("hasil").hidden = true; }
-  $("hit").addEventListener("click", tampil);
+  $("hit").addEventListener("click", tampil); $("hit").addEventListener("click", function () { try { navigator.sendBeacon("/ms/ev?e=kalkulator"); } catch (e) { /* abaikan */ } });
   ["jn", "nt", "ns", "nb"].forEach(function (i) { $(i).addEventListener("input", sembunyi); $(i).addEventListener("change", sembunyi); $(i).addEventListener("keydown", function (ev) { if (ev.key === "Enter") { ev.preventDefault(); tampil(); } }); });
   /* target IPK */
   function target() {

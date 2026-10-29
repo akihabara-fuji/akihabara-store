@@ -34,3 +34,9 @@ test("paket tema UT dan Wireframe tersedia untuk menu Tema di admin", () => {
   assert.ok(t.PRESETS.ut && t.PRESETS.wireframe);
   assert.match(t.head("ut"), /--acc:#1859BC/i); assert.match(t.head("wireframe"), /--bg:#E8E9EC/i);
 });
+test("pemakaian kalkulator dan checklist dihitung lewat /ms/ev tanpa menyimpan isian", () => {
+  assert.match(rd("kalkulator.js"), /sendBeacon\("\/ms\/ev\?e=kalkulator"\)/);
+  assert.match(rd("maba.js"), /sendBeacon\("\/ms\/ev\?e=checklist"\)/);
+  const idx = fs.readFileSync(path.join(dir, "..", "index.js"), "utf8");
+  assert.match(idx, /EV = new Set\(\["kalkulator", "checklist"\]\)/); assert.match(idx, /app\.post\("\/ms\/ev"/);
+});
