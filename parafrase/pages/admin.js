@@ -123,6 +123,9 @@
     api("/ms/admin/parafrase/orders").then(function (j) { s.textContent = ""; s.appendChild(orderTable(j.orders, false)); }).catch(function (e) { s.textContent = e.message; });
   }
 
+  function setVerdict(id, v) {
+    api("/ms/admin/bedah/kalibrasi/" + id + "/verdict", { json: { verdict: v } }).then(renderBedah).catch(function (e) { toast(e.message); });
+  }
   function renderBedah() {
     var s = $("t-bedah"); s.textContent = "Memuat…";
     Promise.all([api("/ms/admin/parafrase/orders"), api("/ms/admin/bedah/kalibrasi")]).then(function (r) {
@@ -138,9 +141,22 @@
           h("a", { class: "btn", href: "/ms/admin/bedah/kalibrasi.zip" }, "Unduh paket lengkap (file apa adanya, berisi NIM di laporan)")]),
         h("div", { class: "muted", style: "margin-top:6px" }, "Kirim ringkasan atau paket ini ke chat Claude untuk dianalisa. Paket berisi file asli mahasiswa, jadi kirim hanya yang berizin dan jangan disebar.")]);
       s.appendChild(box);
+      var rg = k.ringkas || { n: 0, benar: 0, gagal: 0, dicek: 0, batas: null };
+      s.appendChild(h("div", { class: "card", style: "margin-bottom:14px" }, [
+        h("b", {}, "Akurasi pembacaan laporan"),
+        h("div", {}, "Set dinilai: " + rg.n + " · Benar: " + rg.benar + " · Gagal: " + rg.gagal + " · Dicek manual: " + rg.dicek),
+        h("div", {}, rg.batas == null ? (rg.n ? "Ada set gagal: periksa dulu sebelum mengklaim akurasi." : "Belum ada set.") : "Akurasi pembacaan minimal " + rg.batas + "% (keyakinan 95%). Target 100 set tanpa gagal = minimal 97%."),
+        h("div", { class: "muted", style: "margin-top:6px" }, "Lulus otomatis = jumlah kata blok cocok dengan 'Matched words', persentase cocok, jumlah blok cocok, dan ≥95% kata yang ditandai UT ditemukan di file asli. Cek manual: bandingkan PDF UT dengan file asli, pilih sekitar 1 dari 5 set. 100% tidak pernah bisa diklaim.")]));
       if (live.length) {
-        var t = h("table", { class: "tbl" }, [h("tr", {}, ["Kode", "Masuk", "Kata isi", "AI UT", "Similarity UT", "Lengkap"].map(function (x) { return h("th", {}, x); }))]);
-        live.forEach(function (x) { t.appendChild(h("tr", {}, [x.id, dt(x.created_at), x.words, x.ai_pct == null ? "-" : x.ai_pct + "%", x.sim_pct == null ? "-" : x.sim_pct + "%", x.has_ai && x.has_sim ? "ya" : "belum"].map(function (c) { return h("td", {}, String(c)); }))); });
+        var t = h("table", { class: "tbl" }, [h("tr", {}, ["Kode", "Masuk", "Kata isi", "AI UT", "Similarity UT", "Lengkap", "Cek otomatis", "Terbaca", "Cek manual"].map(function (x) { return h("th", {}, x); }))]);
+        live.forEach(function (x) {
+          var man = h("td", {}, [x.verdict ? h("b", {}, x.verdict === "cocok" ? "Cocok " : "Tidak cocok ") : "",
+            h("a", { href: "/ms/admin/bedah/kalibrasi/" + x.id + "/ai", target: "_blank" }, "PDF UT"), " · ", h("a", { href: "/ms/admin/bedah/kalibrasi/" + x.id + "/asli", target: "_blank" }, "Asli"), " ",
+            h("button", { class: "btn", on: { click: function () { setVerdict(x.id, "cocok"); } } }, "Cocok"), " ",
+            h("button", { class: "btn", on: { click: function () { setVerdict(x.id, "tidak"); } } }, "Tidak cocok")]);
+          t.appendChild(h("tr", {}, [x.id, dt(x.created_at), x.words, x.ai_pct == null ? "-" : x.ai_pct + "%", x.sim_pct == null ? "-" : x.sim_pct + "%", x.has_ai && x.has_sim ? "ya" : "belum",
+            x.cek == null ? "-" : x.cek ? "lulus" : "gagal", x.coverage == null ? "-" : x.coverage + "%"].map(function (c) { return h("td", {}, String(c)); }).concat([man])));
+        });
         s.appendChild(t);
       }
       s.appendChild(h("h3", {}, "Pesanan"));

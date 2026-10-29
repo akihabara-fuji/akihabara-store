@@ -279,6 +279,9 @@ const MIGRATIONS = [
   );
   CREATE INDEX kalibrasi_at ON kalibrasi(created_at);
   `,
+  `
+  ALTER TABLE kalibrasi ADD COLUMN verdict TEXT;
+  `,
 ];
 
 

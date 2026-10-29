@@ -249,8 +249,25 @@ module.exports = function mountBedah({ app, express, db, settings, orders, root,
   if (requireAdmin) {
     app.get("/ms/admin/bedah/kalibrasi", requireAdmin, (req, res) => {
       res.set("Cache-Control", "no-store");
-      const rows = db.prepare("SELECT id,created_at,words,has_ai,has_sim,ai_pct,sim_pct,ext,revoked_at FROM kalibrasi ORDER BY created_at DESC LIMIT 500").all();
-      res.json({ beta: beta(), items: rows });
+      const rows = db.prepare("SELECT id,created_at,words,has_ai,has_sim,ai_pct,sim_pct,ext,revoked_at,verdict,summary FROM kalibrasi ORDER BY created_at DESC LIMIT 500").all()
+        .map(r => { let c = { cek: null, coverage: null }; try { c = cekSet(JSON.parse(r.summary || "{}")); } catch (_) {} const { summary, ...x } = r; return { ...x, cek: c.cek, coverage: c.coverage }; });
+      const live = rows.filter(r => !r.revoked_at && r.cek !== null);
+      const benar = live.filter(r => r.cek && (r.coverage == null || r.coverage >= 95) && r.verdict !== "tidak").length;
+      const gagal = live.length - benar, cek = live.filter(r => r.verdict).length;
+      res.json({ beta: beta(), items: rows, ringkas: { n: live.length, benar, gagal, dicek: cek, batas: batasAkurasi(live.length, gagal) } });
+    });
+    app.post("/ms/admin/bedah/kalibrasi/:id/verdict", requireAdmin, express.json({ limit: "1kb" }), (req, res) => {
+      const v = (req.body || {}).verdict;
+      if (!["cocok", "tidak", null].includes(v)) return res.status(400).json({ error: "Nilai tidak valid." });
+      const r = db.prepare("UPDATE kalibrasi SET verdict=? WHERE id=? AND revoked_at IS NULL").run(v, String(req.params.id));
+      if (!r.changes) return res.status(404).json({ error: "Set tidak ditemukan." });
+      res.json({ ok: true });
+    });
+    app.get("/ms/admin/bedah/kalibrasi/:id/:f(asli|ai|sim)", requireAdmin, (req, res) => {
+      const d = path.join(kalDir, String(req.params.id).replace(/[^a-f0-9]/g, ""));
+      const f = fs.existsSync(d) && fs.readdirSync(d).find(n => n.startsWith(req.params.f === "asli" ? "asli." : req.params.f + "."));
+      if (!f) return res.status(404).json({ error: "Berkas tidak ada." });
+      res.set("Cache-Control", "no-store").sendFile(path.join(d, f));
     });
     app.get("/ms/admin/bedah/ringkasan.json", requireAdmin, (req, res) => {
       const rows = db.prepare("SELECT id,created_at,summary FROM kalibrasi WHERE revoked_at IS NULL ORDER BY created_at").all();
@@ -273,5 +290,21 @@ module.exports = function mountBedah({ app, express, db, settings, orders, root,
   }
   return { beta };
 };
+
+/* Cek akurasi pembacaan satu set kalibrasi, dihitung dari ringkasannya (tanpa AI, tanpa tebakan). */
+function cekSet(summary) {
+  const a = summary && summary.ai; if (!a) return { cek: null, coverage: null };
+  const sum = (a.blocks || []).reduce((t, b) => t + (Number(b.words) || 0), 0), m = Number(a.matchedWords) || 0, tot = Number(a.totalWords) || 0;
+  const tbl = a.blockTable || [];
+  const okSum = m > 0 && Math.abs(sum - m) <= Math.max(5, Math.round(m * 0.01));
+  const okPct = tot > 0 && a.pct != null && Math.abs(m / tot * 100 - a.pct) <= 1.5;
+  const okN = !tbl.length || tbl.length === (a.blocks || []).length;
+  const coverage = m > 0 && a.mapped != null ? Math.min(100, Math.round(a.mapped / m * 100)) : null;
+  return { cek: okSum && okPct && okN, detail: { sum, matched: m, okSum, okPct, okN }, coverage };
+}
+/* Batas bawah akurasi (aturan tiga, keyakinan 95%): n set tanpa satu pun gagal => kegagalan < 3/n. */
+function batasAkurasi(n, gagal) { return n > 0 && gagal === 0 ? Math.floor((1 - 3 / n) * 1000) / 10 : null; }
 module.exports.bodyWords = bodyWords;
+module.exports.cekSet = cekSet;
+module.exports.batasAkurasi = batasAkurasi;
 module.exports.rankFindings = rankFindings;
