@@ -112,6 +112,8 @@ module.exports = function mount(ctx) {
   if (ACAD_ONLY && !blog.authorTim) { blog.posts.forEach(x => { if (!x.author || x.author === "dk") x.author = "Tim Catatan Akademik"; }); blog.authorTim = true; saveBlog(); }
   /* Topik di luar fokus akademik UT: tetap bisa dibaca, tetapi noindex dan tidak masuk sitemap agar otoritas topik situs tidak kabur. */
   const OFF_TOPIC = ACAD_ONLY ? ["social", "ai", "viral"] : [];
+  /* Redirect 301 artikel yang digabung: seed/redirects.json = { "slug-lama": "slug-tujuan" }. Slug lama tidak pernah ditampilkan di daftar, sitemap, atau pencarian. */
+  const REDIR = (() => { if (!ACAD_ONLY) return {}; try { return JSON.parse(fs.readFileSync(path.join(ROOT, "seed", "redirects.json"), "utf8")); } catch { return {}; } })();
   const ACAD_TOPICS = Object.keys(TOPICS); // semua kategori boleh dipilih penulis; yang tampil sebagai filter hanya yang sudah punya artikel
   const ACAD_HOST = (() => { try { return new URL(process.env.ACAD_URL || "").host; } catch { return ""; } })();
   const onAcadHost = req => ACAD_ONLY && !!ACAD_HOST && String(req.headers.host || "").toLowerCase() === ACAD_HOST.toLowerCase();
@@ -136,7 +138,7 @@ module.exports = function mount(ctx) {
   const rebrand = h => (ACAD_ONLY ? TEMA.inject(shortPath(caBrand(String(h).replace(/(?<![\w./@-])nextaja(?![\w-]|\.\w)/gi, BRAND))), ctx.getCa && ctx.getCa("ca_tema")) : h);
   /* Terjadwal = tampil otomatis saat publishAt lewat (tanpa cron). Draf, review, dan terjadwal yang belum waktunya tidak pernah tampil publik. */
   const isLive = (p, now = Date.now()) => !p.trashedAt && (p.status === "published" || (p.status === "scheduled" && Date.parse(p.publishAt) <= now));
-  const published = () => blog.posts.filter(p => isLive(p) && (!ACAD_ONLY || ACAD_TOPICS.includes(p.topic))).sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+  const published = () => blog.posts.filter(p => isLive(p) && (!ACAD_ONLY || ACAD_TOPICS.includes(p.topic)) && !Object.prototype.hasOwnProperty.call(REDIR, p.slug)).sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
   const modifiedAt = p => p.contentUpdatedAt || p.updatedAt || p.publishedAt;
   const readMin = p => Math.max(1, Math.round(String(p.body || "").replace(/!\[[^\]]*\]\([^)]*\)/g, " ").split(/\s+/).filter(Boolean).length / 200));
   const norm = s => String(s || "").toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "");
@@ -881,7 +883,6 @@ var links=[].slice.call(document.querySelectorAll(".ax-left a")),hs=links.map(fu
   });
   /* Redirect 301 untuk artikel yang digabung: seed/redirects.json = { "slug-lama": "slug-tujuan" }. Hanya dipakai di domain akademik.
      Slug lama diarahkan walau artikelnya masih ada, jadi cukup hapus/arsipkan artikel lama di admin kapan saja. */
-  const REDIR = (() => { if (!ACAD_ONLY) return {}; try { return JSON.parse(fs.readFileSync(path.join(ROOT, "seed", "redirects.json"), "utf8")); } catch { return {}; } })();
   app.get("/blog/:slug", (req, res, next) => {
     const to = Object.prototype.hasOwnProperty.call(REDIR, req.params.slug) ? String(REDIR[req.params.slug]) : "";
     if (/^[a-z0-9-]{1,90}$/.test(to) && to !== req.params.slug) return res.redirect(301, "/blog/" + to);
