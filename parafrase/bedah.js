@@ -18,6 +18,7 @@ const { computeProblem } = require("./masalah");
 const { helperFor, rewriteFor } = require("./hint");
 const drillbit = require("./drillbit");
 const wordtools = require("./wordtools");
+const utdiag = require("./utdiag");
 
 const MAX_MB = 10, RATE = { max: 10, windowMs: 3600 * 1000 }, UPLOAD_TTL_MS = 2 * 3600 * 1000;
 const PAID = new Set(["baru_dibayar", "dianalisis", "dikerjakan", "cek_ulang", "terkirim"]);
@@ -109,6 +110,32 @@ module.exports = function mountBedah({ app, express, db, settings, orders, root,
     return { a, bibAt, findings, problem, words, map };
   }
   const utIndex = map => new Map(map.hits.map(h => [h.para_idx + ":" + h.sent_idx, h.block]));
+  /* Kalimat yang ditandai UT, urut posisi, masing-masing dengan diagnosis berbasis bukti (utdiag).
+     Potongan berurutan dalam satu blok digabung lalu dipecah ulang jadi kalimat utuh, karena PDF terbaca per baris. */
+  function utItems(paragraphs, hitList) {
+    const byIdx = new Map(paragraphs.map(p => [p.idx, p])), cache = new Map();
+    const sent = (pi, si) => { if (!cache.has(pi)) { const p = byIdx.get(pi); cache.set(pi, p ? splitSentences(p.text || "") : []); } return cache.get(pi)[si]; };
+    const hs = [...hitList].sort((a, b) => a.para_idx - b.para_idx || a.sent_idx - b.sent_idx).map(h => ({ ...h, t: sent(h.para_idx, h.sent_idx) })).filter(h => h.t);
+    const groups = [];
+    for (const h of hs) { const g = groups[groups.length - 1]; if (g && g.block === h.block && h.para_idx - g.last <= 1) { g.hits.push(h); g.last = h.para_idx; } else groups.push({ block: h.block, last: h.para_idx, hits: [h] }); }
+    const items = [];
+    for (const g of groups) {
+      const text = g.hits.map(h => h.t.trim()).join(" ").replace(/\s+/g, " ");
+      // pecah juga pada titik yang diikuti huruf kecil (awal kalimat tidak ikut disorot UT); singkatan umum tidak dipecah
+      const ss = text.split(/(?<=(?<!\b(?:al|dkk|hlm|no|vol|[A-Za-z]))[.!?])\s+(?=[A-Za-z“"(])/).map(x => x.trim()).filter(Boolean);
+      // tiap kalimat utuh dikaitkan ke potongan asal (untuk tanda di Word)
+      let pos = 0; const starts = g.hits.map(h => { const at = text.indexOf(h.t.trim().replace(/\s+/g, " "), pos); pos = at < 0 ? pos : at + 1; return at < 0 ? pos : at; });
+      let off = 0;
+      for (const t of ss) {
+        const at = text.indexOf(t, off), end = (at < 0 ? off : at) + t.length; off = end;
+        const own = g.hits.filter((h, j) => starts[j] < end && (j + 1 >= starts.length || starts[j + 1] > (at < 0 ? off - t.length : at)));
+        const pa = own.length ? own[0].para_idx : g.hits[0].para_idx, pb = own.length ? own[own.length - 1].para_idx : pa;
+        items.push({ n: items.length + 1, block: g.block, para_idx: pa, sent_idx: own.length ? own[0].sent_idx : g.hits[0].sent_idx, parts: own.map(h => [h.para_idx, h.sent_idx]),
+          where: "Paragraf " + (pa + 1) + (pb !== pa ? "–" + (pb + 1) : ""), text: t, tags: utdiag.diagnose(t) });
+      }
+    }
+    return items;
+  }
   function utView(aiRes, map) {
     if (!aiRes || !aiRes.ok) return null;
     const per = {}; for (const h of map.hits) { const o = per[h.block] || (per[h.block] = { sentences: 0, words: 0, from: h.para_idx, to: h.para_idx }); o.sentences++; o.words += h.words; o.from = Math.min(o.from, h.para_idx); o.to = Math.max(o.to, h.para_idx); }
@@ -147,21 +174,17 @@ module.exports = function mountBedah({ app, express, db, settings, orders, root,
         }
         if (ai && !ai.ok) { warn.push(ai.error); ai = null; }
         if (sim && !sim.ok) { warn.push(sim.error); sim = null; }
+        if (!ai) return res.status(400).json({ error: "Bedah fokus pada tanda dari UT. Unggah laporan AI Drillbit (PDF) yang kamu terima dari UT." });
         if (ai && ai.confidence === "rendah") warn.push("Sorotan biru pada laporan AI tidak terbaca utuh, jadi blok ditampilkan sebagai angka dan tidak dipetakan ke kalimat.");
         const r = await analyseDoc(f.buffer, ai && ai.confidence !== "rendah" ? ai : null, cfg);
         const bq = orders.bedahQuote(r.words, cfg), utKey = utIndex(r.map), ranked = rankFindings(r.findings, utKey);
-        const openN = Math.max(0, bq.free);
-        const open = ranked.slice(0, openN).map((x, i) => ({ n: i + 1, ...describe(x, utKey) }));
-        const locked = ranked.slice(openN).map(x => ({ code: x.code, color: COLOR_NAME[x.code], where: "Paragraf " + (x.para_idx + 1), ut: utKey.get(x.para_idx + ":" + x.sent_idx) || null }));
-        const by = {}; for (const x of ranked) by[x.code] = (by[x.code] || 0) + 1;
-        /* Peta seluruh dokumen: tiap kalimat isi dengan tanda UT; warna modul hanya untuk temuan yang dibuka gratis, sisanya penanda terkunci. */
-        let docMap = null, compare = null;
-        if (r.map.hits.length) {
-          const openK = new Map(ranked.slice(0, openN).map(x => [x.para_idx + ":" + x.sent_idx, x.code])), lockK = new Set(ranked.slice(openN).map(x => x.para_idx + ":" + x.sent_idx));
-          docMap = r.a.paragraphs.filter(p => rules.isBody(p, r.bibAt)).map(p => ({ p: p.idx, s: splitSentences(p.text || "").map((t, i) => { const k = p.idx + ":" + i; return { t, u: utKey.has(k) ? 1 : 0, c: openK.get(k) || null, l: lockK.has(k) ? 1 : 0 }; }) })).filter(x => x.s.length);
-          const overlap = ranked.filter(x => utKey.has(x.para_idx + ":" + x.sent_idx)).length;
-          compare = { utSentences: utKey.size, both: overlap, utOnly: utKey.size - overlap, moduleOnly: ranked.length - overlap };
-        }
+        const openN = Math.max(0, bq.free), items = utItems(r.a.paragraphs, r.map.hits);
+        const open = items.slice(0, openN), locked = items.slice(openN).map(x => ({ n: x.n, block: x.block, where: x.where }));
+        const by = {}; for (const x of ranked) by[x.code] = (by[x.code] || 0) + 1; // hanya untuk ringkasan kalibrasi internal
+        /* Peta seluruh dokumen: hanya tanda UT. */
+        let docMap = null;
+        if (r.map.hits.length) docMap = r.a.paragraphs.filter(p => rules.isBody(p, r.bibAt)).map(p => ({ p: p.idx, s: splitSentences(p.text || "").map((t, i) => ({ t, u: utKey.has(p.idx + ":" + i) ? 1 : 0 })) })).filter(x => x.s.length);
+        const blocks = utdiag.blockSummary(items);
         const id = crypto.randomBytes(16).toString("hex"), rel = `docs/${id}.${isPdfName ? "pdf" : "docx"}`;
         await fsp.writeFile(path.join(root, "data", "private", rel), f.buffer, { mode: 0o600 });
         const saved = { ai: ai && { pct: ai.aiPct, matchedWords: ai.matchedWords, totalWords: ai.totalWords, humanPct: ai.humanPct, blockTable: ai.blockTable, blocks: ai.blocks.map(b => ({ n: b.n, words: b.words })), confidence: ai.confidence }, sim, hits: ai && ai.confidence !== "rendah" ? r.map.hits : [], mapWords: r.map.words };
@@ -180,9 +203,9 @@ module.exports = function mountBedah({ app, express, db, settings, orders, root,
           db.prepare("INSERT INTO kalibrasi(id,created_at,words,has_ai,has_sim,ai_pct,sim_pct,ext,summary) VALUES(?,?,?,?,?,?,?,?,?)")
             .run(kode, now, r.words, ai ? 1 : 0, sim ? 1 : 0, ai ? ai.aiPct : null, sim ? sim.pct : null, isPdfName ? "pdf" : "docx", JSON.stringify(summary));
         }
-        res.json({ uploadId: id, file: { name, size: f.size }, words: r.words, problem: r.problem, labels: by, totalFindings: ranked.length, quote: bq,
+        res.json({ uploadId: id, file: { name, size: f.size }, words: r.words, totalFindings: items.length, quote: bq,
           open, locked, ut: utView(ai, r.map), sim: sim && { pct: sim.pct, grade: sim.grade, matchedSources: sim.matchedSources, sourceTypes: sim.sourceTypes, content: sim.content, excluded: sim.excluded, sources: sim.sources },
-          guide: BLOCK_GUIDE, warn, kode, beta: beta(), docMap, compare });
+          protokol: utdiag.PROTOKOL, blocks, warn, kode, beta: beta(), docMap });
       } catch (e) {
         if (e instanceof DocxError) return res.status(422).json({ error: e.message, code: e.code });
         console.error("[bedah] gagal:", e && e.message);
@@ -238,10 +261,9 @@ module.exports = function mountBedah({ app, express, db, settings, orders, root,
     running++;
     try {
       const c = await paidContext(req.params.token, now);
-      const hitsMap = new Map((c.saved.hits || []).map(h => [h.para_idx + ":" + h.sent_idx, h.block])), ranked = rankFindings(c.r.findings, hitsMap);
-      const utSentences = (c.saved.hits || []).map(h => { const p = c.r.a.paragraphs.find(q => q.idx === h.para_idx); const s = p ? splitSentences(p.text)[h.sent_idx] : null; return s ? { block: h.block, where: "Paragraf " + (h.para_idx + 1), text: s } : null; }).filter(Boolean);
-      res.json({ title: c.o.title, words: c.r.words, problem: c.r.problem, total: ranked.length, findings: ranked.map((x, i) => ({ n: i + 1, ...describe(x, hitsMap) })),
-        ut: c.saved.ai ? { ...c.saved.ai, sentences: utSentences } : null, sim: c.saved.sim || null, guide: BLOCK_GUIDE, deleteAt: c.o.delete_at });
+      const items = utItems(c.r.a.paragraphs, c.saved.hits || []);
+      res.json({ title: c.o.title, words: c.r.words, total: items.length, findings: items, blocks: utdiag.blockSummary(items), protokol: utdiag.PROTOKOL,
+        ut: c.saved.ai || null, sim: c.saved.sim || null, deleteAt: c.o.delete_at });
     } catch (e) {
       if (e.status) return res.status(e.status).json({ error: e.message });
       console.error("[bedah] laporan gagal:", e && e.message); res.status(500).json({ error: "Hasil tidak bisa dibuat. Hubungi admin dengan ID pesananmu." });
@@ -253,10 +275,12 @@ module.exports = function mountBedah({ app, express, db, settings, orders, root,
     if (limited("d:" + hashIp(req.ip), 30, now)) return res.status(429).json({ error: "Terlalu banyak permintaan." });
     try {
       const c = await paidContext(req.params.token, now);
-      const ranked = rankFindings(c.r.findings, new Map((c.saved.hits || []).map(h => [h.para_idx + ":" + h.sent_idx, h.block])));
-      const rows = ranked.map((x, i) => ({ seq: i + 1, code: x.code, para_idx: x.para_idx, sent_idx: x.sent_idx, text: x.text, reason: x.reason }));
+      const items = utItems(c.r.a.paragraphs, c.saved.hits || []);
+      const noteOf = x => `Blok UT ${x.block}\n` + x.tags.map(g => `${g.label}\nPerbaiki: ${g.fix}\nJangan: ${g.jangan}\nBukti: ${g.bukti}`).join("\n\n");
+      const rows = [], seen = new Set();
+      items.forEach(x => (x.parts.length ? x.parts : [[x.para_idx, x.sent_idx]]).forEach(([pi, si], j) => { const k = pi + ":" + si; if (seen.has(k)) return; seen.add(k); rows.push({ seq: rows.length + 1, code: "X", para_idx: pi, sent_idx: si, text: x.text, reason: "", note: j === 0 ? noteOf(x) : `Blok UT ${x.block} (lanjutan kalimat di atas)` }); }));
       const pdf = isPdf(c.buf);
-      const out = pdf ? await reportDocx({ title: c.o.title, note: "File aslimu PDF, jadi laporan ini berupa daftar temuan. Unggah .docx bila ingin warna langsung di dokumenmu." }, ranked.map((x, i) => ({ n: i + 1, ...describe(x, new Map()) })))
+      const out = pdf ? await reportDocx({ title: c.o.title, note: "File aslimu PDF, jadi laporan ini berupa daftar kalimat yang ditandai UT beserta diagnosisnya. Unggah .docx bila ingin tanda langsung di dokumenmu." }, items.map(x => ({ n: x.n, code: "X", color: "Blok UT " + x.block, where: x.where, text: x.text, reason: x.tags.map(g => g.label).join("; "), target: x.tags.map(g => "Perbaiki: " + g.fix + " Jangan: " + g.jangan).join(" | ") })))
         : await wordtools.buildColored(c.buf, rows);
       res.set({ "Content-Disposition": `attachment; filename="${c.o.id} bedah laporan.docx"` }).type("application/vnd.openxmlformats-officedocument.wordprocessingml.document").send(out);
       orders.event(c.o.id, "bedah_diunduh", null);

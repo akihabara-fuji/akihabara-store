@@ -6,8 +6,18 @@ const { boot, docx } = require("./pf-helper");
 const drillbit = require("../parafrase/drillbit");
 const { bodyWords, rankFindings } = require("../parafrase/bedah");
 
-async function up(b, extra, izin) {
+/* Laporan AI tiruan untuk tes: pembaca PDF Drillbit diganti hanya untuk berkas berawalan %PDF-FAKEAI. */
+const P2 = "Menurut para ahli, koordinasi antardivisi selalu menentukan keberhasilan implementasi strategi perusahaan. ";
+const P3 = "Sebanyak 45 persen perusahaan melaporkan peningkatan efisiensi operasional setelah digitalisasi proses bisnis dilakukan.";
+let fakeExtra = "";
+const realKind = drillbit.detectKind, realAi = drillbit.parseAi, isFake = b => Buffer.from(b).slice(0, 11).toString() === "%PDF-FAKEAI";
+drillbit.detectKind = async b => (isFake(b) ? "ai" : realKind(b));
+drillbit.parseAi = async b => (isFake(b) ? { ok: true, aiPct: 40, humanPct: 60, matchedWords: 30, totalWords: 75, confidence: "tinggi",
+  blockTable: [{ n: 1, words: 20 }, { n: 2, words: 10 }], blocks: [{ n: 1, words: 20, text: P2 + fakeExtra }, { n: 2, words: 10, text: P3 }] } : realAi(b));
+async function up(b, extra, izin, noAi) {
+  fakeExtra = extra || "";
   const fd = new FormData(); fd.append("file", new Blob([await docx(extra)]), "t.docx"); if (izin) fd.append("izin", "1");
+  if (!noAi) fd.append("ai", new Blob(["%PDF-FAKEAI"]), "ai.pdf");
   const r = await fetch(b.base + "/ms/bedah/upload", { method: "POST", body: fd, headers: b.H });
   return { status: r.status, j: await r.json() };
 }
@@ -21,17 +31,20 @@ test("bedah: harga per blok 500 kata dari pengaturan admin", async () => {
   b.srv.close();
 });
 
-test("bedah: unggah file asli saja, temuan gratis dibatasi dan sisanya terkunci tanpa teks", async () => {
+test("bedah: wajib laporan AI; hanya kalimat yang ditandai UT, gratis dibatasi dan sisanya terkunci tanpa teks", async () => {
   const b = await boot({ bedah_gratis_temuan: 1 });
-  const { status, j } = await up(b, "Seiring perkembangan zaman, hal ini sangat penting dan memegang peranan penting dalam kehidupan sehari-hari.");
+  const no = await up(b, "x", false, true); assert.strictEqual(no.status, 400);
+  const { status, j } = await up(b, "Seiring perkembangan zaman, hal ini sangat penting dalam kehidupan sehari-hari.");
   assert.strictEqual(status, 200);
-  assert.ok(j.totalFindings >= 2, "ada beberapa temuan");
+  assert.ok(j.totalFindings >= 2, "ada beberapa kalimat ditandai UT");
   assert.strictEqual(j.open.length, 1);
   assert.strictEqual(j.locked.length, j.totalFindings - 1);
-  for (const x of j.locked) { assert.ok(!("text" in x) && !("reason" in x) && !("helper" in x), "terkunci tidak membawa teks"); assert.ok(x.code && x.where); }
-  assert.ok(j.open[0].text && j.open[0].reason && (j.open[0].helper || j.open[0].target));
-  assert.strictEqual(j.quote.total, 5000); assert.strictEqual(j.ut, null); assert.strictEqual(j.sim, null);
-  assert.ok(typeof j.problem.pct === "number");
+  for (const x of j.locked) { assert.ok(!("text" in x) && !("tags" in x), "terkunci tidak membawa teks"); assert.ok(x.block && x.where); }
+  assert.ok(j.open[0].text && j.open[0].tags.length && j.open[0].tags[0].fix && j.open[0].tags[0].jangan && j.open[0].tags[0].bukti);
+  assert.ok(!("problem" in j) && !("labels" in j), "tidak ada temuan modul di Bedah");
+  assert.strictEqual(j.quote.total, 5000); assert.strictEqual(j.ut.pct, 40); assert.strictEqual(j.sim, null);
+  assert.ok(Array.isArray(j.protokol) && j.protokol.length >= 3);
+  assert.ok(j.docMap.some(p => p.s.some(x => x.u === 1)));
   b.srv.close();
 });
 
@@ -60,7 +73,7 @@ test("bedah: pesan, bayar, lalu hasil lengkap dan unduhan Word terbuka; sebelum 
   assert.strictEqual(st.docType, "bedah"); assert.strictEqual(st.bedahReady, true); assert.strictEqual(st.queue, null);
   const rep = await (await fetch(b.base + "/ms/bedah/report/" + o.token)).json();
   assert.strictEqual(rep.findings.length, j.totalFindings);
-  assert.ok(rep.findings.every(f => f.text && f.reason));
+  assert.ok(rep.findings.every(f => f.text && f.tags.length));
   const dl = await fetch(b.base + "/ms/bedah/download/" + o.token);
   assert.strictEqual(dl.status, 200);
   assert.ok(/wordprocessingml/.test(dl.headers.get("content-type")));
@@ -70,8 +83,8 @@ test("bedah: pesan, bayar, lalu hasil lengkap dan unduhan Word terbuka; sebelum 
 
 test("bedah: izin data menyimpan set, kode mencabut dan menghapus", async () => {
   const b = await boot();
-  // tanpa laporan UT tidak ada yang disimpan walau izin dicentang
-  const a = await up(b, "x", true); assert.strictEqual(a.j.kode, null);
+  // tanpa laporan UT ditolak dan tidak ada yang disimpan walau izin dicentang
+  const a = await up(b, "x", true, true); assert.strictEqual(a.status, 400);
   assert.strictEqual(b.m.db.prepare("SELECT COUNT(*) n FROM kalibrasi").get().n, 0);
   assert.strictEqual((await fetch(b.base + "/ms/bedah/cabut", { method: "POST", headers: b.J, body: JSON.stringify({ kode: "zzz" }) })).status, 400);
   assert.strictEqual((await fetch(b.base + "/ms/bedah/cabut", { method: "POST", headers: b.J, body: JSON.stringify({ kode: "0123456789ab" }) })).status, 404);
@@ -129,12 +142,20 @@ test("rankFindings: temuan di blok yang ditandai UT diutamakan", () => {
   assert.deepStrictEqual(r.map(x => x.code + x.para_idx), ["K9", "A5", "M7"]);
 });
 
-test("bedah: peta dokumen, perbandingan UT vs modul, dan CTA parafrase ada di kode", () => {
+test("bedah: peta dokumen dan CTA parafrase ada di kode", () => {
   const fs = require("fs"), path = require("path"), r = p => fs.readFileSync(path.join(__dirname, "..", p), "utf8");
-  assert.match(r("parafrase/bedah.js"), /docMap, compare \}\);/);
   assert.match(r("parafrase/pages/bedah.html"), /id="mapCard"/);
   assert.match(r("parafrase/pages/bedah.html"), /href="\/ruangakademikut\/cek-parafrase-mandiri">Buka Cek/);
-  assert.match(r("parafrase/pages/bedah.js"), /hanya ditandai UT/);
+});
+test("utdiag: diagnosis hanya pola terbukti, dengan bukti dan larangan", () => {
+  const { diagnose } = require("../parafrase/utdiag");
+  const a = diagnose("Proposisi pertama: komunikasi berpengaruh terhadap kinerja tim.");
+  assert.deepStrictEqual(a.map(x => x.id), ["proposisi", "umum"]);
+  const c = diagnose("Penelitian Handfield et al. menunjukkan pemasok berpengaruh (Handfield et al., 2026).");
+  assert.ok(c.some(x => x.id === "sintesis"));
+  const d = diagnose("Pada Maret 2026 di Gudang Cikarang terjadi 12 kali keterlambatan.");
+  assert.deepStrictEqual(d.map(x => x.id), ["blok"]);
+  for (const x of [...a, ...c, ...d]) assert.ok(x.fix && x.jangan && x.bukti);
 });
 test("layanan revisi ikut ditutup secara bawaan", () => {
   const s = require("fs").readFileSync(require("path").join(__dirname, "..", "parafrase", "settings.js"), "utf8");
