@@ -26,3 +26,9 @@ test("halaman: hub, unggah, pesanan, aset; alamat lama dialihkan; berkas html ti
     assert.strictEqual(r.status, 301); assert.strictEqual(r.headers.get("location"), "/ruangakademikut");
   } finally { srv.close(); }
 });
+
+test("bedah: ada panduan memperbaiki tanpa menjanjikan angka", () => {
+  const h = require("fs").readFileSync(require("path").join(__dirname, "..", "parafrase", "pages", "bedah.html"), "utf8");
+  assert.match(h, /Cara memperbaiki bagian yang ditandai Drillbit/);
+  assert.match(h, /tidak bisa menjanjikan angka/);
+});
