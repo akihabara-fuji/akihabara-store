@@ -288,6 +288,8 @@ const SITE = (process.env.SITE_URL || "https://nextaja.com").replace(/\/+$/, "")
 const ACAD = (process.env.ACAD_URL || SITE).replace(/\/+$/, "");
 const ACAD_HOSTS = ACAD === SITE ? [] : [new URL(ACAD).hostname, "www." + new URL(ACAD).hostname];
 const isAcadHost = req => ACAD_HOSTS.includes(req.hostname);
+/* www dialihkan permanen ke host utama supaya Google tidak mengindeks dua versi situs yang sama. */
+app.use((req, res, next) => (ACAD_HOSTS.length && req.hostname === "www." + new URL(ACAD).hostname ? res.redirect(301, ACAD + req.originalUrl) : next()));
 const TEMPLATE = path.join(PUB, "index.html");
 app.get("/robots.txt", (req, res) => {
   const base = isAcadHost(req) ? ACAD : SITE;

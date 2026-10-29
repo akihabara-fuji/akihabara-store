@@ -53,3 +53,8 @@ test("artikel topik non-akademik: noindex dan keluar dari sitemap di domain akad
   assert.match(src, /noindex: preview \|\| OFF_TOPIC\.includes\(p\.topic\)/);
   assert.match(src, /blogUrls: \(\) => published\(\)\.filter\(p => !OFF_TOPIC\.includes\(p\.topic\)\)/);
 });
+
+test("www dialihkan 301 ke host utama akademik", () => {
+  const src = require("fs").readFileSync(require("path").join(__dirname, "..", "server.js"), "utf8");
+  assert.match(src, /res\.redirect\(301, ACAD \+ req\.originalUrl\)/);
+});
