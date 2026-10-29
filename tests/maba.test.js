@@ -1,14 +1,15 @@
 "use strict";
 const test = require("node:test"), assert = require("node:assert"), fs = require("fs"), path = require("path");
 const dir = path.join(__dirname, "..", "parafrase", "pages"), rd = f => fs.readFileSync(path.join(dir, f), "utf8");
-const pages = fs.readdirSync(dir).filter(f => f.endsWith(".html") && rd(f).includes('class="sub"'));
+const pages = fs.readdirSync(dir).filter(f => f.endsWith(".html") && rd(f).includes('<header class="nav">') && rd(f).includes("Portal &amp; Alat UT"));
 
 test("semua halaman dengan menu kedua punya dropdown Mahasiswa Baru dan Portal & Alat UT", () => {
   assert.ok(pages.length >= 20);
+  for (const f of pages) assert.ok(!rd(f).includes('class="sub"'), f + " masih punya bar menu kedua");
   for (const f of pages) {
     const h = rd(f);
-    assert.match(h, /<summary class="dds[^"]*">Mahasiswa Baru<\/summary>/, f);
-    assert.match(h, /<summary class="dds[^"]*">Portal &amp; Alat UT<\/summary>/, f);
+    assert.match(h, /<summary[^>]*>Mahasiswa Baru<\/summary>/, f);
+    assert.match(h, /<summary[^>]*>Portal &amp; Alat UT<\/summary>/, f);
     assert.match(h, /href="\/grup\?dari=menu"/, f);
     assert.ok(!/<a (class="on" )?href="\/ruangakademikut\/portal-ut">Portal &amp; Alat UT<\/a>/.test(h), f + " masih tautan lama");
   }

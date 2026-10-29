@@ -365,7 +365,7 @@ window.renderTriage = function (box, t, opts) {
   box.appendChild(card);
 };
 /* dropdown sub-menu: tutup saat klik di luar atau tekan Esc */
-(function(){document.addEventListener("click",function(e){document.querySelectorAll(".sub details[open]").forEach(function(d){if(!d.contains(e.target))d.removeAttribute("open")})});document.addEventListener("keydown",function(e){if(e.key==="Escape")document.querySelectorAll(".sub details[open]").forEach(function(d){d.removeAttribute("open")})});document.querySelectorAll(".sub details").forEach(function(d){d.addEventListener("toggle",function(){if(d.open)document.querySelectorAll(".sub details[open]").forEach(function(o){if(o!==d)o.removeAttribute("open")})})})})();
+(function(){document.addEventListener("click",function(e){document.querySelectorAll(".nav details[open],.sub details[open]").forEach(function(d){if(!d.contains(e.target))d.removeAttribute("open")})});document.addEventListener("keydown",function(e){if(e.key==="Escape")document.querySelectorAll(".nav details[open],.sub details[open]").forEach(function(d){d.removeAttribute("open")})});document.querySelectorAll(".sub details").forEach(function(d){d.addEventListener("toggle",function(){if(d.open)document.querySelectorAll(".nav details[open],.sub details[open]").forEach(function(o){if(o!==d)o.removeAttribute("open")})})})})();
 
 /* Unggah dua langkah (pilih file, lalu tombol Cek file) dan penanda "sedang memindai" yang jelas selama server bekerja. */
 window.pfScan = (function () {
@@ -481,7 +481,7 @@ window.auditOkList = function (sc, box) {
   if (!V) return;
   try { var t = +localStorage.getItem(K); if (t && Date.now() - t < 14 * 864e5) return; } catch (e) { /* abaikan */ }
   document.addEventListener("pf-config", function (ev) {
-    var c = ev.detail || {}, sub = document.querySelector(".sub"); if (!c.update_group_url || !sub || document.getElementById("gban") || document.querySelector("[data-group]")) return;
+    var c = ev.detail || {}, sub = document.querySelector(".sub") || document.querySelector("header.nav"); if (!c.update_group_url || !sub || document.getElementById("gban") || document.querySelector("[data-group]")) return;
     var d = document.createElement("div"); d.id = "gban"; d.className = "gban";
     var chat = V[2] && c.admin_wa_number ? '<a class="gb-o" href="https://wa.me/' + encodeURIComponent(c.admin_wa_number) + '?text=' + encodeURIComponent("Halo admin Catatan Akademik, saya mau tanya soal laporan UT.") + '" target="_blank" rel="noopener">Chat admin</a>' : "";
     d.innerHTML = '<div class="wrap"><p><b></b><span></span></p><span class="gb-a">' + chat + '<a class="gb-g" href="/grup?dari=banner">' + (V[2] ? "Gabung grup" : "Gabung Komunitas Mahasiswa UT") + '</a><button type="button" aria-label="Tutup banner">×</button></span></div>';

@@ -37,7 +37,7 @@ test("Alat Gratis: menu ada di semua halaman yang punya menu Alat Gratis", () =>
   let n = 0;
   for (const f of fs.readdirSync(dir).filter(x => x.endsWith(".html"))) {
     const h = fs.readFileSync(path.join(dir, f), "utf8");
-    if (!h.includes('class="sub"')) continue; n++;
+    if (!h.includes('<header class="nav">') || !h.includes('class="dd"')) continue; n++;
     assert.ok(h.includes('href="/ruangakademikut/audit-parafrase"') && h.includes('href="/ruangakademikut/portal-ut"') && h.includes('href="/ruangakademikut/blog-ut"'), f + " menu utama tidak lengkap");
   }
   const portal = fs.readFileSync(path.join(dir, "portal-ut.html"), "utf8");
