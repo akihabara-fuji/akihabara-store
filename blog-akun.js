@@ -475,6 +475,24 @@ module.exports = function mount(ctx) {
     if (posts.length) { blog.posts.push(...posts); try { await saveBlog(); } catch { blog.posts.splice(blog.posts.length - posts.length, posts.length); return res.status(500).json({ error: "Draf belum bisa disimpan. Coba lagi sebentar." }); } }
     res.json({ ok: true, created: posts.length, results });
   });
+  /* Draf bawaan rilis: file di seed/artikel/*.md masuk SEKALI sebagai draf (tidak pernah terbit sendiri). Nama file yang sudah pernah
+     dimasukkan dicatat di data/blog-seeded.json, jadi draf yang dihapus admin tidak muncul lagi. */
+  if (ACAD_ONLY) setTimeout(async () => {
+    try {
+      const dir = path.join(ROOT, "seed", "artikel"); if (!fs.existsSync(dir)) return;
+      const MARK = path.join(DATA_DIR, "blog-seeded.json"), done = new Set(readJson(MARK, []));
+      const files = fs.readdirSync(dir).filter(f => /\.md$/i.test(f) && !done.has(f)).map(f => ({ name: f, text: fs.readFileSync(path.join(dir, f), "utf8") }));
+      if (!files.length) return;
+      const { posts, results } = importMd.buildDrafts(files, {
+        existing: blog.posts.filter(x => !x.trashedAt), uniqueSlug, slugify, cleanTags, str, newId: () => crypto.randomBytes(6).toString("hex"),
+        topics: TOPICS, allowedTopics: null, defaultTopic: "study", author: DEFAULT_AUTHOR, by: "rilis", now: new Date().toISOString(),
+      });
+      if (posts.length) { blog.posts.push(...posts); await saveBlog(); }
+      for (const r of results) if (r.ok || r.skipped) done.add(r.name);
+      fs.writeFileSync(MARK, JSON.stringify([...done]));
+      console.log(`[blog] draf bawaan: ${posts.length} masuk`);
+    } catch (e) { console.error("[blog] draf bawaan gagal:", e && e.message); }
+  }, 3000);
   /* Hanya tag (tanpa revisi dan tanpa mengubah tanggal "diperbarui", karena isi artikel tidak berubah). */
   app.post("/ms/admin/posts/:id/tags", requireAdmin, adminJson, async (req, res) => {
     const p = blog.posts.find(x => x.id === req.params.id); if (!p) return res.status(404).json({ error: "Tulisan tidak ditemukan." });

@@ -31,7 +31,7 @@ for k in "${KNOWN[@]}"; do dl "$k" "$T/$k"; done
 dep(){ node -e "const p=require('$1');console.log(JSON.stringify([p.dependencies,p.optionalDependencies]))"; }
 [ "$(dep "$APP/package.json")" = "$(dep "$T/new/package.json")" ] || { echo "BERHENTI: dependensi package.json di VPS beda dengan rilis. Tidak ada yang diubah."; exit 1; }
 
-mapfile -t FILES < <(cd "$T/new" && { ls server.js blog-akun.js blog-import.js blog-seo.js blog-cover.js rev-metopen.png; find parafrase admin-ca public/assets/galeri public/assets/fonts -type f; ls public/assets/ca-blog.css public/assets/blog.css public/assets/admin-blog-seo.css public/assets/admin-blog-seo.js; } | sort)
+mapfile -t FILES < <(cd "$T/new" && { ls server.js blog-akun.js blog-import.js blog-seo.js blog-cover.js rev-metopen.png; find parafrase admin-ca seed public/assets/galeri public/assets/fonts -type f; ls public/assets/ca-blog.css public/assets/blog.css public/assets/admin-blog-seo.css public/assets/admin-blog-seo.js; } | sort)
 echo "Memeriksa ${#FILES[@]} berkas…"
 bad=0
 for f in "${FILES[@]}"; do
@@ -87,6 +87,7 @@ x=$(c $CA /halaman-tidak-ada); echo "404: $x"; [ "$x" = 404 ]
 trap - ERR
 relock
 echo "$REF" >> "$REL"
+sleep 4; pm2 logs nextaja --lines 40 --nostream 2>/dev/null | grep -a "draf bawaan" | tail -1 || true
 
 echo
 echo "SELESAI. Semua cek otomatis lolos."
