@@ -249,6 +249,22 @@ window.PF_TARGET = {
   A: "Harusnya: awalan dan penghubung kalimat bervariasi; frasa yang terkesan seragam diganti kata sendiri."
 };
 
+/* Cara membaca warna: satu komponen untuk Bedah, Audit, dan Cek & Parafrase. Isi diambil dari PF_TARGET supaya tidak ada dua versi. */
+window.PF_legend = function (box) {
+  if (!box || box.getAttribute("data-lg")) return; box.setAttribute("data-lg", "1");
+  var N = { M: ["Merah", "Tulis ulang"], O: ["Oranye", "Beri tanda kutip dan sitasi"], K: ["Kuning", "Tambah sumber"], B: ["Biru", "Lengkapi sitasi"], U: ["Ungu", "Singkat"], H: ["Hijau", "Tambah kalimat"], P: ["Merah muda", "Tambah analisis"], A: ["Abu-abu", "Variasikan"] };
+  var d = document.createElement("details"); d.className = "lgd"; d.open = true; d.style.cssText = "border:1px solid var(--line,#2b2b58);border-radius:12px;padding:10px 12px;text-align:left";
+  var sm = document.createElement("summary"); sm.style.cssText = "cursor:pointer;font-weight:700"; sm.textContent = "Cara membaca warna"; d.appendChild(sm);
+  var p = document.createElement("p"); p.className = "muted"; p.style.cssText = "margin:6px 0;font-size:13px"; p.textContent = "Warna menunjukkan jenis perbaikan yang disarankan, bukan nilai bagus atau jelek. Satu kalimat diberi satu warna, yaitu yang paling berat."; d.appendChild(p);
+  Object.keys(N).forEach(function (k) {
+    var r = document.createElement("div"); r.style.cssText = "display:flex;gap:10px;align-items:flex-start;margin:6px 0;font-size:13.5px;line-height:1.5";
+    var c = document.createElement("span"); c.className = "s-" + k; c.style.cssText = "color:inherit;flex:none;min-width:96px;text-align:center;font-size:12px;font-weight:800;padding:2px 9px;border-radius:99px;border:2px solid"; c.textContent = k + " · " + N[k][0]; r.appendChild(c);
+    var t = document.createElement("span"); var b = document.createElement("b"); b.textContent = N[k][1] + ". "; t.appendChild(b); t.appendChild(document.createTextNode(((window.PF_TARGET || {})[k] || "").replace(/^Harusnya:\s*/, "Targetnya: "))); r.appendChild(t); d.appendChild(r);
+  });
+  var u = document.createElement("p"); u.className = "muted"; u.style.cssText = "margin:6px 0 0;font-size:13px"; u.textContent = "Garis putus-putus biru muda dan label Blok UT berarti kalimat itu berada di blok yang ditandai UT pada laporan Drillbit-mu. Warna ini dari aturan modul Catatan Akademik, bukan dari Drillbit."; d.appendChild(u);
+  box.appendChild(d);
+};
+
 /* Kartu urgensi perbaikan: Audit Dokumen = diagnosis, Cek & Parafrase = obat. Satu renderer dan satu mesin server (triage.js),
    jadi tingkat, urutan paragraf, dan resepnya sama di kedua halaman. Semua teks dari server dimasukkan lewat textContent.
    opts: { here: "audit"|"cek"|"hasil", uploadId } */

@@ -123,6 +123,7 @@
         }).join("") + "</p>";
       }).join("");
       card.style.display = "";
+      if (window.PF_legend) window.PF_legend($("pfLegend"));
       $("amapTxt").textContent = pv.focus && pv.focus.moved ? "Bagian ini dipilih karena paling banyak masalahnya (mulai paragraf " + pv.focus.paraNo + "). Sorotan warna menunjukkan kalimat yang bermasalah; bagian lain dikaburkan sampai dibuka." : "Sorotan warna menunjukkan kalimat yang bermasalah. Bagian setelahnya dikaburkan sampai dibuka.";
       var more = !!$("amap").querySelector(".locked") || pv.pages > 1 || $("amap").scrollHeight > $("amap").clientHeight + 4;
       if (d.quote && d.quote.allFree) more = false;

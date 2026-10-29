@@ -32,3 +32,10 @@ test("bedah: ada panduan memperbaiki tanpa menjanjikan angka", () => {
   assert.match(h, /Cara memperbaiki bagian yang ditandai Drillbit/);
   assert.match(h, /tidak bisa menjanjikan angka/);
 });
+
+test("legenda warna dipakai di Bedah, Audit, dan Cek & Parafrase", () => {
+  const fs = require("fs"), path = require("path"), d = p => fs.readFileSync(path.join(__dirname, "..", "parafrase", "pages", p), "utf8");
+  assert.match(d("common.js"), /window\.PF_legend = function/);
+  for (const f of ["bedah.js", "audit.js", "cek.js"]) assert.match(d(f), /PF_legend\(\$\("pfLegend"\)\)/);
+  for (const f of ["bedah.html", "audit.html", "cek.html"]) assert.match(d(f), /id="pfLegend"/);
+});

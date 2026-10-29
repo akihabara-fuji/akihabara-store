@@ -120,7 +120,7 @@
     var uc = $("utCard"); uc.style.display = j.ut ? "" : "none"; if (j.ut) utTable(j.ut, $("utTable"), $("utNote"), $("utGuide"), j.guide || []);
     var sc = $("simCard"); sc.style.display = j.sim ? "" : "none"; if (j.sim) simBody(j.sim, $("simBody"));
     $("fTitle").textContent = j.open.length + " temuan terberat, lengkap (gratis)";
-    var lg = $("legend"); lg.textContent = "Label sama dengan Cek & Parafrase: " + Object.keys(j.labels).map(function (k) { return k + " " + j.labels[k]; }).join(" · ");
+    if (window.PF_legend) window.PF_legend($("pfLegend")); var lg = $("legend"); lg.textContent = "Label sama dengan Cek & Parafrase: " + Object.keys(j.labels).map(function (k) { return k + " " + j.labels[k]; }).join(" · ");
     var fl = $("flist"); fl.innerHTML = ""; j.open.forEach(function (f) { fl.appendChild(findingNode(f, false)); });
     var lk = $("locked"); lk.innerHTML = "";
     if (j.locked.length) {
