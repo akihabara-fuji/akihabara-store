@@ -518,6 +518,27 @@ module.exports = function mount(ctx) {
       console.log(`[blog] migrasi redirect: ${arch} diarsipkan, ${lines} tautan dibersihkan`);
     } catch (e) { console.error("[blog] migrasi redirect gagal:", e && e.message); }
   }, 5000);
+  /* Tautkan artikel saudara yang niatnya beda (bukan digabung): sebelum tenggat vs sesudah tenggat. Sekali saja (tercatat di blog-seeded.json). */
+  if (ACAD_ONLY) setTimeout(async () => {
+    try {
+      const PAIRS = [["panduan-deadline-tuton-ut", "tuton-ut-terlambat-belum-terkirim"], ["tuton-ut-terlambat-belum-terkirim", "panduan-deadline-tuton-ut"]];
+      const MARK = path.join(DATA_DIR, "blog-seeded.json"), done = new Set(readJson(MARK, [])), tag = "tautan-tuton-1";
+      if (done.has(tag)) return;
+      let n = 0;
+      for (const [from, to] of PAIRS) {
+        const a = blog.posts.find(x => x.slug === from && !x.trashedAt), b = blog.posts.find(x => x.slug === to && !x.trashedAt);
+        if (!a || !b || !a.body || a.body.includes("/blog/" + to)) continue;
+        const li = `- [${String(b.title).replace(/[\[\]]/g, "")}](https://catatanakademik.com/blog/${to})\n`;
+        if (/^## Baca juga[^\n]*\n\n/m.test(a.body)) a.body = a.body.replace(/^(## Baca juga[^\n]*\n\n)/m, "$1" + li);
+        else if (/^## Sumber/m.test(a.body)) a.body = a.body.replace(/^## Sumber/m, "## Baca juga\n\n" + li + "\n## Sumber");
+        else a.body = a.body.replace(/\s*$/, "\n\n## Baca juga\n\n" + li);
+        n++;
+      }
+      if (n) await saveBlog();
+      done.add(tag); fs.writeFileSync(MARK, JSON.stringify([...done]));
+      console.log(`[blog] tautan tuton: ${n} artikel diperbarui`);
+    } catch (e) { console.error("[blog] tautan tuton gagal:", e && e.message); }
+  }, 7000);
   /* Hanya tag (tanpa revisi dan tanpa mengubah tanggal "diperbarui", karena isi artikel tidak berubah). */
   app.post("/ms/admin/posts/:id/tags", requireAdmin, adminJson, async (req, res) => {
     const p = blog.posts.find(x => x.id === req.params.id); if (!p) return res.status(404).json({ error: "Tulisan tidak ditemukan." });
