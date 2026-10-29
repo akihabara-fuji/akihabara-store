@@ -779,7 +779,10 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
     const coverFig = cvSrc
       ? `<figure class="ax-cover"><img src="${esc(cvSrc)}" alt="${esc(p.coverAlt || p.title)}" fetchpriority="high" decoding="async">${p.coverCaption ? `<figcaption>${esc(p.coverCaption)}</figcaption>` : ""}</figure>`
       : (ACAD_ONLY ? `<div class="article-cover article-poster" role="img" aria-label="${esc(p.title)}">${posterHtml(p)}</div>` : "");
-    const hk = ACAD_ONLY ? hookFor(p) : null;
+    /* Artikel untuk mahasiswa baru: satu kotak di akhir isi (panduan + grup), menggantikan ajakan layanan supaya tidak ada dua CTA bersaing. */
+    const isMaba = ACAD_ONLY && ((p.tags || []).some(t => /^(maba|mahasiswa-baru)$/.test(t)) || /mahasiswa baru|\bmaba\b/i.test(p.title));
+    const mabaBox = isMaba ? `<aside class="ax-maba" aria-labelledby="axMabaH"><b id="axMabaH">Baru di UT? Baca panduannya dulu.</b><p>Ada checklist setelah registrasi, cara pakai MyUT, dan kalkulator nilai. Kalau masih bingung, tanya mahasiswa lain di grup.</p><div class="ax-maba-b"><a class="ax-hook-b" href="/ruangakademikut/panduan-maba">Buka Panduan Mahasiswa Baru</a><a class="ax-maba-g" href="/grup?dari=artikel">Gabung Komunitas Mahasiswa UT</a></div></aside>` : "";
+    const hk = ACAD_ONLY && !isMaba ? hookFor(p) : null;
     const hookTop = hk ? `<div class="ax-hook" role="note"><div><b>${esc(hk.top)}</b><span>${esc(hk.sub)}</span></div><a class="ax-hook-b" href="${esc(hk.href)}">${esc(hk.btn)}</a></div>` : "";
     const hookSide = hk ? `<section class="ax-box ax-hook-side" aria-label="Rekomendasi layanan"><small>Rekomendasi untuk artikel ini</small><h2>${esc(hk.name)}</h2><p>${esc(hk.side)}</p><a class="ax-hook-b" href="${esc(hk.href)}">${esc(hk.btn)}</a></section>` : "";
     const relatedHtml = related.length ? `<section class="ax-box" aria-labelledby="axRelH"><h2 id="axRelH">Artikel Terkait</h2><div class="ax-rels">${related.map(x => `<a class="ax-rel" href="/blog/${esc(x.slug)}"><span class="ax-rel-cv">${cardCover(x)}</span><span><b>${esc(x.title)}</b><small>${esc(tl(x.topic))} · ${esc(shortDate(x.publishedAt))}</small></span></a>`).join("")}</div></section>` : "";
@@ -803,6 +806,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
       ${coverFig}
       ${toc.length >= 3 ? `<details class="ax-toc ax-toc-in"><summary>Daftar Isi</summary>${tocList}</details>` : ""}
       <div class="prose">${bodyHtml}</div>
+      ${mabaBox}
       ${ACAD_ONLY && clusterOf(p) >= 0 ? `<p class="ax-pillar" style="margin:18px 0;font-size:14.5px;line-height:1.7">Lanjut baca: <a href="/tugas-ut">panduan tugas UT</a>, <a href="/ruangakademikut/kalkulator-nilai-ut">kalkulator nilai UT</a>, dan <a href="/ruangakademikut/kalkulator-nilai-ut">cara menghitung IPK UT</a>.</p>` : ""}
       ${tags.length ? `<div class="ax-tags" aria-label="Tag">${tags.map(t => `<a href="/blog?tag=${encodeURIComponent(t)}" rel="tag">${esc(tagLabel(t))}</a>`).join("")}</div>` : ""}
       ${communityBlock()}

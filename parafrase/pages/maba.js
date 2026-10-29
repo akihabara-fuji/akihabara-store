@@ -48,5 +48,7 @@
   document.head.appendChild(st);
   document.addEventListener("change", function (e) { var t = e.target; if (t.dataset && t.dataset.c) { S[t.dataset.c] = t.checked; save(); var x = total(); $("#mbProg").textContent = x[0] + " dari " + x[1] + " langkah selesai"; $("#mbBar").style.width = Math.round(x[0] / x[1] * 100) + "%"; } });
   document.addEventListener("click", function (e) { if (e.target.id === "mbReset" && confirm("Hapus centang di perangkat ini?")) { S = {}; save(); draw(); } });
+  document.addEventListener("click", function (e) { var a = e.target.closest && e.target.closest("#mbStart"); if (a) { var d = $("#mbMore"); if (d) d.open = true; } });
+  if (location.hash === "#istilah" && $("#istilah")) $("#istilah").open = true;
   draw();
 })();

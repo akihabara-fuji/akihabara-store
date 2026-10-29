@@ -79,6 +79,19 @@ else if(/\\/(?:ruangakademikut\\/)?(layanan|cek-parafrase-mandiri|audit)(?:[\\/?
   mountAudit({ app, express, db, settings, orders, root: ROOT, sameOrigin: sameOrigin || (() => true), secret, userFrom });
   mountBedah({ app, express, db, settings, orders, root: ROOT, sameOrigin: sameOrigin || (() => true), secret, requireAdmin, userFrom });
   const traffic = createTraffic(db, { secret });
+  /* Tautan pendek grup WhatsApp: /grup?dari=menu|banner|artikel|panduan. Klik dihitung per asal (tanpa IP, tanpa cookie), lalu dialihkan ke tautan di pengaturan. */
+  const SRC = new Set(["menu", "banner", "artikel", "panduan", "beranda", "alat"]);
+  const clickGrup = db.prepare("INSERT INTO pv_day(day,path,views) VALUES(?,?,1) ON CONFLICT(day,path) DO UPDATE SET views=views+1");
+  app.get(["/grup", "/ruangakademikut/grup"], (req, res) => {
+    const url = String(settings.get("update_group_url") || "");
+    if (!/^https:\/\/chat\.whatsapp\.com\//.test(url)) return res.redirect(302, "/panduan-maba");
+    const ua = String(req.headers["user-agent"] || "");
+    if (ua && !/bot|crawl|spider|preview|curl|wget|python|headless/i.test(ua)) {
+      const d = new Date(Date.now() + 7 * 3600e3).toISOString().slice(0, 10), src = SRC.has(req.query.dari) ? req.query.dari : "lain";
+      try { clickGrup.run(d, "/klik-grup/" + src); } catch { /* statistik tidak boleh menghalangi pengunjung */ }
+    }
+    res.set({ "Cache-Control": "no-store", "X-Robots-Tag": "noindex" }).redirect(302, url);
+  });
   mountLayanan({ app, express, db, settings, orders, root: ROOT, sameOrigin: sameOrigin || (() => true), secret, requireAdmin, userFrom });
   const t = setInterval(() => { uploads.purgeExpired().catch(() => {}); orders.expireUnpaid().catch(() => {}); orders.sweepRetention().catch(() => {}); }, 10 * 60 * 1000); t.unref();
   const t2 = setInterval(() => notifier.flush().catch(() => {}), 30 * 1000); t2.unref();

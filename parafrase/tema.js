@@ -7,6 +7,8 @@ const PRESETS = {
   hijau:   { nama: "Akademik Hijau", hf: "Plus Jakarta Sans", bf: "Open Sans", pl: "#065F46", pd: "#34D399", bl: "#F4FBF7", bd: "#052E24", tl: "#064E3B", td: "#ECFDF5" },
   premium: { nama: "Premium Muted", hf: "Merriweather", bf: "Source Sans 3", pl: "#78350F", pd: "#E0A458", bl: "#FAF7F2", bd: "#1C1917", tl: "#1C1917", td: "#FAF5EE", serif: true },
   merah:   { nama: "Edu Merah Berani", hf: "Montserrat", bf: "Lato", pl: "#991B1B", pd: "#F87171", bl: "#FFFBFB", bd: "#1A0505", tl: "#1A0505", td: "#FEF2F2" },
+  ut:      { nama: "Biru UT E-Learning (resmi, bersih)", hf: "Inter", bf: "Open Sans", pl: "#1859BC", pd: "#8DB6FF", bl: "#F4F6F9", bd: "#0A1630", tl: "#212529", td: "#EEF2FB" },
+  wireframe: { nama: "Wireframe Monokrom (hitam putih)", hf: "Inter", bf: "Inter", pl: "#1B1C1F", pd: "#F2F2F3", bl: "#E8E9EC", bd: "#0C0C0E", tl: "#1B1C1F", td: "#F2F2F3" },
   kreatif: { nama: "Modern Kreatif", hf: "Poppins", bf: "DM Sans", pl: "#6D28D9", pd: "#A78BFA", bl: "#FAFAFE", bd: "#1E1B4B", tl: "#1E1B4B", td: "#F5F3FF" },
 };
 const DEFAULT = "bawaan";

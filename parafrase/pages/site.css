@@ -137,3 +137,18 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;line-height:
 @media(max-width:560px){.ddp.mega{width:auto;padding:10px}.ddp.mega a em{white-space:normal}}
 
 .sub a.pill{border:1px solid var(--link);border-radius:999px;padding:3px 13px;color:var(--text)}.sub a.pill.on{text-decoration:none;background:var(--surface2)}
+
+/* Menu turun dengan deskripsi (Mahasiswa Baru, Portal & Alat UT) */
+.ddp.desc{min-width:290px;max-width:min(360px,calc(100vw - 32px))}
+.ddp.desc a{display:block;padding:9px 12px;border-bottom:1px solid var(--border);border-radius:0}.ddp.desc a:last-child{border-bottom:0}
+.ddp.desc a b{display:block;font-size:14px;color:var(--text)}.ddp.desc a small{display:block;font-size:12.5px;font-weight:500;color:var(--muted);margin-top:1px}
+.ddp.desc a.all{font-weight:700;font-size:13px;color:var(--link);margin-top:2px}
+.dd summary.dds.on{text-decoration-color:var(--link)}
+
+/* Banner komunitas */
+.gban{background:var(--surface2);border-bottom:1px solid var(--border)}
+.gban .wrap{display:flex;gap:10px 16px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding-top:9px;padding-bottom:9px;font-size:14px}
+.gban p{margin:0;min-width:0;flex:1 1 280px}.gban b{margin-right:4px}.gb-a{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.gb-g,.gb-o{display:inline-flex;align-items:center;min-height:36px;padding:0 14px;border-radius:9px;font-weight:700;font-size:13.5px;text-decoration:none;border:1.5px solid var(--btn)}
+.gb-g{background:var(--btn);color:var(--on-accent)}.gb-o{color:var(--text);border-color:var(--dash)}
+.gban button{background:none;border:0;color:var(--muted);font-size:22px;line-height:1;cursor:pointer;padding:4px 8px}

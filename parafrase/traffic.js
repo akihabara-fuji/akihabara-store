@@ -6,7 +6,7 @@
 const crypto = require("crypto");
 
 const BOT = /bot|crawl|spider|slurp|preview|facebookexternalhit|headless|lighthouse|pagespeed|python|curl|wget|monitor|uptime|axios|node-fetch|go-http|java\//i;
-const SKIP = /^\/(admin|admin-ca|ms|uploads|t\.js|favicon|robots|sitemap|google|bingsiteauth|ruangakademikut\/assets|assets\/ut)/i;
+const SKIP = /^\/(grup|admin|admin-ca|ms|uploads|t\.js|favicon|robots|sitemap|google|bingsiteauth|ruangakademikut\/assets|assets\/ut)/i;
 const WIB = 7 * 3600e3;
 const dayOf = ms => new Date(ms + WIB).toISOString().slice(0, 10);
 
@@ -18,6 +18,7 @@ function normPath(p) {
   return (s || "/").slice(0, 120);
 }
 const GROUPS = [
+  ["Klik grup WhatsApp", /^\/klik-grup\//],
   ["Blog dan artikel", /^\/(blog|ruangakademikut\/blog-ut)/],
   ["Alat gratis", /\/(kalkulator-nilai-ut|pasfoto-yudisium|buat-cv-ats|sampul-tugas|surat-lamaran|tracker-kelulusan|kalender-akademik|panduan-maba|sitasi-apa)/],
   ["Cek & Parafrase", /cek-parafrase-mandiri/],

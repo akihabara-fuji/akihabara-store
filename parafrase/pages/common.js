@@ -41,7 +41,7 @@
     });
     document.querySelectorAll("[data-group]").forEach(function (a) {
       if (!c.update_group_url) { a.classList.add("hidden"); return; }
-      a.href = c.update_group_url; a.target = "_blank"; a.rel = "noopener";
+      a.href = "/grup?dari=banner"; a.target = "_blank"; a.rel = "noopener";
     });
     document.dispatchEvent(new CustomEvent("pf-config", { detail: c }));
   }
@@ -471,3 +471,22 @@ window.auditOkList = function (sc, box) {
   d.appendChild(sm); d.appendChild(inn); box.appendChild(d);
 };
 
+
+/* Banner komunitas sesuai halaman: satu pesan pendek, bisa ditutup (diingat 14 hari di perangkat ini). Tombol lewat /grup supaya klik terhitung. */
+(function () {
+  var p = location.pathname.replace(/^\/ruangakademikut/, "").replace(/\/+$/, "") || "/", K = "ca-gban-v1", V = null;
+  if (/^\/(panduan-maba|pesanan|admin|layanan|grup)/.test(p)) return;
+  if (/^\/(kalkulator-nilai-ut|tracker-kelulusan|kalender-akademik)/.test(p)) V = ["Simpan hasilmu, tanya di grup.", " Mahasiswa lain sering berbagi cara menghitung dan jadwal terbaru.", false];
+  else if (/^\/(portal-ut|blog-ut)/.test(p)) V = ["Baru di UT?", " Gabung grup Catatan Akademik (800+ anggota) untuk tanya Tuton, tugas, dan jadwal.", false];
+  if (!V) return;
+  try { var t = +localStorage.getItem(K); if (t && Date.now() - t < 14 * 864e5) return; } catch (e) { /* abaikan */ }
+  document.addEventListener("pf-config", function (ev) {
+    var c = ev.detail || {}, sub = document.querySelector(".sub"); if (!c.update_group_url || !sub || document.getElementById("gban") || document.querySelector("[data-group]")) return;
+    var d = document.createElement("div"); d.id = "gban"; d.className = "gban";
+    var chat = V[2] && c.admin_wa_number ? '<a class="gb-o" href="https://wa.me/' + encodeURIComponent(c.admin_wa_number) + '?text=' + encodeURIComponent("Halo admin Catatan Akademik, saya mau tanya soal laporan UT.") + '" target="_blank" rel="noopener">Chat admin</a>' : "";
+    d.innerHTML = '<div class="wrap"><p><b></b><span></span></p><span class="gb-a">' + chat + '<a class="gb-g" href="/grup?dari=banner">' + (V[2] ? "Gabung grup" : "Gabung Komunitas Mahasiswa UT") + '</a><button type="button" aria-label="Tutup banner">×</button></span></div>';
+    d.querySelector("b").textContent = V[0]; d.querySelector("span").textContent = V[1];
+    d.querySelector("button").onclick = function () { try { localStorage.setItem(K, String(Date.now())); } catch (e) { /* abaikan */ } d.remove(); };
+    sub.parentNode.insertBefore(d, sub.nextSibling);
+  });
+})();
