@@ -46,3 +46,10 @@ test("halaman Tentang: ada, satu H1, tanpa klaim karangan, disclaimer ada", asyn
     assert.match(nilai.html, /href="\/sitasi-apa"/);
   } finally { srv.close(); }
 });
+
+test("artikel topik non-akademik: noindex dan keluar dari sitemap di domain akademik", () => {
+  const src = require("fs").readFileSync(require("path").join(__dirname, "..", "blog-akun.js"), "utf8");
+  assert.match(src, /OFF_TOPIC = ACAD_ONLY \? \["social", "ai", "viral"\]/);
+  assert.match(src, /noindex: preview \|\| OFF_TOPIC\.includes\(p\.topic\)/);
+  assert.match(src, /blogUrls: \(\) => published\(\)\.filter\(p => !OFF_TOPIC\.includes\(p\.topic\)\)/);
+});
