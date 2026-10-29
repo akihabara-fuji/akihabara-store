@@ -15,6 +15,24 @@
     function disc(keys) { var k = String(keys).split(","), now = Number(c[k[0]]), was = Number(c[k[1]]); return was > 0 && now > 0 && now < was ? Math.round((1 - now / was) * 100) : 0; }
     document.querySelectorAll("[data-disc]").forEach(function (e) { var d = disc(e.getAttribute("data-disc")); if (d > 0) { e.textContent = "· diskon " + d + "%"; e.hidden = false; } else e.hidden = true; });
     document.querySelectorAll("[data-disc-badge]").forEach(function (e) { var d = disc(e.getAttribute("data-disc-badge")); if (d > 0) e.textContent = "Diskon " + d + "%"; });
+    /* Layanan yang ditutup admin (layanan_nonaktif): harga dan tombol pesan diganti arahan ke admin. URL, judul, dan teks halaman tetap sama. */
+    (function () {
+      var off = String(c.layanan_nonaktif || "").split(",").filter(Boolean), has = function (k) { return off.indexOf(k) >= 0; };
+      var shut = { tugas: has("tugas"), diskusi: has("diskusi"), metopen: has("metopen_paket") && has("metopen1") && has("metopen2") && has("metopen3") };
+      var NM = { tugas: "Tugas", diskusi: "Diskusi", metopen: "Metopen" };
+      Object.keys(shut).forEach(function (g) {
+        if (!shut[g]) return;
+        var wa = c.admin_wa_number ? "https://wa.me/" + c.admin_wa_number + "?text=" + encodeURIComponent("Halo admin Catatan Akademik, saya mau tanya layanan " + NM[g] + ".") : "";
+        document.querySelectorAll('[data-g="' + g + '"],[data-slug="' + g + '"]').forEach(function (card) {
+          card.querySelectorAll(".price,.sublink,.pt .badge,.muted").forEach(function (e) { e.style.display = "none"; });
+          card.querySelectorAll(".pr").forEach(function (e) { e.textContent = "Hubungi admin"; });
+          var cta = card.querySelector("a.cta");
+          if (cta) { cta.textContent = "Tanya admin"; if (wa) { cta.href = wa; cta.target = "_blank"; cta.rel = "noopener"; } }
+          var pb = card.querySelector(".pb");
+          if (pb && !pb.querySelector(".tutup")) { var n = document.createElement("div"); n.className = "tutup muted"; n.textContent = "Pesanan baru sedang ditutup sementara. Hubungi admin untuk info."; pb.insertBefore(n, cta || null); }
+        });
+      });
+    })();
     document.querySelectorAll("[data-chat]").forEach(function (a) {
       if (!c.admin_wa_number) { a.classList.add("hidden"); return; }
       var m = a.getAttribute("data-msg") || "Halo admin Catatan Akademik, saya mau tanya Cek dan Parafrase Mandiri.";

@@ -18,6 +18,8 @@
   }
   function paint() {
     var s = cfg[cur]; if (!s) return;
+    var shutNow = !!s.closed;
+    $("tutup").style.display = shutNow ? "block" : "none"; $("oform").style.display = shutNow ? "none" : "flex";
     if (s.kind === "simulasi") return paintSim(s);
     $("chips").innerHTML = "";
     var base = s.of || (s.kind === "metopen" ? "metopen" : cur), fam = base;
@@ -28,9 +30,9 @@
       if (!on) b.style.cssText = "background:transparent;color:inherit;border:1px solid currentColor"; b.onclick = function () { cur = pick || k; slotFiles = {}; history.replaceState(null, "", "?s=" + cur); paint(); }; parent.appendChild(b);
     }
     var newKey = fam === "metopen" ? (cfg[lastStage] && cfg[lastStage].kind === "metopen" ? lastStage : "metopen_paket") : fam, rk = "revisi_" + fam, isRev = s.kind === "revisi";
-    if (cfg[newKey]) mk($("chips"), newKey, "Pesanan baru" + (fam === "metopen" ? "" : " · " + rp(cfg[newKey].price)), !isRev);
+    if (cfg[newKey]) mk($("chips"), newKey, "Pesanan baru" + (fam === "metopen" || cfg[newKey].closed ? "" : " · " + rp(cfg[newKey].price)), !isRev);
     if (cfg[rk]) mk($("chips"), rk, "Revisi · " + (fam === "metopen" ? "gratis untuk file kami, " + rp(cfg[rk].price) + " untuk file dari luar" : rp(cfg[rk].price)), isRev);
-    if (fam === "metopen" && !isRev) ["metopen_paket", "metopen1", "metopen2", "metopen3"].forEach(function (k) { if (cfg[k]) mk(stagesBox, k, cfg[k].label + " · " + rp(cfg[k].price), k === cur); });
+    if (fam === "metopen" && !isRev) ["metopen_paket", "metopen1", "metopen2", "metopen3"].forEach(function (k) { if (cfg[k]) mk(stagesBox, k, cfg[k].label + (cfg[k].closed ? "" : " · " + rp(cfg[k].price)), k === cur); });
     stagesBox.style.display = fam === "metopen" && !isRev ? "flex" : "none";
     var FAM = { tugas: "Tugas", diskusi: "Diskusi", metopen: "Metopen" };
     document.querySelectorAll(".sub a").forEach(function (a) { var t = a.textContent.trim(); a.classList.toggle("on", t === FAM[fam]); });
