@@ -118,6 +118,24 @@
     renderRings(j, $("rings"));
     var w = $("warn"); w.innerHTML = ""; (j.warn || []).forEach(function (m) { w.appendChild(el("div", "color:#ffb347;font-size:13.5px", m)); });
     var uc = $("utCard"); uc.style.display = j.ut ? "" : "none"; if (j.ut) utTable(j.ut, $("utTable"), $("utNote"), $("utGuide"), j.guide || []);
+    var mc = $("mapCard"); mc.style.display = j.docMap ? "" : "none";
+    if (j.docMap) {
+      var cp = j.compare || {}; $("mapNote").textContent = cp.utSentences + " kalimat isi ditandai UT. " + cp.both + " di antaranya juga punya temuan modul, dan " + cp.utOnly + " hanya ditandai UT (tidak melanggar aturan modul; biasanya tulisan umum atau seragam, jadi tambah detail spesifik dari penelitianmu). " + cp.moduleOnly + " temuan modul lain tidak ditandai UT.";
+      var md = $("mapDoc"); md.innerHTML = "";
+      var tw = 0; j.docMap.forEach(function (pp) { pp.s.forEach(function (x) { tw += x.t.split(/\s+/).length; }); });
+      var inl = tw / j.docMap.length < 14, flow = el("div", ""); /* PDF terbaca per baris: gabungkan agar kalimat tidak terpotong tampilan */
+      if (inl) md.appendChild(flow);
+      j.docMap.forEach(function (pp) {
+        var d = inl ? flow : el("div", "margin:0 0 6px");
+        pp.s.forEach(function (x) {
+          var sp = el("span", "padding:1px 3px;border-radius:5px", x.t + " ");
+          if (x.u) sp.className = "bd-ut"; if (x.c) sp.className += " s-" + x.c; if (x.l && !x.c) sp.style.borderBottom = "2px dotted #9aa";
+          d.appendChild(sp);
+        });
+        if (!inl) md.appendChild(d);
+      });
+    }
+    $("ctaPar").style.display = "";
     var sc = $("simCard"); sc.style.display = j.sim ? "" : "none"; if (j.sim) simBody(j.sim, $("simBody"));
     $("fTitle").textContent = j.open.length + " temuan terberat, lengkap (gratis)";
     if (window.PF_legend) window.PF_legend($("pfLegend")); var lg = $("legend"); lg.textContent = "Label sama dengan Cek & Parafrase: " + Object.keys(j.labels).map(function (k) { return k + " " + j.labels[k]; }).join(" · ");

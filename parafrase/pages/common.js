@@ -18,8 +18,9 @@
     /* Layanan yang ditutup admin (layanan_nonaktif): harga dan tombol pesan diganti arahan ke admin. URL, judul, dan teks halaman tetap sama. */
     (function () {
       var off = String(c.layanan_nonaktif || "").split(",").filter(Boolean), has = function (k) { return off.indexOf(k) >= 0; };
-      var shut = { tugas: has("tugas"), diskusi: has("diskusi"), metopen: has("metopen_paket") && has("metopen1") && has("metopen2") && has("metopen3") };
-      var NM = { tugas: "Tugas", diskusi: "Diskusi", metopen: "Metopen" };
+      var shut = { tugas: has("tugas"), diskusi: has("diskusi"), metopen: has("metopen_paket") && has("metopen1") && has("metopen2") && has("metopen3"), revisi: has("revisi_tugas") && has("revisi_diskusi") && has("revisi_metopen") };
+      var NM = { tugas: "Tugas", diskusi: "Diskusi", metopen: "Metopen", revisi: "Revisi" };
+      if (shut.revisi) document.querySelectorAll('.sublink[href*="revisi_"]').forEach(function (e) { e.style.display = "none"; });
       Object.keys(shut).forEach(function (g) {
         if (!shut[g]) return;
         var wa = c.admin_wa_number ? "https://wa.me/" + c.admin_wa_number + "?text=" + encodeURIComponent("Halo admin Catatan Akademik, saya mau tanya layanan " + NM[g] + ".") : "";

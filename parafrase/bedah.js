@@ -154,6 +154,14 @@ module.exports = function mountBedah({ app, express, db, settings, orders, root,
         const open = ranked.slice(0, openN).map((x, i) => ({ n: i + 1, ...describe(x, utKey) }));
         const locked = ranked.slice(openN).map(x => ({ code: x.code, color: COLOR_NAME[x.code], where: "Paragraf " + (x.para_idx + 1), ut: utKey.get(x.para_idx + ":" + x.sent_idx) || null }));
         const by = {}; for (const x of ranked) by[x.code] = (by[x.code] || 0) + 1;
+        /* Peta seluruh dokumen: tiap kalimat isi dengan tanda UT; warna modul hanya untuk temuan yang dibuka gratis, sisanya penanda terkunci. */
+        let docMap = null, compare = null;
+        if (r.map.hits.length) {
+          const openK = new Map(ranked.slice(0, openN).map(x => [x.para_idx + ":" + x.sent_idx, x.code])), lockK = new Set(ranked.slice(openN).map(x => x.para_idx + ":" + x.sent_idx));
+          docMap = r.a.paragraphs.filter(p => rules.isBody(p, r.bibAt)).map(p => ({ p: p.idx, s: splitSentences(p.text || "").map((t, i) => { const k = p.idx + ":" + i; return { t, u: utKey.has(k) ? 1 : 0, c: openK.get(k) || null, l: lockK.has(k) ? 1 : 0 }; }) })).filter(x => x.s.length);
+          const overlap = ranked.filter(x => utKey.has(x.para_idx + ":" + x.sent_idx)).length;
+          compare = { utSentences: utKey.size, both: overlap, utOnly: utKey.size - overlap, moduleOnly: ranked.length - overlap };
+        }
         const id = crypto.randomBytes(16).toString("hex"), rel = `docs/${id}.${isPdfName ? "pdf" : "docx"}`;
         await fsp.writeFile(path.join(root, "data", "private", rel), f.buffer, { mode: 0o600 });
         const saved = { ai: ai && { pct: ai.aiPct, matchedWords: ai.matchedWords, totalWords: ai.totalWords, humanPct: ai.humanPct, blockTable: ai.blockTable, blocks: ai.blocks.map(b => ({ n: b.n, words: b.words })), confidence: ai.confidence }, sim, hits: ai && ai.confidence !== "rendah" ? r.map.hits : [], mapWords: r.map.words };
@@ -174,7 +182,7 @@ module.exports = function mountBedah({ app, express, db, settings, orders, root,
         }
         res.json({ uploadId: id, file: { name, size: f.size }, words: r.words, problem: r.problem, labels: by, totalFindings: ranked.length, quote: bq,
           open, locked, ut: utView(ai, r.map), sim: sim && { pct: sim.pct, grade: sim.grade, matchedSources: sim.matchedSources, sourceTypes: sim.sourceTypes, content: sim.content, excluded: sim.excluded, sources: sim.sources },
-          guide: BLOCK_GUIDE, warn, kode, beta: beta() });
+          guide: BLOCK_GUIDE, warn, kode, beta: beta(), docMap, compare });
       } catch (e) {
         if (e instanceof DocxError) return res.status(422).json({ error: e.message, code: e.code });
         console.error("[bedah] gagal:", e && e.message);

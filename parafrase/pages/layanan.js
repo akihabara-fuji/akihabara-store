@@ -31,7 +31,7 @@
     }
     var newKey = fam === "metopen" ? (cfg[lastStage] && cfg[lastStage].kind === "metopen" ? lastStage : "metopen_paket") : fam, rk = "revisi_" + fam, isRev = s.kind === "revisi";
     if (cfg[newKey]) mk($("chips"), newKey, "Pesanan baru" + (fam === "metopen" || cfg[newKey].closed ? "" : " · " + rp(cfg[newKey].price)), !isRev);
-    if (cfg[rk]) mk($("chips"), rk, "Revisi · " + (fam === "metopen" ? "gratis untuk file kami, " + rp(cfg[rk].price) + " untuk file dari luar" : rp(cfg[rk].price)), isRev);
+    if (cfg[rk]) mk($("chips"), rk, "Revisi" + (cfg[rk].closed ? "" : " · " + (fam === "metopen" ? "gratis untuk file kami, " + rp(cfg[rk].price) + " untuk file dari luar" : rp(cfg[rk].price))), isRev);
     if (fam === "metopen" && !isRev) ["metopen_paket", "metopen1", "metopen2", "metopen3"].forEach(function (k) { if (cfg[k]) mk(stagesBox, k, cfg[k].label + (cfg[k].closed ? "" : " · " + rp(cfg[k].price)), k === cur); });
     stagesBox.style.display = fam === "metopen" && !isRev ? "flex" : "none";
     var FAM = { tugas: "Tugas", diskusi: "Diskusi", metopen: "Metopen" };

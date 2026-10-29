@@ -128,3 +128,15 @@ test("rankFindings: temuan di blok yang ditandai UT diutamakan", () => {
   const r = rankFindings(f, new Map([["5:0", 1], ["9:0", 2]]));
   assert.deepStrictEqual(r.map(x => x.code + x.para_idx), ["K9", "A5", "M7"]);
 });
+
+test("bedah: peta dokumen, perbandingan UT vs modul, dan CTA parafrase ada di kode", () => {
+  const fs = require("fs"), path = require("path"), r = p => fs.readFileSync(path.join(__dirname, "..", p), "utf8");
+  assert.match(r("parafrase/bedah.js"), /docMap, compare \}\);/);
+  assert.match(r("parafrase/pages/bedah.html"), /id="mapCard"/);
+  assert.match(r("parafrase/pages/bedah.html"), /href="\/ruangakademikut\/cek-parafrase-mandiri">Buka Cek/);
+  assert.match(r("parafrase/pages/bedah.js"), /hanya ditandai UT/);
+});
+test("layanan revisi ikut ditutup secara bawaan", () => {
+  const s = require("fs").readFileSync(require("path").join(__dirname, "..", "parafrase", "settings.js"), "utf8");
+  assert.match(s, /revisi_tugas,revisi_diskusi,revisi_metopen/);
+});
