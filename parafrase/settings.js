@@ -3,7 +3,7 @@
 
 const WA = /^\d{8,15}$/;
 const DEFS = {
-  price_per_word:               { type: "int",  min: 1, max: 1000, def: 40, pub: true },
+  price_per_word:               { type: "int",  min: 1, max: 1000, def: 30, pub: true },
   min_order_price:              { type: "int",  min: 0, max: 10000000, def: 40000, pub: true },
   fast_lane_enabled:            { type: "bool", def: true, pub: true },
   fast_lane_price:              { type: "int",  min: 0, max: 1000000, def: 40000, pub: true },
@@ -42,7 +42,7 @@ const DEFS = {
   audit_min:                    { type: "int",  min: 0, max: 100000000, def: 35000, pub: true },
   bedah_gratis_kata:            { type: "int",  min: 0, max: 100000, def: 500, pub: true },        // Bedah: kata isi pertama yang rekomendasinya terbuka gratis (sisanya diburamkan)
   bedah_harga_per_1000:         { type: "int",  min: 0, max: 100000000, def: 10000, pub: true },   // Bedah: harga per 1.000 kata isi di luar jatah gratis (dihitung per kata)
-  bedah_pembulatan:             { type: "int",  min: 1, max: 100000, def: 1000, pub: true },       // total dibulatkan ke atas ke kelipatan ini (Rp)
+  bedah_pembulatan:             { type: "int",  min: 1, max: 100000, def: 5000, pub: true },       // total dibulatkan ke atas ke kelipatan ini (Rp)
   drillbit_sim_max:             { type: "int",  min: 1, max: 100, def: 25, pub: true },
   drillbit_ai_max:              { type: "int",  min: 1, max: 100, def: 20, pub: true },
   /* Urgensi perbaikan (triage.js): dipakai Audit Dokumen dan Cek & Parafrase sekaligus, jadi keduanya selalu sepakat. */
