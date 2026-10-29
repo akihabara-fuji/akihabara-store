@@ -153,13 +153,18 @@ window.auditProblemCard = function (pb, box) {
   function f1(n) { return String(n).replace(".", ","); }
   var none = pb.status === "belum", over = pb.status === "belum_aman", lim = pb.limit || window.PF_FIX_MAX;
   window.PF_PB = { over: over, lim: lim };
-  var COL = none ? "#8ec5ff" : over ? "#ff8aa5" : "#5ee6a8";
+  var COL = none ? "#8ec5ff" : over ? "#ff8aa5" : "#8ec5ff"; /* di bawah batas modul tidak hijau: skor modul bukan jaminan angka AI UT */
   var wrap = el("div", "display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:center;padding:18px;border-radius:18px;border:" + (over ? "2px" : "1px") + " solid " + COL + ";" + (over ? "background:rgba(255,138,165,.08);" : "") + "max-width:760px;margin:0 auto 14px;text-align:left");
   wrap.id = "problemCard";
   var ring = el("div", "flex:none;width:132px;height:132px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:conic-gradient(" + COL + " " + Math.min(100, pb.pct) * 3.6 + "deg,rgba(128,128,160,.22) 0)");
   var inner = el("div", "width:100px;height:100px;border-radius:50%;background:var(--bg,#0a0a1c);display:flex;flex-direction:column;align-items:center;justify-content:center");
   inner.appendChild(el("b", "font-size:28px;line-height:1;color:" + COL, none ? "n/a" : f1(pb.pct) + "%")); inner.appendChild(el("span", "font-size:11.5px;opacity:.7", "bermasalah")); ring.appendChild(inner);
   var side = el("div", "flex:1;min-width:240px");
+  /* Peringatan utama: angka modul bukan angka AI UT. Dokumen berskor modul rendah tetap bisa mendapat AI Drillbit tinggi. */
+  var al = el("div", "border:1.5px solid #ffb347;border-radius:12px;padding:10px 12px;margin:0 0 12px;background:rgba(255,179,71,.1);font-size:13.5px;line-height:1.55");
+  al.appendChild(el("b", "display:block", "Ini BUKAN angka AI Drillbit UT."));
+  al.appendChild(document.createTextNode("Skor modul rendah tidak berarti AI Drillbit rendah: pada 6 dokumen uji kami, skor modul 12 sampai 20% tetapi AI Drillbit di UT 31 sampai 52%. Untuk melihat angka AI dan kalimat yang ditandai UT, unggah laporan Drillbit-mu di Bedah Laporan. "));
+  var ab = el("a", "display:inline-block;margin-top:6px;font-weight:800;color:var(--link,#9db4ff)", "Buka Bedah Laporan UT →"); ab.href = "/ruangakademikut/bedah-laporan"; al.appendChild(ab); side.appendChild(al);
   if (over) { var wn = el("div", "display:flex;gap:8px;align-items:center;color:" + COL + ";font-size:12.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase"); wn.appendChild(window.pfWarnIcon(18)); wn.appendChild(el("span", "", "Di atas batas modul · " + lim + "%")); side.appendChild(wn); }
   else side.appendChild(el("div", "font-size:12.5px;opacity:.7;text-transform:uppercase;letter-spacing:.06em", "Tingkat bermasalah (makin kecil makin baik)"));
   side.appendChild(el("div", "font-size:21px;font-weight:700;margin:2px 0 8px;color:" + COL, none ? "Isi dokumen belum terbaca" : over ? "Di atas batas modul: turunkan sampai " + lim + "% atau kurang" : "Di bawah batas modul: " + lim + "% atau kurang"));
@@ -179,9 +184,8 @@ window.auditProblemCard = function (pb, box) {
     side.appendChild(el("div", "font-size:12.5px;line-height:1.55;margin-top:6px;opacity:.85", "Dari mana: aturan modul Metopen dan aturan sitasi umum. Rumus: (kalimat bermasalah + pustaka bermasalah) ÷ (semua kalimat isi + semua entri pustaka) = " + (pb.num != null ? pb.num : pb.kalimat.num + pb.pustaka.num) + " ÷ " + (pb.den != null ? pb.den : pb.kalimat.den + pb.pustaka.den) + "."));
   }
   side.appendChild(el("div", "font-size:12.5px;font-weight:700;margin-top:8px;color:#ffb347", "Angka ini dihitung Catatan Akademik. BUKAN hasil Drillbit dan BUKAN penilaian resmi UT."));
-  /* Skor modul bukan prediksi hasil AI/Similarity UT (4 dokumen uji: skor modul 12-20%, AI Drillbit sekitar 33-52%) */
-  var nw = el("div", "font-size:12.5px;margin-top:6px;line-height:1.55;opacity:.9", "Skor ini hanya menilai aturan modul, misalnya paragraf terlalu pendek, sitasi, dan daftar pustaka. Skor ini tidak memprediksi hasil AI atau Similarity di UT: pada 4 dokumen uji kami, skor modul 12 sampai 20% sementara AI Drillbit sekitar 33 sampai 52%. Punya laporan Drillbit dari UT? ");
-  var nl = el("a", "color:var(--link,#9db4ff);font-weight:700", "Bedah laporan UT-mu"); nl.href = "/ruangakademikut/bedah-laporan"; nw.appendChild(nl); side.appendChild(nw);
+  /* Skor modul bukan prediksi hasil AI/Similarity UT (6 dokumen uji: skor modul 12-20%, AI Drillbit 31-52%) */
+  side.appendChild(el("div", "font-size:12.5px;margin-top:6px;line-height:1.55;opacity:.9", "Skor ini hanya menilai aturan modul, misalnya paragraf terlalu pendek, sitasi, dan daftar pustaka."));
   side.appendChild(el("div", "font-size:12.5px;opacity:.7;margin-top:4px", pb.note));
   wrap.appendChild(ring); wrap.appendChild(side); box.appendChild(wrap);
   var T = window.__pfTri; if (over && T && T.t && T.t.level === "aman") window.renderTriage(T.box, T.t, T.opts);   /* satu kesimpulan: persen di atas batas = tidak "relatif aman" */
