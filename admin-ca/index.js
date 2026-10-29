@@ -82,6 +82,34 @@ module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, b
     ] };
   }
 
+  /* ---------------- pemeriksaan sistem ---------------- */
+  /* Daftar cek cepat untuk pemilik: pengaturan penting yang kosong dan masalah konten (artikel kembar, terbit serentak, di luar niche).
+     Hanya membaca; tidak mengubah apa pun. Tiap butir: tone ok|warn|bad, teks, dan tautan ke menu terkait bila ada. */
+  app.get("/ms/admin/ca/health", requireAdmin, send(req => {
+    if (req.admin.role === "editor") return { items: [] };
+    const cfg = settings.getAll(), items = [], add = (tone, text, href) => items.push({ tone, text, href: href || "" });
+    const url = v => /^https:\/\/\S+$/.test(String(v || "").trim());
+    if (!url(cfg.update_group_url)) add("bad", "Tautan grup WhatsApp belum diisi. Tombol komunitas di menu, banner, dan artikel tidak punya tujuan.", "#/settings");
+    if (!/^62\d{8,13}$/.test(String(cfg.admin_wa_number || "").replace(/\D/g, ""))) add("bad", "Nomor WhatsApp admin kosong atau formatnya salah (harus diawali 62).", "#/settings");
+    if (!String(cfg.qris_image_path || "").trim()) add("warn", "Gambar QRIS belum diatur. Pembayaran otomatis tidak bisa ditampilkan.", "#/payments");
+    if (!(Number(cfg.price_per_word) > 0)) add("bad", "Harga Cek & Parafrase per kata belum valid.", "#/settings");
+    if (!(Number(cfg.bedah_harga_per_1000) > 0)) add("warn", "Harga Bedah per 1.000 kata bernilai 0, jadi Bedah gratis.", "#/settings");
+    const live = blog.posts().filter(x => !x.trashedAt && blog.isLive(x)), now = Date.now();
+    const off = live.filter(x => ["social", "ai", "viral"].includes(x.topic));
+    if (off.length) add("warn", `${off.length} artikel terbit di luar fokus UT (sosmed, AI, viral). Disembunyikan dari daftar blog dan noindex; arsipkan bila tidak dipakai.`, "#/posts");
+    const byDay = {}; for (const x of live) { const d = String(x.publishedAt || "").slice(0, 10); if (d && now - Date.parse(x.publishedAt) < 14 * 864e5) byDay[d] = (byDay[d] || 0) + 1; }
+    const burst = Object.entries(byDay).filter(([, n]) => n >= 5).map(([d, n]) => `${d} (${n})`);
+    if (burst.length) add("warn", `Artikel terbit serentak dalam 14 hari terakhir: ${burst.join(", ")}. Sebar 2–3 per minggu dengan status Terjadwal.`, "#/posts");
+    const pairs = [], acad = live.filter(x => !["social", "ai", "viral"].includes(x.topic));
+    for (let i = 0; i < acad.length && pairs.length < 5; i++) for (let j = i + 1; j < acad.length && pairs.length < 5; j++) if (seo.similarity(acad[i].title, acad[j].title) >= 0.6) pairs.push(`“${String(acad[i].title).slice(0, 48)}” dan “${String(acad[j].title).slice(0, 48)}”`);
+    if (pairs.length) add("warn", `Judul yang bersaing untuk kata kunci sama: ${pairs.join("; ")}. Gabungkan lewat redirect 301.`, "#/posts");
+    const waiting = db.prepare("SELECT COUNT(*) n FROM orders WHERE status='menunggu_verifikasi' AND updated_at<?").get(now - 6 * 3600e3).n;
+    if (waiting) add("bad", `${waiting} pesanan menunggu konfirmasi pembayaran lebih dari 6 jam.`, "#/orders");
+    const drafts = live.length ? blog.posts().filter(x => !x.trashedAt && x.status === "draft").length : 0;
+    if (drafts >= 10) add("warn", `${drafts} draf belum diselesaikan.`, "#/posts?status=draft");
+    if (!items.length) add("ok", "Semua pemeriksaan lolos.");
+    return { items };
+  }));
   /* ---------------- dashboard ---------------- */
   app.get("/ms/admin/ca/dashboard", requireAdmin, send(req => {
     const r = range(req.query, 30), posts = blog.posts(), now = Date.now();

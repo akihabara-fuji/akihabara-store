@@ -212,7 +212,8 @@
       bindRows(); return;
     }
     const o = d.orders;
-    setPage("Dashboard", "Ringkasan aktivitas website", `${warn}<div class="bar"><span class="grow"></span>${range}</div>
+    let hc = ""; try { const h = await api("/ms/admin/ca/health"); if (h.items && h.items.length) hc = `<div class="card" style="margin-bottom:14px"><div class="hd"><h2>Pemeriksaan sistem</h2></div><ul style="margin:0;padding-left:18px;line-height:1.8">${h.items.map(i => `<li class="${i.tone === "bad" ? "bad" : ""}"><b>${{ ok: "Aman", warn: "Perhatian", bad: "Perlu diperbaiki" }[i.tone] || ""}:</b> ${esc(i.text)}${i.href ? ` <a href="${esc(i.href)}">Buka</a>` : ""}</li>`).join("")}</ul></div>`; } catch (e) { hc = ""; }
+    setPage("Dashboard", "Ringkasan aktivitas website", `${warn}${hc}<div class="bar"><span class="grow"></span>${range}</div>
       <div class="grid g4">
         ${stat("doc", num(p.published), "Artikel terbit", `${num(p.draft)} draf · ${num(p.scheduled)} terjadwal · ${num(p.review)} review`, "#/posts?status=published")}
         ${stat("box", num(d.newToday), "Pesanan baru hari ini", `${num(o.bayar)} menunggu pembayaran`, `#/orders?from=${to}&to=${to}`)}
