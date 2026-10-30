@@ -1,0 +1,16 @@
+/* Tema "Baru" (gaya Hostinger). Dimuat hanya bila paket tema = baru. Tema lama ("bawaan") tidak memuat berkas ini sama sekali. */
+header.nav{background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:saturate(1.4) blur(10px);border-bottom:1px solid var(--border)}
+.btn,.btn-pri,.btn-ghost{border-radius:10px;font-weight:700;transition:transform .2s,box-shadow .2s,background .2s}
+.btn-pri:hover,.btn:not(.btn-ghost):hover{transform:translateY(-2px);box-shadow:0 10px 26px color-mix(in srgb,var(--btn) 35%,transparent)}
+.card,.card.mini,.pc,.rc,.tx-cd{border-radius:16px;transition:transform .25s,box-shadow .25s,border-color .25s}
+.card.mini:hover,.pc:hover,.rc:hover{transform:translateY(-6px);box-shadow:0 14px 40px color-mix(in srgb,var(--btn) 22%,transparent);border-color:var(--btn)}
+h1,h2{letter-spacing:-.02em}
+.sh h2{font-size:clamp(26px,3.4vw,38px);line-height:1.15}
+.hero.hx{position:relative;overflow:hidden}
+.hero.hx:before,.hero.hx:after{content:"";position:absolute;z-index:0;border-radius:50%;filter:blur(80px);opacity:.38;pointer-events:none;animation:bbFloat 10s ease-in-out infinite}
+.hero.hx:before{width:380px;height:380px;background:var(--btn);left:-90px;top:-110px}.hero.hx:after{width:320px;height:320px;background:var(--acc);right:-70px;bottom:-130px;animation-delay:-5s}
+@keyframes bbFloat{50%{transform:translate(40px,30px) scale(1.12)}}
+.nx-strip{overflow:hidden}
+.stats3 b{background:linear-gradient(135deg,var(--btn),var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hk-chip{backdrop-filter:blur(4px)}
+@media(prefers-reduced-motion:reduce){.hero.hx:before,.hero.hx:after{animation:none}.card,.card.mini,.pc,.rc,.btn{transition:none}.card.mini:hover,.pc:hover,.rc:hover,.btn:hover{transform:none}}

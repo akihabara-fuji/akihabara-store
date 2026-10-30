@@ -27,9 +27,11 @@ const DEFS = {
   ca_tiktok_url:                { type: "url",  allowEmpty: true, def: "", pub: true },
   ca_facebook_url:              { type: "url",  allowEmpty: true, def: "", pub: true },
   qris_merchant_name:           { type: "str",  re: /^[\p{L}\p{N} .,&'-]{0,60}$/u, allowEmpty: true, def: "CATATAN TERBUKA", pub: true },
-  ca_tema:                      { type: "str",  re: /^[a-z]{3,12}$/, def: "bawaan" },   // ID paket tema (parafrase/tema.js); ID asing dibaca sebagai bawaan
+  ca_tema:                      { type: "str",  re: /^[a-z]{3,12}$/, def: "baru" },   // ID paket tema (parafrase/tema.js); ID asing dibaca sebagai paket aktif (baru). "bawaan" = tema lama
   price_tugas:                  { type: "int",  min: 0, max: 100000000, def: 35000, pub: true },
   price_diskusi:                { type: "int",  min: 0, max: 100000000, def: 20000, pub: true },
+  price_makalah:                { type: "int",  min: 0, max: 100000000, def: 45000, pub: true },
+  price_jurnal:                 { type: "int",  min: 0, max: 100000000, def: 45000, pub: true },
   price_metopen1:               { type: "int",  min: 0, max: 100000000, def: 300000, pub: true },
   price_metopen2:               { type: "int",  min: 0, max: 100000000, def: 250000, pub: true },
   price_metopen3:               { type: "int",  min: 0, max: 100000000, def: 350000, pub: true },
@@ -66,7 +68,7 @@ const DEFS = {
   layanan_nonaktif:             { type: "str",  re: /^[a-z0-9_]+(,[a-z0-9_]+)*$/, allowEmpty: true, def: "tugas,diskusi,metopen1,metopen2,metopen3,metopen_paket,revisi_tugas,revisi_diskusi,revisi_metopen", pub: true }, // kode layanan yang ditutup, dipisah koma
 };
 /* Nama tampil tiap layanan (formulir, judul pesanan, daftar admin). Kosong = pakai nama bawaan di layanan.js. Diubah dari panel admin. */
-for (const k of ["tugas", "diskusi", "metopen1", "metopen2", "metopen3", "metopen4", "metopen_paket", "revisi_tugas", "revisi_diskusi", "revisi_metopen", "simulasi"])
+for (const k of ["tugas", "diskusi", "makalah", "jurnal", "metopen1", "metopen2", "metopen3", "metopen4", "metopen_paket", "revisi_tugas", "revisi_diskusi", "revisi_metopen", "simulasi"])
   DEFS["label_" + k] = { type: "str", re: /^[\p{L}\p{N} &.,()'+\/:-]{0,40}$/u, allowEmpty: true, def: "", pub: true };
 /* Kartu di halaman Layanan UT yang disembunyikan (kode kartu dipisah koma, mis. "semester,pengarahan"). */
 DEFS.kartu_sembunyi = { type: "str", re: /^[a-z_]+(,[a-z_]+)*$/, allowEmpty: true, def: "" };

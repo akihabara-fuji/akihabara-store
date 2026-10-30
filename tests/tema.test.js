@@ -13,10 +13,11 @@ test("setiap paket lulus kontras 4,5 di mode Terang dan Gelap", () => {
     assert.ok(ratio(p.bd, p.pd) >= 4.5, k + " teks tombol gelap");
   }
 });
-test("bawaan tidak mengubah apa pun; ID asing dibaca bawaan; paket lain memuat font dan variabel", () => {
+test("bawaan (tema lama) tidak mengubah apa pun; ID asing dibaca bawaan; paket lain memuat font dan variabel", () => {
   assert.strictEqual(tema.head("bawaan"), "");
-  assert.strictEqual(tema.head("<script>"), "");
-  assert.strictEqual(tema.id("x"), "bawaan");
+  assert.strictEqual(tema.head("<script>"), tema.head("baru"));
+  assert.strictEqual(tema.id("x"), "baru");
+  assert.match(tema.head("baru"), /baru\.css/); assert.strictEqual(tema.DEFAULT, "baru");
   const h = tema.head("premium");
   assert.match(h, /family=Merriweather/); assert.match(h, /Source\+Sans\+3/); assert.match(h, /--acc:#78350F/); assert.match(h, /--acc:#E0A458/);
   assert.strictEqual(tema.inject("<head></head>", "klasik").includes("tema-klasik"), true);

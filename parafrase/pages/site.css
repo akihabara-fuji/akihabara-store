@@ -171,8 +171,8 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;line-height:
 .nav-r{flex:none;margin-left:auto}
 .nav .nav-ord{border:1px solid var(--border);border-radius:9px;padding:8px 13px;color:var(--text);white-space:nowrap}
 .nav .nav-ord:hover{background:var(--surface2)}
-@media(min-width:1241px) and (max-width:1420px){.nav .links>a,.nav .links .dd>summary{padding:9px 8px;font-size:13.5px}.nav .logo{font-size:18px}.nav .nav-ord{padding:8px 10px}.nav .mode button{padding:6px 10px}}
-@media(max-width:1240px){
+@media(min-width:1401px) and (max-width:1480px){.nav .links>a,.nav .links .dd>summary{padding:9px 8px;font-size:13.5px}.nav .logo{font-size:18px}.nav .nav-ord{padding:8px 10px}.nav .mode button{padding:6px 10px}}
+@media(max-width:1400px){
   .nav .only-m{display:block}
   .nav .links{display:none;position:absolute;left:0;right:0;top:70px;flex-direction:column;align-items:stretch;background:var(--bg);border-bottom:1px solid var(--border);padding:12px 16px 16px;gap:2px;max-height:calc(100vh - 70px);overflow-y:auto}
   .nav .links.open{display:flex}

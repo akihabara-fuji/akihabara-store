@@ -407,6 +407,12 @@ svg.nx-i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;s
 @media(max-width:860px){.hero.hx{min-height:0;display:flex;align-items:stretch;flex-direction:column;width:100%;margin:0;border-radius:0}.hero.hx .nx-bg{position:relative;display:block;width:100%;height:340px;order:2}.hero.hx::after{display:none}.nx-hc{width:100%;padding:26px 20px 20px;order:1}.nx-fc{display:none}.nx-strip{position:relative;order:3;height:auto;grid-template-columns:1fr;justify-items:start;gap:14px;padding:18px 20px 76px}.nx-strip .nx-rt{margin-left:0}.nx-two{grid-template-columns:1fr}.nx-chip{width:calc(33.3% - 7px)}}
 @media(min-width:981px){.hero.hx{min-height:min(calc(100svh - 108px),760px);display:flex;align-items:stretch}.nx-hc{display:flex;flex-direction:column;justify-content:center;padding-top:clamp(28px,5vh,64px);padding-bottom:clamp(120px,15vh,160px)}.hero.hx .sl{font-size:clamp(44px,3.6vw,68px);line-height:1.05}.nx-lead{font-size:clamp(17px,1.2vw,21px);max-width:620px;line-height:1.55}.nx-door{min-height:120px;padding:20px 22px}.nx-chip{width:96px;padding:14px 6px}.nx-strip{height:88px}.nx-fc{width:clamp(232px,15vw,280px)}.hero.hx .nx-bg{height:calc(100% - 88px)}}
 @media(prefers-reduced-motion:reduce){.nx-door,.nx-chip,.nx-t b{transition:none}}
+.hk-chips{display:flex;flex-wrap:wrap;gap:8px;max-width:640px;margin:2px 0 18px}.hk-chip{display:inline-flex;align-items:center;padding:8px 14px;border-radius:999px;border:1px solid color-mix(in srgb,currentColor 25%,transparent);background:color-mix(in srgb,currentColor 7%,transparent);color:inherit;font-size:13.5px;font-weight:600;text-decoration:none;transition:transform .2s,background .2s}.hk-chip:hover{transform:translateY(-2px);background:color-mix(in srgb,var(--btn,#7c3aed) 22%,transparent)}
+.hk-eb{display:inline-block;font-size:12.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--btn,#7c3aed);margin-bottom:6px}
+.stats3.stats4{grid-template-columns:repeat(4,minmax(0,1fr))}@media(max-width:700px){.stats3.stats4{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:18px}}
+.hk-pop{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.hk-pop a{display:flex;gap:14px;align-items:center;padding:16px 18px;border:1px solid var(--border);border-radius:16px;background:var(--surface);color:inherit;text-decoration:none;transition:transform .25s,box-shadow .25s,border-color .25s}.hk-pop a:hover{transform:translateY(-4px);border-color:var(--btn,#7c3aed)}.hk-pop i{flex:none;width:36px;height:36px;border-radius:10px;background:var(--surface2);color:var(--btn,#7c3aed);display:grid;place-items:center;font-style:normal;font-weight:800}.hk-pop b{font-size:15px;line-height:1.35}
+.hk-steps{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px}.hk-steps a{display:block;height:100%;padding:14px;border:1px solid var(--border);border-radius:14px;background:var(--surface);color:inherit;text-decoration:none;transition:transform .25s,border-color .25s}.hk-steps a:hover{transform:translateY(-4px);border-color:var(--btn,#7c3aed)}.hk-steps i{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--btn,#7c3aed);color:#fff;font-style:normal;font-weight:800;font-size:14px;margin-bottom:8px}.hk-steps b{display:block}.hk-steps small{display:block;color:var(--muted);font-size:12.5px;margin-top:3px}
+@media(max-width:1000px){.hk-steps{grid-template-columns:repeat(4,minmax(0,1fr))}.hk-pop{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.hk-steps{grid-template-columns:repeat(2,minmax(0,1fr))}.hk-pop{grid-template-columns:1fr}}
 .stats3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:26px 8px;text-align:center}.stats3>div{display:flex;flex-direction:column;gap:4px;border-right:1px solid var(--border)}.stats3>div:last-child{border:0}.stats3 b{font:600 clamp(30px,4vw,46px)/1.1 "Bricolage Grotesque",sans-serif;font-variant-numeric:tabular-nums}.stats3 span{color:var(--muted);font-size:14px}
 .mini .pr{margin-top:auto;font-weight:700;color:var(--acc);font-size:14px}
 .cvk{position:absolute;top:10px;left:10px;padding:4px 10px;border-radius:999px;background:rgba(10,10,28,.55);color:#fff;font:700 11px Inter,sans-serif}.cvt{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;padding:14px;color:#fff;background:#0a0a1c;overflow:hidden;text-align:left}
@@ -441,8 +447,8 @@ svg.nx-i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;s
   <div class="wrap">
     <a href="#top" class="logo" aria-label="Catatan Akademik, ke atas"><b>C</b><span id="brand">Catatan Akademik</span></a>
     <nav class="links" id="links" aria-label="Menu utama">
-      <details class="dd"><summary>Layanan</summary><div class="ddp mega"><div class="mg"><b>Akademik UT</b><a href="/ruangakademikut/layanan?s=tugas"><span>Tugas tutorial</span></a><a href="/ruangakademikut/layanan?s=diskusi"><span>Diskusi</span></a><a href="/ruangakademikut/layanan?s=metopen_paket"><span>Metopen UT</span></a><a href="/ruangakademikut/layanan?s=simulasi"><span>Simulasi Presentasi</span></a><a href="/ruangakademikut/layanan?s=revisi_tugas"><span>Revisi tugas</span></a></div><div class="mg"><b>Cek &amp; Audit</b><a href="/ruangakademikut/cek-parafrase-mandiri"><span>Cek &amp; Parafrase Mandiri</span></a><a href="/ruangakademikut/audit"><span>Audit Dokumen</span></a><a href="/ruangakademikut/bedah-laporan"><span>Bedah Laporan Penelitian UT</span></a><b>Paket</b><a href="/ruangakademikut#semester"><span>Paket Semester</span></a><a href="/ruangakademikut#pengarahan"><span>Pengarahan Intensif</span></a></div><div class="mg"><b>Gratis</b><a href="/ruangakademikut/blog-ut"><span>Info UT</span></a><a href="/ruangakademikut/buat-cv-ats"><span>Buat CV ATS</span></a><a href="/ruangakademikut/portal-ut"><span>Portal &amp; Alat UT</span></a></div><a class="mg-all" href="/ruangakademikut">Lihat semua layanan →</a></div></details>
-      <details class="dd"><summary class="dds">Audit &amp; Bedah UT</summary><div class="ddp"><a href="/ruangakademikut/cek-parafrase-mandiri">Cek &amp; Parafrase Mandiri</a><a href="/ruangakademikut/audit">Audit Dokumen</a><a href="/ruangakademikut/bedah-laporan">Bedah Laporan Penelitian UT</a><a href="/ruangakademikut/audit-parafrase">Lihat semua →</a></div></details>
+      <details class="dd"><summary>Layanan</summary><div class="ddp mega"><div class="mg"><b>Akademik UT</b><a href="/ruangakademikut/tutorial-online"><span>Tutorial Online</span></a><a href="/ruangakademikut/layanan?s=simulasi"><span>Simulasi Presentasi</span></a><a href="/ruangakademikut/layanan?s=revisi_tugas"><span>Revisi tugas</span></a></div><div class="mg"><b>Cek &amp; Audit</b><a href="/ruangakademikut/cek-parafrase-mandiri"><span>Cek &amp; Parafrase Mandiri</span></a><a href="/ruangakademikut/audit"><span>Audit Dokumen</span></a><a href="/ruangakademikut/bedah-laporan"><span>Bedah Laporan Penelitian UT</span></a><b>Paket</b><a href="/ruangakademikut#semester"><span>Paket Semester</span></a><a href="/ruangakademikut#pengarahan"><span>Pengarahan Intensif</span></a></div><div class="mg"><b>Gratis</b><a href="/ruangakademikut/blog-ut"><span>Info UT</span></a><a href="/ruangakademikut/buat-cv-ats"><span>Buat CV ATS</span></a><a href="/ruangakademikut/portal-ut"><span>Portal &amp; Alat UT</span></a></div><a class="mg-all" href="/ruangakademikut">Lihat semua layanan →</a></div></details>
+      <details class="dd"><summary class="dds">Tutorial Online</summary><div class="ddp desc"><a href="/ruangakademikut/tutorial-online"><b>Semua Tutorial Online</b><small>Pilih layanan, lihat alur dan harga</small></a><a href="/ruangakademikut/tutorial-online?tab=harga&amp;s=diskusi"><b>Diskusi</b><small>Jawaban diskusi Tuton siap tempel</small></a><a href="/ruangakademikut/tutorial-online?tab=harga&amp;s=tugas"><b>Tugas</b><small>Tugas tutorial sesuai soal dan format</small></a><a href="/ruangakademikut/tutorial-online?tab=harga&amp;s=makalah"><b>Makalah</b><small>Kerangka, isi, dan daftar pustaka</small></a><a href="/ruangakademikut/tutorial-online?tab=harga&amp;s=jurnal"><b>Jurnal</b><small>Telaah dan referensi jurnal terverifikasi</small></a><a href="/ruangakademikut/tutorial-online?tab=harga&amp;s=metopen"><b>Metodologi Penelitian</b><small>Metopen Tugas 1 sampai 3 dan paket komplit</small></a><a href="/ruangakademikut/tutorial-online?tab=alur"><b>Testimoni &amp; Alur</b><small>Progres pesanan dan ulasan</small></a><a class="all" href="/ruangakademikut/tutorial-online?tab=harga">Lihat harga <span aria-hidden="true">→</span></a></div></details><details class="dd"><summary class="dds">Audit &amp; Bedah UT</summary><div class="ddp"><a href="/ruangakademikut/cek-parafrase-mandiri">Cek &amp; Parafrase Mandiri</a><a href="/ruangakademikut/audit">Audit Dokumen</a><a href="/ruangakademikut/bedah-laporan">Bedah Laporan Penelitian UT</a><a href="/ruangakademikut/audit-parafrase">Lihat semua →</a></div></details>
       <details class="dd"><summary>Mahasiswa Baru</summary><div class="ddp desc"><a href="/ruangakademikut/panduan-maba"><b>Panduan Mahasiswa Baru</b><small>Checklist dari registrasi sampai nilai</small></a><a href="/ruangakademikut/kalkulator-nilai-ut"><b>Hitung IPS dan IPK</b><small>Kalkulator nilai dan target IPK</small></a><a href="/blog/cara-cek-jadwal-uas-ut"><b>Cara cek jadwal UAS</b><small>Lewat KTPU di MyUT</small></a><a href="/blog/cara-melihat-nilai-uas-dnu-ut"><b>Cara melihat nilai UAS</b><small>Daftar Nilai Ujian (DNU)</small></a><a href="/grup?dari=menu"><b>Gabung Komunitas Mahasiswa UT</b><small>Grup WhatsApp Catatan Akademik</small></a><a class="all" href="/ruangakademikut/panduan-maba">Lihat semua panduan <span aria-hidden="true">→</span></a></div></details><details class="dd"><summary>Portal &amp; Alat UT</summary><div class="ddp desc"><a href="/ruangakademikut/portal-ut"><b>Portal UT</b><small>Tautan resmi UT di satu tempat</small></a><a href="/ruangakademikut/kalkulator-nilai-ut"><b>Kalkulator Nilai UT</b><small>Nilai akhir dan target IPK</small></a><a href="/ruangakademikut/tracker-kelulusan"><b>Tracker Kelulusan &amp; IPK</b><small>SKS lulus dan sisa semester</small></a><a href="/ruangakademikut/kalender-akademik"><b>Kalender &amp; Pengingat</b><small>Tanggal penting jadi pengingat</small></a><a href="/ruangakademikut/sampul-tugas"><b>Sampul &amp; Template Tugas</b><small>Sampul TMK, UAS, makalah</small></a><a href="/ruangakademikut/sitasi-apa"><b>Generator Sitasi APA</b><small>Rapikan daftar pustaka</small></a><a href="/ruangakademikut/buat-cv-ats"><b>Buat CV ATS</b><small>CV ramah sistem rekrutmen</small></a><a href="/ruangakademikut/surat-lamaran"><b>Surat Lamaran</b><small>Template surat lamaran</small></a><a href="/ruangakademikut/pasfoto-yudisium"><b>Pas Foto Yudisium</b><small>Atur ukuran dan latar</small></a><a class="all" href="/ruangakademikut/portal-ut">Lihat semua alat <span aria-hidden="true">→</span></a></div></details>
       <a href="/ruangakademikut/blog-ut">Blog &amp; Berita UT</a>
       <a href="/ruangakademikut/pesanan">Cek Pesanan</a>
@@ -461,12 +467,13 @@ svg.nx-i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;s
   <img class="nx-bg" data-d="-10" data-s="1.06" src="/site-img/hero/model-ut.webp" width="820" height="983" alt="Mahasiswi membawa buku dan tablet di kampus" fetchpriority="high" decoding="async">
   <div class="nx-hc">
     <span class="nx-eb fx" style="--d:.05s">Bukan situs resmi UT · dikelola mahasiswa UT</span>
-    <h1 class="kw fx" style="--d:.1s">Layanan Tugas, Diskusi, Metopen &amp; Audit Dokumen untuk Mahasiswa UT</h1>
-    <p class="sl" id="heroTitle">Tugas UT kamu <em>lebih siap dikumpulkan.</em></p>
-    <p class="nx-lead fx" style="--d:.5s">Cek dokumenmu gratis <span data-p="free_words">500</span> kata pertama, lihat kalimat dan sitasi yang bermasalah menurut aturan modul, lalu perbaiki sendiri. Skornya hitungan Catatan Akademik, bukan hasil Drillbit dan bukan penilaian resmi UT.</p>
+    <h1 class="kw fx" style="--d:.1s">Semua info UT yang kamu perlu ada di sini. Mulai dari mana?</h1>
+    <p class="sl" id="heroTitle">Panduan langkah demi langkah untuk <em>mahasiswa baru dan lama.</em></p>
+    <p class="nx-lead fx" style="--d:.5s">Dari daftar kuliah, PKBJJ, Tuton, jadwal UAS, sampai nilai dan kelulusan. Dirangkum dari sumber resmi UT, lengkap dengan tautannya.</p>
+    <div class="hk-chips fx" style="--d:.6s" aria-label="Pilihan cepat">{{HK_CHIPS}}</div>
     <div class="nx-two">
-      <a class="nx-door nx-d1" href="/audit"><span class="nx-t"><svg class="nx-i" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.4 7.6-8 9-4.6-1.4-8-4.5-8-9V6z"/></svg>Cek dokumen gratis<b aria-hidden="true">→</b></span><small><span data-p="free_words">500</span> kata pertama gratis, lihat skornya sekarang</small></a>
-      <a class="nx-door nx-d2" href="/layanan-ut"><span class="nx-t"><svg class="nx-i" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M9 12h6M9 16h4"/></svg>Lihat layanan<b aria-hidden="true">→</b></span><small>Tugas, diskusi, metopen, audit, dan cek parafrase</small></a>
+      <a class="nx-door nx-d1" href="/panduan-maba"><span class="nx-t"><svg class="nx-i" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.4 7.6-8 9-4.6-1.4-8-4.5-8-9V6z"/></svg>Saya mahasiswa baru<b aria-hidden="true">→</b></span><small>Checklist dari registrasi sampai nilai</small></a>
+      <a class="nx-door nx-d2" data-group href="/grup?dari=beranda"><span class="nx-t"><svg class="nx-i" viewBox="0 0 24 24"><path d="M16 11a3 3 0 1 0-6 0M4 20a8 8 0 0 1 16 0"/></svg>Gabung grup WhatsApp<b aria-hidden="true">→</b></span><small>800+ anggota, info UT tiap hari</small></a>
     </div>
     <div class="nx-pop fx" style="--d:.8s"><span class="nx-help">Tanpa akun untuk unggah dan cek gratis. Login hanya saat bayar.</span>
       <div class="nx-chips"><a class="nx-chip" id="chipWa" href="#" target="_blank" rel="noopener"><svg class="nx-i" viewBox="0 0 24 24"><path d="M4 4h16v13H8l-4 4z"/></svg>Chat Admin</a></div></div>
@@ -484,32 +491,24 @@ svg.nx-i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;s
   </div>
 </section>
 
-<section class="s" style="padding-block:28px 8px"><div class="wrap"><div class="stats3 card rv" id="statsBox">
+<section class="s" style="padding-block:28px 8px"><div class="wrap"><div class="stats3 stats4 card rv" id="statsBox">
+  <div><b data-to="800" data-plus="1">800+</b><span>Anggota grup WhatsApp, info UT tiap hari</span></div>
   <div><b data-to="4" data-plus="1">4+</b><span>Tahun melayani mahasiswa UT</span></div>
   <div><b data-to="2100" data-plus="1">2.100+</b><span>Pesanan sudah masuk</span></div>
   <div><b data-to="17400" data-plus="1">17.400+</b><span>File sudah dikerjakan</span></div>
 </div></div></section>
 
-<section class="s" id="cek"><div class="wrap"><div class="sh"><div><h2>Audit dan cek parafrase dokumen</h2><p>Mulai dari sini: lihat skor masalah dokumenmu, lalu perbaiki.</p></div></div><div class="g2">
-  <a class="card mini rv" data-g="audit" href="/audit"><div class="tx"><small style="display:block;margin:0 22px 4px;font-weight:700;letter-spacing:.5px;color:#34d399">GRATIS <span data-p="free_words">500</span> KATA</small><h3>Audit Dokumen</h3><p>Skor masalah dokumenmu dihitung dari semua temuan: sitasi, struktur, kalimat bermasalah. Ini skala kami, bukan angka Drillbit.</p><span class="pr">Cek dokumen gratis · lengkap <span data-p="audit_per_word">9</span> per kata</span></div></a>
-  <a class="card mini rv" data-g="cek" href="/cek-parafrase-mandiri"><div class="tx"><small style="display:block;margin:0 22px 4px;font-weight:700;letter-spacing:.5px;color:#fbbf24">JALUR CEPAT</small><h3>Cek &amp; Parafrase</h3><p>Kalimat bermasalah ditandai, lalu diparafrase tanpa mengubah makna. Hasil dikirim ke WhatsApp.</p><span class="pr">Unggah dokumen · <span data-p="price_per_word"></span> per kata</span></div></a>
-  <a class="card mini rv" data-g="bedah" href="/bedah-laporan"><div class="tx"><small style="display:block;margin:0 22px 4px;font-weight:700;letter-spacing:.5px;color:#22d3ee">BARU</small><h3>Bedah Laporan Penelitian UT</h3><p>Unggah file asli dan laporan Drillbit dari UT. Lihat kalimat yang ditandai UT, 500 kata pertama gratis, lengkap dengan cara memperbaiki.</p><span class="pr">Rp <span data-p="bedah_harga_per_1000">10k</span> per 1.000 kata</span></div></a>
-</div></div></section>
+<section class="s" id="populer">{{HK_POPULER}}</section>
 
-<section class="s" id="layanan">
-  <div class="wrap">
-    <div class="sh"><div><h2>Layanan pendampingan akademik</h2><p>Pilih yang kamu butuhkan. Harga mengikuti pengaturan terbaru dan dikonfirmasi lagi sebelum kamu membayar.</p></div><a class="btn btn-pri" href="/layanan-ut">Semua layanan</a></div>
-    <div class="g3">
-      <a class="card mini rv" data-g="tugas" href="/layanan?s=tugas"><h3>Tugas tutorial</h3><p>Dikerjakan sesuai soal dan ketentuan format. Kamu memeriksa hasilnya sebelum dikirim ke tutor.</p><span class="pr">Mulai <span data-p="price_tugas"></span></span></a>
-      <a class="card mini rv" data-g="diskusi" href="/layanan?s=diskusi"><h3>Diskusi</h3><p>Jawaban diskusi siap tempel, dengan poin utama dan referensi yang bisa dicek.</p><span class="pr">Mulai <span data-p="price_diskusi"></span></span></a>
-      <a class="card mini rv" data-g="metopen" href="/layanan?s=metopen_paket"><h3>Metopen UT</h3><p>Pendampingan Tugas 1 sampai 3, per tahap atau paket komplit dengan free revisi.</p><span class="pr">Paket <span data-p="price_metopen_paket"></span></span></a>
-      <a class="card mini rv" data-g="revisi" href="/layanan?s=revisi_tugas"><h3>Revisi</h3><p>Catatan tutor diperbaiki. Gratis untuk hasil buatan kami.</p><span class="pr">Free revisi</span></a>
-      <a class="card mini rv" data-g="semester" href="/layanan-ut"><h3>Paket Semester</h3><p>Handle 1 semester: absen, diskusi, tugas, update nilai mingguan.</p><span class="pr"><span data-p="price_semester_min"></span> sampai <span data-p="price_semester_max"></span></span></a>
-      <a class="card mini rv" data-g="pengarahan" href="/layanan-ut"><h3>Pengarahan Intensif</h3><p>Tanya apa saja soal UT, registrasi, dan update.</p><span class="pr">1 semester <span data-p="price_pengarahan_semester"></span></span></a>
-      <a class="card mini rv" data-g="info" href="/blog-ut"><h3>Info UT</h3><p>Jadwal, kabar penting, dan panduan terbaru seputar UT.</p><span class="pr">Gratis</span></a>
-    </div>
-  </div>
-</section>
+<section class="s" id="perjalanan"><div class="wrap">
+  <div class="sh"><div><span class="hk-eb">Mahasiswa baru</span><h2>Perjalananmu di UT, dari daftar sampai lulus</h2><p>Ikuti urutannya. Setiap langkah punya panduan sendiri.</p></div><a class="btn btn-ghost btn-sm" href="/panduan-maba">Buka Panduan Mahasiswa Baru</a></div>
+  <ol class="hk-steps">{{HK_LANGKAH}}</ol>
+</div></section>
+
+
+
+
+
 
 <section class="s" id="portal"><div class="wrap">
   <div class="card rv" style="padding:26px"><div class="sh" style="margin-bottom:14px"><div><h2>Portal &amp; Alat Bantu Belajar UT</h2><p>Tautan resmi UT dan alat gratis kami, di satu tempat.</p></div><a class="btn btn-ghost btn-sm" href="/ruangakademikut/portal-ut">Buka semua</a></div>
@@ -518,12 +517,7 @@ svg.nx-i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;s
   </div></div>
 </div></section>
 
-<section class="s" id="aturan">
-  <div class="wrap g2">
-    <div class="card rule rv"><b>Dari chat sampai beres, 4 langkah</b><div>1. Chat admin: kirim soal atau kebutuhanmu.</div><div>2. Konfirmasi: admin kirim harga dan jadwal. Bayar bisa DP dulu.</div><div>3. Dikerjakan dan direview sebelum dikirim.</div><div>4. Kirim ke tutor. Revisi atas masukan tutor selama sesi aktif.</div></div>
-    <div class="card rule rv"><b>Aturan kerja kami</b><div>Jawaban mengikuti soal, rubrik, dan ketentuan yang kamu kirim.</div><div>Referensi hanya dari sumber yang bisa diperiksa. Yang belum terverifikasi ditandai, tidak dikarang.</div><div>Catatan Akademik bukan situs resmi Universitas Terbuka dan tidak menjamin nilai atau kelulusan. Semangat!</div></div>
-  </div>
-</section>
+
 
 <section class="s" id="blog" hidden>
   <div class="wrap">
@@ -551,9 +545,37 @@ svg.nx-i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;s
   </div>
 </section>
 
+<section class="s" id="layanan">
+  <div class="wrap">
+    <div class="sh"><div><h2>Butuh pendampingan? Ini pilihannya</h2><p>Harga di depan, bisa DP, revisi gratis untuk hasil buatan kami. Harga dikonfirmasi lagi sebelum kamu membayar.</p></div><a class="btn btn-pri" href="/layanan-ut">Semua layanan</a></div>
+    <div class="g3">
+      <a class="card mini rv" data-g="tutorial" href="/ruangakademikut/tutorial-online"><h3>Tutorial Online</h3><p>Diskusi, tugas, makalah, jurnal, dan metodologi penelitian di satu portal.</p><span class="pr">Mulai <span data-p="price_diskusi"></span></span></a>
+      <a class="card mini rv" data-g="revisi" href="/layanan?s=revisi_tugas"><h3>Revisi</h3><p>Catatan tutor diperbaiki. Gratis untuk hasil buatan kami.</p><span class="pr">Free revisi</span></a>
+      <a class="card mini rv" data-g="semester" href="/layanan-ut"><h3>Paket Semester</h3><p>Handle 1 semester: absen, diskusi, tugas, update nilai mingguan.</p><span class="pr"><span data-p="price_semester_min"></span> sampai <span data-p="price_semester_max"></span></span></a>
+      <a class="card mini rv" data-g="pengarahan" href="/layanan-ut"><h3>Pengarahan Intensif</h3><p>Tanya apa saja soal UT, registrasi, dan update.</p><span class="pr">1 semester <span data-p="price_pengarahan_semester"></span></span></a>
+      <a class="card mini rv" data-g="info" href="/blog-ut"><h3>Info UT</h3><p>Jadwal, kabar penting, dan panduan terbaru seputar UT.</p><span class="pr">Gratis</span></a>
+    </div>
+  </div>
+</section>
+
+<section class="s" id="cek"><div class="wrap"><div class="sh"><div><h2>Audit dan cek parafrase dokumen</h2><p>Mulai dari sini: lihat skor masalah dokumenmu, lalu perbaiki.</p></div></div><div class="g2">
+  <a class="card mini rv" data-g="audit" href="/audit"><div class="tx"><small style="display:block;margin:0 22px 4px;font-weight:700;letter-spacing:.5px;color:#34d399">GRATIS <span data-p="free_words">500</span> KATA</small><h3>Audit Dokumen</h3><p>Skor masalah dokumenmu dihitung dari semua temuan: sitasi, struktur, kalimat bermasalah. Ini skala kami, bukan angka Drillbit.</p><span class="pr">Cek dokumen gratis · lengkap <span data-p="audit_per_word">9</span> per kata</span></div></a>
+  <a class="card mini rv" data-g="cek" href="/cek-parafrase-mandiri"><div class="tx"><small style="display:block;margin:0 22px 4px;font-weight:700;letter-spacing:.5px;color:#fbbf24">JALUR CEPAT</small><h3>Cek &amp; Parafrase</h3><p>Kalimat bermasalah ditandai, lalu diparafrase tanpa mengubah makna. Hasil dikirim ke WhatsApp.</p><span class="pr">Unggah dokumen · <span data-p="price_per_word"></span> per kata</span></div></a>
+  <a class="card mini rv" data-g="bedah" href="/bedah-laporan"><div class="tx"><small style="display:block;margin:0 22px 4px;font-weight:700;letter-spacing:.5px;color:#22d3ee">BARU</small><h3>Bedah Laporan Penelitian UT</h3><p>Unggah file asli dan laporan Drillbit dari UT. Lihat kalimat yang ditandai UT, 500 kata pertama gratis, lengkap dengan cara memperbaiki.</p><span class="pr">Rp <span data-p="bedah_harga_per_1000">10k</span> per 1.000 kata</span></div></a>
+</div></div></section>
+
+<section class="s" id="aturan">
+  <div class="wrap g2">
+    <div class="card rule rv"><b>Dari chat sampai beres, 4 langkah</b><div>1. Chat admin: kirim soal atau kebutuhanmu.</div><div>2. Konfirmasi: admin kirim harga dan jadwal. Bayar bisa DP dulu.</div><div>3. Dikerjakan dan direview sebelum dikirim.</div><div>4. Kirim ke tutor. Revisi atas masukan tutor selama sesi aktif.</div></div>
+    <div class="card rule rv"><b>Aturan kerja kami</b><div>Jawaban mengikuti soal, rubrik, dan ketentuan yang kamu kirim.</div><div>Referensi hanya dari sumber yang bisa diperiksa. Yang belum terverifikasi ditandai, tidak dikarang.</div><div>Catatan Akademik bukan situs resmi Universitas Terbuka dan tidak menjamin nilai atau kelulusan. Semangat!</div></div>
+  </div>
+</section>
+
 <section class="s">
   <div class="wrap"><div class="banner"><div><h2>Mulai dari yang paling ringan</h2><p>Audit ringkas gratis, atau tanya dulu lewat WhatsApp.</p></div><a class="btn" href="/audit">Audit dokumen</a></div></div>
 </section>
+
+
 </main>
 
 <footer>

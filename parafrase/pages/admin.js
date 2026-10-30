@@ -195,6 +195,8 @@
       var GROUPS = [
         ["Tugas", "Kartu Tugas di hub dan form Layanan.", ["price_tugas"]],
         ["Diskusi", "Kartu Diskusi di hub dan form Layanan.", ["price_diskusi"]],
+        ["Makalah", "Tutorial Online: Makalah.", ["price_makalah"]],
+        ["Jurnal", "Tutorial Online: Jurnal.", ["price_jurnal"]],
         ["Metopen", "Per tahap dan paket komplit.", ["price_metopen1", "price_metopen2", "price_metopen3", "price_metopen_paket"]],
         ["Revisi", "Revisi untuk hasil dari luar. Hasil buatan kami gratis sesuai jumlah revisi gratis.", ["price_revisi_tugas", "price_revisi_diskusi", "price_revisi_metopen"]],
         ["Cek & Parafrase Mandiri", "Harga per kata, jalur cepat, revisi, dan batas file.", ["price_per_word", "min_order_price", "fast_lane_enabled", "fast_lane_price", "fast_lane_daily_cap", "revision_free_count", "revision_price_per_word", "long_sentence_words", "preview_open_paragraphs", "avg_words_per_hour"]],

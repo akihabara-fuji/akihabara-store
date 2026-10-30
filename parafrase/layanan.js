@@ -16,6 +16,8 @@ const simulasi = require("./simulasi");
 const SV = {
   tugas:          { label: "Tugas", price: 35000, kind: "tugas" },
   diskusi:        { label: "Diskusi", price: 20000, kind: "diskusi" },
+  makalah:        { label: "Makalah", price: 45000, kind: "tugas" }, // satu keluarga dengan Tugas: revisi gratis dan revisi berbayar memakai jalur revisi_tugas
+  jurnal:         { label: "Jurnal", price: 45000, kind: "tugas" },
   metopen1:       { label: "Metopen Tugas 1", price: 300000, kind: "metopen" },
   metopen2:       { label: "Metopen Tugas 2", price: 250000, kind: "metopen" },
   metopen3:       { label: "Metopen Tugas 3", price: 350000, kind: "metopen" },
