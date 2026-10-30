@@ -14,7 +14,7 @@ const { buildTriageBase, withDrillbit, parseDrill, settingsSig } = require("./tr
 const UPLOAD_TTL_MS = 2 * 3600 * 1000;       // unggahan yang tidak jadi pesanan dihapus setelah 2 jam
 const RATE = { max: 10, windowMs: 3600 * 1000 };
 
-module.exports = function mountUploads({ app, db, settings, root, sameOrigin, secret }) {
+module.exports = function mountUploads({ library = null, userFrom = null, app, db, settings, root, sameOrigin, secret }) {
   const dir = path.join(root, "data", "private", "docs");
   fs.mkdirSync(dir, { recursive: true });
   const hits = new Map(); // ipHash -> [timestamps]
@@ -54,6 +54,7 @@ module.exports = function mountUploads({ app, db, settings, root, sameOrigin, se
         const found = analyzeFindings(a.paragraphs, a.bibliographyParagraphIndex, cfg);
         const notes = countByCode(found);
         insert.run(id, rel, name, f.size, sha, JSON.stringify(det), ipHash, now, now + UPLOAD_TTL_MS);
+        if (library) { try { await library.saveUpload({ kind: "parafrase", name, buf: f.buffer, user: userFrom ? userFrom(req) : null, words: det.wordsWithoutBibliography || det.words, summary: { notes: (notes && notes.length) || 0 } }); } catch (e2) { console.error("[parafrase] simpan ke Dokumen gagal:", e2 && e2.message); } }
         res.json({
           uploadId: id,
           file: { name, size: f.size },

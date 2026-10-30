@@ -74,11 +74,11 @@ else if(/\\/(?:ruangakademikut\\/)?(layanan|cek-parafrase-mandiri|audit)(?:[\\/?
     if (!want || want !== req.params[0]) return res.status(404).end();
     res.type("text/html").send("google-site-verification: " + want);
   });
-  const uploads = mountUploads({ app, db, settings, root: ROOT, sameOrigin: sameOrigin || (() => true), secret });
+  const dokumen = mountDokumen({ app, express, db, root: ROOT, requireAdmin });
+  const uploads = mountUploads({ library: dokumen, userFrom, app, db, settings, root: ROOT, sameOrigin: sameOrigin || (() => true), secret });
   const notifier = createNotifier({ db, settings });
   const orders = mountOrders({ app, express, db, settings, notifier, root: ROOT, sameOrigin: sameOrigin || (() => true), requireAdmin, secret, userFrom });
-  mountAudit({ app, express, db, settings, orders, root: ROOT, sameOrigin: sameOrigin || (() => true), secret, userFrom });
-  const dokumen = mountDokumen({ app, express, db, root: ROOT, requireAdmin });
+  mountAudit({ library: dokumen, app, express, db, settings, orders, root: ROOT, sameOrigin: sameOrigin || (() => true), secret, userFrom });
   mountBedah({ library: dokumen, app, express, db, settings, orders, root: ROOT, sameOrigin: sameOrigin || (() => true), secret, requireAdmin, userFrom });
   const traffic = createTraffic(db, { secret });
   /* Tautan pendek grup WhatsApp: /grup?dari=menu|banner|artikel|panduan. Klik dihitung per asal (tanpa IP, tanpa cookie), lalu dialihkan ke tautan di pengaturan. */

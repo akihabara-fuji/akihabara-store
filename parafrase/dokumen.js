@@ -10,7 +10,7 @@ const drillbit = require("./drillbit");
 
 const TTL_MS = 30 * 24 * 3600 * 1000;
 const MAX_MB = 25, MAX_FILES = 10;
-const KINDS = ["bedah", "parafrase", "metopen", "lain"];
+const KINDS = ["bedah", "audit", "parafrase", "metopen", "lain"];
 const EXT = /\.(docx?|pdf|txt|md|xlsx?|pptx?|rtf|ris|zip)$/i;
 
 module.exports = function mountDokumen({ app, express, db, root, requireAdmin }) {
@@ -66,6 +66,23 @@ module.exports = function mountDokumen({ app, express, db, root, requireAdmin })
     data.nameMismatch = mismatch;
     db.prepare("INSERT INTO doc_library(id,name,title,kind,ai_pct,sim_pct,target_ai,target_sim,note,size,path,ai_path,sim_path,words,data,student_key,student_name,nim,wa,status,revision_no,source,order_id,pinned,created_at,expires_at) VALUES(?,?,?,?,?,?,NULL,NULL,'',?,?,?,?,?,?,?,?,?,?,?,?,'bedah',NULL,0,?,?)")
       .run(id, clip(name, 160), clip(name.replace(/\.[a-z0-9]{1,5}$/i, ""), 200), "bedah", ai ? pct(ai.aiPct) : null, sim ? pct(sim.pct) : null, buf.length, rel, aiRel, simRel, words || null, JSON.stringify(data), key, clip(nama, 80) || null, cleanNim || null, wa || null, status, rev, now, now + TTL_MS);
+    return id;
+  }
+
+  /* Setiap unggahan Audit Dokumen atau Cek & Parafrase langsung disimpan di sini, sebelum ada pembayaran atau pesanan.
+     Satu akun (user) = satu kelompok; unggahan file yang sama oleh akun yang sama tidak digandakan. */
+  async function saveUpload({ kind, name, buf, user, words, summary }) {
+    const sha = crypto.createHash("sha256").update(buf).digest("hex");
+    const key = user && user.id ? "user:" + user.id : null;
+    const dup = db.prepare("SELECT id FROM doc_library WHERE kind=? AND IFNULL(student_key,'')=? AND data LIKE ? LIMIT 1").get(kindOf(kind), key || "", '%"sha":"' + sha + '"%');
+    if (dup) return dup.id;
+    const id = crypto.randomBytes(8).toString("hex"), now = nowMs();
+    const ext = (/\.[a-z0-9]{1,5}$/i.exec(name) || [".docx"])[0].toLowerCase(), rel = "library/" + id + ext;
+    await fsp.writeFile(path.join(priv, rel), buf, { mode: 0o600 });
+    const n = key ? db.prepare("SELECT COUNT(*) c FROM doc_library WHERE student_key=? AND kind=?").get(key, kindOf(kind)).c : 0;
+    const data = { sha, words: words || null, summary: summary || null, email: (user && user.email) || null };
+    db.prepare("INSERT INTO doc_library(id,name,title,kind,note,size,path,words,data,student_key,student_name,nim,wa,status,revision_no,source,pinned,created_at,expires_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,NULL,NULL,?,?,?,0,?,?)")
+      .run(id, clip(name, 160), clip(name.replace(/\.[a-z0-9]{1,5}$/i, ""), 200), kindOf(kind), clip(user && user.email, 120), buf.length, rel, words || null, JSON.stringify(data), key, clip(user && user.name, 80) || null, n ? "revisi" : "baru", n, kindOf(kind), now, now + TTL_MS);
     return id;
   }
 
@@ -182,5 +199,5 @@ module.exports = function mountDokumen({ app, express, db, root, requireAdmin })
       db.prepare("DELETE FROM doc_library WHERE id=?").run(r.id);
     }
   }
-  return { purgeExpired, saveBedah };
+  return { purgeExpired, saveBedah, saveUpload };
 };

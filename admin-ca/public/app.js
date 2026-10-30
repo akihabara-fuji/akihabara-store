@@ -923,7 +923,7 @@
   async function pDokumen() {
     const P = "/ms/admin/parafrase/dokumen", q = params();
     const d = await api(P + "?" + new URLSearchParams({ q: q.get("q") || "", kind: q.get("kind") || "" }).toString());
-    const KL = { bedah: "Bedah UT", parafrase: "Cek & Parafrase", metopen: "Metopen", lain: "Lain" };
+    const KL = { bedah: "Bedah UT", audit: "Audit Dokumen", parafrase: "Cek & Parafrase", metopen: "Metopen", lain: "Lain" };
     const sz = n => n > 1048576 ? (n / 1048576).toFixed(1) + " MB" : Math.max(1, Math.round(n / 1024)) + " KB";
     const pc = (id, f, v, ph) => `<input class="in dk-n" type="number" min="0" max="100" step="0.1" data-id="${id}" data-f="${f}" value="${v == null ? "" : v}" placeholder="${ph}" style="width:72px">`;
     const stat = x => {
@@ -1000,7 +1000,7 @@
         <hr style="margin:14px 0;border:0;border-top:1px solid rgba(128,128,128,.25)">
         <div class="small muted">File perbaikan yang kamu kirim ${x.hasFix ? `: <a href="${P}/${id}/unduh?f=fix">${esc(x.fixName || "unduh")}</a> · dikirim ${dt(x.fixSentAt)}` : "belum ada"}</div>
         <div class="bar" style="margin-top:8px"><input class="in" type="file" id="dkFx" style="max-width:320px"><button class="btn pri" id="dkSent">Tandai perbaikan sudah dikirim</button><span class="small faint">File boleh dikosongkan bila sudah kamu kirim lewat WhatsApp.</span></div></div></div>
-      ${aiTop}${simTop}`);
+      ${x.kind === "bedah" ? aiTop + simTop : `<div class="card"><div class="hd"><h2>Ringkasan unggahan</h2></div><div class="bd"><div class="small muted">Diunggah mahasiswa sebelum ada pesanan atau pembayaran.${d.email ? " Akun: " + esc(d.email) + "." : ""}</div>${d.summary && d.summary.score != null ? `<p>Skor audit: <b>${esc(String(d.summary.score))}</b></p>` : ""}</div></div>`}`);
     $("#dkSv").onclick = async () => { try { await api(P + "/" + id, { method: "PATCH", json: { studentName: $("#dkNm").value, wa: $("#dkWa").value, status: $("#dkSt").value } }); toast("Tersimpan"); route(); } catch (err) { fail(err); } };
     $("#dkSent").onclick = async e => { const fd = new FormData(); const f = $("#dkFx").files[0]; if (f) fd.append("file", f); await busy(e.target, async () => { try { await api(P + "/" + id + "/perbaikan", { form: fd }); toast("Status: perbaikan sudah dikirim"); route(); } catch (err) { fail(err); } }); };
     $$(".dk-n").forEach(i => i.onchange = async () => { try { await api(P + "/" + id, { method: "PATCH", json: { [i.dataset.f]: i.value } }); toast("Tersimpan"); route(); } catch (err) { fail(err); } });
