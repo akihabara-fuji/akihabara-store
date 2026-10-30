@@ -181,3 +181,7 @@
 .bx-grup div{display:grid;gap:2px;min-width:0}.bx-grup b{color:var(--text);font-size:16px}.bx-grup span{color:var(--muted);font-size:14px;line-height:1.5}
 .bx-grup-b{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:10px 18px;border-radius:12px;background:var(--bx-cta);color:var(--bx-cta-text);font-weight:800;text-decoration:none}
 .bx-grup-b i{font-style:normal}.bx-grup-b:hover{filter:brightness(1.08)}
+
+/* Smart header: sembunyi saat scroll turun, muncul lagi saat scroll naik */
+.nav{transition:transform .25s ease}.nav.nav-hide{transform:translateY(-100%)}
+@media(prefers-reduced-motion:reduce){.nav{transition:none}}
