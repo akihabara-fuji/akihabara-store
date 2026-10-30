@@ -196,7 +196,9 @@ module.exports = function mount(ctx) {
     const grid = latest.length ? `<div class="bx-grid">${latest.map(blogCard).join("")}</div>` : `<div class="bx-empty"><b>Belum ada artikel yang cocok.</b><span>Coba kata lain, atau <a href="${base}">lihat semua artikel</a>.</span></div>`;
     const more = filtering && list.length > latest.length ? `<p class="bx-more">Menampilkan ${latest.length} dari ${list.length}. Persempit pencarian untuk hasil yang lebih tepat.</p>` : "";
     const archive = !filtering && all.length > latest.length + 1 ? `<section class="bx-arch" aria-labelledby="bxArch"><div class="bx-head"><h2 id="bxArch">Arsip artikel</h2><span class="bx-count">${all.length} artikel</span></div><div class="blog-ctl"><button type="button" data-bx="open">Buka semua</button><button type="button" data-bx="close">Tutup semua</button></div>${groupedList(all)}<script>document.querySelectorAll("[data-bx]").forEach(function(b){b.onclick=function(){document.querySelectorAll(".bx-arch details").forEach(function(d){d.open=b.dataset.bx==="open"})}})</script></section>` : "";
-    return `<div class="bx">${hero}<section class="bx-list" aria-live="polite">${head}${grid}${more}</section>${archive}</div>`;
+    const grupOn = ACAD_ONLY && /^https:\/\/chat\.whatsapp\.com\//.test(String((ctx.getCa && ctx.getCa("update_group_url")) || "").trim());
+    const grupStrip = grupOn ? `<aside class="bx-grup" aria-label="Grup mahasiswa UT"><div><b>Cari grup mahasiswa UT?</b><span>Tanya registrasi, PKBJJ, jadwal, dan Tuton bersama mahasiswa lain. Bukan grup resmi UT.</span></div><a class="bx-grup-b" href="/grup?dari=blog" rel="nofollow">Gabung grup WhatsApp <i aria-hidden="true">→</i></a></aside>` : "";
+    return `<div class="bx">${hero}${grupStrip}<section class="bx-list" aria-live="polite">${head}${grid}${more}</section>${archive}</div>`;
   }
   app.locals.renderAcadBlogCards = req => blogIndex(req, "/blog-ut");
   /* potongan HTML daftar untuk filter di halaman Update UT */
@@ -682,7 +684,7 @@ module.exports = function mount(ctx) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Bricolage+Grotesque:wght@600;700&display=swap" rel="stylesheet">
 <script>try{var t=localStorage.getItem("nx-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
-<link rel="stylesheet" href="/assets/blog.css?v=10"><link rel="stylesheet" href="/assets/ca-blog.css?v=15"><script async src="/t.js"></script>
+<link rel="stylesheet" href="/assets/blog.css?v=10"><link rel="stylesheet" href="/assets/ca-blog.css?v=16"><script async src="/t.js"></script>
 ${extra}
 </head>
 <body>
@@ -788,7 +790,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
   function communityBlock() {
     if (!ACAD_ONLY) return "";
     const g = k => { const v = String((ctx.getCa && ctx.getCa(k)) || "").trim(); return /^https?:\/\//i.test(v) ? v : ""; };
-    const links = [["WhatsApp", g("update_group_url"), "Grup diskusi dan info jadwal"], ["Instagram", g("ca_instagram_url"), "Tips dan pengingat"], ["TikTok", g("ca_tiktok_url"), "Video singkat belajar UT"], ["Facebook", g("ca_facebook_url"), "Kabar terbaru"]].filter(x => x[1]);
+    const links = [["WhatsApp", g("update_group_url") ? "/grup?dari=artikel" : "", "Grup mahasiswa UT: tanya registrasi, PKBJJ, dan jadwal"], ["Instagram", g("ca_instagram_url"), "Tips dan pengingat"], ["TikTok", g("ca_tiktok_url"), "Video singkat belajar UT"], ["Facebook", g("ca_facebook_url"), "Kabar terbaru"]].filter(x => x[1]);
     if (!links.length) return "";
     return `<aside class="ax-comm" aria-labelledby="axCommH"><h2 id="axCommH">Gabung komunitas ${esc(BRAND)}</h2><p>Biar tidak ketinggalan jadwal dan info penting seputar UT.</p><div class="ax-comm-l">${links.map(([n, u, d]) => `<a href="${esc(u)}" rel="noopener nofollow" target="_blank"><b>${esc(n)}</b><span>${esc(d)}</span></a>`).join("")}</div></aside>`;
   }

@@ -80,7 +80,7 @@ else if(/\\/(?:ruangakademikut\\/)?(layanan|cek-parafrase-mandiri|audit)(?:[\\/?
   mountBedah({ app, express, db, settings, orders, root: ROOT, sameOrigin: sameOrigin || (() => true), secret, requireAdmin, userFrom });
   const traffic = createTraffic(db, { secret });
   /* Tautan pendek grup WhatsApp: /grup?dari=menu|banner|artikel|panduan. Klik dihitung per asal (tanpa IP, tanpa cookie), lalu dialihkan ke tautan di pengaturan. */
-  const SRC = new Set(["menu", "banner", "artikel", "panduan", "beranda", "alat"]);
+  const SRC = new Set(["menu", "banner", "artikel", "panduan", "beranda", "alat", "blog"]);
   const clickGrup = db.prepare("INSERT INTO pv_day(day,path,views) VALUES(?,?,1) ON CONFLICT(day,path) DO UPDATE SET views=views+1");
   /* Hitung pemakaian alat tanpa menyimpan isian atau identitas: hanya jumlah per hari. Dibatasi 30 kiriman per menit per alamat. */
   const EV = new Set(["kalkulator", "checklist"]), evHit = new Map();
