@@ -29,11 +29,11 @@
     kota: { l: "Kota (untuk surat pernyataan)", ph: "Jakarta" }, idTutor: { l: "ID Tutor", ph: "Boleh dikosongkan" }
   };
   var TYPES = {
-    tutorial: { n: "Tugas Tutorial", d: "Sampul dan lembar jawaban tugas tutorial (Tugas 1, 2, 3).", f: ["nama", "nim", "prodi", "fakultas", "upbjj", "mkKode", "mkNama", "kelas", "ke", "nSoal"], o: ["optFak", "optUpbjj", "optKelas", "optKesimpulan"], file: "Tugas" },
-    tmk: { n: "TMK (Buku Jawaban Tugas)", d: "Sampul BJT untuk Tugas Mata Kuliah (TMK) dan lembar jawabannya.", f: ["nama", "nim", "mkKode", "mkNama", "upbjj", "ke", "nSoal"], o: [], file: "TMK" },
-    uas: { n: "UAS / THE (BJU)", d: "Sampul Buku Jawaban Ujian, surat pernyataan kejujuran akademik, dan lembar jawaban.", f: ["nama", "nim", "tglLahir", "mkKode", "mkNama", "prodi", "fakultas", "upbjj", "hariUjian", "kota", "nSoal"], o: [], file: "BJU" },
-    jurnal: { n: "Analisis Jurnal", d: "Sampul tugas analisis jurnal dan lembar jawaban (identitas, ringkasan, analisis, daftar pustaka).", f: ["judul", "nama", "nim", "dosen", "mkKode", "mkNama", "prodi", "fakultas", "upbjj", "kelas", "ke"], o: [], file: "Jurnal" },
-    proposal: { n: "Proposal Penelitian", d: "Sampul, daftar isi, ringkasan, dan kerangka Bab I sampai III untuk Metode Penelitian.", f: ["judul", "nama", "nim", "dosen", "idTutor", "prodi"], o: [], file: "Proposal" },
+    tutorial: { n: "Tugas Tutorial", d: "Sampul tugas tutorial (Tugas 1, 2, 3).", f: ["nama", "nim", "prodi", "fakultas", "upbjj", "mkKode", "mkNama", "kelas", "ke"], o: ["optFak", "optUpbjj", "optKelas"], file: "Tugas" },
+    tmk: { n: "TMK (Buku Jawaban Tugas)", d: "Sampul BJT untuk Tugas Mata Kuliah (TMK).", f: ["nama", "nim", "mkKode", "mkNama", "upbjj", "ke"], o: [], file: "TMK" },
+    uas: { n: "UAS / THE (BJU)", d: "Sampul Buku Jawaban Ujian (BJU / THE).", f: ["nama", "nim", "tglLahir", "mkKode", "mkNama", "prodi", "fakultas", "upbjj", "hariUjian"], o: [], file: "BJU" },
+    jurnal: { n: "Analisis Jurnal", d: "Sampul tugas analisis jurnal.", f: ["judul", "nama", "nim", "dosen", "mkKode", "mkNama", "prodi", "fakultas", "upbjj", "kelas", "ke"], o: [], file: "Jurnal" },
+    proposal: { n: "Proposal Penelitian", d: "Sampul, daftar isi, ringkasan, dan kerangka Bab I sampai III, mengikuti template Metode Penelitian UT.", f: ["judul", "nama", "nim", "dosen", "idTutor", "prodi"], o: [], file: "Proposal" },
     makalah: { n: "Makalah / Tugas Mandiri", d: "Sampul makalah atau tugas mandiri (judul, mata kuliah, dosen, penyusun).", f: ["judul", "mkKode", "mkNama", "dosen", "nama", "nim", "prodi", "upbjj", "kelas"], o: [], file: "Makalah" }
   };
   var OPTS = { optFak: "Tampilkan fakultas", optUpbjj: "Tampilkan UPBJJ-UT", optKelas: "Tampilkan kode kelas / pokjar", optKesimpulan: "Tambah bagian Kesimpulan di lembar jawaban" };
@@ -125,7 +125,7 @@
       a.push(c);
       if (S.optLembar) {
         var G = function (t) { return P(t, { i: 1, al: "j", af: 8, color: "555555" }); };
-        a.push([P("DAFTAR ISI", { b: 1, sz: 14, al: "c", af: 12 }), P("Daftar isi\nRingkasan\nBab I Pendahuluan\n      A. Latar Belakang\n      B. Perumusan Masalah\n      C. Tujuan Penelitian\n      D. Kegunaan Penelitian\nBab II Tinjauan Pustaka\n      A. Konsep Teori / Variabel\n      B. Kerangka Konsep / Teoritis; atau Hipotesis\n      C. Hasil-hasil Penelitian Terdahulu\nBab III Metodologi Penelitian\n      A. Metode Penelitian\n      B. Teknik Pengumpulan Data\n      C. Metode Analisis Data\n      D. Objek Analisis\n      E. Validitas dan Reliabilitas\nDaftar Pustaka\nLampiran-lampiran", { af: 10 }), P("Nomor halaman diisi setelah proposalmu selesai (di Word: Referensi > Daftar Isi).", { sz: 10, i: 1, color: "555555" })]);
+        a.push([P("DAFTAR ISI", { b: 1, sz: 14, al: "c", af: 12 }), P("Daftar isi\nRingkasan\nBab I Pendahuluan\n      1.1 Latar Belakang\n      1.2 Perumusan Masalah\n      1.3 Tujuan Penelitian\n      1.4 Manfaat Penelitian\nBab II Tinjauan Pustaka\n      2.1 Konsep Teori / Variabel\n      2.2 Kerangka Konsep / Teoritis; atau Hipotesis\n      2.3 Hasil-hasil Penelitian terdahulu\nBab III Metodologi Penelitian\n      3.1 Metode Penelitian\n      3.2 Teknik Pengumpulan Data\n      3.3 Metode Analisis Data\n      3.4 Objek Analisis\n      3.5 Validitas dan Reliabilitas\nDaftar Pustaka\nLampiran-lampiran", { af: 10 }), P("Nomor halaman diisi setelah proposalmu selesai (di Word: Referensi > Daftar Isi).", { sz: 10, i: 1, color: "555555" })]);
         a.push([P("RINGKASAN PROPOSAL", { b: 1, sz: 14, al: "c", af: 12 }), G("[Rangkum proposal: 1-3 kalimat tentang masalah yang diteliti, 1 kalimat teori yang digunakan, dan 1-2 kalimat tentang metode penelitian.]"), P("Kata kunci: xxxxx, xxxxx, xxxxx", { af: 6 })]);
         a.push([P("BAB I\nPENDAHULUAN", { b: 1, sz: 14, al: "c", af: 12 }), P("A. Latar Belakang", { b: 1, af: 3 }), G("[Jelaskan latar belakang topik / masalah penelitian.]"), P("B. Perumusan Masalah", { b: 1, af: 3 }), G("[Berdasarkan uraian latar belakang di atas, rumuskan masalah penelitian sebagai pertanyaan (1., 2., ...).]"), P("C. Tujuan Penelitian", { b: 1, af: 3 }), G("[Tujuan penelitian selaras dengan rumusan masalah (1., 2., ...).]"), P("D. Kegunaan Penelitian", { b: 1, af: 3 }), G("[Manfaat teoritis dan manfaat praktis penelitian.]")]);
         a.push([P("BAB II\nTINJAUAN PUSTAKA", { b: 1, sz: 14, al: "c", af: 12 }), G("[Jelaskan teori yang digunakan dalam proposal ini dan penelitian terdahulu yang relevan.]"), P("A. Konsep Teori / Variabel", { b: 1, af: 3 }), G("[Uraikan konsep dan teori utama.]"), P("B. Kerangka Konsep / Teoritis; atau Hipotesis", { b: 1, af: 3 }), G("[Gambarkan kerangka konsep atau rumuskan hipotesis.]"), P("C. Hasil-hasil Penelitian Terdahulu", { b: 1, af: 3 }), G("[Dari studi literatur, sebutkan beberapa penelitian terdahulu yang relevan beserta temuannya.]")]);
@@ -139,6 +139,7 @@
         P("PROGRAM STUDI " + U(S.prodi, "[PROGRAM STUDI]") + "\nUNIVERSITAS TERBUKA\nUPBJJ-UT " + U(S.upbjj, "[UPBJJ]") + (S.kelas.trim() ? "\n" + U(S.kelas, "") : "") + "\nTAHUN " + F(S.tahunCover, String(y)), { b: 1, sz: 14, al: "c" })];
       a.push(c);
     }
+    if (T !== "proposal") return [a[0]];
     return a;
   }
 
@@ -159,7 +160,7 @@
     var T = TYPES[TYPE], h = '<div class="sp-r2">' + T.f.map(field).join("") + "</div>";
     h += '<details class="cvs" style="margin-top:6px"><summary>Pengaturan lain</summary>' +
       '<label class="sp-chk"><input type="checkbox" data-o="optLogo"' + (S.optLogo ? " checked" : "") + '> Pasang logo Universitas Terbuka</label>' +
-      (TYPE === "makalah" ? "" : '<label class="sp-chk"><input type="checkbox" data-o="optLembar"' + (S.optLembar ? " checked" : "") + '> Sertakan lembar jawaban / kerangka isi setelah sampul</label>') +
+      (TYPE !== "proposal" ? "" : '<label class="sp-chk"><input type="checkbox" data-o="optLembar"' + (S.optLembar ? " checked" : "") + '> Sertakan daftar isi dan kerangka bab setelah sampul</label>') +
       T.o.map(function (o) { return '<label class="sp-chk"><input type="checkbox" data-o="' + o + '"' + (S[o] ? " checked" : "") + "> " + OPTS[o] + "</label>"; }).join("") +
       '<div class="sp-r2"><label class="sp-f"><span>Tahun akademik</span><input type="text" data-k="tahun" value="' + esc(S.tahun) + '"></label><label class="sp-f"><span>Masa (mis. 2026.2)</span><input type="text" data-k="masa" value="' + esc(S.masa) + '"></label></div>' +
       '<div class="sp-r2"><label class="sp-f"><span>Tahun pada sampul</span><input type="text" data-k="tahunCover" value="' + esc(S.tahunCover) + '"></label><label class="sp-f"><span>Nama kementerian</span><input type="text" data-k="kementerian" value="' + esc(S.kementerian) + '"></label></div>' +
