@@ -49,5 +49,5 @@ test("Audit dan Bedah satu alur: pilihan alur ada di halaman Audit, Bedah, dan h
   assert.match(rd("audit.html"), /alur-i on" href="\/ruangakademikut\/audit"/); assert.match(rd("bedah.html"), /alur-i on" href="\/ruangakademikut\/bedah-laporan"/);
 });
 test("versi aset dinaikkan supaya pengunjung tidak memakai CSS lama dengan HTML baru", () => {
-  assert.match(rd("panduan-maba.html"), /site\.css\?v=20261302/); assert.match(rd("panduan-maba.html"), /common\.js\?v=20261503/);
+  assert.match(rd("panduan-maba.html"), /site\.css\?v=20261302/); assert.match(rd("panduan-maba.html"), /common\.js\?v=20261504/);
 });

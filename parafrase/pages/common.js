@@ -517,3 +517,10 @@ window.auditOkList = function (sc, box) {
   var a = document.createElement("a"); a.id = "skip-ke-konten"; a.href = "#" + m.id; a.textContent = "Lewati ke konten utama";
   document.body.insertBefore(a, document.body.firstChild);
 })();
+/* Menu atas: hanya satu dropdown terbuka; klik di luar atau Esc menutup semuanya. */
+(function () {
+  var ds = function () { return document.querySelectorAll("header.nav details.dd, .nav details.dd"); };
+  document.addEventListener("toggle", function (e) { var t = e.target; if (!t || !t.open || !t.classList || !t.classList.contains("dd")) return; ds().forEach(function (d) { if (d !== t) d.removeAttribute("open"); }); }, true);
+  document.addEventListener("click", function (e) { ds().forEach(function (d) { if (d.open && !d.contains(e.target)) d.removeAttribute("open"); }); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") ds().forEach(function (d) { d.removeAttribute("open"); }); });
+})();
