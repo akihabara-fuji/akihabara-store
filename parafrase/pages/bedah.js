@@ -33,13 +33,18 @@
     if (pdfOnly ? !/\.pdf$/i.test(f.name) : !/\.(docx|pdf)$/i.test(f.name)) { showErr(pdfOnly ? "Laporan Drillbit harus PDF." : "File asli harus Word (.docx) atau PDF."); return false; }
     return true;
   }
-  $("fOrig").onchange = function () { showErr(""); chosen.orig = this.files[0] || null; if (!ok(chosen.orig, false)) { chosen.orig = null; this.value = ""; } $("go").disabled = !(chosen.orig && $("fAi").files[0]); };
-  $("fAi").onchange = function () { showErr(""); if (!ok(this.files[0], true)) this.value = ""; $("go").disabled = !(chosen.orig && this.files[0]); };
+  var waOk = function () { var w = ($("fWa").value || "").replace(/\D/g, "").replace(/^62/, "").replace(/^0/, ""); return /^8\d{8,12}$/.test(w); };
+  var refresh = function () { $("go").disabled = !($("fOrig").files[0] && $("fAi").files[0] && $("fSim").files[0] && waOk()); };
+  $("fOrig").onchange = function () { showErr(""); chosen.orig = this.files[0] || null; if (!ok(chosen.orig, false)) { chosen.orig = null; this.value = ""; } refresh(); };
+  $("fAi").onchange = function () { showErr(""); if (!ok(this.files[0], true)) this.value = ""; refresh(); };
+  $("fSim").onchange = function () { showErr(""); if (!ok(this.files[0], true)) this.value = ""; refresh(); };
+  $("fWa").oninput = refresh;
   $("go").onclick = function () {
     showErr("");
     var o = $("fOrig").files[0], a = $("fAi").files[0], s = $("fSim").files[0];
     if (!o) { showErr("Pilih file aslimu dulu."); return; }
     if (!a) { showErr("Unggah laporan AI Drillbit dari UT. Bedah hanya membaca tanda dari UT."); return; }
+    if (!s) { showErr("Unggah laporan Similarity Drillbit dari UT."); return; }
     var wa = ($("fWa").value || "").replace(/\D/g, "").replace(/^62/, "").replace(/^0/, ""); if (!/^8\d{8,12}$/.test(wa)) { showErr("Isi nomor WhatsApp yang benar (contoh 0812xxxxxxxx)."); return; }
     if (!ok(o, false) || !ok(a, true) || !ok(s, true)) return;
     window.pfScan.start($("busy"), ["Mengunggah file…", "Membaca laporan Drillbit…", "Memetakan blok UT ke dokumenmu…", "Mendiagnosis kalimat yang ditandai…", "Menyusun hasil…"]);

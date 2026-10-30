@@ -202,6 +202,7 @@ module.exports = function mountBedah({ library = null, app, express, db, setting
         }
         if (ai && !ai.ok) { warn.push(ai.error); ai = null; }
         if (sim && !sim.ok) { warn.push(sim.error); sim = null; }
+        if (!sim) return res.status(400).json({ error: "Unggah laporan Similarity Drillbit (PDF) yang kamu terima dari UT. Semua berkas wajib diisi." });
         if (!ai) return res.status(400).json({ error: "Bedah fokus pada tanda dari UT. Unggah laporan AI Drillbit (PDF) yang kamu terima dari UT." });
         if (ai && ai.confidence === "rendah") warn.push("Sorotan biru pada laporan AI tidak terbaca utuh, jadi blok ditampilkan sebagai angka dan tidak dipetakan ke kalimat.");
         const r = await analyseDoc(f.buffer, ai && ai.confidence !== "rendah" ? ai : null, cfg);

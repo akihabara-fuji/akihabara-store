@@ -11,13 +11,16 @@ const P2 = "Menurut para ahli, koordinasi antardivisi selalu menentukan keberhas
 const P3 = "Sebanyak 45 persen perusahaan melaporkan peningkatan efisiensi operasional setelah digitalisasi proses bisnis dilakukan.";
 let fakeExtra = "";
 const realKind = drillbit.detectKind, realAi = drillbit.parseAi, isFake = b => Buffer.from(b).slice(0, 11).toString() === "%PDF-FAKEAI";
-drillbit.detectKind = async b => (isFake(b) ? "ai" : realKind(b));
+const realSim = drillbit.parseSim, isSim = b => Buffer.from(b).slice(0, 12).toString() === "%PDF-FAKESIM";
+drillbit.detectKind = async b => (isFake(b) ? "ai" : isSim(b) ? "sim" : realKind(b));
+drillbit.parseSim = async b => (isSim(b) ? { ok: true, kind: "sim", pct: 12, grade: "B", matchedSources: 1, sourceTypes: {}, content: {}, excluded: {}, sources: [] } : realSim(b));
 drillbit.parseAi = async b => (isFake(b) ? { ok: true, aiPct: 40, humanPct: 60, matchedWords: 30, totalWords: 75, confidence: "tinggi",
   blockTable: [{ n: 1, words: 20 }, { n: 2, words: 10 }], blocks: [{ n: 1, words: 20, text: P2 + fakeExtra }, { n: 2, words: 10, text: P3 }] } : realAi(b));
 async function up(b, extra, izin, noAi) {
   fakeExtra = extra || "";
   const fd = new FormData(); fd.append("wa", "081234567890"); fd.append("file", new Blob([await docx(extra)]), "t.docx"); if (izin) fd.append("izin", "1");
   if (!noAi) fd.append("ai", new Blob(["%PDF-FAKEAI"]), "ai.pdf");
+  fd.append("sim", new Blob(["%PDF-FAKESIM"]), "sim.pdf");
   const r = await fetch(b.base + "/ms/bedah/upload", { method: "POST", body: fd, headers: b.H });
   return { status: r.status, j: await r.json() };
 }
