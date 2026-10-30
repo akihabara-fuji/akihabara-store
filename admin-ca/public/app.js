@@ -36,7 +36,7 @@
     { items: [["dashboard", "Dashboard", "home", ALL], ["traffic", "Pengunjung & Konten", "chart", ED]] },
     { h: "Konten", items: [["posts", "Artikel Blog", "doc", ED], ["posts/new", "Tulis Artikel", "pen", ED], ["taxonomy", "Kategori & Tag", "tag", ED], ["media", "Media", "img", ED], ["comments", "Komentar", "chat", ED], ["studio", "Studio Posting Sosmed", "send", ED]] },
     { h: "Tampilan Situs", items: [["editor", "Editor Halaman", "pen", OWN], ["images", "Gambar Situs", "img", ED], ["testimonials", "Testimoni", "chat", ED], ["texts", "Teks & Nama", "pen", OWN], ["tema", "Tema & Font", "img", OWN]] },
-    { h: "Pesanan", items: [["orders", "Pesanan Layanan", "box", CS, true], ["payments", "Konfirmasi Pembayaran", "card", CS], ["tools/parafrase", "Antrean Cek & Parafrase", "list", CS], ["tools/layanan", "Kirim Hasil Layanan", "send", CS]] },
+    { h: "Pesanan", items: [["orders", "Pesanan Layanan", "box", CS, true], ["payments", "Konfirmasi Pembayaran", "card", CS], ["tools/parafrase", "Antrean Cek & Parafrase", "list", CS], ["tools/layanan", "Kirim Hasil Layanan", "send", CS], ["dokumen", "Dokumen Saya", "doc", OWN]] },
     { h: "Pengguna", items: [["customers", "Pelanggan", "users", CS]] },
     { h: "Lainnya", items: [["services", "Layanan & Harga", "price", OWN], ["reports", "Laporan & Statistik", "chart", OWN], ["settings", "Pengaturan Website", "cog", OWN], ["seo", "SEO & Sitemap", "search", OWN], ["admins", "Admin & Peran", "shield", OWN], ["log", "Log Aktivitas", "clock", OWN]] },
   ];
@@ -143,7 +143,7 @@
     [/^studio$/, ED, pStudio], [/^images$/, ED, pImages], [/^tema$/, OWN, pTema], [/^taxonomy$/, ED, pTaxonomy], [/^media$/, ED, pMedia], [/^comments$/, ED, pComments],
     [/^orders$/, CS, pOrders], [/^orders\/([A-Za-z0-9-]+)$/, CS, m => pOrder(m[1])], [/^payments$/, CS, pPayments],
     [/^tools\/(parafrase|layanan)$/, CS, m => pEmbed(m[1])], [/^customers$/, CS, pCustomers],
-    [/^testimonials$/, ED, pTestimonials], [/^editor$/, OWN, pPageEditor], [/^texts$/, OWN, pTexts], [/^services$/, OWN, pServices], [/^reports$/, OWN, pReports], [/^settings$/, OWN, pSettings], [/^seo$/, OWN, pSeo], [/^admins$/, OWN, pAdmins], [/^log$/, OWN, pLog], [/^account$/, ALL, pAccount],
+    [/^testimonials$/, ED, pTestimonials], [/^dokumen$/, OWN, pDokumen], [/^editor$/, OWN, pPageEditor], [/^texts$/, OWN, pTexts], [/^services$/, OWN, pServices], [/^reports$/, OWN, pReports], [/^settings$/, OWN, pSettings], [/^seo$/, OWN, pSeo], [/^admins$/, OWN, pAdmins], [/^log$/, OWN, pLog], [/^account$/, ALL, pAccount],
   ];
   const params = () => new URLSearchParams((location.hash.split("?")[1]) || "");
   const go = (path, q) => { const s = q ? "?" + new URLSearchParams(Object.entries(q).filter(([, v]) => v !== "" && v != null)).toString() : ""; location.hash = "#/" + path + (s === "?" ? "" : s); };
@@ -920,6 +920,53 @@
     draw();
   }
 
+  async function pDokumen() {
+    const P = "/ms/admin/parafrase/dokumen", q = params();
+    const d = await api(P + "?" + new URLSearchParams({ q: q.get("q") || "", kind: q.get("kind") || "" }).toString());
+    const KL = { bedah: "Bedah UT", parafrase: "Cek & Parafrase", metopen: "Metopen", lain: "Lain" };
+    const sz = n => n > 1048576 ? (n / 1048576).toFixed(1) + " MB" : Math.max(1, Math.round(n / 1024)) + " KB";
+    const pc = (id, f, v, ph) => `<input class="in dk-n" type="number" min="0" max="100" step="0.1" data-id="${id}" data-f="${f}" value="${v == null ? "" : v}" placeholder="${ph}" style="width:72px">`;
+    const stat = x => {
+      const parts = [];
+      if (x.aiOk !== null) parts.push(badge("AI " + (x.aiOk ? "tercapai" : "belum"), x.aiOk ? "ok" : "bad"));
+      if (x.simOk !== null) parts.push(badge("Sim " + (x.simOk ? "tercapai" : "belum"), x.simOk ? "ok" : "bad"));
+      return parts.join(" ") || '<span class="faint small">Isi persen dan target</span>';
+    };
+    const rows = d.items.map(x => `<tr>
+      <td><div><b>${esc(x.title || x.name)}</b></div><div class="small muted">${esc(x.name)} · ${sz(x.size)}${x.orderId ? " · " + esc(x.orderId) : ""}</div>${x.note ? `<div class="small faint">${esc(x.note)}</div>` : ""}</td>
+      <td>${badge(KL[x.kind] || x.kind, "mute")}</td>
+      <td class="nowrap">${pc(x.id, "aiPct", x.aiPct, "AI %")} <span class="faint">→</span> ${pc(x.id, "targetAi", x.targetAi, "target")}</td>
+      <td class="nowrap">${pc(x.id, "simPct", x.simPct, "Sim %")} <span class="faint">→</span> ${pc(x.id, "targetSim", x.targetSim, "target")}</td>
+      <td>${stat(x)}</td>
+      <td class="small muted">${dd(x.createdAt)}<br>${x.pinned ? "Disematkan" : "Hapus " + dd(x.expiresAt)}</td>
+      <td class="nowrap"><a class="btn sm" href="${P}/${x.id}/unduh">Unduh</a> <button class="btn sm" data-pin="${x.id}" data-v="${x.pinned ? 0 : 1}">${x.pinned ? "Lepas sematan" : "Sematkan"}</button> <button class="btn sm bad" data-del="${x.id}">Hapus</button></td></tr>`).join("");
+    setPage("Dokumen Saya", "Simpan file Bedah, Cek & Parafrase, dan metopen dalam satu daftar", `<div class="notice info">File disimpan privat dan dihapus otomatis setelah ${d.ttlDays} hari. Klik <b>Sematkan</b> untuk menyimpan tanpa batas. Isi persen AI dan similarity dari Drillbit beserta targetnya supaya kelihatan mana yang sudah aman. Unggah laporan PDF Drillbit dan angkanya terbaca otomatis.</div>
+      <div class="card"><div class="hd"><h2>Simpan dokumen</h2></div><div class="bd"><form id="dkF" class="grid g2">
+        <label class="f">File dokumen (Word, PDF, dan lainnya, boleh banyak)<input class="in" type="file" name="file" multiple required></label>
+        <label class="f">Judul<input class="in" name="title" maxlength="200" placeholder="Judul tugas atau penelitian"></label>
+        <label class="f">Jenis<select class="in" name="kind">${d.kinds.map(k => `<option value="${k}">${KL[k]}</option>`).join("")}</select></label>
+        <label class="f">Catatan (opsional)<input class="in" name="note" maxlength="300"></label>
+        <label class="f">Laporan AI Drillbit (PDF, opsional)<input class="in" type="file" name="ai" accept="application/pdf"></label>
+        <label class="f">Laporan Similarity Drillbit (PDF, opsional)<input class="in" type="file" name="sim" accept="application/pdf"></label>
+        <label class="f">Persen AI (bila tanpa laporan)<input class="in" name="aiPct" inputmode="decimal" placeholder="mis. 35"></label>
+        <label class="f">Persen similarity (bila tanpa laporan)<input class="in" name="simPct" inputmode="decimal" placeholder="mis. 18"></label>
+        <label class="f">Target AI maksimal (%)<input class="in" name="targetAi" inputmode="decimal" placeholder="mis. 20"></label>
+        <label class="f">Target similarity maksimal (%)<input class="in" name="targetSim" inputmode="decimal" placeholder="mis. 25"></label>
+        <div class="bar" style="grid-column:1/-1"><button class="btn pri" type="submit">Simpan</button><span class="small faint">Bila memilih beberapa file, judul, persen, dan target yang sama dipakai untuk semuanya.</span></div></form>
+        <div class="bar small" style="margin-top:10px"><input class="in" id="dkO" placeholder="ID pesanan, mis. NA-1001" style="max-width:220px"><button class="btn" id="dkOB">Arsipkan file dari pesanan</button></div></div></div>
+      <div class="card"><div class="hd"><h2>Daftar dokumen (${d.items.length})</h2><form class="bar" id="dkQ"><input class="in" name="q" value="${esc(q.get("q") || "")}" placeholder="Cari judul, nama file, catatan" style="max-width:240px"><select class="in" name="kind" style="max-width:160px"><option value="">Semua jenis</option>${d.kinds.map(k => `<option value="${k}"${q.get("kind") === k ? " selected" : ""}>${KL[k]}</option>`).join("")}</select><button class="btn" type="submit">Cari</button></form></div>
+        <div class="tbl-wrap"><table class="t"><thead><tr><th>Judul / file</th><th>Jenis</th><th>AI (sekarang → target)</th><th>Similarity (sekarang → target)</th><th>Status</th><th>Disimpan</th><th></th></tr></thead><tbody>${rows || '<tr><td colspan="7" class="empty">Belum ada dokumen.</td></tr>'}</tbody></table></div></div>`);
+    $("#dkQ").onsubmit = e => { e.preventDefault(); const f = e.target; go("dokumen", { q: f.q.value.trim(), kind: f.kind.value }); };
+    $("#dkF").onsubmit = async e => {
+      e.preventDefault(); const f = e.target, fd = new FormData(f);
+      for (const k of ["ai", "sim"]) if (!f[k].files.length) fd.delete(k);
+      await busy($("button[type=submit]", f), async () => { try { const r = await api(P, { form: fd }); toast("Tersimpan" + (r.aiPct != null ? " · AI " + r.aiPct + "%" : "") + (r.simPct != null ? " · Sim " + r.simPct + "%" : "") + (r.warn && r.warn.length ? " · " + r.warn[0] : ""), !!(r.warn && r.warn.length)); route(); } catch (err) { fail(err); } });
+    };
+    $("#dkOB").onclick = async () => { const id = $("#dkO").value.trim().toUpperCase(); if (!id) return; try { const r = await api(P + "/pesanan/" + encodeURIComponent(id), { json: {} }); toast("Diarsipkan: " + r.saved.join(", ")); route(); } catch (err) { fail(err); } };
+    $$(".dk-n").forEach(i => i.onchange = async () => { try { await api(P + "/" + i.dataset.id, { method: "PATCH", json: { [i.dataset.f]: i.value } }); toast("Tersimpan"); route(); } catch (err) { fail(err); } });
+    $$("[data-pin]").forEach(b => b.onclick = async () => { try { await api(P + "/" + b.dataset.pin, { method: "PATCH", json: { pinned: b.dataset.v === "1" } }); route(); } catch (err) { fail(err); } });
+    $$("[data-del]").forEach(b => b.onclick = async () => { if (!await confirmAct("Hapus dokumen ini?", "File dihapus permanen dari server.", "Hapus", "bad")) return; try { await api(P + "/" + b.dataset.del, { method: "DELETE" }); toast("Dihapus"); route(); } catch (err) { fail(err); } });
+  }
   async function pTestimonials() {
     const d = await api("/ms/admin/ulasan");
     setPage("Testimoni", "Ulasan asli pelanggan yang tampil di beranda Catatan Akademik", `<div class="notice info">Unggah tangkapan layar chat atau tulis kata pelanggan di sini. Di beranda tampil <b>6 testimoni terbaru yang berstatus Tampil</b>. Hanya unggah testimoni <b>asli</b> dan yang sudah diizinkan pelanggan; tutup nama atau nomor yang tidak perlu terlihat di tangkapan layar.</div>

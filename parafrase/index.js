@@ -15,6 +15,7 @@ const mountPages = require("./pages");
 const createTexts = require("./sitetexts");
 const mountAudit = require("./audit");
 const mountBedah = require("./bedah");
+const mountDokumen = require("./dokumen");
 const mountLayanan = require("./layanan");
 const mountOrders = require("./orders");
 const createTraffic = require("./traffic").create;
@@ -77,6 +78,7 @@ else if(/\\/(?:ruangakademikut\\/)?(layanan|cek-parafrase-mandiri|audit)(?:[\\/?
   const notifier = createNotifier({ db, settings });
   const orders = mountOrders({ app, express, db, settings, notifier, root: ROOT, sameOrigin: sameOrigin || (() => true), requireAdmin, secret, userFrom });
   mountAudit({ app, express, db, settings, orders, root: ROOT, sameOrigin: sameOrigin || (() => true), secret, userFrom });
+  const dokumen = mountDokumen({ app, express, db, root: ROOT, requireAdmin });
   mountBedah({ app, express, db, settings, orders, root: ROOT, sameOrigin: sameOrigin || (() => true), secret, requireAdmin, userFrom });
   const traffic = createTraffic(db, { secret });
   /* Tautan pendek grup WhatsApp: /grup?dari=menu|banner|artikel|panduan. Klik dihitung per asal (tanpa IP, tanpa cookie), lalu dialihkan ke tautan di pengaturan. */
@@ -103,7 +105,7 @@ else if(/\\/(?:ruangakademikut\\/)?(layanan|cek-parafrase-mandiri|audit)(?:[\\/?
     res.set({ "Cache-Control": "no-store", "X-Robots-Tag": "noindex" }).redirect(302, url);
   });
   mountLayanan({ app, express, db, settings, orders, root: ROOT, sameOrigin: sameOrigin || (() => true), secret, requireAdmin, userFrom });
-  const t = setInterval(() => { uploads.purgeExpired().catch(() => {}); orders.expireUnpaid().catch(() => {}); orders.sweepRetention().catch(() => {}); }, 10 * 60 * 1000); t.unref();
+  const t = setInterval(() => { uploads.purgeExpired().catch(() => {}); orders.expireUnpaid().catch(() => {}); orders.sweepRetention().catch(() => {}); dokumen.purgeExpired().catch(() => {}); }, 10 * 60 * 1000); t.unref();
   const t2 = setInterval(() => notifier.flush().catch(() => {}), 30 * 1000); t2.unref();
 
   return { db, settings, uploads, orders, notifier, texts, pages, traffic };

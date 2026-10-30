@@ -282,6 +282,28 @@ const MIGRATIONS = [
   `
   ALTER TABLE kalibrasi ADD COLUMN verdict TEXT;
   `,
+  /* pustaka dokumen admin: file yang disimpan pemilik, 30 hari kecuali disematkan */
+  `
+  CREATE TABLE doc_library (
+    id         TEXT PRIMARY KEY,
+    name       TEXT NOT NULL,
+    title      TEXT NOT NULL DEFAULT '',        -- judul dokumen/penelitian
+    kind       TEXT NOT NULL DEFAULT 'lain',   -- bedah | parafrase | metopen | lain
+    ai_pct     REAL,                           -- persen AI Drillbit (laporan atau isian manual)
+    sim_pct    REAL,                           -- persen similarity Drillbit
+    target_ai  REAL,                           -- batas AI yang dituju
+    target_sim REAL,                           -- batas similarity yang dituju
+    note       TEXT NOT NULL DEFAULT '',
+    size       INTEGER NOT NULL,
+    path       TEXT NOT NULL,                  -- relatif ke data/private
+    source     TEXT NOT NULL DEFAULT 'manual', -- manual | pesanan
+    order_id   TEXT,
+    pinned     INTEGER NOT NULL DEFAULT 0,
+    created_at INTEGER NOT NULL,
+    expires_at INTEGER NOT NULL
+  );
+  CREATE INDEX doc_library_at ON doc_library(created_at);
+  `,
 ];
 
 
