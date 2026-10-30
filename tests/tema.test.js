@@ -21,5 +21,5 @@ test("bawaan (tema lama) tidak mengubah apa pun; ID asing dibaca bawaan; paket l
   const h = tema.head("premium");
   assert.match(h, /family=Merriweather/); assert.match(h, /Source\+Sans\+3/); assert.match(h, /--acc:#78350F/); assert.match(h, /--acc:#E0A458/);
   assert.strictEqual(tema.inject("<head></head>", "klasik").includes("tema-klasik"), true);
-  assert.strictEqual(tema.inject("<head></head>", ""), "<head></head>");
+  assert.strictEqual(tema.inject("<head></head>", "bawaan"), "<head></head>");
 });
