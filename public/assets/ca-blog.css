@@ -133,7 +133,7 @@
 
 /* Navigator artikel: "Di artikel ini" di kiri, navigasi situs di kanan, laci di HP */
 .ax-notoc{grid-template-columns:minmax(0,1fr) 290px}
-.ax-left{position:sticky;top:84px;align-self:start;font-size:14px;max-height:calc(100vh - 110px);overflow:auto}
+.ax-left{position:sticky;top:84px;align-self:start;font-size:14px;max-height:calc(100vh - 110px);overflow:auto;scrollbar-width:none}
 .ax-left h2{margin:0 0 10px;font:700 13px Onest,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .ax-left li{list-style:none}.ax-left ol{list-style:none;margin:0;padding:0;border-left:2px solid var(--border);display:grid;gap:2px}.ax-left li.l3{margin-left:12px}
 .ax-left a{display:block;padding:5px 0 5px 12px;margin-left:-2px;border-left:2px solid transparent;color:var(--muted);text-decoration:none;line-height:1.4}
@@ -168,8 +168,9 @@
 @media (min-width:1024px){
 .wrap.ax{max-width:none;padding-right:0;grid-template-columns:230px minmax(0,1fr) 360px;gap:32px}
 .ax-main{max-width:820px;justify-self:center;width:100%}
-.ax-side{position:sticky;top:70px;align-self:start;height:calc(100vh - 70px);overflow-y:auto;padding:24px 24px 32px 20px;border-left:1px solid var(--border);box-sizing:border-box;margin-top:-24px;margin-bottom:-64px}
+.ax-side{position:sticky;top:70px;align-self:start;height:calc(100vh - 70px);overflow-y:auto;padding:24px 24px 32px 20px;scrollbar-width:none;box-sizing:border-box;margin-top:-24px;margin-bottom:-64px}
 .ax-left{top:94px}
+.ax-side::-webkit-scrollbar,.ax-left::-webkit-scrollbar{display:none}
 }
 .ax-more{margin-top:6px}.ax-more summary{cursor:pointer;list-style:none;display:inline-block;margin:6px 0 6px 12px;padding:6px 14px;border:1px solid var(--border);border-radius:999px;font-weight:700;font-size:13px;color:var(--link)}
 .ax-more summary::-webkit-details-marker{display:none}.ax-more[open] summary{margin-bottom:8px}.ax-more[open] summary::after{content:" ▴"}.ax-more:not([open]) summary::after{content:" ▾"}
