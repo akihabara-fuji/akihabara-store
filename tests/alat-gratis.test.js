@@ -4,8 +4,8 @@ const assert = require("node:assert");
 const express = require("express");
 const fs = require("fs"), path = require("path");
 
-const SLUGS = ["sampul-tugas", "surat-lamaran", "tracker-kelulusan", "kalender-akademik", "panduan-maba"];
-const JS = ["wordlib.js", "sampul.js", "surat.js", "tracker.js", "kalender.js", "maba.js", "nilai-ut.js"];
+const SLUGS = ["sampul-tugas", "tracker-kelulusan", "kalender-akademik", "panduan-maba"];
+const JS = ["wordlib.js", "sampul.js", "tracker.js", "kalender.js", "maba.js", "nilai-ut.js"];
 
 test("Alat Gratis: halaman baru tampil di host akademik tanpa string ruangakademikut, aset termuat", async () => {
   const keep = { A: process.env.ACAD_URL, S: process.env.SITE_URL };

@@ -10,7 +10,7 @@ test("domain akademik: alat gratis punya alamat pendek, jalur lama dialihkan 301
     const app = express(); require("../parafrase/pages")({ app, express });
     const srv = app.listen(0), b = "http://127.0.0.1:" + srv.address().port;
     try {
-      for (const slug of ["kalkulator-nilai-ut", "pasfoto-yudisium"]) {
+      for (const slug of ["kalkulator-nilai-ut", "sampul-tugas"]) {
         const old = await fetch(`${b}/ruangakademikut/${slug}`, { redirect: "manual" });
         assert.strictEqual(old.status, 301); assert.strictEqual(old.headers.get("location"), "/" + slug);
         const r = await fetch(`${b}/${slug}`), html = await r.text();

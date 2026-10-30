@@ -10,7 +10,7 @@
       ["a1", "Simpan NIM, email, dan kata sandi akun UT di tempat yang aman (jangan dibagikan ke siapa pun)."],
       ["a2", "Pastikan nomor HP dan email di data diri aktif, karena info penting dikirim ke sana."],
       ["a3", "Catat UPBJJ dan pokjar (kelompok belajar) tempat kamu terdaftar."],
-      ["a4", "Pasfoto sesuai ketentuan siap dipakai. Alat Pasfoto Yudisium di situs ini bisa membantu memotong ukuran fotonya."]] },
+      ["a4", "Pasfoto sesuai ketentuan siap dipakai."]] },
     { t: "2. Saat registrasi mata kuliah", i: [
       ["b1", "Buka kalender akademik resmi di ut.ac.id dan catat tanggal registrasi serta batas pembayaran."],
       ["b2", "Pilih mata kuliah sesuai panduan program studi dan jumlah SKS yang diizinkan untukmu."],

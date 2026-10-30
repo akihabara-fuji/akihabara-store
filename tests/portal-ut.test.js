@@ -9,8 +9,8 @@ const mountPages = require("../parafrase/pages");
 const { shortPaths } = require("../parafrase/acadpaths");
 
 const PAGES = ["/beranda", "/ruangakademikut", "/ruangakademikut/cek-parafrase-mandiri", "/ruangakademikut/audit", "/ruangakademikut/layanan", "/ruangakademikut/blog-ut", "/ruangakademikut/pesanan",
-  "/ruangakademikut/audit/hasil/x", "/kalkulator-nilai-ut", "/pasfoto-yudisium", "/sitasi-apa", "/portal-ut", "/tentang"];
-const ASSETS = ["site.css", "common.js", "cek.js", "audit.js", "audit-hasil.js", "layanan.js", "pesanan.js", "kalkulator.js", "nilai-ut.js", "pasfoto.js", "sitasi.js", "sitasi-apa.js", "blog-ut.js"];
+  "/ruangakademikut/audit/hasil/x", "/kalkulator-nilai-ut", "/sitasi-apa", "/portal-ut", "/tentang"];
+const ASSETS = ["site.css", "common.js", "cek.js", "audit.js", "audit-hasil.js", "layanan.js", "pesanan.js", "kalkulator.js", "nilai-ut.js", "sitasi.js", "sitasi-apa.js", "blog-ut.js"];
 
 async function boot() {
   const app = express(); mountPages({ app, express });
@@ -36,7 +36,7 @@ test("domain akademik: tidak ada /ruangakademikut di halaman publik maupun JS-ny
     for (const f of ["theme.css", "logo-96.png", "favicon.ico"]) assert.strictEqual((await t.get("/assets/ut/ca/" + f)).status, 200, f);
     // jalur lama: aset tetap ada (cache browser lama), halaman alat dialihkan 301
     assert.strictEqual((await t.get("/ruangakademikut/assets/common.js")).status, 200);
-    for (const s of ["portal-ut", "sitasi-apa", "kalkulator-nilai-ut", "pasfoto-yudisium"]) { const r = await t.get("/ruangakademikut/" + s); assert.strictEqual(r.status, 301, s); assert.strictEqual(r.headers.get("location"), "/" + s); }
+    for (const s of ["portal-ut", "sitasi-apa", "kalkulator-nilai-ut"]) { const r = await t.get("/ruangakademikut/" + s); assert.strictEqual(r.status, 301, s); assert.strictEqual(r.headers.get("location"), "/" + s); }
   } finally { t.srv.close(); }
 });
 

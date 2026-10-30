@@ -507,3 +507,13 @@ window.auditOkList = function (sc, box) {
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", run); else run();
 })();
+/* Tautan "Lewati ke konten utama" untuk pengguna keyboard dan pembaca layar. */
+(function () {
+  var m = document.querySelector("main"); if (!m || document.getElementById("skip-ke-konten")) return;
+  if (!m.id) m.id = "konten-utama";
+  var st = document.createElement("style");
+  st.textContent = "#skip-ke-konten{position:fixed;left:12px;top:-60px;z-index:9999;background:var(--acc,#673de6);color:var(--on-accent,#fff);padding:10px 16px;border-radius:10px;font:600 14px system-ui,sans-serif;text-decoration:none;transition:top .15s}#skip-ke-konten:focus{top:12px;outline:2px solid currentColor;outline-offset:2px}";
+  document.head.appendChild(st);
+  var a = document.createElement("a"); a.id = "skip-ke-konten"; a.href = "#" + m.id; a.textContent = "Lewati ke konten utama";
+  document.body.insertBefore(a, document.body.firstChild);
+})();

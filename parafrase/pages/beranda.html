@@ -89,7 +89,7 @@ img{max-width:100%;display:block}
 .links .ddp .mg-all{flex:1 1 100%;text-align:center;margin-top:6px;font-weight:700;background:var(--surface2,rgba(127,127,127,.12))}
 .links .ddp.desc{flex-direction:column;flex-wrap:nowrap;gap:0;width:min(340px,calc(100vw - 32px));padding:8px}.links .ddp.desc a{padding:9px 12px;border-bottom:1px solid var(--border,rgba(127,127,127,.2));border-radius:0}.links .ddp.desc a:last-child{border-bottom:0}.links .ddp.desc a b{display:block;font-size:14px;letter-spacing:0;text-transform:none;color:var(--text);margin:0}.links .ddp.desc a small{display:block;font-size:12.5px;font-weight:500;color:var(--muted);margin-top:1px}.links .ddp.desc a.all{font-weight:700;font-size:13px;color:var(--link,#7c5cff);text-align:left}
 @media(min-width:981px){.links{gap:6px 16px}.links>a,.links .dd summary{white-space:nowrap;font-size:13.5px}.nav .logo span,.logo span{white-space:nowrap}}
-.mbban{background:var(--surface2,rgba(127,127,127,.1));border-bottom:1px solid var(--border)}.mbban .wrap{display:flex;gap:10px 16px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding-top:9px;padding-bottom:9px;font-size:14px}.mbban p{margin:0;flex:1 1 280px;min-width:0}.mbban a{display:inline-flex;align-items:center;min-height:36px;padding:0 14px;border-radius:9px;background:var(--btn,var(--acc));color:var(--on-accent,#fff);font-weight:700;font-size:13.5px;text-decoration:none;white-space:nowrap}
+.mbban{background:var(--surface2,rgba(127,127,127,.1));border-bottom:1px solid var(--border)}.mbban .wrap{display:flex;gap:10px 16px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding-top:9px;padding-bottom:9px;font-size:14px}.mbb-a{display:flex;gap:8px;flex-wrap:wrap}.mbban a.mbb-g{background:#16a34a;color:#fff}.mbban p{margin:0;flex:1 1 280px;min-width:0}.mbban a{display:inline-flex;align-items:center;min-height:36px;padding:0 14px;border-radius:9px;background:var(--btn,var(--acc));color:var(--on-accent,#fff);font-weight:700;font-size:13.5px;text-decoration:none;white-space:nowrap}
 @media(min-width:981px) and (max-width:1299px){.links{gap:6px 12px}.links>a[href*="pesanan"]{display:none}}@media(min-width:981px) and (max-width:1139px){.links>a[href*="blog-ut"]{display:none}}@media(min-width:981px) and (max-width:1079px){.links{gap:6px 9px}.links>a,.links .dd summary{font-size:12.5px}.nav .logo span{display:none}}@media(min-width:981px) and (max-width:1079px){.links{gap:6px 9px}.links>a,.links .dd summary{font-size:12.5px}.nav .logo span{display:none}}
 @media(max-width:980px){.links .ddp{position:static;width:auto;box-shadow:none;margin-top:8px;padding:8px}}
 .links .only-m{display:none}
@@ -379,7 +379,7 @@ a.mini:hover:after{transform:translateX(6px)}
 .nx-t b{margin-left:auto;transition:transform .2s}
 .nx-door:hover .nx-t b{transform:translateX(5px)}
 .nx-door small{font-size:13.5px;line-height:1.45;opacity:.88}
-.nx-d1{background:var(--nx-blue);color:#fff;box-shadow:0 12px 26px var(--nx-glow)}
+.nx-d1{background:var(--nx-blue);color:var(--on-accent,#fff);box-shadow:0 12px 26px var(--nx-glow)}
 .nx-d2{background:var(--surface);color:var(--text);border:1px solid var(--border);box-shadow:var(--nx-shadow)}
 .nx-d2 small{color:var(--muted);opacity:1}
 .nx-pop{margin-top:20px}
@@ -448,11 +448,11 @@ svg.nx-i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;s
   <div class="wrap">
     <a href="#top" class="logo" aria-label="Catatan Akademik, ke atas"><b>C</b><span id="brand">Catatan Akademik</span></a>
     <nav class="links" id="links" aria-label="Menu utama">
-      <details class="dd"><summary>Layanan</summary><div class="ddp mega"><div class="mg"><b>Akademik UT</b><a href="/ruangakademikut/tutorial-online"><span>Tutorial Online</span></a><a href="/ruangakademikut/layanan?s=simulasi"><span>Simulasi Presentasi</span></a><a href="/ruangakademikut/layanan?s=revisi_tugas"><span>Revisi tugas</span></a></div><div class="mg"><b>Cek &amp; Audit</b><a href="/ruangakademikut/cek-parafrase-mandiri"><span>Cek &amp; Parafrase Mandiri</span></a><a href="/ruangakademikut/audit"><span>Audit Dokumen</span></a><a href="/ruangakademikut/bedah-laporan"><span>Bedah Laporan Penelitian UT</span></a><b>Paket</b><a href="/ruangakademikut#semester"><span>Paket Semester</span></a><a href="/ruangakademikut#pengarahan"><span>Pengarahan Intensif</span></a></div><div class="mg"><b>Gratis</b><a href="/ruangakademikut/blog-ut"><span>Info UT</span></a><a href="/ruangakademikut/buat-cv-ats"><span>Buat CV ATS</span></a><a href="/ruangakademikut/portal-ut"><span>Portal &amp; Alat UT</span></a></div><a class="mg-all" href="/ruangakademikut">Lihat semua layanan →</a></div></details>
+      <details class="dd"><summary>Layanan</summary><div class="ddp mega"><div class="mg"><b>Akademik UT</b><a href="/ruangakademikut/tutorial-online"><span>Tutorial Online</span></a><a href="/ruangakademikut/layanan?s=simulasi"><span>Simulasi Presentasi</span></a><a href="/ruangakademikut/layanan?s=revisi_tugas"><span>Revisi tugas</span></a></div><div class="mg"><b>Cek &amp; Audit</b><a href="/ruangakademikut/cek-parafrase-mandiri"><span>Cek &amp; Parafrase Mandiri</span></a><a href="/ruangakademikut/audit"><span>Audit Dokumen</span></a><a href="/ruangakademikut/bedah-laporan"><span>Bedah Laporan Penelitian UT</span></a><b>Paket</b><a href="/ruangakademikut#semester"><span>Paket Semester</span></a><a href="/ruangakademikut#pengarahan"><span>Pengarahan Intensif</span></a></div><div class="mg"><b>Gratis</b><a href="/ruangakademikut/blog-ut"><span>Info UT</span></a><a href="/ruangakademikut/portal-ut"><span>Portal &amp; Alat UT</span></a></div><a class="mg-all" href="/ruangakademikut">Lihat semua layanan →</a></div></details>
       <details class="dd"><summary class="dds">Tutorial Online</summary><div class="ddp desc"><a href="/ruangakademikut/tutorial-online"><b>Semua Tutorial Online</b><small>Pilih layanan, lihat alur dan harga</small></a><a href="/ruangakademikut/tutorial-online?tab=harga&amp;s=diskusi"><b>Diskusi</b><small>Jawaban diskusi Tuton siap tempel</small></a><a href="/ruangakademikut/tutorial-online?tab=harga&amp;s=tugas"><b>Tugas</b><small>Tugas tutorial sesuai soal dan format</small></a><a href="/ruangakademikut/tutorial-online?tab=harga&amp;s=makalah"><b>Makalah</b><small>Kerangka, isi, dan daftar pustaka</small></a><a href="/ruangakademikut/tutorial-online?tab=harga&amp;s=jurnal"><b>Jurnal</b><small>Telaah dan referensi jurnal terverifikasi</small></a><a href="/ruangakademikut/tutorial-online?tab=harga&amp;s=metopen"><b>Metodologi Penelitian</b><small>Metopen Tugas 1 sampai 3 dan paket komplit</small></a><a href="/ruangakademikut/tutorial-online?tab=alur"><b>Testimoni &amp; Alur</b><small>Progres pesanan dan ulasan</small></a><a class="all" href="/ruangakademikut/tutorial-online?tab=harga">Lihat harga <span aria-hidden="true">→</span></a></div></details><details class="dd"><summary class="dds">Audit &amp; Bedah UT</summary><div class="ddp"><a href="/ruangakademikut/cek-parafrase-mandiri">Cek &amp; Parafrase Mandiri</a><a href="/ruangakademikut/audit">Audit Dokumen</a><a href="/ruangakademikut/bedah-laporan">Bedah Laporan Penelitian UT</a><a href="/ruangakademikut/audit-parafrase">Lihat semua →</a></div></details>
-      <details class="dd"><summary>Mahasiswa Baru</summary><div class="ddp desc"><a href="/ruangakademikut/panduan-maba"><b>Panduan Mahasiswa Baru</b><small>Checklist dari registrasi sampai nilai</small></a><a href="/ruangakademikut/kalkulator-nilai-ut"><b>Hitung IPS dan IPK</b><small>Kalkulator nilai dan target IPK</small></a><a href="/blog/cara-cek-jadwal-uas-ut"><b>Cara cek jadwal UAS</b><small>Lewat KTPU di MyUT</small></a><a href="/blog/cara-melihat-nilai-uas-dnu-ut"><b>Cara melihat nilai UAS</b><small>Daftar Nilai Ujian (DNU)</small></a><a href="/grup?dari=menu"><b>Gabung Komunitas Mahasiswa UT</b><small>Grup WhatsApp Catatan Akademik</small></a><a class="all" href="/ruangakademikut/panduan-maba">Lihat semua panduan <span aria-hidden="true">→</span></a></div></details><details class="dd"><summary>Portal &amp; Alat UT</summary><div class="ddp desc"><a href="/ruangakademikut/portal-ut"><b>Portal UT</b><small>Tautan resmi UT di satu tempat</small></a><a href="/ruangakademikut/kalkulator-nilai-ut"><b>Kalkulator Nilai UT</b><small>Nilai akhir dan target IPK</small></a><a href="/ruangakademikut/tracker-kelulusan"><b>Tracker Kelulusan &amp; IPK</b><small>SKS lulus dan sisa semester</small></a><a href="/ruangakademikut/kalender-akademik"><b>Kalender &amp; Pengingat</b><small>Tanggal penting jadi pengingat</small></a><a href="/ruangakademikut/sampul-tugas"><b>Sampul &amp; Template Tugas</b><small>Sampul TMK, UAS, makalah</small></a><a href="/ruangakademikut/sitasi-apa"><b>Generator Sitasi APA</b><small>Rapikan daftar pustaka</small></a><a href="/ruangakademikut/buat-cv-ats"><b>Buat CV ATS</b><small>CV ramah sistem rekrutmen</small></a><a href="/ruangakademikut/surat-lamaran"><b>Surat Lamaran</b><small>Template surat lamaran</small></a><a href="/ruangakademikut/pasfoto-yudisium"><b>Pas Foto Yudisium</b><small>Atur ukuran dan latar</small></a><a class="all" href="/ruangakademikut/portal-ut">Lihat semua alat <span aria-hidden="true">→</span></a></div></details>
+      <details class="dd"><summary>Mahasiswa Baru</summary><div class="ddp desc"><a href="/ruangakademikut/panduan-maba"><b>Panduan Mahasiswa Baru</b><small>Checklist dari registrasi sampai nilai</small></a><a href="/ruangakademikut/kalkulator-nilai-ut"><b>Hitung IPS dan IPK</b><small>Kalkulator nilai dan target IPK</small></a><a href="/blog/cara-cek-jadwal-uas-ut"><b>Cara cek jadwal UAS</b><small>Lewat KTPU di MyUT</small></a><a href="/blog/cara-melihat-nilai-uas-dnu-ut"><b>Cara melihat nilai UAS</b><small>Daftar Nilai Ujian (DNU)</small></a><a href="/grup?dari=menu"><b>Gabung Komunitas Mahasiswa UT</b><small>Grup WhatsApp Catatan Akademik</small></a><a class="all" href="/ruangakademikut/panduan-maba">Lihat semua panduan <span aria-hidden="true">→</span></a></div></details><details class="dd"><summary>Portal &amp; Alat UT</summary><div class="ddp desc"><a href="/ruangakademikut/portal-ut"><b>Portal UT</b><small>Tautan resmi UT di satu tempat</small></a><a href="/ruangakademikut/kalkulator-nilai-ut"><b>Kalkulator Nilai UT</b><small>Nilai akhir dan target IPK</small></a><a href="/ruangakademikut/tracker-kelulusan"><b>Tracker Kelulusan &amp; IPK</b><small>SKS lulus dan sisa semester</small></a><a href="/ruangakademikut/kalender-akademik"><b>Kalender &amp; Pengingat</b><small>Tanggal penting jadi pengingat</small></a><a href="/ruangakademikut/sampul-tugas"><b>Sampul &amp; Template Tugas</b><small>Sampul TMK, UAS, makalah</small></a><a href="/ruangakademikut/sitasi-apa"><b>Generator Sitasi APA</b><small>Rapikan daftar pustaka</small></a><a class="all" href="/ruangakademikut/portal-ut">Lihat semua alat <span aria-hidden="true">→</span></a></div></details>
       <a href="/ruangakademikut/blog-ut">Blog &amp; Berita UT</a>
-      <a href="/ruangakademikut/pesanan">Cek Pesanan</a>
+      <a href="/ruangakademikut/pesanan" aria-label="Cek pesanan" title="Cek pesanan" style="font-size:17px;line-height:1">🛒</a>
       <a href="/ms/masuk" class="only-m">Masuk</a>
     </nav>
     <div class="nav-r">
@@ -463,7 +463,7 @@ svg.nx-i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;s
   </div>
 </header>
 <main id="top">
-<div class="mbban"><div class="wrap"><p><b>Baru masuk kuliah di UT?</b> Pelajari panduan praktis dan gabung grup komunitas mahasiswa.</p><a href="/ruangakademikut/panduan-maba">Buka Panduan Mahasiswa Baru</a></div></div>
+<div class="mbban"><div class="wrap"><p><b>Baru masuk kuliah di UT?</b> Pelajari panduan praktis dan gabung grup komunitas mahasiswa.</p><span class="mbb-a"><a href="/ruangakademikut/panduan-maba">Buka Panduan Mahasiswa Baru</a><a class="mbb-g" data-group href="/grup?dari=banner" target="_blank" rel="noopener">Gabung grup WhatsApp</a></span></div></div>
 <section class="hero hx" id="heroSec">
   <img class="nx-bg" data-d="-10" data-s="1.06" src="/site-img/hero/model-ut.webp" width="820" height="983" alt="Mahasiswi membawa buku dan tablet di kampus" fetchpriority="high" decoding="async">
   <div class="nx-hc">
@@ -476,14 +476,10 @@ svg.nx-i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;s
       <a class="nx-door nx-d1" href="/panduan-maba"><span class="nx-t"><svg class="nx-i" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.4 7.6-8 9-4.6-1.4-8-4.5-8-9V6z"/></svg>Saya mahasiswa baru<b aria-hidden="true">→</b></span><small>Checklist dari registrasi sampai nilai</small></a>
       <a class="nx-door nx-d2" data-group href="/grup?dari=beranda"><span class="nx-t"><svg class="nx-i" viewBox="0 0 24 24"><path d="M16 11a3 3 0 1 0-6 0M4 20a8 8 0 0 1 16 0"/></svg>Gabung grup WhatsApp<b aria-hidden="true">→</b></span><small>800+ anggota, info UT tiap hari</small></a>
     </div>
-    <div class="nx-pop fx" style="--d:.8s"><span class="nx-help">Tanpa akun untuk unggah dan cek gratis. Login hanya saat bayar.</span>
-      <div class="nx-chips"><a class="nx-chip" id="chipWa" href="#" target="_blank" rel="noopener"><svg class="nx-i" viewBox="0 0 24 24"><path d="M4 4h16v13H8l-4 4z"/></svg>Chat Admin</a></div></div>
+    <div class="nx-pop fx" style="--d:.8s"><span class="nx-help">Tanpa akun untuk unggah dan cek gratis. Login hanya saat bayar.</span></div>
   </div>
   <div class="nx-fc nx-c1" data-d="26"><svg class="nx-i" viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg><div><b>2.100+ pesanan masuk</b><small>dari mahasiswa UT sejak 2022</small></div></div>
   <a class="nx-fc nx-c2" data-group href="#" data-d="26"><svg class="nx-i" viewBox="0 0 24 24"><path d="M16 11a3 3 0 1 0-6 0M4 20a8 8 0 0 1 16 0M18 8a2.5 2.5 0 1 0-2-4M6 8a2.5 2.5 0 1 1 2-4"/></svg><div><b>Grup WhatsApp</b><small>800+ anggota, info UT</small></div></a>
-  
-  
-  <a class="nx-fc nx-c5"  href="/pesanan" data-d="-24"><svg class="nx-i" viewBox="0 0 24 24"><path d="M9 3h6l1 2h3v16H5V5h3zM9 12l2 2 4-4"/></svg><div><b>Cek pesanan</b><small>Pantau status pakai kode</small></div></a>
   <div class="nx-strip">
     <span><svg class="nx-i" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.4 7.6-8 9-4.6-1.4-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg><b>Ada tahap review</b><small>Sebelum dikirim ke tutor</small></span>
     <span><svg class="nx-i" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"/></svg><b>Revisi atas masukan tutor</b><small>Selama sesi masih aktif</small></span>
@@ -514,7 +510,7 @@ svg.nx-i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;s
 <section class="s" id="portal"><div class="wrap">
   <div class="card rv" style="padding:26px"><div class="sh" style="margin-bottom:14px"><div><h2>Portal &amp; Alat Bantu Belajar UT</h2><p>Tautan resmi UT dan alat gratis kami, di satu tempat.</p></div><a class="btn btn-ghost btn-sm" href="/ruangakademikut/portal-ut">Buka semua</a></div>
   <div style="display:flex;gap:10px;flex-wrap:wrap;font-size:14px">
-    <a class="btn btn-ghost btn-sm" href="/ruangakademikut/portal-ut">MyUT dan Tuton</a><a class="btn btn-ghost btn-sm" href="/ruangakademikut/kalender-akademik">Kalender Akademik</a><a class="btn btn-ghost btn-sm" href="/ruangakademikut/kalkulator-nilai-ut">Kalkulator Nilai</a><a class="btn btn-ghost btn-sm" href="/ruangakademikut/sitasi-apa">Generator Sitasi APA</a><a class="btn btn-ghost btn-sm" href="/ruangakademikut/pasfoto-yudisium">Pasfoto Yudisium</a><a class="btn btn-ghost btn-sm" href="/ruangakademikut/buat-cv-ats">Buat CV ATS</a>
+    <a class="btn btn-ghost btn-sm" href="/ruangakademikut/portal-ut">MyUT dan Tuton</a><a class="btn btn-ghost btn-sm" href="/ruangakademikut/kalender-akademik">Kalender Akademik</a><a class="btn btn-ghost btn-sm" href="/ruangakademikut/kalkulator-nilai-ut">Kalkulator Nilai</a><a class="btn btn-ghost btn-sm" href="/ruangakademikut/sitasi-apa">Generator Sitasi APA</a>
   </div></div>
 </div></section>
 
@@ -565,12 +561,6 @@ svg.nx-i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;s
   <a class="card mini rv" data-g="bedah" href="/bedah-laporan"><div class="tx"><small style="display:block;margin:0 22px 4px;font-weight:700;letter-spacing:.5px;color:#22d3ee">BARU</small><h3>Bedah Laporan Penelitian UT</h3><p>Unggah file asli dan laporan Drillbit dari UT. Lihat kalimat yang ditandai UT, 500 kata pertama gratis, lengkap dengan cara memperbaiki.</p><span class="pr">Rp <span data-p="bedah_harga_per_1000">10k</span> per 1.000 kata</span></div></a>
 </div></div></section>
 
-<section class="s" id="aturan">
-  <div class="wrap g2">
-    <div class="card rule rv"><b>Dari chat sampai beres, 4 langkah</b><div>1. Chat admin: kirim soal atau kebutuhanmu.</div><div>2. Konfirmasi: admin kirim harga dan jadwal. Bayar bisa DP dulu.</div><div>3. Dikerjakan dan direview sebelum dikirim.</div><div>4. Kirim ke tutor. Revisi atas masukan tutor selama sesi aktif.</div></div>
-    <div class="card rule rv"><b>Aturan kerja kami</b><div>Jawaban mengikuti soal, rubrik, dan ketentuan yang kamu kirim.</div><div>Referensi hanya dari sumber yang bisa diperiksa. Yang belum terverifikasi ditandai, tidak dikarang.</div><div>Catatan Akademik bukan situs resmi Universitas Terbuka dan tidak menjamin nilai atau kelulusan. Semangat!</div></div>
-  </div>
-</section>
 
 <section class="s">
   <div class="wrap"><div class="banner"><div><h2>Mulai dari yang paling ringan</h2><p>Audit ringkas gratis, atau tanya dulu lewat WhatsApp.</p></div><a class="btn" href="/audit">Audit dokumen</a></div></div>
@@ -599,7 +589,7 @@ document.querySelectorAll(".mode button").forEach(function(b){b.addEventListener
 setMode(document.documentElement.dataset.theme||"dark");
 $("#yr").textContent=new Date().getFullYear();
 var wa="6285722227544";
-function setWa(n){wa=n||wa;var u="https://wa.me/"+wa+"?text="+encodeURIComponent("Halo admin Catatan Akademik, saya mau tanya layanan.");$("#fabWa").href=u;$("#chipWa").href=u}
+function setWa(n){wa=n||wa;var u="https://wa.me/"+wa+"?text="+encodeURIComponent("Halo admin Catatan Akademik, saya mau tanya layanan.");$("#fabWa").href=u}
 setWa();
 fetch("/ms/public-config",{cache:"no-store"}).then(function(r){return r.json()}).then(function(c){
   if(!c)return;if(c.admin_wa_number)setWa(c.admin_wa_number);
@@ -691,6 +681,17 @@ if(FINE&&!RM){
   document.addEventListener("mouseleave",untilt);
 }
 requestAnimationFrame(function(){hero.classList.add("in")});
+})();
+</script>
+<script>/* Tautan "Lewati ke konten utama" untuk pengguna keyboard dan pembaca layar. */
+(function () {
+  var m = document.querySelector("main"); if (!m || document.getElementById("skip-ke-konten")) return;
+  if (!m.id) m.id = "konten-utama";
+  var st = document.createElement("style");
+  st.textContent = "#skip-ke-konten{position:fixed;left:12px;top:-60px;z-index:9999;background:var(--acc,#673de6);color:var(--on-accent,#fff);padding:10px 16px;border-radius:10px;font:600 14px system-ui,sans-serif;text-decoration:none;transition:top .15s}#skip-ke-konten:focus{top:12px;outline:2px solid currentColor;outline-offset:2px}";
+  document.head.appendChild(st);
+  var a = document.createElement("a"); a.id = "skip-ke-konten"; a.href = "#" + m.id; a.textContent = "Lewati ke konten utama";
+  document.body.insertBefore(a, document.body.firstChild);
 })();
 </script>
 </body>

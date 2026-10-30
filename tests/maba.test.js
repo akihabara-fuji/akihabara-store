@@ -4,7 +4,7 @@ const dir = path.join(__dirname, "..", "parafrase", "pages"), rd = f => fs.readF
 const pages = fs.readdirSync(dir).filter(f => f.endsWith(".html") && rd(f).includes('<header class="nav">') && rd(f).includes("Portal &amp; Alat UT"));
 
 test("semua halaman dengan menu kedua punya dropdown Mahasiswa Baru dan Portal & Alat UT", () => {
-  assert.ok(pages.length >= 20);
+  assert.ok(pages.length >= 18);
   for (const f of pages) assert.ok(!rd(f).includes('class="sub"'), f + " masih punya bar menu kedua");
   for (const f of pages) {
     const h = rd(f);
@@ -49,5 +49,5 @@ test("Audit dan Bedah satu alur: pilihan alur ada di halaman Audit, Bedah, dan h
   assert.match(rd("audit.html"), /alur-i on" href="\/ruangakademikut\/audit"/); assert.match(rd("bedah.html"), /alur-i on" href="\/ruangakademikut\/bedah-laporan"/);
 });
 test("versi aset dinaikkan supaya pengunjung tidak memakai CSS lama dengan HTML baru", () => {
-  assert.match(rd("panduan-maba.html"), /site\.css\?v=20261302/); assert.match(rd("panduan-maba.html"), /common\.js\?v=20261302/);
+  assert.match(rd("panduan-maba.html"), /site\.css\?v=20261302/); assert.match(rd("panduan-maba.html"), /common\.js\?v=20261503/);
 });
