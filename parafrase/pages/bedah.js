@@ -40,10 +40,11 @@
     var o = $("fOrig").files[0], a = $("fAi").files[0], s = $("fSim").files[0];
     if (!o) { showErr("Pilih file aslimu dulu."); return; }
     if (!a) { showErr("Unggah laporan AI Drillbit dari UT. Bedah hanya membaca tanda dari UT."); return; }
+    var wa = ($("fWa").value || "").replace(/\D/g, "").replace(/^62/, "").replace(/^0/, ""); if (!/^8\d{8,12}$/.test(wa)) { showErr("Isi nomor WhatsApp yang benar (contoh 0812xxxxxxxx)."); return; }
     if (!ok(o, false) || !ok(a, true) || !ok(s, true)) return;
     window.pfScan.start($("busy"), ["Mengunggah file…", "Membaca laporan Drillbit…", "Memetakan blok UT ke dokumenmu…", "Mendiagnosis kalimat yang ditandai…", "Menyusun hasil…"]);
     $("go").disabled = true;
-    var fd = new FormData(); fd.append("izin", $("izin").checked ? "1" : "0"); fd.append("file", o); if (a) fd.append("ai", a); if (s) fd.append("sim", s);
+    var fd = new FormData(); fd.append("wa", $("fWa").value); fd.append("nama", $("fNama").value); fd.append("nim", $("fNim").value); fd.append("izin", $("izin").checked ? "1" : "0"); fd.append("file", o); if (a) fd.append("ai", a); if (s) fd.append("sim", s);
     fetch("/ms/bedah/upload", { method: "POST", body: fd }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
       .then(function (x) {
         $("busy").classList.add("hidden"); $("go").disabled = false;

@@ -932,14 +932,20 @@
       if (x.simOk !== null) parts.push(badge("Sim " + (x.simOk ? "tercapai" : "belum"), x.simOk ? "ok" : "bad"));
       return parts.join(" ") || '<span class="faint small">Isi persen dan target</span>';
     };
-    const rows = d.items.map(x => `<tr>
-      <td><div><a href="#/dokumen/${x.id}"><b>${esc(x.title || x.name)}</b></a></div><div class="small muted">${esc(x.name)} · ${sz(x.size)}${x.orderId ? " · " + esc(x.orderId) : ""}</div>${x.note ? `<div class="small faint">${esc(x.note)}</div>` : ""}</td>
+    const ST = { baru: ["Baru", "info"], diproses: ["Diproses", "warn"], perbaikan_dikirim: ["Perbaikan sudah dikirim", "ok"], revisi: ["Revisi masuk", "bad"] };
+    const row = x => `<tr>
+      <td><div><a href="#/dokumen/${x.id}"><b>${esc(x.title || x.name)}</b></a>${x.revisionNo ? " " + badge("Revisi ke-" + x.revisionNo, "bad") : ""}</div><div class="small muted">${esc(x.name)} · ${sz(x.size)}${x.orderId ? " · " + esc(x.orderId) : ""}</div>${x.note ? `<div class="small faint">${esc(x.note)}</div>` : ""}</td>
       <td>${badge(KL[x.kind] || x.kind, "mute")}</td>
       <td class="nowrap">${pc(x.id, "aiPct", x.aiPct, "AI %")} <span class="faint">→</span> ${pc(x.id, "targetAi", x.targetAi, "target")}</td>
       <td class="nowrap">${pc(x.id, "simPct", x.simPct, "Sim %")} <span class="faint">→</span> ${pc(x.id, "targetSim", x.targetSim, "target")}</td>
-      <td>${stat(x)}</td>
+      <td>${badge(ST[x.status] ? ST[x.status][0] : x.status, ST[x.status] ? ST[x.status][1] : "mute")}<div style="margin-top:4px">${stat(x)}</div></td>
       <td class="small muted">${dd(x.createdAt)}<br>${x.pinned ? "Disematkan" : "Hapus " + dd(x.expiresAt)}</td>
-      <td class="nowrap"><a class="btn sm" href="#/dokumen/${x.id}">Detail</a> <a class="btn sm" href="${P}/${x.id}/unduh">Unduh</a> <button class="btn sm" data-pin="${x.id}" data-v="${x.pinned ? 0 : 1}">${x.pinned ? "Lepas sematan" : "Sematkan"}</button> <button class="btn sm bad" data-del="${x.id}">Hapus</button></td></tr>`).join("");
+      <td class="nowrap"><a class="btn sm" href="#/dokumen/${x.id}">Detail</a> <a class="btn sm" href="${P}/${x.id}/unduh">Unduh</a> <button class="btn sm" data-pin="${x.id}" data-v="${x.pinned ? 0 : 1}">${x.pinned ? "Lepas sematan" : "Sematkan"}</button> <button class="btn sm bad" data-del="${x.id}">Hapus</button></td></tr>`;
+    const stF = q.get("status") || "", items = d.items.filter(x => !stF || x.status === stF);
+    const groups = new Map(); items.forEach(x => { const k = x.studentKey || "-"; (groups.get(k) || groups.set(k, []).get(k)).push(x); });
+    const waLink = (g, t) => g.wa ? `https://wa.me/${g.wa}${t ? "?text=" + encodeURIComponent(t) : ""}` : "";
+    const rows = [...groups.entries()].map(([k, arr]) => { const g = arr.find(x => x.studentName || x.wa) || arr[0]; const head = k === "-" ? "Tanpa data mahasiswa" : `<b>${esc(g.studentName || "Nama belum terbaca")}</b> · NIM ${esc(g.nim || "–")} · ${g.wa ? "+" + esc(g.wa) : "tanpa WA"} · ${arr.length} dokumen`;
+      return `<tr><td colspan="7" style="background:rgba(128,128,128,.12)"><div class="bar">${head}<span class="grow"></span>${g.wa ? `<a class="btn sm pri" target="_blank" rel="noopener" href="${waLink(g)}">Chat WhatsApp</a>` : ""}</div></td></tr>` + arr.map(row).join(""); }).join("");
     setPage("Dokumen Saya", "Simpan file Bedah, Cek & Parafrase, dan metopen dalam satu daftar", `<div class="notice info">File disimpan privat dan dihapus otomatis setelah ${d.ttlDays} hari. Klik <b>Sematkan</b> untuk menyimpan tanpa batas. Isi persen AI dan similarity dari Drillbit beserta targetnya supaya kelihatan mana yang sudah aman. Unggah laporan PDF Drillbit dan angkanya terbaca otomatis.</div>
       <div class="card"><div class="hd"><h2>Simpan dokumen</h2></div><div class="bd"><form id="dkF" class="grid g2">
         <label class="f">File dokumen (Word, PDF, dan lainnya, boleh banyak)<input class="in" type="file" name="file" multiple required></label>
@@ -954,9 +960,9 @@
         <label class="f">Target similarity maksimal (%)<input class="in" name="targetSim" inputmode="decimal" placeholder="mis. 25"></label>
         <div class="bar" style="grid-column:1/-1"><button class="btn pri" type="submit">Simpan</button><span class="small faint">Bila memilih beberapa file, judul, persen, dan target yang sama dipakai untuk semuanya.</span></div></form>
         <div class="bar small" style="margin-top:10px"><input class="in" id="dkO" placeholder="ID pesanan, mis. NA-1001" style="max-width:220px"><button class="btn" id="dkOB">Arsipkan file dari pesanan</button></div></div></div>
-      <div class="card"><div class="hd"><h2>Daftar dokumen (${d.items.length})</h2><form class="bar" id="dkQ"><input class="in" name="q" value="${esc(q.get("q") || "")}" placeholder="Cari judul, nama file, catatan" style="max-width:240px"><select class="in" name="kind" style="max-width:160px"><option value="">Semua jenis</option>${d.kinds.map(k => `<option value="${k}"${q.get("kind") === k ? " selected" : ""}>${KL[k]}</option>`).join("")}</select><button class="btn" type="submit">Cari</button></form></div>
+      <div class="card"><div class="hd"><h2>Daftar dokumen (${items.length} · ${groups.size} mahasiswa)</h2><form class="bar" id="dkQ"><input class="in" name="q" value="${esc(q.get("q") || "")}" placeholder="Cari nama, NIM, WA, judul, catatan" style="max-width:240px"><select class="in" name="kind" style="max-width:160px"><option value="">Semua jenis</option>${d.kinds.map(k => `<option value="${k}"${q.get("kind") === k ? " selected" : ""}>${KL[k]}</option>`).join("")}</select><select class="in" name="status" style="max-width:190px"><option value="">Semua status</option>${Object.entries(ST).map(([k, v]) => `<option value="${k}"${stF === k ? " selected" : ""}>${v[0]}</option>`).join("")}</select><button class="btn" type="submit">Cari</button></form></div>
         <div class="tbl-wrap"><table class="t"><thead><tr><th>Judul / file</th><th>Jenis</th><th>AI (sekarang → target)</th><th>Similarity (sekarang → target)</th><th>Status</th><th>Disimpan</th><th></th></tr></thead><tbody>${rows || '<tr><td colspan="7" class="empty">Belum ada dokumen.</td></tr>'}</tbody></table></div></div>`);
-    $("#dkQ").onsubmit = e => { e.preventDefault(); const f = e.target; go("dokumen", { q: f.q.value.trim(), kind: f.kind.value }); };
+    $("#dkQ").onsubmit = e => { e.preventDefault(); const f = e.target; go("dokumen", { q: f.q.value.trim(), kind: f.kind.value, status: f.status.value }); };
     $("#dkF").onsubmit = async e => {
       e.preventDefault(); const f = e.target, fd = new FormData(f);
       for (const k of ["ai", "sim"]) if (!f[k].files.length) fd.delete(k);
@@ -985,7 +991,18 @@
     setPage(x.title || x.name, "Dokumen Saya · " + dd(x.createdAt), `<div class="bar"><a class="btn" href="#/dokumen">← Daftar dokumen</a><span class="grow"></span><a class="btn pri" href="${P}/${id}/unduh">Unduh file asli</a>${x.hasAi ? `<a class="btn" href="${P}/${id}/unduh?f=ai">Laporan AI (PDF)</a>` : ""}${x.hasSim ? `<a class="btn" href="${P}/${id}/unduh?f=sim">Laporan similarity (PDF)</a>` : ""}</div>
       <div class="card"><div class="bd"><div class="grid g2"><div><div class="small muted">Nama file</div><b>${esc(x.name)}</b></div><div><div class="small muted">Jumlah kata</div><b>${num(x.words || d.words)}</b></div></div>
         <div class="bar" style="margin-top:12px"><span class="small">Target AI maksimal (%)</span>${tgt("targetAi", x.targetAi, "mis. 20")}<span class="small">Target similarity maksimal (%)</span>${tgt("targetSim", x.targetSim, "mis. 25")}<span class="small faint">Berubah otomatis menjadi hijau bila angka ≤ target.</span></div></div></div>
+      <div class="card"><div class="hd"><h2>Mahasiswa dan pengiriman perbaikan</h2></div><div class="bd">
+        <div class="grid g2"><label class="f">Nama<input class="in" id="dkNm" value="${esc(x.studentName || "")}" maxlength="80"></label><label class="f">NIM<input class="in" value="${esc(x.nim || "")}" disabled></label>
+        <label class="f">WhatsApp (62…)<input class="in" id="dkWa" value="${esc(x.wa || "")}" inputmode="tel"></label><label class="f">Status<select class="in" id="dkSt">${[["baru", "Baru"], ["diproses", "Diproses"], ["perbaikan_dikirim", "Perbaikan sudah dikirim"], ["revisi", "Revisi masuk"]].map(([k, l]) => `<option value="${k}"${x.status === k ? " selected" : ""}>${l}</option>`).join("")}</select></label></div>
+        ${d.nameMismatch ? '<div class="notice" style="margin-top:8px">Nama pada unggahan ini berbeda dari yang tercatat untuk NIM yang sama. Periksa dulu apakah ini orang yang sama.</div>' : ""}
+        ${x.revisionNo ? `<div class="notice info" style="margin-top:8px">Ini revisi ke-${x.revisionNo}. Dokumen sebelumnya milik mahasiswa yang sama ada di daftar di bawah namanya.</div>` : ""}
+        <div class="bar" style="margin-top:10px"><button class="btn" id="dkSv">Simpan data</button>${x.wa ? `<a class="btn" target="_blank" rel="noopener" href="https://wa.me/${esc(x.wa)}?text=${encodeURIComponent("Halo " + (x.studentName || "") + ", file perbaikan Bedah kamu sudah kami kirim. Silakan dicek ya. Bila masih ada tanda dari UT, kirim laporan Drillbit barumu di halaman Bedah.")}">Chat WhatsApp</a>` : ""}</div>
+        <hr style="margin:14px 0;border:0;border-top:1px solid rgba(128,128,128,.25)">
+        <div class="small muted">File perbaikan yang kamu kirim ${x.hasFix ? `: <a href="${P}/${id}/unduh?f=fix">${esc(x.fixName || "unduh")}</a> · dikirim ${dt(x.fixSentAt)}` : "belum ada"}</div>
+        <div class="bar" style="margin-top:8px"><input class="in" type="file" id="dkFx" style="max-width:320px"><button class="btn pri" id="dkSent">Tandai perbaikan sudah dikirim</button><span class="small faint">File boleh dikosongkan bila sudah kamu kirim lewat WhatsApp.</span></div></div></div>
       ${aiTop}${simTop}`);
+    $("#dkSv").onclick = async () => { try { await api(P + "/" + id, { method: "PATCH", json: { studentName: $("#dkNm").value, wa: $("#dkWa").value, status: $("#dkSt").value } }); toast("Tersimpan"); route(); } catch (err) { fail(err); } };
+    $("#dkSent").onclick = async e => { const fd = new FormData(); const f = $("#dkFx").files[0]; if (f) fd.append("file", f); await busy(e.target, async () => { try { await api(P + "/" + id + "/perbaikan", { form: fd }); toast("Status: perbaikan sudah dikirim"); route(); } catch (err) { fail(err); } }); };
     $$(".dk-n").forEach(i => i.onchange = async () => { try { await api(P + "/" + id, { method: "PATCH", json: { [i.dataset.f]: i.value } }); toast("Tersimpan"); route(); } catch (err) { fail(err); } });
   }
   async function pTestimonials() {

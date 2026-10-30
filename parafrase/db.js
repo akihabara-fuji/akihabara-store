@@ -299,6 +299,15 @@ const MIGRATIONS = [
     ai_path    TEXT,                           -- laporan AI Drillbit (PDF), dari Bedah
     sim_path   TEXT,                           -- laporan similarity Drillbit (PDF), dari Bedah
     words      INTEGER,
+    student_key  TEXT,                         -- nim:… atau wa:… (pengelompokan satu mahasiswa)
+    student_name TEXT,
+    nim          TEXT,
+    wa           TEXT,                         -- 62812…
+    status       TEXT NOT NULL DEFAULT 'baru', -- baru | diproses | perbaikan_dikirim | revisi
+    revision_no  INTEGER NOT NULL DEFAULT 0,   -- 0 = unggahan pertama, 1 = revisi ke-1, dst
+    fix_path     TEXT,                         -- file perbaikan yang dikirim admin
+    fix_name     TEXT,
+    fix_sent_at  INTEGER,
     data       TEXT,                           -- JSON hasil baca laporan (angka, blok, sumber)
     source     TEXT NOT NULL DEFAULT 'manual', -- manual | pesanan | bedah
     order_id   TEXT,
@@ -307,6 +316,7 @@ const MIGRATIONS = [
     expires_at INTEGER NOT NULL
   );
   CREATE INDEX doc_library_at ON doc_library(created_at);
+  CREATE INDEX doc_library_student ON doc_library(student_key);
   `,
 ];
 

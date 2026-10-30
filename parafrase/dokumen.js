@@ -22,8 +22,10 @@ module.exports = function mountDokumen({ app, express, db, root, requireAdmin })
   const kindOf = v => (KINDS.includes(v) ? v : "lain");
   const pct = v => { if (v === "" || v == null) return null; const n = parseFloat(String(v).replace(",", ".")); return Number.isFinite(n) && n >= 0 && n <= 100 ? Math.round(n * 10) / 10 : null; };
   const reach = (v, t) => (v == null || t == null ? null : v <= t);
-  const view = r => ({ words: r.words, hasAi: !!r.ai_path, hasSim: !!r.sim_path, id: r.id, name: r.name, title: r.title, kind: r.kind, aiPct: r.ai_pct, simPct: r.sim_pct, targetAi: r.target_ai, targetSim: r.target_sim, aiOk: reach(r.ai_pct, r.target_ai), simOk: reach(r.sim_pct, r.target_sim), note: r.note, size: r.size, source: r.source, orderId: r.order_id, pinned: !!r.pinned, createdAt: r.created_at, expiresAt: r.pinned ? null : r.expires_at });
+  const STATUS = ["baru", "diproses", "perbaikan_dikirim", "revisi"];
+  const view = r => ({ studentKey: r.student_key, studentName: r.student_name, nim: r.nim, wa: r.wa, status: r.status, revisionNo: r.revision_no, hasFix: !!r.fix_path, fixName: r.fix_name, fixSentAt: r.fix_sent_at, words: r.words, hasAi: !!r.ai_path, hasSim: !!r.sim_path, id: r.id, name: r.name, title: r.title, kind: r.kind, aiPct: r.ai_pct, simPct: r.sim_pct, targetAi: r.target_ai, targetSim: r.target_sim, aiOk: reach(r.ai_pct, r.target_ai), simOk: reach(r.sim_pct, r.target_sim), note: r.note, size: r.size, source: r.source, orderId: r.order_id, pinned: !!r.pinned, createdAt: r.created_at, expiresAt: r.pinned ? null : r.expires_at });
   const nowMs = () => Date.now();
+  const wa62 = raw => { let d = String(raw || "").replace(/\D/g, ""); d = d.replace(/^62/, "").replace(/^0/, ""); return /^8\d{8,12}$/.test(d) ? "62" + d : null; };
 
   const insert = db.prepare("INSERT INTO doc_library(id,name,title,kind,ai_pct,sim_pct,target_ai,target_sim,note,size,path,source,order_id,pinned,created_at,expires_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?)");
   async function put(buf, name, kind, note, source, orderId, m) {
@@ -36,7 +38,7 @@ module.exports = function mountDokumen({ app, express, db, root, requireAdmin })
   }
 
   /* Dipanggil Bedah setiap kali mahasiswa mengunggah: file asli, laporan AI, laporan similarity, dan hasil bacaannya. */
-  async function saveBedah({ name, buf, aiBuf, simBuf, ai, sim, words, problemPct }) {
+  async function saveBedah({ name, buf, aiBuf, simBuf, ai, sim, words, problemPct, wa, nama, nim }) {
     const id = crypto.randomBytes(8).toString("hex"), now = nowMs();
     const ext = (/\.[a-z0-9]{1,5}$/i.exec(name) || [".docx"])[0].toLowerCase();
     const rel = "library/" + id + ext, aiRel = aiBuf ? "library/" + id + ".ai.pdf" : null, simRel = simBuf ? "library/" + id + ".sim.pdf" : null;
@@ -48,8 +50,22 @@ module.exports = function mountDokumen({ app, express, db, root, requireAdmin })
       ai: ai && { pct: ai.aiPct, humanPct: ai.humanPct, matchedWords: ai.matchedWords, totalWords: ai.totalWords, pages: ai.pages, sentences: ai.sentences, confidence: ai.confidence, blockTable: ai.blockTable, blocks: (ai.blocks || []).map(b => ({ n: b.n, words: b.words })) },
       sim: sim && { pct: sim.pct, grade: sim.grade, matchedSources: sim.matchedSources, pages: sim.pages, totalWords: sim.totalWords, sourceTypes: sim.sourceTypes, content: sim.content, excluded: sim.excluded, sources: sim.sources }
     };
-    db.prepare("INSERT INTO doc_library(id,name,title,kind,ai_pct,sim_pct,target_ai,target_sim,note,size,path,ai_path,sim_path,words,data,source,order_id,pinned,created_at,expires_at) VALUES(?,?,?,?,?,?,NULL,NULL,'',?,?,?,?,?,?,'bedah',NULL,0,?,?)")
-      .run(id, clip(name, 160), clip(name.replace(/\.[a-z0-9]{1,5}$/i, ""), 200), "bedah", ai ? pct(ai.aiPct) : null, sim ? pct(sim.pct) : null, buf.length, rel, aiRel, simRel, words || null, JSON.stringify(data), now, now + TTL_MS);
+    /* Satu mahasiswa = NIM yang sama (bila ada), kalau tidak, nomor WhatsApp yang sama. Unggahan berikutnya otomatis jadi revisi di bawah namanya. */
+    const cleanNim = String(nim || "").replace(/\D/g, "").slice(0, 12), cleanName = clip(nama, 80);
+    const key = cleanNim.length >= 8 ? "nim:" + cleanNim : wa ? "wa:" + wa : null;
+    let rev = 0, status = "baru", mismatch = false;
+    if (key) {
+      const prev = db.prepare("SELECT student_name, wa, nim, revision_no FROM doc_library WHERE student_key=? ORDER BY created_at DESC LIMIT 1").get(key);
+      const n = db.prepare("SELECT COUNT(*) c FROM doc_library WHERE student_key=? AND source='bedah'").get(key).c;
+      if (n > 0) { rev = n; status = "revisi"; }
+      const norm = v => String(v || "").toLowerCase().replace(/[^a-z]/g, "");
+      mismatch = !!(prev && cleanName && prev.student_name && norm(prev.student_name) !== norm(cleanName));
+      if (prev && !cleanName) nama = prev.student_name; // nama kosong: ikut yang sudah tercatat
+      if (prev && !wa) wa = prev.wa;
+    }
+    data.nameMismatch = mismatch;
+    db.prepare("INSERT INTO doc_library(id,name,title,kind,ai_pct,sim_pct,target_ai,target_sim,note,size,path,ai_path,sim_path,words,data,student_key,student_name,nim,wa,status,revision_no,source,order_id,pinned,created_at,expires_at) VALUES(?,?,?,?,?,?,NULL,NULL,'',?,?,?,?,?,?,?,?,?,?,?,?,'bedah',NULL,0,?,?)")
+      .run(id, clip(name, 160), clip(name.replace(/\.[a-z0-9]{1,5}$/i, ""), 200), "bedah", ai ? pct(ai.aiPct) : null, sim ? pct(sim.pct) : null, buf.length, rel, aiRel, simRel, words || null, JSON.stringify(data), key, clip(nama, 80) || null, cleanNim || null, wa || null, status, rev, now, now + TTL_MS);
     return id;
   }
 
@@ -64,7 +80,7 @@ module.exports = function mountDokumen({ app, express, db, root, requireAdmin })
     res.set("Cache-Control", "no-store");
     const q = clip(req.query.q, 80).toLowerCase(), kind = KINDS.includes(req.query.kind) ? req.query.kind : "";
     const rows = db.prepare("SELECT * FROM doc_library WHERE expires_at>? OR pinned=1 ORDER BY pinned DESC, created_at DESC LIMIT 500").all(nowMs())
-      .filter(r => (!kind || r.kind === kind) && (!q || (r.name + " " + r.title + " " + r.note + " " + (r.order_id || "")).toLowerCase().includes(q)));
+      .filter(r => (!kind || r.kind === kind) && (!q || (r.name + " " + r.title + " " + r.note + " " + (r.student_name || "") + " " + (r.nim || "") + " " + (r.wa || "") + " " + (r.order_id || "")).toLowerCase().includes(q)));
     res.json({ items: rows.map(view), ttlDays: TTL_MS / 86400000, kinds: KINDS });
   });
 
@@ -112,11 +128,33 @@ module.exports = function mountDokumen({ app, express, db, root, requireAdmin })
     res.json({ ok: true, saved: done });
   });
 
+  /* File perbaikan: simpan salinannya (opsional) dan tandai bahwa perbaikan sudah dikirim ke mahasiswa. */
+  app.post(base + "/:id/perbaikan", requireAdmin, (req, res) => {
+    const r = /^[a-f0-9]{16}$/.test(req.params.id) && db.prepare("SELECT * FROM doc_library WHERE id=?").get(req.params.id);
+    if (!r) return res.status(404).json({ error: "Dokumen tidak ditemukan." });
+    const up = multer({ storage: multer.memoryStorage(), limits: { fileSize: MAX_MB * 1024 * 1024, files: 1, fields: 2 } }).single("file");
+    up(req, res, async err => {
+      if (err) return res.status(err.code === "LIMIT_FILE_SIZE" ? 413 : 400).json({ error: "Unggahan gagal atau file terlalu besar." });
+      try {
+        let fixRel = r.fix_path, fixName = r.fix_name;
+        if (req.file) {
+          if (!EXT.test(req.file.originalname || "")) return res.status(415).json({ error: "Jenis file tidak didukung." });
+          if (fixRel) { try { await fsp.unlink(path.join(priv, fixRel)); } catch { /* sudah hilang */ } }
+          fixName = clip(Buffer.from(req.file.originalname, "latin1").toString("utf8"), 160);
+          fixRel = "library/" + r.id + ".fix" + ((/\.[a-z0-9]{1,5}$/i.exec(fixName) || [".docx"])[0].toLowerCase());
+          await fsp.writeFile(path.join(priv, fixRel), req.file.buffer, { mode: 0o600 });
+        }
+        db.prepare("UPDATE doc_library SET fix_path=?, fix_name=?, fix_sent_at=?, status='perbaikan_dikirim' WHERE id=?").run(fixRel, fixName, nowMs(), r.id);
+        res.json({ ok: true });
+      } catch (e) { console.error("[dokumen] perbaikan gagal:", e && e.message); res.status(500).json({ error: "File perbaikan gagal disimpan." }); }
+    });
+  });
+
   app.get(base + "/:id/unduh", requireAdmin, (req, res) => {
     const r = /^[a-f0-9]{16}$/.test(req.params.id) && db.prepare("SELECT * FROM doc_library WHERE id=?").get(req.params.id);
     if (!r) return res.status(404).json({ error: "Dokumen tidak ditemukan." });
     res.set("Cache-Control", "no-store");
-    const f = req.query.f === "ai" && r.ai_path ? [r.ai_path, r.name.replace(/\.[a-z0-9]{1,5}$/i, "") + " laporan AI.pdf"] : req.query.f === "sim" && r.sim_path ? [r.sim_path, r.name.replace(/\.[a-z0-9]{1,5}$/i, "") + " laporan similarity.pdf"] : [r.path, r.name];
+    const f = req.query.f === "fix" && r.fix_path ? [r.fix_path, r.fix_name || "perbaikan"] : req.query.f === "ai" && r.ai_path ? [r.ai_path, r.name.replace(/\.[a-z0-9]{1,5}$/i, "") + " laporan AI.pdf"] : req.query.f === "sim" && r.sim_path ? [r.sim_path, r.name.replace(/\.[a-z0-9]{1,5}$/i, "") + " laporan similarity.pdf"] : [r.path, r.name];
     res.download(path.join(priv, f[0]), f[1]);
   });
 
@@ -125,22 +163,22 @@ module.exports = function mountDokumen({ app, express, db, root, requireAdmin })
     if (!r) return res.status(404).json({ error: "Dokumen tidak ditemukan." });
     const b = req.body || {};
     const pv = (k, cur) => (b[k] === undefined ? cur : pct(b[k]));
-    db.prepare("UPDATE doc_library SET note=?, title=?, kind=?, pinned=?, ai_pct=?, sim_pct=?, target_ai=?, target_sim=? WHERE id=?")
-      .run(b.note === undefined ? r.note : clip(b.note, 300), b.title === undefined ? r.title : clip(b.title, 200), b.kind === undefined ? r.kind : kindOf(b.kind), b.pinned === undefined ? r.pinned : (b.pinned ? 1 : 0), pv("aiPct", r.ai_pct), pv("simPct", r.sim_pct), pv("targetAi", r.target_ai), pv("targetSim", r.target_sim), r.id);
+    db.prepare("UPDATE doc_library SET note=?, title=?, kind=?, pinned=?, ai_pct=?, sim_pct=?, target_ai=?, target_sim=?, status=?, wa=?, student_name=? WHERE id=?")
+      .run(b.note === undefined ? r.note : clip(b.note, 300), b.title === undefined ? r.title : clip(b.title, 200), b.kind === undefined ? r.kind : kindOf(b.kind), b.pinned === undefined ? r.pinned : (b.pinned ? 1 : 0), pv("aiPct", r.ai_pct), pv("simPct", r.sim_pct), pv("targetAi", r.target_ai), pv("targetSim", r.target_sim), STATUS.includes(b.status) ? b.status : r.status, b.wa === undefined ? r.wa : (wa62(b.wa) || r.wa), b.studentName === undefined ? r.student_name : clip(b.studentName, 80), r.id);
     res.json({ ok: true });
   });
 
   app.delete(base + "/:id", requireAdmin, async (req, res) => {
     const r = /^[a-f0-9]{16}$/.test(req.params.id) && db.prepare("SELECT * FROM doc_library WHERE id=?").get(req.params.id);
     if (!r) return res.status(404).json({ error: "Dokumen tidak ditemukan." });
-    for (const p of [r.path, r.ai_path, r.sim_path]) if (p) { try { await fsp.unlink(path.join(priv, p)); } catch { /* sudah hilang */ } }
+    for (const p of [r.path, r.ai_path, r.sim_path, r.fix_path]) if (p) { try { await fsp.unlink(path.join(priv, p)); } catch { /* sudah hilang */ } }
     db.prepare("DELETE FROM doc_library WHERE id=?").run(r.id);
     res.json({ ok: true });
   });
 
   async function purgeExpired() {
-    for (const r of db.prepare("SELECT id,path,ai_path,sim_path FROM doc_library WHERE pinned=0 AND expires_at<?").all(nowMs())) {
-      for (const p of [r.path, r.ai_path, r.sim_path]) if (p) { try { await fsp.unlink(path.join(priv, p)); } catch { /* sudah hilang */ } }
+    for (const r of db.prepare("SELECT id,path,ai_path,sim_path,fix_path FROM doc_library WHERE pinned=0 AND expires_at<?").all(nowMs())) {
+      for (const p of [r.path, r.ai_path, r.sim_path, r.fix_path]) if (p) { try { await fsp.unlink(path.join(priv, p)); } catch { /* sudah hilang */ } }
       db.prepare("DELETE FROM doc_library WHERE id=?").run(r.id);
     }
   }

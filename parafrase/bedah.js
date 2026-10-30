@@ -163,7 +163,7 @@ module.exports = function mountBedah({ library = null, app, express, db, setting
     const now = Date.now(), h = hashIp(req.ip);
     if (limited("u:" + h, RATE.max, now)) return res.status(429).json({ error: "Terlalu banyak unggahan. Coba lagi satu jam lagi atau chat admin." });
     if (running >= MAX_RUNNING) return res.status(503).json({ error: "Antrean sedang penuh. Coba lagi beberapa saat." });
-    const up = multer({ storage: multer.memoryStorage(), limits: { fileSize: MAX_MB * 1024 * 1024, files: 3, fields: 4 } })
+    const up = multer({ storage: multer.memoryStorage(), limits: { fileSize: MAX_MB * 1024 * 1024, files: 3, fields: 8 } })
       .fields([{ name: "file", maxCount: 1 }, { name: "ai", maxCount: 1 }, { name: "sim", maxCount: 1 }]);
     up(req, res, async err => {
       if (err) return res.status(err.code === "LIMIT_FILE_SIZE" ? 413 : 400).json({ error: err.code === "LIMIT_FILE_SIZE" ? `File terlalu besar (maksimal ${MAX_MB} MB).` : "Unggahan gagal. Coba lagi." });
@@ -172,6 +172,9 @@ module.exports = function mountBedah({ library = null, app, express, db, setting
       const name = String(f.originalname || "").slice(0, 200);
       if (!/\.(docx|pdf)$/i.test(name)) return res.status(415).json({ error: "File asli harus Word (.docx) atau PDF." });
       const isPdfName = /\.pdf$/i.test(name);
+      const waRaw = String((req.body || {}).wa || "").replace(/\D/g, "").replace(/^62/, "").replace(/^0/, "");
+      if (!/^8\d{8,12}$/.test(waRaw)) return res.status(400).json({ error: "Isi nomor WhatsApp yang benar (contoh 0812xxxxxxxx) supaya kami bisa mengabari hasil perbaikanmu." });
+      const waNum = "62" + waRaw;
       running++;
       try {
         const cfg = settings.getAll(), warn = [];
@@ -205,7 +208,13 @@ module.exports = function mountBedah({ library = null, app, express, db, setting
         await fsp.writeFile(path.join(docsDir, id + ".bedah.json"), JSON.stringify(saved), { mode: 0o600 });
         insert.run(id, rel, name, f.size, crypto.createHash("sha256").update(f.buffer).digest("hex"), JSON.stringify({ kind: "bedah", words: r.words, ai: !!ai, sim: !!sim }), h, now, now + UPLOAD_TTL_MS);
         // salinan lengkap untuk admin (Dokumen Saya): file asli, dua laporan Drillbit, dan angka hasil bacaan. Gagal menyimpan tidak boleh menggagalkan hasil Bedah.
-        if (library) { try { await library.saveBedah({ name, buf: f.buffer, aiBuf: ai ? aiRaw : null, simBuf: sim ? simRaw : null, ai, sim, words: r.words, problemPct: r.problem && r.problem.pct }); } catch (e) { console.error("[bedah] simpan ke Dokumen gagal:", e && e.message); } }
+        let stNama = String((req.body || {}).nama || "").trim(), stNim = String((req.body || {}).nim || "").replace(/\D/g, "");
+        if ((!stNim || !stNama) && r.a && r.a.paragraphs) {   // kosong: baca dari sampul dokumen
+          const head = r.a.paragraphs.slice(0, 60).map(p => String(p.text || "")).join("\n");
+          if (!stNim) { const m = /\bNIM\b\s*[.:]?\s*(\d{8,12})/i.exec(head); if (m) stNim = m[1]; }
+          if (!stNama) { const m = /\bNama(?:\s+(?:Mahasiswa|Lengkap))?\s*:\s*([^\n]{3,60})/i.exec(head); if (m) stNama = m[1].trim(); }
+        }
+        if (library) { try { await library.saveBedah({ wa: waNum, nama: stNama, nim: stNim, name, buf: f.buffer, aiBuf: ai ? aiRaw : null, simBuf: sim ? simRaw : null, ai, sim, words: r.words, problemPct: r.problem && r.problem.pct }); } catch (e) { console.error("[bedah] simpan ke Dokumen gagal:", e && e.message); } }
         // data kalibrasi hanya bila mahasiswa memberi izin
         let kode = null;
         if (String((req.body || {}).izin) === "1" && (ai || sim)) {

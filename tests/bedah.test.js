@@ -16,7 +16,7 @@ drillbit.parseAi = async b => (isFake(b) ? { ok: true, aiPct: 40, humanPct: 60, 
   blockTable: [{ n: 1, words: 20 }, { n: 2, words: 10 }], blocks: [{ n: 1, words: 20, text: P2 + fakeExtra }, { n: 2, words: 10, text: P3 }] } : realAi(b));
 async function up(b, extra, izin, noAi) {
   fakeExtra = extra || "";
-  const fd = new FormData(); fd.append("file", new Blob([await docx(extra)]), "t.docx"); if (izin) fd.append("izin", "1");
+  const fd = new FormData(); fd.append("wa", "081234567890"); fd.append("file", new Blob([await docx(extra)]), "t.docx"); if (izin) fd.append("izin", "1");
   if (!noAi) fd.append("ai", new Blob(["%PDF-FAKEAI"]), "ai.pdf");
   const r = await fetch(b.base + "/ms/bedah/upload", { method: "POST", body: fd, headers: b.H });
   return { status: r.status, j: await r.json() };
@@ -51,10 +51,10 @@ test("bedah: wajib laporan AI; hanya kalimat yang ditandai UT, gratis dibatasi d
 
 test("bedah: file bukan PDF di kolom laporan ditolak, jenis salah dilewati dengan peringatan", async () => {
   const b = await boot();
-  const fd = new FormData(); fd.append("file", new Blob([await docx("x")]), "t.docx"); fd.append("ai", new Blob(["bukan pdf"]), "a.pdf");
+  const fd = new FormData(); fd.append("wa", "081234567890"); fd.append("file", new Blob([await docx("x")]), "t.docx"); fd.append("ai", new Blob(["bukan pdf"]), "a.pdf");
   const r = await fetch(b.base + "/ms/bedah/upload", { method: "POST", body: fd, headers: b.H });
   assert.strictEqual(r.status, 415);
-  const fd2 = new FormData(); fd2.append("file", new Blob([await docx("x")]), "t.pdf.exe");
+  const fd2 = new FormData(); fd2.append("wa", "081234567890"); fd2.append("file", new Blob([await docx("x")]), "t.pdf.exe");
   assert.strictEqual((await fetch(b.base + "/ms/bedah/upload", { method: "POST", body: fd2, headers: b.H })).status, 415);
   const r3 = await fetch(b.base + "/ms/bedah/upload", { method: "POST", body: new FormData(), headers: b.H });
   assert.strictEqual(r3.status, 400);
@@ -161,4 +161,10 @@ test("utdiag: diagnosis hanya pola terbukti, dengan bukti dan larangan", () => {
 test("layanan revisi ikut ditutup secara bawaan", () => {
   const s = require("fs").readFileSync(require("path").join(__dirname, "..", "parafrase", "settings.js"), "utf8");
   assert.match(s, /revisi_tugas,revisi_diskusi,revisi_metopen/);
+});
+
+test("bedah: tanpa nomor WhatsApp ditolak", async () => {
+  const b = await boot();
+  const fd = new FormData(); fd.append("file", new Blob([await docx("x")]), "t.docx"); fd.append("ai", new Blob(["%PDF-FAKEAI"]), "ai.pdf");
+  assert.strictEqual((await fetch(b.base + "/ms/bedah/upload", { method: "POST", body: fd, headers: b.H })).status, 400);
 });
