@@ -99,7 +99,7 @@ async function reportDocx(meta, items) {
   return zip.generateAsync({ type: "nodebuffer" });
 }
 
-module.exports = function mountBedah({ app, express, db, settings, orders, root, sameOrigin, secret, requireAdmin, userFrom = null }) {
+module.exports = function mountBedah({ library = null, app, express, db, settings, orders, root, sameOrigin, secret, requireAdmin, userFrom = null }) {
   const docsDir = path.join(root, "data", "private", "docs"), kalDir = path.join(root, "data", "private", "kalibrasi");
   fs.mkdirSync(docsDir, { recursive: true }); fs.mkdirSync(kalDir, { recursive: true });
   const hits = new Map();
@@ -178,10 +178,11 @@ module.exports = function mountBedah({ app, express, db, settings, orders, root,
         let ai = null, sim = null, aiBuf = F.ai && F.ai[0] && F.ai[0].buffer, simBuf = F.sim && F.sim[0] && F.sim[0].buffer;
         for (const [buf, label] of [[aiBuf, "AI"], [simBuf, "Similarity"]]) if (buf && buf.slice(0, 4).toString() !== "%PDF") return res.status(415).json({ error: `Laporan ${label} harus berupa PDF asli dari UT.` });
         // jenis ditentukan dari isi laporan, bukan dari kolom yang dipilih (supaya tertukar pun tetap terbaca)
+        let aiRaw = null, simRaw = null;
         const files = []; if (aiBuf) files.push(aiBuf); if (simBuf) files.push(simBuf);
         for (const b of files) {
           const k = await drillbit.detectKind(b);
-          if (k === "ai") ai = ai || await drillbit.parseAi(b); else if (k === "sim") sim = sim || await drillbit.parseSim(b);
+          if (k === "ai") { ai = ai || await drillbit.parseAi(b); aiRaw = aiRaw || b; } else if (k === "sim") { sim = sim || await drillbit.parseSim(b); simRaw = simRaw || b; }
           else warn.push("Satu file laporan tidak dikenali sebagai laporan Drillbit dari UT. File itu dilewati.");
         }
         if (ai && !ai.ok) { warn.push(ai.error); ai = null; }
@@ -203,6 +204,8 @@ module.exports = function mountBedah({ app, express, db, settings, orders, root,
         const saved = { ai: ai && { pct: ai.aiPct, matchedWords: ai.matchedWords, totalWords: ai.totalWords, humanPct: ai.humanPct, blockTable: ai.blockTable, blocks: ai.blocks.map(b => ({ n: b.n, words: b.words })), confidence: ai.confidence }, sim, hits: ai && ai.confidence !== "rendah" ? r.map.hits : [], mapWords: r.map.words };
         await fsp.writeFile(path.join(docsDir, id + ".bedah.json"), JSON.stringify(saved), { mode: 0o600 });
         insert.run(id, rel, name, f.size, crypto.createHash("sha256").update(f.buffer).digest("hex"), JSON.stringify({ kind: "bedah", words: r.words, ai: !!ai, sim: !!sim }), h, now, now + UPLOAD_TTL_MS);
+        // salinan lengkap untuk admin (Dokumen Saya): file asli, dua laporan Drillbit, dan angka hasil bacaan. Gagal menyimpan tidak boleh menggagalkan hasil Bedah.
+        if (library) { try { await library.saveBedah({ name, buf: f.buffer, aiBuf: ai ? aiRaw : null, simBuf: sim ? simRaw : null, ai, sim, words: r.words, problemPct: r.problem && r.problem.pct }); } catch (e) { console.error("[bedah] simpan ke Dokumen gagal:", e && e.message); } }
         // data kalibrasi hanya bila mahasiswa memberi izin
         let kode = null;
         if (String((req.body || {}).izin) === "1" && (ai || sim)) {

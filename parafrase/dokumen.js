@@ -22,7 +22,7 @@ module.exports = function mountDokumen({ app, express, db, root, requireAdmin })
   const kindOf = v => (KINDS.includes(v) ? v : "lain");
   const pct = v => { if (v === "" || v == null) return null; const n = parseFloat(String(v).replace(",", ".")); return Number.isFinite(n) && n >= 0 && n <= 100 ? Math.round(n * 10) / 10 : null; };
   const reach = (v, t) => (v == null || t == null ? null : v <= t);
-  const view = r => ({ id: r.id, name: r.name, title: r.title, kind: r.kind, aiPct: r.ai_pct, simPct: r.sim_pct, targetAi: r.target_ai, targetSim: r.target_sim, aiOk: reach(r.ai_pct, r.target_ai), simOk: reach(r.sim_pct, r.target_sim), note: r.note, size: r.size, source: r.source, orderId: r.order_id, pinned: !!r.pinned, createdAt: r.created_at, expiresAt: r.pinned ? null : r.expires_at });
+  const view = r => ({ words: r.words, hasAi: !!r.ai_path, hasSim: !!r.sim_path, id: r.id, name: r.name, title: r.title, kind: r.kind, aiPct: r.ai_pct, simPct: r.sim_pct, targetAi: r.target_ai, targetSim: r.target_sim, aiOk: reach(r.ai_pct, r.target_ai), simOk: reach(r.sim_pct, r.target_sim), note: r.note, size: r.size, source: r.source, orderId: r.order_id, pinned: !!r.pinned, createdAt: r.created_at, expiresAt: r.pinned ? null : r.expires_at });
   const nowMs = () => Date.now();
 
   const insert = db.prepare("INSERT INTO doc_library(id,name,title,kind,ai_pct,sim_pct,target_ai,target_sim,note,size,path,source,order_id,pinned,created_at,expires_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?)");
@@ -34,6 +34,31 @@ module.exports = function mountDokumen({ app, express, db, root, requireAdmin })
     insert.run(id, name, clip(m.title, 200), kindOf(kind), m.ai == null ? null : m.ai, m.sim == null ? null : m.sim, m.tAi == null ? null : m.tAi, m.tSim == null ? null : m.tSim, note, buf.length, rel, source, orderId || null, now, now + TTL_MS);
     return id;
   }
+
+  /* Dipanggil Bedah setiap kali mahasiswa mengunggah: file asli, laporan AI, laporan similarity, dan hasil bacaannya. */
+  async function saveBedah({ name, buf, aiBuf, simBuf, ai, sim, words, problemPct }) {
+    const id = crypto.randomBytes(8).toString("hex"), now = nowMs();
+    const ext = (/\.[a-z0-9]{1,5}$/i.exec(name) || [".docx"])[0].toLowerCase();
+    const rel = "library/" + id + ext, aiRel = aiBuf ? "library/" + id + ".ai.pdf" : null, simRel = simBuf ? "library/" + id + ".sim.pdf" : null;
+    await fsp.writeFile(path.join(priv, rel), buf, { mode: 0o600 });
+    if (aiRel) await fsp.writeFile(path.join(priv, aiRel), aiBuf, { mode: 0o600 });
+    if (simRel) await fsp.writeFile(path.join(priv, simRel), simBuf, { mode: 0o600 });
+    const data = {
+      words: words || null, problemPct: problemPct == null ? null : problemPct,
+      ai: ai && { pct: ai.aiPct, humanPct: ai.humanPct, matchedWords: ai.matchedWords, totalWords: ai.totalWords, pages: ai.pages, sentences: ai.sentences, confidence: ai.confidence, blockTable: ai.blockTable, blocks: (ai.blocks || []).map(b => ({ n: b.n, words: b.words })) },
+      sim: sim && { pct: sim.pct, grade: sim.grade, matchedSources: sim.matchedSources, pages: sim.pages, totalWords: sim.totalWords, sourceTypes: sim.sourceTypes, content: sim.content, excluded: sim.excluded, sources: sim.sources }
+    };
+    db.prepare("INSERT INTO doc_library(id,name,title,kind,ai_pct,sim_pct,target_ai,target_sim,note,size,path,ai_path,sim_path,words,data,source,order_id,pinned,created_at,expires_at) VALUES(?,?,?,?,?,?,NULL,NULL,'',?,?,?,?,?,?,'bedah',NULL,0,?,?)")
+      .run(id, clip(name, 160), clip(name.replace(/\.[a-z0-9]{1,5}$/i, ""), 200), "bedah", ai ? pct(ai.aiPct) : null, sim ? pct(sim.pct) : null, buf.length, rel, aiRel, simRel, words || null, JSON.stringify(data), now, now + TTL_MS);
+    return id;
+  }
+
+  app.get(base + "/:id(" + "[a-f0-9]{16}" + ")", requireAdmin, (req, res) => {
+    const r = db.prepare("SELECT * FROM doc_library WHERE id=?").get(req.params.id);
+    if (!r) return res.status(404).json({ error: "Dokumen tidak ditemukan." });
+    let data = null; try { data = r.data ? JSON.parse(r.data) : null; } catch { /* abaikan */ }
+    res.set("Cache-Control", "no-store").json({ item: view(r), data });
+  });
 
   app.get(base, requireAdmin, (req, res) => {
     res.set("Cache-Control", "no-store");
@@ -91,7 +116,8 @@ module.exports = function mountDokumen({ app, express, db, root, requireAdmin })
     const r = /^[a-f0-9]{16}$/.test(req.params.id) && db.prepare("SELECT * FROM doc_library WHERE id=?").get(req.params.id);
     if (!r) return res.status(404).json({ error: "Dokumen tidak ditemukan." });
     res.set("Cache-Control", "no-store");
-    res.download(path.join(priv, r.path), r.name);
+    const f = req.query.f === "ai" && r.ai_path ? [r.ai_path, r.name.replace(/\.[a-z0-9]{1,5}$/i, "") + " laporan AI.pdf"] : req.query.f === "sim" && r.sim_path ? [r.sim_path, r.name.replace(/\.[a-z0-9]{1,5}$/i, "") + " laporan similarity.pdf"] : [r.path, r.name];
+    res.download(path.join(priv, f[0]), f[1]);
   });
 
   app.patch(base + "/:id", requireAdmin, express.json({ limit: "2kb" }), (req, res) => {
@@ -107,16 +133,16 @@ module.exports = function mountDokumen({ app, express, db, root, requireAdmin })
   app.delete(base + "/:id", requireAdmin, async (req, res) => {
     const r = /^[a-f0-9]{16}$/.test(req.params.id) && db.prepare("SELECT * FROM doc_library WHERE id=?").get(req.params.id);
     if (!r) return res.status(404).json({ error: "Dokumen tidak ditemukan." });
-    try { await fsp.unlink(path.join(priv, r.path)); } catch { /* sudah hilang */ }
+    for (const p of [r.path, r.ai_path, r.sim_path]) if (p) { try { await fsp.unlink(path.join(priv, p)); } catch { /* sudah hilang */ } }
     db.prepare("DELETE FROM doc_library WHERE id=?").run(r.id);
     res.json({ ok: true });
   });
 
   async function purgeExpired() {
-    for (const r of db.prepare("SELECT id,path FROM doc_library WHERE pinned=0 AND expires_at<?").all(nowMs())) {
-      try { await fsp.unlink(path.join(priv, r.path)); } catch { /* sudah hilang */ }
+    for (const r of db.prepare("SELECT id,path,ai_path,sim_path FROM doc_library WHERE pinned=0 AND expires_at<?").all(nowMs())) {
+      for (const p of [r.path, r.ai_path, r.sim_path]) if (p) { try { await fsp.unlink(path.join(priv, p)); } catch { /* sudah hilang */ } }
       db.prepare("DELETE FROM doc_library WHERE id=?").run(r.id);
     }
   }
-  return { purgeExpired };
+  return { purgeExpired, saveBedah };
 };

@@ -79,7 +79,7 @@ else if(/\\/(?:ruangakademikut\\/)?(layanan|cek-parafrase-mandiri|audit)(?:[\\/?
   const orders = mountOrders({ app, express, db, settings, notifier, root: ROOT, sameOrigin: sameOrigin || (() => true), requireAdmin, secret, userFrom });
   mountAudit({ app, express, db, settings, orders, root: ROOT, sameOrigin: sameOrigin || (() => true), secret, userFrom });
   const dokumen = mountDokumen({ app, express, db, root: ROOT, requireAdmin });
-  mountBedah({ app, express, db, settings, orders, root: ROOT, sameOrigin: sameOrigin || (() => true), secret, requireAdmin, userFrom });
+  mountBedah({ library: dokumen, app, express, db, settings, orders, root: ROOT, sameOrigin: sameOrigin || (() => true), secret, requireAdmin, userFrom });
   const traffic = createTraffic(db, { secret });
   /* Tautan pendek grup WhatsApp: /grup?dari=menu|banner|artikel|panduan. Klik dihitung per asal (tanpa IP, tanpa cookie), lalu dialihkan ke tautan di pengaturan. */
   const SRC = new Set(["menu", "banner", "artikel", "panduan", "beranda", "alat", "blog"]);

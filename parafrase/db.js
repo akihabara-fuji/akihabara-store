@@ -296,7 +296,11 @@ const MIGRATIONS = [
     note       TEXT NOT NULL DEFAULT '',
     size       INTEGER NOT NULL,
     path       TEXT NOT NULL,                  -- relatif ke data/private
-    source     TEXT NOT NULL DEFAULT 'manual', -- manual | pesanan
+    ai_path    TEXT,                           -- laporan AI Drillbit (PDF), dari Bedah
+    sim_path   TEXT,                           -- laporan similarity Drillbit (PDF), dari Bedah
+    words      INTEGER,
+    data       TEXT,                           -- JSON hasil baca laporan (angka, blok, sumber)
+    source     TEXT NOT NULL DEFAULT 'manual', -- manual | pesanan | bedah
     order_id   TEXT,
     pinned     INTEGER NOT NULL DEFAULT 0,
     created_at INTEGER NOT NULL,
