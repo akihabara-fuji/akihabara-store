@@ -104,6 +104,18 @@ else if(/\\/(?:ruangakademikut\\/)?(layanan|cek-parafrase-mandiri|audit)(?:[\\/?
     }
     res.set({ "Cache-Control": "no-store", "X-Robots-Tag": "noindex" }).redirect(302, url);
   });
+  /* Tautan pelacak sosmed: /go/<ig|fb|tt>/<slug> dihitung per platform di statistik, lalu diarahkan ke artikel dengan UTM. */
+  const GO = { ig: "instagram", fb: "facebook", tt: "tiktok" };
+  app.get("/go/:src/:slug", (req, res) => {
+    const src = GO[req.params.src], slug = String(req.params.slug || "");
+    if (!src || !/^[a-z0-9][a-z0-9-]{0,118}$/.test(slug)) return res.redirect(302, "/blog");
+    const ua = String(req.headers["user-agent"] || "");
+    if (ua && !/bot|crawl|spider|preview|curl|wget|python|headless/i.test(ua)) {
+      const d = new Date(Date.now() + 7 * 3600e3).toISOString().slice(0, 10);
+      try { clickGrup.run(d, "/klik-sosmed/" + src); } catch { /* statistik tidak boleh menghalangi pengunjung */ }
+    }
+    res.set({ "Cache-Control": "no-store", "X-Robots-Tag": "noindex" }).redirect(302, `/blog/${slug}?utm_source=${src}&utm_medium=social&utm_campaign=studio`);
+  });
   mountLayanan({ app, express, db, settings, orders, root: ROOT, sameOrigin: sameOrigin || (() => true), secret, requireAdmin, userFrom });
   const t = setInterval(() => { uploads.purgeExpired().catch(() => {}); orders.expireUnpaid().catch(() => {}); orders.sweepRetention().catch(() => {}); dokumen.purgeExpired().catch(() => {}); }, 10 * 60 * 1000); t.unref();
   const t2 = setInterval(() => notifier.flush().catch(() => {}), 30 * 1000); t2.unref();

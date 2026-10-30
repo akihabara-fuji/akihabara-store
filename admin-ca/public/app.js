@@ -99,13 +99,14 @@
   }
 
   /* ---------------- kerangka ---------------- */
+  const SUBS_OPEN = () => { let v = null; try { v = localStorage.getItem("ca-subs"); } catch {} return v === null ? /^#\/orders/.test(location.hash) : v === "1"; };
   const allowed = roles => ME && roles.includes(ME.role);
   function shell() {
     const nav = NAV.map(g => {
       const items = g.items.filter(it => allowed(it[3]));
       if (!items.length) return "";
       return (g.h ? `<h3>${g.h}</h3>` : "") + items.map(([r, label, ic, , subs]) => `<a class="nav" href="#/${r}" data-r="${r}">${ICON[ic]}<span>${label}</span>${r === "orders" ? '<span class="cnt" data-c="semua"></span>' : r === "payments" ? '<span class="cnt" data-c="konfirmasi"></span>' : ""}</a>` +
-        (subs ? GROUP_NAV.map(([k, l]) => `<a class="nav sub" href="#/orders?group=${k}" data-r="orders?group=${k}">${l}<span class="cnt" data-c="${k}"></span></a>`).join("") : "")).join("");
+        (subs ? `<button type="button" class="nav sub subtog" id="subtog" aria-expanded="${SUBS_OPEN()}"><span>Status pesanan</span><i aria-hidden="true">▾</i></button><div class="subs" id="subs" ${SUBS_OPEN() ? "" : "hidden"}>` + GROUP_NAV.map(([k, l]) => `<a class="nav sub" href="#/orders?group=${k}" data-r="orders?group=${k}">${l}<span class="cnt" data-c="${k}"></span></a>`).join("") + "</div>" : "")).join("");
     }).join("");
     $("#root").innerHTML = `<div class="shell">
       <aside class="side" id="side" aria-label="Menu admin"><a class="brand" href="#/dashboard"><img src="/assets/ut/ca/logo-96.png" alt="" width="34" height="34"><span><b>Catatan Akademik</b><small>Admin Panel</small></span></a>
@@ -118,6 +119,7 @@
     $("#logout").onclick = async () => { await api("/ms/admin/ca/logout", { json: {} }).catch(() => {}); ME = null; renderLogin(); };
     $("#theme").onclick = () => { const t = document.documentElement.dataset.theme === "dark" ? "light" : "dark"; document.documentElement.dataset.theme = t; store("ca-admin-theme", t); };
     $("#burger").onclick = () => { const o = document.body.classList.toggle("nav-open"); $("#burger").setAttribute("aria-expanded", o); };
+    const tg = $("#subtog"); if (tg) tg.onclick = () => { const o = $("#subs").hidden; $("#subs").hidden = !o; tg.setAttribute("aria-expanded", o); try { localStorage.setItem("ca-subs", o ? "1" : "0"); } catch {} };
     $("#side").addEventListener("click", e => { if (e.target.closest("a")) document.body.classList.remove("nav-open"); });
     refreshCounts();
   }
@@ -261,57 +263,71 @@
     const d = await loadBlog(), posts = d.posts.filter(x => !x.trashedAt && x.status !== "review").sort((x, y) => new Date(y.updatedAt) - new Date(x.updatedAt));
     const q = params(), sel = q.get("p") || (posts[0] && posts[0].id);
     const p = posts.find(x => x.id === sel);
-    if (!p) return setPage("Studio Posting Sosmed", "Siapkan konten dari artikel", `<div class="card"><div class="empty">Belum ada artikel. <a href="#/posts/new">Tulis artikel</a></div></div>`);
-    const url = `${location.origin}/blog/${p.slug}`;
-    const heads = [...String(p.body || "").matchAll(/^##\s+(.+)$/gm)].map(m => m[1].replace(/[*_`]/g, "").trim()).slice(0, 4);
-    const tags = (p.tags || []).slice(0, 5).map(t => "#" + t.replace(/-/g, "")).join(" ");
-    const base = (p.excerpt || "").trim();
-    const hookLine = p.hookText || p.title;
-    const CAP = {
-      ig: [hookLine, "", base, heads.length ? "\n" + heads.map(h => "• " + h).join("\n") : "", "", "Baca selengkapnya: link di bio (" + url + ")", "", "#catatanakademik #universitasterbuka #mahasiswaut " + tags].filter((x, i, arr) => !(x === "" && arr[i - 1] === "")).join("\n").trim(),
-      fb: [hookLine, "", base, heads.length ? "\n" + heads.map(h => "• " + h).join("\n") : "", "", "Baca selengkapnya: " + url].join("\n").replace(/\n{3,}/g, "\n\n").trim(),
-      tt: [hookLine, base.slice(0, 120), "#catatanakademik #universitasterbuka #mahasiswaut " + tags].filter(Boolean).join(" ").trim(),
+    if (!p) return setPage("Studio Posting Sosmed", "Caption dan gambar dari artikel", `<div class="card"><div class="empty">Belum ada artikel. <a href="#/posts/new">Tulis artikel</a></div></div>`);
+    let topPages = []; try { const t = await api("/ms/admin/ca/traffic?days=30"); topPages = (t.pages || []).filter(x => /^\/blog\//.test(x.path)).slice(0, 12); } catch { /* data pengunjung opsional */ }
+    const hot = topPages.map(x => posts.find(y => x.path === "/blog/" + y.slug)).filter(Boolean).slice(0, 5);
+    const hotTags = [...new Set(hot.flatMap(x => x.tags || []))].filter(t => !(p.tags || []).includes(t)).slice(0, 2);
+    const heads = [...String(p.body || "").matchAll(/^##\s+(.+)$/gm)].map(m => m[1].replace(/[*_`]/g, "").trim()).slice(0, 3);
+    const PL = [["ig", "Instagram", "instagram", 1080, 1350], ["fb", "Facebook", "facebook", 1200, 630], ["tt", "TikTok", "tiktok", 1080, 1920]];
+    const link = k => `${location.origin}/go/${k}/${p.slug}`;
+    const cut = (t, n) => { t = String(t || "").replace(/\s+/g, " ").trim(); if (t.length <= n) return t; const c = t.slice(0, n); return c.slice(0, Math.max(c.lastIndexOf(" "), n - 30)).replace(/[,.;:\s]+$/, "") + "…"; };
+    const tagOf = t => "#" + String(t).replace(/[^a-z0-9]/gi, "").toLowerCase();
+    const mk = (topic, k) => {
+      const hook = topic ? `Lagi cari ${topic}? Ini yang perlu kamu tahu.` : (p.hookText || p.title);
+      const body = cut(p.excerpt, k === "tt" ? 110 : 190), pts = heads.length && k !== "tt" ? heads.map(h => "• " + h).join("\n") : "";
+      const base = ["catatanakademik", "universitasterbuka", "mahasiswaut"], extra = [...(p.tags || []), ...hotTags].map(tagOf);
+      const nTag = { ig: 8, fb: 3, tt: 5 }[k], tags = [...new Set([...base.map(t => "#" + t), ...extra])].slice(0, nTag).join(" ");
+      const cta = k === "ig" ? "Baca panduan lengkapnya (tautan di bawah):" : "Baca panduan lengkapnya:";
+      return [hook, body, pts, cta + "\n" + link(k), tags].filter(Boolean).join("\n\n");
     };
-    setPage("Studio Posting Sosmed", "Siapkan caption dan gambar dari artikel, lalu posting sendiri", `
-      <div class="notice info">Studio menyiapkan caption dan gambar. Posting tetap kamu lakukan sendiri di aplikasi Instagram, Facebook, dan TikTok. Kirim otomatis butuh izin resmi tiap platform dan belum dipasang.</div>
-      <div class="card"><div class="bd"><label class="f">Sumber artikel<select class="in" id="stP">${posts.map(x => `<option value="${x.id}" ${x.id === p.id ? "selected" : ""}>${esc(x.title)}${x.status === "published" ? "" : " (draf)"}</option>`).join("")}</select></label></div></div>
-      <div class="card"><div class="hd"><h2>Kalender posting</h2><span class="muted small">Jadwal terbit artikel dan tanggal rekomendasi draf, 14 hari ke depan. Isi manual: Studio tidak mengirim otomatis.</span></div><div class="bd"><div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;font-size:12px">${(() => {
+    const st = x => x.status === "published" ? ["Terbit", "#16a34a"] : x.status === "scheduled" ? ["Terjadwal", "#2563eb"] : ["Rekomendasi (draf)", "#b45309"];
+    setPage("Studio Posting Sosmed", "Caption dan gambar dari artikel", `
+      <div class="notice info">Studio hanya menyiapkan caption dan gambar. Kamu posting sendiri di tiap aplikasi, tidak ada kirim otomatis.</div>
+      <div class="card"><div class="bd" style="display:grid;grid-template-columns:2fr 1fr;gap:12px"><label class="f">Sumber artikel<select class="in" id="stP">${posts.map(x => `<option value="${x.id}" ${x.id === p.id ? "selected" : ""}>${esc(x.title)}${x.status === "published" ? "" : " (draf)"}</option>`).join("")}</select></label>
+        <label class="f">Topik yang lagi dicari (opsional)<input class="in" id="stK" maxlength="60" placeholder="mis. jadwal PKBJJ"></label></div></div>
+      <div class="card"><div class="hd"><h2>Kalender posting</h2><span class="muted small">Jadwal terbit dan tanggal rekomendasi, 14 hari ke depan.</span></div><div class="bd"><div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;font-size:12px">${(() => {
         const day = t => new Date(t + 7 * 3600e3).toISOString().slice(0, 10), ev = {};
-        d.posts.forEach(x => { const k = x.status === "scheduled" && x.publishAt ? day(Date.parse(x.publishAt)) : x.recommendedAt; if (k) (ev[k] = ev[k] || []).push(x); });
+        d.posts.filter(x => !x.trashedAt).forEach(x => { const k = x.status === "scheduled" && x.publishAt ? day(Date.parse(x.publishAt)) : x.status !== "published" ? x.recommendedAt : ""; if (k) (ev[k] = ev[k] || []).push(x); });
         const t0 = Date.now(), cells = []; const dow = new Date(t0 + 7 * 3600e3).getUTCDay(), pad = (dow + 6) % 7;
         const names = ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"].map(n => `<div class="muted" style="text-align:center">${n}</div>`).join("");
         for (let i = 0; i < pad; i++) cells.push('<div></div>');
-        for (let i = 0; i < 14; i++) { const k = day(t0 + i * 864e5), list = ev[k] || []; cells.push(`<div style="min-height:58px;border-radius:8px;padding:6px;background:${list.length ? "var(--tint1,rgba(124,58,237,.14))" : "var(--surface2,rgba(127,127,127,.08))"}"><div class="muted">${k.slice(8)}/${k.slice(5, 7)}</div>${list.slice(0, 2).map(x => `<a href="#/studio?p=${x.id}" style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(x.title)}">${esc(x.title)}</a>`).join("")}</div>`); }
+        for (let i = 0; i < 14; i++) { const k = day(t0 + i * 864e5), list = ev[k] || []; cells.push(`<div style="min-height:70px;border-radius:8px;padding:6px;background:${list.length ? "var(--tint1,rgba(124,58,237,.14))" : "var(--surface2,rgba(127,127,127,.08))"}"><div class="muted">${k.slice(8)}/${k.slice(5, 7)}</div>${list.map(x => { const [l, c] = st(x); return `<a href="#/studio?p=${x.id}" style="display:block;margin-top:3px;line-height:1.25;overflow-wrap:anywhere" title="${esc(x.title)} · ${l}">${esc(x.title)}<span style="display:block;font-size:10.5px;font-weight:700;color:${c}">${l}</span></a>`; }).join("")}</div>`); }
         return names + cells.join("");
       })()}</div></div></div>
-      <div class="grid g2">
-        <div class="card"><div class="hd"><h2>Caption</h2></div><div class="bd" style="display:flex;flex-direction:column;gap:12px">
-          ${[["ig", "Instagram"], ["fb", "Facebook"], ["tt", "TikTok"]].map(([k, l]) => `<label class="f">${l}<textarea class="in" id="cap-${k}" rows="${k === "tt" ? 3 : 8}">${esc(CAP[k])}</textarea></label><div class="bar"><button type="button" class="btn sm" data-copy="cap-${k}">Salin caption ${l}</button></div>`).join("")}
-          ${p.status === "published" ? "" : '<div class="small muted">Artikel ini masih draf: tautan di caption baru bisa dibuka setelah terbit.</div>'}</div></div>
-        <div class="card"><div class="hd"><h2>Gambar</h2></div><div class="bd" style="display:flex;flex-direction:column;gap:12px">
-          <canvas id="stC" width="1080" height="1350" style="width:100%;max-width:360px;border-radius:12px;border:1px solid var(--border)"></canvas>
+      <div class="tabs" id="stTabs" role="tablist">${PL.map(([k, l], i) => `<button type="button" role="tab" data-k="${k}" class="${i ? "" : "on"}">${l}</button>`).join("")}</div>
+      <div class="grid g2" style="margin-top:12px">
+        <div class="card"><div class="hd"><h2 id="stH">Caption</h2></div><div class="bd" style="display:flex;flex-direction:column;gap:12px">
+          <textarea class="in" id="stCap" rows="14"></textarea>
+          <div class="bar"><button type="button" class="btn sm pri" id="stCopy">Salin caption</button></div>
+          <div class="small muted">Tautan di caption dihitung per platform di Pengunjung &amp; Konten (Klik dari sosmed).${p.status === "published" ? "" : " Artikel masih draf: tautan baru bisa dibuka setelah terbit."}</div></div></div>
+        <div class="card"><div class="hd"><h2>Gambar</h2><span class="muted small" id="stSz"></span></div><div class="bd" style="display:flex;flex-direction:column;gap:12px">
+          <canvas id="stC" width="1080" height="1350" style="width:100%;max-width:360px;max-height:520px;object-fit:contain;border-radius:12px;border:1px solid var(--border)"></canvas>
           <label class="f">Teks di gambar<input class="in" id="stT" maxlength="90" value="${esc(p.hookText || p.title)}"></label>
-          <div class="bar"><a class="btn sm pri" id="stDl" download="${esc(p.slug)}-sosmed.png">Unduh gambar (1080×1350)</a></div>
-          ${p.cover ? "" : '<div class="small muted">Artikel belum punya gambar sampul, jadi latar polos. Tambahkan sampul di editor untuk hasil lebih baik.</div>'}</div></div>
+          <div class="bar"><a class="btn sm pri" id="stDl" download="${esc(p.slug)}-sosmed.png">Unduh gambar</a></div>
+          ${p.cover ? "" : '<div class="small muted">Artikel belum punya sampul, jadi latar polos.</div>'}</div></div>
       </div>`);
     $("#stP").onchange = e => go("studio", { p: e.target.value });
-    $$("[data-copy]").forEach(b => b.onclick = async () => { try { await navigator.clipboard.writeText($("#" + b.dataset.copy).value); toast("Caption disalin"); } catch { $("#" + b.dataset.copy).select(); toast("Tekan Ctrl+C untuk menyalin"); } });
-    const cv = $("#stC"), cx = cv.getContext("2d");
-    const draw = img => {
-      cx.fillStyle = "#13122a"; cx.fillRect(0, 0, 1080, 1350);
-      if (img) { const r = Math.max(1080 / img.width, 1350 / img.height), w = img.width * r, h = img.height * r; cx.drawImage(img, (1080 - w) / 2, (1350 - h) / 2, w, h); }
-      const g = cx.createLinearGradient(0, 500, 0, 1350); g.addColorStop(0, "rgba(11,11,26,0)"); g.addColorStop(1, "rgba(11,11,26,.92)"); cx.fillStyle = g; cx.fillRect(0, 500, 1080, 850);
-      cx.fillStyle = "#fff"; cx.font = "800 70px system-ui,sans-serif"; cx.textBaseline = "alphabetic";
-      const words = ($("#stT").value || "").split(/\s+/), lines = []; let cur = "";
-      for (const w of words) { const t = cur ? cur + " " + w : w; if (cx.measureText(t).width > 940 && cur) { lines.push(cur); cur = w; } else cur = t; }
-      if (cur) lines.push(cur);
-      const L = lines.slice(0, 5), y0 = 1190 - (L.length - 1) * 84; L.forEach((l, i) => cx.fillText(l, 70, y0 + i * 84));
-      cx.fillStyle = "#c4b5fd"; cx.font = "700 34px system-ui,sans-serif"; cx.fillText("Catatan Akademik", 70, 1290);
-      try { $("#stDl").href = cv.toDataURL("image/png"); } catch { $("#stDl").removeAttribute("href"); }
+    let cur = "ig"; const cv = $("#stC"), cx = cv.getContext("2d"); let im = null;
+    const draw = () => {
+      const [, name, , W, H] = PL.find(x => x[0] === cur); cv.width = W; cv.height = H; $("#stSz").textContent = `${name} · ${W}×${H}`;
+      cx.fillStyle = "#13122a"; cx.fillRect(0, 0, W, H);
+      if (im) { const r = Math.max(W / im.width, H / im.height), w = im.width * r, h = im.height * r; cx.drawImage(im, (W - w) / 2, (H - h) / 2, w, h); }
+      const g = cx.createLinearGradient(0, H * .37, 0, H); g.addColorStop(0, "rgba(11,11,26,0)"); g.addColorStop(1, "rgba(11,11,26,.92)"); cx.fillStyle = g; cx.fillRect(0, H * .37, W, H);
+      const pad = W * .065, fs = H > W ? W * .065 : H * .1, lh = fs * 1.2; cx.fillStyle = "#fff"; cx.font = `800 ${fs}px system-ui,sans-serif`; cx.textBaseline = "alphabetic";
+      const words = ($("#stT").value || "").split(/\s+/), lines = []; let c = "";
+      for (const w of words) { const t = c ? c + " " + w : w; if (cx.measureText(t).width > W - pad * 2 && c) { lines.push(c); c = w; } else c = t; }
+      if (c) lines.push(c);
+      const L = lines.slice(0, 5), yb = H - pad - fs * 1.1; L.forEach((l, i) => cx.fillText(l, pad, yb - (L.length - 1 - i) * lh));
+      cx.fillStyle = "#c4b5fd"; cx.font = `700 ${fs * .5}px system-ui,sans-serif`; cx.fillText("Catatan Akademik", pad, H - pad * .8);
+      try { $("#stDl").href = cv.toDataURL("image/png"); $("#stDl").download = `${p.slug}-${cur}.png`; } catch { $("#stDl").removeAttribute("href"); }
     };
-    let im = null; draw(null);
-    if (p.cover) { const i = new Image(); i.onload = () => { im = i; draw(im); }; i.src = p.cover; }
-    $("#stT").oninput = () => draw(im);
+    const cap = () => { $("#stCap").value = mk(($("#stK").value || "").trim(), cur); };
+    const show = k => { cur = k; $$("#stTabs button").forEach(b => b.classList.toggle("on", b.dataset.k === k)); $("#stH").textContent = "Caption " + PL.find(x => x[0] === k)[1]; cap(); draw(); };
+    $$("#stTabs button").forEach(b => b.onclick = () => show(b.dataset.k));
+    $("#stK").oninput = cap; $("#stT").oninput = draw;
+    $("#stCopy").onclick = async () => { const t = $("#stCap"); try { await navigator.clipboard.writeText(t.value); toast("Caption disalin"); } catch { t.select(); toast("Tekan Ctrl+C untuk menyalin"); } };
+    show("ig");
+    if (p.cover) { const i = new Image(); i.onload = () => { im = i; draw(); }; i.src = p.cover; }
   }
 
 

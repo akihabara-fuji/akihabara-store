@@ -293,7 +293,7 @@ app.use((req, res, next) => (ACAD_HOSTS.length && req.hostname === "www." + new 
 const TEMPLATE = path.join(PUB, "index.html");
 app.get("/robots.txt", (req, res) => {
   const base = isAcadHost(req) ? ACAD : SITE;
-  res.type("text/plain").send(`User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /ms/\nDisallow: /grup\n\nSitemap: ${base}/sitemap.xml\n`);
+  res.type("text/plain").send(`User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /ms/\nDisallow: /grup\nDisallow: /go/\n\nSitemap: ${base}/sitemap.xml\n`);
 });
 app.get("/sitemap.xml", (req, res) => {
   const urls = ACAD === SITE
