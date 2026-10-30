@@ -105,7 +105,7 @@ else if(/\\/(?:ruangakademikut\\/)?(layanan|cek-parafrase-mandiri|audit)(?:[\\/?
     res.set({ "Cache-Control": "no-store", "X-Robots-Tag": "noindex" }).redirect(302, url);
   });
   /* Tautan pelacak sosmed: /go/<ig|fb|tt>/<slug> dihitung per platform di statistik, lalu diarahkan ke artikel dengan UTM. */
-  const GO = { ig: "instagram", fb: "facebook", tt: "tiktok" };
+  const GO = { ig: "instagram", fb: "facebook", tt: "tiktok", li: "linkedin" };
   app.get("/go/:src/:slug", (req, res) => {
     const src = GO[req.params.src], slug = String(req.params.slug || "");
     if (!src || !/^[a-z0-9][a-z0-9-]{0,118}$/.test(slug)) return res.redirect(302, "/blog");

@@ -268,11 +268,15 @@
     const hot = topPages.map(x => posts.find(y => x.path === "/blog/" + y.slug)).filter(Boolean).slice(0, 5);
     const hotTags = [...new Set(hot.flatMap(x => x.tags || []))].filter(t => !(p.tags || []).includes(t)).slice(0, 2);
     const heads = [...String(p.body || "").matchAll(/^##\s+(.+)$/gm)].map(m => m[1].replace(/[*_`]/g, "").trim()).slice(0, 3);
-    const PL = [["ig", "Instagram", "instagram", 1080, 1350], ["fb", "Facebook", "facebook", 1200, 630], ["tt", "TikTok", "tiktok", 1080, 1920]];
+    const PL = [["ig", "Instagram", "instagram", 1080, 1350], ["fb", "Facebook", "facebook", 1200, 630], ["tt", "TikTok", "tiktok", 1080, 1920], ["li", "LinkedIn", "linkedin", 1200, 627]];
     const link = k => `${location.origin}/go/${k}/${p.slug}`;
     const cut = (t, n) => { t = String(t || "").replace(/\s+/g, " ").trim(); if (t.length <= n) return t; const c = t.slice(0, n); return c.slice(0, Math.max(c.lastIndexOf(" "), n - 30)).replace(/[,.;:\s]+$/, "") + "…"; };
     const tagOf = t => "#" + String(t).replace(/[^a-z0-9]/gi, "").toLowerCase();
     const mk = (topic, k) => {
+      if (k === "li") {
+        const first = cut(p.excerpt, 170), pts = heads.length ? heads.map(h => "• " + h).join("\n") : "";
+        return [topic ? `Soal ${topic}: ini yang sering terlewat.` : (p.hookText || p.title), first, pts, "[Tulis 1-2 kalimat pengalaman pribadimu di sini sebelum diposting.]", "Di alur kerja atau layanan Anda, bagian mana yang sering dikira selesai padahal belum?", [...new Set([...(p.tags || []), ...hotTags].map(tagOf))].slice(0, 3).join(" ")].filter(Boolean).join("\n\n");
+      }
       const hook = topic ? `Lagi cari ${topic}? Ini yang perlu kamu tahu.` : (p.hookText || p.title);
       const body = cut(p.excerpt, k === "tt" ? 110 : 190), pts = heads.length && k !== "tt" ? heads.map(h => "• " + h).join("\n") : "";
       const base = ["catatanakademik", "universitasterbuka", "mahasiswaut"], extra = [...(p.tags || []), ...hotTags].map(tagOf);
@@ -280,6 +284,7 @@
       const cta = k === "ig" ? "Baca panduan lengkapnya (tautan di bawah):" : "Baca panduan lengkapnya:";
       return [hook, body, pts, cta + "\n" + link(k), tags].filter(Boolean).join("\n\n");
     };
+    const hermes = k => `Tulis caption ${PL.find(x => x[0] === k)[1]} berbahasa Indonesia untuk artikel di bawah.\nAturan: bahasa manusia sehari-hari, tanpa tanda pisah panjang, tanpa pola "bukan X, tapi Y", tanpa kalimat penutup klise, satu ajakan saja, jangan menambah fakta atau angka di luar artikel.${k === "li" ? "\nLinkedIn: sudut cerita atau pelajaran dari pengalaman kerja, tanpa tautan di isi postingan (tautan masuk komentar pertama), tutup dengan satu pertanyaan terbuka." : ""}\n\nJudul: ${p.title}\nRingkasan: ${p.excerpt || ""}\nPoin: ${heads.join("; ")}\nTautan: ${link(k)}\n\nIsi artikel:\n${String(p.body || "").slice(0, 3500)}`;
     const st = x => x.status === "published" ? ["Terbit", "#16a34a"] : x.status === "scheduled" ? ["Terjadwal", "#2563eb"] : ["Rekomendasi (draf)", "#b45309"];
     setPage("Studio Posting Sosmed", "Caption dan gambar dari artikel", `
       <div class="notice info">Studio hanya menyiapkan caption dan gambar. Kamu posting sendiri di tiap aplikasi, tidak ada kirim otomatis.</div>
@@ -298,7 +303,8 @@
       <div class="grid g2" style="margin-top:12px">
         <div class="card"><div class="hd"><h2 id="stH">Caption</h2></div><div class="bd" style="display:flex;flex-direction:column;gap:12px">
           <textarea class="in" id="stCap" rows="14"></textarea>
-          <div class="bar"><button type="button" class="btn sm pri" id="stCopy">Salin caption</button></div>
+          <div class="bar"><button type="button" class="btn sm pri" id="stCopy">Salin caption</button><button type="button" class="btn sm" id="stHer" title="Salin perintah siap tempel untuk Hermes">Salin prompt buat Hermes</button></div>
+          <div id="stC2w" hidden><label class="f">Komentar pertama (taruh tautan di sini)<textarea class="in" id="stCap2" rows="2"></textarea></label><div class="bar"><button type="button" class="btn sm" id="stCopy2">Salin komentar</button></div></div>
           <div class="small muted">Tautan di caption dihitung per platform di Pengunjung &amp; Konten (Klik dari sosmed).${p.status === "published" ? "" : " Artikel masih draf: tautan baru bisa dibuka setelah terbit."}</div></div></div>
         <div class="card"><div class="hd"><h2>Gambar</h2><span class="muted small" id="stSz"></span></div><div class="bd" style="display:flex;flex-direction:column;gap:12px">
           <canvas id="stC" width="1080" height="1350" style="width:100%;max-width:360px;max-height:520px;object-fit:contain;border-radius:12px;border:1px solid var(--border)"></canvas>
@@ -321,11 +327,14 @@
       cx.fillStyle = "#c4b5fd"; cx.font = `700 ${fs * .5}px system-ui,sans-serif`; cx.fillText("Catatan Akademik", pad, H - pad * .8);
       try { $("#stDl").href = cv.toDataURL("image/png"); $("#stDl").download = `${p.slug}-${cur}.png`; } catch { $("#stDl").removeAttribute("href"); }
     };
-    const cap = () => { $("#stCap").value = mk(($("#stK").value || "").trim(), cur); };
+    const cap = () => { $("#stCap").value = mk(($("#stK").value || "").trim(), cur); $("#stC2w").hidden = cur !== "li"; if (cur === "li") $("#stCap2").value = `Panduan lengkapnya: ${link("li")}`; };
     const show = k => { cur = k; $$("#stTabs button").forEach(b => b.classList.toggle("on", b.dataset.k === k)); $("#stH").textContent = "Caption " + PL.find(x => x[0] === k)[1]; cap(); draw(); };
     $$("#stTabs button").forEach(b => b.onclick = () => show(b.dataset.k));
     $("#stK").oninput = cap; $("#stT").oninput = draw;
     $("#stCopy").onclick = async () => { const t = $("#stCap"); try { await navigator.clipboard.writeText(t.value); toast("Caption disalin"); } catch { t.select(); toast("Tekan Ctrl+C untuk menyalin"); } };
+    const cp = async (el, ok) => { try { await navigator.clipboard.writeText(typeof el === "string" ? el : el.value); toast(ok); } catch { toast("Salin manual dengan Ctrl+C"); } };
+    $("#stCopy2").onclick = () => cp($("#stCap2"), "Komentar disalin");
+    $("#stHer").onclick = () => cp(hermes(cur), "Prompt untuk Hermes disalin");
     show("ig");
     if (p.cover) { const i = new Image(); i.onload = () => { im = i; draw(); }; i.src = p.cover; }
   }
