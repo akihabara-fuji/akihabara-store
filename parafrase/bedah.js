@@ -25,6 +25,18 @@ const MAX_MB = 10, RATE = { max: 10, windowMs: 3600 * 1000 }, UPLOAD_TTL_MS = 2 
 const PAID = new Set(["baru_dibayar", "dianalisis", "dikerjakan", "cek_ulang", "terkirim"]);
 const COLOR_NAME = Object.fromEntries(Object.entries(rules.CODES).map(([k, v]) => [k, v.color]));
 
+/* Nama dan NIM dari teks sampul (baris-baris awal). NIM UT 8-12 digit; nama = isian "Nama: ..." atau baris tepat di atas/bawah baris NIM. */
+function idFromLines(lines) {
+  const L = lines.map(x => String(x || "").replace(/\s+/g, " ").trim()).filter(Boolean).slice(0, 90);
+  let nim = "", nama = "", at = -1;
+  L.forEach((t, i) => { if (!nim) { const m = /\bNIM\b\s*[.:]?\s*(\d{8,12})/i.exec(t) || /\bNomor Induk Mahasiswa\b[^\d]{0,20}(\d{8,12})/i.exec(t); if (m) { nim = m[1]; at = i; } } });
+  if (!nim) { const i = L.findIndex(t => /^\(?0\d{8,11}\)?$/.test(t)); if (i >= 0) { nim = L[i].replace(/\D/g, ""); at = i; } }
+  const looksName = t => /^[A-Za-z.' ,-]{3,60}$/.test(t) && t.split(" ").length >= 1 && t.split(" ").length <= 6 && !/universitas|terbuka|kementerian|program|studi|fakultas|tugas|proposal|makalah|mata kuliah|tutor|disusun|penelitian|skripsi|nim|tahun/i.test(t);
+  for (const t of L) { const m = /\bNama(?:\s+(?:Mahasiswa|Lengkap))?\s*[:.]\s*([^\n]{3,60})$/i.exec(t); if (m && looksName(m[1].trim())) { nama = m[1].trim(); break; } }
+  if (!nama && at >= 0) for (const j of [at - 1, at + 1]) if (L[j] && looksName(L[j])) { nama = L[j]; break; }
+  return { nim, nama: nama ? nama.replace(/\s+/g, " ").slice(0, 80) : "" };
+}
+
 /* Kata isi: tanpa sampul (baris pendek), daftar isi, tabel, judul, dan daftar pustaka. */
 function bodyStart(paras) {
   let start = 0;
@@ -208,12 +220,13 @@ module.exports = function mountBedah({ library = null, app, express, db, setting
         await fsp.writeFile(path.join(docsDir, id + ".bedah.json"), JSON.stringify(saved), { mode: 0o600 });
         insert.run(id, rel, name, f.size, crypto.createHash("sha256").update(f.buffer).digest("hex"), JSON.stringify({ kind: "bedah", words: r.words, ai: !!ai, sim: !!sim }), h, now, now + UPLOAD_TTL_MS);
         // salinan lengkap untuk admin (Dokumen Saya): file asli, dua laporan Drillbit, dan angka hasil bacaan. Gagal menyimpan tidak boleh menggagalkan hasil Bedah.
-        let stNama = String((req.body || {}).nama || "").trim(), stNim = String((req.body || {}).nim || "").replace(/\D/g, "");
-        if ((!stNim || !stNama) && r.a && r.a.paragraphs) {   // kosong: baca dari sampul dokumen
-          const head = r.a.paragraphs.slice(0, 60).map(p => String(p.text || "")).join("\n");
-          if (!stNim) { const m = /\bNIM\b\s*[.:]?\s*(\d{8,12})/i.exec(head); if (m) stNim = m[1]; }
-          if (!stNama) { const m = /\bNama(?:\s+(?:Mahasiswa|Lengkap))?\s*:\s*([^\n]{3,60})/i.exec(head); if (m) stNama = m[1].trim(); }
-        }
+        let stNama = "", stNim = "";
+        try {   // otomatis dari sampul dokumen; bila tidak ada, dari halaman pertama laporan Drillbit
+          const head = r.a && r.a.paragraphs ? r.a.paragraphs.slice(0, 120).map(p => String(p.text || "")) : [];
+          let id = idFromLines(head.flatMap(t => t.split("\n")));
+          for (const rep of [aiRaw, simRaw]) if ((!id.nim || !id.nama) && rep) { const h = idFromLines((await drillbit.headText(rep)).split("\n")); id = { nim: id.nim || h.nim, nama: id.nama || h.nama }; }
+          stNama = id.nama; stNim = id.nim;
+        } catch { /* tanpa nama/NIM: dikelompokkan lewat nomor WA */ }
         if (library) { try { await library.saveBedah({ wa: waNum, nama: stNama, nim: stNim, name, buf: f.buffer, aiBuf: ai ? aiRaw : null, simBuf: sim ? simRaw : null, ai, sim, words: r.words, problemPct: r.problem && r.problem.pct }); } catch (e) { console.error("[bedah] simpan ke Dokumen gagal:", e && e.message); } }
         // data kalibrasi hanya bila mahasiswa memberi izin
         let kode = null;
@@ -439,6 +452,7 @@ function cekSet(summary) {
 /* Batas bawah akurasi (aturan tiga, keyakinan 95%): n set tanpa satu pun gagal => kegagalan < 3/n. */
 function batasAkurasi(n, gagal) { return n > 0 && gagal === 0 ? Math.floor((1 - 3 / n) * 1000) / 10 : null; }
 module.exports.bodyWords = bodyWords;
+module.exports.idFromLines = idFromLines;
 module.exports.cekSet = cekSet;
 module.exports.batasAkurasi = batasAkurasi;
 module.exports.rankFindings = rankFindings;

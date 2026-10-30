@@ -44,7 +44,7 @@
     if (!ok(o, false) || !ok(a, true) || !ok(s, true)) return;
     window.pfScan.start($("busy"), ["Mengunggah file…", "Membaca laporan Drillbit…", "Memetakan blok UT ke dokumenmu…", "Mendiagnosis kalimat yang ditandai…", "Menyusun hasil…"]);
     $("go").disabled = true;
-    var fd = new FormData(); fd.append("wa", $("fWa").value); fd.append("nama", $("fNama").value); fd.append("nim", $("fNim").value); fd.append("izin", $("izin").checked ? "1" : "0"); fd.append("file", o); if (a) fd.append("ai", a); if (s) fd.append("sim", s);
+    var fd = new FormData(); fd.append("wa", $("fWa").value); fd.append("izin", $("izin").checked ? "1" : "0"); fd.append("file", o); if (a) fd.append("ai", a); if (s) fd.append("sim", s);
     fetch("/ms/bedah/upload", { method: "POST", body: fd }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
       .then(function (x) {
         $("busy").classList.add("hidden"); $("go").disabled = false;
