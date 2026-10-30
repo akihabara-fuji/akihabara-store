@@ -228,7 +228,7 @@ module.exports = function mountBedah({ library = null, app, express, db, setting
           for (const rep of [aiRaw, simRaw]) if ((!id.nim || !id.nama) && rep) { const h = idFromLines((await drillbit.headText(rep)).split("\n")); id = { nim: id.nim || h.nim, nama: id.nama || h.nama }; }
           stNama = id.nama; stNim = id.nim;
         } catch { /* tanpa nama/NIM: dikelompokkan lewat nomor WA */ }
-        if (library) { try { await library.saveBedah({ wa: waNum, nama: stNama, nim: stNim, name, buf: f.buffer, aiBuf: ai ? aiRaw : null, simBuf: sim ? simRaw : null, ai, sim, words: r.words, problemPct: r.problem && r.problem.pct }); } catch (e) { console.error("[bedah] simpan ke Dokumen gagal:", e && e.message); } }
+        if (library) { try { await library.saveBedah({ user: userFrom ? userFrom(req) : null, wa: waNum, nama: stNama, nim: stNim, name, buf: f.buffer, aiBuf: ai ? aiRaw : null, simBuf: sim ? simRaw : null, ai, sim, words: r.words, problemPct: r.problem && r.problem.pct }); } catch (e) { console.error("[bedah] simpan ke Dokumen gagal:", e && e.message); } }
         // data kalibrasi hanya bila mahasiswa memberi izin
         let kode = null;
         if (String((req.body || {}).izin) === "1" && (ai || sim)) {

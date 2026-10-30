@@ -490,3 +490,20 @@ window.auditOkList = function (sc, box) {
     sub.parentNode.insertBefore(d, sub.nextSibling);
   });
 })();
+
+/* Halaman layanan yang wajib login: bagian bertanda data-need-login dikunci dan diganti ajakan masuk. */
+(function () {
+  function run() {
+    var box = document.querySelector("[data-need-login]"); if (!box) return;
+    fetch("/ms/auth/me", { cache: "no-store", credentials: "same-origin" }).then(function (r) { return r.json(); }).then(function (j) {
+      if (j && j.user) return;
+      var n = document.createElement("div"); n.className = "card"; n.setAttribute("role", "note"); n.style.cssText = "text-align:left;margin:0 0 14px;padding:16px;border:2px solid #4c8bf5;border-radius:12px";
+      var b = document.createElement("b"); b.textContent = "Masuk dulu untuk memakai layanan ini"; n.appendChild(b);
+      var p = document.createElement("p"); p.style.margin = "6px 0 10px"; p.textContent = "Dengan akun, dokumen dan hasilmu tersimpan rapi dan kami bisa mengabarimu lewat email. Daftar gratis."; n.appendChild(p);
+      var a = document.createElement("a"); a.className = "btn"; a.href = "/ms/masuk?next=" + encodeURIComponent(location.pathname); a.textContent = "Masuk atau daftar"; n.appendChild(a);
+      box.insertBefore(n, box.firstChild);
+      [].forEach.call(box.querySelectorAll("input,select,textarea,button"), function (x) { x.disabled = true; });
+    }).catch(function () { /* gagal cek: server tetap menolak unggahan tanpa login */ });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", run); else run();
+})();

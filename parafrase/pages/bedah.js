@@ -53,7 +53,7 @@
     fetch("/ms/bedah/upload", { method: "POST", body: fd }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
       .then(function (x) {
         $("busy").classList.add("hidden"); $("go").disabled = false;
-        if (!x.ok) { showErr(x.j.error || "Gagal. Coba lagi."); return; }
+        if (!x.ok) { if (x.j.login) { location.href = "/ms/masuk?next=" + encodeURIComponent(location.pathname); return; } showErr(x.j.error || "Gagal. Coba lagi."); return; }
         upId = x.j.uploadId; lastRes = x.j; render(x.j); $("perbaiki").classList.add("hidden"); $("s1").classList.add("hidden"); $("s2").classList.remove("hidden"); window.scrollTo(0, 0);
       }).catch(function () { $("busy").classList.add("hidden"); $("go").disabled = false; showErr("Koneksi terputus. Coba lagi."); });
   };

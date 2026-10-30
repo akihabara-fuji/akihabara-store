@@ -326,8 +326,12 @@ app.get(/^\/admin\/(parafrase|layanan)\/?$/, (req, res, next) => (ACAD_HOSTS.len
 const extra = require("./blog-akun")({ app, express, requireAdmin, sameOrigin, getCookie, SECURE_COOKIE, ROOT, SITE: ACAD, getSettings: () => store.settings, getCa: k => (typeof pf !== "undefined" && pf.settings ? pf.settings.get(k) : ""), getTexts: () => (typeof pf !== "undefined" ? pf.texts : null), });
 
 /* ---------------- Cek dan Parafrase Mandiri (modul terpisah, lihat parafrase/) ---------------- */
-/* unggah dan audit gratis tanpa akun; login baru diminta saat memesan/membayar */
+/* semua layanan (Bedah, Cek & Parafrase, Audit, pesanan) wajib login: alamat email dipakai untuk kabar dan info layanan */
 const needLogin = (req, res, next) => (extra.userFrom(req) ? next() : res.status(401).json({ error: "Masuk dulu untuk memesan.", login: true }));
+const needLoginUse = (req, res, next) => (extra.userFrom(req) ? next() : res.status(401).json({ error: "Masuk atau daftar dulu untuk memakai layanan ini.", login: true }));
+app.post("/ms/bedah/upload", needLoginUse);
+app.post("/ms/parafrase/upload", needLoginUse);
+app.post("/ms/audit/upload", needLoginUse);
 app.post("/ms/parafrase/order", needLogin);
 app.post("/ms/layanan/order", needLogin);
 app.post("/ms/audit/order", needLogin);

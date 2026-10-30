@@ -38,7 +38,7 @@ module.exports = function mountDokumen({ app, express, db, root, requireAdmin })
   }
 
   /* Dipanggil Bedah setiap kali mahasiswa mengunggah: file asli, laporan AI, laporan similarity, dan hasil bacaannya. */
-  async function saveBedah({ name, buf, aiBuf, simBuf, ai, sim, words, problemPct, wa, nama, nim }) {
+  async function saveBedah({ user, name, buf, aiBuf, simBuf, ai, sim, words, problemPct, wa, nama, nim }) {
     const id = crypto.randomBytes(8).toString("hex"), now = nowMs();
     const ext = (/\.[a-z0-9]{1,5}$/i.exec(name) || [".docx"])[0].toLowerCase();
     const rel = "library/" + id + ext, aiRel = aiBuf ? "library/" + id + ".ai.pdf" : null, simRel = simBuf ? "library/" + id + ".sim.pdf" : null;
@@ -52,20 +52,25 @@ module.exports = function mountDokumen({ app, express, db, root, requireAdmin })
     };
     /* Satu mahasiswa = NIM yang sama (bila ada), kalau tidak, nomor WhatsApp yang sama. Unggahan berikutnya otomatis jadi revisi di bawah namanya. */
     const cleanNim = String(nim || "").replace(/\D/g, "").slice(0, 12), cleanName = clip(nama, 80);
-    const key = cleanNim.length >= 8 ? "nim:" + cleanNim : wa ? "wa:" + wa : null;
+    /* Satu mahasiswa = satu akun. Layanan lain (Audit, Cek & Parafrase) memakai kunci akun yang sama, jadi semua dokumennya satu kelompok.
+       Bila NIM yang terbaca sudah dikenal di kelompok lain (akun berbeda), unggahan ikut kelompok itu. */
+    let key = user && user.id ? "user:" + user.id : (cleanNim.length >= 8 ? "nim:" + cleanNim : wa ? "wa:" + wa : null);
+    if (cleanNim.length >= 8) { const hit = db.prepare("SELECT student_key k FROM doc_library WHERE nim=? AND student_key IS NOT NULL ORDER BY created_at LIMIT 1").get(cleanNim); if (hit) key = hit.k; }
     let rev = 0, status = "baru", mismatch = false;
     if (key) {
       const prev = db.prepare("SELECT student_name, wa, nim, revision_no FROM doc_library WHERE student_key=? ORDER BY created_at DESC LIMIT 1").get(key);
-      const n = db.prepare("SELECT COUNT(*) c FROM doc_library WHERE student_key=? AND source='bedah'").get(key).c;
+      const n = db.prepare("SELECT COUNT(*) c FROM doc_library WHERE student_key=? AND kind='bedah'").get(key).c;
       if (n > 0) { rev = n; status = "revisi"; }
       const norm = v => String(v || "").toLowerCase().replace(/[^a-z]/g, "");
       mismatch = !!(prev && cleanName && prev.student_name && norm(prev.student_name) !== norm(cleanName));
       if (prev && !cleanName) nama = prev.student_name; // nama kosong: ikut yang sudah tercatat
+      if (!nama && user && user.name) nama = user.name;
       if (prev && !wa) wa = prev.wa;
     }
     data.nameMismatch = mismatch;
     db.prepare("INSERT INTO doc_library(id,name,title,kind,ai_pct,sim_pct,target_ai,target_sim,note,size,path,ai_path,sim_path,words,data,student_key,student_name,nim,wa,status,revision_no,source,order_id,pinned,created_at,expires_at) VALUES(?,?,?,?,?,?,NULL,NULL,'',?,?,?,?,?,?,?,?,?,?,?,?,'bedah',NULL,0,?,?)")
       .run(id, clip(name, 160), clip(name.replace(/\.[a-z0-9]{1,5}$/i, ""), 200), "bedah", ai ? pct(ai.aiPct) : null, sim ? pct(sim.pct) : null, buf.length, rel, aiRel, simRel, words || null, JSON.stringify(data), key, clip(nama, 80) || null, cleanNim || null, wa || null, status, rev, now, now + TTL_MS);
+    if (key) db.prepare("UPDATE doc_library SET nim=COALESCE(nim,?), wa=COALESCE(wa,?), student_name=COALESCE(student_name,?) WHERE student_key=?").run(cleanNim || null, wa || null, clip(nama, 80) || null, key);
     return id;
   }
 
