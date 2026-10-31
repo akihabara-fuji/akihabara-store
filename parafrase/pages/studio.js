@@ -10,7 +10,7 @@
     opt = opt || {}; opt.headers = opt.headers || {};
     if (opt.json) { opt.method = opt.method || "POST"; opt.headers["content-type"] = "application/json"; opt.body = JSON.stringify(opt.json); }
     return fetch(path, opt).then(function (r) {
-      if (r.status === 401) { showErr("Sesi admin habis.", ["Masuk lewat halaman admin", "/admin/parafrase"]); throw new Error("401"); }
+      if (r.status === 401) { showErr("Sesi admin habis.", ["Masuk lewat halaman admin", "/admin/"]); throw new Error("401"); }
       return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) { var e = new Error(j.error || "Gagal (" + r.status + ")"); e.data = j; throw e; } return j; });
     });
   }

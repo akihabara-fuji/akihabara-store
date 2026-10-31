@@ -96,3 +96,12 @@ need("dua item berbagi satu kalimat Word: teks digabung, bagian yang tak diedit 
   assert.deepStrictEqual(studio.editsFromItems(items, { 1: "A.", 2: "B." }), [{ para_idx: 9, sent_idx: 0, text: "A. B." }]);
   assert.deepStrictEqual(studio.editsFromItems(items, {}), []);
 });
+
+test("rute Studio memakai login panel CA (bukan login nextaja) dan terbuka untuk pemilik dan admin pesanan", () => {
+  const auth = require("../admin-ca/auth");
+  assert.ok(auth.isCaPath("/ms/admin/studio/NA-1001/word"));
+  assert.ok(!auth.isCaPath("/ms/admin/studio-page"));
+  assert.ok(auth.can("owner", "GET", "/ms/admin/studio/NA-1001"));
+  assert.ok(auth.can("cs", "POST", "/ms/admin/studio/NA-1001/finish"));
+  assert.ok(!auth.can("editor", "GET", "/ms/admin/studio/NA-1001"));
+});
