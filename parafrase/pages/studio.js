@@ -73,9 +73,29 @@
     });
     D.items.forEach(function (it) { if ($("ms" + it.n)) { var t = edits[it.n] != null ? edits[it.n] : it.text; var sp = B.querySelector('[data-n="' + it.n + '"]'); if (sp && t.trim() !== orig[it.n].trim()) sp.classList.add("chg"); measure(it.n, t); } });
     progress();
-    var lk = false;
-    function sy(x, y) { x.addEventListener("scroll", function () { if (lk) { lk = false; return; } lk = true; y.scrollTop = x.scrollTop * (y.scrollHeight - y.clientHeight) / Math.max(1, x.scrollHeight - x.clientHeight); }); }
-    sy(A, B); sy(B, A);
+    /* Sinkron per paragraf, bukan per persen: A memuat kartu rekomendasi sehingga lebih tinggi dari B.
+       Paragraf yang sama di A dan B selalu sejajar di bagian atas layar. */
+    var PA = Array.prototype.slice.call(A.querySelectorAll(":scope > p")), PB = Array.prototype.slice.call(B.querySelectorAll(":scope > p")), ign = null;
+    function topOf(e, box) { return e.getBoundingClientRect().top - box.getBoundingClientRect().top + box.scrollTop; }
+    function anchor(box, list) {
+      var st = box.scrollTop, i = 0;
+      for (var k = 0; k < list.length; k++) { if (topOf(list[k], box) <= st + 1) i = k; else break; }
+      var t = topOf(list[i], box), h = Math.max(1, list[i].offsetHeight);
+      return { i: i, f: Math.min(1, Math.max(0, (st - t) / h)) };
+    }
+    function sy(x, lx, y, ly) {
+      x.addEventListener("scroll", function () {
+        if (ign === x) { ign = null; return; }
+        if (!lx.length || lx.length !== ly.length) return;
+        var to;
+        if (x.scrollTop <= 0) to = 0;
+        else if (x.scrollTop + x.clientHeight >= x.scrollHeight - 2) to = y.scrollHeight - y.clientHeight;
+        else { var a = anchor(x, lx); to = topOf(ly[a.i], y) + a.f * ly[a.i].offsetHeight; }
+        to = Math.max(0, Math.round(to));
+        if (Math.abs(y.scrollTop - to) > 1) { ign = y; y.scrollTop = to; }
+      });
+    }
+    sy(A, PA, B, PB); sy(B, PB, A, PA);
   }
 
   api("/ms/admin/studio/" + id).then(function (j) {
