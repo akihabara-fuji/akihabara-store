@@ -184,7 +184,7 @@ module.exports = function mountBedah({ library = null, app, express, db, setting
       const F = req.files || {}, f = F.file && F.file[0];
       if (!f) return res.status(400).json({ error: "Pilih file asli (Word .docx atau PDF) yang kamu kirim ke UT." });
       const name = String(f.originalname || "").slice(0, 200);
-      if (mode === "cek" ? !/\.docx$/i.test(name) : !/\.(docx|pdf)$/i.test(name)) return res.status(415).json({ error: mode === "cek" ? "File asli harus Word (.docx), karena hasilnya dikirim kembali sebagai Word." : "File asli harus Word (.docx) atau PDF." });
+      if (!/\.(docx|pdf)$/i.test(name)) return res.status(415).json({ error: "File asli harus Word (.docx) atau PDF." });
       const isPdfName = /\.pdf$/i.test(name);
       const waRaw = String((req.body || {}).wa || "").replace(/\D/g, "").replace(/^62/, "").replace(/^0/, "");
       if (!/^8\d{8,12}$/.test(waRaw)) return res.status(400).json({ error: "Isi nomor WhatsApp yang benar (contoh 0812xxxxxxxx) supaya kami bisa mengabari hasil perbaikanmu." });
@@ -463,10 +463,9 @@ module.exports = function mountBedah({ library = null, app, express, db, setting
       const base = path.basename(o.original_file).replace(/\.(docx|pdf)$/i, "");
       let saved; try { saved = JSON.parse(await fsp.readFile(path.join(docsDir, base + ".bedah.json"), "utf8")); } catch { throw sErr(409, "Pesanan ini tidak lewat alur laporan UT, jadi tidak ada tanda UT untuk Studio."); }
       const buf = await fsp.readFile(orders.priv(o.original_file));
-      if (isPdf(buf)) throw sErr(415, "File asli PDF tidak bisa dikerjakan di Studio. Minta mahasiswa mengunggah Word.");
       const a = await analyze(buf), bibAt = a.bibliographyParagraphIndex == null || a.bibliographyParagraphIndex < 0 ? null : a.bibliographyParagraphIndex;
       const items = utItems(a.paragraphs, saved.hits || []);
-      return { o, base, saved, buf, a, bibAt, items };
+      return { o, base, saved, buf, a, bibAt, items, pdf: isPdf(buf) };
     }
     const draftFile = base => path.join(docsDir, base + ".studio.json");
     async function readDraft(base) { try { return JSON.parse(await fsp.readFile(draftFile(base), "utf8")); } catch { return { edits: {} }; } }
@@ -497,7 +496,8 @@ module.exports = function mountBedah({ library = null, app, express, db, setting
     app.get("/ms/admin/studio/:id/word", requireAdmin, async (req, res) => {
       res.set("Cache-Control", "no-store");
       try {
-        const c = await studioCtx(req.params.id), out = await wordtools.buildColored(c.buf, markRows(c.items));
+        const c = await studioCtx(req.params.id);
+        const out = c.pdf ? await studio.plainDocx(c.a.paragraphs, null, new Set(c.items.flatMap(x => (x.parts && x.parts.length ? x.parts : [[x.para_idx, x.sent_idx]]).map(([pi, si]) => pi + ":" + si)))) : await wordtools.buildColored(c.buf, markRows(c.items));
         res.set({ "Content-Disposition": `attachment; filename="${c.o.id} untuk diedit.docx"` }).type("application/vnd.openxmlformats-officedocument.wordprocessingml.document").send(out);
       } catch (e) { sFail(res, e, "word"); }
     });
@@ -519,7 +519,9 @@ module.exports = function mountBedah({ library = null, app, express, db, setting
         const edits = cleanEdits(c.items, body.edits || (await readDraft(c.base)).edits);
         const list = studio.editsFromItems(c.items, edits);
         if (!list.length) throw sErr(400, "Belum ada kalimat biru yang diubah.");
-        const r = await studio.applyEdits(c.buf, list);
+        let r;
+        if (c.pdf) { const w = studio.rewriteParagraphs(c.a.paragraphs, list); r = { buf: await studio.plainDocx(c.a.paragraphs, w.texts, null), applied: w.applied, skipped: [] }; }
+        else r = await studio.applyEdits(c.buf, list);
         if (r.skipped.length && body.force !== true) throw Object.assign(sErr(409, r.skipped.length + " kalimat tidak bisa diganti otomatis (paragraf berformat rumit). Ganti manual lewat Word, atau kirim tetap dengan menandai \"kirim tetap\"."), { skipped: r.skipped });
         const o = await orders.deliverStudio(c.o.id, r.buf);
         await fsp.writeFile(draftFile(c.base), JSON.stringify({ edits, savedAt: Date.now(), sentAt: Date.now() }), { mode: 0o600 });

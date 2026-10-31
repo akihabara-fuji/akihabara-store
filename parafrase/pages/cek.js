@@ -17,11 +17,11 @@
   function checkFile(input, kind) {
     showErr(""); var f = input.files[0]; if (!f) { ready(); return; }
     var c = cfg(), max = (c && c.file_max_mb) || 10;
-    if (kind === "docx" ? !/\.docx$/i.test(f.name) : !/\.pdf$/i.test(f.name)) { showErr(kind === "docx" ? "File asli harus Word (.docx), karena hasilnya dikirim kembali sebagai Word." : "Laporan Drillbit harus PDF."); input.value = ""; }
+    if (kind === "orig" ? !/\.(docx|pdf)$/i.test(f.name) : !/\.pdf$/i.test(f.name)) { showErr(kind === "orig" ? "File asli harus Word (.docx) atau PDF." : "Laporan Drillbit harus PDF."); input.value = ""; }
     else if (f.size > max * 1048576) { showErr("File terlalu besar. Maksimal " + max + " MB."); input.value = ""; }
     ready();
   }
-  fO.onchange = function () { checkFile(fO, "docx"); }; fA.onchange = function () { checkFile(fA, "pdf"); }; fS.onchange = function () { checkFile(fS, "pdf"); };
+  fO.onchange = function () { checkFile(fO, "orig"); }; fA.onchange = function () { checkFile(fA, "pdf"); }; fS.onchange = function () { checkFile(fS, "pdf"); };
   fW.oninput = ready;
 
   $("go").onclick = function () {

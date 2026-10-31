@@ -128,4 +128,36 @@ function matchImported(items, importedParas) {
   return sug;
 }
 
-module.exports = { LONG_MAX, ciri, stats, applyEditsToDom, applyEdits, editsFromItems, matchImported, replaceInParagraph, leadOf };
+
+/* ---------- PDF asli: tidak ada Word untuk diedit, jadi Word dibuat dari teks PDF (format PDF tidak ikut) ---------- */
+/* Teks paragraf setelah edit. Indeks kalimat mengacu ke kalimat paragraf asli; teks kosong berarti kalimat dihapus. */
+function rewriteParagraphs(paragraphs, edits) {
+  const by = new Map();
+  for (const e of edits) { if (!by.has(e.para_idx)) by.set(e.para_idx, new Map()); by.get(e.para_idx).set(e.sent_idx, String(e.text == null ? "" : e.text)); }
+  let applied = 0;
+  const out = paragraphs.map(p => {
+    const m = by.get(p.idx), text = String(p.text || "");
+    if (!m) return text;
+    const ss = splitSentences(text);
+    ss.forEach((t, i) => { if (m.has(i)) { ss[i] = m.get(i); applied++; } });
+    return ss.map(x => x.trim()).filter(Boolean).join(" ");
+  });
+  return { texts: out, applied };
+}
+const xe = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+/* texts: teks per paragraf; marks: Set "paraIdx:sentIdx" yang disorot (untuk Word edit). */
+async function plainDocx(paragraphs, texts, marks) {
+  const JSZip = require("jszip"), zip = new JSZip();
+  const body = paragraphs.map((p, i) => {
+    const t = String(texts ? texts[i] : p.text || ""); if (!t.trim()) return "";
+    const ss = marks ? splitSentences(t) : [t];
+    const runs = ss.map((x, j) => `<w:r>${marks && marks.has(p.idx + ":" + j) ? '<w:rPr><w:highlight w:val="cyan"/></w:rPr>' : ""}<w:t xml:space="preserve">${xe(x)}${j < ss.length - 1 ? " " : ""}</w:t></w:r>`).join("");
+    return `<w:p><w:pPr><w:spacing w:after="160" w:line="360" w:lineRule="auto"/><w:jc w:val="both"/></w:pPr>${runs}</w:p>`;
+  }).join("");
+  zip.file("[Content_Types].xml", '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>');
+  zip.file("_rels/.rels", '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>');
+  zip.file("word/document.xml", `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="${W}"><w:body>${body}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1701" w:right="1701" w:bottom="1701" w:left="2268" w:header="708" w:footer="708" w:gutter="0"/></w:sectPr></w:body></w:document>`);
+  return zip.generateAsync({ type: "nodebuffer", compression: "DEFLATE" });
+}
+
+module.exports = { rewriteParagraphs, plainDocx, LONG_MAX, ciri, stats, applyEditsToDom, applyEdits, editsFromItems, matchImported, replaceInParagraph, leadOf };

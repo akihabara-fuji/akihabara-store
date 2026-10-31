@@ -66,3 +66,19 @@ need("applyEdits: hanya kalimat biru berganti, format dan kalimat lain tetap", a
   assert.match(out, /Kalimat satu tetap\. Kalimat baru dari admin\./); assert.match(out, / Kalimat tiga tetap\./); assert.match(out, /<w:b\/>/);
   assert.doesNotMatch(out, /Kalimat dua/);
 });
+
+need("PDF asli: teks paragraf diganti per kalimat, kalimat lain tetap, kosong = dihapus", () => {
+  const paras = [{ idx: 0, text: "Satu tetap. Dua diganti. Tiga tetap." }, { idx: 1, text: "Paragraf lain utuh." }];
+  const r = studio.rewriteParagraphs(paras, [{ para_idx: 0, sent_idx: 1, text: "Dua baru." }]);
+  assert.strictEqual(r.applied, 1); assert.deepStrictEqual(r.texts, ["Satu tetap. Dua baru. Tiga tetap.", "Paragraf lain utuh."]);
+  const k = studio.rewriteParagraphs(paras, [{ para_idx: 0, sent_idx: 2, text: "" }]);
+  assert.strictEqual(k.texts[0], "Satu tetap. Dua diganti.");
+});
+
+test("PDF asli: Studio dan unggahan Cek menerima PDF, Word dibuat dari teks", () => {
+  const b = require("fs").readFileSync(require("path").join(__dirname, "..", "parafrase", "bedah.js"), "utf8");
+  assert.doesNotMatch(b, /tidak bisa dikerjakan di Studio/);
+  assert.match(b, /plainDocx/);
+  const js = require("fs").readFileSync(require("path").join(__dirname, "..", "parafrase", "pages", "cek.js"), "utf8");
+  assert.match(js, /\(docx\|pdf\)/);
+});
