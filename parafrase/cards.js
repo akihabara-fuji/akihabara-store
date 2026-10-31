@@ -6,7 +6,7 @@ const path = require("path");
 const multer = require("multer");
 const sharp = require("sharp");
 
-const BASE = ["tugas", "diskusi", "metopen", "audit", "revisi", "pengarahan", "cek", "semester", "cv", "info"];
+const BASE = ["tugas", "diskusi", "metopen", "audit", "revisi", "pengarahan", "cek", "semester", "cv", "info", "tutorial", "bedah"];
 /* kartu baru di menu (data-slug="...") otomatis ikut: nama diambil dari judul <h2> kartunya */
 const SLUGS = BASE.slice();
 const LABELS = {};
@@ -25,7 +25,7 @@ module.exports = function mountCards({ app, root, requireAdmin }) {
   fs.mkdirSync(dir, { recursive: true });
   const file = slug => path.join(dir, slug + ".webp");
   // gambar bawaan bila admin belum mengunggah; unggahan admin selalu menang
-  const DEFAULTS = { audit: "tools-ai", cv: "karir-lowongan", cek: "ruang-akademik", semester: "tips-kuliah", metopen: "metodologi", tugas: "tugas-diskusi", diskusi: "tugas-diskusi", revisi: "materi-belajar", pengarahan: "registrasi", info: "jadwal-kalender", bedah: "ujian-ut" };
+  const DEFAULTS = { audit: "tools-ai", cv: "karir-lowongan", cek: "ruang-akademik", semester: "tips-kuliah", metopen: "metodologi", tugas: "tugas-diskusi", diskusi: "tugas-diskusi", revisi: "materi-belajar", pengarahan: "registrasi", info: "jadwal-kalender", tutorial: "tugas-diskusi", bedah: "metodologi", bedah: "ujian-ut" };
 
   app.get(["/ruangakademikut/img/:name", "/assets/ut/img/:name"], (req, res) => {
     const m = /^([a-z]+)\.webp$/.exec(String(req.params.name));

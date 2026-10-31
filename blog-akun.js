@@ -861,7 +861,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
     if (ACAD_ONLY) NAVT.push(
       ["Tutorial Online", [["Semua Tutorial Online", "/ruangakademikut/tutorial-online"], ["Diskusi", "/ruangakademikut/tutorial-online?tab=harga&s=diskusi"], ["Tugas", "/ruangakademikut/tutorial-online?tab=harga&s=tugas"], ["Makalah", "/ruangakademikut/tutorial-online?tab=harga&s=makalah"], ["Jurnal", "/ruangakademikut/tutorial-online?tab=harga&s=jurnal"], ["Metodologi Penelitian", "/ruangakademikut/tutorial-online?tab=harga&s=metopen"]]],
       ["Layanan", [["Simulasi Presentasi", "/ruangakademikut/layanan?s=simulasi"]]],
-      ["Cek & Bedah", [["Cek & Parafrase", "/ruangakademikut/cek-parafrase-mandiri"], ["Bedah Laporan Penelitian UT", "/ruangakademikut/bedah-laporan"]]],
+      ["Parafrase File dan Bedah Penelitian", [["Cek & Parafrase", "/ruangakademikut/cek-parafrase-mandiri"], ["Bedah Laporan Penelitian UT", "/ruangakademikut/bedah-laporan"]]],
       ["Alat Gratis", [["Kalkulator Nilai & IPK", "/ruangakademikut/kalkulator-nilai-ut"], ["Generator Sitasi APA", "/ruangakademikut/sitasi-apa"], ["Tracker Kelulusan & IPK", "/ruangakademikut/tracker-kelulusan"], ["Kalender Akademik", "/ruangakademikut/kalender-akademik"], ["Sampul & Template Tugas", "/ruangakademikut/sampul-tugas"], ["Panduan Maba", "/ruangakademikut/panduan-maba"]]],
       ["Portal UT", [["Portal UT", "/ruangakademikut/portal-ut"]]]);
     const navTree = NAVT.map(([g, ls], i) => `<details${i === 0 ? " open" : ""}><summary>${esc(g)}</summary><ul>${ls.map(([n, h]) => `<li><a href="${esc(h)}"${h === "/blog?f=" + p.topic ? ' aria-current="page" class="on"' : ""}>${esc(n)}</a></li>`).join("")}</ul></details>`).join("");

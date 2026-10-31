@@ -33,13 +33,15 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
   const EH = v => String(v == null ? "" : v).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const CHIPS = [["Cara daftar kuliah di UT", "cara-daftar-kuliah-di-ut-mahasiswa-baru"], ["Cek jadwal PKBJJ", "cara-cek-jadwal-pkbjj-ut"], ["Aktivasi dan login Tuton", "cara-aktivasi-dan-login-tuton-ut"], ["Cek jadwal UAS", "cara-cek-jadwal-uas-ut"], ["Lihat nilai UAS dan DNU", "cara-melihat-nilai-uas-dnu-ut"], ["Hitung IPS dan IPK", "/kalkulator-nilai-ut"], ["Registrasi mata kuliah", "cara-registrasi-mata-kuliah-ut"], ["Syarat lulus", "syarat-lulus-kuliah-ut-ipk-tap"]];
   const STEPS = [["Daftar", "Akun admisi, billing, dokumen", "cara-daftar-kuliah-di-ut-mahasiswa-baru"], ["Registrasi", "Pilih mata kuliah tiap semester", "cara-registrasi-mata-kuliah-ut"], ["PKBJJ", "Jadwal dan lokasi kegiatan", "cara-cek-jadwal-pkbjj-ut"], ["Tuton", "Aktivasi dan kumpulkan tugas", "cara-aktivasi-dan-login-tuton-ut"], ["UAS", "Jadwal lewat KTPU di MyUT", "cara-cek-jadwal-uas-ut"], ["Nilai", "DNU, IPS, dan IPK", "cara-melihat-nilai-uas-dnu-ut"], ["Lulus", "IPK minimal, nilai E, dan TAP", "syarat-lulus-kuliah-ut-ipk-tap"]];
-  const FALLBACK = ["cara-melihat-nilai-uas-dnu-ut", "cara-cek-jadwal-uas-ut", "hitung-nilai-akhir-ips-ipk-ut", "metopen-ut-tugas-bobot-syarat-taps", "persiapan-uas-ut", "cara-mengumpulkan-tugas-tuton-ut"];
+  const FALLBACK = ["cara-melihat-nilai-uas-dnu-ut", "cara-cek-jadwal-uas-ut", "hitung-nilai-akhir-ips-ipk-ut", "metopen-ut-tugas-bobot-syarat-taps", "persiapan-uas-ut", "cara-mengumpulkan-tugas-tuton-ut", "cara-daftar-kuliah-di-ut-mahasiswa-baru", "cara-cek-jadwal-pkbjj-ut", "cara-aktivasi-dan-login-tuton-ut", "cara-registrasi-mata-kuliah-ut", "syarat-lulus-kuliah-ut-ipk-tap", "kesalahan-umum-tugas-tutorial-ut-yang-membuat-nilai-turun"];
   function hk(h) {
     const chips = CHIPS.map(([t, s]) => s[0] === "/" ? [t, s] : (live(s) ? [t, "/blog/" + s] : null)).filter(Boolean).slice(0, 8).map(([t, u]) => `<a class="hk-chip" href="${EH(u)}">${EH(t)}</a>`).join("");
     const steps = STEPS.map(([t, d, s], i) => `<li><a href="${live(s) ? "/blog/" + s : "/panduan-maba"}"><i>${i + 1}</i><b>${EH(t)}</b><small>${EH(d)}</small></a></li>`).join("");
-    let top = []; try { top = typeof app.locals.acadTop === "function" ? app.locals.acadTop(6) : []; } catch { top = []; }
+    let top = []; try { top = typeof app.locals.acadTop === "function" ? app.locals.acadTop(12) : []; } catch { top = []; }
     const fromStats = top.length >= 3;
-    if (!fromStats) top = FALLBACK.map(s => ({ slug: s, title: live(s) })).filter(x => x.title).slice(0, 6);
+    if (!fromStats) top = [];
+    /* Terowongan 3D butuh minimal 12 kartu supaya tidak renggang: lengkapi dengan panduan pilihan yang sudah tayang. */
+    FALLBACK.forEach(s => { if (top.length < 12 && !top.some(x => x.slug === s) && live(s)) top.push({ slug: s, title: live(s) }); });
     const pop = top.length ? `<div class="wrap"><div class="sh"><div><span class="hk-eb">${fromStats ? "Lagi banyak dibaca" : "Panduan pilihan"}</span><h2>${fromStats ? "Yang paling dicari mahasiswa UT sekarang" : "Panduan yang paling sering dibutuhkan"}</h2><p>${fromStats ? "Diurutkan dari panduan yang paling banyak dibuka 30 hari terakhir." : "Mulai dari sini kalau bingung."}</p></div><a class="btn btn-ghost btn-sm" href="/blog-ut">Semua panduan</a></div><div class="hk-pop">${top.map((x, i) => `<a href="/blog/${EH(x.slug)}"><i>${i + 1}</i><b>${EH(x.title)}</b></a>`).join("")}</div></div>` : "";
     return h.replace("{{HK_CHIPS}}", chips).replace("{{HK_LANGKAH}}", steps).replace("{{HK_POPULER}}", pop).replace('<section class="s" id="populer"></section>', "");
   }

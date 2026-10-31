@@ -47,5 +47,5 @@ test("Bedah dan Cek & Parafrase satu alur: pilihan alur di halaman Bedah", () =>
   assert.match(h, /alur-i on" href="\/ruangakademikut\/bedah-laporan"/);
 });
 test("versi aset dinaikkan supaya pengunjung tidak memakai CSS lama dengan HTML baru", () => {
-  assert.match(rd("panduan-maba.html"), /site\.css\?v=20261302/); assert.match(rd("panduan-maba.html"), /common\.js\?v=20261505/);
+  assert.match(rd("panduan-maba.html"), /site\.css\?v=20261302/); assert.match(rd("panduan-maba.html"), /common\.js\?v=20261506/);
 });

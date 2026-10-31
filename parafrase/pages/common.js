@@ -209,7 +209,7 @@ window.auditDrillbit = function (box, score, ctx) {
   try { localStorage.removeItem(KEY); } catch (e) {}   /* angka lama tidak lagi diingat: tiap buka halaman mulai kosong */
   var wrap = el("div", "max-width:760px;margin:0 auto 14px;padding:16px 18px;border-radius:18px;border:1px solid var(--border,#2b2b58);text-align:left");
   wrap.appendChild(el("b", "display:block", "Punya laporan Drillbit resmi dari UT?"));
-  wrap.appendChild(el("div", "font-size:13.5px;opacity:.75;margin:2px 0 10px", (ctx && ctx.here === "cek" ? "Tempel dua angkanya, nanti dipakai menentukan urgensi di bawah, sama seperti di Audit Dokumen. Angka ini dari kamu dan tidak kami verifikasi." : "Tempel dua angkanya, nanti digabung dengan skor di atas. Angka ini dari kamu dan tidak kami verifikasi.")));
+  wrap.appendChild(el("div", "font-size:13.5px;opacity:.75;margin:2px 0 10px", (ctx && ctx.here === "cek" ? "Tempel dua angkanya, nanti dipakai menentukan urgensi di bawah. Angka ini dari kamu dan tidak kami verifikasi." : "Tempel dua angkanya, nanti digabung dengan skor di atas. Angka ini dari kamu dan tidak kami verifikasi.")));
   var row = el("div", "display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end");
   function field(id, label) {
     var w = el("label", "display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600"); w.appendChild(el("span", "", label));
@@ -382,7 +382,6 @@ window.renderTriage = function (box, t, opts) {
     card.appendChild(go);
     card.appendChild(el("div", "font-size:12.5px;opacity:.7;margin-top:4px", opts.uploadId ? "Dokumen yang sama dibawa ke sana, tidak perlu unggah ulang (tersimpan sementara 2 jam)." : "Unggah dokumenmu di sana untuk dikerjakan."));
   }
-  if (opts.here === "cek") { var back = el("a", "display:inline-block;margin-top:10px;font-size:13.5px", "Lihat laporan lengkap di Audit Dokumen →"); back.href = "/ruangakademikut/audit"; card.appendChild(back); }
   card.appendChild(el("p", "margin:10px 0 0;font-size:12.5px;opacity:.7", t.note));
   box.appendChild(card);
 };
@@ -449,12 +448,12 @@ window.renderFindings = function (box, findings, opts) {
     wrap.appendChild(top);
     var opened = g.items.filter(function (f) { return FULL || f.open; }), first = opened[0];
     if (first && first.quote) wrap.appendChild(el("div", "font-size:13px;font-style:italic;opacity:.8;margin-top:6px;padding:6px 10px;border-radius:8px;background:rgba(128,128,160,.14)", "“" + first.quote + "”"));
-    wrap.appendChild(first ? el("div", "font-size:13.5px;opacity:.85;margin-top:4px", first.detail) : el("div", "font-size:13px;opacity:.6;filter:blur(5px);user-select:none;margin-top:4px", "Penjelasan dan saran perbaikan di Audit Lengkap"));
+    wrap.appendChild(first ? el("div", "font-size:13.5px;opacity:.85;margin-top:4px", first.detail) : el("div", "font-size:13px;opacity:.6;filter:blur(5px);user-select:none;margin-top:4px", "Penjelasan dan saran perbaikan ada di teks lengkap"));
     if (n > 1) {
       var d = el("details", "margin-top:6px"), locked = n - opened.length;
-      d.appendChild(el("summary", "cursor:pointer;font-size:13px;font-weight:600", "Lihat rincian " + n + " temuan" + (locked ? " (" + locked + " dibuka di Audit Lengkap)" : "")));
+      d.appendChild(el("summary", "cursor:pointer;font-size:13px;font-weight:600", "Lihat rincian " + n + " temuan" + (locked ? " (" + locked + " ada di teks lengkap)" : "")));
       var ul = el("ul", "margin:6px 0 0;padding-left:18px;font-size:13px;line-height:1.55;max-height:260px;overflow-y:auto");
-      g.items.forEach(function (f) { var li = el("li", "", f.where + (FULL || f.open ? ": " + f.detail : ": dibuka di Audit Lengkap")); if ((FULL || f.open) && f.quote) li.appendChild(el("div", "font-style:italic;opacity:.75;margin:2px 0 6px", "“" + f.quote + "”")); ul.appendChild(li); });
+      g.items.forEach(function (f) { var li = el("li", "", f.where + (FULL || f.open ? ": " + f.detail : ": ada di teks lengkap")); if ((FULL || f.open) && f.quote) li.appendChild(el("div", "font-style:italic;opacity:.75;margin:2px 0 6px", "“" + f.quote + "”")); ul.appendChild(li); });
       d.appendChild(ul); wrap.appendChild(d);
     }
     return wrap;

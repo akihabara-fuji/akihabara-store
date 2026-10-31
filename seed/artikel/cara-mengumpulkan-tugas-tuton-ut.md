@@ -47,7 +47,7 @@ Butuh pendampingan tugas, diskusi, atau metopen? [Lihat layanan Catatan Akademik
 
 - [Perbedaan Tuton, TMK, TTM, dan Tuweb di UT](https://catatanakademik.com/blog/perbedaan-tuton-tmk-ttm-tuweb-ut)
 - [Cara cek jadwal UAS UT lewat KTPU di MyUT](https://catatanakademik.com/blog/cara-cek-jadwal-uas-ut)
-- [Cek dokumen gratis](https://catatanakademik.com/audit) untuk memeriksa kerapian dan kemiripan tugasmu sebelum dikumpulkan.
+- [Cek dokumen gratis](https://catatanakademik.com/cek-parafrase-mandiri) untuk memeriksa kerapian dan kemiripan tugasmu sebelum dikumpulkan.
 - [Sitasi dan daftar pustaka](https://catatanakademik.com/sitasi-apa) untuk menulis rujukan dengan benar.
 - [Panduan Mahasiswa Baru UT](https://catatanakademik.com/panduan-maba) untuk urutan lengkap dari registrasi sampai ujian.
 

@@ -11,7 +11,7 @@ test("menu Tutorial Online ada di semua halaman bernavigasi, tanpa menu lama yan
     const h = fs.readFileSync(path.join(dir, f), "utf8");
     if (!/<nav class="links"/.test(h)) continue;
     assert.ok(/<summary[^>]*>Tutorial Online/.test(h), f + " tanpa menu Tutorial Online");
-    for (const m of ["Layanan", "Audit &amp; Bedah UT", "Mahasiswa Baru", "Portal &amp; Alat UT"]) assert.ok(h.includes(m) || h.includes(m.replace("&amp;", "&")), f + " kehilangan " + m);
+    for (const m of ["Layanan", "Parafrase File dan Bedah Penelitian", "Mahasiswa Baru", "Portal &amp; Alat UT"]) assert.ok(h.includes(m) || h.includes(m.replace("&amp;", "&")), f + " kehilangan " + m);
   }
 });
 test("halaman tutorial-online terdaftar: rute, aset, sitemap, jalur pendek", () => {

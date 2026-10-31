@@ -15,8 +15,6 @@ const PAGES = {
   "beranda.html": "Beranda (landing)",
   "hub.html": "Halaman Layanan UT",
   "cek.html": "Cek & Parafrase Mandiri",
-  "audit.html": "Audit Dokumen",
-  "audit-hasil.html": "Hasil Audit Lengkap",
   "layanan.html": "Form Tugas, Diskusi, Metopen, Revisi",
   "pesanan.html": "Cek Pesanan",
   "blog-ut.html": "Halaman blog",

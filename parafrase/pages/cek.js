@@ -50,8 +50,8 @@
       .then(function () { window.pfScan.stop($("busy")); $("chGo").disabled = false; $("chChange").disabled = false; });
   }
 
-  /* Satu pintu untuk unggahan baru DAN unggahan yang dilanjutkan dari Audit Dokumen (?u=...). Urgensi, urutan paragraf, dan resep
-     datang dari mesin server yang sama dengan Audit; angka Drillbit yang pernah ditempel di Audit (tersimpan di browser ini) ikut dipakai. */
+  /* Satu pintu untuk unggahan baru DAN unggahan yang dilanjutkan dari unggahan sebelumnya (?u=...). Urgensi, urutan paragraf, dan resep
+     datang dari mesin server yang sama dengan Bedah; angka Drillbit yang pernah ditempel (tersimpan di browser ini) ikut dipakai. */
   function triageUrl(s, a) {
     var q = []; if (s != null) q.push("sim=" + encodeURIComponent(String(s))); if (a != null) q.push("ai=" + encodeURIComponent(String(a)));
     return "/ms/parafrase/upload/" + st.up.uploadId + (q.length ? "?" + q.join("&") : "");
@@ -68,9 +68,9 @@
     });
   }
   function resume(id) {
-    window.pfScan.start($("busy"), ["Membuka dokumen dari Audit…", "Menandai bagian yang perlu dibenahi…"]);
+    window.pfScan.start($("busy"), ["Membuka dokumen yang kamu unggah…", "Menandai bagian yang perlu dibenahi…"]);
     fetch("/ms/parafrase/upload/" + id, { cache: "no-store" }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
-      .then(function (x) { if (!x.ok) { showErr(x.j.error || "Dokumen dari Audit tidak bisa dibuka. Unggah ulang dokumenmu."); return; } applyUpload(x.j); })
+      .then(function (x) { if (!x.ok) { showErr(x.j.error || "Dokumen tidak bisa dibuka. Unggah ulang dokumenmu."); return; } applyUpload(x.j); })
       .catch(function () { showErr("Koneksi terputus. Muat ulang halaman atau unggah dokumenmu lagi."); })
       .then(function () { window.pfScan.stop($("busy")); });
   }
@@ -163,12 +163,11 @@
     var dt = $("doc") && $("doc").parentNode; if (dt && dt.tagName === "DETAILS" && !st.openedOnce) { dt.open = true; st.openedOnce = true; }
   }
   function mk(tag, css, txt) { var e = document.createElement(tag); if (css) e.style.cssText = css; if (txt != null) e.textContent = txt; return e; }
-  /* Angka aspek yang sama dengan Audit Dokumen (renderer yang sama di common.js). */
+  /* Angka aspek yang sama dengan Bedah (renderer yang sama di common.js). */
   function renderOverview(pv) {
     var box = $("overview"); box.innerHTML = ""; if ($("pbox")) $("pbox").innerHTML = ""; if (!pv.overview) return;
     if (pv.overview.problem) window.auditProblemCard(pv.overview.problem, $("pbox") || box);
     window.auditAspects(pv.overview, box, { compact: true });
-    box.appendChild(mk("a", "font-size:13.5px", "Skor kesiapan serta penjelasan lengkap sitasi dan daftar pustaka ada di Audit Dokumen →")).href = "/ruangakademikut/audit";
   }
   /* Satu paragraf contoh: rekomendasi di atas, kalimat yang salah dicoret dan diberi warna kodenya, lalu contoh penulisan ulang. */
   function renderExample(pv) {
