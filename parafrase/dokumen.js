@@ -56,7 +56,7 @@ module.exports = function mountDokumen({ app, express, db, root, requireAdmin })
     let rev = 0, status = "baru", mismatch = false;
     if (key) {
       const prev = db.prepare("SELECT student_name, wa, nim, revision_no FROM doc_library WHERE student_key=? ORDER BY created_at DESC LIMIT 1").get(key);
-      const n = db.prepare("SELECT COUNT(*) c FROM doc_library WHERE student_key=? AND kind='bedah'").get(key).c;
+      const n = db.prepare("SELECT COUNT(*) c FROM doc_library WHERE student_key=? AND source='bedah'").get(key).c;
       if (n > 0) { rev = n; status = "revisi"; }
       const norm = v => String(v || "").toLowerCase().replace(/[^a-z]/g, "");
       mismatch = !!(prev && cleanName && prev.student_name && norm(prev.student_name) !== norm(cleanName));
@@ -85,7 +85,7 @@ module.exports = function mountDokumen({ app, express, db, root, requireAdmin })
     if (aiRel) await fsp.writeFile(path.join(priv, aiRel), aiBuf, { mode: 0o600 });
     if (simRel) await fsp.writeFile(path.join(priv, simRel), simBuf, { mode: 0o600 });
     db.prepare("INSERT INTO doc_library(id,name,title,kind,ai_pct,sim_pct,target_ai,target_sim,note,size,path,ai_path,sim_path,words,data,student_key,student_name,nim,wa,status,revision_no,source,order_id,pinned,created_at,expires_at) VALUES(?,?,?,?,?,?,NULL,NULL,'',?,?,?,?,?,?,?,?,?,?,?,?,'bedah',NULL,0,?,?)")
-      .run(id, clip(name, 160), clip(name.replace(/\.[a-z0-9]{1,5}$/i, ""), 200), "bedah", ai ? pct(ai.aiPct) : null, sim ? pct(sim.pct) : null, buf.length, rel, aiRel, simRel, words || null, JSON.stringify(data), key, clip(nama, 80) || null, cleanNim || null, wa || null, status, rev, now, now + TTL_MS);
+      .run(id, clip(name, 160), clip(name.replace(/\.[a-z0-9]{1,5}$/i, ""), 200), service === "cek" ? "parafrase" : "bedah", ai ? pct(ai.aiPct) : null, sim ? pct(sim.pct) : null, buf.length, rel, aiRel, simRel, words || null, JSON.stringify(data), key, clip(nama, 80) || null, cleanNim || null, wa || null, status, rev, now, now + TTL_MS);
     if (key) db.prepare("UPDATE doc_library SET nim=COALESCE(nim,?), wa=COALESCE(wa,?), student_name=COALESCE(student_name,?) WHERE student_key=?").run(cleanNim || null, wa || null, clip(nama, 80) || null, key);
     return id;
   }

@@ -98,17 +98,24 @@ async function applyEdits(buf, edits) {
   return { buf: await zip.generateAsync({ type: "nodebuffer", compression: "DEFLATE" }), ...r };
 }
 
-/* Edit dari item (bisa meliputi beberapa kalimat berurutan) menjadi daftar edit per kalimat:
-   teks baru masuk ke kalimat pertama, kalimat lain milik item itu dikosongkan. */
+/* Edit dari item (bisa meliputi beberapa kalimat berurutan) menjadi daftar edit per kalimat Word:
+   teks baru masuk ke kalimat pertama milik item, kalimat lain milik item itu dikosongkan.
+   Beberapa item bisa berbagi satu kalimat Word (UT menyorot satu kalimat panjang yang kita pecah jadi dua): teksnya digabung berurutan,
+   dan bagian yang tidak diedit memakai teks aslinya supaya tidak hilang. */
 function editsFromItems(items, texts) {
-  const out = [];
+  const slot = new Map(), order = [];
+  let edited = new Set();
   for (const it of items) {
-    const t = texts[it.n];
-    if (t == null || String(t).trim() === "") continue;
+    const t = texts[it.n], has = t != null && String(t).trim() !== "";
     const parts = it.parts && it.parts.length ? it.parts : [[it.para_idx, it.sent_idx]];
-    parts.forEach(([pi, si], j) => out.push({ para_idx: pi, sent_idx: si, text: j === 0 ? String(t).trim() : "" }));
+    parts.forEach(([pi, si], j) => {
+      const k = pi + ":" + si;
+      if (!slot.has(k)) { slot.set(k, { para_idx: pi, sent_idx: si, pieces: [] }); order.push(k); }
+      slot.get(k).pieces.push(j === 0 ? (has ? String(t).trim() : String(it.text || "").trim()) : "");
+      if (has) edited.add(k);
+    });
   }
-  return out;
+  return order.filter(k => edited.has(k)).map(k => { const s = slot.get(k); return { para_idx: s.para_idx, sent_idx: s.sent_idx, text: s.pieces.filter(Boolean).join(" ") }; });
 }
 
 /* Hasil edit di Word: cari kalimat padanan tiap item di dokumen yang diedit (dekat posisi paragrafnya). */

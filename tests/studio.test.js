@@ -89,3 +89,10 @@ test("Studio bisa dibuka dari Dokumen Saya (id dokumen) dan dari pesanan", () =>
   const a = require("fs").readFileSync(require("path").join(__dirname, "..", "admin-ca", "public", "app.js"), "utf8");
   assert.match(a, /studio-page\?id=\$\{x\.id\}/); assert.match(a, /studio-page\?id=\$\{id\}/);
 });
+
+need("dua item berbagi satu kalimat Word: teks digabung, bagian yang tak diedit tetap utuh", () => {
+  const items = [{ n: 1, para_idx: 9, sent_idx: 0, parts: [[9, 0]], text: "Bagian satu." }, { n: 2, para_idx: 9, sent_idx: 0, parts: [[9, 0]], text: "Bagian dua." }];
+  assert.deepStrictEqual(studio.editsFromItems(items, { 1: "Baru satu." }), [{ para_idx: 9, sent_idx: 0, text: "Baru satu. Bagian dua." }]);
+  assert.deepStrictEqual(studio.editsFromItems(items, { 1: "A.", 2: "B." }), [{ para_idx: 9, sent_idx: 0, text: "A. B." }]);
+  assert.deepStrictEqual(studio.editsFromItems(items, {}), []);
+});
