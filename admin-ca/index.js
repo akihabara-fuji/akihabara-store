@@ -177,6 +177,18 @@ module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, b
     db.prepare("INSERT INTO order_notes(order_id,admin,text,at) VALUES(?,?,?,?)").run(o.id, req.admin.name, text, Date.now());
     return { ok: true };
   }));
+  /* Tandai selesai: hasil sudah diserahkan di luar sistem (mis. lewat WhatsApp) atau tidak ada file untuk diunggah. */
+  app.post("/ms/admin/ca/orders/:id/selesai", requireAdmin, J, send(req => {
+    const note = str((req.body || {}).note, 300), now = Date.now();
+    db.transaction(() => {
+      const o = one(req.params.id); if (!o) throw bad(404, "Pesanan tidak ditemukan.");
+      if (!PROCESS.includes(o.status)) throw bad(409, `Pesanan berstatus ${(STATUS[o.status] || {}).label || o.status} tidak bisa ditandai selesai.`);
+      const hrs = settings.getAll().retention_hours || 24;
+      db.prepare("UPDATE orders SET status='terkirim', sent_at=?, delete_at=?, updated_at=? WHERE id=?").run(now, now + hrs * 3600e3, now, o.id);
+      orders.event(o.id, "ditandai_selesai", `${req.admin.name}${note ? ": " + note : ""}`, now);
+    })();
+    return { ok: true };
+  }));
   /* Batalkan: belum bayar -> langsung batal, file dihapus. Sudah bayar -> batal dengan catatan refund manual; tandai "dana dikembalikan" setelah transfer balik. */
   app.post("/ms/admin/ca/orders/:id/cancel", requireAdmin, J, send(async req => {
     const reason = str((req.body || {}).reason, 300); if (reason.length < 3) throw bad(400, "Tulis alasan pembatalan.");

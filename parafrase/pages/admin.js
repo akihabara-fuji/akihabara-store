@@ -19,9 +19,10 @@
   }
   function dt(ms) { return ms ? new Date(ms).toLocaleString("id-ID", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "-"; }
   var STAT = { menunggu_bayar: "Menunggu bayar", menunggu_verifikasi: "Menunggu verifikasi", baru_dibayar: "Baru dibayar", dikerjakan: "Dikerjakan", cek_ulang: "Cek ulang", terkirim: "Terkirim", kedaluwarsa: "Kedaluwarsa" };
-  var TABS = [["verif", "Verifikasi bayar"], ["lay", "Tugas, Diskusi, Metopen, Revisi"], ["queue", "Cek & Parafrase"], ["audit", "Audit Dokumen"], ["bedah", "Bedah Laporan"], ["all", "Semua pesanan"], ["set", "QRIS & Pengaturan"], ["img", "Gambar kartu"], ["site", "Gambar situs"], ["wa", "Pesan WhatsApp"]]; // Ulasan pelanggan pindah ke menu Testimoni di panel CA
-  var cur = "verif";
+  var TABS = [["lay", "Tugas, Diskusi, Metopen, Revisi"], ["queue", "Cek & Parafrase"], ["audit", "Audit Dokumen"], ["bedah", "Bedah Laporan"], ["all", "Semua pesanan"], ["set", "QRIS & Pengaturan"], ["img", "Gambar kartu"], ["site", "Gambar situs"], ["wa", "Pesan WhatsApp"]]; // Ulasan pelanggan pindah ke menu Testimoni di panel CA
+  var cur = EMBED_DEFAULT();
   var EMBED = /[?&]embed=1/.test(location.search);
+  function EMBED_DEFAULT() { return "queue"; }
   if (EMBED) document.documentElement.classList.add("embed");
   var TYPE = { layanan: "Layanan", audit: "Audit", bedah: "Bedah Laporan", umum: "Cek & Parafrase", metopen: "Cek & Parafrase", artikel: "Cek & Parafrase" };
 
@@ -42,7 +43,7 @@
   function go(t) {
     cur = t; TABS.forEach(function (x) { $("t-" + x[0]).classList.toggle("hidden", x[0] !== t); });
     [].forEach.call($("tabs").children, function (b) { b.classList.toggle("on", b.getAttribute("data-t") === t); });
-    ({ queue: renderQueue, verif: renderVerif, all: renderAll, audit: renderAuditList, bedah: renderBedah, lay: renderLay, set: renderSettings, wa: renderWa, img: renderImg, site: renderSite, ul: renderUlasan })[t]();
+    ({ queue: renderQueue, all: renderAll, audit: renderAuditList, bedah: renderBedah, lay: renderLay, set: renderSettings, wa: renderWa, img: renderImg, site: renderSite, ul: renderUlasan })[t]();
   }
   function waLink(o, text) { return "https://wa.me/" + o.wa + (text ? "?text=" + encodeURIComponent(text) : ""); }
 
@@ -101,24 +102,6 @@
       s.appendChild(orderTable(j.queue.filter(function (o) { return o.docType !== "layanan" && o.docType !== "audit" && o.docType !== "bedah"; }), true));
     }).catch(function (e) { s.textContent = e.message; });
   }
-  function renderVerif() {
-    var s = $("t-verif"); s.textContent = "Memuat…";
-    api("/ms/admin/parafrase/orders?status=menunggu_verifikasi").then(function (j) {
-      s.textContent = ""; if (!j.orders.length) s.appendChild(h("p", { class: "muted" }, "Tidak ada pembayaran yang menunggu verifikasi."));
-      j.orders.forEach(function (o) {
-        var reason = h("input", { type: "text", placeholder: "Alasan penolakan (opsional)", maxlength: 200 });
-        s.appendChild(h("div", { class: "card", style: "margin-bottom:14px;display:flex;flex-wrap:wrap;gap:18px" }, [
-          h("div", {}, o.hasProof ? h("img", { class: "proof", alt: "Bukti bayar " + o.orderId, src: "/ms/admin/parafrase/orders/" + o.orderId + "/proof?t=" + (o.proofAt || 0) }) : h("div", { class: "muted" }, "Tidak ada foto")),
-          h("div", { style: "flex:1 1 260px;display:flex;flex-direction:column;gap:8px" }, [
-            h("b", {}, o.orderId + " · " + (TYPE[o.docType] || "Pesanan") + " · " + (o.title || "-")), h("div", {}, "Nominal HARUS persis: " + rp(o.total) + " (kode unik " + o.uniqueCode + ")"),
-            h("div", { class: "muted" }, "Bukti diunggah " + dt(o.proofAt) + " · " + (o.lane === "cepat" ? "JALUR CEPAT" : "biasa") + " · deadline " + dt(o.deadlineAt)), reason,
-            h("div", { class: "act" }, [
-              h("button", { type: "button", class: "btn g", on: { click: function () { api("/ms/admin/parafrase/orders/" + o.orderId + "/confirm", { json: {} }).then(function () { toast("Dikonfirmasi " + o.orderId); renderVerif(); }).catch(function (e) { toast(e.message); }); } } }, "Konfirmasi"),
-              h("button", { type: "button", class: "btn r", on: { click: function () { api("/ms/admin/parafrase/orders/" + o.orderId + "/reject", { json: { reason: reason.value } }).then(function () { toast("Ditolak " + o.orderId); renderVerif(); }).catch(function (e) { toast(e.message); }); } } }, "Tolak"),
-            ])])]));
-      });
-    }).catch(function (e) { s.textContent = e.message; });
-  }
   function renderAll() {
     var s = $("t-all"); s.textContent = "Memuat…";
     api("/ms/admin/parafrase/orders").then(function (j) { s.textContent = ""; s.appendChild(orderTable(j.orders, false)); }).catch(function (e) { s.textContent = e.message; });
@@ -132,7 +115,7 @@
     Promise.all([api("/ms/admin/parafrase/orders"), api("/ms/admin/bedah/kalibrasi")]).then(function (r) {
       var j = r[0], k = r[1];
       s.textContent = "";
-      s.appendChild(h("p", { class: "muted" }, "Bedah Laporan Penelitian UT berjalan otomatis. Pembayaran dikonfirmasi di tab Verifikasi bayar; hasil langsung terbuka untuk pelanggan setelah lunas."));
+      s.appendChild(h("p", { class: "muted" }, "Bedah Laporan Penelitian UT berjalan otomatis. Pembayaran dikonfirmasi di menu Konfirmasi Pembayaran; hasil langsung terbuka untuk pelanggan setelah lunas."));
       var live = k.items.filter(function (x) { return !x.revoked_at; });
       var box = h("div", { class: "card", style: "margin-bottom:14px" }, [
         h("b", {}, "Data kalibrasi (hanya yang berizin)"),
@@ -167,7 +150,7 @@
   function renderAuditList() {
     var s = $("t-audit"); s.textContent = "Memuat…";
     api("/ms/admin/parafrase/orders").then(function (j) {
-      s.textContent = ""; s.appendChild(h("p", { class: "muted" }, "Audit Dokumen berjalan otomatis (tanpa AI). Pembayaran dikonfirmasi di tab Verifikasi bayar; hasil langsung terbuka untuk pelanggan setelah lunas."));
+      s.textContent = ""; s.appendChild(h("p", { class: "muted" }, "Audit Dokumen berjalan otomatis (tanpa AI). Pembayaran dikonfirmasi di menu Konfirmasi Pembayaran; hasil langsung terbuka untuk pelanggan setelah lunas."));
       s.appendChild(orderTable(j.orders.filter(function (o) { return o.docType === "audit"; }), false));
     }).catch(function (e) { s.textContent = e.message; });
   }
