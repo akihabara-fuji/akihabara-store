@@ -1,0 +1,131 @@
+/* Studio Parafrase (admin): logika murni untuk Cek & Parafrase berbasis laporan UT.
+   (1) ciri kalimat yang ditandai UT, diukur dari teksnya sendiri (tanpa persen mesin),
+   (2) hitungan untuk mahasiswa (hanya warna dan total kalimat biru),
+   (3) mengganti kalimat biru di DOCX asli tanpa mengubah format bagian lain,
+   (4) mencocokkan hasil edit di Word ke kalimat biru. */
+"use strict";
+const { splitSentences, countWords, paraText, paragraphNodes, parseBody, openDocx, readText, W } = require("./docx");
+const banding = require("./banding");
+
+const LONG_MAX = 35;                 // sama dengan rules.analyzeFindings (cfg.long_sentence_words)
+const TRANS = ["selain itu", "oleh karena itu", "selanjutnya", "di samping itu", "dengan demikian", "namun demikian", "lebih lanjut", "sehingga", "kemudian"];
+const norm = s => String(s || "").toLowerCase().replace(/\s+/g, " ").trim();
+const leadOf = t => { const n = norm(t); return TRANS.find(x => n.startsWith(x + " ") || n.startsWith(x + ",")) || null; };
+
+/* Ciri satu kalimat. level: merah (bermasalah), hijau (aman), kuning (perlu detail), netral (hanya angka). */
+function ciri(text, paraSents, longMax = LONG_MAX) {
+  const w = countWords(text), commas = (String(text).match(/,/g) || []).length, out = [];
+  out.push(w > longMax
+    ? { key: "panjang", level: "merah", text: `Terlalu panjang: ${w} kata (batas ${longMax}). Pecah jadi dua kalimat.` }
+    : { key: "panjang", level: "hijau", text: `Panjang aman: ${w} kata (batas ${longMax}).` });
+  out.push({ key: "koma", level: "netral", text: `Koma: ${commas}.` });
+  const lead = leadOf(text);
+  if (lead) {
+    const n = (paraSents || []).filter(s => leadOf(s) === lead).length;
+    out.push({ key: "penyambung", level: n >= 3 ? "merah" : "netral", text: `Diawali penyambung "${lead}"` + (n >= 3 ? `; dipakai ${n} kali di paragraf ini. Variasikan.` : ".") });
+  }
+  const pw = (paraSents || []).reduce((a, s) => a + countWords(s), 0);
+  if ((paraSents || []).length && paraSents.length <= 2 && pw < 35)
+    out.push({ key: "dempet", level: "merah", text: `Paragraf dempet: hanya ${paraSents.length} kalimat (${pw} kata). Kembangkan dengan penjelasan atau contoh.` });
+  const detail = /\d/.test(text) || /(?<=[a-z,;]\s)[A-Z][a-z]{2,}/.test(text);
+  if (!detail) out.push({ key: "detail", level: "kuning", text: "Tanpa angka, nama, atau data kasus." });
+  return out;
+}
+
+/* Hitungan untuk mahasiswa: hanya total kalimat biru dan jumlah per warna. Tanpa teks rekomendasi. */
+function stats(items, sentsOfPara) {
+  const pola = { definisi: 0, sintesis: 0, proposisi: 0, umum: 0, blok: 0 };
+  const ciriMerah = { panjang: 0, dempet: 0, penyambung: 0 };
+  for (const it of items) {
+    for (const g of it.tags || []) if (g.id in pola) pola[g.id]++;
+    for (const c of ciri(it.text, sentsOfPara(it.para_idx))) if (c.level === "merah" && c.key in ciriMerah) ciriMerah[c.key]++;
+  }
+  return { total: items.length, pola, ciriMerah };
+}
+
+/* ---------- ganti kalimat di DOM Word ---------- */
+const kidsOf = n => { const o = []; for (let c = n.firstChild; c; c = c.nextSibling) if (c.nodeType === 1) o.push(c); return o; };
+const isW = (el, name) => el && el.namespaceURI === W && el.localName === name;
+const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+/* Satu kalimat dalam satu paragraf. Hanya paragraf sederhana (run + penanda); selain itu dilewati dan dilaporkan. */
+function replaceInParagraph(p, sentIdx, newText) {
+  const kids = kidsOf(p).filter(c => !isW(c, "pPr"));
+  const okKind = new Set(["r", "bookmarkStart", "bookmarkEnd", "proofErr"]);
+  if (!kids.every(c => c.namespaceURI === W && okKind.has(c.localName))) return "paragraf_rumit";
+  const runs = kids.filter(c => isW(c, "r"));
+  const info = runs.map(r => { const ts = kidsOf(r).filter(c => isW(c, "t")); return { r, ts, text: ts.map(t => t.textContent).join(""), other: kidsOf(r).some(c => !isW(c, "rPr") && !isW(c, "t")) }; });
+  const full = info.map(x => x.text).join("");
+  const sents = splitSentences(paraText(p));
+  const s = sents[sentIdx];
+  if (!s) return "kalimat_tidak_ada";
+  const m = new RegExp(s.split(/\s+/).map(esc).join("\\s+")).exec(full);
+  if (!m) return "teks_tidak_cocok";
+  const a = m.index, b = m.index + m[0].length;
+  let pos = 0, done = false;
+  for (const x of info) {
+    const start = pos, end = pos + x.text.length; pos = end;
+    if (end <= a || start >= b || !x.text.length) continue;
+    const from = Math.max(a, start) - start, to = Math.min(b, end) - start;
+    const next = x.text.slice(0, from) + (done ? "" : newText) + x.text.slice(to);
+    done = true;
+    x.ts.forEach((t, i) => { if (i) t.parentNode.removeChild(t); });
+    if (x.ts[0]) { x.ts[0].textContent = next; x.ts[0].setAttribute("xml:space", "preserve"); }
+  }
+  return done ? null : "teks_tidak_cocok";
+}
+
+/* edits: [{ para_idx, sent_idx, text }]. Dikerjakan dari kalimat paling belakang supaya indeks kalimat di depannya tetap benar. */
+function applyEditsToDom(body, edits) {
+  const nodes = paragraphNodes(body), skipped = [];
+  let applied = 0;
+  const list = [...edits].sort((x, y) => y.para_idx - x.para_idx || y.sent_idx - x.sent_idx);
+  for (const e of list) {
+    const n = nodes[e.para_idx];
+    const why = n ? replaceInParagraph(n.node, e.sent_idx, String(e.text == null ? "" : e.text)) : "paragraf_tidak_ada";
+    if (why) skipped.push({ para_idx: e.para_idx, sent_idx: e.sent_idx, reason: why }); else applied++;
+  }
+  return { applied, skipped };
+}
+
+async function applyEdits(buf, edits) {
+  const { XMLSerializer } = require("@xmldom/xmldom");
+  const zip = await openDocx(buf);
+  const { doc, body } = parseBody(await readText(zip, "word/document.xml"));
+  const r = applyEditsToDom(body, edits);
+  const xml = new XMLSerializer().serializeToString(doc);
+  zip.file("word/document.xml", xml.startsWith("<?xml") ? xml : '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n' + xml);
+  return { buf: await zip.generateAsync({ type: "nodebuffer", compression: "DEFLATE" }), ...r };
+}
+
+/* Edit dari item (bisa meliputi beberapa kalimat berurutan) menjadi daftar edit per kalimat:
+   teks baru masuk ke kalimat pertama, kalimat lain milik item itu dikosongkan. */
+function editsFromItems(items, texts) {
+  const out = [];
+  for (const it of items) {
+    const t = texts[it.n];
+    if (t == null || String(t).trim() === "") continue;
+    const parts = it.parts && it.parts.length ? it.parts : [[it.para_idx, it.sent_idx]];
+    parts.forEach(([pi, si], j) => out.push({ para_idx: pi, sent_idx: si, text: j === 0 ? String(t).trim() : "" }));
+  }
+  return out;
+}
+
+/* Hasil edit di Word: cari kalimat padanan tiap item di dokumen yang diedit (dekat posisi paragrafnya). */
+function matchImported(items, importedParas) {
+  const pool = [];
+  for (const p of importedParas) for (const t of splitSentences(p.text || "")) pool.push({ idx: p.idx, text: t });
+  const sug = {};
+  for (const it of items) {
+    let best = null;
+    for (const c of pool) {
+      if (Math.abs(c.idx - it.para_idx) > 3) continue;
+      const sc = banding.similarity(it.text, c.text).score;
+      if (!best || sc > best.sc) best = { c, sc };
+    }
+    if (best && best.sc >= 0.25 && norm(best.c.text) !== norm(it.text)) sug[it.n] = best.c.text;
+  }
+  return sug;
+}
+
+module.exports = { LONG_MAX, ciri, stats, applyEditsToDom, applyEdits, editsFromItems, matchImported, replaceInParagraph, leadOf };

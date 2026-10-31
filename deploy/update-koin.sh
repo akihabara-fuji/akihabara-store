@@ -75,15 +75,17 @@ c(){ curl -s -o /dev/null -w '%{http_code}' --resolve "$1:443:127.0.0.1" "https:
 get(){ curl -fsS --resolve "$1:443:127.0.0.1" "https://$1$2"; }
 has(){ local b; b=$(get "$1" "$2") || return 1; [[ "$b" == *"$3"* ]]; }
 CA="${CA_HOST:-catatanakademik.com}"
-for u in / /blog /sitemap.xml /robots.txt /admin/ /layanan /portal-ut /kalkulator-nilai-ut /ms/layanan/config /ms/galeri /sampul-tugas /tracker-kelulusan /kalender-akademik /panduan-maba /bedah-laporan; do x=$(c $CA "$u"); echo "$CA$u $x"; [ "$x" = 200 ]; done
+for u in / /blog /sitemap.xml /robots.txt /admin/ /layanan /portal-ut /kalkulator-nilai-ut /ms/layanan/config /ms/galeri /sampul-tugas /tracker-kelulusan /kalender-akademik /panduan-maba /bedah-laporan /cek-parafrase-mandiri /ms/admin/studio-page; do x=$(c $CA "$u"); echo "$CA$u $x"; [ "$x" = 200 ]; done
 for u in /buat-cv-ats /surat-lamaran /pasfoto-yudisium; do x=$(c $CA "$u"); echo "$CA$u $x"; [ "$x" = 301 ]; done
 x=$(c $CA /grup); echo "$CA/grup $x"; [ "$x" = 302 ] || [ "$x" = 200 ]
 has $CA /panduan-maba 'Baru masuk UT' || { echo "Halaman panduan maba tidak tampil"; false; }
 for u in /audit /audit-parafrase /ruangakademikut/audit; do x=$(c $CA "$u"); echo "$CA$u $x"; [ "$x" = 301 ]; done
 has $CA /admin/ 'Admin · Catatan Akademik' || { echo "Panel admin CA tidak tampil di /admin"; false; }
+has $CA /cek-parafrase-mandiri 'fOrig' || { echo "Halaman Cek tidak tampil"; false; }
+has $CA /ms/admin/studio-page 'id="mB"' || { echo "Halaman Studio tidak tampil"; false; }
 has $CA /ms/layanan/config 'metopen' || { echo "Konfigurasi layanan tidak terbaca"; false; }
 echo "Isi halaman: OK"
-for u in /ms/admin/ca/me /ms/admin/posts /ms/admin/ca/orders; do x=$(c $CA $u); echo "API $u tanpa login: $x"; [ "$x" = 401 ]; done
+for u in /ms/admin/ca/me /ms/admin/posts /ms/admin/ca/orders /ms/admin/studio/NA-0; do x=$(c $CA $u); echo "API $u tanpa login: $x"; [ "$x" = 401 ]; done
 x=$(c $CA /halaman-tidak-ada); echo "404: $x"; [ "$x" = 404 ]
 trap - ERR
 relock

@@ -189,16 +189,12 @@ section.s{padding:80px 0 0}
 .gal-n{position:absolute;right:8px;top:8px;background:rgba(10,10,28,.65);color:#fff;font-size:11px;font-weight:700;border-radius:999px;padding:2px 8px}
 @media(prefers-reduced-motion:reduce){.gal-t{transition:none}}
 .mini h3{margin:0 22px;font-size:18px}.mini p{margin:0 22px;color:var(--muted);font-size:13.5px}
-/* ukuran rapi di layar lebar: foto kartu tidak ikut membesar */
-.gal{aspect-ratio:16/9;max-height:230px}.gal.cv{aspect-ratio:16/9}
-#cek .g2{grid-template-columns:repeat(2,minmax(0,1fr))}#cek .mini{flex-direction:column;align-items:stretch;padding:0;gap:0}
-#cek .mini .gal{flex:none;max-height:230px;aspect-ratio:16/9;min-height:0;margin:0}#cek .mini .gal.cv{aspect-ratio:16/9}
-#cek .mini .tx{flex:1;display:flex;flex-direction:column;justify-content:flex-start;align-items:flex-start;gap:8px;padding:20px 22px}
-#cek .mini .tx>*,#cek .mini .tx h3,#cek .mini .tx p,#cek .mini .tx small{margin:0!important}
-#cek .mini .tx h3{font-size:22px}
-#cek .mini .tx .pr{display:inline-block;margin-top:6px;padding:10px 16px;border-radius:12px;background:var(--acc);color:var(--on-accent);font-weight:800;font-size:14px}
+/* semua foto kartu memakai rasio yang sama dengan kartu blog (40:21) */
+.gal,.gal.cv{aspect-ratio:40/21;max-height:none}
 @media(max-width:900px){#cek .g2{grid-template-columns:1fr}}
-@media(min-width:1280px){#layanan .g3{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media(min-width:1280px){#layanan .g3{grid-template-columns:repeat(4,minmax(0,1fr))}}
+/* foto kartu Cek dan Bedah punya pita hitam dan sisa panel di tepi: dizoom sedikit supaya bingkainya bersih */
+[data-g="cek"] .gal-t img,[data-g="bedah"] .gal-t img{transform:scale(1.15);object-position:center 40%}
 
 /* produk */
 .tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
@@ -485,10 +481,8 @@ svg.nx-i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;s
       <a class="nx-door nx-d1" href="/panduan-maba"><span class="nx-t"><svg class="nx-i" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.4 7.6-8 9-4.6-1.4-8-4.5-8-9V6z"/></svg>Saya mahasiswa baru<b aria-hidden="true">→</b></span><small>Checklist dari registrasi sampai nilai</small></a>
       <a class="nx-door nx-d2" data-group href="/grup?dari=beranda"><span class="nx-t"><svg class="nx-i" viewBox="0 0 24 24"><path d="M16 11a3 3 0 1 0-6 0M4 20a8 8 0 0 1 16 0"/></svg>Gabung grup WhatsApp<b aria-hidden="true">→</b></span><small>800+ anggota, info UT tiap hari</small></a>
     </div>
-    <div class="nx-pop fx" style="--d:.8s"><span class="nx-help">Masuk dengan akun supaya berkasmu tersimpan di Dokumen Saya. Bayar lewat QRIS.</span></div>
+    <div class="nx-pop fx" style="--d:.8s"><span class="nx-help">Masuk dengan akun supaya berkasmu tersimpan. Bayar lewat QRIS.</span></div>
   </div>
-  <div class="nx-fc nx-c1" data-d="26"><svg class="nx-i" viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg><div><b>2.100+ pesanan masuk</b><small>dari mahasiswa UT sejak 2022</small></div></div>
-  <a class="nx-fc nx-c2" data-group href="#" data-d="26"><svg class="nx-i" viewBox="0 0 24 24"><path d="M16 11a3 3 0 1 0-6 0M4 20a8 8 0 0 1 16 0M18 8a2.5 2.5 0 1 0-2-4M6 8a2.5 2.5 0 1 1 2-4"/></svg><div><b>Grup WhatsApp</b><small>800+ anggota, info UT</small></div></a>
   <div class="nx-strip">
     <span><svg class="nx-i" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.4 7.6-8 9-4.6-1.4-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg><b>Ada tahap review</b><small>Sebelum dikirim ke tutor</small></span>
     <span><svg class="nx-i" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"/></svg><b>Revisi atas masukan tutor</b><small>Selama sesi masih aktif</small></span>
@@ -539,6 +533,20 @@ svg.nx-i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;s
   </div>
 </section>
 
+<section class="s" id="layanan">
+  <div class="wrap">
+    <div class="sh"><div><h2>Butuh pendampingan? Ini pilihannya</h2><p>Alur dan harga ada di tiap layanan, bisa DP, revisi gratis untuk hasil buatan kami. Harga dikonfirmasi lagi sebelum kamu membayar.</p></div><a class="btn btn-pri" href="/layanan-ut">Semua layanan</a></div>
+    <div class="g3">
+      <a class="card mini rv" data-g="tutorial" href="/ruangakademikut/tutorial-online"><h3>Tutorial Online</h3><p>Diskusi, tugas, makalah, jurnal, dan metodologi penelitian di satu portal.</p><span class="pr">Lihat testimoni &amp; alur <b aria-hidden="true">→</b></span></a>
+      <a class="card mini rv" data-g="revisi" href="/layanan?s=revisi_tugas"><h3>Revisi</h3><p>Catatan tutor diperbaiki. Gratis untuk hasil buatan kami.</p><span class="pr">Lihat alur &amp; harga <b aria-hidden="true">→</b></span></a>
+      <a class="card mini rv" data-g="semester" href="/layanan-ut"><h3>Paket Semester</h3><p>Handle 1 semester: absen, diskusi, tugas, update nilai mingguan.</p><span class="pr">Lihat alur &amp; harga <b aria-hidden="true">→</b></span></a>
+      <a class="card mini rv" data-g="pengarahan" href="/layanan-ut"><h3>Pengarahan Intensif</h3><p>Tanya apa saja soal UT, registrasi, dan update.</p><span class="pr">Lihat alur &amp; harga <b aria-hidden="true">→</b></span></a>
+      <a class="card mini rv" id="cek" data-g="cek" href="/cek-parafrase-mandiri"><h3>Cek &amp; Parafrase</h3><p>Admin merevisi kalimat yang ditandai UT. Hasilnya dikirim kembali sebagai file Word.</p><span class="pr">Lihat alur &amp; harga <b aria-hidden="true">→</b></span></a>
+      <a class="card mini rv" data-g="bedah" href="/bedah-laporan"><h3>Bedah Laporan Penelitian UT</h3><p>Lihat kalimat yang ditandai laporan Drillbit UT, lengkap dengan cara memperbaiki.</p><span class="pr">Lihat alur &amp; harga <b aria-hidden="true">→</b></span></a>
+      <a class="card mini rv" data-g="info" href="/blog-ut"><h3>Info UT</h3><p>Jadwal, kabar penting, dan panduan terbaru seputar UT.</p><span class="pr">Baca panduan <b aria-hidden="true">→</b></span></a>
+    </div>
+  </div>
+</section>
 <section class="s" id="faq">
   <div class="wrap">
     <div class="sh"><div><h2>Pertanyaan yang sering muncul</h2></div></div>
@@ -551,27 +559,8 @@ svg.nx-i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;s
   </div>
 </section>
 
-<section class="s" id="layanan">
-  <div class="wrap">
-    <div class="sh"><div><h2>Butuh pendampingan? Ini pilihannya</h2><p>Harga di depan, bisa DP, revisi gratis untuk hasil buatan kami. Harga dikonfirmasi lagi sebelum kamu membayar.</p></div><a class="btn btn-pri" href="/layanan-ut">Semua layanan</a></div>
-    <div class="g3">
-      <a class="card mini rv" data-g="tutorial" href="/ruangakademikut/tutorial-online"><h3>Tutorial Online</h3><p>Diskusi, tugas, makalah, jurnal, dan metodologi penelitian di satu portal.</p><span class="pr">Mulai <span data-p="price_diskusi"></span></span></a>
-      <a class="card mini rv" data-g="revisi" href="/layanan?s=revisi_tugas"><h3>Revisi</h3><p>Catatan tutor diperbaiki. Gratis untuk hasil buatan kami.</p><span class="pr">Free revisi</span></a>
-      <a class="card mini rv" data-g="semester" href="/layanan-ut"><h3>Paket Semester</h3><p>Handle 1 semester: absen, diskusi, tugas, update nilai mingguan.</p><span class="pr"><span data-p="price_semester_min"></span> sampai <span data-p="price_semester_max"></span></span></a>
-      <a class="card mini rv" data-g="pengarahan" href="/layanan-ut"><h3>Pengarahan Intensif</h3><p>Tanya apa saja soal UT, registrasi, dan update.</p><span class="pr">1 semester <span data-p="price_pengarahan_semester"></span></span></a>
-      <a class="card mini rv" data-g="info" href="/blog-ut"><h3>Info UT</h3><p>Jadwal, kabar penting, dan panduan terbaru seputar UT.</p><span class="pr">Gratis</span></a>
-    </div>
-  </div>
-</section>
-
-<section class="s" id="cek"><div class="wrap"><div class="sh"><div><h2>Cek parafrase dan bedah laporan</h2><p>Dua layanan: proposal UT lewat Bedah Laporan, dan turunkan skor lewat Cek &amp; Parafrase.</p></div></div><div class="g2">
-  <a class="card mini rv" data-g="cek" href="/cek-parafrase-mandiri"><div class="tx"><small style="display:block;margin:0 22px 4px;font-weight:700;letter-spacing:.5px;color:#fbbf24">JALUR CEPAT</small><h3>Cek &amp; Parafrase</h3><p>Kalimat bermasalah ditandai, lalu diparafrase tanpa mengubah makna. Hasil dikirim ke WhatsApp.</p><span class="pr">Unggah dokumen · <span data-p="price_per_word"></span> per kata</span></div></a>
-  <a class="card mini rv" data-g="bedah" href="/bedah-laporan"><div class="tx"><small style="display:block;margin:0 22px 4px;font-weight:700;letter-spacing:.5px;color:#22d3ee">BARU</small><h3>Bedah Laporan Penelitian UT</h3><p>Unggah file asli dan laporan Drillbit dari UT. Lihat kalimat yang ditandai UT, 500 kata pertama gratis, lengkap dengan cara memperbaiki.</p><span class="pr">Rp <span data-p="bedah_harga_per_1000">10k</span> per 1.000 kata</span></div></a>
-</div></div></section>
-
-
 <section class="s">
-  <div class="wrap"><div class="banner"><div><h2>Mulai dari yang paling ringan</h2><p>Bedah Laporan gratis 500 kata pertama, atau tanya dulu lewat WhatsApp.</p></div></div></div>
+  <div class="wrap"><div class="banner"><div><h2>Mulai dari yang paling ringan</h2><p>Lihat alur dan harga dulu, atau tanya lewat WhatsApp.</p></div></div></div>
 </section>
 
 

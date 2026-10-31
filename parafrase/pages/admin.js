@@ -50,6 +50,7 @@
     var a = h("div", { class: "act" });
     var run = function (label, cls, fn) { a.appendChild(h("button", { type: "button", class: "btn " + (cls || ""), on: { click: function (ev) { ev.target.disabled = true; Promise.resolve(fn()).then(function () { go(cur); }).catch(function (e) { toast(e.message); }).then(function () { ev.target.disabled = false; }); } } }, label)); };
     if (o.status === "baru_dibayar" || o.status === "dianalisis") run("Mulai kerja", "g", function () { return api("/ms/admin/parafrase/orders/" + o.orderId + "/start", { json: {} }).then(function () { toast("Dikerjakan: " + o.orderId); }); });
+    if (o.paid && !o.filesDeleted && o.docType !== "layanan" && o.docType !== "audit" && o.docType !== "bedah") a.appendChild(h("a", { class: "btn g", style: "display:inline-flex;align-items:center;text-decoration:none", href: "/ms/admin/studio-page?id=" + encodeURIComponent(o.orderId) }, "Buka Studio"));
     if (o.paid && !o.filesDeleted) a.appendChild(h("a", { class: "btn o", style: "display:inline-flex;align-items:center;text-decoration:none", href: "/ms/admin/parafrase/orders/" + o.orderId + "/colored" }, "Word berwarna"));
     if (["baru_dibayar", "dianalisis", "dikerjakan", "cek_ulang", "terkirim"].includes(o.status) && !o.filesDeleted) {
       var f = h("input", { type: "file", accept: ".docx", class: "hidden" });

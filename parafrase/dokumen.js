@@ -38,7 +38,7 @@ module.exports = function mountDokumen({ app, express, db, root, requireAdmin })
   }
 
   /* Dipanggil Bedah setiap kali mahasiswa mengunggah: file asli, laporan AI, laporan similarity, dan hasil bacaannya. */
-  async function saveBedah({ user, name, buf, aiBuf, simBuf, ai, sim, words, problemPct, wa, nama, nim }) {
+  async function saveBedah({ user, name, buf, aiBuf, simBuf, ai, sim, words, problemPct, wa, nama, nim, service }) {
     const id = crypto.randomBytes(8).toString("hex"), now = nowMs();
     const ext = (/\.[a-z0-9]{1,5}$/i.exec(name) || [".docx"])[0].toLowerCase();
     const rel = "library/" + id + ext, aiRel = aiBuf ? "library/" + id + ".ai.pdf" : null, simRel = simBuf ? "library/" + id + ".sim.pdf" : null;
@@ -67,7 +67,7 @@ module.exports = function mountDokumen({ app, express, db, root, requireAdmin })
     data.nameMismatch = mismatch;
     /* File yang sama (sha256) milik akun yang sama sudah tersimpan dari layanan lain (Cek & Parafrase atau Bedah): jangan simpan salinan kedua,
        cukup lengkapi baris yang ada dengan laporan Drillbit dan hasil bacaannya. */
-    data.sha = crypto.createHash("sha256").update(buf).digest("hex"); data.usedIn = ["bedah"];
+    data.sha = crypto.createHash("sha256").update(buf).digest("hex"); data.usedIn = [service === "cek" ? "cek" : "bedah"];
     if (key) {
       const dup = db.prepare("SELECT id, data FROM doc_library WHERE student_key=? AND data LIKE ? LIMIT 1").get(key, '%"sha":"' + data.sha + '"%');
       if (dup) {
@@ -75,7 +75,7 @@ module.exports = function mountDokumen({ app, express, db, root, requireAdmin })
         const dAi = aiBuf ? "library/" + dup.id + ".ai.pdf" : null, dSim = simBuf ? "library/" + dup.id + ".sim.pdf" : null;
         if (dAi) await fsp.writeFile(path.join(priv, dAi), aiBuf, { mode: 0o600 });
         if (dSim) await fsp.writeFile(path.join(priv, dSim), simBuf, { mode: 0o600 });
-        const merged = { ...od, ...data, usedIn: [...new Set([...(od.usedIn || []), "bedah"])] };
+        const merged = { ...od, ...data, usedIn: [...new Set([...(od.usedIn || []), service === "cek" ? "cek" : "bedah"])] };
         db.prepare("UPDATE doc_library SET ai_path=COALESCE(?,ai_path), sim_path=COALESCE(?,sim_path), ai_pct=COALESCE(?,ai_pct), sim_pct=COALESCE(?,sim_pct), words=COALESCE(?,words), data=?, nim=COALESCE(nim,?), wa=COALESCE(wa,?), student_name=COALESCE(student_name,?) WHERE id=?")
           .run(dAi, dSim, ai ? pct(ai.aiPct) : null, sim ? pct(sim.pct) : null, words || null, JSON.stringify(merged), cleanNim || null, wa || null, clip(nama, 80) || null, dup.id);
         return dup.id;

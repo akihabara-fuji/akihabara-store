@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Cek Similarity & Parafrase Mandiri UT | Catatan Akademik</title>
-<meta name="description" content="Unggah dokumen Word atau PDF, lihat bagian yang perlu dibenahi dengan 8 warna, lalu tim Catatan Akademik merevisinya. Pemeriksaan Internal Catatan Akademik.">
+<title>Cek &amp; Parafrase Mandiri UT: Admin Merevisi Kalimat yang Ditandai UT | Catatan Akademik</title>
+<meta name="description" content="Unggah file asli dan dua laporan Drillbit dari UT. Admin Catatan Akademik merevisi hanya kalimat yang ditandai UT, lalu hasilnya dikirim kembali sebagai file Word.">
 <link rel="canonical" href="{{SITE}}/ruangakademikut/cek-parafrase-mandiri"><meta property="og:type" content="website"><meta property="og:site_name" content="Catatan Akademik"><meta property="og:locale" content="id_ID"><meta property="og:title" content="Cek Similarity & Parafrase Mandiri UT | Catatan Akademik"><meta property="og:description" content="Unggah dokumen Word atau PDF, lihat bagian yang perlu dibenahi dengan 8 warna, lalu tim Catatan Akademik merevisinya."><meta property="og:url" content="{{SITE}}/ruangakademikut/cek-parafrase-mandiri"><meta property="og:image" content="{{SITE}}/icon-512.png"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Cek Similarity & Parafrase Mandiri UT | Catatan Akademik"><meta name="twitter:description" content="Unggah dokumen Word atau PDF, lihat bagian yang perlu dibenahi dengan 8 warna, lalu tim Catatan Akademik merevisinya."><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Cek dan Parafrase Mandiri UT","description":"Pemeriksaan dokumen dan penanda bagian yang perlu diparafrase, untuk tugas dan proposal mahasiswa UT.","url":"{{SITE}}/ruangakademikut/cek-parafrase-mandiri","applicationCategory":"EducationalApplication","operatingSystem":"Web","inLanguage":"id-ID","audience":{"@type":"EducationalAudience","educationalRole":"student","audienceType":"Mahasiswa Universitas Terbuka"},"publisher":{"@type":"Organization","name":"Catatan Akademik","url":"{{SITE}}/"}}</script>
 <link rel="icon" href="/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Bricolage+Grotesque:wght@500;700&display=swap" rel="stylesheet"><script>try{var t=localStorage.getItem("nx-theme");document.documentElement.dataset.theme=(t==="light"||t==="dark")?t:"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script>
@@ -19,91 +19,65 @@
 </div></div>
 
 <section id="s1" class="hero" data-need-login>
-  <span class="badge">Pemeriksaan Internal Catatan Akademik</span>
-  <h1>Takut kena similarity tinggi? <span class="hook">Lihat dulu bagian yang berbahaya.</span></h1>
-  <p class="lead">Unggah satu file. Kami membaca judul, bahasa, dan jenisnya sendiri, menandai bagian yang perlu dibenahi, lalu tim kami merevisinya.</p>
-  <div class="drop" id="drop">
-    <b>Tarik dan lepas file di sini</b>
-    <div style="font-size:14px;color:var(--muted)">File Word (.docx) atau PDF. Maksimal <span id="maxmb">25</span> MB, tanpa batas jumlah kata.</div>
-    <div class="muted" style="max-width:520px"><span data-fw>700</span> kata pertama dibuka gratis. File PDF dibaca sebagai teks (tanpa tata letak), jadi Word lebih akurat.</div>
-    <input id="file" type="file" accept=".docx,.pdf,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" class="hidden">
-    <button class="btn" id="pick" type="button" style="margin-top:6px">Pilih file</button>
-    <div class="pf-chosen hidden" id="chosen"><div>File dipilih: <b id="chName"></b> <span class="muted" id="chMeta"></span></div><div><button class="btn" id="chGo" type="button">Cek file</button> <button class="btn" id="chChange" type="button" style="background:transparent;color:inherit;border:1px solid currentColor">Ganti file</button></div></div>
+  <nav class="alur" aria-label="Pilih alur cek dokumen"><a class="alur-i on" href="/ruangakademikut/cek-parafrase-mandiri" aria-current="page"><b>Mau dikerjakan admin</b><small>Cek &amp; Parafrase Mandiri: admin merevisi kalimat yang ditandai UT</small></a><a class="alur-i" href="/ruangakademikut/bedah-laporan"><b>Mau perbaiki sendiri</b><small>Bedah Laporan: lihat kalimat yang ditandai UT dan cara memperbaikinya</small></a></nav>
+  <span class="badge">Cek &amp; Parafrase Mandiri UT</span>
+  <h1>Sudah dapat hasil Drillbit dari UT? <span class="hook">Admin yang merevisi kalimat yang ditandai.</span></h1>
+  <p class="lead">Unggah file aslimu dan dua laporan Drillbit dari UT. Kamu langsung melihat persen dari laporan UT dan kalimat mana yang ditandai. Admin hanya mengubah kalimat yang ditandai UT, bagian lain tidak disentuh. Hasilnya kamu terima sebagai file Word.</p>
+  <div class="card" style="max-width:760px;margin:0 auto;text-align:left;display:flex;flex-direction:column;gap:14px">
+    <label class="bd-f"><b>1. File asli</b> (Word .docx yang kamu kirim ke UT, wajib)<input id="fOrig" type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"></label>
+    <label class="bd-f"><b>2. Laporan AI Drillbit</b> (PDF dari UT, wajib)<input id="fAi" type="file" accept=".pdf,application/pdf"></label>
+    <label class="bd-f"><b>3. Laporan Similarity Drillbit</b> (PDF dari UT, wajib)<input id="fSim" type="file" accept=".pdf,application/pdf"></label>
+    <label class="bd-f"><b>4. Nomor WhatsApp</b> (wajib, untuk kabar progres; nama dan NIM dibaca otomatis dari filemu)<input id="fWa" type="tel" inputmode="tel" autocomplete="tel" placeholder="0812xxxxxxxx" maxlength="16"></label>
+    <p class="muted" style="font-size:13px;margin:0">File yang kamu unggah langsung tersimpan privat di berkas admin begitu terunggah, tanpa menunggu pembayaran. File yang sama tidak disimpan dua kali. Hanya admin yang bisa membukanya.</p>
+    <button class="btn" id="go" type="button" disabled>Unggah &amp; lihat hasil (gratis)</button>
     <div id="busy" class="hidden"></div>
-  </div>
-  <div id="err" class="err hidden" role="alert"></div>
-  <div class="steps">
-    <div><strong>1. Unggah</strong>Cukup satu file dokumenmu.</div>
-    <div><strong>2. Cek isiannya</strong>Detail terisi otomatis. Isi nomor WhatsApp saja.</div>
-    <div><strong>3. Bayar lewat QRIS</strong>Rp<span data-ppw>40</span> per kata. Hasil dikirim ke WhatsApp dan halaman Cek Pesanan.</div>
+    <div id="err" class="err hidden" role="alert"></div>
+    <p class="muted" style="margin:0;font-size:13px">Gratis artinya kamu bisa melihat hasil bacaan tanpa membayar. Bayar baru di langkah berikutnya, hanya kalau kamu mau admin yang mengerjakan. Angka dibaca dari laporan yang kamu unggah dan belum diverifikasi oleh UT; kami tidak menghitung atau menebaknya sendiri.</p>
   </div>
 </section>
 
 <section id="s2" class="wrap hidden">
   <div class="cols">
     <div class="main">
-      <div class="card" style="display:flex;flex-direction:column;gap:16px">
-        <h2 style="margin:0;font-size:28px">Pratinjau dokumenmu</h2>
-        <p style="margin:0;color:var(--muted);line-height:1.55">Sorotan warna menunjukkan bagian yang akan kami kerjakan. Satu paragraf dibuka sebagai contoh: salahnya di mana dan harusnya bagaimana. Catatan lainnya dibuka setelah pembayaran.</p>
-        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px">
-          <div><div id="fname" style="font-size:16px;font-weight:700;overflow-wrap:anywhere"></div><div id="fmeta" class="muted" style="margin-top:2px"></div></div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn ghost" id="again">Ganti file</button><button type="button" class="btn" id="goform">Lanjut isi data dan bayar ↓</button></div>
-        </div>
-        <div id="dbit"></div>
-        <div id="pbox"></div>
-        <details style="margin-top:2px" open><summary style="cursor:pointer;font-weight:600">Lihat peta warna seluruh dokumen</summary>
-        <div class="doc" id="doc" aria-label="Pratinjau dokumen" style="max-height:min(52vh,420px);overflow-y:auto;line-height:2;font-size:15px;padding:16px"></div>
-        <div class="pager"><button class="btn ghost" id="prev" type="button">Sebelumnya</button><span id="pg"></span><button class="btn ghost" id="next" type="button">Berikutnya</button></div>
-        </details>
-        <div id="triage"></div>
-        <div id="overview"></div>
-        <div id="pfLegend"></div>
-        <div class="chips" id="chips"></div>
-        <div id="examples"></div>
-        <button type="button" class="btn" id="goform2">Lanjut isi data dan bayar ↓</button>
-        <div class="muted">Satu paragraf contoh dibuka agar kamu tahu bentuk catatannya. Sisanya tersamar dari server, bukan sekadar efek tampilan, jadi teks aslinya tidak ikut terkirim sebelum pembayaran.</div>
-      </div>
-
-      <div class="card" id="detail" style="display:flex;flex-direction:column;gap:16px;scroll-margin-top:90px">
-        <div style="font-size:16px;font-weight:700">Detail dokumen <span style="font-size:12px;font-weight:600;color:var(--link);margin-left:6px">Terdeteksi otomatis, ubah jika salah</span></div>
-        <div class="row">
-          <div class="fld" style="flex:2 1 300px"><label for="judul">Judul dokumen</label><input id="judul" type="text" maxlength="200"></div>
-          <div class="fld" style="flex:1 1 160px"><label for="bhs">Bahasa</label><select id="bhs"><option value="id">Indonesia</option><option value="en">Inggris</option></select></div>
-          <div class="fld" style="flex:1 1 220px"><label for="jenis">Jenis dokumen</label><select id="jenis"><option value="umum">Tugas tutorial / makalah</option><option value="metopen">Proposal Metopen (Bab II–III)</option><option value="artikel">Artikel / Karil</option></select></div>
-        </div>
-        <label style="display:flex;gap:10px;align-items:center;font-size:14px"><input type="checkbox" id="nobib" checked style="width:18px;height:18px">Kecualikan daftar pustaka</label>
-        <div class="fld" style="flex:none"><label for="wa" class="lab" style="font-weight:700">Nomor WhatsApp <span style="color:#8E1B1B">(wajib)</span></label>
-          <div style="display:flex;gap:10px"><div style="min-height:48px;padding:0 14px;border:1px solid var(--dash);border-radius:8px;display:flex;align-items:center;background:var(--surface2)">+62</div><input id="wa" class="req" type="text" inputmode="tel" autocomplete="tel-national" placeholder="8xxxxxxxxxx"></div></div>
-        <div class="fld" style="flex:none"><label for="dl" class="lab" style="font-weight:700">Deadline: kapan hasil dibutuhkan <span style="color:#8E1B1B">(wajib)</span></label>
-          <div class="row"><input id="dl" class="req" type="date" style="flex:1 1 180px;width:auto"><input id="dljam" class="req" type="time" value="17:00" aria-label="Jam deadline" style="flex:1 1 120px;width:auto"></div>
-          <div class="muted">Dipakai tim untuk mengatur jadwal. Deadline tidak menjamin urutan; yang mendahulukan pesanan hanya jalur cepat. <span id="dlwarn" style="color:#8A3C06;font-weight:600"></span></div></div>
-      </div>
+      <div class="card" style="text-align:left;display:flex;flex-direction:column;gap:12px"><h2 id="rt" style="margin:0;font-size:26px">Hasil bacaan laporan UT</h2><div id="rmeta" class="muted"></div><div id="rings" style="display:flex;flex-wrap:wrap;gap:16px"></div><div id="warn"></div></div>
+      <div class="card" style="text-align:left"><h2 style="margin:0 0 6px;font-size:22px">Analisis kalimat biru (ditandai UT)</h2><div class="muted" id="utNote" style="margin-bottom:10px"></div><div id="anaRows"></div>
+        <div class="muted" style="font-size:13px;margin-top:8px">Rekomendasi lengkap per kalimat dipakai admin saat mengerjakan, tidak ditampilkan di sini.</div></div>
+      <div class="card" id="mapCard" style="text-align:left;display:none"><h2 style="margin:0 0 6px;font-size:22px">Peta seluruh dokumen</h2><div class="muted" id="mapNote" style="font-size:13.5px;line-height:1.6"></div>
+        <details style="margin-top:8px"><summary style="cursor:pointer;font-weight:600">Lihat seluruh isi dokumen</summary><div id="mapDoc" style="max-height:min(52vh,420px);overflow-y:auto;line-height:2;font-size:15px;margin-top:8px"></div></details></div>
+      <div class="card" style="text-align:left"><h2 style="margin:0 0 6px;font-size:20px">Fungsi warna</h2><div class="bd-lg" style="display:grid;gap:8px;font-size:13.5px"><div><b class="bd-ut">Biru UT</b> Kalimat yang ditandai UT. Hanya ini yang dikerjakan admin; kalimat tanpa warna sudah lolos dan tidak diubah.</div></div></div>
     </div>
-
-    <div class="side">
+    <div class="side" id="detail" style="position:sticky;top:84px;scroll-margin-top:90px">
       <div class="card" style="padding:0;overflow:hidden">
-        <div class="hd"><div style="font-size:17px;font-weight:700">Informasi Harga</div><div style="font-size:13px;color:#D6E6F3">Revisi mandiri berwarna</div></div>
+        <div class="hd"><div style="font-size:17px;font-weight:700">Informasi Harga</div><div style="font-size:13px;color:#D6E6F3">Cek &amp; Parafrase Mandiri</div></div>
         <div class="price">
-          <div class="l"><span style="color:var(--muted)"><span data-fw>500</span> kata pertama</span><strong>Gratis</strong></div>
-          <div class="l"><span style="color:var(--muted)">Harga per kata (setelahnya)</span><strong>Rp <span data-ppw>17</span></strong></div>
-          <div class="l"><span style="color:var(--muted)">Total kata</span><strong id="pwords">-</strong></div>
+          <div class="l"><span style="color:var(--muted)">Kata isi dokumen</span><strong id="pwords">-</strong></div>
+          <div class="l"><span style="color:var(--muted)">Kata ditandai UT (dikerjakan)</span><strong id="pmark">-</strong></div>
+          <div class="l"><span style="color:var(--muted)">Harga per kata</span><strong>Rp <span data-ppw>17</span></strong></div>
           <div class="l"><span style="color:var(--muted)">Harga minimum</span><strong><span data-k="min_order_price">40k</span></strong></div>
           <label class="fast" id="fastbox"><input type="checkbox" id="fast" style="width:18px;height:18px;margin-top:2px"><span><strong style="font-size:14px">Jalur cepat + <span data-k="fast_lane_price">40k</span></strong><br>Pesananmu dikerjakan lebih dulu dari antrean biasa. Tidak menjanjikan durasi pasti. <span id="slot"></span></span></label>
           <div class="tot"><span style="font-weight:600">Total harga</span><span id="total">-</span></div>
-          <div class="muted">Termasuk <span data-revfree>1</span>x revisi dalam <span data-retention>24</span> jam setelah hasil dikirim. Revisi berikutnya dihitung per dokumen, Rp <span data-revppw>20</span> per kata. Harga final dihitung ulang di server saat pesanan dibuat.</div>
+          <div class="muted" style="font-size:12.5px">Harga dihitung dari jumlah seluruh kata isi dokumen, bukan hanya kata yang ditandai UT. Tidak ada jatah gratis. Yang diubah admin tetap hanya kalimat yang ditandai UT. Harga final dihitung ulang di server saat pesanan dibuat.</div>
         </div>
         <div style="padding:0 22px 22px;display:flex;flex-direction:column;gap:10px">
+          <div class="fld" style="flex:none"><label for="dl" class="lab" style="font-weight:700">Deadline: kapan hasil dibutuhkan <span style="color:#8E1B1B">(wajib)</span></label>
+            <div class="row"><input id="dl" class="req" type="date" style="flex:1 1 150px;width:auto"><input id="dljam" class="req" type="time" value="17:00" aria-label="Jam deadline" style="flex:1 1 100px;width:auto"></div>
+            <div class="muted">Dipakai tim untuk mengatur jadwal; tidak memengaruhi urutan. <span id="dlwarn" style="color:#8A3C06;font-weight:600"></span></div></div>
           <label style="display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.5"><input type="checkbox" id="agree" style="width:18px;height:18px;margin-top:2px"><span>Saya setuju syarat dan kebijakan privasi. File dihapus <span data-retention>24</span> jam setelah pesanan selesai, dan keterlambatan mengunduh menjadi risiko saya.</span></label>
           <div id="err2" class="err hidden" role="alert" style="margin:0"></div>
           <button class="btn" id="pay" type="button" disabled>Bayar dengan QRIS</button>
-          <div class="muted" style="text-align:center" id="payhint">Isi nomor WhatsApp, deadline, dan centang persetujuan untuk melanjutkan</div>
+          <div class="muted" style="text-align:center" id="payhint">Isi deadline dan centang persetujuan untuk melanjutkan</div>
+          <button class="btn" id="again" type="button" style="background:transparent;color:inherit;border:1px solid currentColor">Unggah dokumen lain</button>
         </div>
       </div>
-      <div class="card muted" style="font-size:13px;line-height:1.6;color:var(--muted)">Kami tidak mengunggah apa pun ke e-learning UT atas namamu. Kamu mengunggah hasil revisi sendiri, dan kuota unggah UT tidak terpengaruh. Hasil tidak menjamin skor tertentu atau kelulusan. Catatan berwarna adalah pemeriksaan internal Catatan Akademik, bukan hasil pembandingan dengan database jurnal atau internet.</div>
+      <div class="card muted" style="font-size:13px;line-height:1.6;color:var(--muted)">Kami tidak mengunggah apa pun ke e-learning UT atas namamu. Kamu mengunggah hasil revisi sendiri, dan kuota unggah UT tidak terpengaruh. Hasil tidak menjamin skor tertentu atau kelulusan. Penilaian akhir tetap dari laporan UT yang baru.</div>
     </div>
   </div>
 </section>
+<style>.bd-f{display:flex;flex-direction:column;gap:6px;font-size:14px}.bd-f input{padding:10px;border:1px dashed currentColor;border-radius:12px;background:transparent;color:inherit;font:inherit}
+.bd-ring{width:112px;height:112px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none}.bd-ring>div{width:84px;height:84px;border-radius:50%;background:var(--bg,#0a0a1c);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.bd-clamp li:nth-child(n+3){display:none}.bd-clamp+.muted{display:none}.bd-ut{background:#9ec1ff;color:#0a1f4d;border-radius:4px;padding:1px 3px;-webkit-box-decoration-break:clone;box-decoration-break:clone}.bd-good{background:#8ee0b4;color:#0b2a1b}.bd-warn{background:#ffe27a;color:#3a2c00}.bd-bad{background:#ff9ea1;color:#4a0a0d}.bd-none{background:#d3d8e3;color:#1c2333}.bd-st{display:inline-block;font-weight:800;font-size:12.5px;border-radius:99px;padding:2px 10px}.bd-sent{border-radius:4px;padding:1px 3px;-webkit-box-decoration-break:clone;box-decoration-break:clone}.bd-blur{filter:blur(6px);user-select:none;-webkit-user-select:none;pointer-events:none}.bd-blur-demo{filter:blur(3px);background:#d3d8e3;color:#1c2333;border-radius:4px;padding:1px 6px}.bd-lg{display:grid;gap:8px}.bd-lg>div{display:grid;grid-template-columns:130px minmax(0,1fr);gap:10px;align-items:start;font-size:13.5px;line-height:1.55}.bd-lg b{justify-self:start}@media(max-width:520px){.bd-lg>div{grid-template-columns:minmax(0,1fr)}}.bd-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}@media(max-width:700px){.bd-two{grid-template-columns:minmax(0,1fr)}}.bd-t{width:100%;border-collapse:collapse;font-size:14px}.bd-t td,.bd-t th{padding:6px 8px;border-bottom:1px solid var(--line,#2b2b58);text-align:left}
+.bd-f2{padding:12px 14px;border-radius:14px;border:1px solid var(--line,#2b2b58);margin:8px 0}.bd-chip{display:inline-block;font-size:12px;font-weight:800;padding:2px 9px;border-radius:99px;border:2px solid}.bd-lock{filter:blur(5px);user-select:none;pointer-events:none}</style>
 <script src="/ruangakademikut/assets/common.js?v=20261506"></script>
-<script src="/ruangakademikut/assets/cek.js?v=20261302"></script>
+<script src="/ruangakademikut/assets/cek.js?v=20261433"></script>
 <footer class="ft"><div class="wrap ft-in"><div class="ft-b"><b>Catatan Akademik</b><span>Jakarta Barat. Layanan UT dan Blog.</span><small>© Catatan Akademik. Semua hak dilindungi.</small><small class="ft-dis">Layanan independen, bukan situs resmi Universitas Terbuka. Cocokkan informasi dengan ut.ac.id.</small></div><nav class="ft-n" aria-label="Footer"><a href="/ruangakademikut">Layanan UT</a><a href="/ruangakademikut/blog-ut">Blog &amp; Berita UT</a><a href="/ruangakademikut/tentang">Tentang</a><a href="/ms/masuk">Masuk</a><a href="/ms/privasi">Privasi</a><a href="/ms/ketentuan">Ketentuan</a></nav></div></footer>
 </body></html>

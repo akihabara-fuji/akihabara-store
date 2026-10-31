@@ -112,10 +112,13 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
   /* Verifikasi Bing Webmaster Tools (kode per akun, bukan rahasia) */
   app.get("/BingSiteAuth.xml", (req, res) => res.type("application/xml").set("Cache-Control", "public, max-age=3600")
     .send('<?xml version="1.0"?>\n<users>\n\t<user>5A51A6D49E191DE95E89EA165A5F3815</user>\n</users>'));
-  const ASSETS = new Set(["site.css", "hub.css", "common.js", "cek.js", "pesanan.js", "admin.js", "bedah.js", "layanan.js", "tutorial.js", "tutorial.css", "baru.css", "layanan-admin.js", "blog-ut.js", "nilai-ut.js", "kalkulator.js", "wordlib.js", "sampul.js", "tracker.js", "kalender.js", "maba.js", "logo-ut.png", "sitasi-apa.js", "sitasi.js"]);
+  const ASSETS = new Set(["site.css", "hub.css", "common.js", "cek.js", "pesanan.js", "admin.js", "studio.js", "bedah.js", "layanan.js", "tutorial.js", "tutorial.css", "baru.css", "layanan-admin.js", "blog-ut.js", "nilai-ut.js", "kalkulator.js", "wordlib.js", "sampul.js", "tracker.js", "kalender.js", "maba.js", "logo-ut.png", "sitasi-apa.js", "sitasi.js"]);
   app.get(["/ruangakademikut/assets/:f", "/assets/ut/:f"], (req, res) => {
     if (!ASSETS.has(req.params.f)) return res.status(404).end();
     sendAsset(res, path.join(dir, req.params.f), "no-cache");
+  });
+  app.get(["/ms/admin/studio-page", "/admin/parafrase/studio", "/admin/parafrase/studio/"], (req, res) => {
+    fs.readFile(path.join(dir, "studio.html"), "utf8", (err, html) => err ? res.status(500).end() : res.set({ "Cache-Control": "no-store", "X-Robots-Tag": "noindex" }).type("html").send(html));
   });
   app.get(["/admin/parafrase", "/admin/parafrase/"], (req, res) => {
     fs.readFile(path.join(dir, "admin.html"), "utf8", (err, html) => err ? res.status(500).end() : res.set({ "Cache-Control": "no-store", "X-Robots-Tag": "noindex" }).type("html").send(html));

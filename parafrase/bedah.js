@@ -20,6 +20,7 @@ const drillbit = require("./drillbit");
 const wordtools = require("./wordtools");
 const utdiag = require("./utdiag");
 const banding = require("./banding");
+const studio = require("./studio");
 
 const MAX_MB = 10, RATE = { max: 10, windowMs: 3600 * 1000 }, UPLOAD_TTL_MS = 2 * 3600 * 1000;
 const PAID = new Set(["baru_dibayar", "dianalisis", "dikerjakan", "cek_ulang", "terkirim"]);
@@ -169,7 +170,8 @@ module.exports = function mountBedah({ library = null, app, express, db, setting
       mappedSentences: map.hits.length, mappedWords: map.words };
   }
 
-  app.post("/ms/bedah/upload", (req, res) => {
+  /* Satu mesin unggah untuk dua layanan: "bedah" (mahasiswa memperbaiki sendiri) dan "cek" (admin yang mengerjakan lewat Studio). */
+  const uploadRoute = mode => (req, res) => {
     res.set("Cache-Control", "no-store");
     if (!sameOrigin(req)) return res.status(403).json({ error: "Permintaan ditolak." });
     const now = Date.now(), h = hashIp(req.ip);
@@ -182,7 +184,7 @@ module.exports = function mountBedah({ library = null, app, express, db, setting
       const F = req.files || {}, f = F.file && F.file[0];
       if (!f) return res.status(400).json({ error: "Pilih file asli (Word .docx atau PDF) yang kamu kirim ke UT." });
       const name = String(f.originalname || "").slice(0, 200);
-      if (!/\.(docx|pdf)$/i.test(name)) return res.status(415).json({ error: "File asli harus Word (.docx) atau PDF." });
+      if (mode === "cek" ? !/\.docx$/i.test(name) : !/\.(docx|pdf)$/i.test(name)) return res.status(415).json({ error: mode === "cek" ? "File asli harus Word (.docx), karena hasilnya dikirim kembali sebagai Word." : "File asli harus Word (.docx) atau PDF." });
       const isPdfName = /\.pdf$/i.test(name);
       const waRaw = String((req.body || {}).wa || "").replace(/\D/g, "").replace(/^62/, "").replace(/^0/, "");
       if (!/^8\d{8,12}$/.test(waRaw)) return res.status(400).json({ error: "Isi nomor WhatsApp yang benar (contoh 0812xxxxxxxx) supaya kami bisa mengabari hasil perbaikanmu." });
@@ -219,7 +221,7 @@ module.exports = function mountBedah({ library = null, app, express, db, setting
         await fsp.writeFile(path.join(root, "data", "private", rel), f.buffer, { mode: 0o600 });
         const saved = { ai: ai && { pct: ai.aiPct, matchedWords: ai.matchedWords, totalWords: ai.totalWords, humanPct: ai.humanPct, blockTable: ai.blockTable, blocks: ai.blocks.map(b => ({ n: b.n, words: b.words })), confidence: ai.confidence }, sim, hits: ai && ai.confidence !== "rendah" ? r.map.hits : [], mapWords: r.map.words };
         await fsp.writeFile(path.join(docsDir, id + ".bedah.json"), JSON.stringify(saved), { mode: 0o600 });
-        insert.run(id, rel, name, f.size, crypto.createHash("sha256").update(f.buffer).digest("hex"), JSON.stringify({ kind: "bedah", words: r.words, ai: !!ai, sim: !!sim }), h, now, now + UPLOAD_TTL_MS);
+        insert.run(id, rel, name, f.size, crypto.createHash("sha256").update(f.buffer).digest("hex"), JSON.stringify(mode === "cek" ? { kind: "cek", words: r.words, wordsWithoutBibliography: r.words, hasBibliography: false, title: name.replace(/\.[a-z0-9]{1,5}$/i, "").slice(0, 200), docType: "umum", language: "id", ai: !!ai, sim: !!sim } : { kind: "bedah", words: r.words, ai: !!ai, sim: !!sim }), h, now, now + UPLOAD_TTL_MS);
         // salinan lengkap untuk admin (Dokumen Saya): file asli, dua laporan Drillbit, dan angka hasil bacaan. Gagal menyimpan tidak boleh menggagalkan hasil Bedah.
         let stNama = "", stNim = "";
         try {   // otomatis dari sampul dokumen; bila tidak ada, dari halaman pertama laporan Drillbit
@@ -228,10 +230,10 @@ module.exports = function mountBedah({ library = null, app, express, db, setting
           for (const rep of [aiRaw, simRaw]) if ((!id.nim || !id.nama) && rep) { const h = idFromLines((await drillbit.headText(rep)).split("\n")); id = { nim: id.nim || h.nim, nama: id.nama || h.nama }; }
           stNama = id.nama; stNim = id.nim;
         } catch { /* tanpa nama/NIM: dikelompokkan lewat nomor WA */ }
-        if (library) { try { await library.saveBedah({ user: userFrom ? userFrom(req) : null, wa: waNum, nama: stNama, nim: stNim, name, buf: f.buffer, aiBuf: ai ? aiRaw : null, simBuf: sim ? simRaw : null, ai, sim, words: r.words, problemPct: r.problem && r.problem.pct }); } catch (e) { console.error("[bedah] simpan ke Dokumen gagal:", e && e.message); } }
+        if (library) { try { await library.saveBedah({ service: mode, user: userFrom ? userFrom(req) : null, wa: waNum, nama: stNama, nim: stNim, name, buf: f.buffer, aiBuf: ai ? aiRaw : null, simBuf: sim ? simRaw : null, ai, sim, words: r.words, problemPct: r.problem && r.problem.pct }); } catch (e) { console.error("[bedah] simpan ke Dokumen gagal:", e && e.message); } }
         // data kalibrasi hanya bila mahasiswa memberi izin
         let kode = null;
-        if (String((req.body || {}).izin) === "1" && (ai || sim)) {
+        if (mode !== "cek" && String((req.body || {}).izin) === "1" && (ai || sim)) {
           kode = crypto.randomBytes(6).toString("hex");
           const d = path.join(kalDir, kode); await fsp.mkdir(d, { recursive: true, mode: 0o700 });
           await fsp.writeFile(path.join(d, "asli." + (isPdfName ? "pdf" : "docx")), f.buffer, { mode: 0o600 });
@@ -242,6 +244,13 @@ module.exports = function mountBedah({ library = null, app, express, db, setting
           db.prepare("INSERT INTO kalibrasi(id,created_at,words,has_ai,has_sim,ai_pct,sim_pct,ext,summary) VALUES(?,?,?,?,?,?,?,?,?)")
             .run(kode, now, r.words, ai ? 1 : 0, sim ? 1 : 0, ai ? ai.aiPct : null, sim ? sim.pct : null, isPdfName ? "pdf" : "docx", JSON.stringify(summary));
         }
+        if (mode === "cek") {   // mahasiswa hanya melihat angka UT, peta biru, dan hitungan warna. Tanpa teks rekomendasi.
+          const byIdx = new Map(r.a.paragraphs.map(p => [p.idx, p]));
+          const sentsOf = pi => { const p = byIdx.get(pi); return p ? splitSentences(p.text || "") : []; };
+          return res.json({ uploadId: id, file: { name, size: f.size }, words: r.words, totalFindings: items.length, saved: true,
+            ut: utView(ai, r.map), sim: sim && { pct: sim.pct, grade: sim.grade, matchedSources: sim.matchedSources, sourceTypes: sim.sourceTypes },
+            stats: studio.stats(items, sentsOf), blocks, warn, docMap });
+        }
         res.json({ uploadId: id, file: { name, size: f.size }, words: r.words, totalFindings: items.length, quote: bq,
           open, locked, ut: utView(ai, r.map), sim: sim && { pct: sim.pct, grade: sim.grade, matchedSources: sim.matchedSources, sourceTypes: sim.sourceTypes, content: sim.content, excluded: sim.excluded, sources: sim.sources },
           protokol: utdiag.PROTOKOL, blocks, warn, kode, beta: beta(), docMap });
@@ -251,7 +260,9 @@ module.exports = function mountBedah({ library = null, app, express, db, setting
         res.status(500).json({ error: "Dokumen tidak bisa diproses. Coba simpan ulang sebagai .docx lalu unggah lagi." });
       } finally { running--; }
     });
-  });
+  };
+  app.post("/ms/bedah/upload", uploadRoute("bedah"));
+  app.post("/ms/cek/upload", uploadRoute("cek"));
 
   /* Cabut izin data: menghapus set kalibrasi milik kode itu. */
   app.post("/ms/bedah/cabut", express.json({ limit: "2kb" }), async (req, res) => {
@@ -379,9 +390,7 @@ module.exports = function mountBedah({ library = null, app, express, db, setting
     try {
       const c = await paidContext(req.params.token, now);
       const items = utItems(c.r.a.paragraphs, c.saved.hits || []);
-      const noteOf = x => `Blok UT ${x.block}\n` + x.tags.map(g => `${g.label}\nPerbaiki: ${g.fix}\nJangan: ${g.jangan}\nBukti: ${g.bukti}`).join("\n\n");
-      const rows = [], seen = new Set();
-      items.forEach(x => (x.parts.length ? x.parts : [[x.para_idx, x.sent_idx]]).forEach(([pi, si], j) => { const k = pi + ":" + si; if (seen.has(k)) return; seen.add(k); rows.push({ seq: rows.length + 1, code: "X", para_idx: pi, sent_idx: si, text: x.text, reason: "", note: j === 0 ? noteOf(x) : `Blok UT ${x.block} (lanjutan kalimat di atas)` }); }));
+      const rows = markRows(items);
       const pdf = isPdf(c.buf);
       const out = pdf ? await reportDocx({ title: c.o.title, note: "File aslimu PDF, jadi laporan ini berupa daftar kalimat yang ditandai UT beserta diagnosisnya. Unggah .docx bila ingin tanda langsung di dokumenmu." }, items.map(x => ({ n: x.n, code: "X", color: "Blok UT " + x.block, where: x.where, text: x.text, reason: x.tags.map(g => g.label).join("; "), target: x.tags.map(g => "Perbaiki: " + g.fix + " Jangan: " + g.jangan).join(" | ") })))
         : await wordtools.buildColored(c.buf, rows);
@@ -392,6 +401,13 @@ module.exports = function mountBedah({ library = null, app, express, db, setting
       console.error("[bedah] unduh gagal:", e && e.message); res.status(500).json({ error: "File gagal dibuat. Hubungi admin dengan ID pesananmu." });
     }
   });
+
+  const noteOf = x => `Blok UT ${x.block}\n` + x.tags.map(g => `${g.label}\nPerbaiki: ${g.fix}\nJangan: ${g.jangan}\nBukti: ${g.bukti}`).join("\n\n");
+  function markRows(items) {
+    const rows = [], seen = new Set();
+    items.forEach(x => (x.parts.length ? x.parts : [[x.para_idx, x.sent_idx]]).forEach(([pi, si], j) => { const k = pi + ":" + si; if (seen.has(k)) return; seen.add(k); rows.push({ seq: rows.length + 1, code: "X", para_idx: pi, sent_idx: si, text: x.text, reason: "", note: j === 0 ? noteOf(x) : `Blok UT ${x.block} (lanjutan kalimat di atas)` }); }));
+    return rows;
+  }
 
   /* ---------- admin: data kalibrasi ---------- */
   if (requireAdmin) {
@@ -434,6 +450,81 @@ module.exports = function mountBedah({ library = null, app, express, db, setting
         const out = await zip.generateAsync({ type: "nodebuffer", compression: "DEFLATE" });
         res.set({ "Content-Disposition": 'attachment; filename="kalibrasi-paket.zip"', "Cache-Control": "no-store" }).type("application/zip").send(out);
       } catch (e) { console.error("[bedah] zip gagal:", e && e.message); res.status(500).json({ error: "Paket gagal dibuat." }); }
+    });
+
+    /* ---------- admin: Studio Parafrase (Cek & Parafrase berbasis laporan UT) ----------
+       Monitor A = dokumen asli lengkap dengan tanda dan rekomendasi. Monitor B = dokumen polos; hanya kalimat biru dari UT yang bisa diganti. */
+    const sErr = (status, message) => Object.assign(new Error(message), { status });
+    const sFail = (res, e, tag) => { if (e && e.status) return res.status(e.status).json({ error: e.message, ...(e.skipped ? { skipped: e.skipped } : {}) }); console.error("[studio] " + tag + ":", e && e.message); res.status(500).json({ error: "Studio gagal memproses. Coba lagi." }); };
+    async function studioCtx(id) {
+      const o = db.prepare("SELECT * FROM orders WHERE id=?").get(String(id || ""));
+      if (!o || ["layanan", "audit", "bedah"].includes(o.doc_type) || !o.original_file) throw sErr(404, "Pesanan Cek & Parafrase tidak ditemukan.");
+      if (o.files_deleted_at) throw sErr(410, "File pesanan sudah dihapus.");
+      const base = path.basename(o.original_file).replace(/\.(docx|pdf)$/i, "");
+      let saved; try { saved = JSON.parse(await fsp.readFile(path.join(docsDir, base + ".bedah.json"), "utf8")); } catch { throw sErr(409, "Pesanan ini tidak lewat alur laporan UT, jadi tidak ada tanda UT untuk Studio."); }
+      const buf = await fsp.readFile(orders.priv(o.original_file));
+      if (isPdf(buf)) throw sErr(415, "File asli PDF tidak bisa dikerjakan di Studio. Minta mahasiswa mengunggah Word.");
+      const a = await analyze(buf), bibAt = a.bibliographyParagraphIndex == null || a.bibliographyParagraphIndex < 0 ? null : a.bibliographyParagraphIndex;
+      const items = utItems(a.paragraphs, saved.hits || []);
+      return { o, base, saved, buf, a, bibAt, items };
+    }
+    const draftFile = base => path.join(docsDir, base + ".studio.json");
+    async function readDraft(base) { try { return JSON.parse(await fsp.readFile(draftFile(base), "utf8")); } catch { return { edits: {} }; } }
+    const cleanEdits = (items, raw) => { const ok = new Set(items.map(x => x.n)), out = {}; for (const [k, v] of Object.entries(raw && typeof raw === "object" ? raw : {})) if (ok.has(Number(k)) && typeof v === "string") out[k] = v.slice(0, 4000); return out; };
+
+    app.get("/ms/admin/studio/:id", requireAdmin, async (req, res) => {
+      res.set("Cache-Control", "no-store");
+      try {
+        const c = await studioCtx(req.params.id), byIdx = new Map(c.a.paragraphs.map(p => [p.idx, p]));
+        const sentsOf = pi => { const p = byIdx.get(pi); return p ? splitSentences(p.text || "") : []; };
+        const nOf = new Map(); for (const x of c.items) (x.parts.length ? x.parts : [[x.para_idx, x.sent_idx]]).forEach(([pi, si]) => nOf.set(pi + ":" + si, x.n));
+        const paras = c.a.paragraphs.filter(p => rules.isBody(p, c.bibAt)).map(p => ({ p: p.idx, s: splitSentences(p.text || "").map((t, i) => ({ t, n: nOf.get(p.idx + ":" + i) || 0 })) })).filter(x => x.s.length);
+        const draft = await readDraft(c.base);
+        res.json({ order: { id: c.o.id, title: c.o.title, status: c.o.status, wa: c.o.wa_number, words: c.o.word_count },
+          ut: c.saved.ai || null, sim: c.saved.sim || null, longMax: studio.LONG_MAX,
+          items: c.items.map(x => ({ n: x.n, block: x.block, where: x.where, text: x.text, para_idx: x.para_idx, sent_idx: x.sent_idx, parts: x.parts && x.parts.length ? x.parts : [[x.para_idx, x.sent_idx]], tags: x.tags, ciri: studio.ciri(x.text, sentsOf(x.para_idx)) })),
+          paras, draft: draft.edits || {} });
+      } catch (e) { sFail(res, e, "muat"); }
+    });
+    app.put("/ms/admin/studio/:id/draft", requireAdmin, express.json({ limit: "400kb" }), async (req, res) => {
+      res.set("Cache-Control", "no-store");
+      try {
+        const c = await studioCtx(req.params.id), edits = cleanEdits(c.items, (req.body || {}).edits);
+        await fsp.writeFile(draftFile(c.base), JSON.stringify({ edits, savedAt: Date.now() }), { mode: 0o600 });
+        res.json({ ok: true, done: Object.values(edits).filter(v => v.trim()).length });
+      } catch (e) { sFail(res, e, "draf"); }
+    });
+    app.get("/ms/admin/studio/:id/word", requireAdmin, async (req, res) => {
+      res.set("Cache-Control", "no-store");
+      try {
+        const c = await studioCtx(req.params.id), out = await wordtools.buildColored(c.buf, markRows(c.items));
+        res.set({ "Content-Disposition": `attachment; filename="${c.o.id} untuk diedit.docx"` }).type("application/vnd.openxmlformats-officedocument.wordprocessingml.document").send(out);
+      } catch (e) { sFail(res, e, "word"); }
+    });
+    app.post("/ms/admin/studio/:id/import", requireAdmin, (req, res) => {
+      multer({ storage: multer.memoryStorage(), limits: { fileSize: settings.get("file_max_mb") * 1048576, files: 1 } }).single("file")(req, res, async err => {
+        res.set("Cache-Control", "no-store");
+        try {
+          if (err || !req.file || !/\.docx$/i.test(req.file.originalname || "")) throw sErr(400, "Pilih file Word (.docx) hasil edit.");
+          const c = await studioCtx(req.params.id), a2 = await analyze(req.file.buffer);
+          const sug = studio.matchImported(c.items, a2.paragraphs);
+          res.json({ ok: true, suggest: sug, matched: Object.keys(sug).length, total: c.items.length });
+        } catch (e) { if (e instanceof DocxError) return res.status(422).json({ error: e.message }); sFail(res, e, "impor"); }
+      });
+    });
+    app.post("/ms/admin/studio/:id/finish", requireAdmin, express.json({ limit: "400kb" }), async (req, res) => {
+      res.set("Cache-Control", "no-store");
+      try {
+        const c = await studioCtx(req.params.id), body = req.body || {};
+        const edits = cleanEdits(c.items, body.edits || (await readDraft(c.base)).edits);
+        const list = studio.editsFromItems(c.items, edits);
+        if (!list.length) throw sErr(400, "Belum ada kalimat biru yang diubah.");
+        const r = await studio.applyEdits(c.buf, list);
+        if (r.skipped.length && body.force !== true) throw Object.assign(sErr(409, r.skipped.length + " kalimat tidak bisa diganti otomatis (paragraf berformat rumit). Ganti manual lewat Word, atau kirim tetap dengan menandai \"kirim tetap\"."), { skipped: r.skipped });
+        const o = await orders.deliverStudio(c.o.id, r.buf);
+        await fsp.writeFile(draftFile(c.base), JSON.stringify({ edits, savedAt: Date.now(), sentAt: Date.now() }), { mode: 0o600 });
+        res.json({ ok: true, applied: r.applied, skipped: r.skipped, status: o.status });
+      } catch (e) { sFail(res, e, "kirim"); }
     });
   }
   return { beta };

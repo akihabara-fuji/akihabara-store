@@ -33,11 +33,13 @@ test("bedah: ada panduan memperbaiki tanpa menjanjikan angka", () => {
   assert.match(h, /Tidak ada jaminan angka turun/);
 });
 
-test("legenda warna dipakai di Audit dan Cek & Parafrase", () => {
+test("Cek & Parafrase memakai tiga berkas UT dan tidak menampilkan persen hitungan mesin", () => {
   const fs = require("fs"), path = require("path"), d = p => fs.readFileSync(path.join(__dirname, "..", "parafrase", "pages", p), "utf8");
-  assert.match(d("common.js"), /window\.PF_legend = function/);
-  for (const f of ["audit.js", "cek.js"]) assert.match(d(f), /PF_legend\(\$\("pfLegend"\)\)/);
-  for (const f of ["cek.html"]) assert.match(d(f), /id="pfLegend"/);
+  const html = d("cek.html"), js = d("cek.js");
+  for (const id of ["fOrig", "fAi", "fSim", "fWa"]) assert.match(html, new RegExp('id="' + id + '"'));
+  assert.match(js, /\/ms\/cek\/upload/);
+  assert.doesNotMatch(js, /auditProblemCard|auditAspects|auditScoreCard/);
+  assert.doesNotMatch(js, /free_words/);
 });
 
 test("layanan ditutup: default tutup, harga disembunyikan, halaman dan URL tetap", () => {
