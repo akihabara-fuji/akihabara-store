@@ -8,7 +8,7 @@ function openDb() {
   const { DatabaseSync } = require("node:sqlite"); const raw = new DatabaseSync(":memory:"); let d = 0;
   const db = { exec: s => raw.exec(s), prepare: s => { const st = raw.prepare(s); return { get: (...p) => st.get(...p), all: (...p) => st.all(...p), run: (...p) => st.run(...p) }; },
     transaction: fn => (...a) => { if (d) return fn(...a); raw.exec("BEGIN IMMEDIATE"); d++; try { const r = fn(...a); raw.exec("COMMIT"); return r; } catch (e) { raw.exec("ROLLBACK"); throw e; } finally { d--; } } };
-  for (const m of MIGRATIONS) raw.exec(m); return db;
+  for (const m of MIGRATIONS) if (typeof m === "string") raw.exec(m); return db;
 }
 const T = require("../parafrase/traffic");
 const req = (o = {}) => ({ method: "GET", path: "/blog/cara-hitung-nilai-akhir-ut", ip: "1.1.1.1", hostname: "catatanakademik.com", headers: { "user-agent": "Mozilla/5.0 (Linux; Android 13)", ...(o.headers || {}) }, ...o, headers: { "user-agent": "Mozilla/5.0 (Linux; Android 13)", ...((o && o.headers) || {}) } });

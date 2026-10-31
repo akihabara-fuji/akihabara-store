@@ -318,6 +318,15 @@ const MIGRATIONS = [
   CREATE INDEX doc_library_at ON doc_library(created_at);
   CREATE INDEX doc_library_student ON doc_library(student_key);
   `,
+  /* Perbaikan: migrasi pustaka dokumen pernah diubah di tempat, jadi server yang sudah melewatinya tidak punya kolom-kolom ini
+     (error "no such column: student_key" saat simpan ke Dokumen Saya). Melengkapi kolom yang hilang, aman dijalankan ulang. */
+  db => {
+    const have = new Set(db.prepare("PRAGMA table_info(doc_library)").all().map(c => c.name));
+    const cols = [["ai_path", "TEXT"], ["sim_path", "TEXT"], ["words", "INTEGER"], ["student_key", "TEXT"], ["student_name", "TEXT"], ["nim", "TEXT"], ["wa", "TEXT"],
+      ["status", "TEXT NOT NULL DEFAULT 'baru'"], ["revision_no", "INTEGER NOT NULL DEFAULT 0"], ["fix_path", "TEXT"], ["fix_name", "TEXT"], ["fix_sent_at", "INTEGER"], ["data", "TEXT"]];
+    for (const [n, t] of cols) if (!have.has(n)) db.exec(`ALTER TABLE doc_library ADD COLUMN ${n} ${t}`);
+    db.exec("CREATE INDEX IF NOT EXISTS doc_library_student ON doc_library(student_key)");
+  },
 ];
 
 
@@ -335,7 +344,7 @@ function migrate(db) {
   const cur = db.pragma("user_version", { simple: true });
   for (let v = cur; v < MIGRATIONS.length; v++) {
     db.transaction(() => {
-      db.exec(MIGRATIONS[v]);
+      if (typeof MIGRATIONS[v] === "function") MIGRATIONS[v](db); else db.exec(MIGRATIONS[v]);
       db.pragma(`user_version = ${v + 1}`);
     })();
   }
