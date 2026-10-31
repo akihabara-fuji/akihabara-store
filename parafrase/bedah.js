@@ -456,7 +456,25 @@ module.exports = function mountBedah({ library = null, app, express, db, setting
        Monitor A = dokumen asli lengkap dengan tanda dan rekomendasi. Monitor B = dokumen polos; hanya kalimat biru dari UT yang bisa diganti. */
     const sErr = (status, message) => Object.assign(new Error(message), { status });
     const sFail = (res, e, tag) => { if (e && e.status) return res.status(e.status).json({ error: e.message, ...(e.skipped ? { skipped: e.skipped } : {}) }); console.error("[studio] " + tag + ":", e && e.message); res.status(500).json({ error: "Studio gagal memproses. Coba lagi." }); };
+    /* Studio dibuka dari Dokumen Saya (id 16 hex) atau dari pesanan (NA-...). Dari Dokumen Saya, tanda UT dibaca ulang dari file AI Drillbit yang tersimpan. */
+    async function studioDoc(id) {
+      const row = db.prepare("SELECT * FROM doc_library WHERE id=?").get(id);
+      if (!row || !row.path) throw sErr(404, "Dokumen tidak ditemukan.");
+      if (!row.ai_path) throw sErr(409, "Dokumen ini belum punya laporan AI Drillbit, jadi belum ada tanda UT untuk Studio.");
+      const pr = rel => path.join(root, "data", "private", rel);
+      let buf, aiBuf; try { buf = await fsp.readFile(pr(row.path)); aiBuf = await fsp.readFile(pr(row.ai_path)); } catch { throw sErr(410, "File dokumen sudah dihapus dari server."); }
+      let data = {}; try { data = row.data ? JSON.parse(row.data) : {}; } catch { /* data rusak */ }
+      const ai = await drillbit.parseAi(aiBuf);
+      if (!ai || !ai.ok || ai.confidence === "rendah") throw sErr(409, "Sorotan biru pada laporan AI tidak terbaca utuh, jadi kalimat UT tidak bisa dipetakan.");
+      const r = await analyseDoc(buf, ai, settings.getAll()), items = utItems(r.a.paragraphs, r.map.hits);
+      let orderId = row.order_id || null;
+      if (!orderId && data.sha) { const x = db.prepare("SELECT o.id FROM orders o JOIN uploads u ON u.order_id=o.id WHERE u.sha256=? ORDER BY o.created_at DESC LIMIT 1").get(data.sha); if (x) orderId = x.id; }
+      const od = orderId ? db.prepare("SELECT * FROM orders WHERE id=?").get(orderId) : null;
+      const o = { id: row.id, title: row.title || row.name, status: od ? od.status : "belum dipesan", wa_number: row.wa || (od && od.wa_number) || "", word_count: row.words || r.words };
+      return { o, orderId, base: row.id, saved: { ai: data.ai || null, sim: data.sim || null }, buf, a: r.a, bibAt: r.bibAt, items, pdf: isPdf(buf) };
+    }
     async function studioCtx(id) {
+      if (/^[a-f0-9]{16}$/.test(String(id || ""))) return studioDoc(String(id));
       const o = db.prepare("SELECT * FROM orders WHERE id=?").get(String(id || ""));
       if (!o || ["layanan", "audit", "bedah"].includes(o.doc_type) || !o.original_file) throw sErr(404, "Pesanan Cek & Parafrase tidak ditemukan.");
       if (o.files_deleted_at) throw sErr(410, "File pesanan sudah dihapus.");
@@ -465,7 +483,7 @@ module.exports = function mountBedah({ library = null, app, express, db, setting
       const buf = await fsp.readFile(orders.priv(o.original_file));
       const a = await analyze(buf), bibAt = a.bibliographyParagraphIndex == null || a.bibliographyParagraphIndex < 0 ? null : a.bibliographyParagraphIndex;
       const items = utItems(a.paragraphs, saved.hits || []);
-      return { o, base, saved, buf, a, bibAt, items, pdf: isPdf(buf) };
+      return { o, orderId: o.id, base, saved, buf, a, bibAt, items, pdf: isPdf(buf) };
     }
     const draftFile = base => path.join(docsDir, base + ".studio.json");
     async function readDraft(base) { try { return JSON.parse(await fsp.readFile(draftFile(base), "utf8")); } catch { return { edits: {} }; } }
@@ -523,7 +541,8 @@ module.exports = function mountBedah({ library = null, app, express, db, setting
         if (c.pdf) { const w = studio.rewriteParagraphs(c.a.paragraphs, list); r = { buf: await studio.plainDocx(c.a.paragraphs, w.texts, null), applied: w.applied, skipped: [] }; }
         else r = await studio.applyEdits(c.buf, list);
         if (r.skipped.length && body.force !== true) throw Object.assign(sErr(409, r.skipped.length + " kalimat tidak bisa diganti otomatis (paragraf berformat rumit). Ganti manual lewat Word, atau kirim tetap dengan menandai \"kirim tetap\"."), { skipped: r.skipped });
-        const o = await orders.deliverStudio(c.o.id, r.buf);
+        if (!c.orderId) throw sErr(409, "Mahasiswa belum membuat pesanan untuk dokumen ini, jadi belum ada tujuan pengiriman. Simpan draf atau unduh Word dulu.");
+        const o = await orders.deliverStudio(c.orderId, r.buf);
         await fsp.writeFile(draftFile(c.base), JSON.stringify({ edits, savedAt: Date.now(), sentAt: Date.now() }), { mode: 0o600 });
         res.json({ ok: true, applied: r.applied, skipped: r.skipped, status: o.status });
       } catch (e) { sFail(res, e, "kirim"); }

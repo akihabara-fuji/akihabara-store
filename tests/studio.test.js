@@ -82,3 +82,10 @@ test("PDF asli: Studio dan unggahan Cek menerima PDF, Word dibuat dari teks", ()
   const js = require("fs").readFileSync(require("path").join(__dirname, "..", "parafrase", "pages", "cek.js"), "utf8");
   assert.match(js, /\(docx\|pdf\)/);
 });
+
+test("Studio bisa dibuka dari Dokumen Saya (id dokumen) dan dari pesanan", () => {
+  const b = require("fs").readFileSync(require("path").join(__dirname, "..", "parafrase", "bedah.js"), "utf8");
+  assert.match(b, /studioDoc/); assert.match(b, /doc_library WHERE id=\?/);
+  const a = require("fs").readFileSync(require("path").join(__dirname, "..", "admin-ca", "public", "app.js"), "utf8");
+  assert.match(a, /studio-page\?id=\$\{x\.id\}/); assert.match(a, /studio-page\?id=\$\{id\}/);
+});
