@@ -10,6 +10,7 @@ const { quote } = require("./pricing");
 const { analyzeFindings, countByCode } = require("./rules");
 const { buildPreview } = require("./preview");
 const { buildTriageBase, withDrillbit, parseDrill, settingsSig } = require("./triage");
+const drillbit = require("./drillbit");
 
 const UPLOAD_TTL_MS = 2 * 3600 * 1000;       // unggahan yang tidak jadi pesanan dihapus setelah 2 jam
 const RATE = { max: 10, windowMs: 3600 * 1000 };
@@ -105,6 +106,41 @@ module.exports = function mountUploads({ library = null, userFrom = null, app, d
       if (!e) return res.status(404).json({ error: "Unggahan tidak ditemukan atau sudah kedaluwarsa. Unggah ulang dokumenmu." });
       res.json(buildPreview(e.a, e.findings, secret, id, { unlocked: false, openWords: cfg.free_words, openParagraphs: cfg.preview_open_paragraphs, cfg, page: parseInt(req.query.page, 10) || 1, focus: req.query.page === "focus", pageSize: parseInt(req.query.size, 10) || 30 }));
     } catch (err) { console.error("[parafrase] preview gagal:", err && err.message); res.status(500).json({ error: "Pratinjau tidak bisa dibuat." }); }
+  });
+
+  /* Laporan Drillbit resmi dari UT (PDF AI dan Similarity), sama seperti di Bedah: jenis dikenali dari isi file, angka dibaca otomatis,
+     dan kedua PDF ikut tersimpan di Dokumen Saya. Angka dikembalikan ke halaman untuk menghitung ulang urgensi. */
+  app.post("/ms/parafrase/drillbit/:id", (req, res) => {
+    res.set("Cache-Control", "no-store");
+    if (!sameOrigin(req)) return res.status(403).json({ error: "Permintaan ditolak." });
+    const id = String(req.params.id || "");
+    if (!/^[a-f0-9]{32}$/.test(id)) return res.status(404).json({ error: "Unggahan tidak ditemukan." });
+    const now = Date.now(), h = hashIp(req.ip);
+    if (limited("d:" + h, now)) return res.status(429).json({ error: "Terlalu banyak unggahan. Coba lagi satu jam lagi atau chat admin." });
+    const cfg = settings.getAll();
+    const up = multer({ storage: multer.memoryStorage(), limits: { fileSize: cfg.file_max_mb * 1024 * 1024, files: 2, fields: 2 } }).fields([{ name: "ai", maxCount: 1 }, { name: "sim", maxCount: 1 }]);
+    up(req, res, async err => {
+      if (err) return res.status(err.code === "LIMIT_FILE_SIZE" ? 413 : 400).json({ error: err.code === "LIMIT_FILE_SIZE" ? `File terlalu besar (maksimal ${cfg.file_max_mb} MB).` : "Unggahan gagal. Coba lagi." });
+      try {
+        const row = db.prepare("SELECT sha256, expires_at, order_id FROM uploads WHERE id=?").get(id);
+        if (!row || row.expires_at < now) return res.status(404).json({ error: "Unggahan tidak ditemukan atau sudah kedaluwarsa. Unggah ulang dokumenmu." });
+        const F = req.files || {}, bufs = [F.ai && F.ai[0] && F.ai[0].buffer, F.sim && F.sim[0] && F.sim[0].buffer].filter(Boolean);
+        if (!bufs.length) return res.status(400).json({ error: "Pilih laporan Drillbit dari UT (PDF)." });
+        let ai = null, sim = null, aiRaw = null, simRaw = null; const warn = [];
+        for (const b of bufs) {
+          if (b.slice(0, 4).toString() !== "%PDF") return res.status(415).json({ error: "Laporan Drillbit harus berupa PDF asli dari UT." });
+          const k = await drillbit.detectKind(b);
+          if (k === "ai") { ai = ai || await drillbit.parseAi(b); aiRaw = aiRaw || b; } else if (k === "sim") { sim = sim || await drillbit.parseSim(b); simRaw = simRaw || b; }
+          else warn.push("Satu file tidak dikenali sebagai laporan Drillbit dari UT, jadi dilewati.");
+        }
+        if (ai && !ai.ok) { warn.push(ai.error); ai = null; aiRaw = null; }
+        if (sim && !sim.ok) { warn.push(sim.error); sim = null; simRaw = null; }
+        if (!ai && !sim) return res.status(422).json({ error: warn[0] || "Laporan tidak terbaca. Pastikan itu PDF Drillbit asli dari UT." });
+        let saved = false;
+        if (library && library.attachReports) { try { saved = !!(await library.attachReports({ sha: row.sha256, user: userFrom ? userFrom(req) : null, aiBuf: aiRaw, simBuf: simRaw, ai, sim })); } catch (e2) { console.error("[parafrase] simpan laporan Drillbit ke Dokumen gagal:", e2 && e2.message); } }
+        res.json({ ai: ai ? ai.aiPct : null, sim: sim ? sim.pct : null, warn, saved });
+      } catch (e) { console.error("[parafrase] baca laporan Drillbit gagal:", e && e.message); res.status(500).json({ error: "Laporan tidak bisa dibaca. Coba lagi atau chat admin." }); }
+    });
   });
 
   /* Lanjutkan unggahan yang sudah ada (mis. dari Audit Dokumen) tanpa unggah ulang, sekaligus menghitung ulang urgensi

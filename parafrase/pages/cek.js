@@ -62,6 +62,7 @@
     window.renderTriage($("triage"), j.triage, tOpts);
     window.auditDrillbit($("dbit"), null, {
       here: "cek",
+      upload: function (fd) { return fetch("/ms/parafrase/drillbit/" + st.up.uploadId, { method: "POST", body: fd }).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || "Laporan tidak bisa dibaca."); return j; }); }); },
       fetch: function (s, a) { return fetch(triageUrl(s, a), { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (x) { return x.triage; }); },
       onTriage: function (t) { window.renderTriage($("triage"), t, tOpts); }
     });

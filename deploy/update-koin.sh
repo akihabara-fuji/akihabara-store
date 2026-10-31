@@ -79,7 +79,7 @@ for u in / /blog /sitemap.xml /robots.txt /admin/ /layanan /portal-ut /kalkulato
 for u in /buat-cv-ats /surat-lamaran /pasfoto-yudisium; do x=$(c $CA "$u"); echo "$CA$u $x"; [ "$x" = 301 ]; done
 x=$(c $CA /grup); echo "$CA/grup $x"; [ "$x" = 302 ] || [ "$x" = 200 ]
 has $CA /panduan-maba 'Baru masuk UT' || { echo "Halaman panduan maba tidak tampil"; false; }
-x=$(c $CA /ruangakademikut/audit); echo "$CA/ruangakademikut/audit $x"; [ "$x" = 200 ] || [ "$x" = 301 ]
+for u in /audit /audit-parafrase /ruangakademikut/audit; do x=$(c $CA "$u"); echo "$CA$u $x"; [ "$x" = 301 ]; done
 has $CA /admin/ 'Admin · Catatan Akademik' || { echo "Panel admin CA tidak tampil di /admin"; false; }
 has $CA /ms/layanan/config 'metopen' || { echo "Konfigurasi layanan tidak terbaca"; false; }
 echo "Isi halaman: OK"

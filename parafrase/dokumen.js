@@ -42,9 +42,6 @@ module.exports = function mountDokumen({ app, express, db, root, requireAdmin })
     const id = crypto.randomBytes(8).toString("hex"), now = nowMs();
     const ext = (/\.[a-z0-9]{1,5}$/i.exec(name) || [".docx"])[0].toLowerCase();
     const rel = "library/" + id + ext, aiRel = aiBuf ? "library/" + id + ".ai.pdf" : null, simRel = simBuf ? "library/" + id + ".sim.pdf" : null;
-    await fsp.writeFile(path.join(priv, rel), buf, { mode: 0o600 });
-    if (aiRel) await fsp.writeFile(path.join(priv, aiRel), aiBuf, { mode: 0o600 });
-    if (simRel) await fsp.writeFile(path.join(priv, simRel), simBuf, { mode: 0o600 });
     const data = {
       words: words || null, problemPct: problemPct == null ? null : problemPct,
       ai: ai && { pct: ai.aiPct, humanPct: ai.humanPct, matchedWords: ai.matchedWords, totalWords: ai.totalWords, pages: ai.pages, sentences: ai.sentences, confidence: ai.confidence, blockTable: ai.blockTable, blocks: (ai.blocks || []).map(b => ({ n: b.n, words: b.words })) },
@@ -68,6 +65,25 @@ module.exports = function mountDokumen({ app, express, db, root, requireAdmin })
       if (prev && !wa) wa = prev.wa;
     }
     data.nameMismatch = mismatch;
+    /* File yang sama (sha256) milik akun yang sama sudah tersimpan dari layanan lain (Cek & Parafrase atau Bedah): jangan simpan salinan kedua,
+       cukup lengkapi baris yang ada dengan laporan Drillbit dan hasil bacaannya. */
+    data.sha = crypto.createHash("sha256").update(buf).digest("hex"); data.usedIn = ["bedah"];
+    if (key) {
+      const dup = db.prepare("SELECT id, data FROM doc_library WHERE student_key=? AND data LIKE ? LIMIT 1").get(key, '%"sha":"' + data.sha + '"%');
+      if (dup) {
+        let od = {}; try { od = dup.data ? JSON.parse(dup.data) : {}; } catch { /* data lama rusak */ }
+        const dAi = aiBuf ? "library/" + dup.id + ".ai.pdf" : null, dSim = simBuf ? "library/" + dup.id + ".sim.pdf" : null;
+        if (dAi) await fsp.writeFile(path.join(priv, dAi), aiBuf, { mode: 0o600 });
+        if (dSim) await fsp.writeFile(path.join(priv, dSim), simBuf, { mode: 0o600 });
+        const merged = { ...od, ...data, usedIn: [...new Set([...(od.usedIn || []), "bedah"])] };
+        db.prepare("UPDATE doc_library SET ai_path=COALESCE(?,ai_path), sim_path=COALESCE(?,sim_path), ai_pct=COALESCE(?,ai_pct), sim_pct=COALESCE(?,sim_pct), words=COALESCE(?,words), data=?, nim=COALESCE(nim,?), wa=COALESCE(wa,?), student_name=COALESCE(student_name,?) WHERE id=?")
+          .run(dAi, dSim, ai ? pct(ai.aiPct) : null, sim ? pct(sim.pct) : null, words || null, JSON.stringify(merged), cleanNim || null, wa || null, clip(nama, 80) || null, dup.id);
+        return dup.id;
+      }
+    }
+    await fsp.writeFile(path.join(priv, rel), buf, { mode: 0o600 });
+    if (aiRel) await fsp.writeFile(path.join(priv, aiRel), aiBuf, { mode: 0o600 });
+    if (simRel) await fsp.writeFile(path.join(priv, simRel), simBuf, { mode: 0o600 });
     db.prepare("INSERT INTO doc_library(id,name,title,kind,ai_pct,sim_pct,target_ai,target_sim,note,size,path,ai_path,sim_path,words,data,student_key,student_name,nim,wa,status,revision_no,source,order_id,pinned,created_at,expires_at) VALUES(?,?,?,?,?,?,NULL,NULL,'',?,?,?,?,?,?,?,?,?,?,?,?,'bedah',NULL,0,?,?)")
       .run(id, clip(name, 160), clip(name.replace(/\.[a-z0-9]{1,5}$/i, ""), 200), "bedah", ai ? pct(ai.aiPct) : null, sim ? pct(sim.pct) : null, buf.length, rel, aiRel, simRel, words || null, JSON.stringify(data), key, clip(nama, 80) || null, cleanNim || null, wa || null, status, rev, now, now + TTL_MS);
     if (key) db.prepare("UPDATE doc_library SET nim=COALESCE(nim,?), wa=COALESCE(wa,?), student_name=COALESCE(student_name,?) WHERE student_key=?").run(cleanNim || null, wa || null, clip(nama, 80) || null, key);
@@ -79,16 +95,38 @@ module.exports = function mountDokumen({ app, express, db, root, requireAdmin })
   async function saveUpload({ kind, name, buf, user, words, summary }) {
     const sha = crypto.createHash("sha256").update(buf).digest("hex");
     const key = user && user.id ? "user:" + user.id : null;
-    const dup = db.prepare("SELECT id FROM doc_library WHERE kind=? AND IFNULL(student_key,'')=? AND data LIKE ? LIMIT 1").get(kindOf(kind), key || "", '%"sha":"' + sha + '"%');
-    if (dup) return dup.id;
+    /* File yang sama dari akun yang sama tidak digandakan, di layanan mana pun ia diunggah lebih dulu (Audit, Bedah, Cek & Parafrase). */
+    const dup = key ? db.prepare("SELECT id, data FROM doc_library WHERE student_key=? AND data LIKE ? LIMIT 1").get(key, '%"sha":"' + sha + '"%') : db.prepare("SELECT id, data FROM doc_library WHERE kind=? AND student_key IS NULL AND data LIKE ? LIMIT 1").get(kindOf(kind), '%"sha":"' + sha + '"%');
+    if (dup) {
+      try { const od = dup.data ? JSON.parse(dup.data) : {}; const u = [...new Set([...(od.usedIn || []), kindOf(kind)])]; if (u.length !== (od.usedIn || []).length) db.prepare("UPDATE doc_library SET data=? WHERE id=?").run(JSON.stringify({ ...od, usedIn: u }), dup.id); } catch { /* biarkan */ }
+      return dup.id;
+    }
     const id = crypto.randomBytes(8).toString("hex"), now = nowMs();
     const ext = (/\.[a-z0-9]{1,5}$/i.exec(name) || [".docx"])[0].toLowerCase(), rel = "library/" + id + ext;
     await fsp.writeFile(path.join(priv, rel), buf, { mode: 0o600 });
     const n = key ? db.prepare("SELECT COUNT(*) c FROM doc_library WHERE student_key=? AND kind=?").get(key, kindOf(kind)).c : 0;
-    const data = { sha, words: words || null, summary: summary || null, email: (user && user.email) || null };
+    const data = { sha, usedIn: [kindOf(kind)], words: words || null, summary: summary || null, email: (user && user.email) || null };
     db.prepare("INSERT INTO doc_library(id,name,title,kind,note,size,path,words,data,student_key,student_name,nim,wa,status,revision_no,source,pinned,created_at,expires_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,NULL,NULL,?,?,?,0,?,?)")
       .run(id, clip(name, 160), clip(name.replace(/\.[a-z0-9]{1,5}$/i, ""), 200), kindOf(kind), clip(user && user.email, 120), buf.length, rel, words || null, JSON.stringify(data), key, clip(user && user.name, 80) || null, n ? "revisi" : "baru", n, kindOf(kind), now, now + TTL_MS);
     return id;
+  }
+
+  /* Laporan Drillbit (PDF AI dan Similarity) yang diunggah murid di Cek & Parafrase: dilekatkan ke dokumen yang sama di Dokumen Saya
+     (dicari lewat sha256 file, kelompok akun yang sama), sama seperti yang dilakukan Bedah. */
+  async function attachReports({ sha, user, aiBuf, simBuf, ai, sim }) {
+    const key = user && user.id ? "user:" + user.id : "";
+    const row = db.prepare("SELECT id, data FROM doc_library WHERE IFNULL(student_key,'')=? AND data LIKE ? ORDER BY created_at DESC LIMIT 1").get(key, '%"sha":"' + sha + '"%');
+    if (!row) return null;
+    const aiRel = aiBuf ? "library/" + row.id + ".ai.pdf" : null, simRel = simBuf ? "library/" + row.id + ".sim.pdf" : null;
+    if (aiRel) await fsp.writeFile(path.join(priv, aiRel), aiBuf, { mode: 0o600 });
+    if (simRel) await fsp.writeFile(path.join(priv, simRel), simBuf, { mode: 0o600 });
+    let data = {}; try { data = row.data ? JSON.parse(row.data) : {}; } catch { /* data lama rusak: mulai baru */ }
+    data.usedIn = [...new Set([...(data.usedIn || []), "parafrase"])];
+    if (ai) data.ai = { pct: ai.aiPct, humanPct: ai.humanPct, matchedWords: ai.matchedWords, totalWords: ai.totalWords, pages: ai.pages, sentences: ai.sentences, confidence: ai.confidence, blockTable: ai.blockTable };
+    if (sim) data.sim = { pct: sim.pct, grade: sim.grade, matchedSources: sim.matchedSources, pages: sim.pages, totalWords: sim.totalWords, sourceTypes: sim.sourceTypes, content: sim.content, excluded: sim.excluded, sources: sim.sources };
+    db.prepare("UPDATE doc_library SET ai_path=COALESCE(?,ai_path), sim_path=COALESCE(?,sim_path), ai_pct=COALESCE(?,ai_pct), sim_pct=COALESCE(?,sim_pct), data=? WHERE id=?")
+      .run(aiRel, simRel, ai ? pct(ai.aiPct) : null, sim ? pct(sim.pct) : null, JSON.stringify(data), row.id);
+    return row.id;
   }
 
   app.get(base + "/:id(" + "[a-f0-9]{16}" + ")", requireAdmin, (req, res) => {
@@ -204,5 +242,5 @@ module.exports = function mountDokumen({ app, express, db, root, requireAdmin })
       db.prepare("DELETE FROM doc_library WHERE id=?").run(r.id);
     }
   }
-  return { purgeExpired, saveBedah, saveUpload };
+  return { purgeExpired, saveBedah, saveUpload, attachReports };
 };

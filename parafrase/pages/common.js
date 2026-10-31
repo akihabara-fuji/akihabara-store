@@ -1,4 +1,4 @@
-/* Dipakai semua halaman Ruang Akademik UT: ambil pengaturan publik, isi tombol dan harga. */
+/* Dipakai semua halaman Catatan Akademik: ambil pengaturan publik, isi tombol dan harga. */
 (function () {
   var rp = function (n) { return Number(n).toLocaleString("id-ID"); };
   /* Harga ditampilkan singkat: 35000 jadi 35k, 1300000 jadi 1,3 jt. Angka di bawah Rp1.000 (mis. harga per kata) tetap rupiah. Halaman bayar memakai tulisan penuh. */
@@ -255,9 +255,31 @@ window.auditDrillbit = function (box, score, ctx) {
     out.appendChild(el("p", "margin:12px 0 4px;font-weight:600", over ? "Rekomendasi: " + msg.replace(/^Ada angka di atas batas acuan\. /, "") : msg));
     if (over && !(ctx && ctx.here === "cek")) { var l = el("a", "", "Buka Cek & Parafrase Mandiri"); l.href = "/ruangakademikut/cek-parafrase-mandiri" + (ctx && ctx.uploadId ? "?u=" + ctx.uploadId : ""); l.style.fontSize = "14px"; out.appendChild(l); }
     if (ctx && ctx.fetch && ctx.onTriage) ctx.fetch(s, a).then(ctx.onTriage).catch(function () {});
-    out.appendChild(el("p", "margin:6px 0 0;font-size:12.5px;opacity:.7", "Batas acuan diatur admin, bukan aturan resmi UT. Ikuti ketentuan prodi dan tutormu. Angka berasal dari laporan Drillbit yang kamu tempel."));
+    out.appendChild(el("p", "margin:6px 0 0;font-size:12.5px;opacity:.7", "Batas acuan diatur admin, bukan aturan resmi UT. Ikuti ketentuan prodi dan tutormu. Angka berasal dari laporan Drillbit yang kamu unggah."));
   }
   go.onclick = show;
+  /* Cek & Parafrase: sama seperti Bedah, murid mengunggah PDF Drillbit dari UT (AI dan Similarity). Angka dibaca server dan
+     kedua PDF tersimpan di Dokumen Saya; tidak ada lagi kolom tempel angka. */
+  if (ctx && ctx.upload) {
+    row.style.display = "none";
+    wrap.firstChild.textContent = "Unggah laporan Drillbit dari UT";
+    wrap.childNodes[1].textContent = "Unggah dua PDF dari UT (laporan AI dan laporan Similarity). Angkanya dibaca otomatis dan dipakai menentukan urgensi di bawah. File ikut tersimpan di akunmu.";
+    var fr = el("div", "display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end");
+    function pick(label) { var w = el("label", "display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600;flex:1;min-width:220px"); w.appendChild(el("span", "", label)); var i = el("input", "padding:9px 10px;border-radius:12px;border:1px solid currentColor;background:transparent;color:inherit;font:inherit"); i.type = "file"; i.accept = "application/pdf,.pdf"; w.appendChild(i); fr.appendChild(w); return i; }
+    var fAi = pick("Laporan AI Drillbit (PDF)"), fSim = pick("Laporan Similarity Drillbit (PDF)");
+    var rd = el("button", "", "Baca laporan"); rd.type = "button"; rd.className = "btn"; fr.appendChild(rd); wrap.insertBefore(fr, row);
+    rd.onclick = function () {
+      err.textContent = ""; out.innerHTML = "";
+      if (!fAi.files.length && !fSim.files.length) { err.textContent = "Pilih minimal satu laporan PDF dari UT."; return; }
+      var fd = new FormData(); if (fAi.files.length) fd.append("ai", fAi.files[0]); if (fSim.files.length) fd.append("sim", fSim.files[0]);
+      rd.disabled = true; rd.textContent = "Membaca…";
+      ctx.upload(fd).then(function (r) {
+        iS.value = r.sim != null ? String(r.sim).replace(".", ",") : ""; iA.value = r.ai != null ? String(r.ai).replace(".", ",") : "";
+        show(); if (r.warn && r.warn.length) err.textContent = r.warn[0];
+      }).catch(function (e) { err.textContent = (e && e.message) || "Laporan tidak bisa dibaca."; })
+        .then(function () { rd.disabled = false; rd.textContent = "Baca laporan"; });
+    };
+  }
 };
 
 /* Arahan "harusnya seperti apa" per kode warna (sama dengan TARGET di hint.js). Dipakai sebagai keterangan saat kursor di atas penanda. */

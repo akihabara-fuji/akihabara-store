@@ -13,6 +13,7 @@ function shortPaths(s) {
   return String(s)
     .replace(/\/ruangakademikut\/assets\//g, "/assets/ut/")
     .replace(/\/ruangakademikut\/img\//g, "/assets/ut/img/")
+    .replace(/\/ruangakademikut\/(?=#)/g, "/layanan-ut")
     .replace(RE_PAGE, "/$1")
     .replace(/(https?:\/\/[^"'\s<]+?)\/ruangakademikut(?=["'<\s?#)])/g, "$1/layanan-ut")
     .replace(/(["'(=])\/ruangakademikut(?=["'<\s?#)])/g, "$1/layanan-ut");

@@ -4,7 +4,7 @@ const dir = path.join(__dirname, "..", "parafrase", "pages"), rd = f => fs.readF
 const pages = fs.readdirSync(dir).filter(f => f.endsWith(".html") && rd(f).includes('<header class="nav">') && rd(f).includes("Portal &amp; Alat UT"));
 
 test("semua halaman dengan menu kedua punya dropdown Mahasiswa Baru dan Portal & Alat UT", () => {
-  assert.ok(pages.length >= 18);
+  assert.ok(pages.length >= 15);
   for (const f of pages) assert.ok(!rd(f).includes('class="sub"'), f + " masih punya bar menu kedua");
   for (const f of pages) {
     const h = rd(f);
@@ -41,13 +41,11 @@ test("pemakaian kalkulator dan checklist dihitung lewat /ms/ev tanpa menyimpan i
   const idx = fs.readFileSync(path.join(dir, "..", "index.js"), "utf8");
   assert.match(idx, /EV = new Set\(\["kalkulator", "checklist"\]\)/); assert.match(idx, /app\.post\("\/ms\/ev"/);
 });
-test("Audit dan Bedah satu alur: pilihan alur ada di halaman Audit, Bedah, dan hasil Audit", () => {
-  for (const f of ["audit.html", "bedah.html", "audit-hasil.html"]) {
-    const h = rd(f);
-    assert.match(h, /class="alur"/, f); assert.match(h, /href="\/ruangakademikut\/audit"/, f); assert.match(h, /href="\/ruangakademikut\/bedah-laporan"/, f);
-  }
-  assert.match(rd("audit.html"), /alur-i on" href="\/ruangakademikut\/audit"/); assert.match(rd("bedah.html"), /alur-i on" href="\/ruangakademikut\/bedah-laporan"/);
+test("Bedah dan Cek & Parafrase satu alur: pilihan alur di halaman Bedah", () => {
+  const h = rd("bedah.html");
+  assert.match(h, /class="alur"/); assert.match(h, /href="\/ruangakademikut\/cek-parafrase-mandiri"/); assert.match(h, /href="\/ruangakademikut\/bedah-laporan"/);
+  assert.match(h, /alur-i on" href="\/ruangakademikut\/bedah-laporan"/);
 });
 test("versi aset dinaikkan supaya pengunjung tidak memakai CSS lama dengan HTML baru", () => {
-  assert.match(rd("panduan-maba.html"), /site\.css\?v=20261302/); assert.match(rd("panduan-maba.html"), /common\.js\?v=20261504/);
+  assert.match(rd("panduan-maba.html"), /site\.css\?v=20261302/); assert.match(rd("panduan-maba.html"), /common\.js\?v=20261505/);
 });

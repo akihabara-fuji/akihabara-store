@@ -1,4 +1,4 @@
-/* Layanan Ruang Akademik UT: Tugas, Diskusi, Metopen (per tahap atau paket), dan Revisi.
+/* Layanan Catatan Akademik: Tugas, Diskusi, Metopen (per tahap atau paket), dan Revisi.
    Alur: pelanggan login, tulis kebutuhan + unggah file, bayar QRIS (halaman pesanan yang sudah ada),
    admin mengerjakan lewat Hermes lalu mengirim hasil (file Word/PDF atau teks). Hasil dan lampiran dihapus 24 jam kemudian.
    Memakai tabel pesanan yang sama (doc_type='layanan'); tidak ada AI di server. */

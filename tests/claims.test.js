@@ -10,12 +10,6 @@ test("halaman publik tidak memuat janji hasil atau klaim mutlak", () => {
   for (const f of pages) for (const re of BAD) assert.ok(!re.test(text(f)), `${f} memuat klaim terlarang ${re}`);
 });
 
-test("teks penyimpanan file di Audit Dokumen sesuai perilaku kode (disimpan sementara, bukan 'tidak disimpan')", () => {
-  const t = text("audit.html"), code = fs.readFileSync(path.join(__dirname, "..", "parafrase", "audit.js"), "utf8");
-  assert.ok(/UPLOAD_TTL_MS = 2 \* 3600/.test(code) && /writeFile/.test(code), "kode memang menyimpan 2 jam");
-  assert.ok(!/File tidak disimpan/i.test(t) && /2 jam/.test(t));
-});
-
 test("halaman layanan tetap memuat penafian: bukan situs resmi UT dan tidak menjamin nilai", () => {
   assert.ok(/bukan situs resmi/i.test(text("beranda.html")) && /tidak menjamin nilai/i.test(text("beranda.html")));
   assert.ok(/tidak menjamin skor tertentu atau kelulusan/i.test(text("cek.html")));

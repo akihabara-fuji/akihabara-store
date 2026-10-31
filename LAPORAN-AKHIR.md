@@ -1,4 +1,4 @@
-# Laporan akhir: Cek dan Parafrase Mandiri (Ruang Akademik UT)
+# Laporan akhir: Cek dan Parafrase Mandiri (Catatan Akademik)
 
 Branch: `feature/cek-parafrase-mandiri` (repo akihabara-store). **Belum dipasang ke nextaja.com.** Menunggu ACC.
 

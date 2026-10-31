@@ -3,7 +3,7 @@
 Cabang: `feature/cek-parafrase-mandiri` (dari `nextaja-baru`). Jangan deploy sebelum disetujui pemilik.
 
 ## Keputusan
-- Nama menu/hub final: "Ruang Akademik UT" di `/ruangakademikut` (menggantikan "Kebutuhan anak UT" dan #akademik; nama layanan: "Cek dan Parafrase Mandiri", label menu pendek "Cek & Parafrase").
+- Nama menu/hub final: "Catatan Akademik" di `/ruangakademikut` (menggantikan "Kebutuhan anak UT" dan #akademik; nama layanan: "Cek dan Parafrase Mandiri", label menu pendek "Cek & Parafrase").
 - Pembayaran: QRIS manual (foto QRIS + bukti bayar + verifikasi admin). Webhook ditunda ke v2.
 - Database: SQLite (better-sqlite3), berkas `data/parafrase.db`.
 - WhatsApp: bot Baileys yang sudah ada di VPS (belum dihubungkan).
@@ -21,7 +21,7 @@ Cabang: `feature/cek-parafrase-mandiri` (dari `nextaja-baru`). Jangan deploy seb
 ## Langkah berikutnya
 1. Tahap 4b: penyamaran server pada pratinjau (kalimat pertama terbuka, sisanya berwarna tapi teks diganti karakter pengganti; teks asli tidak boleh bocor di respons, HTML, atau cache).
 2. Penyetelan aturan 4a dengan 3 sampai 5 dokumen tugas asli (kurangi salah tandai).
-3. Tahap 5: halaman /ruangakademikut ("Ruang Akademik UT") dan halaman murid.
+3. Tahap 5: halaman /ruangakademikut ("Catatan Akademik") dan halaman murid.
 
 ## Tahap 4b selesai
 - `parafrase/preview.js`: pratinjau dengan penyamaran di server (kalimat pertama terbuka, sisanya diganti karakter acak deterministik dengan panjang sama; alasan catatan tidak dikirim saat terkunci).
@@ -31,7 +31,7 @@ Cabang: `feature/cek-parafrase-mandiri` (dari `nextaja-baru`). Jangan deploy seb
 
 ## Tahap 5 selesai (halaman)
 - `parafrase/pages.js` + `parafrase/pages/`: `/ruangakademikut` (hub), `/ruangakademikut/cek-parafrase-mandiri` (unggah, pratinjau 8 warna, detail, harga, jalur cepat), `/ruangakademikut/pesanan` (placeholder sampai Tahap 7), aset di `/ruangakademikut/assets/*` (daftar putih). `/akademik` dan `/kebutuhan-anak-ut` dialihkan 301.
-- `public/index.html` (salinan repo): menu Akademik -> Ruang Akademik UT, `#akademik` dialihkan lewat skrip kecil. Versi live harus disesuaikan lewat skrip pasang.
+- `public/index.html` (salinan repo): menu Akademik -> Catatan Akademik, `#akademik` dialihkan lewat skrip kecil. Versi live harus disesuaikan lewat skrip pasang.
 - Contoh terbuka kini = kalimat BERCATATAN pertama (bukan judul).
 - Tombol Bayar dengan QRIS belum membuat pesanan (Tahap 6a). 35 tes lulus, diuji di browser (desktop dan HP).
 - Berikutnya: Tahap 6a (pesanan + QRIS manual + bukti bayar + Konfirmasi/Tolak).

@@ -72,7 +72,7 @@ Uji manual di browser (server lokal + data blog asli dari snapshot + pesanan con
 - Tampilan HP 375px: tanpa scroll ke samping (blog dan panel).
 
 ## 6. Yang masih tersisa / di luar cakupan
-- **Panel nextaja tidak disentuh** (sesuai permintaan). Tab Blog/Pelanggan/Ruang Akademik di sana akan menampilkan "sesi habis" karena API akademik sekarang khusus login CA.
+- **Panel nextaja tidak disentuh** (sesuai permintaan). Tab Blog/Pelanggan/Catatan Akademik di sana akan menampilkan "sesi habis" karena API akademik sekarang khusus login CA.
 - Format isi artikel tetap Markdown dengan toolbar (bukan editor WYSIWYG), demi keamanan dan kecocokan dengan 17 artikel yang ada.
 - Kategori masih tetap di kode (Study, Info UT); tag bebas dari editor.
 - Pengunjung/trafik tidak dihitung panel; pakai GA4.

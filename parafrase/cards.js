@@ -1,4 +1,4 @@
-/* Gambar kartu layanan di Ruang Akademik UT. Admin mengunggah dari panel; publik hanya bisa mengambil lewat nama tetap. */
+/* Gambar kartu layanan di Catatan Akademik. Admin mengunggah dari panel; publik hanya bisa mengambil lewat nama tetap. */
 "use strict";
 const fs = require("fs");
 const fsp = fs.promises;

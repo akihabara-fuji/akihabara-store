@@ -331,6 +331,7 @@ const needLogin = (req, res, next) => (extra.userFrom(req) ? next() : res.status
 const needLoginUse = (req, res, next) => (extra.userFrom(req) ? next() : res.status(401).json({ error: "Masuk atau daftar dulu untuk memakai layanan ini.", login: true }));
 app.post("/ms/bedah/upload", needLoginUse);
 app.post("/ms/parafrase/upload", needLoginUse);
+app.post("/ms/parafrase/drillbit/:id", needLoginUse);
 app.post("/ms/audit/upload", needLoginUse);
 app.post("/ms/parafrase/order", needLogin);
 app.post("/ms/layanan/order", needLogin);
