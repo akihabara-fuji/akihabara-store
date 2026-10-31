@@ -515,7 +515,9 @@ module.exports = function mountBedah({ library = null, app, express, db, setting
       res.set("Cache-Control", "no-store");
       try {
         const c = await studioCtx(req.params.id);
-        const out = c.pdf ? await studio.plainDocx(c.a.paragraphs, null, new Set(c.items.flatMap(x => (x.parts && x.parts.length ? x.parts : [[x.para_idx, x.sent_idx]]).map(([pi, si]) => pi + ":" + si)))) : await wordtools.buildColored(c.buf, markRows(c.items));
+        const marks = new Set(c.items.flatMap(x => (x.parts && x.parts.length ? x.parts : [[x.para_idx, x.sent_idx]]).map(([pi, si]) => pi + ":" + si)));
+        const notes = new Map(); for (const x of c.items) { if (!notes.has(x.para_idx)) notes.set(x.para_idx, []); { const [h, ...r] = noteOf(x).split("\n"); notes.get(x.para_idx).push("Rekomendasi · " + h + "\nKalimat: \u201c" + (x.text.length > 140 ? x.text.slice(0, 140) + "…" : x.text) + "\u201d\n" + r.join("\n")); } }
+        const out = c.pdf ? await studio.plainDocx(c.a.paragraphs, null, marks, notes) : await wordtools.buildColored(c.buf, markRows(c.items));
         res.set({ "Content-Disposition": `attachment; filename="${c.o.id} untuk diedit.docx"` }).type("application/vnd.openxmlformats-officedocument.wordprocessingml.document").send(out);
       } catch (e) { sFail(res, e, "word"); }
     });

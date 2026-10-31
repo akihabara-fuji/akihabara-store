@@ -153,13 +153,18 @@ function rewriteParagraphs(paragraphs, edits) {
 }
 const xe = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 /* texts: teks per paragraf; marks: Set "paraIdx:sentIdx" yang disorot (untuk Word edit). */
-async function plainDocx(paragraphs, texts, marks) {
+async function plainDocx(paragraphs, texts, marks, notes) {
   const JSZip = require("jszip"), zip = new JSZip();
   const body = paragraphs.map((p, i) => {
     const t = String(texts ? texts[i] : p.text || ""); if (!t.trim()) return "";
     const ss = marks ? splitSentences(t) : [t];
-    const runs = ss.map((x, j) => `<w:r>${marks && marks.has(p.idx + ":" + j) ? '<w:rPr><w:highlight w:val="cyan"/></w:rPr>' : ""}<w:t xml:space="preserve">${xe(x)}${j < ss.length - 1 ? " " : ""}</w:t></w:r>`).join("");
-    return `<w:p><w:pPr><w:spacing w:after="160" w:line="360" w:lineRule="auto"/><w:jc w:val="both"/></w:pPr>${runs}</w:p>`;
+    const runs = ss.map((x, j) => `<w:r>${marks && marks.has(p.idx + ":" + j) ? '<w:rPr><w:shd w:val="clear" w:color="auto" w:fill="B2EBF2"/></w:rPr>' : ""}<w:t xml:space="preserve">${xe(x)}${j < ss.length - 1 ? " " : ""}</w:t></w:r>`).join("");
+    let out = `<w:p><w:pPr><w:spacing w:after="160" w:line="360" w:lineRule="auto"/><w:jc w:val="both"/></w:pPr>${runs}</w:p>`;
+    /* Rekomendasi per kalimat biru: kotak abu di bawah paragrafnya (Word hasil kirim tidak memuat ini; hanya untuk admin). */
+    for (const n of (notes && notes.get(p.idx)) || []) {
+      out += n.split("\n").map((line, k) => `<w:p><w:pPr><w:shd w:val="clear" w:color="auto" w:fill="F1F3F5"/><w:spacing w:after="${k === n.split("\n").length - 1 ? 160 : 0}"/><w:ind w:left="360"/></w:pPr><w:r><w:rPr><w:sz w:val="18"/>${k === 0 ? "<w:b/>" : ""}</w:rPr><w:t xml:space="preserve">${xe(line)}</w:t></w:r></w:p>`).join("");
+    }
+    return out;
   }).join("");
   zip.file("[Content_Types].xml", '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>');
   zip.file("_rels/.rels", '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>');
