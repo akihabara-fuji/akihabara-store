@@ -206,3 +206,11 @@ table.t input[type=checkbox]{width:17px;height:17px;cursor:pointer;accent-color:
 .cp-pv{display:flex;gap:12px;flex-wrap:wrap}.cp-pv>div{flex:0 0 190px;min-width:0;font-size:12px;color:var(--muted)}.cp-pv b{display:block;margin-bottom:5px;color:var(--text)}
 .cp-pvb{display:block;position:relative;overflow:hidden;border-radius:8px;border:1px solid var(--border);background:#000;aspect-ratio:var(--ar,1.5)}.cp-pvb i{display:block}
 .dlg .bd{max-height:calc(100vh - 190px);overflow:auto}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.chips a{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid var(--border);border-radius:999px;font-size:13px;font-weight:600;color:var(--muted,var(--text));text-decoration:none}
+.chips a.on{background:var(--acc);border-color:var(--acc);color:var(--on-acc)}
+.chips a .n{opacity:.8;font-weight:700}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.steps .st{display:flex;flex-direction:column;gap:8px;align-items:flex-start;border:1px solid var(--border);border-radius:12px;padding:12px}
+.steps .st span{font-size:13px;color:var(--muted,var(--text))}
+.stu-h{display:flex;flex-wrap:wrap;gap:8px;align-items:center}

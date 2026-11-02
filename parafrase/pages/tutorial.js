@@ -49,7 +49,7 @@
       if (r[1]) { if (!cfg[r[1]]) return; v = cfg[r[1]].closed ? "Ditutup sementara" : rp(cfg[r[1]].price); }
       else { var ps = ["metopen1", "metopen2", "metopen3"].filter(function (k) { return cfg[k] && !cfg[k].closed; }).map(function (k) { return cfg[k].price; }); if (!ps.length) return; v = rp(Math.min.apply(null, ps)) + " sampai " + rp(Math.max.apply(null, ps)); }
       tr.appendChild(el("td", "", r[0])); tr.appendChild(el("td", "", v)); tb.appendChild(tr); });
-    var rv = cfg.revisi_tugas ? "Revisi gratis untuk hasil buatan kami. Revisi untuk file dari luar mulai " + rp(cfg.revisi_tugas.price) + "." : "";
+    var rv = cfg.revisi_tugas && !cfg.revisi_tugas.closed ? "Revisi gratis untuk hasil buatan kami. Revisi untuk file dari luar mulai " + rp(cfg.revisi_tugas.price) + "." : "";
     $("#txRev").textContent = rv; reveal();
   }
   function reveal() {
@@ -70,6 +70,16 @@
     }).catch(function () {});
   }
   document.addEventListener("click", function (e) { var b = e.target.closest("[data-tab]"); if (b) { e.preventDefault(); setTab(b.dataset.tab); window.scrollTo({ top: 0, behavior: "smooth" }); } });
-  fetch("/ms/layanan/config").then(function (r) { return r.json(); }).then(function (j) { cfg = j || {}; paint(); }).catch(function () { $("#txPlans").textContent = "Harga belum bisa dimuat. Muat ulang halaman atau chat admin."; });
+  function closedBanner() {
+    var all = SV.every(function (x) { return x[2].every(function (k) { return !cfg[k] || cfg[k].closed; }); });
+    if (!all) return;
+    var hd = document.querySelector(".tx-hd .wrap"); if (!hd || hd.querySelector(".tx-closed")) return;
+    var n = el("div", "tx-closed", "Sesi tutorial online sedang ditutup, jadi pesanan baru belum dibuka. Lihat alur dan testimoni di bawah, atau tanya admin untuk info sesi berikutnya.");
+    n.style.cssText = "margin:12px 0;padding:12px 16px;border-radius:12px;border:1px solid var(--border);background:var(--surface2)"; hd.insertBefore(n, hd.querySelector(".tx-seg"));
+    var hb = document.querySelector('.tx-seg [data-tab="harga"]'); if (hb) hb.textContent = "Layanan";
+    var th = document.querySelector("#tx-harga thead th:last-child"); if (th) th.textContent = "Status";
+    var cta = document.querySelector('.tx-cta [data-tab="harga"]'); if (cta) cta.textContent = "Lihat layanan";
+  }
+  fetch("/ms/layanan/config").then(function (r) { return r.json(); }).then(function (j) { cfg = j || {}; closedBanner(); paint(); }).catch(function () { $("#txPlans").textContent = "Harga belum bisa dimuat. Muat ulang halaman atau chat admin."; });
   setTab(q.get("tab") === "harga" || q.get("s") ? "harga" : "alur", false); ulasan(); reveal();
 })();

@@ -42,9 +42,9 @@ test("legenda warna dipakai di Audit dan Cek & Parafrase", () => {
 
 test("layanan ditutup: default tutup, harga disembunyikan, halaman dan URL tetap", () => {
   const fs = require("fs"), path = require("path"), r = p => fs.readFileSync(path.join(__dirname, "..", p), "utf8");
-  assert.match(r("parafrase/settings.js"), /layanan_nonaktif:.*def: "tugas,diskusi,metopen1,metopen2,metopen3,metopen_paket,revisi_tugas,revisi_diskusi,revisi_metopen"/);
+  assert.match(r("parafrase/settings.js"), /layanan_nonaktif:.*def: "tugas,diskusi,makalah,jurnal,metopen1,metopen2,metopen3,metopen_paket,revisi_tugas,revisi_diskusi,revisi_metopen"/);
   assert.match(r("parafrase/pages/common.js"), /Pesanan baru sedang ditutup sementara\. Hubungi admin untuk info\./);
   assert.match(r("parafrase/pages/layanan.html"), /id="tutup"/);
-  assert.match(r("parafrase/layanan.js"), /closed: String\(settings\.get\("layanan_nonaktif"\)/);
-  assert.match(r("parafrase/pages/hub.html"), /data-slug="tugas"/);
+  assert.match(r("parafrase/layanan.js"), /closed: isOff\(k\)/);
+  assert.match(r("parafrase/pages/hub.html"), /data-slug="semester"/);
 });

@@ -33,6 +33,9 @@ const MAGIC = { docx: b => b.slice(0, 2).toString() === "PK", pdf: b => b.slice(
 
 module.exports = function mountLayanan({ app, express, db, settings, orders, root, sameOrigin, secret, requireAdmin, userFrom }) {
   const priceOf = k => { const v = settings.get("price_" + k); return Number.isInteger(v) ? v : SV[k].price; };
+  /* Layanan ditutup: kode ada di layanan_nonaktif, atau satu keluarga dengan Tugas yang ditutup (Makalah dan Jurnal ikut Tugas). */
+  const offList = () => String(settings.get("layanan_nonaktif") || "").split(",").filter(Boolean);
+  const isOff = k => { const o = offList(); return o.includes(k) || ((k === "makalah" || k === "jurnal") && o.includes("tugas")); };
   const labelOf = k => labelFor(settings, k); // nama tampil: bisa diubah admin (label_<kode>), bawaan dari SV
   const priv = p => path.join(root, "data", "private", p);
   const hits = new Map();
@@ -43,7 +46,7 @@ module.exports = function mountLayanan({ app, express, db, settings, orders, roo
   const ext = n => ((String(n).match(/\.([a-z0-9]{2,5})$/i) || [])[1] || "").toLowerCase();
   const bad = (status, error, extra) => Object.assign(new Error(error), { status }, extra || {});
 
-  app.get("/ms/layanan/config", (req, res) => { res.set("Cache-Control", "public, max-age=5"); res.json(Object.fromEntries(Object.entries(SV).filter(([, v]) => !v.hidden).map(([k, v]) => [k, { label: labelOf(k), price: priceOf(k), kind: v.kind, closed: String(settings.get("layanan_nonaktif") || "").split(",").includes(k), ...(v.of ? { of: v.of } : {}), ...requirements(k) }]))); });
+  app.get("/ms/layanan/config", (req, res) => { res.set("Cache-Control", "public, max-age=5"); res.json(Object.fromEntries(Object.entries(SV).filter(([, v]) => !v.hidden).map(([k, v]) => [k, { label: labelOf(k), price: priceOf(k), kind: v.kind, closed: isOff(k), ...(v.of ? { of: v.of } : {}), ...requirements(k) }]))); });
 
   const up = multer({ storage: multer.memoryStorage(), limits: { fileSize: MAX_MB * 1048576, files: MAX_FILES, fields: 8 } }).array("files", MAX_FILES);
   app.post("/ms/layanan/order", (req, res) => {
@@ -57,7 +60,7 @@ module.exports = function mountLayanan({ app, express, db, settings, orders, roo
         const b = req.body || {}, files = req.files || [];
         const sv = SV[b.service]; if (!sv) throw bad(400, "Pilih jenis layanan.");
         if (sv.hidden) throw bad(410, "Metopen Tugas 4 sudah tidak tersedia. Metopen UT sekarang sampai Tugas 3.");
-        if (String(settings.get("layanan_nonaktif") || "").split(",").includes(b.service)) throw bad(409, `Layanan ${labelOf(b.service)} sedang tidak dibuka. Hubungi admin lewat WhatsApp.`);
+        if (isOff(b.service)) throw bad(409, `Layanan ${labelOf(b.service)} sedang tidak dibuka. Hubungi admin lewat WhatsApp.`);
         const wa = wa62(b.wa); if (!wa) throw bad(400, "Nomor WhatsApp tidak valid.");
         if (b.agree !== "true") throw bad(400, "Centang persetujuan syarat dan kebijakan privasi.");
         const brief = String(b.brief || "").trim().slice(0, 4000);

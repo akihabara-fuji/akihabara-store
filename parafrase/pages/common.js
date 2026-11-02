@@ -8,7 +8,7 @@
     window.PF.cfg = c;
     var set = function (sel, v) { document.querySelectorAll(sel).forEach(function (e) { e.textContent = v; }); };
     set("[data-ppw]", rp(c.price_per_word)); set("[data-min]", rp(c.min_order_price)); set("[data-fast]", rp(c.fast_lane.price));
-    set("[data-retention]", c.retention_hours); set("[data-fw]", rp(c.free_words || 0));
+    set("[data-retention]", Math.max(1, Math.round((c.retention_hours || 720) / 24))); set("[data-fw]", rp(c.free_words || 0));
     document.querySelectorAll("[data-p]").forEach(function (e) { var v = c[e.getAttribute("data-p")]; if (v != null) e.textContent = window.priceFmt(v).replace(/^Rp/, ""); });
     document.querySelectorAll("[data-k]").forEach(function (e) { var v = c[e.getAttribute("data-k")]; if (v != null) e.textContent = window.priceFmt(v); });
     /* Diskon dalam persen, dihitung dari harga sekarang dan harga normal (pengaturan admin). Tidak tampil bila datanya tidak masuk akal. */
@@ -19,7 +19,10 @@
     (function () {
       var off = String(c.layanan_nonaktif || "").split(",").filter(Boolean), has = function (k) { return off.indexOf(k) >= 0; };
       var shut = { tugas: has("tugas"), diskusi: has("diskusi"), metopen: has("metopen_paket") && has("metopen1") && has("metopen2") && has("metopen3"), revisi: has("revisi_tugas") && has("revisi_diskusi") && has("revisi_metopen") };
-      var NM = { tugas: "Tugas", diskusi: "Diskusi", metopen: "Metopen", revisi: "Revisi" };
+      shut.semester = shut.tugas && shut.diskusi; shut.pengarahan = shut.semester; // ikut tutup selama tutorial ditutup                 // Paket Semester memuat diskusi dan tugas
+      var allTut = shut.tugas && shut.diskusi && shut.metopen; // semua Tutorial Online ditutup
+      var NM = { tugas: "Tugas", diskusi: "Diskusi", metopen: "Metopen", revisi: "Revisi", semester: "Paket Semester", pengarahan: "Pengarahan Intensif" };
+      if (allTut) document.querySelectorAll(".tx-ban span:last-child").forEach(function (e) { e.textContent = "Lihat alur dan testimoni →"; });
       if (shut.revisi) document.querySelectorAll('.sublink[href*="revisi_"]').forEach(function (e) { e.style.display = "none"; });
       Object.keys(shut).forEach(function (g) {
         if (!shut[g]) return;

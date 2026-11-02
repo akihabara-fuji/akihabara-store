@@ -40,3 +40,30 @@ test("studio: halaman baru memakai kiri Word bisa diketik, kanan kalimat biru + 
   assert.ok(js.includes('contentEditable = "true"') && js.includes("/revisi") && js.includes("/final") && js.includes("/finish"));
   assert.ok(html.includes("Word asli mahasiswa") && html.includes("Kirim ke pelanggan") && html.includes("Unduh final"));
 });
+
+test("navigasi atas publik: 6 item, hanya 2 dropdown, sama di semua halaman", () => {
+  const dir = path.join(__dirname, "..", "parafrase", "pages");
+  let n = 0;
+  for (const f of fs.readdirSync(dir).filter(x => x.endsWith(".html"))) {
+    const h = fs.readFileSync(path.join(dir, f), "utf8"), m = /<nav class="links"[^>]*>[\s\S]*?<\/nav>/.exec(h);
+    if (!m || !m[0].includes('class="dd"')) continue; n++;
+    const items = [...m[0].replace(/<div class="ddp[\s\S]*?<\/div>/g, "").matchAll(/<(?:summary|a)[^>]*>([^<]+)</g)].map(x => x[1].trim());
+    assert.deepEqual(items.slice(0, 6), ["Layanan", "Tutorial Online", "Cek &amp; Bedah", "Mahasiswa Baru", "Alat UT", "Blog"], f);
+    assert.equal((m[0].match(/<details class="dd"/g) || []).length, 2, f);
+  }
+  assert.ok(n >= 15, "halaman publik terperiksa: " + n);
+});
+
+test("menu admin: Pesanan punya tab Cek & Parafrase per mahasiswa dan status jadi chip", () => {
+  const src = fs.readFileSync(path.join(__dirname, "..", "admin-ca", "public", "app.js"), "utf8");
+  assert.ok(src.includes('"Cek & Parafrase", OWN') && src.includes('class="chips"') && src.includes("Buka semua file") && src.includes("Urutan kerja") && src.includes("Pilih dari Pustaka"));
+  assert.ok(!src.includes("Antrean Cek & Parafrase\", CS"));
+});
+
+test("layanan ditutup: Makalah dan Jurnal ikut Tugas, Paket Semester ikut Tugas+Diskusi", () => {
+  const r = p => fs.readFileSync(path.join(__dirname, "..", p), "utf8");
+  const l = r("parafrase/layanan.js");
+  assert.ok(l.includes('(k === "makalah" || k === "jurnal") && o.includes("tugas")') && l.includes("isOff(b.service)"), "pesanan makalah/jurnal ditolak bila Tugas ditutup");
+  assert.ok(r("parafrase/pages/common.js").includes("shut.semester = shut.tugas && shut.diskusi"));
+  assert.ok(r("parafrase/pages/tutorial.js").includes("Sesi tutorial online sedang ditutup") && r("parafrase/pages/tutorial.js").includes("!cfg.revisi_tugas.closed"));
+});
