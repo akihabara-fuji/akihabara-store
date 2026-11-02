@@ -14,3 +14,7 @@ data/parafrase.db-wal
 data/parafrase.db-shm
 data/private/
 data/indexnow.key
+data/studio.sqlite
+data/indexnow.key
+data/*.db*
+*.bak*

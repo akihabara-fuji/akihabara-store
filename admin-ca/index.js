@@ -82,6 +82,34 @@ module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, b
     ] };
   }
 
+  /* ---------------- pemeriksaan sistem ---------------- */
+  /* Daftar cek cepat untuk pemilik: pengaturan penting yang kosong dan masalah konten (artikel kembar, terbit serentak, di luar niche).
+     Hanya membaca; tidak mengubah apa pun. Tiap butir: tone ok|warn|bad, teks, dan tautan ke menu terkait bila ada. */
+  app.get("/ms/admin/ca/health", requireAdmin, send(req => {
+    if (req.admin.role === "editor") return { items: [] };
+    const cfg = settings.getAll(), items = [], add = (tone, text, href) => items.push({ tone, text, href: href || "" });
+    const url = v => /^https:\/\/\S+$/.test(String(v || "").trim());
+    if (!url(cfg.update_group_url)) add("bad", "Tautan grup WhatsApp belum diisi. Tombol komunitas di menu, banner, dan artikel tidak punya tujuan.", "#/settings");
+    if (!/^62\d{8,13}$/.test(String(cfg.admin_wa_number || "").replace(/\D/g, ""))) add("bad", "Nomor WhatsApp admin kosong atau formatnya salah (harus diawali 62).", "#/settings");
+    if (!String(cfg.qris_image_path || "").trim()) add("warn", "Gambar QRIS belum diatur. Pembayaran otomatis tidak bisa ditampilkan.", "#/payments");
+    if (!(Number(cfg.price_per_word) > 0)) add("bad", "Harga Cek & Parafrase per kata belum valid.", "#/settings");
+    if (!(Number(cfg.bedah_harga_per_1000) > 0)) add("warn", "Harga Bedah per 1.000 kata bernilai 0, jadi Bedah gratis.", "#/settings");
+    const live = blog.posts().filter(x => !x.trashedAt && blog.isLive(x)), now = Date.now();
+    const off = live.filter(x => ["social", "ai", "viral"].includes(x.topic));
+    if (off.length) add("warn", `${off.length} artikel terbit di luar fokus UT (sosmed, AI, viral). Disembunyikan dari daftar blog dan noindex; arsipkan bila tidak dipakai.`, "#/posts");
+    const byDay = {}; for (const x of live) { const d = String(x.publishedAt || "").slice(0, 10); if (d && now - Date.parse(x.publishedAt) < 7 * 864e5) byDay[d] = (byDay[d] || 0) + 1; }
+    const burst = Object.entries(byDay).filter(([, n]) => n >= 5).map(([d, n]) => `${d} (${n})`);
+    if (burst.length) add("warn", `Artikel terbit serentak dalam 7 hari terakhir: ${burst.join(", ")}. Sebar 2–3 per minggu dengan status Terjadwal.`, "#/posts");
+    const pairs = [], acad = live.filter(x => !["social", "ai", "viral"].includes(x.topic));
+    for (let i = 0; i < acad.length && pairs.length < 5; i++) for (let j = i + 1; j < acad.length && pairs.length < 5; j++) if (seo.similarity(acad[i].title, acad[j].title) >= 0.6) pairs.push(`“${String(acad[i].title).slice(0, 48)}” dan “${String(acad[j].title).slice(0, 48)}”`);
+    if (pairs.length) add("warn", `Judul yang bersaing untuk kata kunci sama: ${pairs.join("; ")}. Gabungkan lewat redirect 301.`, "#/posts");
+    const waiting = db.prepare("SELECT COUNT(*) n FROM orders WHERE status='menunggu_verifikasi' AND updated_at<?").get(now - 6 * 3600e3).n;
+    if (waiting) add("bad", `${waiting} pesanan menunggu konfirmasi pembayaran lebih dari 6 jam.`, "#/orders");
+    const drafts = live.length ? blog.posts().filter(x => !x.trashedAt && x.status === "draft").length : 0;
+    if (drafts >= 10) add("warn", `${drafts} draf belum diselesaikan.`, "#/posts?status=draft");
+    if (!items.length) add("ok", "Semua pemeriksaan lolos.");
+    return { items };
+  }));
   /* ---------------- dashboard ---------------- */
   app.get("/ms/admin/ca/dashboard", requireAdmin, send(req => {
     const r = range(req.query, 30), posts = blog.posts(), now = Date.now();
@@ -147,6 +175,18 @@ module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, b
     const o = one(req.params.id); if (!o) throw bad(404, "Pesanan tidak ditemukan.");
     const text = str((req.body || {}).text, 1000); if (text.length < 2) throw bad(400, "Catatan masih kosong.");
     db.prepare("INSERT INTO order_notes(order_id,admin,text,at) VALUES(?,?,?,?)").run(o.id, req.admin.name, text, Date.now());
+    return { ok: true };
+  }));
+  /* Tandai selesai: hasil sudah diserahkan di luar sistem (mis. lewat WhatsApp) atau tidak ada file untuk diunggah. */
+  app.post("/ms/admin/ca/orders/:id/selesai", requireAdmin, J, send(req => {
+    const note = str((req.body || {}).note, 300), now = Date.now();
+    db.transaction(() => {
+      const o = one(req.params.id); if (!o) throw bad(404, "Pesanan tidak ditemukan.");
+      if (!PROCESS.includes(o.status)) throw bad(409, `Pesanan berstatus ${(STATUS[o.status] || {}).label || o.status} tidak bisa ditandai selesai.`);
+      const hrs = settings.getAll().retention_hours || 24;
+      db.prepare("UPDATE orders SET status='terkirim', sent_at=?, delete_at=?, updated_at=? WHERE id=?").run(now, now + hrs * 3600e3, now, o.id);
+      orders.event(o.id, "ditandai_selesai", `${req.admin.name}${note ? ": " + note : ""}`, now);
+    })();
     return { ok: true };
   }));
   /* Batalkan: belum bayar -> langsung batal, file dihapus. Sudah bayar -> batal dengan catatan refund manual; tandai "dana dikembalikan" setelah transfer balik. */

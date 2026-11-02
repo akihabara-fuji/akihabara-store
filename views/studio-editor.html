@@ -1,0 +1,160 @@
+<section class="pg sx-pg"><div class="wrap">
+  <span class="eyebrow">Studio Konten</span>
+  <h1>Foto jadi konten siap posting</h1>
+  <p class="lead">Unggah foto, atur teksnya langsung di pratinjau, lalu unduh gambarnya. Semua diproses di browser kamu dan fotonya tidak dikirim ke server kami. Posting otomatis ke Instagram, Threads, dan TikTok belum tersedia.</p>
+
+  <div class="sx" id="sx">
+    <div class="sx-top">
+      <button type="button" class="sx-ic" id="menuBtn" aria-haspopup="true" aria-expanded="false" aria-label="Menu lainnya"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
+      <div class="sx-plat" id="plat" role="group" aria-label="Platform">
+        <button type="button" data-p="ig" aria-pressed="true" title="Instagram feed 4:5">Instagram</button>
+        <button type="button" data-p="th" aria-pressed="false" title="Threads 1:1">Threads</button>
+        <button type="button" data-p="tt" aria-pressed="false" title="TikTok 9:16">TikTok</button>
+      </div>
+      <span class="sx-sp"></span>
+      <div class="sx-sched" title="Posting terjadwal belum tersedia">
+        <button type="button" id="schedBtn" class="sx-sched-a">Jadwalkan</button><button type="button" id="schedTime" class="sx-sched-b">Hari ini 19.00 &rarr;</button>
+      </div>
+      <button type="button" class="sx-dl" id="dl">Unduh PNG</button>
+      <div class="sx-pop" id="pop" hidden role="menu">
+        <button type="button" role="menuitem" id="popNow" class="is-off">Posting sekarang <small>segera</small></button>
+        <button type="button" role="menuitem" id="popPlat">Pilih platform</button>
+        <button type="button" role="menuitem" id="popLogo">Logo (watermark)</button>
+        <button type="button" role="menuitem" id="popAuto">Susun ulang teks otomatis</button>
+        <button type="button" role="menuitem" id="popDel" class="is-danger">Hapus post</button>
+      </div>
+      <input type="file" id="logoFile" accept="image/*" hidden>
+    </div>
+
+    <div class="sx-tabs" role="tablist" aria-label="Tampilan">
+      <button type="button" role="tab" id="tabEd" aria-selected="true">Editor</button>
+      <button type="button" role="tab" id="tabRv" aria-selected="false">Review (swipe)</button>
+      <span class="sx-undo"><button type="button" id="undoBtn" aria-label="Urungkan" title="Urungkan (Ctrl+Z)">&#8630;</button><button type="button" id="redoBtn" aria-label="Ulangi" title="Ulangi (Ctrl+Y)">&#8631;</button></span>
+    </div>
+
+    <div class="sx-ed" id="edView">
+      <div class="sx-colA">
+        <article class="sx-card" id="card" data-p="ig">
+          <header class="sx-ch"><span class="sx-av" id="av">na</span><b id="cname">nextaja.com</b><span class="sx-dots" aria-hidden="true">&middot;&middot;&middot;</span></header>
+          <div class="sx-cap-top" id="capTop" hidden></div>
+          <div class="sx-media" id="media">
+            <canvas id="cv" width="1080" height="1350" aria-label="Pratinjau desain. Geser teks atau foto untuk mengatur posisi."></canvas>
+            <canvas id="ov" width="1080" height="1350" aria-hidden="true"></canvas>
+            <div class="sx-empty" id="empty">
+              <span class="sx-empty-ic" aria-hidden="true">+</span>
+              <b>Tambah foto</b>
+              <span>Foto yang kamu taruh di sini muncul di post. Fotonya tetap di browser kamu.</span>
+              <label class="sx-pick">Pilih foto<input type="file" id="file" accept="image/*" class="sx-sr"></label>
+            </div>
+            <div class="sx-ttrail" id="ttRail" hidden aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+          </div>
+          <div class="sx-acts" id="acts" aria-hidden="true"><span>&#9825; <b>447</b></span><span>&#128172; <b>175</b></span><span>&#8635; <b>30</b></span><span>&#10148;</span><span class="sx-grow"></span><span>&#9744;</span></div>
+          <div class="sx-cap" id="capLive"><b id="capName">nextaja.com</b> <span id="capText">Caption kamu tampil di sini.</span></div>
+          <p class="sx-hint" id="msg" aria-live="polite"></p>
+        </article>
+        <div class="sx-tb" id="tb" hidden aria-label="Pengaturan teks terpilih">
+          <div class="sx-tb-row">
+            <input type="text" id="btext" maxlength="180" aria-label="Isi teks terpilih" placeholder="Isi teks">
+            <button type="button" id="bDup" class="sx-mini" title="Gandakan">Gandakan</button>
+            <button type="button" id="bDel" class="sx-mini sx-danger" title="Hapus">Hapus</button>
+            <button type="button" id="bDone" class="sx-mini" title="Tutup pengaturan">Selesai</button>
+          </div>
+          <div class="sx-tb-row">
+            <select id="bFont" aria-label="Font"></select>
+            <select id="bWeight" aria-label="Ketebalan"><option value="300">Light</option><option value="400">Regular</option><option value="500">Medium</option><option value="600">Semibold</option><option value="700">Bold</option><option value="800">Extra bold</option><option value="900">Black</option></select>
+            <input type="color" id="bColor" aria-label="Warna teks" value="#ffffff">
+            <button type="button" id="bAutoColor" class="sx-mini" title="Warna otomatis mengikuti foto">Warna auto</button>
+          </div>
+          <div class="sx-tb-row sx-tb-sl">
+            <label>Ukuran<input type="range" id="bSize" min="1.5" max="22" step="0.1" value="6"></label>
+            <label>Lebar<input type="range" id="bWidth" min="15" max="96" step="1" value="80"></label>
+            <label>Spasi huruf<input type="range" id="bTrack" min="-3" max="40" step="1" value="0"></label>
+            <label>Jarak baris<input type="range" id="bLead" min="90" max="170" step="1" value="110"></label>
+            <label>Putar<input type="range" id="bRot" min="-30" max="30" step="0.5" value="0"></label>
+          </div>
+          <div class="sx-tb-row">
+            <span class="sx-seg" id="bAlign" role="group" aria-label="Perataan"><button type="button" data-a="left" title="Rata kiri">Kiri</button><button type="button" data-a="center" title="Rata tengah">Tengah</button><button type="button" data-a="right" title="Rata kanan">Kanan</button></span>
+            <button type="button" id="bCaps" class="sx-mini" aria-pressed="false">KAPITAL</button>
+            <button type="button" id="bItalic" class="sx-mini" aria-pressed="false"><i>Miring</i></button>
+            <button type="button" id="bShadow" class="sx-mini" aria-pressed="false" title="Bayangan lembut hanya untuk keterbacaan">Bantu terbaca</button>
+          </div>
+          <div class="sx-tb-row">
+            <input type="text" id="bHi" maxlength="30" placeholder="Sorot satu kata (opsional)" aria-label="Kata yang disorot">
+            <input type="color" id="bHiColor" value="#ffd166" aria-label="Warna sorotan">
+          </div>
+        </div>
+
+      </div>
+
+      <aside class="sx-colB">
+        <section class="sx-sec"><h3>Foto</h3>
+          <div class="sx-row"><button type="button" class="pill" id="clear">Hapus foto</button><button type="button" class="pill" id="resetPhoto">Reset foto</button></div>
+          <div class="sx-row" id="fmt" role="group" aria-label="Ukuran"><button type="button" class="pill" data-f="4:5" aria-pressed="true">4:5 Feed</button><button type="button" class="pill" data-f="1:1" aria-pressed="false">1:1 Kotak</button><button type="button" class="pill" data-f="9:16" aria-pressed="false">9:16 Story/Reels</button></div>
+          <label class="sx-l">Zoom foto<input type="range" id="zoom" min="1" max="3" step="0.01" value="1"></label>
+          <label class="sx-l">Luruskan foto <output id="rotVal">0&deg;</output><input type="range" id="rotation" min="-10" max="10" step="0.5" value="0"></label>
+          <div class="sx-row"><button type="button" class="pill" id="autoStraight">Auto-lurus (perkiraan)</button><button type="button" class="pill" id="smartCrop">Crop pintar</button></div>
+          <label class="sx-chk"><input type="checkbox" id="aeOn" checked> Auto Estetik</label>
+          <label class="sx-l">Kekuatan <output id="aeVal">60</output><input type="range" id="aeStr" min="0" max="100" step="1" value="60"></label>
+          <p class="sx-note">Auto Estetik menyesuaikan cahaya, kontras, warna, nada hangat, highlight, dan vignette halus. Hasilnya perkiraan otomatis, bukan edit AI.</p>
+        </section>
+
+        <section class="sx-sec"><h3>Gaya</h3>
+          <div class="sx-row" id="tpl" role="group" aria-label="Gaya">
+            <button type="button" class="pill" data-t="polaroid" aria-pressed="true">Polaroid</button>
+            <button type="button" class="pill" data-t="bold" aria-pressed="false">Bold bawah</button>
+            <button type="button" class="pill" data-t="center" aria-pressed="false">Tengah</button>
+            <button type="button" class="pill" data-t="editorial" aria-pressed="false">Editorial</button>
+            <button type="button" class="pill" data-t="poster" aria-pressed="false">Poster merah</button>
+            <button type="button" class="pill" data-t="quote" aria-pressed="false">Kutipan</button>
+            <button type="button" class="pill" data-t="minimal" aria-pressed="false">Minimal</button>
+          </div>
+          <label class="sx-l">Pasangan font
+            <select id="pairSel"><option value="">Ikuti gaya</option><option value="editorial">Elegant Editorial &middot; Playfair + Inter</option><option value="minimal">Clean Minimalist &middot; Montserrat</option><option value="trendy">Trendy &amp; Bold &middot; Syne + Poppins</option><option value="warm">Warm Professional &middot; Instrument Serif + Raleway</option><option value="luxury">Luxury &middot; Cinzel + Cormorant</option><option value="family">Satu keluarga &middot; Montserrat Black/Medium/Light</option></select>
+          </label>
+          <label class="sx-chk"><input type="checkbox" id="polRot" checked> Bingkai Polaroid miring halus</label>
+          <button type="button" class="pill" id="autoLayout">Susun ulang teks otomatis</button>
+        </section>
+
+        <section class="sx-sec"><h3>Teks</h3>
+          <label class="sx-l">Headline<textarea id="head" maxlength="180">Judul kontenmu di sini</textarea></label>
+          <label class="sx-l">Subteks<input type="text" id="sub" maxlength="120" value="Subteks singkat yang menjelaskan isinya"></label>
+          <div class="sx-two"><label class="sx-l">Nama akun<input type="text" id="handle" maxlength="40" value="@akunmu"></label><label class="sx-l">Warna aksen<input type="color" id="acc" value="#7c3aed"></label></div>
+          <label class="sx-l">Ukuran headline<input type="range" id="size" min="60" max="140" step="1" value="100"></label>
+          <div class="sx-row"><button type="button" class="pill" id="addText">+ Teks</button><button type="button" class="pill" id="addRule">+ Garis</button></div>
+          <p class="sx-note">Klik teks di pratinjau untuk memilihnya, lalu geser, ubah ukuran lewat sudut kanan bawah, atau putar lewat titik di atasnya. Tahan Alt supaya tidak menempel ke garis bantu. Ctrl+Z untuk urungkan.</p>
+        </section>
+
+        <section class="sx-sec"><h3>Ide hook dan kerangka caption</h3>
+          <p class="sx-note">Dibuat dari templat kalimat, bukan AI. Selalu edit supaya cocok dengan isi kontenmu.</p>
+          <div class="sx-two"><label class="sx-l">Topik<input type="text" id="topic" maxlength="60" placeholder="contoh: analisa TikTok"></label><label class="sx-l">Untuk siapa<input type="text" id="aud" maxlength="40" placeholder="contoh: Kreator pemula"></label></div>
+          <div class="sx-row"><button type="button" class="btn btn-pri btn-sm" id="hookGo">Buat ide hook</button></div>
+          <div id="hooks" class="sx-hooks"></div>
+          <h4>Kerangka caption</h4>
+          <label class="sx-l">Hook<input type="text" id="cHook" maxlength="200" placeholder="tempel atau ketik hook"></label>
+          <label class="sx-l">Poin isi (satu baris satu poin)<textarea id="cPts" placeholder="Poin 1&#10;Poin 2&#10;Poin 3"></textarea></label>
+          <label class="sx-l">Tujuan<select id="cGoal"><option value="edukasi">Edukasi</option><option value="jualan">Jualan</option><option value="cerita">Cerita</option></select></label>
+          <div class="sx-row"><button type="button" class="btn btn-ghost btn-sm" id="capGo">Susun caption</button><button type="button" class="btn btn-ghost btn-sm" id="capCopy">Salin caption</button></div>
+          <label class="sx-l">Hasil caption (boleh diedit)<textarea id="cOut" style="min-height:140px"></textarea></label>
+        </section>
+        <p class="sx-note">Cek lagi teks dan hak pakai fotonya sebelum diposting. Kamu yang bertanggung jawab atas isi kontenmu.</p>
+      </aside>
+    </div>
+
+    <div class="sx-rv" id="rvView" hidden>
+      <div class="sx-rv-head">
+        <p class="sx-note" style="margin:0">Geser kartu ke <b>kanan</b> kalau suka, ke <b>kiri</b> kalau dibuang. Bisa juga pakai tombol atau panah keyboard.</p>
+        <div class="sx-row"><button type="button" class="btn btn-pri btn-sm" id="rvGen">Buat 12 ide dari topik</button><span class="sx-count" id="rvCount" aria-live="polite"></span></div>
+      </div>
+      <div class="sx-stack" id="rvStack" tabindex="0" aria-label="Tumpukan kartu ide. Panah kanan untuk suka, panah kiri untuk buang."></div>
+      <div class="sx-rv-btns" id="rvBtns"><button type="button" id="rvNo" class="sx-round sx-no" aria-label="Buang">&#10005;</button><button type="button" id="rvUndo" class="sx-round sx-mid" aria-label="Urungkan swipe">&#8630;</button><button type="button" id="rvYes" class="sx-round sx-yes" aria-label="Suka">&#9825;</button></div>
+      <div class="sx-sum" id="rvSum" hidden></div>
+    </div>
+
+    <div class="sx-prompt" id="prompt">
+      <textarea id="promptTx" rows="1" placeholder="Ceritakan post yang kamu mau..." aria-label="Ceritakan post yang kamu mau"></textarea>
+      <div class="sx-prompt-r"><button type="button" class="sx-plus" id="plusBtn" aria-label="Tambah teks">+</button><span class="sx-ai">AI belum aktif: memakai templat</span><button type="button" class="sx-send" id="sendBtn" aria-label="Buat ide dari tulisan ini">&#8593;</button></div>
+    </div>
+  </div>
+  <div class="sx-toast" id="sxToast" role="status" aria-live="polite"></div>
+</div></section>
+<script src="/assets/studio.js?v=2" defer></script>

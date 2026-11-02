@@ -16,7 +16,7 @@ const { buildTriageBase, withDrillbit, parseDrill, settingsSig } = require("./tr
 
 const MAX_MB = 10, RATE = { max: 10, windowMs: 3600 * 1000 }, UPLOAD_TTL_MS = 2 * 3600 * 1000;
 
-module.exports = function mountAudit({ app, express, db, settings, orders, root, sameOrigin, secret, fetchFn, userFrom = null }) {
+module.exports = function mountAudit({ library = null, app, express, db, settings, orders, root, sameOrigin, secret, fetchFn, userFrom = null }) {
   const dir = path.join(root, "data", "private", "docs");
   fs.mkdirSync(dir, { recursive: true });
   const hits = new Map();
@@ -68,6 +68,7 @@ module.exports = function mountAudit({ app, express, db, settings, orders, root,
         const id = crypto.randomBytes(16).toString("hex"), rel = `docs/${id}.${isPdfName ? "pdf" : "docx"}`;
         await fsp.writeFile(path.join(root, "data", "private", rel), f.buffer, { mode: 0o600 });
         insert.run(id, rel, name, f.size, crypto.createHash("sha256").update(f.buffer).digest("hex"), JSON.stringify({ kind: "audit", words, wordsWithoutBibliography: a.wordsBody, hasBibliography: !!a.hasBibliography }), h, now, now + UPLOAD_TTL_MS);
+        if (library) { try { await library.saveUpload({ kind: "audit", name, buf: f.buffer, user: userFrom ? userFrom(req) : null, words, summary: { score: r.score, counts: r.counts } }); } catch (e2) { console.error("[audit] simpan ke Dokumen gagal:", e2 && e2.message); } }
         res.json({
           uploadId: id, file: { name, size: f.size }, words, counts: r.counts, refs: r.refs, score: r.score, triage,
           /* Hanya tingkat, kategori, dan lokasi. Penjelasan ada di Audit Lengkap. */

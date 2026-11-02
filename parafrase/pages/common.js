@@ -1,4 +1,4 @@
-/* Dipakai semua halaman Ruang Akademik UT: ambil pengaturan publik, isi tombol dan harga. */
+/* Dipakai semua halaman Catatan Akademik: ambil pengaturan publik, isi tombol dan harga. */
 (function () {
   var rp = function (n) { return Number(n).toLocaleString("id-ID"); };
   /* Harga ditampilkan singkat: 35000 jadi 35k, 1300000 jadi 1,3 jt. Angka di bawah Rp1.000 (mis. harga per kata) tetap rupiah. Halaman bayar memakai tulisan penuh. */
@@ -41,7 +41,7 @@
     });
     document.querySelectorAll("[data-group]").forEach(function (a) {
       if (!c.update_group_url) { a.classList.add("hidden"); return; }
-      a.href = c.update_group_url; a.target = "_blank"; a.rel = "noopener";
+      a.href = "/grup?dari=banner"; a.target = "_blank"; a.rel = "noopener";
     });
     document.dispatchEvent(new CustomEvent("pf-config", { detail: c }));
   }
@@ -209,7 +209,7 @@ window.auditDrillbit = function (box, score, ctx) {
   try { localStorage.removeItem(KEY); } catch (e) {}   /* angka lama tidak lagi diingat: tiap buka halaman mulai kosong */
   var wrap = el("div", "max-width:760px;margin:0 auto 14px;padding:16px 18px;border-radius:18px;border:1px solid var(--border,#2b2b58);text-align:left");
   wrap.appendChild(el("b", "display:block", "Punya laporan Drillbit resmi dari UT?"));
-  wrap.appendChild(el("div", "font-size:13.5px;opacity:.75;margin:2px 0 10px", (ctx && ctx.here === "cek" ? "Tempel dua angkanya, nanti dipakai menentukan urgensi di bawah, sama seperti di Audit Dokumen. Angka ini dari kamu dan tidak kami verifikasi." : "Tempel dua angkanya, nanti digabung dengan skor di atas. Angka ini dari kamu dan tidak kami verifikasi.")));
+  wrap.appendChild(el("div", "font-size:13.5px;opacity:.75;margin:2px 0 10px", (ctx && ctx.here === "cek" ? "Tempel dua angkanya, nanti dipakai menentukan urgensi di bawah. Angka ini dari kamu dan tidak kami verifikasi." : "Tempel dua angkanya, nanti digabung dengan skor di atas. Angka ini dari kamu dan tidak kami verifikasi.")));
   var row = el("div", "display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end");
   function field(id, label) {
     var w = el("label", "display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600"); w.appendChild(el("span", "", label));
@@ -255,9 +255,31 @@ window.auditDrillbit = function (box, score, ctx) {
     out.appendChild(el("p", "margin:12px 0 4px;font-weight:600", over ? "Rekomendasi: " + msg.replace(/^Ada angka di atas batas acuan\. /, "") : msg));
     if (over && !(ctx && ctx.here === "cek")) { var l = el("a", "", "Buka Cek & Parafrase Mandiri"); l.href = "/ruangakademikut/cek-parafrase-mandiri" + (ctx && ctx.uploadId ? "?u=" + ctx.uploadId : ""); l.style.fontSize = "14px"; out.appendChild(l); }
     if (ctx && ctx.fetch && ctx.onTriage) ctx.fetch(s, a).then(ctx.onTriage).catch(function () {});
-    out.appendChild(el("p", "margin:6px 0 0;font-size:12.5px;opacity:.7", "Batas acuan diatur admin, bukan aturan resmi UT. Ikuti ketentuan prodi dan tutormu. Angka berasal dari laporan Drillbit yang kamu tempel."));
+    out.appendChild(el("p", "margin:6px 0 0;font-size:12.5px;opacity:.7", "Batas acuan diatur admin, bukan aturan resmi UT. Ikuti ketentuan prodi dan tutormu. Angka berasal dari laporan Drillbit yang kamu unggah."));
   }
   go.onclick = show;
+  /* Cek & Parafrase: sama seperti Bedah, murid mengunggah PDF Drillbit dari UT (AI dan Similarity). Angka dibaca server dan
+     kedua PDF tersimpan di Dokumen Saya; tidak ada lagi kolom tempel angka. */
+  if (ctx && ctx.upload) {
+    row.style.display = "none";
+    wrap.firstChild.textContent = "Unggah laporan Drillbit dari UT";
+    wrap.childNodes[1].textContent = "Unggah dua PDF dari UT (laporan AI dan laporan Similarity). Angkanya dibaca otomatis dan dipakai menentukan urgensi di bawah. File ikut tersimpan di akunmu.";
+    var fr = el("div", "display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end");
+    function pick(label) { var w = el("label", "display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600;flex:1;min-width:220px"); w.appendChild(el("span", "", label)); var i = el("input", "padding:9px 10px;border-radius:12px;border:1px solid currentColor;background:transparent;color:inherit;font:inherit"); i.type = "file"; i.accept = "application/pdf,.pdf"; w.appendChild(i); fr.appendChild(w); return i; }
+    var fAi = pick("Laporan AI Drillbit (PDF)"), fSim = pick("Laporan Similarity Drillbit (PDF)");
+    var rd = el("button", "", "Baca laporan"); rd.type = "button"; rd.className = "btn"; fr.appendChild(rd); wrap.insertBefore(fr, row);
+    rd.onclick = function () {
+      err.textContent = ""; out.innerHTML = "";
+      if (!fAi.files.length && !fSim.files.length) { err.textContent = "Pilih minimal satu laporan PDF dari UT."; return; }
+      var fd = new FormData(); if (fAi.files.length) fd.append("ai", fAi.files[0]); if (fSim.files.length) fd.append("sim", fSim.files[0]);
+      rd.disabled = true; rd.textContent = "Membaca…";
+      ctx.upload(fd).then(function (r) {
+        iS.value = r.sim != null ? String(r.sim).replace(".", ",") : ""; iA.value = r.ai != null ? String(r.ai).replace(".", ",") : "";
+        show(); if (r.warn && r.warn.length) err.textContent = r.warn[0];
+      }).catch(function (e) { err.textContent = (e && e.message) || "Laporan tidak bisa dibaca."; })
+        .then(function () { rd.disabled = false; rd.textContent = "Baca laporan"; });
+    };
+  }
 };
 
 /* Arahan "harusnya seperti apa" per kode warna (sama dengan TARGET di hint.js). Dipakai sebagai keterangan saat kursor di atas penanda. */
@@ -360,12 +382,11 @@ window.renderTriage = function (box, t, opts) {
     card.appendChild(go);
     card.appendChild(el("div", "font-size:12.5px;opacity:.7;margin-top:4px", opts.uploadId ? "Dokumen yang sama dibawa ke sana, tidak perlu unggah ulang (tersimpan sementara 2 jam)." : "Unggah dokumenmu di sana untuk dikerjakan."));
   }
-  if (opts.here === "cek") { var back = el("a", "display:inline-block;margin-top:10px;font-size:13.5px", "Lihat laporan lengkap di Audit Dokumen →"); back.href = "/ruangakademikut/audit"; card.appendChild(back); }
   card.appendChild(el("p", "margin:10px 0 0;font-size:12.5px;opacity:.7", t.note));
   box.appendChild(card);
 };
 /* dropdown sub-menu: tutup saat klik di luar atau tekan Esc */
-(function(){document.addEventListener("click",function(e){document.querySelectorAll(".sub details[open]").forEach(function(d){if(!d.contains(e.target))d.removeAttribute("open")})});document.addEventListener("keydown",function(e){if(e.key==="Escape")document.querySelectorAll(".sub details[open]").forEach(function(d){d.removeAttribute("open")})});document.querySelectorAll(".sub details").forEach(function(d){d.addEventListener("toggle",function(){if(d.open)document.querySelectorAll(".sub details[open]").forEach(function(o){if(o!==d)o.removeAttribute("open")})})})})();
+(function(){document.addEventListener("click",function(e){document.querySelectorAll(".nav details[open],.sub details[open]").forEach(function(d){if(!d.contains(e.target))d.removeAttribute("open")})});document.addEventListener("keydown",function(e){if(e.key==="Escape")document.querySelectorAll(".nav details[open],.sub details[open]").forEach(function(d){d.removeAttribute("open")})});document.querySelectorAll(".sub details").forEach(function(d){d.addEventListener("toggle",function(){if(d.open)document.querySelectorAll(".nav details[open],.sub details[open]").forEach(function(o){if(o!==d)o.removeAttribute("open")})})})})();
 
 /* Unggah dua langkah (pilih file, lalu tombol Cek file) dan penanda "sedang memindai" yang jelas selama server bekerja. */
 window.pfScan = (function () {
@@ -427,12 +448,12 @@ window.renderFindings = function (box, findings, opts) {
     wrap.appendChild(top);
     var opened = g.items.filter(function (f) { return FULL || f.open; }), first = opened[0];
     if (first && first.quote) wrap.appendChild(el("div", "font-size:13px;font-style:italic;opacity:.8;margin-top:6px;padding:6px 10px;border-radius:8px;background:rgba(128,128,160,.14)", "“" + first.quote + "”"));
-    wrap.appendChild(first ? el("div", "font-size:13.5px;opacity:.85;margin-top:4px", first.detail) : el("div", "font-size:13px;opacity:.6;filter:blur(5px);user-select:none;margin-top:4px", "Penjelasan dan saran perbaikan di Audit Lengkap"));
+    wrap.appendChild(first ? el("div", "font-size:13.5px;opacity:.85;margin-top:4px", first.detail) : el("div", "font-size:13px;opacity:.6;filter:blur(5px);user-select:none;margin-top:4px", "Penjelasan dan saran perbaikan ada di teks lengkap"));
     if (n > 1) {
       var d = el("details", "margin-top:6px"), locked = n - opened.length;
-      d.appendChild(el("summary", "cursor:pointer;font-size:13px;font-weight:600", "Lihat rincian " + n + " temuan" + (locked ? " (" + locked + " dibuka di Audit Lengkap)" : "")));
+      d.appendChild(el("summary", "cursor:pointer;font-size:13px;font-weight:600", "Lihat rincian " + n + " temuan" + (locked ? " (" + locked + " ada di teks lengkap)" : "")));
       var ul = el("ul", "margin:6px 0 0;padding-left:18px;font-size:13px;line-height:1.55;max-height:260px;overflow-y:auto");
-      g.items.forEach(function (f) { var li = el("li", "", f.where + (FULL || f.open ? ": " + f.detail : ": dibuka di Audit Lengkap")); if ((FULL || f.open) && f.quote) li.appendChild(el("div", "font-style:italic;opacity:.75;margin:2px 0 6px", "“" + f.quote + "”")); ul.appendChild(li); });
+      g.items.forEach(function (f) { var li = el("li", "", f.where + (FULL || f.open ? ": " + f.detail : ": ada di teks lengkap")); if ((FULL || f.open) && f.quote) li.appendChild(el("div", "font-style:italic;opacity:.75;margin:2px 0 6px", "“" + f.quote + "”")); ul.appendChild(li); });
       d.appendChild(ul); wrap.appendChild(d);
     }
     return wrap;
@@ -471,3 +492,56 @@ window.auditOkList = function (sc, box) {
   d.appendChild(sm); d.appendChild(inn); box.appendChild(d);
 };
 
+
+/* Banner komunitas sesuai halaman: satu pesan pendek, bisa ditutup (diingat 14 hari di perangkat ini). Tombol lewat /grup supaya klik terhitung. */
+(function () {
+  var p = location.pathname.replace(/^\/ruangakademikut/, "").replace(/\/+$/, "") || "/", K = "ca-gban-v1", V = null;
+  if (/^\/(panduan-maba|pesanan|admin|layanan|grup)/.test(p)) return;
+  if (/^\/(kalkulator-nilai-ut|tracker-kelulusan|kalender-akademik)/.test(p)) V = ["Simpan hasilmu, tanya di grup.", " Mahasiswa lain sering berbagi cara menghitung dan jadwal terbaru.", false];
+  else if (/^\/(portal-ut|blog-ut)/.test(p)) V = ["Baru di UT?", " Gabung grup Catatan Akademik (800+ anggota) untuk tanya Tuton, tugas, dan jadwal.", false];
+  if (!V) return;
+  try { var t = +localStorage.getItem(K); if (t && Date.now() - t < 14 * 864e5) return; } catch (e) { /* abaikan */ }
+  document.addEventListener("pf-config", function (ev) {
+    var c = ev.detail || {}, sub = document.querySelector(".sub") || document.querySelector("header.nav"); if (!c.update_group_url || !sub || document.getElementById("gban") || document.querySelector("[data-group]")) return;
+    var d = document.createElement("div"); d.id = "gban"; d.className = "gban";
+    var chat = V[2] && c.admin_wa_number ? '<a class="gb-o" href="https://wa.me/' + encodeURIComponent(c.admin_wa_number) + '?text=' + encodeURIComponent("Halo admin Catatan Akademik, saya mau tanya soal laporan UT.") + '" target="_blank" rel="noopener">Chat admin</a>' : "";
+    d.innerHTML = '<div class="wrap"><p><b></b><span></span></p><span class="gb-a">' + chat + '<a class="gb-g" href="/grup?dari=banner">' + (V[2] ? "Gabung grup" : "Gabung Komunitas Mahasiswa UT") + '</a><button type="button" aria-label="Tutup banner">×</button></span></div>';
+    d.querySelector("b").textContent = V[0]; d.querySelector("span").textContent = V[1];
+    d.querySelector("button").onclick = function () { try { localStorage.setItem(K, String(Date.now())); } catch (e) { /* abaikan */ } d.remove(); };
+    sub.parentNode.insertBefore(d, sub.nextSibling);
+  });
+})();
+
+/* Halaman layanan yang wajib login: bagian bertanda data-need-login dikunci dan diganti ajakan masuk. */
+(function () {
+  function run() {
+    var box = document.querySelector("[data-need-login]"); if (!box) return;
+    fetch("/ms/auth/me", { cache: "no-store", credentials: "same-origin" }).then(function (r) { return r.json(); }).then(function (j) {
+      if (j && j.user) return;
+      var n = document.createElement("div"); n.className = "card"; n.setAttribute("role", "note"); n.style.cssText = "text-align:left;margin:0 0 14px;padding:16px;border:2px solid #4c8bf5;border-radius:12px";
+      var b = document.createElement("b"); b.textContent = "Masuk dulu untuk memakai layanan ini"; n.appendChild(b);
+      var p = document.createElement("p"); p.style.margin = "6px 0 10px"; p.textContent = "Dengan akun, dokumen dan hasilmu tersimpan rapi dan kami bisa mengabarimu lewat email. Daftar gratis."; n.appendChild(p);
+      var a = document.createElement("a"); a.className = "btn"; a.href = "/ms/masuk?next=" + encodeURIComponent(location.pathname); a.textContent = "Masuk atau daftar"; n.appendChild(a);
+      box.insertBefore(n, box.firstChild);
+      [].forEach.call(box.querySelectorAll("input,select,textarea,button"), function (x) { x.disabled = true; });
+    }).catch(function () { /* gagal cek: server tetap menolak unggahan tanpa login */ });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", run); else run();
+})();
+/* Tautan "Lewati ke konten utama" untuk pengguna keyboard dan pembaca layar. */
+(function () {
+  var m = document.querySelector("main"); if (!m || document.getElementById("skip-ke-konten")) return;
+  if (!m.id) m.id = "konten-utama";
+  var st = document.createElement("style");
+  st.textContent = "#skip-ke-konten{position:fixed;left:12px;top:-60px;z-index:9999;background:var(--acc,#673de6);color:var(--on-accent,#fff);padding:10px 16px;border-radius:10px;font:600 14px system-ui,sans-serif;text-decoration:none;transition:top .15s}#skip-ke-konten:focus{top:12px;outline:2px solid currentColor;outline-offset:2px}";
+  document.head.appendChild(st);
+  var a = document.createElement("a"); a.id = "skip-ke-konten"; a.href = "#" + m.id; a.textContent = "Lewati ke konten utama";
+  document.body.insertBefore(a, document.body.firstChild);
+})();
+/* Menu atas: hanya satu dropdown terbuka; klik di luar atau Esc menutup semuanya. */
+(function () {
+  var ds = function () { return document.querySelectorAll("header.nav details.dd, .nav details.dd"); };
+  document.addEventListener("toggle", function (e) { var t = e.target; if (!t || !t.open || !t.classList || !t.classList.contains("dd")) return; ds().forEach(function (d) { if (d !== t) d.removeAttribute("open"); }); }, true);
+  document.addEventListener("click", function (e) { ds().forEach(function (d) { if (d.open && !d.contains(e.target)) d.removeAttribute("open"); }); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") ds().forEach(function (d) { d.removeAttribute("open"); }); });
+})();

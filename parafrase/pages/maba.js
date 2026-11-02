@@ -10,7 +10,7 @@
       ["a1", "Simpan NIM, email, dan kata sandi akun UT di tempat yang aman (jangan dibagikan ke siapa pun)."],
       ["a2", "Pastikan nomor HP dan email di data diri aktif, karena info penting dikirim ke sana."],
       ["a3", "Catat UPBJJ dan pokjar (kelompok belajar) tempat kamu terdaftar."],
-      ["a4", "Pasfoto sesuai ketentuan siap dipakai. Alat Pasfoto Yudisium di situs ini bisa membantu memotong ukuran fotonya."]] },
+      ["a4", "Pasfoto sesuai ketentuan siap dipakai."]] },
     { t: "2. Saat registrasi mata kuliah", i: [
       ["b1", "Buka kalender akademik resmi di ut.ac.id dan catat tanggal registrasi serta batas pembayaran."],
       ["b2", "Pilih mata kuliah sesuai panduan program studi dan jumlah SKS yang diizinkan untukmu."],
@@ -48,5 +48,7 @@
   document.head.appendChild(st);
   document.addEventListener("change", function (e) { var t = e.target; if (t.dataset && t.dataset.c) { S[t.dataset.c] = t.checked; save(); var x = total(); $("#mbProg").textContent = x[0] + " dari " + x[1] + " langkah selesai"; $("#mbBar").style.width = Math.round(x[0] / x[1] * 100) + "%"; } });
   document.addEventListener("click", function (e) { if (e.target.id === "mbReset" && confirm("Hapus centang di perangkat ini?")) { S = {}; save(); draw(); } });
+  document.addEventListener("click", function (e) { var a = e.target.closest && e.target.closest("#mbStart"); if (a) { var d = $("#mbMore"); if (d) d.open = true; try { navigator.sendBeacon("/ms/ev?e=checklist"); } catch (x) { /* abaikan */ } } });
+  if (location.hash === "#istilah" && $("#istilah")) $("#istilah").open = true;
   draw();
 })();

@@ -33,10 +33,10 @@
   const ALL = ["owner", "editor", "cs"], ED = ["owner", "editor"], CS = ["owner", "cs"], OWN = ["owner"];
   const GROUP_NAV = [["bayar", "Menunggu pembayaran"], ["konfirmasi", "Menunggu konfirmasi"], ["proses", "Sedang diproses"], ["revisi", "Perlu revisi"], ["selesai", "Selesai"], ["batal", "Dibatalkan"]];
   const NAV = [
-    { items: [["dashboard", "Dashboard", "home", ALL], ["traffic", "Pengunjung & Konten", "chart", ED]] },
+    { items: [["dashboard", "Dashboard", "home", ALL], ["payments", "Konfirmasi Pembayaran", "card", CS], ["traffic", "Pengunjung & Konten", "chart", ED]] },
     { h: "Konten", items: [["posts", "Artikel Blog", "doc", ED], ["posts/new", "Tulis Artikel", "pen", ED], ["taxonomy", "Kategori & Tag", "tag", ED], ["media", "Media", "img", ED], ["comments", "Komentar", "chat", ED], ["studio", "Studio Posting Sosmed", "send", ED]] },
     { h: "Tampilan Situs", items: [["editor", "Editor Halaman", "pen", OWN], ["images", "Gambar Situs", "img", ED], ["testimonials", "Testimoni", "chat", ED], ["texts", "Teks & Nama", "pen", OWN], ["tema", "Tema & Font", "img", OWN]] },
-    { h: "Pesanan", items: [["orders", "Pesanan Layanan", "box", CS, true], ["payments", "Konfirmasi Pembayaran", "card", CS], ["tools/parafrase", "Antrean Cek & Parafrase", "list", CS], ["tools/layanan", "Kirim Hasil Layanan", "send", CS]] },
+    { h: "Pesanan", items: [["orders", "Pesanan Layanan", "box", CS, true], ["tools/parafrase", "Antrean Cek & Parafrase", "list", CS], ["tools/layanan", "Kirim Hasil Layanan", "send", CS], ["dokumen", "Dokumen Saya", "doc", OWN]] },
     { h: "Pengguna", items: [["customers", "Pelanggan", "users", CS]] },
     { h: "Lainnya", items: [["services", "Layanan & Harga", "price", OWN], ["reports", "Laporan & Statistik", "chart", OWN], ["settings", "Pengaturan Website", "cog", OWN], ["seo", "SEO & Sitemap", "search", OWN], ["admins", "Admin & Peran", "shield", OWN], ["log", "Log Aktivitas", "clock", OWN]] },
   ];
@@ -99,13 +99,14 @@
   }
 
   /* ---------------- kerangka ---------------- */
+  const SUBS_OPEN = () => { let v = null; try { v = localStorage.getItem("ca-subs"); } catch {} return v === null ? /^#\/orders/.test(location.hash) : v === "1"; };
   const allowed = roles => ME && roles.includes(ME.role);
   function shell() {
     const nav = NAV.map(g => {
       const items = g.items.filter(it => allowed(it[3]));
       if (!items.length) return "";
       return (g.h ? `<h3>${g.h}</h3>` : "") + items.map(([r, label, ic, , subs]) => `<a class="nav" href="#/${r}" data-r="${r}">${ICON[ic]}<span>${label}</span>${r === "orders" ? '<span class="cnt" data-c="semua"></span>' : r === "payments" ? '<span class="cnt" data-c="konfirmasi"></span>' : ""}</a>` +
-        (subs ? GROUP_NAV.map(([k, l]) => `<a class="nav sub" href="#/orders?group=${k}" data-r="orders?group=${k}">${l}<span class="cnt" data-c="${k}"></span></a>`).join("") : "")).join("");
+        (subs ? `<button type="button" class="nav sub subtog" id="subtog" aria-expanded="${SUBS_OPEN()}"><span>Status pesanan</span><i aria-hidden="true">▾</i></button><div class="subs" id="subs" ${SUBS_OPEN() ? "" : "hidden"}>` + GROUP_NAV.map(([k, l]) => `<a class="nav sub" href="#/orders?group=${k}" data-r="orders?group=${k}">${l}<span class="cnt" data-c="${k}"></span></a>`).join("") + "</div>" : "")).join("");
     }).join("");
     $("#root").innerHTML = `<div class="shell">
       <aside class="side" id="side" aria-label="Menu admin"><a class="brand" href="#/dashboard"><img src="/assets/ut/ca/logo-96.png" alt="" width="34" height="34"><span><b>Catatan Akademik</b><small>Admin Panel</small></span></a>
@@ -118,6 +119,7 @@
     $("#logout").onclick = async () => { await api("/ms/admin/ca/logout", { json: {} }).catch(() => {}); ME = null; renderLogin(); };
     $("#theme").onclick = () => { const t = document.documentElement.dataset.theme === "dark" ? "light" : "dark"; document.documentElement.dataset.theme = t; store("ca-admin-theme", t); };
     $("#burger").onclick = () => { const o = document.body.classList.toggle("nav-open"); $("#burger").setAttribute("aria-expanded", o); };
+    const tg = $("#subtog"); if (tg) tg.onclick = () => { const o = $("#subs").hidden; $("#subs").hidden = !o; tg.setAttribute("aria-expanded", o); try { localStorage.setItem("ca-subs", o ? "1" : "0"); } catch {} };
     $("#side").addEventListener("click", e => { if (e.target.closest("a")) document.body.classList.remove("nav-open"); });
     refreshCounts();
   }
@@ -143,7 +145,7 @@
     [/^studio$/, ED, pStudio], [/^images$/, ED, pImages], [/^tema$/, OWN, pTema], [/^taxonomy$/, ED, pTaxonomy], [/^media$/, ED, pMedia], [/^comments$/, ED, pComments],
     [/^orders$/, CS, pOrders], [/^orders\/([A-Za-z0-9-]+)$/, CS, m => pOrder(m[1])], [/^payments$/, CS, pPayments],
     [/^tools\/(parafrase|layanan)$/, CS, m => pEmbed(m[1])], [/^customers$/, CS, pCustomers],
-    [/^testimonials$/, ED, pTestimonials], [/^editor$/, OWN, pPageEditor], [/^texts$/, OWN, pTexts], [/^services$/, OWN, pServices], [/^reports$/, OWN, pReports], [/^settings$/, OWN, pSettings], [/^seo$/, OWN, pSeo], [/^admins$/, OWN, pAdmins], [/^log$/, OWN, pLog], [/^account$/, ALL, pAccount],
+    [/^testimonials$/, ED, pTestimonials], [/^dokumen$/, OWN, pDokumen], [/^dokumen\/([a-f0-9]{16})$/, OWN, m => pDokumenDetail(m[1])], [/^editor$/, OWN, pPageEditor], [/^texts$/, OWN, pTexts], [/^services$/, OWN, pServices], [/^reports$/, OWN, pReports], [/^settings$/, OWN, pSettings], [/^seo$/, OWN, pSeo], [/^admins$/, OWN, pAdmins], [/^log$/, OWN, pLog], [/^account$/, ALL, pAccount],
   ];
   const params = () => new URLSearchParams((location.hash.split("?")[1]) || "");
   const go = (path, q) => { const s = q ? "?" + new URLSearchParams(Object.entries(q).filter(([, v]) => v !== "" && v != null)).toString() : ""; location.hash = "#/" + path + (s === "?" ? "" : s); };
@@ -212,7 +214,8 @@
       bindRows(); return;
     }
     const o = d.orders;
-    setPage("Dashboard", "Ringkasan aktivitas website", `${warn}<div class="bar"><span class="grow"></span>${range}</div>
+    let hc = ""; try { const h = await api("/ms/admin/ca/health"); if (h.items && h.items.length) hc = `<div class="card" style="margin-bottom:14px"><div class="hd"><h2>Pemeriksaan sistem</h2></div><ul style="margin:0;padding-left:18px;line-height:1.8">${h.items.map(i => `<li class="${i.tone === "bad" ? "bad" : ""}"><b>${{ ok: "Aman", warn: "Perhatian", bad: "Perlu diperbaiki" }[i.tone] || ""}:</b> ${esc(i.text)}${i.href ? ` <a href="${esc(i.href)}">Buka</a>` : ""}</li>`).join("")}</ul></div>`; } catch (e) { hc = ""; }
+    setPage("Dashboard", "Ringkasan aktivitas website", `${warn}${hc}<div class="bar"><span class="grow"></span>${range}</div>
       <div class="grid g4">
         ${stat("doc", num(p.published), "Artikel terbit", `${num(p.draft)} draf · ${num(p.scheduled)} terjadwal · ${num(p.review)} review`, "#/posts?status=published")}
         ${stat("box", num(d.newToday), "Pesanan baru hari ini", `${num(o.bayar)} menunggu pembayaran`, `#/orders?from=${to}&to=${to}`)}
@@ -260,57 +263,80 @@
     const d = await loadBlog(), posts = d.posts.filter(x => !x.trashedAt && x.status !== "review").sort((x, y) => new Date(y.updatedAt) - new Date(x.updatedAt));
     const q = params(), sel = q.get("p") || (posts[0] && posts[0].id);
     const p = posts.find(x => x.id === sel);
-    if (!p) return setPage("Studio Posting Sosmed", "Siapkan konten dari artikel", `<div class="card"><div class="empty">Belum ada artikel. <a href="#/posts/new">Tulis artikel</a></div></div>`);
-    const url = `${location.origin}/blog/${p.slug}`;
-    const heads = [...String(p.body || "").matchAll(/^##\s+(.+)$/gm)].map(m => m[1].replace(/[*_`]/g, "").trim()).slice(0, 4);
-    const tags = (p.tags || []).slice(0, 5).map(t => "#" + t.replace(/-/g, "")).join(" ");
-    const base = (p.excerpt || "").trim();
-    const hookLine = p.hookText || p.title;
-    const CAP = {
-      ig: [hookLine, "", base, heads.length ? "\n" + heads.map(h => "• " + h).join("\n") : "", "", "Baca selengkapnya: link di bio (" + url + ")", "", "#catatanakademik #universitasterbuka #mahasiswaut " + tags].filter((x, i, arr) => !(x === "" && arr[i - 1] === "")).join("\n").trim(),
-      fb: [hookLine, "", base, heads.length ? "\n" + heads.map(h => "• " + h).join("\n") : "", "", "Baca selengkapnya: " + url].join("\n").replace(/\n{3,}/g, "\n\n").trim(),
-      tt: [hookLine, base.slice(0, 120), "#catatanakademik #universitasterbuka #mahasiswaut " + tags].filter(Boolean).join(" ").trim(),
+    if (!p) return setPage("Studio Posting Sosmed", "Caption dan gambar dari artikel", `<div class="card"><div class="empty">Belum ada artikel. <a href="#/posts/new">Tulis artikel</a></div></div>`);
+    let topPages = []; try { const t = await api("/ms/admin/ca/traffic?days=30"); topPages = (t.pages || []).filter(x => /^\/blog\//.test(x.path)).slice(0, 12); } catch { /* data pengunjung opsional */ }
+    const hot = topPages.map(x => posts.find(y => x.path === "/blog/" + y.slug)).filter(Boolean).slice(0, 5);
+    const hotTags = [...new Set(hot.flatMap(x => x.tags || []))].filter(t => !(p.tags || []).includes(t)).slice(0, 2);
+    const heads = [...String(p.body || "").matchAll(/^##\s+(.+)$/gm)].map(m => m[1].replace(/[*_`]/g, "").trim()).slice(0, 3);
+    const PL = [["ig", "Instagram", "instagram", 1080, 1350], ["fb", "Facebook", "facebook", 1200, 630], ["tt", "TikTok", "tiktok", 1080, 1920], ["li", "LinkedIn", "linkedin", 1200, 627]];
+    const link = k => `${location.origin}/go/${k}/${p.slug}`;
+    const cut = (t, n) => { t = String(t || "").replace(/\s+/g, " ").trim(); if (t.length <= n) return t; const c = t.slice(0, n); return c.slice(0, Math.max(c.lastIndexOf(" "), n - 30)).replace(/[,.;:\s]+$/, "") + "…"; };
+    const tagOf = t => "#" + String(t).replace(/[^a-z0-9]/gi, "").toLowerCase();
+    const mk = (topic, k) => {
+      if (k === "li") {
+        const first = cut(p.excerpt, 170), pts = heads.length ? heads.map(h => "• " + h).join("\n") : "";
+        return [topic ? `Soal ${topic}: ini yang sering terlewat.` : (p.hookText || p.title), first, pts, "[Tulis 1-2 kalimat pengalaman pribadimu di sini sebelum diposting.]", "Di alur kerja atau layanan Anda, bagian mana yang sering dikira selesai padahal belum?", [...new Set([...(p.tags || []), ...hotTags].map(tagOf))].slice(0, 3).join(" ")].filter(Boolean).join("\n\n");
+      }
+      const hook = topic ? `Lagi cari ${topic}? Ini yang perlu kamu tahu.` : (p.hookText || p.title);
+      const body = cut(p.excerpt, k === "tt" ? 110 : 190), pts = heads.length && k !== "tt" ? heads.map(h => "• " + h).join("\n") : "";
+      const base = ["catatanakademik", "universitasterbuka", "mahasiswaut"], extra = [...(p.tags || []), ...hotTags].map(tagOf);
+      const nTag = { ig: 8, fb: 3, tt: 5 }[k], tags = [...new Set([...base.map(t => "#" + t), ...extra])].slice(0, nTag).join(" ");
+      const cta = k === "ig" ? "Baca panduan lengkapnya (tautan di bawah):" : "Baca panduan lengkapnya:";
+      return [hook, body, pts, cta + "\n" + link(k), tags].filter(Boolean).join("\n\n");
     };
-    setPage("Studio Posting Sosmed", "Siapkan caption dan gambar dari artikel, lalu posting sendiri", `
-      <div class="notice info">Studio menyiapkan caption dan gambar. Posting tetap kamu lakukan sendiri di aplikasi Instagram, Facebook, dan TikTok. Kirim otomatis butuh izin resmi tiap platform dan belum dipasang.</div>
-      <div class="card"><div class="bd"><label class="f">Sumber artikel<select class="in" id="stP">${posts.map(x => `<option value="${x.id}" ${x.id === p.id ? "selected" : ""}>${esc(x.title)}${x.status === "published" ? "" : " (draf)"}</option>`).join("")}</select></label></div></div>
-      <div class="card"><div class="hd"><h2>Kalender posting</h2><span class="muted small">Jadwal terbit artikel dan tanggal rekomendasi draf, 14 hari ke depan. Isi manual: Studio tidak mengirim otomatis.</span></div><div class="bd"><div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;font-size:12px">${(() => {
+    const hermes = k => `Tulis caption ${PL.find(x => x[0] === k)[1]} berbahasa Indonesia untuk artikel di bawah.\nAturan: bahasa manusia sehari-hari, tanpa tanda pisah panjang, tanpa pola "bukan X, tapi Y", tanpa kalimat penutup klise, satu ajakan saja, jangan menambah fakta atau angka di luar artikel.${k === "li" ? "\nLinkedIn: sudut cerita atau pelajaran dari pengalaman kerja, tanpa tautan di isi postingan (tautan masuk komentar pertama), tutup dengan satu pertanyaan terbuka." : ""}\n\nJudul: ${p.title}\nRingkasan: ${p.excerpt || ""}\nPoin: ${heads.join("; ")}\nTautan: ${link(k)}\n\nIsi artikel:\n${String(p.body || "").slice(0, 3500)}`;
+    const st = x => x.status === "published" ? ["Terbit", "#16a34a"] : x.status === "scheduled" ? ["Terjadwal", "#2563eb"] : ["Rekomendasi (draf)", "#b45309"];
+    setPage("Studio Posting Sosmed", "Caption dan gambar dari artikel", `
+      <div class="notice info">Studio hanya menyiapkan caption dan gambar. Kamu posting sendiri di tiap aplikasi, tidak ada kirim otomatis.</div>
+      <div class="card"><div class="bd" style="display:grid;grid-template-columns:2fr 1fr;gap:12px"><label class="f">Sumber artikel<select class="in" id="stP">${posts.map(x => `<option value="${x.id}" ${x.id === p.id ? "selected" : ""}>${esc(x.title)}${x.status === "published" ? "" : " (draf)"}</option>`).join("")}</select></label>
+        <label class="f">Topik yang lagi dicari (opsional)<input class="in" id="stK" maxlength="60" placeholder="mis. jadwal PKBJJ"></label></div></div>
+      <div class="card"><div class="hd"><h2>Kalender posting</h2><span class="muted small">Jadwal terbit dan tanggal rekomendasi, 14 hari ke depan.</span></div><div class="bd"><div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;font-size:12px">${(() => {
         const day = t => new Date(t + 7 * 3600e3).toISOString().slice(0, 10), ev = {};
-        d.posts.forEach(x => { const k = x.status === "scheduled" && x.publishAt ? day(Date.parse(x.publishAt)) : x.recommendedAt; if (k) (ev[k] = ev[k] || []).push(x); });
+        d.posts.filter(x => !x.trashedAt).forEach(x => { const k = x.status === "scheduled" && x.publishAt ? day(Date.parse(x.publishAt)) : x.status !== "published" ? x.recommendedAt : ""; if (k) (ev[k] = ev[k] || []).push(x); });
         const t0 = Date.now(), cells = []; const dow = new Date(t0 + 7 * 3600e3).getUTCDay(), pad = (dow + 6) % 7;
         const names = ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"].map(n => `<div class="muted" style="text-align:center">${n}</div>`).join("");
         for (let i = 0; i < pad; i++) cells.push('<div></div>');
-        for (let i = 0; i < 14; i++) { const k = day(t0 + i * 864e5), list = ev[k] || []; cells.push(`<div style="min-height:58px;border-radius:8px;padding:6px;background:${list.length ? "var(--tint1,rgba(124,58,237,.14))" : "var(--surface2,rgba(127,127,127,.08))"}"><div class="muted">${k.slice(8)}/${k.slice(5, 7)}</div>${list.slice(0, 2).map(x => `<a href="#/studio?p=${x.id}" style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(x.title)}">${esc(x.title)}</a>`).join("")}</div>`); }
+        for (let i = 0; i < 14; i++) { const k = day(t0 + i * 864e5), list = ev[k] || []; cells.push(`<div style="min-height:70px;border-radius:8px;padding:6px;background:${list.length ? "var(--tint1,rgba(124,58,237,.14))" : "var(--surface2,rgba(127,127,127,.08))"}"><div class="muted">${k.slice(8)}/${k.slice(5, 7)}</div>${list.map(x => { const [l, c] = st(x); return `<a href="#/studio?p=${x.id}" style="display:block;margin-top:3px;line-height:1.25;overflow-wrap:anywhere" title="${esc(x.title)} · ${l}">${esc(x.title)}<span style="display:block;font-size:10.5px;font-weight:700;color:${c}">${l}</span></a>`; }).join("")}</div>`); }
         return names + cells.join("");
       })()}</div></div></div>
-      <div class="grid g2">
-        <div class="card"><div class="hd"><h2>Caption</h2></div><div class="bd" style="display:flex;flex-direction:column;gap:12px">
-          ${[["ig", "Instagram"], ["fb", "Facebook"], ["tt", "TikTok"]].map(([k, l]) => `<label class="f">${l}<textarea class="in" id="cap-${k}" rows="${k === "tt" ? 3 : 8}">${esc(CAP[k])}</textarea></label><div class="bar"><button type="button" class="btn sm" data-copy="cap-${k}">Salin caption ${l}</button></div>`).join("")}
-          ${p.status === "published" ? "" : '<div class="small muted">Artikel ini masih draf: tautan di caption baru bisa dibuka setelah terbit.</div>'}</div></div>
-        <div class="card"><div class="hd"><h2>Gambar</h2></div><div class="bd" style="display:flex;flex-direction:column;gap:12px">
-          <canvas id="stC" width="1080" height="1350" style="width:100%;max-width:360px;border-radius:12px;border:1px solid var(--border)"></canvas>
+      <div class="tabs" id="stTabs" role="tablist">${PL.map(([k, l], i) => `<button type="button" role="tab" data-k="${k}" class="${i ? "" : "on"}">${l}</button>`).join("")}</div>
+      <div class="grid g2" style="margin-top:12px">
+        <div class="card"><div class="hd"><h2 id="stH">Caption</h2></div><div class="bd" style="display:flex;flex-direction:column;gap:12px">
+          <textarea class="in" id="stCap" rows="14"></textarea>
+          <div class="bar"><button type="button" class="btn sm pri" id="stCopy">Salin caption</button><button type="button" class="btn sm" id="stHer" title="Salin perintah siap tempel untuk Hermes">Salin prompt buat Hermes</button></div>
+          <div id="stC2w" hidden><label class="f">Komentar pertama (taruh tautan di sini)<textarea class="in" id="stCap2" rows="2"></textarea></label><div class="bar"><button type="button" class="btn sm" id="stCopy2">Salin komentar</button></div></div>
+          <div class="small muted">Tautan di caption dihitung per platform di Pengunjung &amp; Konten (Klik dari sosmed).${p.status === "published" ? "" : " Artikel masih draf: tautan baru bisa dibuka setelah terbit."}</div></div></div>
+        <div class="card"><div class="hd"><h2>Gambar</h2><span class="muted small" id="stSz"></span></div><div class="bd" style="display:flex;flex-direction:column;gap:12px">
+          <canvas id="stC" width="1080" height="1350" style="width:100%;max-width:360px;max-height:520px;object-fit:contain;border-radius:12px;border:1px solid var(--border)"></canvas>
           <label class="f">Teks di gambar<input class="in" id="stT" maxlength="90" value="${esc(p.hookText || p.title)}"></label>
-          <div class="bar"><a class="btn sm pri" id="stDl" download="${esc(p.slug)}-sosmed.png">Unduh gambar (1080×1350)</a></div>
-          ${p.cover ? "" : '<div class="small muted">Artikel belum punya gambar sampul, jadi latar polos. Tambahkan sampul di editor untuk hasil lebih baik.</div>'}</div></div>
+          <div class="bar"><a class="btn sm pri" id="stDl" download="${esc(p.slug)}-sosmed.png">Unduh gambar</a></div>
+          ${p.cover ? "" : '<div class="small muted">Artikel belum punya sampul, jadi latar polos.</div>'}</div></div>
       </div>`);
     $("#stP").onchange = e => go("studio", { p: e.target.value });
-    $$("[data-copy]").forEach(b => b.onclick = async () => { try { await navigator.clipboard.writeText($("#" + b.dataset.copy).value); toast("Caption disalin"); } catch { $("#" + b.dataset.copy).select(); toast("Tekan Ctrl+C untuk menyalin"); } });
-    const cv = $("#stC"), cx = cv.getContext("2d");
-    const draw = img => {
-      cx.fillStyle = "#13122a"; cx.fillRect(0, 0, 1080, 1350);
-      if (img) { const r = Math.max(1080 / img.width, 1350 / img.height), w = img.width * r, h = img.height * r; cx.drawImage(img, (1080 - w) / 2, (1350 - h) / 2, w, h); }
-      const g = cx.createLinearGradient(0, 500, 0, 1350); g.addColorStop(0, "rgba(11,11,26,0)"); g.addColorStop(1, "rgba(11,11,26,.92)"); cx.fillStyle = g; cx.fillRect(0, 500, 1080, 850);
-      cx.fillStyle = "#fff"; cx.font = "800 70px system-ui,sans-serif"; cx.textBaseline = "alphabetic";
-      const words = ($("#stT").value || "").split(/\s+/), lines = []; let cur = "";
-      for (const w of words) { const t = cur ? cur + " " + w : w; if (cx.measureText(t).width > 940 && cur) { lines.push(cur); cur = w; } else cur = t; }
-      if (cur) lines.push(cur);
-      const L = lines.slice(0, 5), y0 = 1190 - (L.length - 1) * 84; L.forEach((l, i) => cx.fillText(l, 70, y0 + i * 84));
-      cx.fillStyle = "#c4b5fd"; cx.font = "700 34px system-ui,sans-serif"; cx.fillText("Catatan Akademik", 70, 1290);
-      try { $("#stDl").href = cv.toDataURL("image/png"); } catch { $("#stDl").removeAttribute("href"); }
+    let cur = "ig"; const cv = $("#stC"), cx = cv.getContext("2d"); let im = null;
+    const draw = () => {
+      const [, name, , W, H] = PL.find(x => x[0] === cur); cv.width = W; cv.height = H; $("#stSz").textContent = `${name} · ${W}×${H}`;
+      cx.fillStyle = "#13122a"; cx.fillRect(0, 0, W, H);
+      if (im) { const r = Math.max(W / im.width, H / im.height), w = im.width * r, h = im.height * r; cx.drawImage(im, (W - w) / 2, (H - h) / 2, w, h); }
+      const g = cx.createLinearGradient(0, H * .37, 0, H); g.addColorStop(0, "rgba(11,11,26,0)"); g.addColorStop(1, "rgba(11,11,26,.92)"); cx.fillStyle = g; cx.fillRect(0, H * .37, W, H);
+      const pad = W * .065, fs = H > W ? W * .065 : H * .1, lh = fs * 1.2; cx.fillStyle = "#fff"; cx.font = `800 ${fs}px system-ui,sans-serif`; cx.textBaseline = "alphabetic";
+      const words = ($("#stT").value || "").split(/\s+/), lines = []; let c = "";
+      for (const w of words) { const t = c ? c + " " + w : w; if (cx.measureText(t).width > W - pad * 2 && c) { lines.push(c); c = w; } else c = t; }
+      if (c) lines.push(c);
+      const L = lines.slice(0, 5), yb = H - pad - fs * 1.1; L.forEach((l, i) => cx.fillText(l, pad, yb - (L.length - 1 - i) * lh));
+      cx.fillStyle = "#c4b5fd"; cx.font = `700 ${fs * .5}px system-ui,sans-serif`; cx.fillText("Catatan Akademik", pad, H - pad * .8);
+      try { $("#stDl").href = cv.toDataURL("image/png"); $("#stDl").download = `${p.slug}-${cur}.png`; } catch { $("#stDl").removeAttribute("href"); }
     };
-    let im = null; draw(null);
-    if (p.cover) { const i = new Image(); i.onload = () => { im = i; draw(im); }; i.src = p.cover; }
-    $("#stT").oninput = () => draw(im);
+    const cap = () => { $("#stCap").value = mk(($("#stK").value || "").trim(), cur); $("#stC2w").hidden = cur !== "li"; if (cur === "li") $("#stCap2").value = `Panduan lengkapnya: ${link("li")}`; };
+    const show = k => { cur = k; $$("#stTabs button").forEach(b => b.classList.toggle("on", b.dataset.k === k)); $("#stH").textContent = "Caption " + PL.find(x => x[0] === k)[1]; cap(); draw(); };
+    $$("#stTabs button").forEach(b => b.onclick = () => show(b.dataset.k));
+    $("#stK").oninput = cap; $("#stT").oninput = draw;
+    $("#stCopy").onclick = async () => { const t = $("#stCap"); try { await navigator.clipboard.writeText(t.value); toast("Caption disalin"); } catch { t.select(); toast("Tekan Ctrl+C untuk menyalin"); } };
+    const cp = async (el, ok) => { try { await navigator.clipboard.writeText(typeof el === "string" ? el : el.value); toast(ok); } catch { toast("Salin manual dengan Ctrl+C"); } };
+    $("#stCopy2").onclick = () => cp($("#stCap2"), "Komentar disalin");
+    $("#stHer").onclick = () => cp(hermes(cur), "Prompt untuk Hermes disalin");
+    show("ig");
+    if (p.cover) { const i = new Image(); i.onload = () => { im = i; draw(); }; i.src = p.cover; }
   }
 
 
@@ -776,6 +802,7 @@
     const d = await api("/ms/admin/ca/orders/" + encodeURIComponent(id)), o = d.order;
     const can = { confirm: ["menunggu_verifikasi", "menunggu_bayar"].includes(o.status), reject: o.status === "menunggu_verifikasi", start: o.status === "baru_dibayar" || (o.status === "dianalisis" && o.docType !== "layanan"),
       cancel: !["terkirim", "dibatalkan", "kedaluwarsa", "dikembalikan"].includes(o.status), refund: o.status === "dibatalkan" && o.paid, result: ["baru_dibayar", "dikerjakan", "dianalisis", "cek_ulang"].includes(o.status) };
+    can.finish = can.result;
     setPage("Detail Pesanan " + o.id, o.service, `
       <div class="bar">${badge(o.statusLabel, o.tone)}<span class="grow"></span><a class="btn" href="${waLink(o.wa, o.id)}" target="_blank" rel="noopener">Hubungi via WhatsApp</a><a class="btn" href="${esc(o.customerUrl)}" target="_blank" rel="noopener">${ICON.ext}Halaman pelanggan</a><a class="btn" href="#/orders">← Daftar pesanan</a></div>
       <div class="grid g-main"><div class="grid">
@@ -785,7 +812,7 @@
         <div class="card"><div class="hd"><h2>Pembayaran</h2>${o.paid ? badge("Terkonfirmasi", "ok") : ""}</div><div class="bd"><dl class="kv"><dt>Total</dt><dd><b>${rp(o.total)}</b> <span class="faint small">(${rp(o.baseTotal)} + kode unik ${num(o.uniqueCode)}${o.fastPrice ? ", jalur cepat " + rp(o.fastPrice) : ""})</span></dd><dt>Metode</dt><dd>QRIS (transfer manual, dicek admin)</dd><dt>Batas bayar</dt><dd>${dt(o.payExpiresAt)}</dd><dt>Bukti bayar</dt><dd>${o.hasProof ? `<button class="btn sm" id="proofB">Lihat bukti</button> <span class="faint small">diunggah ${dt(o.proofAt)}</span>` : "Belum ada"}</dd>${o.confirmedAt ? `<dt>Dikonfirmasi</dt><dd>${dt(o.confirmedAt)} oleh ${esc(o.confirmedBy)}</dd>` : ""}${o.rejectReason ? `<dt>Catatan</dt><dd>${esc(o.rejectReason)}</dd>` : ""}</dl>
           <p class="small faint" style="margin:10px 0 0">Bukti unggahan pelanggan bukan bukti dana masuk. Konfirmasi hanya setelah nominal ${rp(o.total)} terlihat di mutasi QRIS/rekening.</p>
           <div class="bar" style="margin-top:12px">${can.confirm ? `<button class="btn ok" id="cfB">${o.status === "menunggu_bayar" ? "Konfirmasi manual" : "Konfirmasi pembayaran"}</button>` : ""}${can.reject ? '<button class="btn bad" id="rjB">Tolak bukti</button>' : ""}</div></div></div>
-        <div class="card"><div class="hd"><h2>Proses</h2></div><div class="bd bar">${can.start ? '<button class="btn pri" id="stB">Mulai kerjakan</button>' : ""}${can.result ? `<a class="btn" href="#/tools/${o.docType === "layanan" ? "layanan" : "parafrase"}">Kirim hasil</a>` : ""}${can.cancel ? '<button class="btn bad" id="cnB">Batalkan pesanan</button>' : ""}${can.refund ? '<button class="btn" id="rfB">Tandai dana sudah dikembalikan</button>' : ""}${!can.start && !can.result && !can.cancel && !can.refund ? '<span class="muted">Tidak ada aksi untuk status ini.</span>' : ""}</div></div>
+        <div class="card"><div class="hd"><h2>Proses</h2></div><div class="bd"><div class="bar">${can.start ? '<button class="btn pri" id="stB">Mulai kerjakan</button>' : ""}${o.paid && !o.filesDeleted && !["layanan", "audit", "bedah"].includes(o.docType) ? `<a class="btn pri" href="/ms/admin/studio-page?id=${encodeURIComponent(o.id)}" target="_blank" rel="noopener">1. Kerjakan di Studio</a><a class="btn" href="/ms/admin/studio/${id}/word">Word tanda UT + rekomendasi</a>` : ""}${can.result ? `<a class="btn" href="#/tools/${o.docType === "layanan" ? "layanan" : "parafrase"}">${o.docType === "layanan" ? "Unggah hasil" : "2. Kirim file hasil"}</a>` : ""}${can.finish ? '<button class="btn ok" id="fnB">3. Tandai selesai</button>' : ""}</div>${can.result ? '<p class="small faint" style="margin:8px 0 0">Kirim hasil lewat Studio atau unggah file; bila sudah diserahkan lewat WhatsApp, klik Tandai selesai.</p>' : ""}<div class="bar" style="margin-top:10px">${can.cancel ? '<button class="btn bad" id="cnB">Batalkan pesanan</button>' : ""}${can.refund ? '<button class="btn" id="rfB">Tandai dana sudah dikembalikan</button>' : ""}${!can.start && !can.result && !can.cancel && !can.refund ? '<span class="muted">Tidak ada aksi untuk status ini.</span>' : ""}</div></div></div>
       </div><div class="grid">
         <div class="card"><div class="hd"><h2>Pelanggan</h2></div><div class="bd"><dl class="kv"><dt>WhatsApp</dt><dd class="mono">${esc(o.wa)}</dd></dl></div></div>
         <div class="card"><div class="hd"><h2>Catatan internal</h2></div><div class="bd" style="display:flex;flex-direction:column;gap:10px"><form id="nf" class="bar"><label class="sr" for="nt">Catatan baru</label><input class="in grow" id="nt" maxlength="1000" placeholder="Tulis catatan untuk tim (tidak terlihat pelanggan)"><button class="btn">Tambah</button></form>${d.notes.map(n => `<div class="note-item"><small>${esc(n.admin)} · ${dt(n.at)}</small>${esc(n.text)}</div>`).join("") || '<span class="muted small">Belum ada catatan.</span>'}</div></div>
@@ -796,6 +823,7 @@
     if ($("#cfB")) $("#cfB").onclick = async e => { if (!await confirmAct("Konfirmasi pembayaran?", `Pastikan dana <b>${rp(o.total)}</b> untuk ${esc(o.id)} sudah masuk. Pesanan akan masuk antrean dan pelanggan diberi tahu.`, "Ya, dana sudah masuk", "ok")) return; busy(e.target, async () => { try { await api(`/ms/admin/parafrase/orders/${encodeURIComponent(o.id)}/confirm`, { json: {} }); toast("Pembayaran dikonfirmasi"); re(); } catch (err) { fail(err); re(); } }); };
     if ($("#rjB")) $("#rjB").onclick = async () => { const why = await dialog({ title: "Tolak bukti bayar", input: { label: "Alasan (dikirim ke pelanggan)", textarea: true, required: true, min: 5, minMsg: "Tulis alasan minimal 5 huruf.", max: 200 }, ok: "Tolak", okClass: "bad" }); if (!why) return; try { await api(`/ms/admin/parafrase/orders/${encodeURIComponent(o.id)}/reject`, { json: { reason: why } }); toast("Bukti ditolak, pelanggan bisa unggah ulang"); re(); } catch (e) { fail(e); } };
     if ($("#stB")) $("#stB").onclick = e => busy(e.target, async () => { try { await api(o.docType === "layanan" ? `/ms/admin/layanan/${encodeURIComponent(o.id)}/mulai` : `/ms/admin/parafrase/orders/${encodeURIComponent(o.id)}/start`, { json: {} }); toast("Status: sedang diproses"); re(); } catch (err) { fail(err); } });
+    if ($("#fnB")) $("#fnB").onclick = async () => { const note = await dialog({ title: "Tandai " + o.id + " selesai?", body: "<p>Status pelanggan berubah menjadi Terkirim. Pakai ini bila hasil sudah kamu serahkan di luar sistem.</p>", input: { label: "Catatan (opsional)", max: 300 }, ok: "Ya, tandai selesai" }); if (note === false) return; try { await api(`/ms/admin/ca/orders/${encodeURIComponent(o.id)}/selesai`, { json: { note: note || "" } }); toast("Pesanan ditandai selesai"); re(); } catch (e) { fail(e); } };
     if ($("#cnB")) $("#cnB").onclick = async () => { const why = await dialog({ title: "Batalkan pesanan " + o.id, body: o.paid ? `<div class="notice">Pesanan ini <b>sudah dibayar ${rp(o.total)}</b>. Setelah dibatalkan, kembalikan dana secara manual lalu klik “Tandai dana sudah dikembalikan”.</div>` : "<p>File pesanan yang belum dibayar akan dihapus.</p>", input: { label: "Alasan pembatalan (tercatat di riwayat)", textarea: true, required: true, min: 3, minMsg: "Tulis alasan pembatalan.", max: 300 }, ok: "Batalkan pesanan", okClass: "bad" }); if (!why) return; try { const r = await api(`/ms/admin/ca/orders/${encodeURIComponent(o.id)}/cancel`, { json: { reason: why } }); toast(r.refundNeeded ? "Dibatalkan. Jangan lupa kembalikan dana." : "Pesanan dibatalkan"); re(); } catch (e) { fail(e); } };
     if ($("#rfB")) $("#rfB").onclick = async () => { const note = await dialog({ title: "Dana sudah dikembalikan?", input: { label: "Catatan (mis. tanggal & rekening tujuan)", max: 300 }, ok: "Tandai dikembalikan" }); if (note === false) return; try { await api(`/ms/admin/ca/orders/${encodeURIComponent(o.id)}/refunded`, { json: { note } }); toast("Ditandai dana dikembalikan"); re(); } catch (e) { fail(e); } };
     $("#nf").onsubmit = async e => { e.preventDefault(); const t = $("#nt").value.trim(); if (!t) return; try { await api(`/ms/admin/ca/orders/${encodeURIComponent(o.id)}/notes`, { json: { text: t } }); re(); } catch (err) { fail(err); } };
@@ -835,7 +863,7 @@
     $("#rg").onchange = e => go("traffic", { days: e.target.value });
   }
   function pEmbed(which) {
-    const t = which === "parafrase" ? ["Antrean Cek & Parafrase", "Verifikasi, antrean, Word berwarna, cek ulang, kirim hasil, QRIS, gambar situs, dan pesan WhatsApp", "/admin/parafrase?embed=1"] : ["Kirim Hasil Layanan", "Tugas, Diskusi, Metopen, dan Revisi yang sudah dibayar", "/admin/layanan?embed=1"];
+    const t = which === "parafrase" ? ["Antrean Cek & Parafrase", "Antrean, Word berwarna, cek ulang, kirim hasil, QRIS, gambar situs, dan pesan WhatsApp. Pembayaran dikonfirmasi di menu Konfirmasi Pembayaran.", "/admin/parafrase?embed=1"] : ["Kirim Hasil Layanan", "Tugas, Diskusi, Metopen, dan Revisi yang sudah dibayar", "/admin/layanan?embed=1"];
     setPage(t[0], t[1], `<iframe class="embed" title="${esc(t[0])}" src="${t[2]}"></iframe>`);
   }
   async function pCustomers() {
@@ -919,6 +947,98 @@
     draw();
   }
 
+  async function pDokumen() {
+    const P = "/ms/admin/parafrase/dokumen", q = params();
+    const d = await api(P + "?" + new URLSearchParams({ q: q.get("q") || "", kind: q.get("kind") || "" }).toString());
+    const KL = { bedah: "Bedah UT", audit: "Audit Dokumen", parafrase: "Cek & Parafrase", metopen: "Metopen", lain: "Lain" };
+    const sz = n => n > 1048576 ? (n / 1048576).toFixed(1) + " MB" : Math.max(1, Math.round(n / 1024)) + " KB";
+    const pc = (id, f, v, ph) => `<input class="in dk-n" type="number" min="0" max="100" step="0.1" data-id="${id}" data-f="${f}" value="${v == null ? "" : v}" placeholder="${ph}" style="width:72px">`;
+    const stat = x => {
+      const parts = [];
+      if (x.aiOk !== null) parts.push(badge("AI " + (x.aiOk ? "tercapai" : "belum"), x.aiOk ? "ok" : "bad"));
+      if (x.simOk !== null) parts.push(badge("Sim " + (x.simOk ? "tercapai" : "belum"), x.simOk ? "ok" : "bad"));
+      return parts.join(" ") || '<span class="faint small">Isi persen dan target</span>';
+    };
+    const ST = { baru: ["Baru", "info"], diproses: ["Diproses", "warn"], perbaikan_dikirim: ["Perbaikan sudah dikirim", "ok"], revisi: ["Revisi masuk", "bad"] };
+    const row = x => `<tr>
+      <td><div><a href="#/dokumen/${x.id}"><b>${esc(x.title || x.name)}</b></a>${x.revisionNo ? " " + badge("Revisi ke-" + x.revisionNo, "bad") : ""}</div><div class="small muted">${esc(x.name)} · ${sz(x.size)}${x.orderId ? " · " + esc(x.orderId) : ""}</div>${x.note ? `<div class="small faint">${esc(x.note)}</div>` : ""}</td>
+      <td>${badge(KL[x.kind] || x.kind, "mute")}</td>
+      <td class="nowrap">${pc(x.id, "aiPct", x.aiPct, "AI %")} <span class="faint">→</span> ${pc(x.id, "targetAi", x.targetAi, "target")}</td>
+      <td class="nowrap">${pc(x.id, "simPct", x.simPct, "Sim %")} <span class="faint">→</span> ${pc(x.id, "targetSim", x.targetSim, "target")}</td>
+      <td>${badge(ST[x.status] ? ST[x.status][0] : x.status, ST[x.status] ? ST[x.status][1] : "mute")}<div style="margin-top:4px">${stat(x)}</div></td>
+      <td class="small muted">${dd(x.createdAt)}<br>${x.pinned ? "Disematkan" : "Hapus " + dd(x.expiresAt)}</td>
+      <td class="nowrap"><a class="btn sm" href="#/dokumen/${x.id}">Detail</a> ${x.hasAi ? `<a class="btn sm pri" href="/ms/admin/studio-page?id=${x.id}" target="_blank" rel="noopener">Buka Studio</a> <a class="btn sm" href="/ms/admin/studio/${x.id}/word">Word tanda UT</a> ` : ""}<a class="btn sm" href="${P}/${x.id}/unduh">Unduh</a> <button class="btn sm" data-pin="${x.id}" data-v="${x.pinned ? 0 : 1}">${x.pinned ? "Lepas sematan" : "Sematkan"}</button> <button class="btn sm bad" data-del="${x.id}">Hapus</button></td></tr>`;
+    const stF = q.get("status") || "", items = d.items.filter(x => !stF || x.status === stF);
+    const groups = new Map(); items.forEach(x => { const k = x.studentKey || "-"; (groups.get(k) || groups.set(k, []).get(k)).push(x); });
+    const waLink = (g, t) => g.wa ? `https://wa.me/${g.wa}${t ? "?text=" + encodeURIComponent(t) : ""}` : "";
+    const rows = [...groups.entries()].map(([k, arr]) => { const g = arr.find(x => x.studentName || x.wa) || arr[0]; const head = k === "-" ? "Tanpa data mahasiswa" : `<b>${esc(g.studentName || "Nama belum terbaca")}</b> · NIM ${esc(g.nim || "–")} · ${g.wa ? "+" + esc(g.wa) : "tanpa WA"} · ${arr.length} dokumen`;
+      return `<tr><td colspan="7" style="background:rgba(128,128,128,.12)"><div class="bar">${head}<span class="grow"></span>${g.wa ? `<a class="btn sm pri" target="_blank" rel="noopener" href="${waLink(g)}">Chat WhatsApp</a>` : ""}</div></td></tr>` + arr.map(row).join(""); }).join("");
+    setPage("Dokumen Saya", "Simpan file Bedah, Cek & Parafrase, dan metopen dalam satu daftar", `<div class="notice info">File disimpan privat dan dihapus otomatis setelah ${d.ttlDays} hari. Klik <b>Sematkan</b> untuk menyimpan tanpa batas. Isi persen AI dan similarity dari Drillbit beserta targetnya supaya kelihatan mana yang sudah aman. Unggah laporan PDF Drillbit dan angkanya terbaca otomatis.</div>
+      <div class="card"><div class="hd"><h2>Simpan dokumen</h2></div><div class="bd"><form id="dkF" class="grid g2">
+        <label class="f">File dokumen (Word, PDF, dan lainnya, boleh banyak)<input class="in" type="file" name="file" multiple required></label>
+        <label class="f">Judul<input class="in" name="title" maxlength="200" placeholder="Judul tugas atau penelitian"></label>
+        <label class="f">Jenis<select class="in" name="kind">${d.kinds.map(k => `<option value="${k}">${KL[k]}</option>`).join("")}</select></label>
+        <label class="f">Catatan (opsional)<input class="in" name="note" maxlength="300"></label>
+        <label class="f">Laporan AI Drillbit (PDF, opsional)<input class="in" type="file" name="ai" accept="application/pdf"></label>
+        <label class="f">Laporan Similarity Drillbit (PDF, opsional)<input class="in" type="file" name="sim" accept="application/pdf"></label>
+        <label class="f">Persen AI (bila tanpa laporan)<input class="in" name="aiPct" inputmode="decimal" placeholder="mis. 35"></label>
+        <label class="f">Persen similarity (bila tanpa laporan)<input class="in" name="simPct" inputmode="decimal" placeholder="mis. 18"></label>
+        <label class="f">Target AI maksimal (%)<input class="in" name="targetAi" inputmode="decimal" placeholder="mis. 20"></label>
+        <label class="f">Target similarity maksimal (%)<input class="in" name="targetSim" inputmode="decimal" placeholder="mis. 25"></label>
+        <div class="bar" style="grid-column:1/-1"><button class="btn pri" type="submit">Simpan</button><span class="small faint">Bila memilih beberapa file, judul, persen, dan target yang sama dipakai untuk semuanya.</span></div></form>
+        <div class="bar small" style="margin-top:10px"><input class="in" id="dkO" placeholder="ID pesanan, mis. NA-1001" style="max-width:220px"><button class="btn" id="dkOB">Arsipkan file dari pesanan</button></div></div></div>
+      <div class="card"><div class="hd"><h2>Daftar dokumen (${items.length} · ${groups.size} mahasiswa)</h2><form class="bar" id="dkQ"><input class="in" name="q" value="${esc(q.get("q") || "")}" placeholder="Cari nama, NIM, WA, judul, catatan" style="max-width:240px"><select class="in" name="kind" style="max-width:160px"><option value="">Semua jenis</option>${d.kinds.map(k => `<option value="${k}"${q.get("kind") === k ? " selected" : ""}>${KL[k]}</option>`).join("")}</select><select class="in" name="status" style="max-width:190px"><option value="">Semua status</option>${Object.entries(ST).map(([k, v]) => `<option value="${k}"${stF === k ? " selected" : ""}>${v[0]}</option>`).join("")}</select><button class="btn" type="submit">Cari</button></form></div>
+        <div class="tbl-wrap"><table class="t"><thead><tr><th>Judul / file</th><th>Jenis</th><th>AI (sekarang → target)</th><th>Similarity (sekarang → target)</th><th>Status</th><th>Disimpan</th><th></th></tr></thead><tbody>${rows || '<tr><td colspan="7" class="empty">Belum ada dokumen.</td></tr>'}</tbody></table></div></div>`);
+    $("#dkQ").onsubmit = e => { e.preventDefault(); const f = e.target; go("dokumen", { q: f.q.value.trim(), kind: f.kind.value, status: f.status.value }); };
+    $("#dkF").onsubmit = async e => {
+      e.preventDefault(); const f = e.target, fd = new FormData(f);
+      for (const k of ["ai", "sim"]) if (!f[k].files.length) fd.delete(k);
+      await busy($("button[type=submit]", f), async () => { try { const r = await api(P, { form: fd }); toast("Tersimpan" + (r.aiPct != null ? " · AI " + r.aiPct + "%" : "") + (r.simPct != null ? " · Sim " + r.simPct + "%" : "") + (r.warn && r.warn.length ? " · " + r.warn[0] : ""), !!(r.warn && r.warn.length)); route(); } catch (err) { fail(err); } });
+    };
+    $("#dkOB").onclick = async () => { const id = $("#dkO").value.trim().toUpperCase(); if (!id) return; try { const r = await api(P + "/pesanan/" + encodeURIComponent(id), { json: {} }); toast("Diarsipkan: " + r.saved.join(", ")); route(); } catch (err) { fail(err); } };
+    $$(".dk-n").forEach(i => i.onchange = async () => { try { await api(P + "/" + i.dataset.id, { method: "PATCH", json: { [i.dataset.f]: i.value } }); toast("Tersimpan"); route(); } catch (err) { fail(err); } });
+    $$("[data-pin]").forEach(b => b.onclick = async () => { try { await api(P + "/" + b.dataset.pin, { method: "PATCH", json: { pinned: b.dataset.v === "1" } }); route(); } catch (err) { fail(err); } });
+    $$("[data-del]").forEach(b => b.onclick = async () => { if (!await confirmAct("Hapus dokumen ini?", "File dihapus permanen dari server.", "Hapus", "bad")) return; try { await api(P + "/" + b.dataset.del, { method: "DELETE" }); toast("Dihapus"); route(); } catch (err) { fail(err); } });
+  }
+  async function pDokumenDetail(id) {
+    const P = "/ms/admin/parafrase/dokumen", r = await api(P + "/" + id), x = r.item, d = r.data || {}, ai = d.ai, sim = d.sim;
+    const f1 = v => v == null ? "–" : Number(v).toLocaleString("id-ID", { maximumFractionDigits: 1 });
+    const col = (v, t, lo, hi) => v == null ? "var(--faint)" : (t != null ? (v <= t ? "var(--ok,#2e9d62)" : "var(--bad,#d9534f)") : v <= lo ? "var(--ok,#2e9d62)" : v <= hi ? "var(--warn,#e0a526)" : "var(--bad,#d9534f)");
+    const donut = (v, c, label, sub) => { const R = 52, C = 2 * Math.PI * R, p = Math.max(0, Math.min(100, v || 0)); return `<svg viewBox="0 0 140 140" width="150" height="150" role="img" aria-label="${esc(label)} ${f1(v)} persen"><circle cx="70" cy="70" r="${R}" fill="none" stroke="rgba(128,128,128,.25)" stroke-width="16"/><circle cx="70" cy="70" r="${R}" fill="none" stroke="${c}" stroke-width="16" stroke-dasharray="${(C * p / 100).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 70 70)" stroke-linecap="butt"/><text x="70" y="68" text-anchor="middle" font-size="26" font-weight="800" fill="currentColor">${f1(v)}%</text><text x="70" y="88" text-anchor="middle" font-size="11" fill="currentColor" opacity=".7">${esc(sub || "")}</text></svg><div class="small" style="text-align:center"><b>${esc(label)}</b></div>`; };
+    const bars = (rows, max) => rows.map(([l, v, c, extra]) => `<div style="display:grid;grid-template-columns:minmax(90px,150px) 1fr 64px;gap:8px;align-items:center;margin:5px 0"><span class="small">${esc(l)}</span><span style="background:rgba(128,128,128,.2);border-radius:6px;height:14px;display:block"><span style="display:block;height:14px;border-radius:6px;width:${Math.max(1, Math.min(100, (v || 0) / (max || 100) * 100))}%;background:${c}"></span></span><b class="small">${esc(extra || f1(v) + "%")}</b></div>`).join("");
+    const aiTop = ai ? `<div class="card"><div class="hd"><h2>Deteksi AI Drillbit</h2></div><div class="bd" style="display:flex;flex-wrap:wrap;gap:24px;align-items:center"><div>${donut(ai.pct, col(ai.pct, x.targetAi, 20, 40), "AI terdeteksi", x.targetAi != null ? "target ≤ " + f1(x.targetAi) + "%" : "")}</div>
+      <div class="grid g2" style="flex:1;min-width:240px">${[["Persen AI", f1(ai.pct) + "%"], ["Persen tulisan manusia", f1(ai.humanPct) + (ai.humanPct == null ? "" : "%")], ["Kata terdeteksi AI", num(ai.matchedWords)], ["Total kata", num(ai.totalWords || d.words)], ["Halaman", num(ai.pages)], ["Kalimat", num(ai.sentences)], ["Blok ditandai", num((ai.blockTable || []).length)], ["Keyakinan pemetaan", ai.confidence || "–"]].map(([l, v]) => `<div class="card"><div class="bd"><div class="small muted">${l}</div><b>${v}</b></div></div>`).join("")}</div></div></div>
+      ${(ai.blockTable || []).length ? `<div class="card"><div class="hd"><h2>Persen AI per blok</h2></div><div class="bd">${bars(ai.blockTable.map(b => ["Blok " + b.n + (b.included ? "" : " (dikecualikan)"), b.pct, b.included ? col(b.pct, null, 20, 50) : "rgba(128,128,128,.5)", f1(b.pct) + "% · " + num(b.words) + " kata"]), 100)}</div></div>` : ""}` : `<div class="notice">Laporan AI tidak ada.</div>`;
+    const typeRows = sim ? Object.entries({ Internet: sim.sourceTypes && sim.sourceTypes.internet, "Jurnal / publikasi": sim.sourceTypes && sim.sourceTypes.jurnal, "Tugas mahasiswa": sim.sourceTypes && sim.sourceTypes.mahasiswa }).filter(([, v]) => v != null) : [];
+    const simTop = sim ? `<div class="card"><div class="hd"><h2>Similarity Drillbit</h2></div><div class="bd" style="display:flex;flex-wrap:wrap;gap:24px;align-items:center"><div>${donut(sim.pct, col(sim.pct, x.targetSim, 10, 40), "Similarity", "Grade " + (sim.grade || "–"))}</div>
+      <div style="flex:1;min-width:240px">${typeRows.length ? "<div class='small muted'>Asal kemiripan</div>" + bars(typeRows.map(([l, v]) => [l, v, "var(--pri,#4c8bf5)"]), Math.max(100, ...typeRows.map(t => t[1]))) : ""}
+      ${sim.content && (sim.content.kutipan != null || sim.content.kurangDari14Kata != null) ? `<div class="small muted" style="margin-top:8px">Komponen dikecualikan/terhitung: kutipan ${f1(sim.content.kutipan)}% · kata kurang dari 14: ${f1(sim.content.kurangDari14Kata)}%</div>` : ""}</div></div></div>
+      ${(sim.sources || []).length ? `<div class="card"><div class="hd"><h2>Sumber kemiripan teratas</h2></div><div class="tbl-wrap"><table class="t"><thead><tr><th>#</th><th>Sumber</th><th>Jenis</th><th class="num">%</th></tr></thead><tbody>${sim.sources.map(s => `<tr><td>${s.n}</td><td>${esc(s.domain)}</td><td>${esc(s.type)}</td><td class="num">${f1(s.pct)}</td></tr>`).join("")}</tbody></table></div></div>` : ""}` : `<div class="notice">Laporan similarity tidak ada.</div>`;
+    const tgt = (f, v, ph) => `<input class="in dk-n" type="number" min="0" max="100" step="0.1" data-f="${f}" value="${v == null ? "" : v}" placeholder="${ph}" style="width:90px">`;
+    setPage(x.title || x.name, "Dokumen Saya · " + dd(x.createdAt), `<div class="bar"><a class="btn" href="#/dokumen">← Daftar dokumen</a><span class="grow"></span>${x.hasAi ? `<a class="btn pri" href="/ms/admin/studio-page?id=${id}" target="_blank" rel="noopener">Buka Studio Parafrase</a>` : ""}</div>
+      <div class="card"><div class="hd"><h2>Berkas</h2></div><div class="bd"><div class="grid g2">${[
+        ["1. File asli", esc(x.name), `${P}/${id}/unduh`, true],
+        ["2. Laporan AI Drillbit", x.hasAi ? "PDF dari UT" : "Belum ada", `${P}/${id}/unduh?f=ai`, x.hasAi],
+        ["3. Laporan Similarity", x.hasSim ? "PDF dari UT" : "Belum ada", `${P}/${id}/unduh?f=sim`, x.hasSim],
+        ["4. Word tanda UT + rekomendasi", x.hasAi ? "Kalimat biru UT ditandai, rekomendasi di tiap tanda" : "Butuh laporan AI", `/ms/admin/studio/${id}/word`, x.hasAi]
+      ].map(([t, sub, href, ok]) => `<div class="card"><div class="bd"><div class="small muted">${t}</div><div class="small" style="margin:2px 0 8px;overflow-wrap:anywhere">${sub}</div>${ok ? `<a class="btn sm${t[0] === "4" ? " pri" : ""}" href="${href}">Unduh</a>` : ""}</div></div>`).join("")}</div></div></div>
+
+      <div class="card"><div class="bd"><div class="grid g2"><div><div class="small muted">Nama file</div><b>${esc(x.name)}</b></div><div><div class="small muted">Jumlah kata</div><b>${num(x.words || d.words)}</b></div></div>
+        <div class="bar" style="margin-top:12px"><span class="small">Target AI maksimal (%)</span>${tgt("targetAi", x.targetAi, "mis. 20")}<span class="small">Target similarity maksimal (%)</span>${tgt("targetSim", x.targetSim, "mis. 25")}<span class="small faint">Berubah otomatis menjadi hijau bila angka ≤ target.</span></div></div></div>
+      <div class="card"><div class="hd"><h2>Mahasiswa dan pengiriman perbaikan</h2></div><div class="bd">
+        <div class="grid g2"><label class="f">Nama<input class="in" id="dkNm" value="${esc(x.studentName || "")}" maxlength="80"></label><label class="f">NIM<input class="in" value="${esc(x.nim || "")}" disabled></label>
+        <label class="f">WhatsApp (62…)<input class="in" id="dkWa" value="${esc(x.wa || "")}" inputmode="tel"></label><label class="f">Status<select class="in" id="dkSt">${[["baru", "Baru"], ["diproses", "Diproses"], ["perbaikan_dikirim", "Perbaikan sudah dikirim"], ["revisi", "Revisi masuk"]].map(([k, l]) => `<option value="${k}"${x.status === k ? " selected" : ""}>${l}</option>`).join("")}</select></label></div>
+        ${d.nameMismatch ? '<div class="notice" style="margin-top:8px">Nama pada unggahan ini berbeda dari yang tercatat untuk NIM yang sama. Periksa dulu apakah ini orang yang sama.</div>' : ""}
+        ${x.revisionNo ? `<div class="notice info" style="margin-top:8px">Ini revisi ke-${x.revisionNo}. Dokumen sebelumnya milik mahasiswa yang sama ada di daftar di bawah namanya.</div>` : ""}
+        <div class="bar" style="margin-top:10px"><button class="btn" id="dkSv">Simpan data</button>${x.wa ? `<a class="btn" target="_blank" rel="noopener" href="https://wa.me/${esc(x.wa)}?text=${encodeURIComponent("Halo " + (x.studentName || "") + ", file perbaikan Bedah kamu sudah kami kirim. Silakan dicek ya. Bila masih ada tanda dari UT, kirim laporan Drillbit barumu di halaman Bedah.")}">Chat WhatsApp</a>` : ""}</div>
+        <hr style="margin:14px 0;border:0;border-top:1px solid rgba(128,128,128,.25)">
+        <div class="small muted">File perbaikan yang kamu kirim ${x.hasFix ? `: <a href="${P}/${id}/unduh?f=fix">${esc(x.fixName || "unduh")}</a> · dikirim ${dt(x.fixSentAt)}` : "belum ada"}</div>
+        <div class="bar" style="margin-top:8px"><input class="in" type="file" id="dkFx" style="max-width:320px"><button class="btn pri" id="dkSent">Tandai perbaikan sudah dikirim</button><span class="small faint">File boleh dikosongkan bila sudah kamu kirim lewat WhatsApp.</span></div></div></div>
+      ${x.kind === "bedah" || x.source === "bedah" ? aiTop + simTop : `<div class="card"><div class="hd"><h2>Ringkasan unggahan</h2></div><div class="bd"><div class="small muted">Diunggah mahasiswa sebelum ada pesanan atau pembayaran.${d.email ? " Akun: " + esc(d.email) + "." : ""}</div>${d.summary && d.summary.score != null ? `<p>Skor audit: <b>${esc(String(d.summary.score))}</b></p>` : ""}</div></div>`}`);
+    $("#dkSv").onclick = async () => { try { await api(P + "/" + id, { method: "PATCH", json: { studentName: $("#dkNm").value, wa: $("#dkWa").value, status: $("#dkSt").value } }); toast("Tersimpan"); route(); } catch (err) { fail(err); } };
+    $("#dkSent").onclick = async e => { const fd = new FormData(); const f = $("#dkFx").files[0]; if (f) fd.append("file", f); await busy(e.target, async () => { try { await api(P + "/" + id + "/perbaikan", { form: fd }); toast("Status: perbaikan sudah dikirim"); route(); } catch (err) { fail(err); } }); };
+    $$(".dk-n").forEach(i => i.onchange = async () => { try { await api(P + "/" + id, { method: "PATCH", json: { [i.dataset.f]: i.value } }); toast("Tersimpan"); route(); } catch (err) { fail(err); } });
+  }
   async function pTestimonials() {
     const d = await api("/ms/admin/ulasan");
     setPage("Testimoni", "Ulasan asli pelanggan yang tampil di beranda Catatan Akademik", `<div class="notice info">Unggah tangkapan layar chat atau tulis kata pelanggan di sini. Di beranda tampil <b>6 testimoni terbaru yang berstatus Tampil</b>. Hanya unggah testimoni <b>asli</b> dan yang sudah diizinkan pelanggan; tutup nama atau nomor yang tidak perlu terlihat di tangkapan layar.</div>

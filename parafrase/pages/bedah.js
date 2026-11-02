@@ -9,9 +9,21 @@
 
   /* harga di hook dari pengaturan admin */
   fetch("/ms/public-config").then(function (r) { return r.ok ? r.json() : {}; }).then(function (c) {
-    var m = { "data-bg": c.bedah_gratis_temuan, "data-bh": c.bedah_harga_per_blok, "data-bk": c.bedah_blok_kata };
+    var m = { "data-bg": c.bedah_gratis_kata, "data-bh": c.bedah_harga_per_1000 };
     Object.keys(m).forEach(function (a) { if (m[a] == null) return; document.querySelectorAll("[" + a + "]").forEach(function (n) { n.textContent = rp(m[a]); }); });
   }).catch(function () {});
+
+  /* "Baca lengkap" untuk teks panduan, dan "Baca selanjutnya" untuk daftar panjang: halaman tetap pendek, tidak perlu scroll panjang. */
+  (function () {
+    var l = $("pbList"), b = $("pbMore"); if (!l || !b) return;
+    l.classList.add("bd-clamp");
+    b.onclick = function () { var open = l.classList.toggle("bd-clamp"); b.textContent = open ? "Baca lengkap" : "Ringkas"; b.setAttribute("aria-expanded", open ? "false" : "true"); };
+  })();
+  function pager(list, per, box, build) {
+    box.innerHTML = ""; var shown = 0, holder = el("div"), btn = el("button", "margin-top:10px", "", "btn"); btn.type = "button"; box.appendChild(holder); box.appendChild(btn);
+    function more() { list.slice(shown, shown + per).forEach(function (x) { holder.appendChild(build(x)); }); shown = Math.min(list.length, shown + per); var left = list.length - shown; btn.style.display = left > 0 ? "" : "none"; btn.textContent = "Baca selanjutnya (" + Math.min(per, left) + " dari " + left + " tersisa)"; }
+    btn.onclick = more; more();
+  }
 
   /* ---------- unggah ---------- */
   var chosen = { orig: null };
@@ -21,25 +33,31 @@
     if (pdfOnly ? !/\.pdf$/i.test(f.name) : !/\.(docx|pdf)$/i.test(f.name)) { showErr(pdfOnly ? "Laporan Drillbit harus PDF." : "File asli harus Word (.docx) atau PDF."); return false; }
     return true;
   }
-  $("fOrig").onchange = function () { showErr(""); chosen.orig = this.files[0] || null; if (!ok(chosen.orig, false)) { chosen.orig = null; this.value = ""; } $("go").disabled = !(chosen.orig && $("fAi").files[0]); };
-  $("fAi").onchange = function () { showErr(""); if (!ok(this.files[0], true)) this.value = ""; $("go").disabled = !(chosen.orig && this.files[0]); };
+  var waOk = function () { var w = ($("fWa").value || "").replace(/\D/g, "").replace(/^62/, "").replace(/^0/, ""); return /^8\d{8,12}$/.test(w); };
+  var refresh = function () { $("go").disabled = !($("fOrig").files[0] && $("fAi").files[0] && $("fSim").files[0] && waOk()); };
+  $("fOrig").onchange = function () { showErr(""); chosen.orig = this.files[0] || null; if (!ok(chosen.orig, false)) { chosen.orig = null; this.value = ""; } refresh(); };
+  $("fAi").onchange = function () { showErr(""); if (!ok(this.files[0], true)) this.value = ""; refresh(); };
+  $("fSim").onchange = function () { showErr(""); if (!ok(this.files[0], true)) this.value = ""; refresh(); };
+  $("fWa").oninput = refresh;
   $("go").onclick = function () {
     showErr("");
     var o = $("fOrig").files[0], a = $("fAi").files[0], s = $("fSim").files[0];
     if (!o) { showErr("Pilih file aslimu dulu."); return; }
     if (!a) { showErr("Unggah laporan AI Drillbit dari UT. Bedah hanya membaca tanda dari UT."); return; }
+    if (!s) { showErr("Unggah laporan Similarity Drillbit dari UT."); return; }
+    var wa = ($("fWa").value || "").replace(/\D/g, "").replace(/^62/, "").replace(/^0/, ""); if (!/^8\d{8,12}$/.test(wa)) { showErr("Isi nomor WhatsApp yang benar (contoh 0812xxxxxxxx)."); return; }
     if (!ok(o, false) || !ok(a, true) || !ok(s, true)) return;
     window.pfScan.start($("busy"), ["Mengunggah file…", "Membaca laporan Drillbit…", "Memetakan blok UT ke dokumenmu…", "Mendiagnosis kalimat yang ditandai…", "Menyusun hasil…"]);
     $("go").disabled = true;
-    var fd = new FormData(); fd.append("izin", $("izin").checked ? "1" : "0"); fd.append("file", o); if (a) fd.append("ai", a); if (s) fd.append("sim", s);
+    var fd = new FormData(); fd.append("wa", $("fWa").value); fd.append("izin", $("izin").checked ? "1" : "0"); fd.append("file", o); if (a) fd.append("ai", a); if (s) fd.append("sim", s);
     fetch("/ms/bedah/upload", { method: "POST", body: fd }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
       .then(function (x) {
         $("busy").classList.add("hidden"); $("go").disabled = false;
-        if (!x.ok) { showErr(x.j.error || "Gagal. Coba lagi."); return; }
-        upId = x.j.uploadId; lastRes = x.j; render(x.j); $("s1").classList.add("hidden"); $("s2").classList.remove("hidden"); window.scrollTo(0, 0);
+        if (!x.ok) { if (x.j.login) { location.href = "/ms/masuk?next=" + encodeURIComponent(location.pathname); return; } showErr(x.j.error || "Gagal. Coba lagi."); return; }
+        upId = x.j.uploadId; lastRes = x.j; render(x.j); $("perbaiki").classList.add("hidden"); $("s1").classList.add("hidden"); $("s2").classList.remove("hidden"); window.scrollTo(0, 0);
       }).catch(function () { $("busy").classList.add("hidden"); $("go").disabled = false; showErr("Koneksi terputus. Coba lagi."); });
   };
-  $("again").onclick = function () { $("s2").classList.add("hidden"); $("s1").classList.remove("hidden"); showErr(""); };
+  $("again").onclick = function () { $("s2").classList.add("hidden"); $("perbaiki").classList.remove("hidden"); $("s1").classList.remove("hidden"); showErr(""); };
 
   /* ---------- komponen ---------- */
   function ring(col, big, sub, pct, dashed) {
@@ -73,7 +91,14 @@
     head.appendChild(el("span", "font-size:11px;font-weight:800;color:#26c6da;border:2px dashed #26c6da;border-radius:99px;padding:1px 8px", "Blok UT " + f.block));
     head.appendChild(el("span", "font-size:12.5px;opacity:.8", f.where));
     d.appendChild(head);
-    if (locked) { d.appendChild(el("div", "", "Kalimat dan diagnosisnya terbuka setelah paket lengkap dibeli.")); return d; }
+    if (locked) {
+      var n = Math.max(8, Math.min(40, f.words || 20)), fill = [], base = ["Kalimat", "ini", "ditandai", "UT", "dan", "rekomendasinya", "terbuka", "setelah", "pembayaran"];
+      for (var i = 0; i < n; i++) fill.push(base[i % base.length]);
+      var ph = el("div", "line-height:1.8", fill.join(" "), "bd-blur"); ph.setAttribute("aria-hidden", "true"); d.appendChild(ph);
+      var rc = el("div", "margin-top:8px;padding:8px 10px;border-radius:10px;border:1px solid var(--line,#2b2b58);font-size:13.5px", "Perbaiki, jangan, dan bukti untuk kalimat ini terbuka setelah pembayaran.", "bd-blur"); rc.setAttribute("aria-hidden", "true"); d.appendChild(rc);
+      d.appendChild(el("div", "margin-top:6px;font-size:12.5px;font-weight:700", "Terkunci: di luar jatah gratis. Buka lewat pembayaran di samping."));
+      return d;
+    }
     var sent = el("div", "line-height:1.8"); sent.appendChild(el("span", "", f.text, "bd-ut")); d.appendChild(sent);
     (f.tags || []).forEach(function (g) {
       var b = el("div", "margin-top:8px;padding:8px 10px;border-radius:10px;border:1px solid var(--line,#2b2b58);font-size:13.5px;line-height:1.55");
@@ -88,7 +113,8 @@
   var LBL = { proposisi: "proposisi/hipotesis", sintesis: "ringkasan penelitian orang lain", definisi: "definisi buku teks", umum: "kalimat umum tanpa detail", blok: "ikut satu blok" };
   function protokolBox(list, box) {
     box.innerHTML = ""; box.appendChild(el("b", "display:block;margin-bottom:6px", "Aturan revisi (kesempatan unggah di UT terbatas)"));
-    var ol = el("ol", "margin:0;padding-left:20px;line-height:1.7;font-size:14px"); (list || []).forEach(function (x) { ol.appendChild(el("li", "", x)); }); box.appendChild(ol);
+    var ol = el("ol", "margin:0;padding-left:20px;line-height:1.7;font-size:14px"); (list || []).forEach(function (x, i) { var li = el("li", "", x); if (i >= 2) li.style.display = "none"; ol.appendChild(li); }); box.appendChild(ol);
+    if ((list || []).length > 2) { var mb = el("button", "margin-top:6px;background:none;border:0;color:inherit;text-decoration:underline;cursor:pointer;font:inherit;font-size:13.5px", "Baca lengkap"); mb.type = "button"; var openR = false; mb.onclick = function () { openR = !openR; ol.querySelectorAll("li").forEach(function (li, i) { if (i >= 2) li.style.display = openR ? "" : "none"; }); mb.textContent = openR ? "Ringkas" : "Baca lengkap"; }; box.appendChild(mb); }
   }
   function blockList(bl, box) {
     box.innerHTML = ""; if (!bl || !bl.length) return;
@@ -130,7 +156,7 @@
     var uc = $("utCard"); uc.style.display = j.ut ? "" : "none"; if (j.ut) utTable(j.ut, $("utTable"), $("utNote"), $("utGuide"), j.blocks || []);
     var mc = $("mapCard"); mc.style.display = j.docMap ? "" : "none";
     if (j.docMap) {
-      $("mapNote").textContent = j.totalFindings + " kalimat isi ditandai UT. Hanya kalimat bergaris putus-putus yang direvisi; sisanya sudah lolos dan jangan diubah.";
+      $("mapNote").textContent = j.totalFindings + " kalimat isi ditandai UT. Hanya kalimat berwarna biru yang direvisi; sisanya sudah lolos dan jangan diubah.";
       var md = $("mapDoc"); md.innerHTML = "";
       var tw = 0; j.docMap.forEach(function (pp) { pp.s.forEach(function (x) { tw += x.t.split(/\s+/).length; }); });
       var inl = tw / j.docMap.length < 14, flow = el("div", ""); /* PDF terbaca per baris: gabungkan agar kalimat tidak terpotong tampilan */
@@ -147,18 +173,18 @@
     }
     $("ctaPar").style.display = "";
     var sc = $("simCard"); sc.style.display = j.sim ? "" : "none"; if (j.sim) simBody(j.sim, $("simBody"));
-    $("fTitle").textContent = "Kalimat yang ditandai UT · " + j.open.length + " dari " + j.totalFindings + " dibuka gratis";
+    $("fTitle").textContent = "Kalimat yang ditandai UT · " + j.open.length + " dari " + j.totalFindings + " terbuka (" + rp(j.quote.freeWords) + " kata pertama gratis)";
     protokolBox(j.protokol, $("pfLegend")); $("legend").textContent = "Setiap kalimat diberi diagnosis dari pola yang terbukti di data uji: apa yang diperbaiki, apa yang jangan dilakukan, dan buktinya.";
-    var fl = $("flist"); fl.innerHTML = ""; j.open.forEach(function (f) { fl.appendChild(findingNode(f, false)); });
+    pager(j.open, 5, $("flist"), function (f) { return findingNode(f, false); });
     var lk = $("locked"); lk.innerHTML = "";
     if (j.locked.length) {
-      lk.appendChild(el("div", "font-weight:800;margin:10px 0 4px", j.locked.length + " kalimat lagi terkunci"));
-      j.locked.slice(0, 6).forEach(function (f) { lk.appendChild(findingNode(f, true)); });
-      if (j.locked.length > 6) lk.appendChild(el("div", "margin:6px 0 8px", "… dan " + (j.locked.length - 6) + " kalimat lain."));
-      var go = el("a", "", "Buka semua kalimat dan unduh file Word bertanda", "btn"); go.href = "#cta"; lk.appendChild(go);
+      lk.appendChild(el("div", "font-weight:800;margin:10px 0 4px", j.locked.length + " kalimat lagi terkunci (diburamkan)"));
+      j.locked.slice(0, 2).forEach(function (f) { lk.appendChild(findingNode(f, true)); });
+      if (j.locked.length > 2) lk.appendChild(el("div", "margin:6px 0 8px", "… dan " + (j.locked.length - 2) + " kalimat lain."));
+      var go = el("a", "", "Buka semua rekomendasi dan unduh file Word bertanda", "btn"); go.href = "#cta"; lk.appendChild(go);
     }
-    var q = j.quote; $("pWords").textContent = rp(j.words); $("pFree").textContent = Math.min(q.free, j.totalFindings) + " kalimat"; $("pAll").textContent = j.totalFindings + " kalimat";
-    $("pTier").textContent = q.blocks + " × " + rp(q.blockWords) + " kata (sampai " + rp(q.limit) + " kata)"; $("total").textContent = "Rp " + rp(q.total); $("buyAmt").textContent = " · Rp " + rp(q.total);
+    var q = j.quote; $("pWords").textContent = rp(j.words); $("pFree").textContent = rp(q.freeWords) + " kata"; $("pAll").textContent = j.totalFindings + " kalimat";
+    $("pTier").textContent = rp(q.paidWords) + " kata × Rp" + rp(q.perK) + "/1.000"; $("total").textContent = "Rp " + rp(q.total); $("buyAmt").textContent = " · Rp " + rp(q.total);
     $("kodeCard").style.display = j.kode ? "" : "none"; if (j.kode) $("kodeVal").textContent = j.kode;
     gate();
   }
@@ -177,21 +203,104 @@
       .then(function (j) { $("cabutMsg").textContent = j.ok ? "Data kamu sudah dihapus." : (j.error || "Gagal menghapus."); if (j.ok) $("cabut").disabled = true; }).catch(function () { $("cabutMsg").textContent = "Koneksi terputus."; });
   };
 
+  /* ---------- Pembanding (sesudah bayar) ---------- */
+  var STX = { sudah: ["Sudah diubah", "bd-good"], sebagian: ["Diubah, masih berpola", "bd-warn"], belum: ["Belum diubah", "bd-bad"], tidak_ditemukan: ["Padanan tidak ditemukan", "bd-none"] };
+  function setupBand(tk) {
+    $("bandCard").style.display = "";
+    var f = $("bandFile"), go = $("bandGo"), err = $("bandErr");
+    f.onchange = function () { err.classList.add("hidden"); var x = f.files[0]; if (x && (!/\.(docx|pdf)$/i.test(x.name) || x.size > 10 * 1048576)) { err.textContent = "Pilih Word (.docx) atau PDF, maksimal 10 MB."; err.classList.remove("hidden"); f.value = ""; } go.disabled = !f.files[0]; };
+    go.onclick = function () {
+      err.classList.add("hidden"); go.disabled = true; $("bandOut").textContent = "Membandingkan…";
+      var fd = new FormData(); fd.append("file", f.files[0]);
+      fetch("/ms/bedah/banding/" + tk, { method: "POST", body: fd }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+        .then(function (x) { go.disabled = false; if (!x.ok) { $("bandOut").textContent = ""; err.textContent = x.j.error || "Gagal membandingkan."; err.classList.remove("hidden"); return; } renderBand(x.j); })
+        .catch(function () { go.disabled = false; $("bandOut").textContent = ""; err.textContent = "Koneksi terputus. Coba lagi."; err.classList.remove("hidden"); });
+    };
+  }
+  function renderBand(j) {
+    var box = $("bandOut"); box.innerHTML = "";
+    var s = j.summary, sn = s.sentences, row = el("div", "display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px");
+    [["sudah", sn.sudah], ["sebagian", sn.sebagian], ["belum", sn.belum], ["tidak_ditemukan", sn.tidak_ditemukan]].forEach(function (a) { row.appendChild(el("span", "", STX[a[0]][0] + ": " + a[1] + " kalimat", "bd-st " + STX[a[0]][1])); });
+    box.appendChild(row);
+    box.appendChild(el("div", "font-size:13px;opacity:.8;margin-bottom:10px", "Dari " + s.total + " kalimat yang ditandai UT. Per blok: " + s.blocks.sudah + " sudah, " + s.blocks.sebagian + " masih berpola, " + s.blocks.belum + " belum diubah, " + s.blocks.tidak_ditemukan + " tidak ditemukan. File: " + j.file));
+    j.blocks.forEach(function (b) {
+      var c = el("div", "border:1px solid var(--line,#2b2b58);border-radius:12px;padding:12px;margin-bottom:10px");
+      var h = el("div", "display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px"); h.appendChild(el("b", "", "Blok UT " + b.block)); h.appendChild(el("span", "", STX[b.status][0], "bd-st " + STX[b.status][1])); c.appendChild(h);
+      b.items.forEach(function (it) {
+        var w = el("div", "border-top:1px solid var(--line,#2b2b58);padding-top:10px;margin-top:10px");
+        w.appendChild(el("div", "font-size:12.5px;opacity:.75;margin-bottom:6px", it.where));
+        var two = el("div", "", null, "bd-two");
+        var l = el("div"); l.appendChild(el("div", "font-size:12px;opacity:.7", "Teks asli (ditandai UT)")); l.appendChild(el("p", "margin:4px 0")).appendChild(el("span", "", it.orig, "bd-ut"));
+        var r = el("div"); r.appendChild(el("div", "font-size:12px;opacity:.7", "Hasil parafrase" + (it.where ? " · " + it.where : "")));
+        if (it.cand) r.appendChild(el("p", "margin:4px 0")).appendChild(el("span", "", it.cand, "bd-sent " + STX[it.status][1])); else r.appendChild(el("p", "margin:4px 0")).appendChild(el("span", "", "Padanan tidak ditemukan", "bd-sent bd-none"));
+        two.appendChild(l); two.appendChild(r); w.appendChild(two);
+        var n = el("div", "font-size:13.5px;line-height:1.55"); n.appendChild(el("span", "", STX[it.status][0], "bd-st " + STX[it.status][1])); n.appendChild(document.createTextNode(" " + (it.reasons || []).join(" "))); w.appendChild(n);
+        (it.tags || []).forEach(function (g) {
+          var t = el("div", "margin-top:6px;font-size:13px;line-height:1.55"); t.appendChild(el("b", "", g.label + ". ")); t.appendChild(el("span", "", "Perbaiki: " + g.fix + " "));
+          t.appendChild(el("span", "color:#ff8aa5", "Jangan: " + g.jangan)); w.appendChild(t);
+        });
+        c.appendChild(w);
+      });
+      box.appendChild(c);
+    });
+    box.appendChild(el("div", "font-size:12.5px;opacity:.8;border:1px dashed currentColor;border-radius:10px;padding:8px 10px", "Pembanding menilai pola kalimat memakai pedoman Bedah. Ini bukan skor Drillbit UT dan bukan jaminan lolos. Penilaian akhir tetap dari laporan UT yang baru."));
+  }
+
+  /* ---------- Banding laporan UT pertama vs kedua ---------- */
+  var LST = { hilang: ["Sudah hilang", "bd-good"], masih: ["Masih ditandai", "bd-bad"], sebagian: ["Sebagian masih ditandai", "bd-warn"], baru: ["Baru muncul", "bd-warn"] };
+  function setupLap(tk) {
+    $("lapCard").style.display = "";
+    var f = $("lapFile"), go = $("lapGo"), err = $("lapErr");
+    f.onchange = function () { err.classList.add("hidden"); var x = f.files[0]; if (x && (!/\.pdf$/i.test(x.name) || x.size > 10 * 1048576)) { err.textContent = "Pilih PDF laporan AI, maksimal 10 MB."; err.classList.remove("hidden"); f.value = ""; } go.disabled = !f.files[0]; };
+    go.onclick = function () {
+      err.classList.add("hidden"); go.disabled = true; $("lapOut").textContent = "Membandingkan…";
+      var fd = new FormData(); fd.append("file", f.files[0]);
+      fetch("/ms/bedah/banding-laporan/" + tk, { method: "POST", body: fd }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+        .then(function (x) { go.disabled = false; if (!x.ok) { $("lapOut").textContent = ""; err.textContent = x.j.error || "Gagal membandingkan."; err.classList.remove("hidden"); return; } renderLap(x.j); })
+        .catch(function () { go.disabled = false; $("lapOut").textContent = ""; err.textContent = "Koneksi terputus. Coba lagi."; err.classList.remove("hidden"); });
+    };
+  }
+  function renderLap(j) {
+    var box = $("lapOut"); box.innerHTML = ""; var s = j.summary;
+    var row = el("div", "display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px");
+    [["hilang", s.hilang], ["masih", s.masih], ["baru", s.baru]].forEach(function (a) { row.appendChild(el("span", "", LST[a[0]][0] + ": " + a[1] + " kalimat", "bd-st " + LST[a[0]][1])); });
+    box.appendChild(row);
+    box.appendChild(el("div", "font-size:13px;opacity:.8;margin-bottom:10px", "Laporan pertama menandai " + s.before + " kalimat, laporan kedua " + s.after + " kalimat."));
+    j.blocks.forEach(function (b) {
+      var c = el("div", "border:1px solid var(--line,#2b2b58);border-radius:12px;padding:12px;margin-bottom:10px");
+      var h = el("div", "display:flex;gap:8px;flex-wrap:wrap;align-items:center"); h.appendChild(el("b", "", "Blok UT " + b.block + " (laporan pertama)")); h.appendChild(el("span", "", LST[b.status][0], "bd-st " + LST[b.status][1])); c.appendChild(h);
+      j.rows.filter(function (r) { return r.block === b.block; }).forEach(function (r) {
+        var w = el("div", "border-top:1px solid var(--line,#2b2b58);padding-top:8px;margin-top:8px"); w.appendChild(el("span", "", LST[r.status][0], "bd-st " + LST[r.status][1]));
+        w.appendChild(el("p", "margin:6px 0 0")).appendChild(el("span", "", r.text, "bd-ut"));
+        if (r.now) { w.appendChild(el("div", "font-size:12px;opacity:.7;margin-top:6px", "Di laporan kedua (blok " + r.nowBlock + ")")); w.appendChild(el("p", "margin:4px 0 0")).appendChild(el("span", "", r.now, "bd-sent bd-bad")); }
+        c.appendChild(w);
+      });
+      box.appendChild(c);
+    });
+    if (j.baru.length) {
+      var nb = el("div", "border:1px solid var(--line,#2b2b58);border-radius:12px;padding:12px;margin-bottom:10px"); nb.appendChild(el("b", "", "Kalimat baru yang ditandai di laporan kedua (" + j.baru.length + ")"));
+      j.baru.slice(0, 30).forEach(function (r) { nb.appendChild(el("p", "margin:8px 0 0")).appendChild(el("span", "", r.text, "bd-sent bd-warn")); });
+      if (j.baru.length > 30) nb.appendChild(el("div", "font-size:12.5px;opacity:.75;margin-top:6px", "Dan " + (j.baru.length - 30) + " kalimat lainnya."));
+      box.appendChild(nb);
+    }
+    box.appendChild(el("div", "font-size:12.5px;opacity:.8;border:1px dashed currentColor;border-radius:10px;padding:8px 10px", "Pencocokan memakai kemiripan kata, jadi kalimat yang direvisi tipis tetap dianggap sama. Ini bukan skor resmi UT."));
+  }
+
   /* ---------- hasil lengkap (sesudah bayar) ---------- */
   var tk = (location.search.match(/[?&]t=([0-9a-f]{20,})/) || [])[1];
   if (tk) {
-    $("s1").classList.add("hidden"); $("s3").classList.remove("hidden");
+    $("s1").classList.add("hidden"); $("perbaiki").classList.add("hidden"); $("s3").classList.remove("hidden");
     fetch("/ms/bedah/report/" + tk, { cache: "no-store" }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); }).then(function (x) {
       $("pload").classList.add("hidden");
       if (!x.ok) { $("pbody").appendChild(el("div", "color:#ff8aa5", x.j.error || "Hasil tidak bisa dibuka.")); return; }
       var j = x.j; $("pt").textContent = j.title || "Hasil lengkap"; $("pmeta").textContent = rp(j.words) + " kata isi · " + j.total + " kalimat ditandai UT · file dihapus otomatis pada " + new Date(j.deleteAt).toLocaleString("id-ID");
-      $("dl").href = "/ms/bedah/download/" + tk;
+      $("dl").href = "/ms/bedah/download/" + tk; setupBand(tk); setupLap(tk);
       var b = $("pbody"); b.innerHTML = "";
       var rg = el("div", "display:flex;flex-wrap:wrap;gap:16px;margin-bottom:12px"); renderRings({ ut: j.ut && { pct: j.ut.pct, matchedWords: j.ut.matchedWords, totalWords: j.ut.totalWords, blocks: j.ut.blocks || [] }, sim: j.sim }, rg); b.appendChild(rg);
       var pk = el("div", "margin:10px 0"); protokolBox(j.protokol, pk); b.appendChild(pk);
       var bl = el("div"); blockList(j.blocks, bl); b.appendChild(bl);
       b.appendChild(el("h3", "margin:14px 0 6px", "Semua kalimat yang ditandai UT (" + j.total + ")"));
-      j.findings.forEach(function (f) { b.appendChild(findingNode(f, false)); });
+      var fp = el("div"); b.appendChild(fp); pager(j.findings, 5, fp, function (f) { return findingNode(f, false); });
       if (j.sim) { var sb = el("div", "margin-top:14px"); sb.appendChild(el("h3", "margin:0 0 6px", "Laporan Similarity")); var sx = el("div"); simBody(j.sim, sx); sb.appendChild(sx); b.appendChild(sb); }
     }).catch(function () { $("pload").textContent = "Koneksi terputus. Muat ulang halaman."; });
   };

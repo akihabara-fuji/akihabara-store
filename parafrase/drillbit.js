@@ -181,4 +181,8 @@ function mapBlocks(blocks, paragraphs, splitSentences) {
 }
 function sum(a) { return a.reduce((n, h) => n + h.words, 0); }
 
-module.exports = { detectKind, parseAi, parseSim, mapBlocks, kindOf };
+/* Teks halaman pertama laporan (untuk mencari nama/NIM bila sampul dokumen tidak memuatnya). Gagal baca = string kosong. */
+async function headText(buf) {
+  try { return await withTmp(buf, async f => String(await run("pdftotext", ["-f", "1", "-l", "1", "-layout", f, "-"])).slice(0, 4000)); } catch { return ""; }
+}
+module.exports = { headText, detectKind, parseAi, parseSim, mapBlocks, kindOf };

@@ -3,7 +3,7 @@
 
 const WA = /^\d{8,15}$/;
 const DEFS = {
-  price_per_word:               { type: "int",  min: 1, max: 1000, def: 40, pub: true },
+  price_per_word:               { type: "int",  min: 1, max: 1000, def: 30, pub: true },
   min_order_price:              { type: "int",  min: 0, max: 10000000, def: 40000, pub: true },
   fast_lane_enabled:            { type: "bool", def: true, pub: true },
   fast_lane_price:              { type: "int",  min: 0, max: 1000000, def: 40000, pub: true },
@@ -27,9 +27,11 @@ const DEFS = {
   ca_tiktok_url:                { type: "url",  allowEmpty: true, def: "", pub: true },
   ca_facebook_url:              { type: "url",  allowEmpty: true, def: "", pub: true },
   qris_merchant_name:           { type: "str",  re: /^[\p{L}\p{N} .,&'-]{0,60}$/u, allowEmpty: true, def: "CATATAN TERBUKA", pub: true },
-  ca_tema:                      { type: "str",  re: /^[a-z]{3,12}$/, def: "bawaan" },   // ID paket tema (parafrase/tema.js); ID asing dibaca sebagai bawaan
+  ca_tema:                      { type: "str",  re: /^[a-z]{3,12}$/, def: "baru" },   // ID paket tema (parafrase/tema.js); ID asing dibaca sebagai paket aktif (baru). "bawaan" = tema lama
   price_tugas:                  { type: "int",  min: 0, max: 100000000, def: 35000, pub: true },
   price_diskusi:                { type: "int",  min: 0, max: 100000000, def: 20000, pub: true },
+  price_makalah:                { type: "int",  min: 0, max: 100000000, def: 45000, pub: true },
+  price_jurnal:                 { type: "int",  min: 0, max: 100000000, def: 45000, pub: true },
   price_metopen1:               { type: "int",  min: 0, max: 100000000, def: 300000, pub: true },
   price_metopen2:               { type: "int",  min: 0, max: 100000000, def: 250000, pub: true },
   price_metopen3:               { type: "int",  min: 0, max: 100000000, def: 350000, pub: true },
@@ -40,9 +42,9 @@ const DEFS = {
   price_revisi_metopen:         { type: "int",  min: 0, max: 100000000, def: 99000, pub: true },
   audit_per_word:               { type: "int",  min: 0, max: 100000000, def: 9, pub: true },
   audit_min:                    { type: "int",  min: 0, max: 100000000, def: 35000, pub: true },
-  bedah_harga_per_blok:         { type: "int",  min: 0, max: 100000000, def: 5000, pub: true },    // Bedah Laporan Penelitian UT: harga per blok kata isi (semua temuan + file Word berwarna)
-  bedah_blok_kata:              { type: "int",  min: 100, max: 100000, def: 500, pub: true },      // ukuran blok; kata dihitung dari isi: tanpa sampul, daftar isi, daftar pustaka
-  bedah_gratis_temuan:          { type: "int",  min: 0, max: 100, def: 10, pub: true },            // temuan terberat yang terbuka lengkap gratis
+  bedah_gratis_kata:            { type: "int",  min: 0, max: 100000, def: 500, pub: true },        // Bedah: kata isi pertama yang rekomendasinya terbuka gratis (sisanya diburamkan)
+  bedah_harga_per_1000:         { type: "int",  min: 0, max: 100000000, def: 10000, pub: true },   // Bedah: harga per 1.000 kata isi di luar jatah gratis (dihitung per kata)
+  bedah_pembulatan:             { type: "int",  min: 1, max: 100000, def: 5000, pub: true },       // total dibulatkan ke atas ke kelipatan ini (Rp)
   drillbit_sim_max:             { type: "int",  min: 1, max: 100, def: 25, pub: true },
   drillbit_ai_max:              { type: "int",  min: 1, max: 100, def: 20, pub: true },
   /* Urgensi perbaikan (triage.js): dipakai Audit Dokumen dan Cek & Parafrase sekaligus, jadi keduanya selalu sepakat. */
@@ -66,7 +68,7 @@ const DEFS = {
   layanan_nonaktif:             { type: "str",  re: /^[a-z0-9_]+(,[a-z0-9_]+)*$/, allowEmpty: true, def: "tugas,diskusi,metopen1,metopen2,metopen3,metopen_paket,revisi_tugas,revisi_diskusi,revisi_metopen", pub: true }, // kode layanan yang ditutup, dipisah koma
 };
 /* Nama tampil tiap layanan (formulir, judul pesanan, daftar admin). Kosong = pakai nama bawaan di layanan.js. Diubah dari panel admin. */
-for (const k of ["tugas", "diskusi", "metopen1", "metopen2", "metopen3", "metopen4", "metopen_paket", "revisi_tugas", "revisi_diskusi", "revisi_metopen", "simulasi"])
+for (const k of ["tugas", "diskusi", "makalah", "jurnal", "metopen1", "metopen2", "metopen3", "metopen4", "metopen_paket", "revisi_tugas", "revisi_diskusi", "revisi_metopen", "simulasi"])
   DEFS["label_" + k] = { type: "str", re: /^[\p{L}\p{N} &.,()'+\/:-]{0,40}$/u, allowEmpty: true, def: "", pub: true };
 /* Kartu di halaman Layanan UT yang disembunyikan (kode kartu dipisah koma, mis. "semester,pengarahan"). */
 DEFS.kartu_sembunyi = { type: "str", re: /^[a-z_]+(,[a-z_]+)*$/, allowEmpty: true, def: "" };

@@ -47,14 +47,15 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
     const dl = Number(body.deadline);
     if (!Number.isFinite(dl) || dl <= now || dl > now + 120 * 86400e3) throw Object.assign(new Error("Deadline harus waktu yang belum lewat."), { status: 400 });
     const det = JSON.parse(up.detected);
-    const excl = body.excludeBib !== false && det.hasBibliography;
+    const cek = det.kind === "cek";  // alur laporan UT: bayar seluruh kata isi dokumen, tanpa jatah gratis
+    const excl = !cek && body.excludeBib !== false && det.hasBibliography;
     const words = excl ? det.wordsWithoutBibliography : det.words;
     const wantFast = body.fast === true;
     const unpaid = db.prepare("SELECT lane FROM orders WHERE wa_number=? AND status='menunggu_bayar' AND pay_expires_at>?").all(wa, now);
     if (unpaid.length >= 3) throw Object.assign(new Error("Kamu masih punya 3 pesanan yang belum dibayar. Selesaikan atau tunggu kedaluwarsa dulu."), { status: 429 });
     if (wantFast && unpaid.some(u => u.lane === "cepat")) throw Object.assign(new Error("Kamu masih punya pesanan jalur cepat yang belum dibayar. Selesaikan dulu atau pilih jalur biasa."), { status: 409 });
     if (wantFast && !(cfg.fast_lane_enabled && cfg.fast_lane_daily_cap > 0)) throw Object.assign(new Error("Jalur cepat sedang tidak tersedia."), { status: 409 });
-    const q = quote(words, wantFast, cfg);
+    const q = quote(words, wantFast, cek ? { ...cfg, free_words: 0 } : cfg);
     if (q.all_free) throw Object.assign(new Error(`Dokumenmu ${words} kata, jadi seluruhnya sudah terbuka gratis (${cfg.free_words} kata pertama). Tidak perlu membayar.`), { status: 400 });
     const title = String(body.title || det.title || "").trim().slice(0, 200);
     const lang = body.language === "en" ? "en" : "id";
@@ -91,12 +92,13 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
   }
 
   /* Audit Lengkap: memakai tabel pesanan dan alur QRIS yang sama (doc_type='audit'). Tarif tetap di sini, dihitung di server. */
-  /* Bedah Laporan Penelitian UT (doc_type='bedah'): sepuluh temuan terberat gratis; semua temuan + Word berwarna berbayar tetap.
-     Dua tingkat harga menurut jumlah kata isi (tanpa sampul, daftar isi, daftar pustaka). Semua angka dari pengaturan admin. */
+  /* Bedah Laporan Penelitian UT (doc_type='bedah'): rekomendasi pada kata isi pertama gratis, sisanya diburamkan sampai dibayar.
+     Harga dihitung per kata (bedah_harga_per_1000 / 1000) untuk kata di luar jatah gratis, lalu dibulatkan ke atas (bedah_pembulatan).
+     Kata isi: tanpa sampul, daftar isi, daftar pustaka. Semua angka dari pengaturan admin. */
   const bedahQuote = (words, cfg) => {
-    const blockWords = Number(cfg.bedah_blok_kata) || 500, per = Number(cfg.bedah_harga_per_blok) || 0;
-    const blocks = Math.max(1, Math.ceil((Number(words) || 0) / blockWords));
-    return { words, blocks, blockWords, limit: blocks * blockWords, total: blocks * per, free: Number(cfg.bedah_gratis_temuan) || 0 };
+    const w = Math.max(0, Number(words) || 0), free = Math.max(0, Number(cfg.bedah_gratis_kata) || 0), perK = Math.max(0, Number(cfg.bedah_harga_per_1000) || 0), round = Math.max(1, Number(cfg.bedah_pembulatan) || 1);
+    const paidWords = Math.max(0, w - free), raw = paidWords * perK / 1000;
+    return { words: w, freeWords: free, paidWords, perK, round, raw: Math.round(raw), total: paidWords ? Math.ceil(raw / round) * round : 0 };
   };
   function createBedahOrder(body, ipHash, now = Date.now(), buyer = null) {
     const cfg = settings.getAll();
@@ -507,6 +509,26 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
     } catch (e) { console.error("[parafrase] finalisasi gagal:", e && e.message); res.status(500).json({ error: "Gagal membuat file bersih." }); }
   });
 
-  return { createOrder, createAuditOrder, createBedahOrder, bedahQuote, auditRate, auditQuote, confirmPayment, rejectPayment, expireUnpaid, startWork, sweepRetention, byToken, event, view, priv };
+  /* Studio Parafrase: hasil kerja admin (DOCX berisi kalimat baru) dikirim ke mahasiswa lewat jalur yang sama dengan finalisasi biasa. */
+  async function deliverStudio(orderId, revisedBuf) {
+    const o = rowById(orderId);
+    if (!o || o.files_deleted_at) throw Object.assign(new Error("Pesanan tidak ditemukan atau file sudah dihapus."), { status: 404 });
+    if (!["baru_dibayar", "dianalisis", "dikerjakan", "cek_ulang", "terkirim"].includes(o.status)) throw Object.assign(new Error("Pesanan belum bisa menerima hasil (status: " + o.status + ")."), { status: 409 });
+    await analyze(revisedBuf);
+    fs.mkdirSync(priv("revised"), { recursive: true }); fs.mkdirSync(priv("results"), { recursive: true });
+    const rrel = `revised/${o.id}.docx`, rel = `results/${o.id}.docx`;
+    await fsp.writeFile(priv(rrel), revisedBuf, { mode: 0o600 });
+    const clean = await wordtools.acceptAndClean(revisedBuf);
+    await analyze(clean);
+    await fsp.writeFile(priv(rel), clean, { mode: 0o600 });
+    const cfg = settings.getAll(), now = Date.now(), resend = o.status === "terkirim";
+    db.prepare("UPDATE orders SET revised_path=?, status='terkirim', result_path=?, result_name=?, sent_at=?, delete_at=?, reminder_sent_at=NULL, revision_no=revision_no+?, updated_at=? WHERE id=?")
+      .run(rrel, rel, `${slug(o.title)} - Catatan Akademik.docx`, now, now + cfg.retention_hours * 3600e3, resend ? 1 : 0, now, o.id);
+    event(o.id, resend ? "hasil_dikirim_ulang" : "hasil_dikirim", "studio", now);
+    notifier.send("selesai", rowById(o.id), now);
+    return rowById(o.id);
+  }
+
+  return { createOrder, createAuditOrder, createBedahOrder, bedahQuote, auditRate, auditQuote, confirmPayment, rejectPayment, expireUnpaid, startWork, sweepRetention, byToken, event, view, priv, deliverStudio, rowById };
 
 };

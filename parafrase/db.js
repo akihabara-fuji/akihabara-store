@@ -282,6 +282,51 @@ const MIGRATIONS = [
   `
   ALTER TABLE kalibrasi ADD COLUMN verdict TEXT;
   `,
+  /* pustaka dokumen admin: file yang disimpan pemilik, 30 hari kecuali disematkan */
+  `
+  CREATE TABLE doc_library (
+    id         TEXT PRIMARY KEY,
+    name       TEXT NOT NULL,
+    title      TEXT NOT NULL DEFAULT '',        -- judul dokumen/penelitian
+    kind       TEXT NOT NULL DEFAULT 'lain',   -- bedah | parafrase | metopen | lain
+    ai_pct     REAL,                           -- persen AI Drillbit (laporan atau isian manual)
+    sim_pct    REAL,                           -- persen similarity Drillbit
+    target_ai  REAL,                           -- batas AI yang dituju
+    target_sim REAL,                           -- batas similarity yang dituju
+    note       TEXT NOT NULL DEFAULT '',
+    size       INTEGER NOT NULL,
+    path       TEXT NOT NULL,                  -- relatif ke data/private
+    ai_path    TEXT,                           -- laporan AI Drillbit (PDF), dari Bedah
+    sim_path   TEXT,                           -- laporan similarity Drillbit (PDF), dari Bedah
+    words      INTEGER,
+    student_key  TEXT,                         -- nim:… atau wa:… (pengelompokan satu mahasiswa)
+    student_name TEXT,
+    nim          TEXT,
+    wa           TEXT,                         -- 62812…
+    status       TEXT NOT NULL DEFAULT 'baru', -- baru | diproses | perbaikan_dikirim | revisi
+    revision_no  INTEGER NOT NULL DEFAULT 0,   -- 0 = unggahan pertama, 1 = revisi ke-1, dst
+    fix_path     TEXT,                         -- file perbaikan yang dikirim admin
+    fix_name     TEXT,
+    fix_sent_at  INTEGER,
+    data       TEXT,                           -- JSON hasil baca laporan (angka, blok, sumber)
+    source     TEXT NOT NULL DEFAULT 'manual', -- manual | pesanan | bedah
+    order_id   TEXT,
+    pinned     INTEGER NOT NULL DEFAULT 0,
+    created_at INTEGER NOT NULL,
+    expires_at INTEGER NOT NULL
+  );
+  CREATE INDEX doc_library_at ON doc_library(created_at);
+  CREATE INDEX doc_library_student ON doc_library(student_key);
+  `,
+  /* Perbaikan: migrasi pustaka dokumen pernah diubah di tempat, jadi server yang sudah melewatinya tidak punya kolom-kolom ini
+     (error "no such column: student_key" saat simpan ke Dokumen Saya). Melengkapi kolom yang hilang, aman dijalankan ulang. */
+  db => {
+    const have = new Set(db.prepare("PRAGMA table_info(doc_library)").all().map(c => c.name));
+    const cols = [["ai_path", "TEXT"], ["sim_path", "TEXT"], ["words", "INTEGER"], ["student_key", "TEXT"], ["student_name", "TEXT"], ["nim", "TEXT"], ["wa", "TEXT"],
+      ["status", "TEXT NOT NULL DEFAULT 'baru'"], ["revision_no", "INTEGER NOT NULL DEFAULT 0"], ["fix_path", "TEXT"], ["fix_name", "TEXT"], ["fix_sent_at", "INTEGER"], ["data", "TEXT"]];
+    for (const [n, t] of cols) if (!have.has(n)) db.exec(`ALTER TABLE doc_library ADD COLUMN ${n} ${t}`);
+    db.exec("CREATE INDEX IF NOT EXISTS doc_library_student ON doc_library(student_key)");
+  },
 ];
 
 
@@ -299,7 +344,7 @@ function migrate(db) {
   const cur = db.pragma("user_version", { simple: true });
   for (let v = cur; v < MIGRATIONS.length; v++) {
     db.transaction(() => {
-      db.exec(MIGRATIONS[v]);
+      if (typeof MIGRATIONS[v] === "function") MIGRATIONS[v](db); else db.exec(MIGRATIONS[v]);
       db.pragma(`user_version = ${v + 1}`);
     })();
   }

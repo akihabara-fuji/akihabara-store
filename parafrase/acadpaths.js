@@ -6,13 +6,14 @@
 const clean = u => String(u || "").replace(/\/+$/, "");
 const SHORT = !!process.env.ACAD_URL && clean(process.env.ACAD_URL) !== clean(process.env.SITE_URL || "https://nextaja.com");
 
-const PAGES = "tentang|audit-parafrase|cek-parafrase-mandiri|audit|bedah-laporan|layanan|blog-ut|pesanan|kalkulator-nilai-ut|pasfoto-yudisium|buat-cv-ats|sampul-tugas|surat-lamaran|tracker-kelulusan|kalender-akademik|panduan-maba|sitasi-apa|koin|portal-ut";
+const PAGES = "tentang|audit-parafrase|cek-parafrase-mandiri|audit|bedah-laporan|layanan|tutorial-online|blog-ut|pesanan|kalkulator-nilai-ut|sampul-tugas|tracker-kelulusan|kalender-akademik|panduan-maba|sitasi-apa|koin|portal-ut|grup";
 const RE_PAGE = new RegExp(`/ruangakademikut/(${PAGES})`, "g");
 
 function shortPaths(s) {
   return String(s)
     .replace(/\/ruangakademikut\/assets\//g, "/assets/ut/")
     .replace(/\/ruangakademikut\/img\//g, "/assets/ut/img/")
+    .replace(/\/ruangakademikut\/(?=#)/g, "/layanan-ut")
     .replace(RE_PAGE, "/$1")
     .replace(/(https?:\/\/[^"'\s<]+?)\/ruangakademikut(?=["'<\s?#)])/g, "$1/layanan-ut")
     .replace(/(["'(=])\/ruangakademikut(?=["'<\s?#)])/g, "$1/layanan-ut");

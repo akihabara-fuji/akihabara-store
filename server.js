@@ -293,7 +293,7 @@ app.use((req, res, next) => (ACAD_HOSTS.length && req.hostname === "www." + new 
 const TEMPLATE = path.join(PUB, "index.html");
 app.get("/robots.txt", (req, res) => {
   const base = isAcadHost(req) ? ACAD : SITE;
-  res.type("text/plain").send(`User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /ms/\n\nSitemap: ${base}/sitemap.xml\n`);
+  res.type("text/plain").send(`User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /ms/\nDisallow: /grup\nDisallow: /go/\n\nSitemap: ${base}/sitemap.xml\n`);
 });
 app.get("/sitemap.xml", (req, res) => {
   const urls = ACAD === SITE
@@ -326,8 +326,14 @@ app.get(/^\/admin\/(parafrase|layanan)\/?$/, (req, res, next) => (ACAD_HOSTS.len
 const extra = require("./blog-akun")({ app, express, requireAdmin, sameOrigin, getCookie, SECURE_COOKIE, ROOT, SITE: ACAD, getSettings: () => store.settings, getCa: k => (typeof pf !== "undefined" && pf.settings ? pf.settings.get(k) : ""), getTexts: () => (typeof pf !== "undefined" ? pf.texts : null), });
 
 /* ---------------- Cek dan Parafrase Mandiri (modul terpisah, lihat parafrase/) ---------------- */
-/* unggah dan audit gratis tanpa akun; login baru diminta saat memesan/membayar */
+/* semua layanan (Bedah, Cek & Parafrase, Audit, pesanan) wajib login: alamat email dipakai untuk kabar dan info layanan */
 const needLogin = (req, res, next) => (extra.userFrom(req) ? next() : res.status(401).json({ error: "Masuk dulu untuk memesan.", login: true }));
+const needLoginUse = (req, res, next) => (extra.userFrom(req) ? next() : res.status(401).json({ error: "Masuk atau daftar dulu untuk memakai layanan ini.", login: true }));
+app.post("/ms/bedah/upload", needLoginUse);
+app.post("/ms/cek/upload", needLoginUse);
+app.post("/ms/parafrase/upload", needLoginUse);
+app.post("/ms/parafrase/drillbit/:id", needLoginUse);
+app.post("/ms/audit/upload", needLoginUse);
 app.post("/ms/parafrase/order", needLogin);
 app.post("/ms/layanan/order", needLogin);
 app.post("/ms/audit/order", needLogin);

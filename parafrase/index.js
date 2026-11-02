@@ -15,6 +15,7 @@ const mountPages = require("./pages");
 const createTexts = require("./sitetexts");
 const mountAudit = require("./audit");
 const mountBedah = require("./bedah");
+const mountDokumen = require("./dokumen");
 const mountLayanan = require("./layanan");
 const mountOrders = require("./orders");
 const createTraffic = require("./traffic").create;
@@ -73,14 +74,52 @@ else if(/\\/(?:ruangakademikut\\/)?(layanan|cek-parafrase-mandiri|audit)(?:[\\/?
     if (!want || want !== req.params[0]) return res.status(404).end();
     res.type("text/html").send("google-site-verification: " + want);
   });
-  const uploads = mountUploads({ app, db, settings, root: ROOT, sameOrigin: sameOrigin || (() => true), secret });
+  const dokumen = mountDokumen({ app, express, db, root: ROOT, requireAdmin });
+  const uploads = mountUploads({ library: dokumen, userFrom, app, db, settings, root: ROOT, sameOrigin: sameOrigin || (() => true), secret });
   const notifier = createNotifier({ db, settings });
   const orders = mountOrders({ app, express, db, settings, notifier, root: ROOT, sameOrigin: sameOrigin || (() => true), requireAdmin, secret, userFrom });
-  mountAudit({ app, express, db, settings, orders, root: ROOT, sameOrigin: sameOrigin || (() => true), secret, userFrom });
-  mountBedah({ app, express, db, settings, orders, root: ROOT, sameOrigin: sameOrigin || (() => true), secret, requireAdmin, userFrom });
+  mountAudit({ library: dokumen, app, express, db, settings, orders, root: ROOT, sameOrigin: sameOrigin || (() => true), secret, userFrom });
+  mountBedah({ library: dokumen, app, express, db, settings, orders, root: ROOT, sameOrigin: sameOrigin || (() => true), secret, requireAdmin, userFrom });
   const traffic = createTraffic(db, { secret });
+  /* Tautan pendek grup WhatsApp: /grup?dari=menu|banner|artikel|panduan. Klik dihitung per asal (tanpa IP, tanpa cookie), lalu dialihkan ke tautan di pengaturan. */
+  const SRC = new Set(["menu", "banner", "artikel", "panduan", "beranda", "alat", "blog"]);
+  /* Panduan terpopuler 30 hari terakhir (dari statistik pengunjung) untuk beranda. */
+  app.locals.acadTop = (n = 6) => traffic.summary(30).pages.filter(x => /^\/blog\/[a-z0-9-]+$/.test(x.path)).map(x => ({ slug: x.path.slice(6), views: x.views })).map(x => ({ slug: x.slug, title: typeof app.locals.acadPostTitle === "function" ? app.locals.acadPostTitle(x.slug) : null })).filter(x => x.title).slice(0, n);
+  const clickGrup = db.prepare("INSERT INTO pv_day(day,path,views) VALUES(?,?,1) ON CONFLICT(day,path) DO UPDATE SET views=views+1");
+  /* Hitung pemakaian alat tanpa menyimpan isian atau identitas: hanya jumlah per hari. Dibatasi 30 kiriman per menit per alamat. */
+  const EV = new Set(["kalkulator", "checklist"]), evHit = new Map();
+  app.post("/ms/ev", (req, res) => {
+    const e = String(req.query.e || ""), ip = String(req.ip || ""), m = Math.floor(Date.now() / 6e4), k = ip + m;
+    if (evHit.size > 5000) evHit.clear();
+    evHit.set(k, (evHit.get(k) || 0) + 1);
+    if (!EV.has(e) || evHit.get(k) > 30 || /bot|crawl|spider|curl|python|headless/i.test(String(req.headers["user-agent"] || ""))) return res.status(204).end();
+    try { clickGrup.run(new Date(Date.now() + 7 * 3600e3).toISOString().slice(0, 10), "/event/" + e); } catch { /* abaikan */ }
+    res.status(204).end();
+  });
+  app.get(["/grup", "/ruangakademikut/grup"], (req, res) => {
+    const url = String(settings.get("update_group_url") || "");
+    if (!/^https:\/\/chat\.whatsapp\.com\//.test(url)) return res.redirect(302, "/panduan-maba");
+    const ua = String(req.headers["user-agent"] || "");
+    if (ua && !/bot|crawl|spider|preview|curl|wget|python|headless/i.test(ua)) {
+      const d = new Date(Date.now() + 7 * 3600e3).toISOString().slice(0, 10), src = SRC.has(req.query.dari) ? req.query.dari : "lain";
+      try { clickGrup.run(d, "/klik-grup/" + src); } catch { /* statistik tidak boleh menghalangi pengunjung */ }
+    }
+    res.set({ "Cache-Control": "no-store", "X-Robots-Tag": "noindex" }).redirect(302, url);
+  });
+  /* Tautan pelacak sosmed: /go/<ig|fb|tt>/<slug> dihitung per platform di statistik, lalu diarahkan ke artikel dengan UTM. */
+  const GO = { ig: "instagram", fb: "facebook", tt: "tiktok", li: "linkedin" };
+  app.get("/go/:src/:slug", (req, res) => {
+    const src = GO[req.params.src], slug = String(req.params.slug || "");
+    if (!src || !/^[a-z0-9][a-z0-9-]{0,118}$/.test(slug)) return res.redirect(302, "/blog");
+    const ua = String(req.headers["user-agent"] || "");
+    if (ua && !/bot|crawl|spider|preview|curl|wget|python|headless/i.test(ua)) {
+      const d = new Date(Date.now() + 7 * 3600e3).toISOString().slice(0, 10);
+      try { clickGrup.run(d, "/klik-sosmed/" + src); } catch { /* statistik tidak boleh menghalangi pengunjung */ }
+    }
+    res.set({ "Cache-Control": "no-store", "X-Robots-Tag": "noindex" }).redirect(302, `/blog/${slug}?utm_source=${src}&utm_medium=social&utm_campaign=studio`);
+  });
   mountLayanan({ app, express, db, settings, orders, root: ROOT, sameOrigin: sameOrigin || (() => true), secret, requireAdmin, userFrom });
-  const t = setInterval(() => { uploads.purgeExpired().catch(() => {}); orders.expireUnpaid().catch(() => {}); orders.sweepRetention().catch(() => {}); }, 10 * 60 * 1000); t.unref();
+  const t = setInterval(() => { uploads.purgeExpired().catch(() => {}); orders.expireUnpaid().catch(() => {}); orders.sweepRetention().catch(() => {}); dokumen.purgeExpired().catch(() => {}); }, 10 * 60 * 1000); t.unref();
   const t2 = setInterval(() => notifier.flush().catch(() => {}), 30 * 1000); t2.unref();
 
   return { db, settings, uploads, orders, notifier, texts, pages, traffic };

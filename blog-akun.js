@@ -112,6 +112,8 @@ module.exports = function mount(ctx) {
   if (ACAD_ONLY && !blog.authorTim) { blog.posts.forEach(x => { if (!x.author || x.author === "dk") x.author = "Tim Catatan Akademik"; }); blog.authorTim = true; saveBlog(); }
   /* Topik di luar fokus akademik UT: tetap bisa dibaca, tetapi noindex dan tidak masuk sitemap agar otoritas topik situs tidak kabur. */
   const OFF_TOPIC = ACAD_ONLY ? ["social", "ai", "viral"] : [];
+  /* Redirect 301 artikel yang digabung: seed/redirects.json = { "slug-lama": "slug-tujuan" }. Slug lama tidak pernah ditampilkan di daftar, sitemap, atau pencarian. */
+  const REDIR = (() => { if (!ACAD_ONLY) return {}; try { return JSON.parse(fs.readFileSync(path.join(ROOT, "seed", "redirects.json"), "utf8")); } catch { return {}; } })();
   const ACAD_TOPICS = Object.keys(TOPICS); // semua kategori boleh dipilih penulis; yang tampil sebagai filter hanya yang sudah punya artikel
   const ACAD_HOST = (() => { try { return new URL(process.env.ACAD_URL || "").host; } catch { return ""; } })();
   const onAcadHost = req => ACAD_ONLY && !!ACAD_HOST && String(req.headers.host || "").toLowerCase() === ACAD_HOST.toLowerCase();
@@ -136,7 +138,7 @@ module.exports = function mount(ctx) {
   const rebrand = h => (ACAD_ONLY ? TEMA.inject(shortPath(caBrand(String(h).replace(/(?<![\w./@-])nextaja(?![\w-]|\.\w)/gi, BRAND))), ctx.getCa && ctx.getCa("ca_tema")) : h);
   /* Terjadwal = tampil otomatis saat publishAt lewat (tanpa cron). Draf, review, dan terjadwal yang belum waktunya tidak pernah tampil publik. */
   const isLive = (p, now = Date.now()) => !p.trashedAt && (p.status === "published" || (p.status === "scheduled" && Date.parse(p.publishAt) <= now));
-  const published = () => blog.posts.filter(p => isLive(p) && (!ACAD_ONLY || ACAD_TOPICS.includes(p.topic))).sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+  const published = () => blog.posts.filter(p => isLive(p) && (!ACAD_ONLY || ACAD_TOPICS.includes(p.topic)) && !Object.prototype.hasOwnProperty.call(REDIR, p.slug)).sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
   const modifiedAt = p => p.contentUpdatedAt || p.updatedAt || p.publishedAt;
   const readMin = p => Math.max(1, Math.round(String(p.body || "").replace(/!\[[^\]]*\]\([^)]*\)/g, " ").split(/\s+/).filter(Boolean).length / 200));
   const norm = s => String(s || "").toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "");
@@ -146,6 +148,7 @@ module.exports = function mount(ctx) {
   const wib = iso => { const d = new Date(new Date(iso).getTime() + 7 * 3600e3); return { y: d.getUTCFullYear(), m: d.getUTCMonth(), d: d.getUTCDate() }; };
   const weekOf = day => Math.min(4, Math.ceil(day / 7));
   const titleRow = p => `<li><a href="/blog/${esc(p.slug)}"><time datetime="${esc(p.publishedAt)}">${esc(new Date(p.publishedAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", timeZone: "Asia/Jakarta" }))}</time><span class="t">${esc(p.title)}</span><span class="tag">${esc(tl(p.topic))}</span></a></li>`;
+  const SMARTNAV = '<script>(function(){var n=document.querySelector("header.nav,.nav");if(!n)return;var y=scrollY,t=0;function f(){t=0;var c=scrollY,d=c-y;if(Math.abs(d)<8)return;var o=n.querySelector(".links.open,.dd[open]")||n.contains(document.activeElement)&&document.activeElement!==document.body;if(c>120&&d>0&&!o)n.classList.add("nav-hide");else if(d<0||c<=120)n.classList.remove("nav-hide");y=c}addEventListener("scroll",function(){if(!t)t=requestAnimationFrame(f)},{passive:true})})()</script>';
   const groupedList = posts => {
     const months = new Map();
     for (const p of posts) { const w = wib(p.publishedAt), k = w.y * 12 + w.m; if (!months.has(k)) months.set(k, { w, weeks: new Map(), n: 0 }); const M = months.get(k), wk = weekOf(w.d); if (!M.weeks.has(wk)) M.weeks.set(wk, []); M.weeks.get(wk).push(p); M.n++; }
@@ -163,14 +166,16 @@ module.exports = function mount(ctx) {
   /* hi=true untuk gambar utama di layar pertama (kandidat LCP): dimuat segera dan diprioritaskan, bukan lazy. */
   const cardCover = (p, hi = false) => { const src = p.cover || autoCover(p); return src ? `<img src="${esc(src)}" alt="${esc(p.coverAlt || "")}" ${hi ? 'fetchpriority="high" decoding="async"' : 'loading="lazy" decoding="async"'}>` : posterHtml(p); };
   const blogCard = p => `<article class="bx-card"><a href="/blog/${esc(p.slug)}"><div class="bx-cv">${cardCover(p)}</div><div class="bx-b"><span class="bx-tag">${esc(tl(p.topic))}</span><h3>${esc(p.title)}</h3>${p.excerpt ? `<p>${esc(p.excerpt)}</p>` : ""}<div class="bx-ft"><span><time datetime="${esc(p.publishedAt)}">${esc(shortDate(p.publishedAt))}</time> · ${readMin(p)} menit baca</span><span class="bx-go">Baca <i aria-hidden="true">→</i></span></div></div></a></article>`;
-  const topicsShown = () => Object.keys(TOPICS).filter(k => !ACAD_ONLY || k === "study" || k === "updateut" || blog.posts.some(p => p.topic === k && isLive(p)));
+  /* Daftar publik (kartu, filter, tag, terkait, RSS ringkas): di domain akademik topik di luar fokus UT tidak ditampilkan. Alamat langsung artikelnya tetap bisa dibuka (noindex), jadi tidak ada tautan lama yang putus. */
+  const listed = () => published().filter(p => !OFF_TOPIC.includes(p.topic));
+  const topicsShown = () => Object.keys(TOPICS).filter(k => !ACAD_ONLY || k === "study" || k === "updateut" || (!OFF_TOPIC.includes(k) && blog.posts.some(p => p.topic === k && isLive(p))));
   const topTags = (posts, n) => { const c = new Map(); for (const p of posts) for (const t of p.tags || []) c.set(t, (c.get(t) || 0) + 1); return [...c.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, n).map(x => x[0]); };
   function blogFilters(req) {
     const f = TOPICS[req.query.f] && topicsShown().includes(req.query.f) ? req.query.f : "";
     return { f, tag: str(req.query.tag, 40).toLowerCase(), q: str(req.query.q, 80) };
   }
   function blogIndex(req, base) {
-    const { f, tag, q } = blogFilters(req), all = published();
+    const { f, tag, q } = blogFilters(req), all = listed();
     const list = all.filter(p => (!f || p.topic === f) && (!tag || (p.tags || []).includes(tag)) && matches(p, q));
     const filtering = !!(f || tag || q);
     const featured = filtering ? null : (all.find(p => p.featured) || all.find(p => p.cover) || all[0]);
@@ -192,14 +197,17 @@ module.exports = function mount(ctx) {
     const grid = latest.length ? `<div class="bx-grid">${latest.map(blogCard).join("")}</div>` : `<div class="bx-empty"><b>Belum ada artikel yang cocok.</b><span>Coba kata lain, atau <a href="${base}">lihat semua artikel</a>.</span></div>`;
     const more = filtering && list.length > latest.length ? `<p class="bx-more">Menampilkan ${latest.length} dari ${list.length}. Persempit pencarian untuk hasil yang lebih tepat.</p>` : "";
     const archive = !filtering && all.length > latest.length + 1 ? `<section class="bx-arch" aria-labelledby="bxArch"><div class="bx-head"><h2 id="bxArch">Arsip artikel</h2><span class="bx-count">${all.length} artikel</span></div><div class="blog-ctl"><button type="button" data-bx="open">Buka semua</button><button type="button" data-bx="close">Tutup semua</button></div>${groupedList(all)}<script>document.querySelectorAll("[data-bx]").forEach(function(b){b.onclick=function(){document.querySelectorAll(".bx-arch details").forEach(function(d){d.open=b.dataset.bx==="open"})}})</script></section>` : "";
-    return `<div class="bx">${hero}<section class="bx-list" aria-live="polite">${head}${grid}${more}</section>${archive}</div>`;
+    const grupOn = ACAD_ONLY && /^https:\/\/chat\.whatsapp\.com\//.test(String((ctx.getCa && ctx.getCa("update_group_url")) || "").trim());
+    const grupStrip = grupOn ? `<aside class="bx-grup" aria-label="Grup mahasiswa UT"><div><b>Cari grup mahasiswa UT?</b><span>Tanya registrasi, PKBJJ, jadwal, dan Tuton bersama mahasiswa lain. Bukan grup resmi UT.</span></div><a class="bx-grup-b" href="/grup?dari=blog" rel="nofollow">Gabung grup WhatsApp <i aria-hidden="true">→</i></a></aside>` : "";
+    return `<div class="bx">${hero}${grupStrip}<section class="bx-list" aria-live="polite">${head}${grid}${more}</section>${archive}</div><script>(function(){var i=document.getElementById("bxq");if(!i)return;var cs=[].slice.call(document.querySelectorAll(".bx-card,.blog-titles li")),n=document.querySelector(".bx-head .bx-count");i.addEventListener("input",function(){var q=i.value.toLowerCase().trim();if(q.length<2){cs.forEach(function(c){c.hidden=false});return}var k=0;cs.forEach(function(c){var m=c.textContent.toLowerCase().indexOf(q)>-1;c.hidden=!m;if(m)k++});[].forEach.call(document.querySelectorAll(".blog-week,.blog-month"),function(d){if(q.length>=2){d.open=!!d.querySelector("li:not([hidden])");d.hidden=!d.open}});if(n)n.textContent=k+" artikel cocok"})})()</script>${SMARTNAV}`;
   }
   app.locals.renderAcadBlogCards = req => blogIndex(req, "/blog-ut");
+  app.locals.acadPostTitle = slug => { const p = blog.posts.find(x => x.slug === slug && isLive(x)); return p ? p.title : null; };
   /* potongan HTML daftar untuk filter di halaman Update UT */
   app.get("/ms/blog/list-html", (req, res) => {
     res.set("Cache-Control", "no-cache");
     const f = TOPICS[req.query.f] || req.query.f === "ut" ? req.query.f : "";
-    const list = published().filter(p => !f || p.topic === f || (f === "ut" && (p.topic === "updateut" || p.topic === "study")));
+    const list = listed().filter(p => !f || p.topic === f || (f === "ut" && (p.topic === "updateut" || p.topic === "study")));
     res.json({ n: list.length, html: groupedList(list) });
   });
 
@@ -387,7 +395,7 @@ module.exports = function mount(ctx) {
   const STATUSES_POST = ["draft", "review", "scheduled", "published"];
   /* Hook layanan di artikel: ajakan ke satu layanan yang paling nyambung. Otomatis dari isi artikel; admin bisa pilih layanan lain, ubah kalimat, atau matikan per artikel. */
   const HOOKS = {
-    audit: { name: "Audit Dokumen", top: "Takut tugasmu kena similarity tinggi?", sub: "Cek 500 kata pertama gratis, lihat skornya sekarang.", btn: "Cek gratis", href: "/ruangakademikut/audit", side: "Periksa sitasi dan kalimat bermasalah sebelum dikumpulkan.", re: /plagiar|plagiat|similarity|parafrase|sitasi|kutipan|referensi|daftar pustaka|turnitin|orisinal/i },
+    audit: { name: "Cek & Parafrase Mandiri", top: "Takut tugasmu kena similarity tinggi?", sub: "Unggah dokumenmu, lihat bagian yang perlu diperbaiki, lalu admin yang memparafrase.", btn: "Cek dokumen", href: "/ruangakademikut/cek-parafrase-mandiri", side: "Periksa kalimat bermasalah sebelum dikumpulkan.", re: /plagiar|plagiat|similarity|parafrase|sitasi|kutipan|referensi|daftar pustaka|turnitin|orisinal/i },
     metopen: { name: "Metopen UT", top: "Bingung menyusun tugas metopen?", sub: "Pendampingan Tugas 1 sampai 3, per tahap atau paket.", btn: "Lihat metopen", href: "/ruangakademikut/layanan?s=metopen_paket", side: "Pendampingan Tugas 1 sampai 3, per tahap atau paket komplit.", re: /metopen|metodologi penelitian|proposal|rumusan masalah|kerangka teori|skripsi/i },
     diskusi: { name: "Diskusi", top: "Diskusi tuton belum terjawab?", sub: "Jawaban siap tempel dengan poin utama dan referensi yang bisa dicek.", btn: "Pesan diskusi", href: "/ruangakademikut/layanan?s=diskusi", side: "Jawaban diskusi siap tempel, dengan referensi yang bisa dicek.", re: /diskusi|tuton|tutorial online|forum/i },
     tugas: { name: "Tugas tutorial", top: "Tugas tutorial mepet deadline?", sub: "Dikerjakan sesuai soal dan format, kamu periksa dulu sebelum dikirim.", btn: "Pesan tugas", href: "/ruangakademikut/layanan?s=tugas", side: "Dikerjakan sesuai soal dan ketentuan format.", re: /tugas|deadline|nilai|ujian|uas|uts|jawaban/i },
@@ -475,6 +483,66 @@ module.exports = function mount(ctx) {
     if (posts.length) { blog.posts.push(...posts); try { await saveBlog(); } catch { blog.posts.splice(blog.posts.length - posts.length, posts.length); return res.status(500).json({ error: "Draf belum bisa disimpan. Coba lagi sebentar." }); } }
     res.json({ ok: true, created: posts.length, results });
   });
+  /* Draf bawaan rilis: file di seed/artikel/*.md masuk SEKALI sebagai draf (tidak pernah terbit sendiri). Nama file yang sudah pernah
+     dimasukkan dicatat di data/blog-seeded.json, jadi draf yang dihapus admin tidak muncul lagi. */
+  if (ACAD_ONLY) setTimeout(async () => {
+    try {
+      const dir = path.join(ROOT, "seed", "artikel"); if (!fs.existsSync(dir)) return;
+      const MARK = path.join(DATA_DIR, "blog-seeded.json"), done = new Set(readJson(MARK, []));
+      const files = fs.readdirSync(dir).filter(f => /\.md$/i.test(f) && !done.has(f)).map(f => ({ name: f, text: fs.readFileSync(path.join(dir, f), "utf8") }));
+      if (!files.length) return;
+      const { posts, results } = importMd.buildDrafts(files, {
+        existing: blog.posts.filter(x => !x.trashedAt), uniqueSlug, slugify, cleanTags, str, newId: () => crypto.randomBytes(6).toString("hex"),
+        topics: TOPICS, allowedTopics: null, defaultTopic: "study", author: DEFAULT_AUTHOR, by: "rilis", now: new Date().toISOString(),
+      });
+      if (posts.length) { blog.posts.push(...posts); await saveBlog(); }
+      for (const r of results) if (r.ok || r.skipped) done.add(r.name);
+      fs.writeFileSync(MARK, JSON.stringify([...done]));
+      console.log(`[blog] draf bawaan: ${posts.length} masuk`);
+    } catch (e) { console.error("[blog] draf bawaan gagal:", e && e.message); }
+  }, 3000);
+  /* Rapikan artikel yang sudah dialihkan (seed/redirects.json): artikel lamanya diarsipkan (masuk Sampah, bisa dipulihkan dari admin)
+     dan baris daftar "- [judul](.../blog/slug-lama)" dihapus dari artikel lain. Dijalankan SEKALI per isi redirects.json (dicatat di blog-seeded.json).
+     Cadangan blog.json dibuat otomatis oleh saveBlog. */
+  if (ACAD_ONLY) setTimeout(async () => {
+    try {
+      const keys = Object.keys(REDIR).sort(); if (!keys.length) return;
+      const MARK = path.join(DATA_DIR, "blog-seeded.json"), done = new Set(readJson(MARK, [])), tag = "migrasi-redirect:" + keys.join(",");
+      if (done.has(tag)) return;
+      const now = new Date().toISOString(); let arch = 0, lines = 0;
+      for (const k of keys) { const old = blog.posts.find(x => x.slug === k && !x.trashedAt); if (old) { old.trashedAt = now; arch++; } }
+      for (const x of blog.posts) {
+        if (!x.body || x.trashedAt) continue;
+        let b = x.body;
+        for (const k of keys) b = b.replace(new RegExp("^[ \\t]*[-*][ \\t]*\\[[^\\]\\n]*\\]\\([^)\\n]*/blog/" + k.replace(/[^a-z0-9-]/g, "") + "\\)[ \\t]*\\n?", "gm"), () => { lines++; return ""; });
+        if (b !== x.body) x.body = b;
+      }
+      if (arch || lines) await saveBlog();
+      done.add(tag); fs.writeFileSync(MARK, JSON.stringify([...done]));
+      console.log(`[blog] migrasi redirect: ${arch} diarsipkan, ${lines} tautan dibersihkan`);
+    } catch (e) { console.error("[blog] migrasi redirect gagal:", e && e.message); }
+  }, 5000);
+  /* Tautkan artikel saudara yang niatnya beda (bukan digabung): sebelum tenggat vs sesudah tenggat. Sekali saja (tercatat di blog-seeded.json). */
+  if (ACAD_ONLY) setTimeout(async () => {
+    try {
+      const PAIRS = [["panduan-deadline-tuton-ut", "tuton-ut-terlambat-belum-terkirim"], ["tuton-ut-terlambat-belum-terkirim", "panduan-deadline-tuton-ut"]];
+      const MARK = path.join(DATA_DIR, "blog-seeded.json"), done = new Set(readJson(MARK, [])), tag = "tautan-tuton-1";
+      if (done.has(tag)) return;
+      let n = 0;
+      for (const [from, to] of PAIRS) {
+        const a = blog.posts.find(x => x.slug === from && !x.trashedAt), b = blog.posts.find(x => x.slug === to && !x.trashedAt);
+        if (!a || !b || !a.body || a.body.includes("/blog/" + to)) continue;
+        const li = `- [${String(b.title).replace(/[\[\]]/g, "")}](https://catatanakademik.com/blog/${to})\n`;
+        if (/^## Baca juga[^\n]*\n\n/m.test(a.body)) a.body = a.body.replace(/^(## Baca juga[^\n]*\n\n)/m, "$1" + li);
+        else if (/^## Sumber/m.test(a.body)) a.body = a.body.replace(/^## Sumber/m, "## Baca juga\n\n" + li + "\n## Sumber");
+        else a.body = a.body.replace(/\s*$/, "\n\n## Baca juga\n\n" + li);
+        n++;
+      }
+      if (n) await saveBlog();
+      done.add(tag); fs.writeFileSync(MARK, JSON.stringify([...done]));
+      console.log(`[blog] tautan tuton: ${n} artikel diperbarui`);
+    } catch (e) { console.error("[blog] tautan tuton gagal:", e && e.message); }
+  }, 7000);
   /* Hanya tag (tanpa revisi dan tanpa mengubah tanggal "diperbarui", karena isi artikel tidak berubah). */
   app.post("/ms/admin/posts/:id/tags", requireAdmin, adminJson, async (req, res) => {
     const p = blog.posts.find(x => x.id === req.params.id); if (!p) return res.status(404).json({ error: "Tulisan tidak ditemukan." });
@@ -590,7 +658,7 @@ module.exports = function mount(ctx) {
     res.set("Cache-Control", "no-cache");
     const f = TOPICS[req.query.f] || req.query.f === "ut" ? req.query.f : "";
     const lim = Math.min(30, Math.max(1, parseInt(req.query.limit, 10) || 3));
-    const list = published().filter(p => !f || p.topic === f || (f === "ut" && (p.topic === "updateut" || p.topic === "study"))).slice(0, lim);
+    const list = listed().filter(p => !f || p.topic === f || (f === "ut" && (p.topic === "updateut" || p.topic === "study"))).slice(0, lim);
     res.json({ posts: list.map(p => ({ slug: p.slug, title: p.title, excerpt: p.excerpt, topic: tl(p.topic), cover: p.cover || autoCover(p), date: p.publishedAt })) });
   });
 
@@ -618,7 +686,7 @@ module.exports = function mount(ctx) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Bricolage+Grotesque:wght@600;700&display=swap" rel="stylesheet">
 <script>try{var t=localStorage.getItem("nx-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
-<link rel="stylesheet" href="/assets/blog.css?v=10"><link rel="stylesheet" href="/assets/ca-blog.css?v=15"><script async src="/t.js"></script>
+<link rel="stylesheet" href="/assets/blog.css?v=10"><link rel="stylesheet" href="/assets/ca-blog.css?v=16"><script async src="/t.js"></script>
 ${extra}
 </head>
 <body>
@@ -661,7 +729,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
     const body = `<section class="pg"><div class="wrap">${blogIndex(req, "/blog")}</div></section>`;
     const blogTitle = `${heading} — Blog ${ACAD_ONLY ? "Catatan Akademik" : "nextaja"}`;
     // halaman tag punya judul & deskripsi sendiri (bukan salinan beranda blog)
-    const tagCount = tag ? published().filter(p => (p.tags || []).includes(tag)).length : 0;
+    const tagCount = tag ? listed().filter(p => (p.tags || []).includes(tag)).length : 0;
     const blogDesc = tag ? `${tagCount} artikel Catatan Akademik tentang ${tagLabel(tag)} untuk mahasiswa Universitas Terbuka: panduan, tips, dan info terbaru.`
       : ACAD_ONLY ? "Info dan panduan kuliah Universitas Terbuka: jadwal, registrasi, ujian, tugas, Metopen, dan tips belajar dari Catatan Akademik." : "Catatan tentang belajar, social media, AI, dan berita viral hari ini dari nextaja.";
     // halaman pencarian dan tag kosong tidak diindeks; filter kategori/tag yang berisi tetap boleh
@@ -677,10 +745,10 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
   app.get("/tugas-ut", (req, res, next) => {
     if (!ACAD_ONLY) return next();
     const groups = CLUSTER.map(([label]) => ({ label, items: [] }));
-    for (const p of published()) { const i = clusterOf(p); if (i >= 0) groups[i].items.push(p); }
+    for (const p of listed()) { const i = clusterOf(p); if (i >= 0) groups[i].items.push(p); }
     const all = groups.flatMap(g => g.items);
     const mod = all.map(p => String(modifiedAt(p) || "").slice(0, 10)).filter(Boolean).sort().pop();
-    const tools = [["Audit Dokumen", "/ruangakademikut/audit", "Skor masalah dokumen menurut aturan modul, 500 kata pertama gratis."], ["Cek &amp; Parafrase Mandiri", "/ruangakademikut/cek-parafrase-mandiri", "Tandai kalimat yang terlalu mirip, lalu parafrase tanpa mengubah makna."], ["Bedah Laporan Penelitian UT", "/ruangakademikut/bedah-laporan", "Unggah laporan Drillbit dari UT, lihat kalimat yang ditandai dan cara memperbaikinya."], ["Kalkulator nilai UT", "/ruangakademikut/kalkulator-nilai-ut", "Hitung estimasi nilai akhir dan target IPK. Nilai resmi tetap dari MyUT."], ["Tracker Kelulusan &amp; IPK", "/ruangakademikut/tracker-kelulusan", "Pantau SKS dan IPK menuju kelulusan."], ["Kalender Akademik", "/ruangakademikut/kalender-akademik", "Jadwal dan tenggat yang sering terlewat."]];
+    const tools = [["Cek &amp; Parafrase Mandiri", "/ruangakademikut/cek-parafrase-mandiri", "Tandai kalimat yang terlalu mirip, lalu parafrase tanpa mengubah makna."], ["Bedah Laporan Penelitian UT", "/ruangakademikut/bedah-laporan", "Unggah laporan Drillbit dari UT, lihat kalimat yang ditandai dan cara memperbaikinya."], ["Kalkulator nilai UT", "/ruangakademikut/kalkulator-nilai-ut", "Hitung estimasi nilai akhir dan target IPK. Nilai resmi tetap dari MyUT."], ["Tracker Kelulusan &amp; IPK", "/ruangakademikut/tracker-kelulusan", "Pantau SKS dan IPK menuju kelulusan."], ["Kalender Akademik", "/ruangakademikut/kalender-akademik", "Jadwal dan tenggat yang sering terlewat."]];
     const sect = g => g.items.length ? `<section class="ax-box" style="margin:0 0 18px"><h2>${esc(g.label)}</h2><ul style="margin:0;padding-left:18px;line-height:1.9">${g.items.map(p => `<li><a href="/blog/${esc(p.slug)}">${esc(p.title)}</a></li>`).join("")}</ul></section>` : "";
     const ld = JSON.stringify({ "@context": "https://schema.org", "@graph": [
       { "@type": "CollectionPage", "name": "Panduan Tugas UT", "url": `${SITE}/tugas-ut`, "description": "Pusat panduan tugas, Tuton, nilai, dan Metopen untuk mahasiswa Universitas Terbuka.", "dateModified": mod, "isPartOf": { "@type": "WebSite", "name": BRAND, "url": `${SITE}/` }, "mainEntity": { "@type": "ItemList", "itemListElement": all.map((p, i) => ({ "@type": "ListItem", "position": i + 1, "url": `${SITE}/blog/${p.slug}`, "name": p.title })) } },
@@ -689,7 +757,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
       <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Beranda</a><span aria-hidden="true">/</span><span aria-current="page">Panduan Tugas UT</span></nav>
       <h1>Panduan Tugas UT: Tuton, Tugas Mandiri, dan Cara Mengeceknya</h1>
       <p class="bx-lead">Satu halaman untuk mulai: apa yang perlu disiapkan sebelum mengerjakan tugas UT, tulisan pendukung yang sudah kami terbitkan, dan alat untuk memeriksa tugasmu sebelum dikumpulkan.</p>
-      <section class="ax-box" style="margin:0 0 18px"><h2>Urutan kerja yang aman</h2><ol style="margin:0;padding-left:20px;line-height:1.85"><li>Baca soal dan petunjuk tugas dari tutor, lalu catat tenggat dan format yang diminta.</li><li>Pakai modul dan sumber resmi UT sebagai rujukan utama. Fakta resmi dicek ke <a href="https://www.ut.ac.id" rel="noopener" target="_blank">ut.ac.id</a>.</li><li>Tulis dengan bahasamu sendiri, cantumkan sitasi dan daftar pustaka yang bisa ditelusuri.</li><li>Periksa dulu lewat <a href="/ruangakademikut/audit">Audit Dokumen</a> atau <a href="/ruangakademikut/cek-parafrase-mandiri">Cek &amp; Parafrase Mandiri</a>, lalu perbaiki bagian yang ditandai.</li><li>Kumpulkan sebelum tenggat, dan simpan bukti pengumpulannya.</li></ol></section>
+      <section class="ax-box" style="margin:0 0 18px"><h2>Urutan kerja yang aman</h2><ol style="margin:0;padding-left:20px;line-height:1.85"><li>Baca soal dan petunjuk tugas dari tutor, lalu catat tenggat dan format yang diminta.</li><li>Pakai modul dan sumber resmi UT sebagai rujukan utama. Fakta resmi dicek ke <a href="https://www.ut.ac.id" rel="noopener" target="_blank">ut.ac.id</a>.</li><li>Tulis dengan bahasamu sendiri, cantumkan sitasi dan daftar pustaka yang bisa ditelusuri.</li><li>Periksa dulu lewat <a href="/ruangakademikut/cek-parafrase-mandiri">Cek &amp; Parafrase Mandiri</a>, lalu perbaiki bagian yang ditandai.</li><li>Kumpulkan sebelum tenggat, dan simpan bukti pengumpulannya.</li></ol></section>
       ${groups.map(sect).join("")}
       <section class="ax-box" style="margin:0 0 18px"><h2>Alat yang membantu</h2><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px">${tools.map(([n, u, d]) => `<a class="ax-rel" href="${u}" style="display:block;padding:12px 14px"><b>${n}</b><br><span style="font-size:13px;opacity:.8">${d}</span></a>`).join("")}</div></section>
       <p class="ax-note">Angka dan skor di alat kami dihitung berdasarkan aturan modul. Itu bukan hasil Drillbit dan bukan penilaian resmi UT, dan kami tidak menjanjikan nilai atau persentase tertentu. ${mod ? `Terakhir diperbarui ${esc(shortDate(mod))}. ` : ""}Lihat <a href="/ruangakademikut/tentang#editorial">kebijakan editorial dan sumber</a>.</p>
@@ -724,7 +792,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
   function communityBlock() {
     if (!ACAD_ONLY) return "";
     const g = k => { const v = String((ctx.getCa && ctx.getCa(k)) || "").trim(); return /^https?:\/\//i.test(v) ? v : ""; };
-    const links = [["WhatsApp", g("update_group_url"), "Grup diskusi dan info jadwal"], ["Instagram", g("ca_instagram_url"), "Tips dan pengingat"], ["TikTok", g("ca_tiktok_url"), "Video singkat belajar UT"], ["Facebook", g("ca_facebook_url"), "Kabar terbaru"]].filter(x => x[1]);
+    const links = [["WhatsApp", g("update_group_url") ? "/grup?dari=artikel" : "", "Grup mahasiswa UT: tanya registrasi, PKBJJ, dan jadwal"], ["Instagram", g("ca_instagram_url"), "Tips dan pengingat"], ["TikTok", g("ca_tiktok_url"), "Video singkat belajar UT"], ["Facebook", g("ca_facebook_url"), "Kabar terbaru"]].filter(x => x[1]);
     if (!links.length) return "";
     return `<aside class="ax-comm" aria-labelledby="axCommH"><h2 id="axCommH">Gabung komunitas ${esc(BRAND)}</h2><p>Biar tidak ketinggalan jadwal dan info penting seputar UT.</p><div class="ax-comm-l">${links.map(([n, u, d]) => `<a href="${esc(u)}" rel="noopener nofollow" target="_blank"><b>${esc(n)}</b><span>${esc(d)}</span></a>`).join("")}</div></aside>`;
   }
@@ -772,25 +840,29 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
     const overlap = x => (x.tags || []).filter(t => tags.includes(t)).length;
     // terkait: tag yang sama dulu, lalu kategori yang sama, lalu terbaru (selalu terisi bila ada artikel lain)
     const score = x => overlap(x) * 2 + (x.topic === p.topic ? 1 : 0);
-    const related = published().filter(x => x.slug !== p.slug).sort((a, b) => score(b) - score(a) || new Date(b.publishedAt) - new Date(a.publishedAt)).slice(0, 4);
+    const related = listed().filter(x => x.slug !== p.slug).sort((a, b) => score(b) - score(a) || new Date(b.publishedAt) - new Date(a.publishedAt)).slice(0, 4);
     const topicLink = `/blog?f=${encodeURIComponent(p.topic)}`;
     const ld = JSON.stringify([{ "@context": "https://schema.org", "@type": "BlogPosting", headline: p.title.slice(0, 110), datePublished: pub, dateModified: mod, description: desc, image: [img], inLanguage: "id-ID", wordCount: plain ? plain.split(" ").length : 0, ...(tags.length ? { keywords: tags.join(", ") } : {}), articleSection: tl(p.topic), author: ACAD_ONLY && author === "Tim Catatan Akademik" ? { "@type": "Organization", name: author, url: `${SITE}/ruangakademikut/tentang` } : { "@type": "Person", name: author }, publisher: { "@type": "Organization", name: BRAND, logo: { "@type": "ImageObject", url: SITE + "/icon-512.png" } }, mainEntityOfPage: { "@type": "WebPage", "@id": url } },
       { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Beranda", item: SITE + "/" }, { "@type": "ListItem", position: 2, name: "Blog", item: SITE + "/blog" }, { "@type": "ListItem", position: 3, name: tl(p.topic), item: SITE + topicLink }, { "@type": "ListItem", position: 4, name: p.title, item: url }] }]).replace(/</g, "\\u003c");
     const coverFig = cvSrc
       ? `<figure class="ax-cover"><img src="${esc(cvSrc)}" alt="${esc(p.coverAlt || p.title)}" fetchpriority="high" decoding="async">${p.coverCaption ? `<figcaption>${esc(p.coverCaption)}</figcaption>` : ""}</figure>`
       : (ACAD_ONLY ? `<div class="article-cover article-poster" role="img" aria-label="${esc(p.title)}">${posterHtml(p)}</div>` : "");
-    const hk = ACAD_ONLY ? hookFor(p) : null;
+    /* Artikel untuk mahasiswa baru: satu kotak di akhir isi (panduan + grup), menggantikan ajakan layanan supaya tidak ada dua CTA bersaing. */
+    const isMaba = ACAD_ONLY && ((p.tags || []).some(t => /^(maba|mahasiswa-baru)$/.test(t)) || /mahasiswa baru|\bmaba\b/i.test(p.title));
+    const mabaBox = isMaba ? `<aside class="ax-maba" aria-labelledby="axMabaH"><b id="axMabaH">Baru di UT? Baca panduannya dulu.</b><p>Ada checklist setelah registrasi, cara pakai MyUT, dan kalkulator nilai. Kalau masih bingung, tanya mahasiswa lain di grup.</p><div class="ax-maba-b"><a class="ax-hook-b" href="/ruangakademikut/panduan-maba">Buka Panduan Mahasiswa Baru</a><a class="ax-maba-g" href="/grup?dari=artikel">Gabung Komunitas Mahasiswa UT</a></div></aside>` : "";
+    const hk = ACAD_ONLY && !isMaba ? hookFor(p) : null;
     const hookTop = hk ? `<div class="ax-hook" role="note"><div><b>${esc(hk.top)}</b><span>${esc(hk.sub)}</span></div><a class="ax-hook-b" href="${esc(hk.href)}">${esc(hk.btn)}</a></div>` : "";
     const hookSide = hk ? `<section class="ax-box ax-hook-side" aria-label="Rekomendasi layanan"><small>Rekomendasi untuk artikel ini</small><h2>${esc(hk.name)}</h2><p>${esc(hk.side)}</p><a class="ax-hook-b" href="${esc(hk.href)}">${esc(hk.btn)}</a></section>` : "";
     const relatedHtml = related.length ? `<section class="ax-box" aria-labelledby="axRelH"><h2 id="axRelH">Artikel Terkait</h2><div class="ax-rels">${related.map(x => `<a class="ax-rel" href="/blog/${esc(x.slug)}"><span class="ax-rel-cv">${cardCover(x)}</span><span><b>${esc(x.title)}</b><small>${esc(tl(x.topic))} · ${esc(shortDate(x.publishedAt))}</small></span></a>`).join("")}</div></section>` : "";
     const readAlso = related.length ? `<section class="ax-also" aria-labelledby="axAlsoH"><h2 id="axAlsoH">Baca juga</h2><p class="ax-also-s">Dipilih otomatis dari tag dan kategori yang sama.</p><div class="ax-also-g">${related.slice(0, 3).map(x => `<a class="ax-also-c" href="/blog/${esc(x.slug)}"><span class="ax-also-cv">${cardCover(x)}</span><b>${esc(x.title)}</b></a>`).join("")}</div><a class="ax-also-all" href="/blog">Lihat semua artikel →</a></section>` : "";
-    const otherSvc = ACAD_ONLY ? `<section class="ax-box" aria-label="Layanan lain"><h2>Layanan lain</h2><div class="ax-svc"><a href="/cek-parafrase-mandiri">Cek &amp; Parafrase</a><a href="/layanan?s=tugas">Tugas &amp; Diskusi</a><a href="/layanan?s=metopen_paket">Metopen UT</a><a href="/ruangakademikut/portal-ut">Portal &amp; Alat UT</a></div></section>` : "";
+    const otherSvc = ACAD_ONLY ? `<section class="ax-box" aria-label="Layanan lain"><h2>Layanan lain</h2><div class="ax-svc"><a href="/cek-parafrase-mandiri">Cek &amp; Parafrase</a><a href="/tutorial-online">Tutorial Online</a><a href="/ruangakademikut/portal-ut">Portal &amp; Alat UT</a></div></section>` : "";
     /* Navigator situs di samping isi artikel: pohon menu di kanan, "Di artikel ini" di kiri. Di HP kanan jadi laci. */
     const NAVT = [["Blog", [["Semua artikel", "/blog"], ...topicsShown().map(k => [TOPICS[k].label, "/blog?f=" + k])]]];
     if (ACAD_ONLY) NAVT.push(
-      ["Layanan", [["Tugas tutorial", "/ruangakademikut/layanan?s=tugas"], ["Diskusi", "/ruangakademikut/layanan?s=diskusi"], ["Metopen UT", "/ruangakademikut/layanan?s=metopen_paket"], ["Simulasi Presentasi", "/ruangakademikut/layanan?s=simulasi"]]],
-      ["Cek & Audit", [["Cek & Parafrase", "/ruangakademikut/cek-parafrase-mandiri"], ["Audit dokumen", "/ruangakademikut/audit"], ["Bedah Laporan Penelitian UT", "/ruangakademikut/bedah-laporan"]]],
-      ["Alat Gratis", [["Kalkulator Nilai & IPK", "/ruangakademikut/kalkulator-nilai-ut"], ["Generator Sitasi APA", "/ruangakademikut/sitasi-apa"], ["Tracker Kelulusan & IPK", "/ruangakademikut/tracker-kelulusan"], ["Kalender Akademik", "/ruangakademikut/kalender-akademik"], ["Buat CV ATS", "/ruangakademikut/buat-cv-ats"], ["Surat Lamaran", "/ruangakademikut/surat-lamaran"], ["Sampul & Template Tugas", "/ruangakademikut/sampul-tugas"], ["Pasfoto Yudisium", "/ruangakademikut/pasfoto-yudisium"], ["Panduan Maba", "/ruangakademikut/panduan-maba"]]],
+      ["Tutorial Online", [["Semua Tutorial Online", "/ruangakademikut/tutorial-online"], ["Diskusi", "/ruangakademikut/tutorial-online?tab=harga&s=diskusi"], ["Tugas", "/ruangakademikut/tutorial-online?tab=harga&s=tugas"], ["Makalah", "/ruangakademikut/tutorial-online?tab=harga&s=makalah"], ["Jurnal", "/ruangakademikut/tutorial-online?tab=harga&s=jurnal"], ["Metodologi Penelitian", "/ruangakademikut/tutorial-online?tab=harga&s=metopen"]]],
+      ["Layanan", [["Simulasi Presentasi", "/ruangakademikut/layanan?s=simulasi"]]],
+      ["Parafrase File dan Bedah Penelitian", [["Cek & Parafrase", "/ruangakademikut/cek-parafrase-mandiri"], ["Bedah Laporan Penelitian UT", "/ruangakademikut/bedah-laporan"]]],
+      ["Alat Gratis", [["Kalkulator Nilai & IPK", "/ruangakademikut/kalkulator-nilai-ut"], ["Generator Sitasi APA", "/ruangakademikut/sitasi-apa"], ["Tracker Kelulusan & IPK", "/ruangakademikut/tracker-kelulusan"], ["Kalender Akademik", "/ruangakademikut/kalender-akademik"], ["Sampul & Template Tugas", "/ruangakademikut/sampul-tugas"], ["Panduan Maba", "/ruangakademikut/panduan-maba"]]],
       ["Portal UT", [["Portal UT", "/ruangakademikut/portal-ut"]]]);
     const navTree = NAVT.map(([g, ls], i) => `<details${i === 0 ? " open" : ""}><summary>${esc(g)}</summary><ul>${ls.map(([n, h]) => `<li><a href="${esc(h)}"${h === "/blog?f=" + p.topic ? ' aria-current="page" class="on"' : ""}>${esc(n)}</a></li>`).join("")}</ul></details>`).join("");
     const statusLabel = { draft: "Draf", review: "Menunggu review", scheduled: `Terjadwal ${p.publishAt ? shortDate(p.publishAt) : ""}`, published: "Terbit" }[p.status] || p.status;
@@ -803,6 +875,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
       ${coverFig}
       ${toc.length >= 3 ? `<details class="ax-toc ax-toc-in"><summary>Daftar Isi</summary>${tocList}</details>` : ""}
       <div class="prose">${bodyHtml}</div>
+      ${mabaBox}
       ${ACAD_ONLY && clusterOf(p) >= 0 ? `<p class="ax-pillar" style="margin:18px 0;font-size:14.5px;line-height:1.7">Lanjut baca: <a href="/tugas-ut">panduan tugas UT</a>, <a href="/ruangakademikut/kalkulator-nilai-ut">kalkulator nilai UT</a>, dan <a href="/ruangakademikut/kalkulator-nilai-ut">cara menghitung IPK UT</a>.</p>` : ""}
       ${tags.length ? `<div class="ax-tags" aria-label="Tag">${tags.map(t => `<a href="/blog?tag=${encodeURIComponent(t)}" rel="tag">${esc(tagLabel(t))}</a>`).join("")}</div>` : ""}
       ${communityBlock()}
@@ -815,7 +888,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
     <button type="button" class="ax-navbtn" id="axNavBtn" aria-controls="axDrawer" aria-expanded="false" aria-label="Buka navigasi situs">Navigasi</button>
     <div class="ax-drawer" id="axDrawer" role="dialog" aria-label="Navigasi situs" hidden><div class="ax-drawer-in"><button type="button" class="ax-drawer-x" id="axNavX" aria-label="Tutup navigasi">×</button><h2>Navigasi</h2>${navTree}</div></div>
     <script>(function(){var b=document.getElementById("axNavBtn"),d=document.getElementById("axDrawer"),x=document.getElementById("axNavX");if(b&&d){var set=function(o){d.hidden=!o;b.setAttribute("aria-expanded",o);document.body.style.overflow=o?"hidden":"";if(!o)b.focus();};b.addEventListener("click",function(){set(true)});x.addEventListener("click",function(){set(false)});d.addEventListener("click",function(e){if(e.target===d)set(false)});document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!d.hidden)set(false)});}
-var links=[].slice.call(document.querySelectorAll(".ax-left a")),hs=links.map(function(a){return document.getElementById(a.getAttribute("href").slice(1))}).filter(Boolean);if(hs.length&&"IntersectionObserver"in window){var cur=null;var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)cur=e.target.id});links.forEach(function(a){var on=a.getAttribute("href")==="#"+cur;a.classList.toggle("on",on);if(on)a.setAttribute("aria-current","true");else a.removeAttribute("aria-current")});},{rootMargin:"-80px 0px -65% 0px"});hs.forEach(function(h){io.observe(h)});}})();</script>
+var links=[].slice.call(document.querySelectorAll(".ax-left a")),hs=links.map(function(a){return document.getElementById(a.getAttribute("href").slice(1))}).filter(Boolean);if(hs.length&&"IntersectionObserver"in window){var cur=null;var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)cur=e.target.id});links.forEach(function(a){var on=a.getAttribute("href")==="#"+cur;a.classList.toggle("on",on);if(on){a.setAttribute("aria-current","true");var L=a.closest(".ax-left");if(L&&L.scrollHeight>L.clientHeight){var t=a.offsetTop-L.clientHeight/2;L.scrollTop=Math.max(0,t)}}else a.removeAttribute("aria-current")});},{rootMargin:"-80px 0px -65% 0px"});hs.forEach(function(h){io.observe(h)});}var sd=document.querySelector(".ax-side");if(sd){var tk=0;function sy(){tk=0;var m=sd.scrollHeight-sd.clientHeight;if(m<=0)return;var D=document.documentElement,p=D.scrollTop/Math.max(1,D.scrollHeight-innerHeight);sd.scrollTop=Math.min(1,Math.max(0,p))*m}addEventListener("scroll",function(){if(!tk)tk=requestAnimationFrame(sy)},{passive:true});sy()}})();</script>${SMARTNAV}
     <a class="wa-bubble" href="/ruangakademikut"><span>Layanan ${esc(BRAND)}</span><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg></a>`;
     return layout({ title: `${p.metaTitle || p.title} — ${BRAND}`, desc, path: `/blog/${p.slug}`, body, image: img, type: "article", noindex: preview || OFF_TOPIC.includes(p.topic),
       extra: `${cvSrc ? `<meta property="og:image:alt" content="${esc(p.coverAlt || p.title)}"><meta name="twitter:image:alt" content="${esc(p.coverAlt || p.title)}">` : ""}<meta property="article:published_time" content="${esc(pub)}"><meta property="article:modified_time" content="${esc(mod)}">${tags.map(t => `<meta property="article:tag" content="${esc(t)}">`).join("")}${preview ? "" : `<script type="application/ld+json">${ld}</script>`}` });
@@ -833,6 +906,13 @@ var links=[].slice.call(document.querySelectorAll(".ax-left a")),hs=links.map(fu
       }
       res.set("Cache-Control", "public, max-age=604800").type("jpg").sendFile(file);
     } catch { res.status(500).type("text").send("Gagal membuat sampul"); }
+  });
+  /* Redirect 301 untuk artikel yang digabung: seed/redirects.json = { "slug-lama": "slug-tujuan" }. Hanya dipakai di domain akademik.
+     Slug lama diarahkan walau artikelnya masih ada, jadi cukup hapus/arsipkan artikel lama di admin kapan saja. */
+  app.get("/blog/:slug", (req, res, next) => {
+    const to = Object.prototype.hasOwnProperty.call(REDIR, req.params.slug) ? String(REDIR[req.params.slug]) : "";
+    if (/^[a-z0-9-]{1,90}$/.test(to) && to !== req.params.slug) return res.redirect(301, "/blog/" + to);
+    next();
   });
   app.get("/blog/:slug", (req, res, next) => {
     const p = published().find(x => x.slug === req.params.slug);
@@ -1132,7 +1212,7 @@ var links=[].slice.call(document.querySelectorAll(".ax-left a")),hs=links.map(fu
   function notFound(req, res) {
     res.status(404).set("Cache-Control", "no-store");
     if (ACAD_ONLY && !onAcadHost(req)) return res.type("html").send('<!doctype html><html lang="id"><meta charset="utf-8"><meta name="robots" content="noindex"><title>Halaman tidak ditemukan</title><body style="font-family:system-ui;padding:40px"><h1>Halaman tidak ditemukan</h1><p><a href="/">Kembali ke beranda</a></p></body></html>');
-    const latest = published().slice(0, 4);
+    const latest = listed().slice(0, 4);
     const body = `<section class="pg"><div class="wrap nf">
       <span class="bx-eyebrow">Error 404</span><h1>Halaman tidak ditemukan</h1>
       <p class="bx-lead">Alamat yang kamu buka tidak ada atau sudah dipindah. Coba cari artikelnya, atau buka salah satu halaman di bawah.</p>
@@ -1144,7 +1224,7 @@ var links=[].slice.call(document.querySelectorAll(".ax-left a")),hs=links.map(fu
   }
 
   /* halaman statis di sitemap: lastmod = kapan berkas halamannya terakhir berubah (tanggal rilis), bukan tanggal buatan */
-  const SITEMAP_PAGES = { "/ruangakademikut": "hub.html", "/ruangakademikut/cek-parafrase-mandiri": "cek.html", "/ruangakademikut/audit": "audit.html", "/ruangakademikut/audit-parafrase": "audit-parafrase.html", "/ruangakademikut/tentang": "tentang.html", "/ruangakademikut/bedah-laporan": "bedah.html", "/ruangakademikut/layanan": "layanan.html", "/ruangakademikut/kalkulator-nilai-ut": "alat-nilai.html", "/ruangakademikut/pasfoto-yudisium": "alat-pasfoto.html", "/ruangakademikut/buat-cv-ats": "alat-cv.html", "/ruangakademikut/sampul-tugas": "alat-sampul.html", "/ruangakademikut/surat-lamaran": "alat-surat.html", "/ruangakademikut/tracker-kelulusan": "alat-tracker.html", "/ruangakademikut/kalender-akademik": "alat-kalender.html", "/ruangakademikut/panduan-maba": "panduan-maba.html", "/ruangakademikut/sitasi-apa": "sitasi.html", "/ruangakademikut/portal-ut": "portal-ut.html" };
+  const SITEMAP_PAGES = { "/ruangakademikut": "hub.html", "/ruangakademikut/cek-parafrase-mandiri": "cek.html", "/ruangakademikut/tentang": "tentang.html", "/ruangakademikut/bedah-laporan": "bedah.html", "/ruangakademikut/layanan": "layanan.html", "/ruangakademikut/tutorial-online": "tutorial-online.html", "/ruangakademikut/kalkulator-nilai-ut": "alat-nilai.html", "/ruangakademikut/sampul-tugas": "alat-sampul.html", "/ruangakademikut/tracker-kelulusan": "alat-tracker.html", "/ruangakademikut/kalender-akademik": "alat-kalender.html", "/ruangakademikut/panduan-maba": "panduan-maba.html", "/ruangakademikut/sitasi-apa": "sitasi.html", "/ruangakademikut/portal-ut": "portal-ut.html" };
   const pageMod = file => { try { return fs.statSync(path.join(__dirname, "parafrase", "pages", file)).mtime.toISOString().slice(0, 10); } catch { return undefined; } };
   // untuk sitemap. /blog-ut tidak didaftarkan: isinya sama dengan /blog (kanonis ke /blog).
   return { userFrom, userById: id => db.users.find(x => x.id === id) || null, userByEmail: e => db.users.find(x => String(x.email || "").toLowerCase() === String(e || "").trim().toLowerCase()) || null, notFound, articlePage, isLive, suggestTags, suggestTopic, tagLabel, posts: () => blog.posts, usersCount: () => db.users.length, TOPICS, ACAD_TOPICS, pageUrls: () => (ACAD_ONLY ? [{ loc: `${SITE}/`, lastmod: pageMod("beranda.html"), pri: "1.0" }, { loc: `${SITE}/tugas-ut`, lastmod: published().map(p => String(modifiedAt(p) || "").slice(0, 10)).filter(Boolean).sort().pop(), pri: "0.9" }] : []).concat(Object.entries(SITEMAP_PAGES).map(([u, file]) => ({ loc: `${SITE}${ACAD_ONLY ? (u === "/ruangakademikut" ? "/layanan-ut" : shortPath(u)) : u}`, lastmod: pageMod(file), pri: "0.7" }))), blogUrls: () => published().filter(p => !OFF_TOPIC.includes(p.topic)).map(p => ({ loc: `${SITE}/blog/${p.slug}`, lastmod: String(modifiedAt(p) || "").slice(0, 10), pri: "0.6" })) };
