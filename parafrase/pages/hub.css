@@ -74,3 +74,30 @@
 .fq summary::-webkit-details-marker{display:none}.fq summary::after{content:"+";font-size:20px;color:var(--acc)}
 .fq details[open] summary::after{content:"−"}.fq summary:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 .fq details p{margin:0;padding:0 18px 16px;color:var(--muted);font-size:14.5px;line-height:1.6}
+
+/* Web rapi: Layanan seperti Tutorial Online */
+.hub main{padding-top:0!important}
+.hub h1{text-align:center;margin:56px 0 10px;font-size:clamp(32px,5vw,48px)}
+.hub .lead{text-align:center;margin:0 auto 34px;max-width:46ch;font-size:16px}
+.hub .kat{display:none}
+.hub .cards{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.hub .pc.card{border-radius:14px;box-shadow:none;background:var(--surface)}
+.hub .pc .pt{display:none}
+.hub .pc .pb{padding:20px;gap:8px}.hub .pc .pb h2{font-size:18px;margin:0}
+.hub .pc .pb p{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;color:var(--muted);font-size:14px}
+.hub .pc .pb .price{font-size:13px;color:var(--muted)}
+.hub .tx-ban{order:-1;grid-column:auto!important;flex-direction:column;align-items:flex-start!important;border-radius:14px!important;padding:20px!important;gap:10px!important}
+.hub .tx-ban b{font-size:18px}.hub .tx-ban small{font-size:14px}
+.hub .cr{margin:56px 0 0}.hub .cr h2{font-size:20px}
+.hub .cr-l{display:grid;grid-template-columns:repeat(4,1fr);gap:0;list-style:none;padding:0;margin:16px 0 0}
+.hub .cr-l li{border:0;border-top:2px solid var(--border);border-radius:0;background:none;box-shadow:none;padding:14px 16px 0 0;display:block}
+.hub .cr-l li:first-child{border-top-color:var(--btn,var(--acc))}.hub .cr-l li b{display:block;color:var(--text);margin-bottom:4px}.hub .cr-l li span{color:var(--muted);font-size:14px}
+.hub .fq{margin-top:48px}.hub .fq h2{font-size:20px}
+.hub .fq details{border:0;border-top:1px solid var(--border);border-radius:0;background:none;box-shadow:none;padding:14px 0}
+.hub .dp,.hub .joinbox{display:none}
+.hub .note{margin-top:40px;font-size:13px;color:var(--muted);border:0;padding:0}
+@media(max-width:980px){.hub .cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.hub .cards,.hub .cr-l{grid-template-columns:1fr}.hub .cr-l{gap:18px}}
+.hub .fq summary{padding:0!important;min-height:0!important}.hub .fq details p{margin:8px 0 0}
+.hub .cr-l li b{font-size:15px}
+.hub .rv{opacity:1!important;transform:none!important}

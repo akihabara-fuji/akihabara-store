@@ -5,7 +5,7 @@
 <link rel="canonical" href="{{SITE}}/ruangakademikut"><meta property="og:type" content="website"><meta property="og:site_name" content="Catatan Akademik"><meta property="og:locale" content="id_ID"><meta property="og:title" content="Catatan Akademik: Layanan Tugas, Diskusi, dan Metopen UT"><meta property="og:description" content="Semua progres kuliah UT di satu tempat: Cek dan Parafrase Mandiri, paket semester, dan pendampingan metopen."><meta property="og:url" content="{{SITE}}/ruangakademikut"><meta property="og:image" content="{{SITE}}/icon-512.png"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Catatan Akademik: Layanan Tugas, Diskusi, dan Metopen UT"><meta name="twitter:description" content="Semua progres kuliah UT di satu tempat: Cek dan Parafrase Mandiri, paket semester, dan pendampingan metopen.">
 <link rel="icon" href="/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Bricolage+Grotesque:wght@500;700&display=swap" rel="stylesheet"><script>document.documentElement.classList.add("js");try{var t=localStorage.getItem("nx-theme");document.documentElement.dataset.theme=(t==="light"||t==="dark")?t:"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script>
-<link rel="stylesheet" href="/ruangakademikut/assets/site.css?v=26110222"><link rel="stylesheet" href="/ruangakademikut/assets/hub.css?v=20261028">
+<link rel="stylesheet" href="/ruangakademikut/assets/site.css?v=2611022354"><link rel="stylesheet" href="/ruangakademikut/assets/hub.css?v=2611022350">
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"{{SITE}}/#org","name":"Catatan Akademik","url":"{{SITE}}/","logo":"{{SITE}}/icon-512.png"},{"@type":"Service","name":"Layanan Tugas, Diskusi, dan Metopen UT","serviceType":"Pendampingan akademik mahasiswa Universitas Terbuka","description":"Tugas, diskusi, dan metopen UT dikerjakan tim Catatan Akademik dengan tahap review, termasuk revisi atas masukan tutor.","provider":{"@id":"{{SITE}}/#org"},"areaServed":{"@type":"Country","name":"Indonesia"},"audience":{"@type":"Audience","audienceType":"Mahasiswa Universitas Terbuka"},"url":"{{SITE}}/ruangakademikut"}]}</script>
 </head><body class="hub">
 <header class="nav"><div class="wrap">
@@ -15,9 +15,8 @@
 </div></header>
 
 <main class="wrap" style="padding-top:28px">
-  <h1 style="margin-bottom:8px">Tugas numpuk, deadline mepet? <span class="hook">Tenang, ada yang bantu.</span></h1>
-  <p class="lead" style="margin:0 0 18px;max-width:720px">Tugas, diskusi, dan metopen UT dikerjakan tim <b>Catatan Akademik</b>, dengan tahap review sebelum dikirim ke tutor. Revisi atas masukan tutor sudah termasuk selama sesi masih aktif. Kami tidak menjamin nilai atau kelulusan. Semangat!</p>
-  <p class="small" style="margin:-6px 0 14px;max-width:720px;opacity:.8">Semua layanan dibayar dengan <b>QRIS</b>: pesan, bayar, unggah bukti, lalu admin mengonfirmasi.</p>
+  <h1>Layanan</h1>
+  <p class="lead">Pilih yang kamu butuhkan. Dibayar lewat QRIS, lalu admin mengonfirmasi.</p>
   <div class="kat" role="group" aria-label="Kategori layanan"><button type="button" class="on" data-k="" aria-pressed="true">Semua</button><button type="button" data-k="paket" aria-pressed="false">Paket &amp; Pengarahan</button></div>
   <div class="cards">
     <article id="semester" class="card pc rv" data-slug="semester" data-cat="paket"><div class="pt" style="--g:linear-gradient(135deg,#7c2d12,#f59e0b)"><span class="badge o">Paling hemat</span><span class="pl">Paket
@@ -58,6 +57,6 @@ fetch("/ms/ulasan").then(function(r){return r.ok?r.json():{}}).then(function(j){
 it.forEach(function(u){var f=document.createElement("figure");f.className="ts-c";var q=document.createElement("blockquote");q.textContent=u.teks||"";f.appendChild(q);var c=document.createElement("figcaption");c.textContent=(u.nama||"")+(u.ket?" · "+u.ket:"");f.appendChild(c);box.appendChild(f)});document.getElementById("tsBox").hidden=false}).catch(function(){});
 })();
 </script>
-<script src="/ruangakademikut/assets/common.js?v=26110222"></script>
+<script src="/ruangakademikut/assets/common.js?v=2611022354"></script>
 <footer class="ft"><div class="wrap ft-in"><div class="ft-b"><b>Catatan Akademik</b><span>Jakarta Barat. Layanan UT dan Blog.</span><small>© Catatan Akademik. Semua hak dilindungi.</small><small class="ft-dis">Layanan independen, bukan situs resmi Universitas Terbuka. Cocokkan informasi dengan ut.ac.id.</small></div><nav class="ft-n" aria-label="Footer"><a href="/ruangakademikut">Layanan UT</a><a href="/ruangakademikut/blog-ut">Blog &amp; Berita UT</a><a href="/ruangakademikut/tentang">Tentang</a><a href="/ms/masuk">Masuk</a><a href="/ms/privasi">Privasi</a><a href="/ms/ketentuan">Ketentuan</a></nav></div></footer>
 </body></html>
