@@ -548,3 +548,17 @@ window.auditOkList = function (sc, box) {
   document.addEventListener("click", function (e) { ds().forEach(function (d) { if (d.open && !d.contains(e.target)) d.removeAttribute("open"); }); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") ds().forEach(function (d) { d.removeAttribute("open"); }); });
 })();
+
+/* Web rapi: bar info, banner grup, dan tombol tema dipindah ke footer supaya isi halaman langsung terlihat. */
+(function () {
+  function go() {
+    var ft = document.querySelector("footer.ft .ft-in"); if (!ft || ft.querySelector(".ft-x")) return;
+    var x = document.createElement("div"); x.className = "ft-x";
+    var top = document.querySelector("body > .top"), strip = document.querySelector("body > .strip"), mode = document.querySelector("header.nav .mode");
+    if (top) { var p = document.createElement("p"); p.className = "ft-ret"; p.innerHTML = top.innerHTML; x.appendChild(p); top.remove(); }
+    if (strip) { var s = document.createElement("div"); s.className = "ft-grp"; s.innerHTML = strip.firstElementChild ? strip.firstElementChild.innerHTML : strip.innerHTML; x.appendChild(s); strip.remove(); }
+    if (mode) { var m = document.createElement("div"); m.className = "ft-mode"; m.appendChild(mode); x.appendChild(m); }
+    if (x.children.length) ft.appendChild(x);
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go); else go();
+})();

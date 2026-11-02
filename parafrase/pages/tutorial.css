@@ -26,3 +26,11 @@ a.tx-cd:hover,.tx-cd:hover{transform:translateY(-5px);box-shadow:0 14px 36px col
 .tx-rv{opacity:0;transform:translateY(20px);transition:opacity .55s,transform .55s}.tx-rv.in{opacity:1;transform:none}
 @media(max-width:900px){.tx-flow{grid-template-columns:1fr 1fr}.tx-g3{grid-template-columns:1fr 1fr}}@media(max-width:560px){.tx-flow,.tx-g3{grid-template-columns:1fr}.tx-pick{border-radius:20px}}
 @media(prefers-reduced-motion:reduce){.tx-hd:before,.tx-hd:after{animation:none}.tx-rv{opacity:1;transform:none;transition:none}.tx-plan,.tx-cd,.tx-flow li{transition:none}}
+
+/* Web rapi: hero pendek, alur datar */
+.tx-hd{padding:64px 0 44px}.tx-hd:before,.tx-hd:after{display:none}.tx-hd p{max-width:46ch;line-height:1.6}.tx-eb{display:none}
+.tx-flow{gap:0}.tx-flow li{border:0;border-top:2px solid var(--border);border-radius:0;background:none;padding:14px 16px 0 0;transition:none}
+.tx-flow li:first-child{border-top-color:var(--btn)}.tx-flow li:hover{transform:none;border-color:var(--border)}.tx-flow li:first-child:hover{border-color:var(--btn)}
+.tx-flow b{color:var(--text)}
+.tx-note{margin-top:18px}
+@media(max-width:900px){.tx-flow{gap:18px}}

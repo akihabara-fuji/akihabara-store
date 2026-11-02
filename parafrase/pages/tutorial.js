@@ -74,7 +74,7 @@
     var all = SV.every(function (x) { return x[2].every(function (k) { return !cfg[k] || cfg[k].closed; }); });
     if (!all) return;
     var hd = document.querySelector(".tx-hd .wrap"); if (!hd || hd.querySelector(".tx-closed")) return;
-    var n = el("div", "tx-closed", "Sesi tutorial online sedang ditutup, jadi pesanan baru belum dibuka. Lihat alur dan testimoni di bawah, atau tanya admin untuk info sesi berikutnya.");
+    var n = el("div", "tx-closed", "Sesi sedang ditutup. Tanya admin untuk jadwal sesi berikutnya.");
     n.style.cssText = "margin:12px 0;padding:12px 16px;border-radius:12px;border:1px solid var(--border);background:var(--surface2)"; hd.insertBefore(n, hd.querySelector(".tx-seg"));
     var hb = document.querySelector('.tx-seg [data-tab="harga"]'); if (hb) hb.textContent = "Layanan";
     var th = document.querySelector("#tx-harga thead th:last-child"); if (th) th.textContent = "Status";

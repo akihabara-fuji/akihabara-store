@@ -196,3 +196,10 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;line-height:
 /* Ikon: keranjang (Cek Pesanan) dan mode gelap/terang */
 .nav .nav-ord{font-size:17px;line-height:1;padding:8px 11px}
 .mode button{font-size:15px;line-height:1;padding:6px 9px}
+
+/* Web rapi */
+.ft-x{flex:1 0 100%;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 24px;border-top:1px solid var(--border);padding-top:20px;margin-top:4px}
+.ft-x p{margin:0;font-size:13px}.ft-grp{flex:1 1 360px;display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;font-size:13px}.ft-grp p{flex:1 1 280px;margin:0}.ft-grp .pills{display:flex;gap:8px;flex-wrap:wrap}
+.ft-mode .mode{display:inline-flex}
+.nav .wrap{min-height:64px}
+section,.sec{scroll-margin-top:80px}

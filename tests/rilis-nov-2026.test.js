@@ -65,5 +65,5 @@ test("layanan ditutup: Makalah dan Jurnal ikut Tugas, Paket Semester ikut Tugas+
   const l = r("parafrase/layanan.js");
   assert.ok(l.includes('(k === "makalah" || k === "jurnal") && o.includes("tugas")') && l.includes("isOff(b.service)"), "pesanan makalah/jurnal ditolak bila Tugas ditutup");
   assert.ok(r("parafrase/pages/common.js").includes("shut.semester = shut.tugas && shut.diskusi"));
-  assert.ok(r("parafrase/pages/tutorial.js").includes("Sesi tutorial online sedang ditutup") && r("parafrase/pages/tutorial.js").includes("!cfg.revisi_tugas.closed"));
+  assert.ok(r("parafrase/pages/tutorial.js").includes("Sesi sedang ditutup") && r("parafrase/pages/tutorial.js").includes("!cfg.revisi_tugas.closed"));
 });
