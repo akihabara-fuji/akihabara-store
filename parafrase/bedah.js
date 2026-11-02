@@ -112,7 +112,7 @@ async function reportDocx(meta, items) {
   return zip.generateAsync({ type: "nodebuffer" });
 }
 
-module.exports = function mountBedah({ library = null, app, express, db, settings, orders, root, sameOrigin, secret, requireAdmin, userFrom = null }) {
+module.exports = function mountBedah({ library = null, app, express, db, settings, orders, root, sameOrigin, secret, requireAdmin, userFrom = null, aiClient = null }) {
   const docsDir = path.join(root, "data", "private", "docs"), kalDir = path.join(root, "data", "private", "kalibrasi");
   fs.mkdirSync(docsDir, { recursive: true }); fs.mkdirSync(kalDir, { recursive: true });
   const hits = new Map();
@@ -489,6 +489,9 @@ module.exports = function mountBedah({ library = null, app, express, db, setting
     async function readDraft(base) { try { return JSON.parse(await fsp.readFile(draftFile(base), "utf8")); } catch { return { edits: {} }; } }
     const cleanEdits = (items, raw) => { const ok = new Set(items.map(x => x.n)), out = {}; for (const [k, v] of Object.entries(raw && typeof raw === "object" ? raw : {})) if (ok.has(Number(k)) && typeof v === "string") out[k] = v.slice(0, 4000); return out; };
 
+    const cleanParas = (a, raw) => { const ok = new Set(a.paragraphs.map(p => p.idx)), out = {}; for (const [k, v] of Object.entries(raw && typeof raw === "object" ? raw : {})) if (ok.has(Number(k)) && typeof v === "string") out[k] = v.slice(0, 20000); return out; };
+    const cleanSpans = (a, raw) => { const ok = new Set(a.paragraphs.map(p => p.idx)), out = {}; for (const [k, v] of Object.entries(raw && typeof raw === "object" ? raw : {})) if (ok.has(Number(k)) && Array.isArray(v) && v.length <= 400 && v.every(x => typeof x === "string")) out[k] = v.map(x => x.slice(0, 4000)); return out; };
+    const aiFn = aiClient ? () => aiClient : () => { try { const { createAiClient } = require("../studio/ai-client"); const c = process.env.AI_BASE_URL && process.env.AI_API_KEY && process.env.AI_MODEL ? createAiClient({ timeoutMs: 45000 }) : null; return c; } catch { return null; } };
     app.get("/ms/admin/studio/:id", requireAdmin, async (req, res) => {
       res.set("Cache-Control", "no-store");
       try {
@@ -500,15 +503,15 @@ module.exports = function mountBedah({ library = null, app, express, db, setting
         res.json({ order: { id: c.o.id, title: c.o.title, status: c.o.status, wa: c.o.wa_number, words: c.o.word_count },
           ut: c.saved.ai || null, sim: c.saved.sim || null, longMax: studio.LONG_MAX,
           items: c.items.map(x => ({ n: x.n, block: x.block, where: x.where, text: x.text, para_idx: x.para_idx, sent_idx: x.sent_idx, parts: x.parts && x.parts.length ? x.parts : [[x.para_idx, x.sent_idx]], tags: x.tags, ciri: studio.ciri(x.text, sentsOf(x.para_idx)) })),
-          paras, draft: draft.edits || {} });
+          paras, draft: draft.edits || {}, draftParas: draft.paras || {}, draftSpans: draft.spans || {}, sentAt: draft.sentAt || null, aiReady: !!aiFn(), wa: c.o.wa_number || "", pdf: !!c.pdf, hasOrder: !!c.orderId });
       } catch (e) { sFail(res, e, "muat"); }
     });
     app.put("/ms/admin/studio/:id/draft", requireAdmin, express.json({ limit: "400kb" }), async (req, res) => {
       res.set("Cache-Control", "no-store");
       try {
-        const c = await studioCtx(req.params.id), edits = cleanEdits(c.items, (req.body || {}).edits);
-        await fsp.writeFile(draftFile(c.base), JSON.stringify({ edits, savedAt: Date.now() }), { mode: 0o600 });
-        res.json({ ok: true, done: Object.values(edits).filter(v => v.trim()).length });
+        const c = await studioCtx(req.params.id), edits = cleanEdits(c.items, (req.body || {}).edits), paras = cleanParas(c.a, (req.body || {}).paras), old = await readDraft(c.base), spans = cleanSpans(c.a, (req.body || {}).spans);
+        await fsp.writeFile(draftFile(c.base), JSON.stringify({ edits, paras, spans, savedAt: Date.now(), ...(old.sentAt ? { sentAt: old.sentAt } : {}) }), { mode: 0o600 });
+        res.json({ ok: true, done: Object.values(edits).filter(v => v.trim()).length, paras: Object.keys(paras).length });
       } catch (e) { sFail(res, e, "draf"); }
     });
     app.get("/ms/admin/studio/:id/word", requireAdmin, async (req, res) => {
@@ -532,20 +535,47 @@ module.exports = function mountBedah({ library = null, app, express, db, setting
         } catch (e) { if (e instanceof DocxError) return res.status(422).json({ error: e.message }); sFail(res, e, "impor"); }
       });
     });
+    /* Final bersih (tanpa tanda, tanpa rekomendasi) untuk diunduh admin sebelum dikirim. Tidak mengubah file unggahan asli. */
+    app.post("/ms/admin/studio/:id/final", requireAdmin, express.json({ limit: "1mb" }), async (req, res) => {
+      res.set("Cache-Control", "no-store");
+      try {
+        const c = await studioCtx(req.params.id), paras = cleanParas(c.a, (req.body || {}).paras), list = studio.parasToEdits(c.a.paragraphs, paras);
+        let buf;
+        if (c.pdf) { const w = studio.rewriteParagraphs(c.a.paragraphs, list); buf = await studio.plainDocx(c.a.paragraphs, w.texts, null); }
+        else buf = list.length ? (await studio.applyEdits(c.buf, list)).buf : c.buf;
+        res.set({ "Content-Disposition": `attachment; filename="${c.o.id} final.docx"` }).type("application/vnd.openxmlformats-officedocument.wordprocessingml.document").send(buf);
+      } catch (e) { sFail(res, e, "final"); }
+    });
+    /* Kalimat revisi otomatis untuk satu kalimat biru. Hanya dari isi dokumen itu sendiri; angka/nama baru ditolak. */
+    app.post("/ms/admin/studio/:id/revisi", requireAdmin, express.json({ limit: "20kb" }), async (req, res) => {
+      res.set("Cache-Control", "no-store");
+      try {
+        const ai = aiFn(); if (!ai) throw sErr(503, "Mesin penulis belum dikonfigurasi di server. Ketik revisinya manual di kotak.");
+        const c = await studioCtx(req.params.id), n = Number((req.body || {}).n), it = c.items.find(x => x.n === n);
+        if (!it) throw sErr(404, "Kalimat biru tidak ditemukan.");
+        const para = c.a.paragraphs.find(p => p.idx === it.para_idx), ptext = para ? para.text || "" : "";
+        let out; try { out = await ai.completeJson({ prompt: studio.revisePrompt(it, ptext, studio.LONG_MAX) }); } catch (e) { console.error("[studio] revisi:", e && e.message); throw sErr(502, "Mesin penulis gagal menjawab. Coba lagi."); }
+        const rev = String(out && out.revisi || "").replace(/\s+/g, " ").trim();
+        if (!rev) throw sErr(502, "Mesin penulis tidak memberi revisi. Coba lagi.");
+        const baru = studio.newFacts(ptext + " " + it.text, rev);
+        res.json({ ok: true, n, revisi: rev.slice(0, 2000), baru });
+      } catch (e) { sFail(res, e, "revisi"); }
+    });
     app.post("/ms/admin/studio/:id/finish", requireAdmin, express.json({ limit: "400kb" }), async (req, res) => {
       res.set("Cache-Control", "no-store");
       try {
         const c = await studioCtx(req.params.id), body = req.body || {};
-        const edits = cleanEdits(c.items, body.edits || (await readDraft(c.base)).edits);
-        const list = studio.editsFromItems(c.items, edits);
-        if (!list.length) throw sErr(400, "Belum ada kalimat biru yang diubah.");
+        const dr = await readDraft(c.base), edits = cleanEdits(c.items, body.edits || dr.edits);
+        const paras = body.paras ? cleanParas(c.a, body.paras) : null;
+        const list = paras ? studio.parasToEdits(c.a.paragraphs, paras) : studio.editsFromItems(c.items, edits);
+        if (!list.length) throw sErr(400, "Belum ada perubahan di dokumen.");
         let r;
         if (c.pdf) { const w = studio.rewriteParagraphs(c.a.paragraphs, list); r = { buf: await studio.plainDocx(c.a.paragraphs, w.texts, null), applied: w.applied, skipped: [] }; }
         else r = await studio.applyEdits(c.buf, list);
         if (r.skipped.length && body.force !== true) throw Object.assign(sErr(409, r.skipped.length + " kalimat tidak bisa diganti otomatis (paragraf berformat rumit). Ganti manual lewat Word, atau kirim tetap dengan menandai \"kirim tetap\"."), { skipped: r.skipped });
         if (!c.orderId) throw sErr(409, "Mahasiswa belum membuat pesanan untuk dokumen ini, jadi belum ada tujuan pengiriman. Simpan draf atau unduh Word dulu.");
         const o = await orders.deliverStudio(c.orderId, r.buf);
-        await fsp.writeFile(draftFile(c.base), JSON.stringify({ edits, savedAt: Date.now(), sentAt: Date.now() }), { mode: 0o600 });
+        await fsp.writeFile(draftFile(c.base), JSON.stringify({ edits, paras: paras || dr.paras || {}, spans: dr.spans || {}, savedAt: Date.now(), sentAt: Date.now() }), { mode: 0o600 });
         res.json({ ok: true, applied: r.applied, skipped: r.skipped, status: o.status });
       } catch (e) { sFail(res, e, "kirim"); }
     });

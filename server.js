@@ -75,6 +75,13 @@ function themeCss(t = {}) {
 let store = JSON.parse(fs.readFileSync(DATA, "utf8"));
 let writing = Promise.resolve();
 
+/* Nomor WhatsApp admin: satu sumber, yaitu pengaturan Catatan Akademik (admin_wa_number).
+   Panel lama, beranda, dan blog membaca nomor yang sama; menyimpan di panel lama ikut memperbarui sumbernya. */
+const validWa = v => /^\d{8,15}$/.test(String(v || ""));
+const waNow = () => { try { const n = typeof pf !== "undefined" && pf.settings ? String(pf.settings.get("admin_wa_number") || "") : ""; return validWa(n) ? n : ""; } catch { return ""; } };
+const withWa = st => { const n = waNow(); return n ? { ...(st || {}), waNumber: n } : (st || {}); };
+const syncWaFromPanel = next => { try { const n = String((next.settings || {}).waNumber || "").replace(/\D/g, ""); if (validWa(n) && n !== waNow()) pf.settings.set({ admin_wa_number: n }, "panel lama"); } catch (e) { console.error("[nextaja] sinkron nomor WA gagal:", e.message); } };
+
 async function saveStore(next) {
   // tulis atomik + simpan cadangan (maks 40 terakhir)
   writing = writing.then(async () => {
@@ -227,9 +234,9 @@ app.post("/ms/admin/logout", (req, res) => {
 app.get("/ms/store", (req, res) => { res.set("Cache-Control", "no-store"); res.json(publicStore()); });
 
 app.get("/ms/admin/me", (req, res) => res.json({ authed: isAuthed(req) }));
-app.get("/ms/admin/store", requireAdmin, (req, res) => res.json({ store, icons: ICONS, themes: THEMES }));
+app.get("/ms/admin/store", requireAdmin, (req, res) => res.json({ store: { ...store, settings: withWa(store.settings) }, icons: ICONS, themes: THEMES }));
 app.put("/ms/admin/store", requireAdmin, express.json({ limit: "1mb" }), async (req, res) => {
-  try { const next = clean(req.body || {}); await saveStore(next); res.json({ ok: true, store: next }); }
+  try { const next = clean(req.body || {}); await saveStore(next); syncWaFromPanel(next); res.json({ ok: true, store: { ...next, settings: withWa(next.settings) } }); }
   catch (e) { console.error(e); res.status(500).json({ error: "Gagal menyimpan." }); }
 });
 
@@ -273,7 +280,7 @@ app.post("/ms/admin/restore", requireAdmin, express.json({ limit: "4kb" }), asyn
 
 /* ---------------- halaman ---------------- */
 function publicStore() {
-  const st = store.settings || {};
+  const st = withWa(store.settings);
   const show = st.showPrices === true;
   return {
     settings: show ? st : { ...st, analisaPrice: "" },
@@ -310,7 +317,8 @@ app.get(["/", "/index.html"], async (req, res) => {
   const st = store.settings || {};
     res.type("html").send(html.replaceAll("{{SITE}}", SITE)
     .replace('<style id="theme-vars"></style>', `<style id="theme-vars">${themeCss(st.theme)}</style>`)
-    .replace('<script id="store-data" type="application/json">null</script>', `<script id="store-data" type="application/json">${json}</script>`));
+    .replace('<script id="store-data" type="application/json">null</script>', `<script id="store-data" type="application/json">${json}</script>`)
+    .replace(/("waNumber":")\d*(")/, (m, a, b) => a + (waNow() || (m.match(/\d+/) || [""])[0]) + b));
 });
 /* ---------------- admin Catatan Akademik: login, peran, dan sesi sendiri (terpisah dari admin nextaja) ---------------- */
 const caDb = require("./parafrase/db").open(process.env.PARAFRASE_DB || path.join(ROOT, "data", "parafrase.db"));
@@ -323,7 +331,7 @@ if (!process.env.CA_ADMIN_PASSWORD) console.warn("[!] CA_ADMIN_PASSWORD belum di
 app.get(/^\/admin\/(parafrase|layanan)\/?$/, (req, res, next) => (ACAD_HOSTS.length && !isAcadHost(req) ? res.redirect(302, `${ACAD}/admin/`) : next()));
 
 /* ---------------- blog + akun customer ---------------- */
-const extra = require("./blog-akun")({ app, express, requireAdmin, sameOrigin, getCookie, SECURE_COOKIE, ROOT, SITE: ACAD, getSettings: () => store.settings, getCa: k => (typeof pf !== "undefined" && pf.settings ? pf.settings.get(k) : ""), getTexts: () => (typeof pf !== "undefined" ? pf.texts : null), });
+const extra = require("./blog-akun")({ app, express, requireAdmin, sameOrigin, getCookie, SECURE_COOKIE, ROOT, SITE: ACAD, getSettings: () => withWa(store.settings), getCa: k => (typeof pf !== "undefined" && pf.settings ? pf.settings.get(k) : ""), getTexts: () => (typeof pf !== "undefined" ? pf.texts : null), });
 
 /* ---------------- Cek dan Parafrase Mandiri (modul terpisah, lihat parafrase/) ---------------- */
 /* semua layanan (Bedah, Cek & Parafrase, Audit, pesanan) wajib login: alamat email dipakai untuk kabar dan info layanan */
@@ -338,6 +346,12 @@ app.post("/ms/parafrase/order", needLogin);
 app.post("/ms/layanan/order", needLogin);
 app.post("/ms/audit/order", needLogin);
 const pf = require("./parafrase")({ app, express, requireAdmin, sameOrigin, ROOT, db: caDb, userFrom: extra.userFrom, users: { byId: extra.userById, byEmail: extra.userByEmail } });
+/* Sinkron satu kali: bila nomor belum pernah diubah di Pengaturan CA tetapi panel lama berisi nomor lain, panel lama yang dipakai. */
+try {
+  const touched = caDb.prepare("SELECT 1 FROM settings_log WHERE key='admin_wa_number' LIMIT 1").get();
+  const old = String((store.settings || {}).waNumber || "").replace(/\D/g, "");
+  if (!touched && validWa(old) && old !== waNow()) { pf.settings.set({ admin_wa_number: old }, "sinkron"); console.log("[nextaja] nomor WhatsApp admin disamakan dengan panel lama."); }
+} catch (e) { console.error("[nextaja] sinkron nomor WA dilewati:", e.message); }
 recordHit = (q, s) => { if (!ACAD_HOSTS.length || isAcadHost(q)) pf.traffic.record(q, s); };
 require("./admin-ca")({ app, express, db: caDb, auth: caAuth, requireAdmin, blog: extra, settings: pf.settings, orders: pf.orders, traffic: pf.traffic, texts: pf.texts, pages: pf.pages, ROOT, UPLOADS, sharp, ACAD });
 

@@ -55,25 +55,30 @@ test("WhatsApp: pesan masuk outbox tanpa duplikat; webhook mengirim; tanpa webho
   try {
     const j = await paid(t, "w");
     let rows = t.m.db.prepare("SELECT kind,status,to_number,text FROM wa_outbox WHERE order_id=?").all(j.orderId);
-    assert.deepStrictEqual(rows.map(r => [r.kind, r.status, r.to_number]), [["dikonfirmasi", "manual", "6281234567890"]]);
-    assert.ok(rows[0].text.includes(j.token));
-    t.m.orders.confirmPayment; // idempoten: kirim ulang jenis sama tidak menggandakan
+    assert.deepStrictEqual(rows, [], "konfirmasi bayar tidak mengirim WA: hanya 2 pesan (selesai, ditolak)");
     const o = t.m.orders.byToken(j.token);
-    assert.strictEqual(t.m.notifier.send("dikonfirmasi", o), false);
+    assert.strictEqual(t.m.notifier.send("selesai", o), true);
+    rows = t.m.db.prepare("SELECT kind,status,to_number,text FROM wa_outbox WHERE order_id=?").all(j.orderId);
+    assert.deepStrictEqual(rows.map(r => [r.kind, r.status, r.to_number]), [["selesai", "manual", "6281234567890"]]);
+    assert.ok(rows[0].text.includes(j.token));
+    assert.strictEqual(t.m.notifier.send("selesai", o), false, "jenis sama tidak menggandakan");
     // webhook
     const calls = []; const http = require("http");
     const hook = http.createServer((q, s) => { let b = ""; q.on("data", d => b += d); q.on("end", () => { calls.push({ auth: q.headers.authorization, body: JSON.parse(b) }); s.statusCode = 200; s.end("ok"); }); }).listen(0);
     process.env.PARAFRASE_WA_WEBHOOK = "http://127.0.0.1:" + hook.address().port; process.env.PARAFRASE_WA_SECRET = "rahasia";
     try {
       t.m.orders.startWork(j.orderId);
+      assert.strictEqual(t.m.db.prepare("SELECT COUNT(*) n FROM wa_outbox WHERE kind='dikerjakan'").get().n, 0, "mulai dikerjakan tidak kirim WA");
+      t.m.db.prepare("DELETE FROM wa_outbox WHERE kind='selesai'").run();
+      assert.strictEqual(t.m.notifier.send("selesai", t.m.orders.byToken(j.token)), true);
       assert.strictEqual(await t.m.notifier.flush(), 1);
       assert.strictEqual(calls[0].auth, "Bearer rahasia"); assert.strictEqual(calls[0].body.to, "6281234567890");
-      assert.strictEqual(t.m.db.prepare("SELECT status FROM wa_outbox WHERE kind='dikerjakan'").get().status, "sent");
+      assert.strictEqual(t.m.db.prepare("SELECT status FROM wa_outbox WHERE kind='selesai'").get().status, "sent");
     } finally { delete process.env.PARAFRASE_WA_WEBHOOK; delete process.env.PARAFRASE_WA_SECRET; hook.close(); }
   } finally { t.srv.close(); }
 });
 
-test("retensi: pengingat 3 jam sebelum, file dihapus tepat waktu, unduhan ditolak sesudahnya", async () => {
+test("retensi: tanpa pengingat WA, file dihapus tepat waktu, unduhan ditolak sesudahnya", async () => {
   const t = await boot();
   const fs = require("fs"), path = require("path");
   try {
@@ -89,9 +94,7 @@ test("retensi: pengingat 3 jam sebelum, file dihapus tepat waktu, unduhan ditola
     assert.strictEqual(await t.m.orders.sweepRetention(now + 10 * 3600e3), 0);
     assert.strictEqual(db.prepare("SELECT COUNT(*) n FROM wa_outbox WHERE kind='pengingat'").get().n, 0);
     assert.strictEqual(await t.m.orders.sweepRetention(now + 21.5 * 3600e3), 0);
-    assert.strictEqual(db.prepare("SELECT COUNT(*) n FROM wa_outbox WHERE kind='pengingat'").get().n, 1);
-    await t.m.orders.sweepRetention(now + 21.6 * 3600e3);
-    assert.strictEqual(db.prepare("SELECT COUNT(*) n FROM wa_outbox WHERE kind='pengingat'").get().n, 1, "pengingat tidak boleh ganda");
+    assert.strictEqual(db.prepare("SELECT COUNT(*) n FROM wa_outbox WHERE kind='pengingat'").get().n, 0, "tidak ada pengingat WA ke pelanggan");
     assert.strictEqual(await t.m.orders.sweepRetention(now + 25 * 3600e3), 1);
     for (const f of [o.original_file, resRel]) assert.ok(!fs.existsSync(path.join(t.root, "data/private", f)), f);
     assert.strictEqual(db.prepare("SELECT COUNT(*) n FROM findings WHERE order_id=? AND text<>''").get(j.orderId).n, 0);
@@ -132,6 +135,6 @@ test("alur admin: Word berwarna -> unggah revisi -> cek ulang -> kirim bersih ->
     assert.ok(cd.includes("Rahman (2020)") && !cd.includes("commentRange") && !cd.includes("0A0B0C") && !out.file("word/comments.xml"));
     const msg = t.m.db.prepare("SELECT text FROM wa_outbox WHERE kind='selesai'").get();
     assert.ok(msg && msg.text.includes(j.token));
-    assert.ok(t.m.db.prepare("SELECT delete_at-sent_at d FROM orders WHERE id=?").get(j.orderId).d === 24 * 3600e3);
+    assert.ok(t.m.db.prepare("SELECT delete_at-sent_at d FROM orders WHERE id=?").get(j.orderId).d === t.m.settings.get("retention_hours") * 3600e3);
   } finally { t.srv.close(); }
 });

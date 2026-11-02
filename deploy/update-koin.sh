@@ -13,7 +13,7 @@
 set -euo pipefail
 REF="${1:?pakai: update-koin.sh <commit>}"
 APP="${APP:-/var/www/mahyra-serv}"
-KNOWN=(d3321cb ea4b557 4a8953e 3f29ccc e31a933 08cf5f2 12cfe4a dc31d36 c7f60c8 1b5c15a ec8523c 091972e 54d72bc 1574580 b623210 b3ad6ff 40d7848 bc2a821 256add9 1c861f1 8aaef92 4adfff0 ac04263 fbd0646 c5aed04 1366e15 3520907 beee9ca 30de5e8 8430614 e9dc347 24d1beb c8ef2a9 6c293b0 1dd323d 394b043 453b928 07d62b2 25df56b feabda8 cc24c43 728e5dd a5060eb bef8f54 c2a6ac3 4e42d58 825ff86 2857817 8b3ca4a 2857817 697e6cf 0253bf6)
+KNOWN=(b89b9d4 d3321cb ea4b557 4a8953e 3f29ccc e31a933 08cf5f2 12cfe4a dc31d36 c7f60c8 1b5c15a ec8523c 091972e 54d72bc 1574580 b623210 b3ad6ff 40d7848 bc2a821 256add9 1c861f1 8aaef92 4adfff0 ac04263 fbd0646 c5aed04 1366e15 3520907 beee9ca 30de5e8 8430614 e9dc347 24d1beb c8ef2a9 6c293b0 1dd323d 394b043 453b928 07d62b2 25df56b feabda8 cc24c43 728e5dd a5060eb bef8f54 c2a6ac3 4e42d58 825ff86 2857817 8b3ca4a 2857817 697e6cf 0253bf6)
 # Versi yang pernah sukses dirilis oleh skrip ini dicatat otomatis di VPS dan ikut dianggap dikenal: tidak perlu menambah daftar KNOWN lagi.
 REL=/root/.koin-released; [ -f "$REL" ] && while read -r k; do [ -n "$k" ] && KNOWN+=("$k"); done < "$REL"
 GH="${GH:-https://codeload.github.com/akihabara-fuji/akihabara-store/tar.gz}"
@@ -75,7 +75,8 @@ c(){ curl -s -o /dev/null -w '%{http_code}' --resolve "$1:443:127.0.0.1" "https:
 get(){ curl -fsS --resolve "$1:443:127.0.0.1" "https://$1$2"; }
 has(){ local b; b=$(get "$1" "$2") || return 1; [[ "$b" == *"$3"* ]]; }
 CA="${CA_HOST:-catatanakademik.com}"
-for u in / /blog /sitemap.xml /robots.txt /admin/ /layanan /portal-ut /kalkulator-nilai-ut /ms/layanan/config /ms/galeri /buat-cv-ats /sampul-tugas /surat-lamaran /tracker-kelulusan /kalender-akademik /panduan-maba; do x=$(c $CA "$u"); echo "$CA$u $x"; [ "$x" = 200 ]; done
+for u in / /blog /sitemap.xml /robots.txt /admin/ /layanan /portal-ut /kalkulator-nilai-ut /ms/layanan/config /ms/galeri /buat-cv-ats /sampul-tugas /surat-lamaran /tracker-kelulusan /kalender-akademik /panduan-maba; do x=$(c $CA "$u"); echo "$CA$u $x"; [ "$x" = 200 ] || { [ "$x" = 301 ] && case "$u" in /buat-cv-ats|/surat-lamaran) true;; *) false;; esac; }; done
+for u in /ruangakademikut /ruangakademikut/layanan /ruangakademikut/assets/studio.js; do x=$(c $CA "$u"); echo "$CA$u $x"; [ "$x" = 200 ]; done
 x=$(c $CA /ruangakademikut/audit); echo "$CA/ruangakademikut/audit $x"; [ "$x" = 200 ] || [ "$x" = 301 ]
 has $CA /admin/ 'Admin · Catatan Akademik' || { echo "Panel admin CA tidak tampil di /admin"; false; }
 has $CA /ms/layanan/config 'metopen' || { echo "Konfigurasi layanan tidak terbaca"; false; }
@@ -87,5 +88,5 @@ relock
 echo "$REF" >> "$REL"
 
 echo
-echo "SELESAI. Cek manual: login https://$CA/admin/ -> Blog -> 'Impor file .md' (1 contoh jadi draf) -> Preview; /ruangakademikut/audit mode gelap; /koin harus dialihkan ke /layanan."
+echo "SELESAI. Versi $REF aktif."
 echo "Rollback: ca-lock unlock; xargs -a $BK.files -I{} rm -f $APP/{}; tar xzf $BK -C $APP && pm2 restart nextaja --update-env; ca-lock lock"

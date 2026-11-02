@@ -1023,7 +1023,7 @@ var links=[].slice.call(document.querySelectorAll(".ax-left a")),hs=links.map(fu
   /* ============================== LAB STUDIO (satu kesatuan) ============================== */
   app.get("/ms/labstudio", (req, res, next) => {
     if (ACAD_ONLY) return res.redirect(301, (process.env.SITE_URL || "https://nextaja.com").replace(/\/+$/, "") + "/ms/labstudio");
-    const wa = String(SOCIAL().waNumber || "6285722227544").replace(/\D/g, "");
+    const wa = String(SOCIAL().waNumber || "").replace(/\D/g, "");
     const body = `<section class="pg"><div class="wrap">
       <span class="eyebrow">Lab Studio</span>
       <h1>Preset, template, dan Studio Konten. Satu tempat.</h1>
@@ -1109,7 +1109,7 @@ var links=[].slice.call(document.querySelectorAll(".ax-left a")),hs=links.map(fu
 
   /* ---- kebijakan privasi & ketentuan ---- */
   const legalPage = (title, desc, pth, html) => (req, res) => {
-    const wa = String((SOCIAL().waNumber) || "6285722227544");
+    const wa = String((SOCIAL().waNumber) || "");
     const body = `<section class="pg"><div class="wrap narrow"><article class="card" style="padding:28px;line-height:1.75">${html.replace(/\{WA\}/g, `<a href="https://wa.me/${wa}" rel="noopener">WhatsApp admin</a>`)}</article></div></section>`;
     res.type("html").send(layout({ title, desc, path: pth, body }));
   };
@@ -1161,7 +1161,7 @@ var links=[].slice.call(document.querySelectorAll(".ax-left a")),hs=links.map(fu
       </div></div></section>
       <script>
       (function(){var NEXT=(function(){var n=new URLSearchParams(location.search).get("next")||"";return /^\\/[a-zA-Z0-9\\/_\\-?=&.%]*$/.test(n)&&n.indexOf("//")!==0?n:"/ms/akun"})();var mode="in",f=document.getElementById("f"),err=document.getElementById("err");
-      var w=${JSON.stringify(String((SOCIAL().waNumber) || "6285722227544"))};document.getElementById("wa").href="https://wa.me/"+w+"?text="+encodeURIComponent("Halo admin nextaja, saya lupa sandi akun saya.");
+      var w=${JSON.stringify(String((SOCIAL().waNumber) || ""))};document.getElementById("wa").href="https://wa.me/"+w+"?text="+encodeURIComponent("Halo admin nextaja, saya lupa sandi akun saya.");
       document.querySelectorAll(".tabs2 button").forEach(function(b){b.addEventListener("click",function(){mode=b.dataset.t;
         document.querySelectorAll(".tabs2 button").forEach(function(x){x.setAttribute("aria-pressed",x===b)});
         document.getElementById("lName").hidden=mode!=="up";document.getElementById("lPromo").hidden=mode!=="up";document.getElementById("hint").hidden=mode!=="up";

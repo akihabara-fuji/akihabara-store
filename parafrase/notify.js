@@ -34,15 +34,13 @@ module.exports = function createNotifier({ db, settings, fetchImpl }) {
 
   const site = () => (process.env.ACAD_URL || process.env.SITE_URL || "https://nextaja.com").replace(/\/+$/, "");
   const link = o => `${site()}${process.env.ACAD_URL ? "" : "/ruangakademikut"}/pesanan/${o.public_token}`;
+  /* Hanya dua pesan ke pelanggan: yang butuh tindakan (bukti bayar ditolak) dan hasil selesai. Status lain terlihat di tautan pesanan. */
+  const days = cfg => Math.max(1, Math.round((cfg.retention_hours || 720) / 24));
   const T = {
-    dikonfirmasi: o => `Halo! Pembayaran pesanan ${o.id} sudah dikonfirmasi. Pesananmu masuk antrean Cek dan Parafrase Mandiri. Pantau di sini: ${link(o)}`,
     ditolak: o => `Halo, bukti bayar pesanan ${o.id} belum bisa diverifikasi (${o.reject_reason || "tidak sesuai"}). Silakan unggah bukti yang benar di: ${link(o)}`,
-    dikerjakan: o => `Pesanan ${o.id} mulai dikerjakan. Kami kabari lagi setelah selesai. Pantau: ${link(o)}`,
-    selesai: (o, cfg) => `Pesanan ${o.id} selesai! Unduh hasil Word-nya di: ${link(o)} . File dihapus otomatis ${cfg.retention_hours} jam setelah ini, jadi segera unduh. Ada 1x revisi gratis dalam waktu itu, hubungi admin (nomor di bawah).`,
-    pengingat: (o, cfg) => `Pengingat: file pesanan ${o.id} akan dihapus sekitar ${cfg.reminder_before_delete_hours} jam lagi. Unduh sekarang di: ${link(o)}`,
-    kedaluwarsa: o => `Pesanan ${o.id} kedaluwarsa karena pembayaran belum diterima. Kamu bisa membuat pesanan baru kapan saja di ${site()}${process.env.ACAD_URL ? "/" : "/ruangakademikut"}`,
+    selesai: (o, cfg) => `Pesanan ${o.id} selesai! Unduh hasil Word-nya di: ${link(o)} . File dihapus otomatis ${days(cfg)} hari setelah diunggah, jadi segera unduh. Ada 1x revisi gratis, hubungi admin (nomor di bawah).`,
   };
-  const footer = cfg => `\n\nPesan otomatis, mohon tidak dibalas ke nomor ini. Pertanyaan atau revisi? Hubungi admin: https://wa.me/${cfg.admin_wa_number || "6285722227544"}`;
+  const footer = cfg => cfg.admin_wa_number ? `\n\nPesan otomatis, mohon tidak dibalas ke nomor ini. Pertanyaan atau revisi? Hubungi admin: https://wa.me/${cfg.admin_wa_number}` : `\n\nPesan otomatis, mohon tidak dibalas ke nomor ini.`;
   function send(kind, o, now = Date.now()) {
     const cfg = settings.getAll();
     return enqueue({ orderId: o.id, to: o.wa_number, kind, text: T[kind](o, cfg) + footer(cfg), dedupe: `${o.id}:${kind}:${o.revision_no || 0}`, now });

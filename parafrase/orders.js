@@ -294,7 +294,6 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
       }
       event(orderId, "dikonfirmasi", source, now);
       const done = db.prepare("SELECT * FROM orders WHERE id=?").get(orderId);
-      notifier.send("dikonfirmasi", done, now);
       return done;
     })();
   }
@@ -325,7 +324,6 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
         db.prepare("UPDATE orders SET status='kedaluwarsa', updated_at=? WHERE id=?").run(now, r.id);
         db.prepare("UPDATE fast_reservations SET status='released' WHERE order_id=? AND status='reserved'").run(r.id);
         event(r.id, "kedaluwarsa", null, now);
-        notifier.send("kedaluwarsa", db.prepare("SELECT * FROM orders WHERE id=?").get(r.id), now);
       })();
       for (const f of [r.original_file, r.proof_path]) if (f) { try { await fsp.unlink(priv(f)); } catch {} }
       await dropAttach(r.attach_json);
@@ -417,7 +415,6 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
       if (!["baru_dibayar", "dianalisis"].includes(o.status)) throw Object.assign(new Error("Pesanan ini tidak bisa dimulai: " + o.status), { status: 409 });
       db.prepare("UPDATE orders SET status='dikerjakan', work_started_at=?, updated_at=? WHERE id=?").run(now, now, orderId);
       event(orderId, "dikerjakan", null, now);
-      notifier.send("dikerjakan", db.prepare("SELECT * FROM orders WHERE id=?").get(orderId), now);
       return db.prepare("SELECT * FROM orders WHERE id=?").get(orderId);
     })();
   }
@@ -434,8 +431,11 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
   /* ---------- retensi: pengingat dan penghapusan file ---------- */
   async function sweepRetention(now = Date.now()) {
     const cfg = settings.getAll(); let deleted = 0;
+    const ret = (cfg.retention_hours || 720) * 3600e3;
     for (const o of db.prepare("SELECT * FROM orders WHERE status='terkirim' AND delete_at IS NOT NULL AND files_deleted_at IS NULL").all()) {
-      if (o.delete_at <= now) {
+      /* Masa simpan dihitung dari saat diunggah (bukan dari pengiriman), tetapi pelanggan tetap punya minimal 3 hari setelah hasil dikirim. */
+      const due = Math.min(o.delete_at, Math.max((o.created_at || 0) + ret, (o.sent_at || now) + 3 * 86400e3));
+      if (due <= now) {
         for (const f of [o.original_file, o.result_path, o.revised_path, o.proof_path]) if (f) { try { await fsp.unlink(priv(f)); } catch {} }
         await dropAttach(o.attach_json);
         db.prepare("UPDATE orders SET result_text=NULL, brief=NULL, attach_json=NULL WHERE id=?").run(o.id);
@@ -443,9 +443,6 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
         db.prepare("DELETE FROM uploads WHERE order_id=?").run(o.id);
         db.prepare("UPDATE findings SET text='' WHERE order_id=?").run(o.id);
         event(o.id, "file_dihapus", null, now); deleted++;
-      } else if (cfg.reminder_before_delete_hours > 0 && !o.reminder_sent_at && o.delete_at - cfg.reminder_before_delete_hours * 3600e3 <= now) {
-        notifier.send("pengingat", o, now);
-        db.prepare("UPDATE orders SET reminder_sent_at=? WHERE id=?").run(now, o.id);
       }
     }
     return deleted;

@@ -11,7 +11,7 @@ const DEFS = {
   revision_free_count:          { type: "int",  min: 0, max: 10, def: 1, pub: true },
   revision_price_per_word:      { type: "int",  min: 1, max: 1000, def: 20, pub: true },
   file_max_mb:                  { type: "int",  min: 1, max: 100, def: 25, pub: true },
-  retention_hours:              { type: "int",  min: 1, max: 720, def: 24, pub: true },
+  retention_hours:              { type: "int",  min: 1, max: 720, def: 720, pub: true },
   reminder_before_delete_hours: { type: "int",  min: 0, max: 72, def: 3 },
   long_sentence_words:          { type: "int",  min: 10, max: 100, def: 35 },
   preview_open_sentences:       { type: "int",  min: 0, max: 8, def: 1 },
@@ -21,7 +21,7 @@ const DEFS = {
   unique_code_enabled:          { type: "bool", def: true, pub: true },
   unique_code_max:              { type: "int",  min: 1, max: 999, def: 99 },
   payment_window_minutes:       { type: "int",  min: 5, max: 1440, def: 60, pub: true },
-  admin_wa_number:              { type: "str",  re: WA, allowEmpty: true, def: "6285722227544", pub: true },
+  admin_wa_number:              { type: "str",  re: WA, allowEmpty: true, def: "", pub: true },
   update_group_url:             { type: "url",  allowEmpty: true, def: "https://chat.whatsapp.com/GABKsK7XnfjHpZe8iC7A7A", pub: true },
   ca_instagram_url:             { type: "url",  allowEmpty: true, def: "", pub: true },   // tampil otomatis di blok komunitas bawah artikel blog
   ca_tiktok_url:                { type: "url",  allowEmpty: true, def: "", pub: true },

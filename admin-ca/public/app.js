@@ -31,15 +31,30 @@
 
   let ME = null, ORDER_COUNTS = {}, DIRTY = false;
   const ALL = ["owner", "editor", "cs"], ED = ["owner", "editor"], CS = ["owner", "cs"], OWN = ["owner"];
-  const GROUP_NAV = [["bayar", "Menunggu pembayaran"], ["konfirmasi", "Menunggu konfirmasi"], ["proses", "Sedang diproses"], ["revisi", "Perlu revisi"], ["selesai", "Selesai"], ["batal", "Dibatalkan"]];
+  /* Menu samping: 10 item. Item yang punya beberapa halaman memakai tab di atas isi halaman (TABG), bukan sub-menu. */
+  const TABG = {
+    pesanan: [["orders", "Semua pesanan", CS], ["payments", "Konfirmasi bayar", CS], ["dokumen", "Mahasiswa & file", OWN], ["tools/parafrase", "Antrean Cek & Parafrase", CS], ["tools/layanan", "Kirim hasil", CS]],
+    artikel: [["posts", "Daftar artikel", ED], ["posts/new", "Tulis artikel", ED], ["taxonomy", "Kategori & tag", ED], ["comments", "Komentar", ED]],
+    media: [["media", "Pustaka", ED], ["images", "Gambar situs", ED]],
+    tampilan: [["editor", "Editor halaman", OWN], ["texts", "Teks & nama", OWN], ["testimonials", "Testimoni", ED], ["tema", "Tema & font", OWN]],
+    laporan: [["reports", "Statistik", OWN], ["traffic", "Pengunjung & konten", ED]],
+    pengaturan: [["settings", "Umum", OWN], ["seo", "SEO & sitemap", OWN], ["admins", "Admin & peran", OWN], ["log", "Log aktivitas", OWN]],
+  };
   const NAV = [
-    { items: [["dashboard", "Dashboard", "home", ALL], ["payments", "Konfirmasi Pembayaran", "card", CS], ["traffic", "Pengunjung & Konten", "chart", ED]] },
-    { h: "Konten", items: [["posts", "Artikel Blog", "doc", ED], ["posts/new", "Tulis Artikel", "pen", ED], ["taxonomy", "Kategori & Tag", "tag", ED], ["media", "Media", "img", ED], ["comments", "Komentar", "chat", ED], ["studio", "Studio Posting Sosmed", "send", ED]] },
-    { h: "Tampilan Situs", items: [["editor", "Editor Halaman", "pen", OWN], ["images", "Gambar Situs", "img", ED], ["testimonials", "Testimoni", "chat", ED], ["texts", "Teks & Nama", "pen", OWN], ["tema", "Tema & Font", "img", OWN]] },
-    { h: "Pesanan", items: [["orders", "Pesanan Layanan", "box", CS, true], ["tools/parafrase", "Antrean Cek & Parafrase", "list", CS], ["tools/layanan", "Kirim Hasil Layanan", "send", CS], ["dokumen", "Dokumen Saya", "doc", OWN]] },
-    { h: "Pengguna", items: [["customers", "Pelanggan", "users", CS]] },
-    { h: "Lainnya", items: [["services", "Layanan & Harga", "price", OWN], ["reports", "Laporan & Statistik", "chart", OWN], ["settings", "Pengaturan Website", "cog", OWN], ["seo", "SEO & Sitemap", "search", OWN], ["admins", "Admin & Peran", "shield", OWN], ["log", "Log Aktivitas", "clock", OWN]] },
+    { items: [["dashboard", "Dashboard", "home", ALL]] },
+    { h: "Pesanan", items: [["g:pesanan", "Pesanan", "box", CS], ["customers", "Pelanggan", "users", CS]] },
+    { h: "Isi situs", items: [["g:artikel", "Artikel", "doc", ED], ["g:media", "Media", "img", ED], ["studio", "Studio Sosmed", "send", ED], ["g:tampilan", "Tampilan", "pen", ED]] },
+    { h: "Pengaturan", items: [["services", "Layanan & Harga", "price", OWN], ["g:laporan", "Laporan", "chart", ED], ["g:pengaturan", "Pengaturan", "cog", OWN]] },
   ];
+  const baseOf = h => String(h || "").split("?")[0];
+  const tabOn = (r, b) => b === r || (r === "orders" && b.startsWith("orders/")) || (r === "posts" && b.startsWith("posts/") && b !== "posts/new") || (r === "dokumen" && b.startsWith("dokumen/"));
+  const groupOf = h => { const b = baseOf(h); for (const [k, tabs] of Object.entries(TABG)) if (tabs.some(([r]) => tabOn(r, b))) return k; return null; };
+  function tabsHtml(h) {
+    const k = groupOf(h); if (!k) return "";
+    const tabs = TABG[k].filter(t => allowed(t[2])); if (tabs.length < 2) return "";
+    const b = baseOf(h);
+    return `<nav class="gtabs" aria-label="Bagian menu">${tabs.map(([r, l]) => `<a href="#/${r}" class="${tabOn(r, b) ? "on" : ""}">${esc(l)}${r === "payments" ? '<span class="cnt" data-c="konfirmasi"></span>' : ""}</a>`).join("")}</nav>`;
+  }
 
   /* ---------------- API ---------------- */
   async function api(path, { method, json, form, raw } = {}) {
@@ -87,7 +102,7 @@
       <label class="f">Sandi<input class="in" name="p" type="password" autocomplete="current-password" required></label>
       <p class="err" id="le" role="alert"></p>
       <button class="btn pri" type="submit">Masuk</button>
-      <p class="small faint">Panel ini khusus Catatan Akademik. Akun dibuat oleh pemilik di menu Admin &amp; Peran.</p></form></main>`;
+      <p class="small faint">Panel ini khusus Catatan Akademik. Akun dibuat oleh pemilik di Pengaturan, tab Admin &amp; peran.</p></form></main>`;
     $("#lf").addEventListener("submit", async e => {
       e.preventDefault(); const f = e.target, b = $("button[type=submit]", f); $("#le").textContent = "";
       await busy(b, async () => {
@@ -99,14 +114,15 @@
   }
 
   /* ---------------- kerangka ---------------- */
-  const SUBS_OPEN = () => { let v = null; try { v = localStorage.getItem("ca-subs"); } catch {} return v === null ? /^#\/orders/.test(location.hash) : v === "1"; };
   const allowed = roles => ME && roles.includes(ME.role);
   function shell() {
     const nav = NAV.map(g => {
       const items = g.items.filter(it => allowed(it[3]));
       if (!items.length) return "";
-      return (g.h ? `<h3>${g.h}</h3>` : "") + items.map(([r, label, ic, , subs]) => `<a class="nav" href="#/${r}" data-r="${r}">${ICON[ic]}<span>${label}</span>${r === "orders" ? '<span class="cnt" data-c="semua"></span>' : r === "payments" ? '<span class="cnt" data-c="konfirmasi"></span>' : ""}</a>` +
-        (subs ? `<button type="button" class="nav sub subtog" id="subtog" aria-expanded="${SUBS_OPEN()}"><span>Status pesanan</span><i aria-hidden="true">▾</i></button><div class="subs" id="subs" ${SUBS_OPEN() ? "" : "hidden"}>` + GROUP_NAV.map(([k, l]) => `<a class="nav sub" href="#/orders?group=${k}" data-r="orders?group=${k}">${l}<span class="cnt" data-c="${k}"></span></a>`).join("") + "</div>" : "")).join("");
+      return (g.h ? `<h3>${g.h}</h3>` : "") + items.map(([r, label, ic]) => {
+        const k = r.replace(/^g:/, ""), to = r.startsWith("g:") ? (TABG[k].find(t => allowed(t[2])) || [])[0] : r;
+        return `<a class="nav" href="#/${to}" data-r="${k}">${ICON[ic]}<span>${label}</span>${k === "pesanan" ? '<span class="cnt" data-c="konfirmasi"></span>' : ""}</a>`;
+      }).join("");
     }).join("");
     $("#root").innerHTML = `<div class="shell">
       <aside class="side" id="side" aria-label="Menu admin"><a class="brand" href="#/dashboard"><img src="/assets/ut/ca/logo-96.png" alt="" width="34" height="34"><span><b>Catatan Akademik</b><small>Admin Panel</small></span></a>
@@ -119,7 +135,6 @@
     $("#logout").onclick = async () => { await api("/ms/admin/ca/logout", { json: {} }).catch(() => {}); ME = null; renderLogin(); };
     $("#theme").onclick = () => { const t = document.documentElement.dataset.theme === "dark" ? "light" : "dark"; document.documentElement.dataset.theme = t; store("ca-admin-theme", t); };
     $("#burger").onclick = () => { const o = document.body.classList.toggle("nav-open"); $("#burger").setAttribute("aria-expanded", o); };
-    const tg = $("#subtog"); if (tg) tg.onclick = () => { const o = $("#subs").hidden; $("#subs").hidden = !o; tg.setAttribute("aria-expanded", o); try { localStorage.setItem("ca-subs", o ? "1" : "0"); } catch {} };
     $("#side").addEventListener("click", e => { if (e.target.closest("a")) document.body.classList.remove("nav-open"); });
     refreshCounts();
   }
@@ -130,9 +145,11 @@
   function setPage(title, sub, html) {
     document.title = `${title} · Admin Catatan Akademik`;
     $("#ptitle").textContent = title; $("#psub").textContent = sub || "";
-    $("#page").innerHTML = html;
     const h = location.hash.replace(/^#\//, "");
-    $$(".side a.nav").forEach(a => a.classList.toggle("on", a.dataset.r === h || (a.dataset.r === h.split("?")[0] && !$(`.side a.nav[data-r="${CSS.escape(h)}"]`))));
+    $("#page").innerHTML = tabsHtml(h) + html;
+    const gk = groupOf(h) || baseOf(h);
+    $$(".side a.nav").forEach(a => a.classList.toggle("on", a.dataset.r === gk));
+    $$(".cnt[data-c]").forEach(c => { const n = ORDER_COUNTS[c.dataset.c]; c.textContent = n ? num(n) : ""; });
   }
   const loading = () => { const p = $("#page"); if (p) p.innerHTML = '<div class="empty">Memuat…</div>'; };
   const errBox = e => `<div class="card"><div class="empty">${esc(e.message || e)}</div></div>`;
@@ -966,15 +983,17 @@
       <td class="nowrap">${pc(x.id, "aiPct", x.aiPct, "AI %")} <span class="faint">→</span> ${pc(x.id, "targetAi", x.targetAi, "target")}</td>
       <td class="nowrap">${pc(x.id, "simPct", x.simPct, "Sim %")} <span class="faint">→</span> ${pc(x.id, "targetSim", x.targetSim, "target")}</td>
       <td>${badge(ST[x.status] ? ST[x.status][0] : x.status, ST[x.status] ? ST[x.status][1] : "mute")}<div style="margin-top:4px">${stat(x)}</div></td>
-      <td class="small muted">${dd(x.createdAt)}<br>${x.pinned ? "Disematkan" : "Hapus " + dd(x.expiresAt)}</td>
-      <td class="nowrap"><a class="btn sm" href="#/dokumen/${x.id}">Detail</a> ${x.hasAi ? `<a class="btn sm pri" href="/ms/admin/studio-page?id=${x.id}" target="_blank" rel="noopener">Buka Studio</a> <a class="btn sm" href="/ms/admin/studio/${x.id}/word">Word tanda UT</a> ` : ""}<a class="btn sm" href="${P}/${x.id}/unduh">Unduh</a> <button class="btn sm" data-pin="${x.id}" data-v="${x.pinned ? 0 : 1}">${x.pinned ? "Lepas sematan" : "Sematkan"}</button> <button class="btn sm bad" data-del="${x.id}">Hapus</button></td></tr>`;
+      <td class="small muted">${dd(x.createdAt)}<br>${x.purged ? "File dihapus " + dd(x.purgedAt) : x.pinned ? "Disematkan" : "Hapus " + dd(x.expiresAt)}</td>
+      <td class="nowrap">${x.purged ? `<a class="btn sm" href="#/dokumen/${x.id}">Detail</a> <span class="faint small">File dihapus, angka tersimpan</span>` : `<a class="btn sm" href="#/dokumen/${x.id}">Detail</a> ${x.hasAi ? `<a class="btn sm pri" href="/ms/admin/studio-page?id=${x.id}" target="_blank" rel="noopener">Buka Studio</a> <a class="btn sm" href="/ms/admin/studio/${x.id}/word">Word tanda UT</a> ` : ""}<a class="btn sm" href="${P}/${x.id}/unduh">Unduh</a> <button class="btn sm" data-pin="${x.id}" data-v="${x.pinned ? 0 : 1}">${x.pinned ? "Lepas sematan" : "Sematkan"}</button> <button class="btn sm bad" data-del="${x.id}">Hapus</button>`}</td></tr>`;
     const stF = q.get("status") || "", items = d.items.filter(x => !stF || x.status === stF);
     const groups = new Map(); items.forEach(x => { const k = x.studentKey || "-"; (groups.get(k) || groups.set(k, []).get(k)).push(x); });
     const waLink = (g, t) => g.wa ? `https://wa.me/${g.wa}${t ? "?text=" + encodeURIComponent(t) : ""}` : "";
     const rows = [...groups.entries()].map(([k, arr]) => { const g = arr.find(x => x.studentName || x.wa) || arr[0]; const head = k === "-" ? "Tanpa data mahasiswa" : `<b>${esc(g.studentName || "Nama belum terbaca")}</b> · NIM ${esc(g.nim || "–")} · ${g.wa ? "+" + esc(g.wa) : "tanpa WA"} · ${arr.length} dokumen`;
       return `<tr><td colspan="7" style="background:rgba(128,128,128,.12)"><div class="bar">${head}<span class="grow"></span>${g.wa ? `<a class="btn sm pri" target="_blank" rel="noopener" href="${waLink(g)}">Chat WhatsApp</a>` : ""}</div></td></tr>` + arr.map(row).join(""); }).join("");
-    setPage("Dokumen Saya", "Simpan file Bedah, Cek & Parafrase, dan metopen dalam satu daftar", `<div class="notice info">File disimpan privat dan dihapus otomatis setelah ${d.ttlDays} hari. Klik <b>Sematkan</b> untuk menyimpan tanpa batas. Isi persen AI dan similarity dari Drillbit beserta targetnya supaya kelihatan mana yang sudah aman. Unggah laporan PDF Drillbit dan angkanya terbaca otomatis.</div>
-      <div class="card"><div class="hd"><h2>Simpan dokumen</h2></div><div class="bd"><form id="dkF" class="grid g2">
+    setPage("Mahasiswa & file", "Semua file yang diunggah, dikelompokkan per mahasiswa", `<div class="notice info">File disimpan privat dan dihapus otomatis setelah ${d.ttlDays} hari. Klik <b>Sematkan</b> untuk menyimpan tanpa batas. Isi persen AI dan similarity dari Drillbit beserta targetnya supaya kelihatan mana yang sudah aman. Unggah laporan PDF Drillbit dan angkanya terbaca otomatis.</div>
+      <div class="card"><div class="hd"><h2>Daftar dokumen (${items.length} · ${groups.size} mahasiswa)</h2><form class="bar" id="dkQ"><input class="in" name="q" value="${esc(q.get("q") || "")}" placeholder="Cari nama, NIM, WA, judul, catatan" style="max-width:240px"><select class="in" name="kind" style="max-width:160px"><option value="">Semua jenis</option>${d.kinds.map(k => `<option value="${k}"${q.get("kind") === k ? " selected" : ""}>${KL[k]}</option>`).join("")}</select><select class="in" name="status" style="max-width:190px"><option value="">Semua status</option>${Object.entries(ST).map(([k, v]) => `<option value="${k}"${stF === k ? " selected" : ""}>${v[0]}</option>`).join("")}</select><button class="btn" type="submit">Cari</button></form></div>
+        <div class="tbl-wrap"><table class="t"><thead><tr><th>Judul / file</th><th>Jenis</th><th>AI (sekarang → target)</th><th>Similarity (sekarang → target)</th><th>Status</th><th>Disimpan</th><th></th></tr></thead><tbody>${rows || '<tr><td colspan="7" class="empty">Belum ada dokumen.</td></tr>'}</tbody></table></div></div>
+      <details class="card"><summary class="hd" style="cursor:pointer"><h2 style="display:inline">Tambah file manual</h2></summary><div class="bd"><form id="dkF" class="grid g2">
         <label class="f">File dokumen (Word, PDF, dan lainnya, boleh banyak)<input class="in" type="file" name="file" multiple required></label>
         <label class="f">Judul<input class="in" name="title" maxlength="200" placeholder="Judul tugas atau penelitian"></label>
         <label class="f">Jenis<select class="in" name="kind">${d.kinds.map(k => `<option value="${k}">${KL[k]}</option>`).join("")}</select></label>
@@ -986,9 +1005,8 @@
         <label class="f">Target AI maksimal (%)<input class="in" name="targetAi" inputmode="decimal" placeholder="mis. 20"></label>
         <label class="f">Target similarity maksimal (%)<input class="in" name="targetSim" inputmode="decimal" placeholder="mis. 25"></label>
         <div class="bar" style="grid-column:1/-1"><button class="btn pri" type="submit">Simpan</button><span class="small faint">Bila memilih beberapa file, judul, persen, dan target yang sama dipakai untuk semuanya.</span></div></form>
-        <div class="bar small" style="margin-top:10px"><input class="in" id="dkO" placeholder="ID pesanan, mis. NA-1001" style="max-width:220px"><button class="btn" id="dkOB">Arsipkan file dari pesanan</button></div></div></div>
-      <div class="card"><div class="hd"><h2>Daftar dokumen (${items.length} · ${groups.size} mahasiswa)</h2><form class="bar" id="dkQ"><input class="in" name="q" value="${esc(q.get("q") || "")}" placeholder="Cari nama, NIM, WA, judul, catatan" style="max-width:240px"><select class="in" name="kind" style="max-width:160px"><option value="">Semua jenis</option>${d.kinds.map(k => `<option value="${k}"${q.get("kind") === k ? " selected" : ""}>${KL[k]}</option>`).join("")}</select><select class="in" name="status" style="max-width:190px"><option value="">Semua status</option>${Object.entries(ST).map(([k, v]) => `<option value="${k}"${stF === k ? " selected" : ""}>${v[0]}</option>`).join("")}</select><button class="btn" type="submit">Cari</button></form></div>
-        <div class="tbl-wrap"><table class="t"><thead><tr><th>Judul / file</th><th>Jenis</th><th>AI (sekarang → target)</th><th>Similarity (sekarang → target)</th><th>Status</th><th>Disimpan</th><th></th></tr></thead><tbody>${rows || '<tr><td colspan="7" class="empty">Belum ada dokumen.</td></tr>'}</tbody></table></div></div>`);
+        <div class="bar small" style="margin-top:10px"><input class="in" id="dkO" placeholder="ID pesanan, mis. NA-1001" style="max-width:220px"><button class="btn" id="dkOB">Arsipkan file dari pesanan</button></div></details>
+`);
     $("#dkQ").onsubmit = e => { e.preventDefault(); const f = e.target; go("dokumen", { q: f.q.value.trim(), kind: f.kind.value, status: f.status.value }); };
     $("#dkF").onsubmit = async e => {
       e.preventDefault(); const f = e.target, fd = new FormData(f);
@@ -1015,7 +1033,7 @@
       ${sim.content && (sim.content.kutipan != null || sim.content.kurangDari14Kata != null) ? `<div class="small muted" style="margin-top:8px">Komponen dikecualikan/terhitung: kutipan ${f1(sim.content.kutipan)}% · kata kurang dari 14: ${f1(sim.content.kurangDari14Kata)}%</div>` : ""}</div></div></div>
       ${(sim.sources || []).length ? `<div class="card"><div class="hd"><h2>Sumber kemiripan teratas</h2></div><div class="tbl-wrap"><table class="t"><thead><tr><th>#</th><th>Sumber</th><th>Jenis</th><th class="num">%</th></tr></thead><tbody>${sim.sources.map(s => `<tr><td>${s.n}</td><td>${esc(s.domain)}</td><td>${esc(s.type)}</td><td class="num">${f1(s.pct)}</td></tr>`).join("")}</tbody></table></div></div>` : ""}` : `<div class="notice">Laporan similarity tidak ada.</div>`;
     const tgt = (f, v, ph) => `<input class="in dk-n" type="number" min="0" max="100" step="0.1" data-f="${f}" value="${v == null ? "" : v}" placeholder="${ph}" style="width:90px">`;
-    setPage(x.title || x.name, "Dokumen Saya · " + dd(x.createdAt), `<div class="bar"><a class="btn" href="#/dokumen">← Daftar dokumen</a><span class="grow"></span>${x.hasAi ? `<a class="btn pri" href="/ms/admin/studio-page?id=${id}" target="_blank" rel="noopener">Buka Studio Parafrase</a>` : ""}</div>
+    setPage(x.title || x.name, "Mahasiswa & file · " + dd(x.createdAt), `<div class="bar"><a class="btn" href="#/dokumen">← Daftar dokumen</a><span class="grow"></span>${x.hasAi ? `<a class="btn pri" href="/ms/admin/studio-page?id=${id}" target="_blank" rel="noopener">Buka Studio Parafrase</a>` : ""}</div>
       <div class="card"><div class="hd"><h2>Berkas</h2></div><div class="bd"><div class="grid g2">${[
         ["1. File asli", esc(x.name), `${P}/${id}/unduh`, true],
         ["2. Laporan AI Drillbit", x.hasAi ? "PDF dari UT" : "Belum ada", `${P}/${id}/unduh?f=ai`, x.hasAi],

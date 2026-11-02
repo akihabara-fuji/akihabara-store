@@ -172,4 +172,43 @@ async function plainDocx(paragraphs, texts, marks, notes) {
   return zip.generateAsync({ type: "nodebuffer", compression: "DEFLATE" });
 }
 
-module.exports = { rewriteParagraphs, plainDocx, LONG_MAX, ciri, stats, applyEditsToDom, applyEdits, editsFromItems, matchImported, replaceInParagraph, leadOf };
+/* Edit bebas per paragraf (kiri Studio): paras = { paraIdx: teksBaru }. Jumlah kalimat sama -> ganti per kalimat yang berubah
+   (format sekitar tetap). Jumlah beda -> seluruh teks paragraf ditaruh di kalimat pertama, kalimat lain dikosongkan. */
+function parasToEdits(paragraphs, paras) {
+  const out = [];
+  for (const p of paragraphs) {
+    const t = paras && paras[p.idx]; if (typeof t !== "string") continue;
+    const o = String(p.text || ""), nt = t.replace(/\s+/g, " ").trim();
+    if (norm(nt) === norm(o)) continue;
+    const os = splitSentences(o), ns = splitSentences(nt);
+    if (os.length && os.length === ns.length) ns.forEach((x, i) => { if (norm(x) !== norm(os[i])) out.push({ para_idx: p.idx, sent_idx: i, text: x }); });
+    else os.forEach((_, i) => out.push({ para_idx: p.idx, sent_idx: i, text: i === 0 ? nt : "" }));
+  }
+  return out;
+}
+
+/* Angka dan nama yang muncul di revisi tetapi tidak ada di teks sumber (kalimat + paragrafnya). Revisi tidak boleh menambah fakta. */
+function newFacts(source, revised) {
+  const src = String(source || ""), toks = s => (String(s).match(/\d+(?:[.,]\d+)?%?|(?<=[a-z,;]\s)[A-Z][a-z]{2,}/g) || []);
+  const have = new Set(toks(src).map(x => x.toLowerCase()));
+  return [...new Set(toks(revised))].filter(x => !have.has(x.toLowerCase()));
+}
+
+/* Perintah ke mesin penulis untuk satu kalimat biru. Sumber fakta hanya kalimat itu dan paragrafnya. */
+function revisePrompt(item, paragraphText, longMax = LONG_MAX) {
+  const larangan = (item.tags || []).map(g => `- ${g.label}: ${g.fix} Jangan: ${g.jangan}`).join("\n");
+  return `Tulis ulang SATU kalimat skripsi/tugas mahasiswa berbahasa Indonesia agar tidak terbaca seperti tulisan mesin, tanpa mengubah makna.
+Aturan keras:
+- Hanya pakai fakta yang ada di kalimat dan paragraf di bawah. Dilarang menambah angka, nama, tahun, kutipan, atau data baru. Bila perlu data yang tidak ada, tulis persis "[butuh data dari mahasiswa]".
+- Maksimal ${longMax} kata. Pecah menjadi dua kalimat bila perlu, dan tetap ringkas.
+- Variasikan pembuka kalimat; jangan mulai dengan "Selain itu", "Oleh karena itu", "Dengan demikian".
+- Jangan memakai pola yang dilarang di bawah. Jangan memakai kata hiperbolis.
+Pola yang ditandai pada kalimat ini:
+${larangan || "- (tidak ada keterangan khusus)"}
+
+Paragraf (konteks): """${String(paragraphText || "").slice(0, 1800)}"""
+Kalimat yang ditulis ulang: """${item.text}"""
+Balas hanya JSON: {"revisi":"..."}`;
+}
+
+module.exports = { parasToEdits, newFacts, revisePrompt, rewriteParagraphs, plainDocx, LONG_MAX, ciri, stats, applyEditsToDom, applyEdits, editsFromItems, matchImported, replaceInParagraph, leadOf };

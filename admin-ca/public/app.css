@@ -103,6 +103,10 @@ table.t .num{text-align:right;font-variant-numeric:tabular-nums}
 .tabs a,.tabs button{display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 12px;border:1px solid var(--border);border-radius:999px;background:var(--surface);color:var(--text);font-size:13px;font-weight:600;text-decoration:none;cursor:pointer}
 .tabs .on{background:var(--acc);border-color:var(--acc);color:var(--on-acc)}
 .tabs .n{opacity:.75;font-weight:700}
+.gtabs{display:flex;flex-wrap:wrap;gap:2px;border-bottom:1px solid var(--border);margin:0 0 16px}
+.gtabs a{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-bottom:2px solid transparent;color:var(--muted,var(--text));font-size:13.5px;font-weight:600;text-decoration:none;margin-bottom:-1px}
+.gtabs a:hover{color:var(--text)}
+.gtabs a.on{color:var(--acc);border-color:var(--acc)}
 input.in,select.in,textarea.in{width:100%;min-height:38px;padding:8px 11px;border:1px solid var(--border);border-radius:9px;background:var(--surface);color:var(--text)}
 textarea.in{min-height:90px;resize:vertical;line-height:1.55}
 input.in:focus,select.in:focus,textarea.in:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px var(--acc-soft)}

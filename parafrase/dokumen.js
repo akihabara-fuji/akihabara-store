@@ -23,7 +23,7 @@ module.exports = function mountDokumen({ app, express, db, root, requireAdmin })
   const pct = v => { if (v === "" || v == null) return null; const n = parseFloat(String(v).replace(",", ".")); return Number.isFinite(n) && n >= 0 && n <= 100 ? Math.round(n * 10) / 10 : null; };
   const reach = (v, t) => (v == null || t == null ? null : v <= t);
   const STATUS = ["baru", "diproses", "perbaikan_dikirim", "revisi"];
-  const view = r => ({ studentKey: r.student_key, studentName: r.student_name, nim: r.nim, wa: r.wa, status: r.status, revisionNo: r.revision_no, hasFix: !!r.fix_path, fixName: r.fix_name, fixSentAt: r.fix_sent_at, words: r.words, hasAi: !!r.ai_path, hasSim: !!r.sim_path, id: r.id, name: r.name, title: r.title, kind: r.kind, aiPct: r.ai_pct, simPct: r.sim_pct, targetAi: r.target_ai, targetSim: r.target_sim, aiOk: reach(r.ai_pct, r.target_ai), simOk: reach(r.sim_pct, r.target_sim), note: r.note, size: r.size, source: r.source, orderId: r.order_id, pinned: !!r.pinned, createdAt: r.created_at, expiresAt: r.pinned ? null : r.expires_at });
+  const view = r => ({ studentKey: r.student_key, studentName: r.student_name, nim: r.nim, wa: r.wa, status: r.status, revisionNo: r.revision_no, hasFix: !!r.fix_path, fixName: r.fix_name, fixSentAt: r.fix_sent_at, words: r.words, hasAi: !!r.ai_path, hasSim: !!r.sim_path, id: r.id, name: r.name, title: r.title, kind: r.kind, aiPct: r.ai_pct, simPct: r.sim_pct, targetAi: r.target_ai, targetSim: r.target_sim, aiOk: reach(r.ai_pct, r.target_ai), simOk: reach(r.sim_pct, r.target_sim), note: r.note, size: r.size, source: r.source, orderId: r.order_id, pinned: !!r.pinned, createdAt: r.created_at, expiresAt: r.pinned ? null : r.expires_at, purged: !!r.purged_at, purgedAt: r.purged_at || null });
   const nowMs = () => Date.now();
   const wa62 = raw => { let d = String(raw || "").replace(/\D/g, ""); d = d.replace(/^62/, "").replace(/^0/, ""); return /^8\d{8,12}$/.test(d) ? "62" + d : null; };
 
@@ -139,7 +139,7 @@ module.exports = function mountDokumen({ app, express, db, root, requireAdmin })
   app.get(base, requireAdmin, (req, res) => {
     res.set("Cache-Control", "no-store");
     const q = clip(req.query.q, 80).toLowerCase(), kind = KINDS.includes(req.query.kind) ? req.query.kind : "";
-    const rows = db.prepare("SELECT * FROM doc_library WHERE expires_at>? OR pinned=1 ORDER BY pinned DESC, created_at DESC LIMIT 500").all(nowMs())
+    const rows = db.prepare("SELECT * FROM doc_library WHERE expires_at>? OR pinned=1 OR purged_at IS NOT NULL ORDER BY pinned DESC, created_at DESC LIMIT 500").all(nowMs())
       .filter(r => (!kind || r.kind === kind) && (!q || (r.name + " " + r.title + " " + r.note + " " + (r.student_name || "") + " " + (r.nim || "") + " " + (r.wa || "") + " " + (r.order_id || "")).toLowerCase().includes(q)));
     res.json({ items: rows.map(view), ttlDays: TTL_MS / 86400000, kinds: KINDS });
   });
@@ -214,6 +214,7 @@ module.exports = function mountDokumen({ app, express, db, root, requireAdmin })
     const r = /^[a-f0-9]{16}$/.test(req.params.id) && db.prepare("SELECT * FROM doc_library WHERE id=?").get(req.params.id);
     if (!r) return res.status(404).json({ error: "Dokumen tidak ditemukan." });
     res.set("Cache-Control", "no-store");
+    if (r.purged_at) return res.status(410).json({ error: "File sudah dihapus otomatis setelah 30 hari. Angka laporan tetap tersimpan." });
     const f = req.query.f === "fix" && r.fix_path ? [r.fix_path, r.fix_name || "perbaikan"] : req.query.f === "ai" && r.ai_path ? [r.ai_path, r.name.replace(/\.[a-z0-9]{1,5}$/i, "") + " laporan AI.pdf"] : req.query.f === "sim" && r.sim_path ? [r.sim_path, r.name.replace(/\.[a-z0-9]{1,5}$/i, "") + " laporan similarity.pdf"] : [r.path, r.name];
     res.download(path.join(priv, f[0]), f[1]);
   });
@@ -236,10 +237,12 @@ module.exports = function mountDokumen({ app, express, db, root, requireAdmin })
     res.json({ ok: true });
   });
 
+  /* Hanya angka dan penanda yang disimpan setelah file dihapus: kutipan kalimat dari dokumen tidak ikut. */
+  const numbersOnly = raw => { let d = {}; try { d = raw ? JSON.parse(raw) : {}; } catch { return "{}"; } const o = {}; for (const [k, v] of Object.entries(d || {})) if (typeof v === "number" || typeof v === "boolean" || k === "sha" || k === "usedIn") o[k] = v; return JSON.stringify(o); };
   async function purgeExpired() {
-    for (const r of db.prepare("SELECT id,path,ai_path,sim_path,fix_path FROM doc_library WHERE pinned=0 AND expires_at<?").all(nowMs())) {
+    for (const r of db.prepare("SELECT id,path,ai_path,sim_path,fix_path,data FROM doc_library WHERE pinned=0 AND purged_at IS NULL AND expires_at<?").all(nowMs())) {
       for (const p of [r.path, r.ai_path, r.sim_path, r.fix_path]) if (p) { try { await fsp.unlink(path.join(priv, p)); } catch { /* sudah hilang */ } }
-      db.prepare("DELETE FROM doc_library WHERE id=?").run(r.id);
+      db.prepare("UPDATE doc_library SET path='', ai_path=NULL, sim_path=NULL, fix_path=NULL, fix_name=NULL, size=0, data=?, purged_at=? WHERE id=?").run(numbersOnly(r.data), nowMs(), r.id);
     }
   }
   return { purgeExpired, saveBedah, saveUpload, attachReports };

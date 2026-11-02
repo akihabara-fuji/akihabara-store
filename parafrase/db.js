@@ -327,6 +327,11 @@ const MIGRATIONS = [
     for (const [n, t] of cols) if (!have.has(n)) db.exec(`ALTER TABLE doc_library ADD COLUMN ${n} ${t}`);
     db.exec("CREATE INDEX IF NOT EXISTS doc_library_student ON doc_library(student_key)");
   },
+  /* Masa simpan file 30 hari: file dihapus, baris (identitas + angka Drillbit) tetap untuk bahan analisis. */
+  db => {
+    const have = new Set(db.prepare("PRAGMA table_info(doc_library)").all().map(c => c.name));
+    if (!have.has("purged_at")) db.exec("ALTER TABLE doc_library ADD COLUMN purged_at INTEGER");
+  },
 ];
 
 

@@ -585,8 +585,8 @@ function setMode(m){document.documentElement.dataset.theme=m;try{localStorage.se
 document.querySelectorAll(".mode button").forEach(function(b){b.addEventListener("click",function(){setMode(b.dataset.m)})});
 setMode(document.documentElement.dataset.theme||"dark");
 $("#yr").textContent=new Date().getFullYear();
-var wa="6285722227544";
-function setWa(n){wa=n||wa;var u="https://wa.me/"+wa+"?text="+encodeURIComponent("Halo admin Catatan Akademik, saya mau tanya layanan.");$("#fabWa").href=u}
+var wa="";
+function setWa(n){wa=n||wa;var f=$("#fabWa");if(!wa){f.hidden=true;return}f.hidden=false;f.href="https://wa.me/"+wa+"?text="+encodeURIComponent("Halo admin Catatan Akademik, saya mau tanya layanan.")}
 setWa();
 fetch("/ms/public-config",{cache:"no-store"}).then(function(r){return r.json()}).then(function(c){
   if(!c)return;if(c.admin_wa_number)setWa(c.admin_wa_number);
