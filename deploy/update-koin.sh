@@ -67,6 +67,8 @@ trap 'echo "GAGAL di baris $LINENO: $BASH_COMMAND"; rollback; rm -rf "$T"' ERR
 for f in "${FILES[@]}"; do case "$f" in *.js) node --check "$T/new/$f";; esac; done
 [ $LOCK = 1 ] && ca-lock unlock >/dev/null && echo "Kunci dibuka sementara untuk rilis."
 for f in "${FILES[@]}"; do mkdir -p "$(dirname "$APP/$f")"; cp "$T/new/$f" "$APP/$f"; done
+# nama lama di teks yang tampil (landing dan tab admin) diganti; alamat/href tidak disentuh
+for f in public/index.html admin/index.html; do [ -f "$APP/$f" ] && sed -i "s/Ruang Akademik UT/Catatan Akademik/g; s/Ruang Akademik/Catatan Akademik/g" "$APP/$f"; done
 
 pm2 restart nextaja --update-env >/dev/null
 sleep 5
@@ -77,8 +79,8 @@ get(){ curl -fsS --resolve "$1:443:127.0.0.1" "https://$1$2"; }
 has(){ local b; b=$(get "$1" "$2") || return 1; [[ "$b" == *"$3"* ]]; }
 CA="${CA_HOST:-catatanakademik.com}"
 for u in / /blog /sitemap.xml /robots.txt /admin/ /layanan /portal-ut /kalkulator-nilai-ut /ms/layanan/config /ms/galeri /buat-cv-ats /sampul-tugas /surat-lamaran /tracker-kelulusan /kalender-akademik /panduan-maba; do x=$(c $CA "$u"); echo "$CA$u $x"; [ "$x" = 200 ] || { [ "$x" = 301 ] && case "$u" in /buat-cv-ats|/surat-lamaran) true;; *) false;; esac; }; done
-for u in /ruangakademikut /ruangakademikut/layanan /ruangakademikut/assets/studio.js; do x=$(cl $CA "$u"); echo "$CA$u $x"; [ "$x" = 200 ]; done
-x=$(c $CA /ruangakademikut/audit); echo "$CA/ruangakademikut/audit $x"; [ "$x" = 200 ] || [ "$x" = 301 ]
+for u in /ruangakademikut /ruangakademikut/layanan /ruangakademikut/assets/studio.js; do x=$(cl $CA "$u"); echo "portal CA ${u##*/} $x"; [ "$x" = 200 ]; done
+x=$(c $CA /ruangakademikut/audit); echo "portal CA audit $x"; [ "$x" = 200 ] || [ "$x" = 301 ]
 has $CA /admin/ 'Admin · Catatan Akademik' || { echo "Panel admin CA tidak tampil di /admin"; false; }
 has $CA /ms/layanan/config 'metopen' || { echo "Konfigurasi layanan tidak terbaca"; false; }
 echo "Isi halaman: OK"
