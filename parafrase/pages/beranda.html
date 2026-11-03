@@ -593,11 +593,7 @@ main h2{font-size:clamp(20px,2vw,24px)!important;font-weight:700!important;lette
 <img class="h2mdl f" alt="Model mahasiswi" src="/ruangakademikut/assets/ca/model-f.webp" fetchpriority="high">
 <img class="h2mdl m" alt="Model mahasiswa" src="/ruangakademikut/assets/ca/model-m.webp" loading="lazy">
 
-<div class="h2hx"><div class="h2eb">Pusat Informasi dan Pendampingan Mahasiswa UT</div>
-<div style="position:relative;min-height:98px"><div class="h2t1" id="h2t1">Kuliah UT Lebih Terarah, <span>Semua Ada Panduannya.</span></div><div class="h2t2" id="h2t2">Mahasiswa baru atau lama, <span>cari panduannya di sini.</span></div></div>
-<div class="h2cta"><a class="h2c1" href="/panduan-maba">Mulai Belajar</a><a class="h2c2" href="/ruangakademikut">Jelajahi Layanan</a></div>
-<span class="h2bd">Bukan situs resmi UT · dikelola mahasiswa UT</span>
-<div class="h2ch"><a href="/blog/hitung-nilai-akhir-ips-ipk-ut">Hitung IPS dan IPK</a><a href="/ruangakademikut/tutorial-online">Tutorial Online</a><a href="/ruangakademikut/cek-parafrase-mandiri">Cek &amp; Bedah</a></div></div>
+<a class="h2b h2b1" href="/panduan-maba">Mahasiswa Baru <i>→</i></a><a class="h2b h2b2" href="/ruangakademikut">Jelajahi Layanan <i>→</i></a>
 <div class="h2vt" aria-hidden="true">PUSAT INFORMASI UT</div>
 </div></section>
 
@@ -856,7 +852,7 @@ canvas#hkTr{position:fixed;inset:0;z-index:70;pointer-events:none}
 (function(){var $=function(i){return document.getElementById(i)},st=$("h2st"),run=st.parentNode,pt=$("h2pt");
 var n=matchMedia("(max-width:860px)").matches?10:24,h="";for(var i=0;i<n;i++){var z=(2+Math.random()*3).toFixed(1);h+='<i style="left:'+Math.round(Math.random()*100)+'%;width:'+z+'px;height:'+z+'px;animation-duration:'+(8+Math.random()*9).toFixed(1)+'s;animation-delay:-'+(Math.random()*12).toFixed(1)+'s"></i>'}pt.innerHTML=h;
 var t1=st.querySelector(".h2t1"),t2=st.querySelector(".h2t2");
-function onS(){var m=run.offsetHeight-innerHeight,p=Math.max(0,Math.min(1,(scrollY||0)/(m*.8||1)));st.style.setProperty("--h2p",p.toFixed(3));t1.style.opacity=(1-p*2).toFixed(2);t2.style.opacity=Math.max(0,p*2-1).toFixed(2)}
+function onS(){var m=run.offsetHeight-innerHeight,p=Math.max(0,Math.min(1,(scrollY||0)/(m*.8||1)));st.style.setProperty("--h2p",p.toFixed(3));if(t1)t1.style.opacity=(1-p*2).toFixed(2);if(t2)t2.style.opacity=Math.max(0,p*2-1).toFixed(2)}
 addEventListener("scroll",onS,{passive:true});onS();
 var mf=st.querySelector(".h2mdl.f"),mm=st.querySelector(".h2mdl.m");
 addEventListener("pointermove",function(e){if(matchMedia("(max-width:860px)").matches)return;var on=[mf,mm].some(function(el){var r=el.getBoundingClientRect();return getComputedStyle(el).opacity>.2&&e.clientX>r.left&&e.clientX<r.right&&e.clientY>r.top&&e.clientY<r.bottom});st.classList.toggle("hv",on)});
@@ -880,7 +876,7 @@ addEventListener("pointermove",function(e){if(matchMedia("(max-width:860px)").ma
 (function fr(){x.clearRect(0,0,c.width,c.height);var n=performance.now();pts=pts.filter(function(p){return n-p.t<500});for(var i=1;i<pts.length;i++){var a=1-(n-pts[i].t)/500;x.strokeStyle="rgba(124,80,240,"+a.toFixed(2)+")";x.lineWidth=2+4*a;x.lineCap="round";x.beginPath();x.moveTo(pts[i-1].x,pts[i-1].y);x.lineTo(pts[i].x,pts[i].y);x.stroke()}requestAnimationFrame(fr)})();
 })();
 </script><style>
-.h2big{opacity:max(0,calc(1 - var(--h2p)*2.4));transform:translateY(calc(var(--h2p)*60px))}
+.h2big{opacity:1;transform:none}
 .h2st:after{content:"";position:absolute;inset:0;z-index:4;pointer-events:none;background:radial-gradient(420px circle at var(--mx,68%) var(--my,34%),rgba(139,92,246,.34),transparent 70%);mix-blend-mode:screen}
 #statsBox{position:relative;overflow:hidden}
 #statsBox:before{content:"";position:absolute;top:0;bottom:0;width:40%;left:-50%;background:linear-gradient(100deg,transparent,rgba(167,139,250,.22),transparent);transform:skewX(-18deg);pointer-events:none}
@@ -1000,6 +996,38 @@ var lastS=scrollY;addEventListener("scroll",function(){var d=scrollY-lastS;lastS
 var tp=performance.now();(function tick(t){var dt=Math.min(40,t-tp)/16.7;tp=t;if(vis){if(rg.clientWidth!==lw){lw=rg.clientWidth;size()}if(!down){var base=hov?0:.14;vel+=(base-vel)*.04*dt;ang+=vel*dt}draw()}requestAnimationFrame(tick)})(tp);
 }
 build();new MutationObserver(build).observe(lst,{childList:true});
+})();
+</script>
+<style>
+.h2st{background:var(--h2c0)!important;color:var(--h2f0)!important}
+.h2b{position:absolute;z-index:7;top:46%;display:inline-flex;align-items:center;gap:10px;border-radius:999px;padding:15px 28px;font-weight:800;font-size:17px;letter-spacing:-.01em;transition:transform .25s,box-shadow .25s;animation:h2bf 4s ease-in-out infinite}
+.h2b i{font-style:normal;transition:transform .25s}.h2b:hover i{transform:translateX(5px)}
+.h2b1{left:max(24px,4vw);background:var(--acc);color:#16132e;box-shadow:0 12px 32px -10px rgba(124,92,255,.8)}
+.h2b2{right:max(24px,6vw);border:2px solid #16132e;color:#16132e;background:rgba(255,255,255,.55);backdrop-filter:blur(6px);animation-delay:.6s}
+.h2b:hover{transform:translateY(-4px) scale(1.05);box-shadow:0 16px 36px -8px rgba(124,92,255,.9);animation-play-state:paused}
+@keyframes h2bf{50%{translate:0 -7px}}
+.h2mdl.f{height:min(86%,780px)}
+.h2mdl.m{height:min(77%,650px);opacity:calc(var(--h2p)*1.7 - .7)}
+.h2big i{display:inline-block;font-style:normal;will-change:transform;transform-origin:50% 100%}
+@media(max-width:860px){.h2b{top:96px;padding:11px 18px;font-size:14px}.h2b1{left:14px}.h2b2{right:14px}.h2mdl.f{height:62%}.h2mdl.m{height:44%}}
+@media(prefers-reduced-motion:reduce){.h2b{animation:none}}
+</style>
+<script>
+(function(){var rm=matchMedia("(prefers-reduced-motion:reduce)").matches,st=document.getElementById("h2st"),big=st&&st.querySelector(".h2big");if(!big)return;
+var L=[];[].forEach.call(big.querySelectorAll("span"),function(sp){var t=sp.textContent;sp.textContent="";for(var k=0;k<t.length;k++){var e=document.createElement("i");e.textContent=t[k];sp.appendChild(e);L.push({el:e,x:0,y:0,r:0,vx:0,vy:0,vr:0,s:"idle",t:0})}});
+if(rm)return;
+function H(){return st.clientHeight+260}
+L.forEach(function(o,i){o.s="wait";o.t=performance.now()+300+i*130;o.y=-H();o.el.style.opacity=0});
+function hit(o,dir){o.s="fall";o.vx=dir*(1+Math.random()*2.5);o.vy=-5-Math.random()*3;o.vr=dir*(4+Math.random()*9)}
+st.addEventListener("pointermove",function(e){L.forEach(function(o){if(o.s!=="idle")return;var r=o.el.getBoundingClientRect();if(e.clientX>r.left-4&&e.clientX<r.right+4&&e.clientY>r.top&&e.clientY<r.bottom+4)hit(o,e.clientX<(r.left+r.right)/2?1:-1)}) },{passive:true});
+(function loop(now){L.forEach(function(o){
+ if(o.s==="idle")return;
+ if(o.s==="wait"){if(now>=o.t){o.s="back";o.x=0;o.y=-H();o.r=(Math.random()-.5)*50;o.vy=0;o.vr=(Math.random()-.5)*4;o.vx=0;o.el.style.opacity=1}else return}
+ o.vy+=.85;o.y+=o.vy;o.x+=o.vx;o.r+=o.vr;
+ if(o.s==="fall"&&o.y>H()-150){o.s="wait";o.t=now+1300+Math.random()*900;o.el.style.opacity=0;o.x=0;o.r=0;o.vx=0;o.vr=0;o.y=-H();o.vy=0;return}
+ if(o.s==="back"&&o.y>=0&&o.vy>0){o.y=0;o.vy*=-.42;o.vr*=.4;o.r*=.55;if(Math.abs(o.vy)<2.2){o.s="idle";o.x=0;o.y=0;o.r=0;o.vx=o.vy=o.vr=0}}
+ o.el.style.transform=o.s==="idle"?"":"translate("+o.x.toFixed(1)+"px,"+o.y.toFixed(1)+"px) rotate("+o.r.toFixed(1)+"deg)"});
+ requestAnimationFrame(loop)})(performance.now());
 })();
 </script>
 </body>
