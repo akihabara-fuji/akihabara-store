@@ -58,6 +58,8 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
         out = out.replace('<section class="s" id="ulasan" hidden>', '<section class="s" id="ulasan">').replace('<div class="ul3" id="ulList"></div>', `<div class="ul3 po-grid" id="ulList">${cards}</div>`);
       }
     }
+    /* Menu Testimoni disembunyikan selama belum ada testimoni yang tampil */
+    if (typeof app.locals.ulasanPublic === "function" && !opts.preview) { let n = 0; try { n = app.locals.ulasanPublic().length; } catch { n = 0; } if (!n) out = out.replace(/<a [^>]*#ulasan[^>]*>Testimoni<\/a>\s*/g, ""); }
     if (file === "beranda.html") out = hk(out);
     if (file === "hub.html" && texts) out = texts.hideCards(out, opts.hidden || hiddenCards());
     if (texts) out = texts.apply(out, opts.over || null, { mark: opts.mark, edit: opts.edit });
