@@ -58,14 +58,17 @@
     var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }); }, { threshold: .1 });
     els.forEach(function (e) { io.observe(e); });
   }
+function poBuild(box,a){box.classList.add("po-grid");box.innerHTML="";a.forEach(function(x,i){var f=document.createElement("figure");f.className="po p"+(i%6+1);f.tabIndex=0;var ph=document.createElement("div");ph.className="po-ph";
+    if(x.img){var im=document.createElement("img");im.loading="lazy";im.alt="Tangkapan layar chat dari "+x.nama;im.src=x.img;ph.appendChild(im)}else{var q=document.createElement("q");q.textContent=x.teks;ph.appendChild(q)}
+    f.appendChild(ph);var c=document.createElement("figcaption"),b=document.createElement("b");b.textContent=x.nama;c.appendChild(b);if(x.ket){var s=document.createElement("span");s.textContent=x.ket;c.appendChild(s)}f.appendChild(c);
+    f.addEventListener("click",function(){poOpen(f)});f.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();poOpen(f)}});box.appendChild(f)})}
+function poOpen(f){var lb=document.createElement("div");lb.className="po-lb";var c=f.cloneNode(true);c.removeAttribute("tabindex");c.className="po";var q=c.querySelector("q");if(q)q.textContent=(f.__t||q.textContent);lb.appendChild(c);
+    var close=function(){lb.remove();document.removeEventListener("keydown",esc)},esc=function(e){if(e.key==="Escape")close()};lb.addEventListener("click",close);document.addEventListener("keydown",esc);document.body.appendChild(lb)}
   function ulasan() {
     var sec = $("#ulasan"), box = $("#ulList"); if (!sec || !box) return;
     fetch("/ms/ulasan").then(function (r) { return r.json(); }).then(function (j) {
       var a = (j.items || []).slice(0, 6); if (!a.length) return; box.innerHTML = "";
-      a.forEach(function (x) { var c = el("div", "tx-rc tx-rv"), qq = el("q", "", x.teks), w = el("div", "who", x.nama); c.appendChild(qq);
-        if (x.ket) w.appendChild(el("small", "", x.ket)); c.appendChild(w);
-        if (x.img) { var im = el("img"); im.loading = "lazy"; im.alt = "Tangkapan layar chat dari " + x.nama; im.src = x.img; c.appendChild(im); }
-        box.appendChild(c); });
+      poBuild(box, a);
       sec.hidden = false; reveal();
     }).catch(function () {});
   }

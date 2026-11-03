@@ -33,10 +33,18 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
   const EH = v => String(v == null ? "" : v).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const CHIPS = [["Cara daftar kuliah di UT", "cara-daftar-kuliah-di-ut-mahasiswa-baru"], ["Cek jadwal PKBJJ", "cara-cek-jadwal-pkbjj-ut"], ["Aktivasi dan login Tuton", "cara-aktivasi-dan-login-tuton-ut"], ["Cek jadwal UAS", "cara-cek-jadwal-uas-ut"], ["Lihat nilai UAS dan DNU", "cara-melihat-nilai-uas-dnu-ut"], ["Hitung IPS dan IPK", "/kalkulator-nilai-ut"], ["Registrasi mata kuliah", "cara-registrasi-mata-kuliah-ut"], ["Syarat lulus", "syarat-lulus-kuliah-ut-ipk-tap"]];
   const STEPS = [["Daftar", "Akun admisi, billing, dokumen", "cara-daftar-kuliah-di-ut-mahasiswa-baru"], ["Registrasi", "Pilih mata kuliah tiap semester", "cara-registrasi-mata-kuliah-ut"], ["PKBJJ", "Jadwal dan lokasi kegiatan", "cara-cek-jadwal-pkbjj-ut"], ["Tuton", "Aktivasi dan kumpulkan tugas", "cara-aktivasi-dan-login-tuton-ut"], ["UAS", "Jadwal lewat KTPU di MyUT", "cara-cek-jadwal-uas-ut"], ["Nilai", "DNU, IPS, dan IPK", "cara-melihat-nilai-uas-dnu-ut"], ["Lulus", "IPK minimal, nilai E, dan TAP", "syarat-lulus-kuliah-ut-ipk-tap"]];
+  const SVG = ['<rect class="ln" x="13" y="6" width="30" height="42" rx="4"/><path class="ln l" d="M20 18h16"/><path class="ln l" d="M20 26h16"/><path class="ln chk" d="M21 38l5 5 9-10"/>',
+    '<g class="r"><rect class="fl" x="8" y="9" width="40" height="10" rx="4"/></g><g class="r"><rect class="fl" x="8" y="23" width="40" height="10" rx="4"/></g><g class="r"><rect class="fy" x="8" y="37" width="40" height="10" rx="4"/></g>',
+    '<ellipse class="sh fl" cx="28" cy="49" rx="12" ry="3"/><g class="p"><path class="fl" d="M28 8c-8 0-13 6-13 13 0 9 13 24 13 24s13-15 13-24c0-7-5-13-13-13z"/><circle class="fw" cx="28" cy="21" r="5"/></g>',
+    '<rect class="ln" x="10" y="12" width="36" height="25" rx="3"/><path class="ln" d="M5 44h46"/><path class="ln up" d="M28 33V19M22 25l6-6 6 6"/>',
+    '<circle class="ring" cx="28" cy="31" r="14"/><rect class="ln" x="11" y="12" width="34" height="34" rx="5"/><path class="ln" d="M11 22h34M20 8v8M36 8v8"/><circle class="fy" cx="28" cy="33" r="4"/>',
+    '<rect class="fl bb" x="9" y="26" width="10" height="22" rx="2"/><rect class="fl bb" x="23" y="16" width="10" height="32" rx="2"/><rect class="fy bb" x="37" y="8" width="10" height="40" rx="2"/>',
+    '<g class="c"><path class="fl" d="M28 12L6 23l22 11 22-11z"/><path class="fl" d="M15 29v9c0 4 6 8 13 8s13-4 13-8v-9l-13 6z" style="opacity:.75"/><path class="ln" d="M50 23v13"/></g>'];
+  const ANI = ["doc", "list", "pin", "lap", "cal", "bar", "cap"];
   const FALLBACK = ["cara-melihat-nilai-uas-dnu-ut", "cara-cek-jadwal-uas-ut", "hitung-nilai-akhir-ips-ipk-ut", "metopen-ut-tugas-bobot-syarat-taps", "persiapan-uas-ut", "cara-mengumpulkan-tugas-tuton-ut", "cara-daftar-kuliah-di-ut-mahasiswa-baru", "cara-cek-jadwal-pkbjj-ut", "cara-aktivasi-dan-login-tuton-ut", "cara-registrasi-mata-kuliah-ut", "syarat-lulus-kuliah-ut-ipk-tap", "kesalahan-umum-tugas-tutorial-ut-yang-membuat-nilai-turun"];
   function hk(h) {
     const chips = CHIPS.map(([t, s]) => s[0] === "/" ? [t, s] : (live(s) ? [t, "/blog/" + s] : null)).filter(Boolean).slice(0, 8).map(([t, u]) => `<a class="hk-chip" href="${EH(u)}">${EH(t)}</a>`).join("");
-    const steps = STEPS.map(([t, d, s], i) => `<li><a href="${live(s) ? "/blog/" + s : "/panduan-maba"}"><i>${i + 1}</i><b>${EH(t)}</b><small>${EH(d)}</small></a></li>`).join("");
+    const steps = STEPS.map(([t, d, s], i) => `<li><a href="${live(s) ? "/blog/" + s : "/panduan-maba"}"><span class="hk-ic a-${ANI[i]}" aria-hidden="true"><svg viewBox="0 0 56 56">${SVG[i]}</svg></span><i>${i + 1}</i><b>${EH(t)}</b><small>${EH(d)}</small></a></li>`).join("");
     let top = []; try { top = typeof app.locals.acadTop === "function" ? app.locals.acadTop(12) : []; } catch { top = []; }
     const fromStats = top.length >= 3;
     if (!fromStats) top = [];
@@ -53,8 +61,8 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
       const E = v => String(v == null ? "" : v).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
       const items = app.locals.ulasanPublic().slice(0, 6);
       if (items.length) {
-        const cards = items.map(x => `<div class="rc${x.img ? " has" : ""}"><q>${E(x.teks)}</q><div class="who">${E(x.nama)}${x.ket ? `<small>${E(x.ket)}</small>` : ""}</div>${x.img ? `<div class="shot"><img loading="lazy" alt="Tangkapan layar chat dari ${E(x.nama)}" src="${E(x.img)}"></div>` : ""}</div>`).join("");
-        out = out.replace('<section class="s" id="ulasan" hidden>', '<section class="s" id="ulasan">').replace('<div class="ul3" id="ulList"></div>', `<div class="ul3" id="ulList">${cards}</div>`);
+        const cards = items.map((x, n) => `<figure class="po p${n % 6 + 1}" tabindex="0"><div class="po-ph">${x.img ? `<img loading="lazy" alt="Tangkapan layar chat dari ${E(x.nama)}" src="${E(x.img)}">` : `<q>${E(x.teks)}</q>`}</div><figcaption><b>${E(x.nama)}</b>${x.ket ? `<span>${E(x.ket)}</span>` : ""}</figcaption></figure>`).join("");
+        out = out.replace('<section class="s" id="ulasan" hidden>', '<section class="s" id="ulasan">').replace('<div class="ul3" id="ulList"></div>', `<div class="ul3 po-grid" id="ulList">${cards}</div>`);
       }
     }
     if (file === "beranda.html") out = hk(out);
