@@ -17,14 +17,16 @@
   const digits = w => (String(w).match(/\d/g) || []).length;
 
   /* kotak yang harus diburamkan, dari hasil OCR (koordinat piksel gambar kerja) */
-  function detect(lines) {
+  function detect(lines, names) {
     const out = [];
+    const nm = new Set((names || []).flatMap(n => String(n).toLowerCase().split(/[^a-z0-9\u00c0-\u024f]+/)).filter(t => t.length >= 3));
     const add = (b, why) => out.push({ x: b.x0, y: b.y0, w: b.x1 - b.x0, h: b.y1 - b.y0, why });
     const union = ws => ({ x0: Math.min(...ws.map(w => w.bbox.x0)), y0: Math.min(...ws.map(w => w.bbox.y0)), x1: Math.max(...ws.map(w => w.bbox.x1)), y1: Math.max(...ws.map(w => w.bbox.y1)) });
     for (const ln of lines) {
       const ws = (ln.words || []).filter(w => w.text && w.bbox);
       if (!ws.length) continue;
       if (KEY.test(ln.text || "")) { add(union(ws), "kata sensitif"); continue; }
+      if (nm.size) for (const w of ws) { const t = w.text.toLowerCase().replace(/[^a-z0-9\u00c0-\u024f]+/g, ""); if (t.length >= 3 && nm.has(t)) add(w.bbox, "nama"); }
       let run = [], n = 0;
       const flush = () => { if (run.length && n >= 8) add(union(run), "nomor"); run = []; n = 0; };
       for (const w of ws) {
@@ -60,7 +62,7 @@
     const W = Math.round(im.naturalWidth * sc), H = Math.round(im.naturalHeight * sc);
     const orig = document.createElement("canvas"); orig.width = W; orig.height = H; orig.getContext("2d").drawImage(im, 0, 0, W, H);
     const out = document.createElement("canvas"); out.width = W; out.height = H;
-    const st = { boxes: [], header: H > W * 1.2 };
+    const st = { boxes: [], header: true };
     const bandBox = () => ({ x: 0, y: 0, w: W, h: Math.round(H * 0.1), why: "kepala chat", band: true });
     const all = () => (st.header ? [bandBox()] : []).concat(st.boxes);
     const paint = (guides, view) => {
@@ -71,7 +73,7 @@
     const ref = {};
     const ok = await h.dialog({
       title: "Blur data sensitif", wide: true, ok: "Pakai gambar ini", cancel: "Batal",
-      body: `<p class="small muted" style="margin:0">Nomor HP, email, tautan, rekening, kalimat sensitif, dan kepala chat diburamkan otomatis. <b>Seret</b> pada gambar untuk menambah kotak blur (mis. nama), <b>klik kotak merah</b> untuk membatalkannya.</p>
+      body: `<p class="small muted" style="margin:0">Nomor telepon, nama yang Anda isi di kolom nama, email, tautan, rekening, kalimat sensitif, dan kepala chat diburamkan otomatis. Gambar asli tidak disimpan. <b>Seret</b> pada gambar untuk menambah kotak blur (mis. nama), <b>klik kotak merah</b> untuk membatalkannya.</p>
         <div class="bar"><label class="bar small"><input type="checkbox" id="bhd" ${st.header ? "checked" : ""}> Blur kepala chat (nama kontak &amp; foto profil)</label><span class="grow"></span><span class="small faint" id="bst">Memindai teks…</span></div>
         <div style="max-height:62vh;overflow:auto;border:1px solid var(--border);border-radius:10px;background:#111"><canvas id="bcv" style="width:100%;display:block;cursor:crosshair;touch-action:none"></canvas></div>`,
       onOpen: async d => {
@@ -97,7 +99,7 @@
           await wk.terminate();
           const lines = (r.data.lines) || ((r.data.blocks || []).flatMap(b => (b.paragraphs || []).flatMap(p => p.lines || [])));
           const pad = Math.max(3, Math.round(W / 250));
-          st.boxes = detect(lines).map(b => ({ x: b.x - pad, y: b.y - pad, w: b.w + 2 * pad, h: b.h + 2 * pad, why: b.why }));
+          st.boxes = detect(lines, h.names).map(b => ({ x: b.x - pad, y: b.y - pad, w: b.w + 2 * pad, h: b.h + 2 * pad, why: b.why }));
           stat.textContent = st.boxes.length ? `${st.boxes.length} bagian diburamkan otomatis. Periksa hasilnya.` : "Tidak ada data sensitif terdeteksi. Periksa manual.";
         } catch (e) { stat.textContent = (e && e.message || "Pemindaian gagal") + " Tandai manual dengan menyeret."; }
         draw();

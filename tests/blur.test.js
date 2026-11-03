@@ -31,3 +31,13 @@ test("blur: kalimat dengan kata sensitif diburamkan satu baris penuh", () => {
   assert.strictEqual(found[0].why, "kata sensitif");
   assert.strictEqual(found[0].w, 4 * 50 + 45);
 });
+
+test("blur: nama yang diisi admin dan nomor +62 berspasi terdeteksi", () => {
+  const found = detect([
+    line(["Siap", "Kak", "Contoh", "Nama,", "sudah"], 0),
+    line(["WA", "+62", "812", "3456", "7890"], 30),
+  ], ["Contoh Nama"]);
+  assert.strictEqual(found.filter(b => b.y === 0 && b.why === "nama").length, 2, "dua kata nama");
+  assert.ok(found.some(b => b.y === 30 && b.why === "nomor"), "nomor +62");
+  assert.ok(!detect([line(["Siap", "Kak"], 0)], ["Contoh Nama"]).length, "tanpa nama cocok tidak ada kotak");
+});
