@@ -27,7 +27,7 @@ const FORBID = /Ruang Akademik|ruangakademikut|nextaja|Analisa|Lab Studio/i;
 test("nav: Kelas Tuton, Komunitas, Alat UT, Panduan Maba, Blog; Cek Pesanan dan Masuk tidak tampil di mana pun", async () => {
   const t = await boot();
   try {
-    for (const p of ["/tutorial-online", "/komunitas", "/tentang", "/bedah-tulisan", "/beranda", "/ruangakademikut/layanan", "/ruangakademikut/cek-parafrase-mandiri", "/ruangakademikut/blog-ut", "/panduan-maba", "/sitasi-apa", "/ruangakademikut/pesanan"]) {
+    for (const p of ["/tutorial-online", "/komunitas", "/tentang", "/bedah-data-ut", "/beranda", "/ruangakademikut/layanan", "/ruangakademikut/cek-parafrase-mandiri", "/ruangakademikut/blog-ut", "/panduan-maba", "/sitasi-apa", "/ruangakademikut/pesanan"]) {
       const r = await t.get(p); assert.strictEqual(r.status, 200, p); const h = await r.text();
       assert.ok(/Kelas Tuton/.test(h) && /Komunitas/.test(h) && />Panduan Maba</.test(h) && />Blog</.test(h), "menu baru di " + p);
       assert.ok(!/nav-ord|aria-label="Cek pesanan"|>\s*Cek Pesanan\s*<\/a>/.test(h), "tautan Cek Pesanan masih tampil di " + p);
@@ -132,7 +132,7 @@ test("Bedah teks: tanpa kunci API pesannya jelas; dengan AI palsu menandai A-D d
     const fd = new FormData(); fd.append("text", "Kalimat pertama yang cukup panjang untuk diuji. Dua. Tiga kalimat lagi tanpa sumber.");
     const r = await fetch(noKey.base + "/ms/bedah-teks/analisis", { method: "POST", body: fd }); assert.strictEqual(r.status, 503);
     assert.ok(/kunci API Gemini belum diatur/.test((await r.json()).error));
-    const p = await (await noKey.get("/bedah-tulisan")).text();
+    const p = await (await noKey.get("/bedah-data-ut")).text();
     for (const x of ["SALIN TEKS", "PILIH FILE", "maksimal 10 MB", "30 halaman", "bukan jaminan skor detektor", "Bedah dengan Gemini"]) assert.ok(p.includes(x), x);
   } finally { noKey.srv.close(); }
   const seen = [];

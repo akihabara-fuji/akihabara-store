@@ -95,7 +95,7 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
   app.get(SHORT ? ["/ruangakademikut/tentang", "/tentang"] : "/ruangakademikut/tentang", kpage(() => KP.tentang(), ""));
   app.get(SHORT ? ["/ruangakademikut/komunitas", "/komunitas"] : "/ruangakademikut/komunitas", kpage(() => KP.komunitas(), "komunitas"));
   app.get(SHORT ? ["/ruangakademikut/kegiatan/:slug", "/kegiatan/:slug"] : "/ruangakademikut/kegiatan/:slug", kpage(req => KP.kegiatan(String(req.params.slug)), "komunitas"));
-  app.get(SHORT ? ["/ruangakademikut/bedah-tulisan", "/bedah-tulisan"] : "/ruangakademikut/bedah-tulisan", kpage(() => KP.bedahTeks(bedahCfg()), "alat"));
+  app.get(SHORT ? ["/ruangakademikut/bedah-data-ut", "/bedah-data-ut"] : "/ruangakademikut/bedah-data-ut", kpage(() => KP.bedahTeks(bedahCfg()), "alat"));
   app.get(SHORT ? ["/ruangakademikut/tutorial-online/materi/:id", "/tutorial-online/materi/:id"] : "/ruangakademikut/tutorial-online/materi/:id", kpage(req => { const r = KP.materi(String(req.params.id)); if (r && app.locals.konten) app.locals.konten.hit(String(req.params.id)).catch(() => {}); return r; }, "tuton"));
   app.get("/ruangakademikut/layanan", page("layanan.html"));
   app.get(SHORT ? ["/ruangakademikut/tutorial-online", "/tutorial-online"] : "/ruangakademikut/tutorial-online", kpage(req => KP.tuton(req), "tuton"));

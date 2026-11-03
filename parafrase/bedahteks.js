@@ -1,4 +1,4 @@
-/* Bedah Laporan (alat teks): Gemini menandai kalimat per jenis (A pendek/seragam, B koma berlebihan, C transisi generik, D argumen kurang kuat).
+/* Bedah Data UT (alat teks): Gemini menandai kalimat per jenis (A pendek/seragam, B koma berlebihan, C transisi generik, D argumen kurang kuat).
    Alat TIDAK menulis ulang kalimat. Teks hanya diproses di memori: tidak ditulis ke disk, tidak masuk log, tidak masuk database. */
 "use strict";
 const multer = require("multer");
