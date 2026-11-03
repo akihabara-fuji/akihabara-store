@@ -23,7 +23,7 @@ const PAGES = {
   "alat-tracker.html": "Tracker Kelulusan dan IPK",
   "alat-kalender.html": "Kalender dan Pengingat Akademik",
   "panduan-maba.html": "Panduan Maba UT",
-  "portal-ut.html": "Portal UT",
+  "portal-ut.html": "Info Alat UT",
 };
 const EXTRA_PAGE = "Blog dan akun (menu & footer)";
 const META_KEYS = new Set(["description", "og:title", "og:description", "twitter:title", "twitter:description"]);
