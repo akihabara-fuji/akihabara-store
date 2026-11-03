@@ -3,7 +3,7 @@ const test = require("node:test"), assert = require("node:assert"), express = re
 process.env.ACAD_URL = "https://akademik.example"; process.env.SITE_URL = "https://toko.example";
 const mountPages = require("../parafrase/pages");
 async function boot(ul) {
-  const app = express(); if (ul) app.locals.ulasanPublic = () => ul; mountPages({ app, express });
+  const app = express(); if (ul) app.locals.ulasanPublic = () => ul; require("../parafrase/konten")({ app, express, root: require("fs").mkdtempSync(require("path").join(require("os").tmpdir(), "sl-")), requireAdmin: (q, r, n) => n() }); mountPages({ app, express });
   const srv = app.listen(0), base = "http://127.0.0.1:" + srv.address().port;
   return { srv, get: p => fetch(base + p).then(async r => ({ status: r.status, html: await r.text() })) };
 }
@@ -39,7 +39,7 @@ test("halaman Tentang: ada, satu H1, tanpa klaim karangan, disclaimer ada", asyn
     const r = await get("/tentang");
     assert.strictEqual(r.status, 200);
     assert.strictEqual(tags(r.html, "h1"), 1);
-    assert.match(r.html, /Bukan situs resmi dan tidak terafiliasi dengan Universitas Terbuka/);
+    assert.match(r.html, /Belum ada penunjukan atau afiliasi resmi dengan Universitas Terbuka/);
     assert.match(r.html, /Kami tidak menjamin nilai atau kelulusan/);
     const nilai = await get("/kalkulator-nilai-ut");
     assert.match(nilai.html, /aria-label="Lanjut dari sini"/);

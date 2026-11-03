@@ -11,6 +11,8 @@ const mountUploads = require("./uploads");
 const mountCards = require("./cards");
 const mountSiteImg = require("./siteimg");
 const mountUlasan = require("./ulasan");
+const mountKonten = require("./konten");
+const mountBedahTeks = require("./bedahteks");
 const mountPages = require("./pages");
 const createTexts = require("./sitetexts");
 const mountAudit = require("./audit");
@@ -54,6 +56,8 @@ module.exports = function mount(ctx) {
   mountCards({ app, root: ROOT, requireAdmin });
   mountSiteImg({ app, root: ROOT, requireAdmin });
   mountUlasan({ app, root: ROOT, requireAdmin });
+  mountBedahTeks({ app, express, settings });
+  mountKonten({ app, express, root: ROOT, requireAdmin, getBlogPosts: () => (app.locals.acadPosts ? app.locals.acadPosts() : []) });
   /* Pelacak: GA4 langsung, atau GTM bila diisi (GTM yang memuat GA4, supaya tidak dihitung dua kali). ID diatur dari admin. */
   app.get("/t.js", (req, res) => {
     const c = settings.getAll(), G = c.ga_id || "", T = c.gtm_id || "";

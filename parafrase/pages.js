@@ -4,6 +4,8 @@ const path = require("path");
 const { SHORT, shortPaths } = require("./acadpaths");
 const fs = require("fs");
 const tema = require("./tema");
+const navfix = require("./navfix");
+const buildKonten = require("./konten-pages");
 
 module.exports = function mountPages({ app, express, texts = null, settings = null }) {
   const dir = path.join(__dirname, "pages");
@@ -20,10 +22,10 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
     .replace(/<link rel="apple-touch-icon"[^>]*>/g, '<link rel="apple-touch-icon" href="/ruangakademikut/assets/ca/apple-touch-icon.png">')
     .replace(/<link rel="manifest"[^>]*>/g, '<link rel="manifest" href="/ruangakademikut/assets/ca/manifest.webmanifest">')
     .replace(/(<a [^>]*class="logo"[^>]*>)<b>C<\/b>/g, '$1<b class="lg"><img src="/ruangakademikut/assets/ca/logo-96.png" alt="" width="34" height="34"></b>')
-    .replace("</head>", (h.includes("/site.css") ? '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme-svc.css?v=2">' : '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme.css?v=2">') + '<link rel="stylesheet" href="/ruangakademikut/assets/ca/nav.css?v=1"></head>')
+    .replace("</head>", (h.includes("/site.css") ? '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme-svc.css?v=2">' : '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme.css?v=2">') + '<link rel="stylesheet" href="/ruangakademikut/assets/ca/nav.css?v=2"></head>')
     .replace("</head>", "<style>.logo b.lg{background:none!important;box-shadow:none}.logo b.lg img{width:34px;height:34px;object-fit:contain;display:block}</style></head>")
     );
-  const TRACK = new Set(["beranda.html", "hub.html", "tentang.html", "cek.html", "bedah.html", "layanan.html", "tutorial-online.html", "blog-ut.html", "alat-nilai.html", "alat-sampul.html", "alat-tracker.html", "alat-kalender.html", "panduan-maba.html", "sitasi.html", "portal-ut.html"]); // halaman pesanan dan hasil memuat token rahasia: tidak dilacak
+  const TRACK = new Set(["shell.html", "beranda.html", "hub.html", "tentang.html", "cek.html", "bedah.html", "layanan.html", "tutorial-online.html", "blog-ut.html", "alat-nilai.html", "alat-sampul.html", "alat-tracker.html", "alat-kalender.html", "panduan-maba.html", "sitasi.html", "portal-ut.html"]); // halaman pesanan dan hasil memuat token rahasia: tidak dilacak
   const blogCards = req => typeof app.locals.renderAcadBlogCards === "function" ? app.locals.renderAcadBlogCards(req) : "";
   /* Satu jalur render untuk halaman publik DAN pratinjau admin. Kamus teks (sitetexts.js) dan kartu tersembunyi diterapkan di sini,
      di server, jadi pengunjung dan Google langsung menerima teks yang sudah diganti. opts: { over: Map pengganti sementara, mark: teks yang disorot } */
@@ -48,6 +50,7 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
   }
   function render(file, req, opts = {}) {
     let out = fs.readFileSync(path.join(dir, file), "utf8");
+    if (opts.vars) { const v = opts.vars; out = out.replace("{{BODY}}", () => v.body).replace(/\{\{TITLE\}\}/g, () => EH(v.title)).replace(/\{\{DESC\}\}/g, () => EH(v.desc)).replace("{{CANON}}", () => v.canon || "").replace("{{HEADX}}", () => v.headx || "").replace("{{ROBOTS}}", () => v.robots ? '<meta name="robots" content="' + v.robots + '">' : ""); }
     if (file === "blog-ut.html") out = out.replace('<div id="bl" class="bx-host"></div>', `<div id="bl" class="bx-host">${blogCards(req)}</div>`);
     if (file === "beranda.html" && typeof app.locals.ulasanPublic === "function" && !opts.preview) {
       /* Testimoni asli ditulis di HTML awal (bukan hanya lewat JavaScript) supaya terbaca mesin pencari. Skrip halaman membangunnya ulang untuk efek tilt. */
@@ -64,6 +67,8 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
     if (file === "hub.html" && texts) out = texts.hideCards(out, opts.hidden || hiddenCards());
     if (texts) out = texts.apply(out, opts.over || null, { mark: opts.mark, edit: opts.edit });
     out = (TRACK.has(file) && !opts.preview ? out.replace("</head>", '<script async src="/t.js"></script></head>') : out).replaceAll("{{SITE}}", SITE);
+    const on = k => !!(settings && settings.get(k));
+    out = navfix.fix(out, { file, active: opts.vars ? (opts.vars.active || "") : undefined, cek: on("tampil_cek_pesanan"), harga: on("tampil_harga_pesan") });
     return tema.inject(shorten(out), settings ? settings.get("ca_tema") : "");
   }
   const page = file => (req, res) => {
@@ -75,9 +80,25 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
   app.get("/ruangakademikut/cek-parafrase-mandiri", page("cek.html"));
   app.get(["/ruangakademikut/audit", "/audit", "/ruangakademikut/audit-parafrase", "/audit-parafrase", "/ruangakademikut/audit/hasil/:token"], (req, res) => res.redirect(301, SHORT ? "/cek-parafrase-mandiri" : "/ruangakademikut/cek-parafrase-mandiri"));
   app.get(SHORT ? ["/ruangakademikut/bedah-laporan", "/bedah-laporan"] : "/ruangakademikut/bedah-laporan", page("bedah.html"));
-  app.get(SHORT ? ["/ruangakademikut/tentang", "/tentang"] : "/ruangakademikut/tentang", page("tentang.html"));
+  /* Halaman berbasis data (Kelas Tuton, Komunitas, Portofolio, Bedah teks): isi dibangun di konten-pages.js, dibungkus shell.html */
+  const KP = buildKonten(app);
+  const bedahCfg = () => ({ mb: settings ? settings.get("bedahteks_max_mb") : 10, hal: settings ? settings.get("bedahteks_max_halaman") : 30 });
+  const kpage = (fn, active) => (req, res) => {
+    let out;
+    try {
+      const r = fn(req);
+      out = r ? render("shell.html", req, { vars: Object.assign({ active }, r) }) : render("shell.html", req, { vars: { active, title: "Halaman tidak ditemukan", desc: "Halaman tidak ditemukan.", canon: "", robots: "noindex", body: '<main class="wrap kt"><section class="kt-hd"><h1>Halaman tidak ditemukan</h1><p><a href="/ruangakademikut/tutorial-online">Ke Kelas Tuton</a> · <a href="/ruangakademikut/komunitas">Ke Komunitas</a></p></section></main>' } });
+      if (!r) res.status(404);
+    } catch (e) { console.error("[halaman]", e); return res.status(500).type("text").send("Halaman tidak tersedia."); }
+    res.set("Cache-Control", "no-cache").type("html").send(out);
+  };
+  app.get(SHORT ? ["/ruangakademikut/tentang", "/tentang"] : "/ruangakademikut/tentang", kpage(() => KP.tentang(), ""));
+  app.get(SHORT ? ["/ruangakademikut/komunitas", "/komunitas"] : "/ruangakademikut/komunitas", kpage(() => KP.komunitas(), "komunitas"));
+  app.get(SHORT ? ["/ruangakademikut/kegiatan/:slug", "/kegiatan/:slug"] : "/ruangakademikut/kegiatan/:slug", kpage(req => KP.kegiatan(String(req.params.slug)), "komunitas"));
+  app.get(SHORT ? ["/ruangakademikut/bedah-tulisan", "/bedah-tulisan"] : "/ruangakademikut/bedah-tulisan", kpage(() => KP.bedahTeks(bedahCfg()), "alat"));
+  app.get(SHORT ? ["/ruangakademikut/tutorial-online/materi/:id", "/tutorial-online/materi/:id"] : "/ruangakademikut/tutorial-online/materi/:id", kpage(req => { const r = KP.materi(String(req.params.id)); if (r && app.locals.konten) app.locals.konten.hit(String(req.params.id)).catch(() => {}); return r; }, "tuton"));
   app.get("/ruangakademikut/layanan", page("layanan.html"));
-  app.get(SHORT ? ["/ruangakademikut/tutorial-online", "/tutorial-online"] : "/ruangakademikut/tutorial-online", page("tutorial-online.html"));
+  app.get(SHORT ? ["/ruangakademikut/tutorial-online", "/tutorial-online"] : "/ruangakademikut/tutorial-online", kpage(req => KP.tuton(req), "tuton"));
   app.get("/ruangakademikut/blog-ut", page("blog-ut.html"));
   /* Alat gratis: di domain akademik alamat resminya pendek (/kalkulator-nilai-ut); jalur lama /ruangakademikut/... dialihkan 301. */
   for (const [slug, file] of [["kalkulator-nilai-ut", "alat-nilai.html"], ["sampul-tugas", "alat-sampul.html"], ["tracker-kelulusan", "alat-tracker.html"], ["kalender-akademik", "alat-kalender.html"], ["panduan-maba", "panduan-maba.html"], ["sitasi-apa", "sitasi.html"], ["portal-ut", "portal-ut.html"]]) {
@@ -115,7 +136,7 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
   /* Verifikasi Bing Webmaster Tools (kode per akun, bukan rahasia) */
   app.get("/BingSiteAuth.xml", (req, res) => res.type("application/xml").set("Cache-Control", "public, max-age=3600")
     .send('<?xml version="1.0"?>\n<users>\n\t<user>5A51A6D49E191DE95E89EA165A5F3815</user>\n</users>'));
-  const ASSETS = new Set(["site.css", "hub.css", "common.js", "cek.js", "pesanan.js", "admin.js", "studio.js", "bedah.js", "layanan.js", "tutorial.js", "tutorial.css", "baru.css", "layanan-admin.js", "blog-ut.js", "nilai-ut.js", "kalkulator.js", "wordlib.js", "sampul.js", "tracker.js", "kalender.js", "maba.js", "logo-ut.png", "sitasi-apa.js", "sitasi.js"]);
+  const ASSETS = new Set(["konten.css", "konten.js", "bedah-teks.js", "site.css", "hub.css", "common.js", "cek.js", "pesanan.js", "admin.js", "studio.js", "bedah.js", "layanan.js", "tutorial.js", "tutorial.css", "baru.css", "layanan-admin.js", "blog-ut.js", "nilai-ut.js", "kalkulator.js", "wordlib.js", "sampul.js", "tracker.js", "kalender.js", "maba.js", "logo-ut.png", "sitasi-apa.js", "sitasi.js"]);
   app.get(["/ruangakademikut/assets/:f", "/assets/ut/:f"], (req, res) => {
     if (!ASSETS.has(req.params.f)) return res.status(404).end();
     sendAsset(res, path.join(dir, req.params.f), "no-cache");

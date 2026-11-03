@@ -65,6 +65,10 @@ const DEFS = {
   google_verify_file:           { type: "str",  re: /^google[a-z0-9]{8,40}\.html$/, allowEmpty: true, def: "" },
   qris_image_path:              { type: "str",  re: /^[a-z0-9/_.-]{0,200}$/i, allowEmpty: true, def: "" },
   price_simulasi:               { type: "int",  min: 0, max: 100000000, def: 0, pub: true },        // biaya pesan simulasi (0 = gratis dipesan)
+  bedahteks_max_mb:             { type: "int",  min: 1, max: 25, def: 10, pub: false },   // batas ukuran file alat Bedah Laporan (teks)
+  bedahteks_max_halaman:        { type: "int",  min: 1, max: 100, def: 30, pub: false },  // batas halaman file alat Bedah Laporan (teks)
+  tampil_cek_pesanan:           { type: "bool", def: false, pub: true }, // ikon/menu/banner Cek Pesanan di semua halaman
+  tampil_harga_pesan:           { type: "bool", def: false, pub: true }, // harga dan tombol pesan di kartu layanan
   layanan_nonaktif:             { type: "str",  re: /^[a-z0-9_]+(,[a-z0-9_]+)*$/, allowEmpty: true, def: "tugas,diskusi,makalah,jurnal,metopen1,metopen2,metopen3,metopen_paket,revisi_tugas,revisi_diskusi,revisi_metopen", pub: true }, // kode layanan yang ditutup, dipisah koma
 };
 /* Nama tampil tiap layanan (formulir, judul pesanan, daftar admin). Kosong = pakai nama bawaan di layanan.js. Diubah dari panel admin. */

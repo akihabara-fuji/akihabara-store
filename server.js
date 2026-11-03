@@ -361,7 +361,7 @@ app.use("/admin", (req, res, next) => (isAcadHost(req) ? caPanel(req, res, next)
 if (!ACAD_HOSTS.length) app.use("/admin-ca", caPanel);
 app.use("/admin", express.static(path.join(ROOT, "admin"), { index: "index.html" }));
 /* Berkas unggahan hanya boleh tampil sebagai gambar: tidak ada skrip/HTML yang bisa jalan walau dibuka langsung. */
-app.use("/uploads", express.static(UPLOADS, { maxAge: "30d", immutable: true, setHeaders: res => res.setHeader("Content-Security-Policy", "default-src 'none'; img-src 'self'; sandbox") }));
+app.use("/uploads", express.static(UPLOADS, { maxAge: "30d", immutable: true, setHeaders: (res, fp) => { res.setHeader("Content-Security-Policy", "default-src 'none'; img-src 'self'; sandbox"); if (app.locals.mediaReplaced && app.locals.mediaReplaced(require("path").basename(fp))) res.setHeader("Cache-Control", "no-cache"); } }));
 /* Galeri kartu layanan di landing: daftar foto dibaca dari public/assets/galeri/<kartu>/ (urut nama berkas). Kosong = kartu teks saja. */
 app.get("/ms/galeri", (req, res) => {
   res.set("Cache-Control", "no-cache");

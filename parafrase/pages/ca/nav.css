@@ -10,6 +10,7 @@ header.nav{background:linear-gradient(to bottom,color-mix(in srgb,var(--bg) 94%,
 .nav .wrap{height:auto;max-width:none;width:100%;margin:10px 0 0;padding:0 24px;gap:16px;background:none;box-shadow:none;border-radius:0;position:relative;justify-content:space-between}
 .nav .links{position:relative;background:#16123a!important;box-shadow:0 6px 20px rgba(0,0,0,.28)!important;border-radius:999px;padding:5px 6px;flex:0 1 auto;gap:2px!important}
 .nav .links>a,.nav .links .dd summary{color:#fff!important;font:600 12px Inter,Onest,sans-serif!important;padding:5px 10px;border-radius:999px}
+.nav .links{display:flex!important;flex-direction:row!important;align-items:center!important;left:auto!important;right:auto!important;top:auto!important;max-height:none!important;overflow:visible!important;margin:0!important}.nav .burger,.nav .only-m{display:none!important}
 .nav .links>a:after{display:none}
 .nav .links>a.on{background:#fff;color:#16132e!important}
 .nav .links>a:hover:not(.on),.nav .links .dd[open] summary,.nav .links .dd summary:hover{background:rgba(255,255,255,.14)!important}

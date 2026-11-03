@@ -18,7 +18,7 @@ module.exports = function mountUlasan({ app, root, requireAdmin }) {
   const save = () => (chain = chain.then(() => fsp.writeFile(file + ".tmp", JSON.stringify(items, null, 1)).then(() => fsp.rename(file + ".tmp", file))));
   const imgPath = id => path.join(dir, id + ".webp");
   const clip = (v, n) => String(v == null ? "" : v).replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, "").trim().slice(0, n);
-  const pub = it => ({ id: it.id, nama: it.nama, ket: it.ket, teks: it.teks, img: it.img ? `/ms/ulasan/img/${it.id}.webp?v=${it.at}` : "" });
+  const pub = it => ({ id: it.id, nama: it.nama, ket: it.ket, teks: it.teks, tgl: new Date(it.at || 0).toISOString().slice(0, 10), img: it.img ? `/ms/ulasan/img/${it.id}.webp?v=${it.at}` : "" });
 
   app.locals.ulasanPublic = () => items.filter(i => i.tampil).sort((a, b) => b.at - a.at).map(pub);
   app.get("/ms/ulasan", (req, res) => {

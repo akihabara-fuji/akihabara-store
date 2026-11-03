@@ -387,8 +387,28 @@ document.addEventListener("submit",function(e){e.preventDefault()},true);
   }));
   app.get("/ms/admin/ca/media", requireAdmin, send(async () => {
     const posts = blog.posts(), files = (await fsp.readdir(UPLOADS).catch(() => [])).filter(f => /^[a-z0-9][a-z0-9._-]*\.(webp|jpe?g|png|gif|avif)$/i.test(f));
-    const stats = await Promise.all(files.map(async f => { const s = await fsp.stat(path.join(UPLOADS, f)); const url = `/uploads/${f}`; return { url, size: s.size, at: s.mtimeMs, usedIn: posts.filter(p => p.cover === url || String(p.body || "").includes(url)).map(p => ({ title: p.title, slug: p.slug })) }; }));
+    const stats = await Promise.all(files.map(async f => { const s = await fsp.stat(path.join(UPLOADS, f)); const url = `/uploads/${f}`; return { url, size: s.size, at: s.mtimeMs, usedIn: posts.filter(p => p.cover === url || String(p.body || "").includes(url)).map(p => ({ title: p.title, slug: p.slug })).concat(app.locals.kontenUsage ? app.locals.kontenUsage(url) : []) }; }));
     return { items: stats.sort((a, b) => b.at - a.at).slice(0, 400) };
+  }));
+
+  /* Ganti isi gambar sekali, tampil baru di semua halaman yang memakainya (alamat file tetap). Format file tetap sama dengan aslinya. */
+  app.post("/ms/admin/ca/media/:file/replace", requireAdmin, (req, res) => up(req, res, async err => {
+    const f = String(req.params.file || "");
+    if (!/^[a-z0-9][a-z0-9._-]*\.(webp|jpe?g|png|gif|avif)$/i.test(f) || f.includes("..")) return res.status(400).json({ error: "Nama berkas tidak valid." });
+    if (err || !req.file) return res.status(400).json({ error: "File harus gambar (JPG, PNG, WebP, GIF, AVIF), maks 15 MB." });
+    const dest = path.join(UPLOADS, f); try { await fsp.access(dest); } catch { return res.status(404).json({ error: "Gambar tidak ditemukan." }); }
+    const kind = sniff(req.file.buffer); if (!kind) return res.status(415).json({ error: "Isi file bukan gambar yang valid." });
+    const want = f.split(".").pop().toLowerCase().replace("jpeg", "jpg");
+    try {
+      let out = req.file.buffer;
+      if (sharp && want !== "gif" && want !== "avif") {
+        let s = sharp(req.file.buffer, { failOn: "error", limitInputPixels: 60e6 }).rotate().resize({ width: 2000, height: 2000, fit: "inside", withoutEnlargement: true });
+        out = await (want === "jpg" ? s.jpeg({ quality: 86 }) : want === "png" ? s.png() : s.webp({ quality: 84 })).toBuffer();
+      } else if (kind !== want) return res.status(400).json({ error: "Format file harus sama dengan gambar asli (." + want + ")." });
+      await fsp.writeFile(dest + ".tmp", out); await fsp.rename(dest + ".tmp", dest);
+      if (app.locals.mediaMarkReplaced) await app.locals.mediaMarkReplaced(f);
+      res.json({ ok: true, url: "/uploads/" + f });
+    } catch { res.status(400).json({ error: "Gambar tidak bisa dibaca. Coba file lain." }); }
   }));
 
   /* hapus gambar: hanya yang tidak dipakai artikel mana pun (termasuk draf dan sampah), supaya tidak ada gambar patah */
@@ -396,7 +416,8 @@ document.addEventListener("submit",function(e){e.preventDefault()},true);
     const f = String(req.params.file || "");
     if (!/^[a-z0-9][a-z0-9._-]*\.(webp|jpe?g|png|gif|avif)$/i.test(f) || f.includes("..")) throw bad(400, "Nama berkas tidak valid.");
     const url = `/uploads/${f}`, use = blog.posts().filter(p => p.cover === url || String(p.body || "").includes(url));
-    if (use.length) throw bad(409, `Gambar masih dipakai di: ${use.slice(0, 3).map(p => p.title).join(", ")}. Ganti gambar di artikel itu dulu.`);
+    const use2 = use.map(p => p.title).concat((app.locals.kontenUsage ? app.locals.kontenUsage(url) : []).map(u => u.title));
+    if (use2.length) throw bad(409, `Gambar masih dipakai di: ${use2.slice(0, 3).join(", ")}. Pakai "Ganti gambar" untuk menimpa isinya di semua halaman, atau lepas gambar dari halaman itu dulu.`);
     try { await fsp.unlink(path.join(UPLOADS, f)); } catch (e) { if (e.code === "ENOENT") throw bad(404, "Gambar tidak ditemukan."); throw e; }
     return { ok: true };
   }));

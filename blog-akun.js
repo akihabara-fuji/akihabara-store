@@ -131,11 +131,12 @@ module.exports = function mount(ctx) {
     .replace(/<link rel="apple-touch-icon"[^>]*>/g, '<link rel="apple-touch-icon" href="/ruangakademikut/assets/ca/apple-touch-icon.png">')
     .replace(/<link rel="manifest"[^>]*>/g, '<link rel="manifest" href="/ruangakademikut/assets/ca/manifest.webmanifest">')
     .replace(/(<a [^>]*class="logo"[^>]*>)<b>[^<]*<\/b>/g, '$1<b class="lg"><img src="/ruangakademikut/assets/ca/logo-96.png" alt="" width="34" height="34"></b>')
-    .replace("</head>", '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme.css?v=2"><link rel="stylesheet" href="/ruangakademikut/assets/ca/nav.css?v=1"></head>')
+    .replace("</head>", '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme.css?v=2"><link rel="stylesheet" href="/ruangakademikut/assets/ca/nav.css?v=2"></head>')
     .replace("</head>", "<style>.logo b.lg{background:none!important}.logo b.lg img{width:34px;height:34px;object-fit:contain;display:block}</style></head>");
   const TEMA = require("./parafrase/tema");
   /* Tema dipasang paling akhir: shortPath menyisipkan theme.css tepat sebelum </head>, jadi tema harus sesudahnya. */
-  const rebrand = h => (ACAD_ONLY ? TEMA.inject(shortPath(caBrand(String(h).replace(/(?<![\w./@-])nextaja(?![\w-]|\.\w)/gi, BRAND))), ctx.getCa && ctx.getCa("ca_tema")) : h);
+  const NAVFIX = require("./parafrase/navfix");
+  const rebrand = h => (ACAD_ONLY ? TEMA.inject(shortPath(caBrand(NAVFIX.fix(String(h), { active: "blog", harga: true, cek: !!(ctx.getCa && ctx.getCa("tampil_cek_pesanan")) }).replace(/(?<![\w./@-])nextaja(?![\w-]|\.\w)/gi, BRAND))), ctx.getCa && ctx.getCa("ca_tema")) : h);
   /* Terjadwal = tampil otomatis saat publishAt lewat (tanpa cron). Draf, review, dan terjadwal yang belum waktunya tidak pernah tampil publik. */
   const isLive = (p, now = Date.now()) => !p.trashedAt && (p.status === "published" || (p.status === "scheduled" && Date.parse(p.publishAt) <= now));
   const published = () => blog.posts.filter(p => isLive(p) && (!ACAD_ONLY || ACAD_TOPICS.includes(p.topic)) && !Object.prototype.hasOwnProperty.call(REDIR, p.slug)).sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
@@ -202,6 +203,7 @@ module.exports = function mount(ctx) {
     return `<div class="bx">${hero}${grupStrip}<section class="bx-list" aria-live="polite">${head}${grid}${more}</section>${archive}</div><script>(function(){var i=document.getElementById("bxq");if(!i)return;var cs=[].slice.call(document.querySelectorAll(".bx-card,.blog-titles li")),n=document.querySelector(".bx-head .bx-count");i.addEventListener("input",function(){var q=i.value.toLowerCase().trim();if(q.length<2){cs.forEach(function(c){c.hidden=false});return}var k=0;cs.forEach(function(c){var m=c.textContent.toLowerCase().indexOf(q)>-1;c.hidden=!m;if(m)k++});[].forEach.call(document.querySelectorAll(".blog-week,.blog-month"),function(d){if(q.length>=2){d.open=!!d.querySelector("li:not([hidden])");d.hidden=!d.open}});if(n)n.textContent=k+" artikel cocok"})})()</script>${SMARTNAV}`;
   }
   app.locals.renderAcadBlogCards = req => blogIndex(req, "/blog-ut");
+  app.locals.acadPosts = () => blog.posts.filter(x => !x.trashedAt && (x.status === "published" || x.status === "scheduled")).map(x => ({ slug: x.slug, title: x.title, status: x.status }));
   app.locals.acadPostTitle = slug => { const p = blog.posts.find(x => x.slug === slug && isLive(x)); return p ? p.title : null; };
   /* potongan HTML daftar untuk filter di halaman Update UT */
   app.get("/ms/blog/list-html", (req, res) => {
@@ -878,6 +880,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
       ${mabaBox}
       ${ACAD_ONLY && clusterOf(p) >= 0 ? `<p class="ax-pillar" style="margin:18px 0;font-size:14.5px;line-height:1.7">Lanjut baca: <a href="/tugas-ut">panduan tugas UT</a>, <a href="/ruangakademikut/kalkulator-nilai-ut">kalkulator nilai UT</a>, dan <a href="/ruangakademikut/kalkulator-nilai-ut">cara menghitung IPK UT</a>.</p>` : ""}
       ${tags.length ? `<div class="ax-tags" aria-label="Tag">${tags.map(t => `<a href="/blog?tag=${encodeURIComponent(t)}" rel="tag">${esc(tagLabel(t))}</a>`).join("")}</div>` : ""}
+      ${ACAD_ONLY && app.locals.ktaCta ? app.locals.ktaCta(p.slug, p.title) : ""}
       ${communityBlock()}
       ${readAlso}
       <p class="ax-note">${BRAND} adalah layanan belajar independen yang dikelola oleh mahasiswa UT. Bukan situs resmi Universitas Terbuka. Selalu pegang ketentuan dari tutor dan sumber resmi UT di <a href="https://www.ut.ac.id" rel="noopener" target="_blank">ut.ac.id</a>.${ACAD_ONLY ? ' Lihat <a href="/ruangakademikut/tentang#editorial">kebijakan editorial dan sumber</a>.' : ""}</p>
