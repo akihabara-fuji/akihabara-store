@@ -77,7 +77,7 @@ function poOpen(f){var lb=document.createElement("div");lb.className="po-lb";var
     var all = SV.every(function (x) { return x[2].every(function (k) { return !cfg[k] || cfg[k].closed; }); });
     if (!all) return;
     var hd = document.querySelector(".tx-hd .wrap"); if (!hd || hd.querySelector(".tx-closed")) return;
-    var n = el("div", "tx-closed", "Sesi sedang ditutup. Tanya admin untuk jadwal sesi berikutnya.");
+    var n = el("div", "tx-closed", "Sesi sedang ditutup. Tanya admin untuk jadwal sesi berikutnya."); var mi = new Image(); mi.src = "/ruangakademikut/assets/ca/mc-12.webp"; mi.alt = ""; mi.width = 40; mi.height = 40; mi.className = "mcs w1"; mi.style.cssText = "float:right;margin:-6px 0 0 10px"; n.appendChild(mi);
     n.style.cssText = "margin:12px 0;padding:12px 16px;border-radius:12px;border:1px solid var(--border);background:var(--surface2)"; hd.insertBefore(n, hd.querySelector(".tx-seg"));
     var hb = document.querySelector('.tx-seg [data-tab="harga"]'); if (hb) hb.textContent = "Layanan";
     var th = document.querySelector("#tx-harga thead th:last-child"); if (th) th.textContent = "Status";

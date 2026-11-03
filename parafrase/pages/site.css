@@ -208,3 +208,10 @@ section,.sec{scroll-margin-top:80px}
 .wab button{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:0;color:#fff;font-size:20px;line-height:1;cursor:pointer;padding:6px 10px}
 .gban{display:none!important}
 @media print{.wab{display:none!important}}
+
+/* Maskot chibi */
+.mcs{display:inline-block;width:44px;height:44px;margin-left:10px;vertical-align:middle;filter:drop-shadow(0 3px 5px rgba(0,0,0,.28));pointer-events:none}
+.mcs.w1{animation:mcb 3.2s ease-in-out infinite}.mcs.w2{animation:mcw 2.8s ease-in-out infinite}.mcs.w3{animation:mct 4s ease-in-out infinite}
+@keyframes mcb{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}@keyframes mcw{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}@keyframes mct{0%,100%{transform:rotate(3deg) translateY(0)}50%{transform:rotate(-3deg) translateY(-4px)}}
+.ft-b .mcs{display:block;margin:10px 0 0}
+@media (prefers-reduced-motion:reduce){.mcs{animation:none!important}}

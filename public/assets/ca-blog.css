@@ -185,3 +185,7 @@
 /* Smart header: sembunyi saat scroll turun, muncul lagi saat scroll naik */
 .nav{transition:transform .25s ease}.nav.nav-hide{transform:translateY(-100%)}
 @media(prefers-reduced-motion:reduce){.nav{transition:none}}
+
+.bx-mc{display:inline-block;width:44px;height:44px;margin-left:10px;vertical-align:middle;filter:drop-shadow(0 3px 5px rgba(0,0,0,.28));animation:bxmc 3.4s ease-in-out infinite}.bx-empty .bx-mc{display:block;margin:0 0 6px;width:56px;height:56px}
+@keyframes bxmc{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@media (prefers-reduced-motion:reduce){.bx-mc{animation:none!important}}

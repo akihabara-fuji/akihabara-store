@@ -19,7 +19,7 @@ test("landing: satu H1 berkata kunci, sub-judul bukan H1, kartu Audit/Cek di baw
     assert.ok(html.indexOf("Audit dan cek parafrase dokumen</h2>") > 0 && html.indexOf("Audit dan cek parafrase dokumen</h2>") < html.indexOf("<h3>Audit Dokumen</h3>"), "H2 mendahului H3 kartu");
     assert.match(html, /href="\/tentang"/);
     assert.ok(!/aman dari|di bawah 25%/.test(html.replace(/<[^>]+>/g, " ")), "beranda tidak menjanjikan hasil similarity");
-    assert.match(html, /rel="preload" as="image" href="\/site-img\/hero\/model-ut\.webp"/);
+    assert.match(html, /rel="preload" as="image" href="\/ruangakademikut\/assets\/ca\/ms\.webp"/);
     assert.ok(!/id="ulasan">/.test(html), "tanpa testimoni asli bagiannya tetap tersembunyi");
   } finally { srv.close(); }
 });

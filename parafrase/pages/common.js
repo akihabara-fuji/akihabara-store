@@ -556,4 +556,30 @@ window.auditOkList = function (sc, box) {
     if (x.children.length) ft.appendChild(x);
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go); else go();
+  setTimeout(go, 900); setTimeout(go, 2500);
+})();
+
+/* Maskot chibi: stiker kecil di judul halaman dan footer. Gerak lembut, mati bila "kurangi gerakan". */
+(function () {
+  var P = location.pathname, src = function (n) { return "/ruangakademikut/assets/ca/mc-" + (n < 10 ? "0" : "") + n + ".webp"; };
+  function mk(n, cls) { var i = new Image(); i.className = "mcs " + (cls || ""); i.src = src(n); i.alt = ""; i.width = 44; i.height = 44; i.loading = "lazy"; return i; }
+  function inH(sel, n, cls, test) { var e = document.querySelector(sel); if (!e || e.querySelector(".mcs") || (test && !test(e))) return; e.appendChild(mk(n, cls)); }
+  function go() {
+    if (/cek-parafrase/.test(P)) inH("h1", 14, "w1");
+    else if (/bedah/.test(P)) inH("h1", 17, "w2");
+    else if (/tutorial-online/.test(P)) inH("h1", 9, "w3");
+    else if (/panduan-maba/.test(P)) inH("h1", 20, "w1");
+    else if (/pesanan/.test(P)) document.querySelectorAll("h1").forEach(function (h) { if (/Cek Pesanan/.test(h.textContent)) inH2(h, 22, "w2"); });
+    else if (/\/layanan$/.test(P) || /ruangakademikut\/?$/.test(P)) {
+      document.querySelectorAll("h2,h3").forEach(function (h) {
+        if (/Paket Semester/.test(h.textContent)) inH2(h, 23, "w1");
+        
+      });
+    }
+    var tb = document.querySelector(".tx-ban b"); if (tb) inH2(tb, 15, "w2");
+    var f = document.querySelector("footer.ft .ft-b"); if (f && !f.querySelector(".mcs")) f.appendChild(mk(11, "w3"));
+  }
+  function inH2(h, n, cls) { if (!h.querySelector(".mcs")) h.appendChild(mk(n, cls)); }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go); else go();
+  setTimeout(go, 900); setTimeout(go, 2500);
 })();

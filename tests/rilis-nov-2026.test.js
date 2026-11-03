@@ -41,14 +41,14 @@ test("studio: halaman baru memakai kiri Word bisa diketik, kanan kalimat biru + 
   assert.ok(html.includes("Word asli mahasiswa") && html.includes("Kirim ke pelanggan") && html.includes("Unduh final"));
 });
 
-test("navigasi atas publik: 6 item, hanya 2 dropdown, sama di semua halaman", () => {
+test("navigasi atas publik: 7 item, hanya 2 dropdown, sama di semua halaman", () => {
   const dir = path.join(__dirname, "..", "parafrase", "pages");
   let n = 0;
   for (const f of fs.readdirSync(dir).filter(x => x.endsWith(".html"))) {
     const h = fs.readFileSync(path.join(dir, f), "utf8"), m = /<nav class="links"[^>]*>[\s\S]*?<\/nav>/.exec(h);
     if (!m || !m[0].includes('class="dd"')) continue; n++;
     const items = [...m[0].replace(/<div class="ddp[\s\S]*?<\/div>/g, "").matchAll(/<(?:summary|a)[^>]*>([^<]+)</g)].map(x => x[1].trim());
-    assert.deepEqual(items.slice(0, 6), ["Layanan", "Tutorial Online", "Cek &amp; Bedah", "Mahasiswa Baru", "Alat UT", "Blog"], f);
+    assert.deepEqual(items.slice(0, 7), ["Layanan", "Tutorial Online", "Cek &amp; Bedah", "Mahasiswa Baru", "Testimoni", "Alat UT", "Blog"], f);
     assert.equal((m[0].match(/<details class="dd"/g) || []).length, 2, f);
   }
   assert.ok(n >= 15, "halaman publik terperiksa: " + n);

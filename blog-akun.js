@@ -186,15 +186,15 @@ module.exports = function mount(ctx) {
     const popular = topTags(all, 8);
     const popHtml = popular.length ? `<nav class="bx-pop" aria-label="Topik populer"><span>Topik populer:</span>${popular.map(t => `<a href="${base}?tag=${encodeURIComponent(t)}"${tag === t ? ' aria-current="page" class="on"' : ""}>${esc(tagLabel(t))}</a>`).join("")}</nav>` : "";
     const hero = `<section class="bx-hero"><div class="bx-hero-t">
-        <span class="bx-eyebrow">Update Terbaru</span>
+        <span class="bx-eyebrow">Update Terbaru</span><img class="bx-mc" src="/ruangakademikut/assets/ca/mc-02.webp" alt="" width="44" height="44">
         <h1>${ACAD_ONLY ? 'Informasi dan Panduan Kuliah <span class="bx-hl">Universitas Terbuka</span>' : "Blog dan tulisan terbaru"}</h1>
         <p class="bx-lead">${ACAD_ONLY ? "Jadwal, registrasi, ujian, tugas, Metopen, tips belajar, dan pengalaman mahasiswa UT. Bukan situs resmi UT: selalu cocokkan dengan pengumuman resmi di ut.ac.id." : "Catatan tentang belajar, social media, AI, dan hal-hal yang lagi ramai."}</p>
         <form class="bx-search" role="search" action="${base}" method="get"><label class="bx-sr" for="bxq">Cari artikel</label><input id="bxq" type="search" name="q" value="${esc(q)}" maxlength="80" placeholder="Cari artikel, contoh: jadwal ujian, registrasi, tugas…"><button type="submit">Cari</button></form>
         <nav class="bx-chips" aria-label="Filter kategori">${chips}</nav>${popHtml}
       </div>${featured ? `<article class="bx-feat"><a href="/blog/${esc(featured.slug)}"><div class="bx-cv">${cardCover(featured, true)}<span class="bx-badge">Artikel Pilihan</span></div><div class="bx-b"><h2>${esc(featured.title)}</h2>${featured.excerpt ? `<p>${esc(featured.excerpt)}</p>` : ""}<div class="bx-ft"><span><time datetime="${esc(featured.publishedAt)}">${esc(shortDate(featured.publishedAt))}</time> · ${esc(tl(featured.topic))}</span><span class="bx-go">Baca selengkapnya <i aria-hidden="true">→</i></span></div></div></a></article>` : ""}</section>`;
     const what = q ? `Hasil pencarian “${esc(q)}”` : tag ? `Artikel tentang ${esc(tagLabel(tag))}` : f ? esc(TOPICS[f].label) : "Artikel Terbaru";
-    const head = `<div class="bx-head"><h2>${what}</h2>${filtering ? `<span class="bx-count">${list.length} artikel · <a href="${base}">Hapus filter</a></span>` : ""}</div>`;
-    const grid = latest.length ? `<div class="bx-grid">${latest.map(blogCard).join("")}</div>` : `<div class="bx-empty"><b>Belum ada artikel yang cocok.</b><span>Coba kata lain, atau <a href="${base}">lihat semua artikel</a>.</span></div>`;
+    const head = `<div class="bx-head"><h2>${what}${!q && !tag && !f ? '<img class="bx-mc" src="/ruangakademikut/assets/ca/mc-16.webp" alt="" width="40" height="40">' : ""}</h2>${filtering ? `<span class="bx-count">${list.length} artikel · <a href="${base}">Hapus filter</a></span>` : ""}</div>`;
+    const grid = latest.length ? `<div class="bx-grid">${latest.map(blogCard).join("")}</div>` : `<div class="bx-empty"><img class="bx-mc" src="/ruangakademikut/assets/ca/mc-21.webp" alt="" width="56" height="56"><b>Belum ada artikel yang cocok.</b><span>Coba kata lain, atau <a href="${base}">lihat semua artikel</a>.</span></div>`;
     const more = filtering && list.length > latest.length ? `<p class="bx-more">Menampilkan ${latest.length} dari ${list.length}. Persempit pencarian untuk hasil yang lebih tepat.</p>` : "";
     const archive = !filtering && all.length > latest.length + 1 ? `<section class="bx-arch" aria-labelledby="bxArch"><div class="bx-head"><h2 id="bxArch">Arsip artikel</h2><span class="bx-count">${all.length} artikel</span></div><div class="blog-ctl"><button type="button" data-bx="open">Buka semua</button><button type="button" data-bx="close">Tutup semua</button></div>${groupedList(all)}<script>document.querySelectorAll("[data-bx]").forEach(function(b){b.onclick=function(){document.querySelectorAll(".bx-arch details").forEach(function(d){d.open=b.dataset.bx==="open"})}})</script></section>` : "";
     const grupOn = ACAD_ONLY && /^https:\/\/chat\.whatsapp\.com\//.test(String((ctx.getCa && ctx.getCa("update_group_url")) || "").trim());
@@ -686,7 +686,7 @@ module.exports = function mount(ctx) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Bricolage+Grotesque:wght@600;700&display=swap" rel="stylesheet">
 <script>try{var t=localStorage.getItem("nx-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
-<link rel="stylesheet" href="/assets/blog.css?v=10"><link rel="stylesheet" href="/assets/ca-blog.css?v=16"><script async src="/t.js"></script>
+<link rel="stylesheet" href="/assets/blog.css?v=10"><link rel="stylesheet" href="/assets/ca-blog.css?v=17"><script async src="/t.js"></script>
 ${extra}
 </head>
 <body>
