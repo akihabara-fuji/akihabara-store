@@ -90,7 +90,7 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
   /* Koin sudah tidak dipakai: halaman lama diarahkan ke layanan (semua pembayaran lewat QRIS). */
   app.get(["/koin", "/ruangakademikut/koin"], (req, res) => res.redirect(302, SHORT ? "/layanan" : "/ruangakademikut/layanan"));
   app.get(["/ruangakademikut/pesanan", "/ruangakademikut/pesanan/:token"], page("pesanan.html"));
-  const CA = new Set(["theme.css", "theme-svc.css", "favicon.ico", "favicon-32.png", "apple-touch-icon.png", "icon-192.png", "icon-512.png", "logo-96.png", "manifest.webmanifest", "ms.webp", ...Array.from({ length: 24 }, (_, i) => `mc-${String(i + 1).padStart(2, "0")}.webp`)]);
+  const CA = new Set(["theme.css", "theme-svc.css", "favicon.ico", "favicon-32.png", "apple-touch-icon.png", "icon-192.png", "icon-512.png", "logo-96.png", "manifest.webmanifest", "ms.webp", "model-f.webp", "model-m.webp", ...Array.from({ length: 24 }, (_, i) => `mc-${String(i + 1).padStart(2, "0")}.webp`)]);
   /* Berkas teks (JS, manifest) ditulis ulang di server: tautan di dalamnya ikut alamat pendek di domain akademik. Hasil disimpan per waktu ubah berkas. */
   const rewritten = new Map();
   function sendAsset(res, file, cache) {
