@@ -131,7 +131,7 @@ module.exports = function mount(ctx) {
     .replace(/<link rel="apple-touch-icon"[^>]*>/g, '<link rel="apple-touch-icon" href="/ruangakademikut/assets/ca/apple-touch-icon.png">')
     .replace(/<link rel="manifest"[^>]*>/g, '<link rel="manifest" href="/ruangakademikut/assets/ca/manifest.webmanifest">')
     .replace(/(<a [^>]*class="logo"[^>]*>)<b>[^<]*<\/b>/g, '$1<b class="lg"><img src="/ruangakademikut/assets/ca/logo-96.png" alt="" width="34" height="34"></b>')
-    .replace("</head>", '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme.css?v=2"><link rel="stylesheet" href="/ruangakademikut/assets/ca/nav.css?v=2"></head>')
+    .replace("</head>", '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme.css?v=2"><link rel="stylesheet" href="/ruangakademikut/assets/ca/dd.css?v=1"><link rel="stylesheet" href="/ruangakademikut/assets/ca/nav.css?v=4"></head>')
     .replace("</head>", "<style>.logo b.lg{background:none!important}.logo b.lg img{width:34px;height:34px;object-fit:contain;display:block}</style></head>");
   const TEMA = require("./parafrase/tema");
   /* Tema dipasang paling akhir: shortPath menyisipkan theme.css tepat sebelum </head>, jadi tema harus sesudahnya. */

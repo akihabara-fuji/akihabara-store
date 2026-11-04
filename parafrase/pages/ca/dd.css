@@ -1,0 +1,49 @@
+/* Gaya menu turun (Kelas Tuton, Alat UT) untuk halaman blog yang tidak memuat site.css. Disalin dari site.css, hanya aturan .dd/.ddp. */
+.sub a.on,.sub .dds.on{color:var(--link);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px}
+.dd{position:relative}
+.dd summary{list-style:none;cursor:pointer;color:var(--muted);display:inline-flex;align-items:center;gap:6px;min-height:28px}
+.dd summary::-webkit-details-marker{display:none}
+.dd summary::after{content:"";width:6px;height:6px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px);transition:transform .15s}
+.dd[open] summary::after{transform:rotate(-135deg) translate(-2px,0)}
+.dd summary:hover,.dd[open] summary{color:var(--text)}
+.dd summary:focus-visible,.sub a:focus-visible{outline:2px solid var(--link);outline-offset:3px;border-radius:6px}
+.ddp{position:absolute;z-index:30;top:calc(100% + 10px);left:-12px;min-width:230px;display:flex;flex-direction:column;padding:8px;border-radius:14px;background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow)}
+.ddp a{padding:10px 12px;border-radius:9px;color:var(--text)}
+.ddp a:hover{background:var(--surface2)}
+.ddp a.on{text-decoration:none;background:var(--surface2);color:var(--link)}
+@media(max-width:560px){.ddp{position:static;margin-top:8px;box-shadow:none;min-width:0}
+.dd[open]{flex-basis:100%}}
+/* Menu Layanan: panel lebar berisi semua layanan, harga dari pengaturan admin */
+.ddp.mega{flex-direction:row;flex-wrap:wrap;gap:6px 28px;min-width:0;width:min(760px,calc(100vw - 32px));padding:18px;box-sizing:border-box}
+.ddp.mega .mg{flex:1 1 200px;min-width:0;display:flex;flex-direction:column}
+.ddp.mega .mg b{font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin:2px 12px 6px}
+.ddp.mega .mg b+a~b{margin-top:12px}
+.ddp.mega a{display:flex;justify-content:space-between;align-items:baseline;gap:10px;overflow-wrap:anywhere}
+.ddp.mega a em{font-style:normal;font-size:12.5px;font-weight:600;color:var(--link);white-space:nowrap}
+.ddp.mega .mg-all{flex:1 1 100%;justify-content:center;margin-top:6px;background:var(--surface2);font-weight:700;color:var(--link)}
+@media(max-width:560px){.ddp.mega{width:auto;padding:10px}
+.ddp.mega a em{white-space:normal}}
+/* Menu turun dengan deskripsi (Mahasiswa Baru, Portal & Alat UT) */
+.ddp.desc{min-width:290px;max-width:min(360px,calc(100vw - 32px))}
+.ddp.desc a{display:block;padding:9px 12px;border-bottom:1px solid var(--border);border-radius:0}
+.ddp.desc a:last-child{border-bottom:0}
+.ddp.desc a b{display:block;font-size:14px;color:var(--text)}
+.ddp.desc a small{display:block;font-size:12.5px;font-weight:500;color:var(--muted);margin-top:1px}
+.ddp.desc a.all{font-weight:700;font-size:13px;color:var(--link);margin-top:2px}
+.dd summary.dds.on{text-decoration-color:var(--link)}
+.nav .links>a,.nav .links .dd>summary{padding:9px 11px;border-radius:8px;font-weight:600;font-size:14px;color:var(--text);white-space:nowrap;min-height:0}
+.nav .links>a:hover,.nav .links .dd>summary:hover,.nav .links .dd[open]>summary{background:var(--surface2)}
+.nav .links a.on,.nav .links .dds.on{color:var(--link);text-decoration:none;background:var(--surface2)}
+.nav .links .ddp a:after{display:none}
+.nav .links .ddp{top:calc(100% + 12px);left:0}
+.nav .links .ddp.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 10px;width:min(600px,calc(100vw - 32px));max-width:none}
+.nav .links .ddp.two a{border-bottom:0;border-radius:9px}
+.nav .links .ddp.two a.all{grid-column:1/-1;border-top:1px solid var(--border);margin-top:6px;border-radius:0 0 9px 9px}
+.nav .links .ddp.end{left:auto;right:0}
+.nav .links .ddp a{white-space:normal}
+@media(min-width:1401px) and (max-width:1480px){.nav .links>a,.nav .links .dd>summary{padding:9px 8px;font-size:13.5px}}
+@media(max-width:1400px){.nav .links .dd{width:100%}
+.nav .links>a,.nav .links .dd>summary{display:flex;justify-content:space-between;padding:12px 8px;border-bottom:1px solid var(--border);border-radius:0}
+.nav .links .ddp,.nav .links .ddp.two,.nav .links .ddp.end{position:static;display:block;width:auto;max-width:none;min-width:0;box-shadow:none;border:0;padding:0 0 6px 10px;background:none}
+.nav .links .ddp a{padding:8px 6px}
+.nav .links .ddp.two a.all{border-top:0}}

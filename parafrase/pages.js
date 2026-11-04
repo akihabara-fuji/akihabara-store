@@ -22,7 +22,7 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
     .replace(/<link rel="apple-touch-icon"[^>]*>/g, '<link rel="apple-touch-icon" href="/ruangakademikut/assets/ca/apple-touch-icon.png">')
     .replace(/<link rel="manifest"[^>]*>/g, '<link rel="manifest" href="/ruangakademikut/assets/ca/manifest.webmanifest">')
     .replace(/(<a [^>]*class="logo"[^>]*>)<b>C<\/b>/g, '$1<b class="lg"><img src="/ruangakademikut/assets/ca/logo-96.png" alt="" width="34" height="34"></b>')
-    .replace("</head>", (h.includes("/site.css") ? '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme-svc.css?v=2">' : '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme.css?v=2">') + '<link rel="stylesheet" href="/ruangakademikut/assets/ca/nav.css?v=2"></head>')
+    .replace("</head>", (h.includes("/site.css") ? '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme-svc.css?v=2">' : '<link rel="stylesheet" href="/ruangakademikut/assets/ca/theme.css?v=2">') + '<link rel="stylesheet" href="/ruangakademikut/assets/ca/nav.css?v=4"></head>')
     .replace("</head>", "<style>.logo b.lg{background:none!important;box-shadow:none}.logo b.lg img{width:34px;height:34px;object-fit:contain;display:block}</style></head>")
     );
   const TRACK = new Set(["shell.html", "beranda.html", "hub.html", "tentang.html", "cek.html", "bedah.html", "layanan.html", "tutorial-online.html", "blog-ut.html", "alat-nilai.html", "alat-sampul.html", "alat-tracker.html", "alat-kalender.html", "panduan-maba.html", "sitasi.html", "portal-ut.html"]); // halaman pesanan dan hasil memuat token rahasia: tidak dilacak
@@ -111,7 +111,7 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
   /* Koin sudah tidak dipakai: halaman lama diarahkan ke layanan (semua pembayaran lewat QRIS). */
   app.get(["/koin", "/ruangakademikut/koin"], (req, res) => res.redirect(302, SHORT ? "/layanan" : "/ruangakademikut/layanan"));
   app.get(["/ruangakademikut/pesanan", "/ruangakademikut/pesanan/:token"], page("pesanan.html"));
-  const CA = new Set(["theme.css", "theme-svc.css", "favicon.ico", "favicon-32.png", "apple-touch-icon.png", "icon-192.png", "icon-512.png", "logo-96.png", "manifest.webmanifest", "ms.webp", "model-f.webp", "model-m.webp", "nav.css", ...Array.from({ length: 24 }, (_, i) => `mc-${String(i + 1).padStart(2, "0")}.webp`)]);
+  const CA = new Set(["theme.css", "theme-svc.css", "favicon.ico", "favicon-32.png", "apple-touch-icon.png", "icon-192.png", "icon-512.png", "logo-96.png", "manifest.webmanifest", "ms.webp", "model-f.webp", "model-m.webp", "nav.css", "dd.css", ...Array.from({ length: 24 }, (_, i) => `mc-${String(i + 1).padStart(2, "0")}.webp`)]);
   /* Berkas teks (JS, manifest) ditulis ulang di server: tautan di dalamnya ikut alamat pendek di domain akademik. Hasil disimpan per waktu ubah berkas. */
   const rewritten = new Map();
   function sendAsset(res, file, cache) {
