@@ -18,7 +18,7 @@
     var y = e.target.closest("button.yt,button.yt-mini"); if (y) { loadYt(y, y.getAttribute("data-id")); return; }
     var c = e.target.closest("[data-copy]");
     if (c) { var pre = $("pre", document.getElementById(c.getAttribute("data-copy"))); if (!pre) return; var t = pre.textContent;
-      (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).catch(function () { var r = document.createRange(); r.selectNodeContents(pre); var s = getSelection(); s.removeAllRanges(); s.addRange(r); try { document.execCommand("copy"); } catch (x) {} }).then(function () { c.textContent = "Tersalin"; setTimeout(function () { c.textContent = "Salin prompt"; }, 1800); });
+      (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).catch(function () { var r = document.createRange(); r.selectNodeContents(pre); var s = getSelection(); s.removeAllRanges(); s.addRange(r); try { document.execCommand("copy"); } catch (x) {} }).then(function () { var o = c.getAttribute("data-lb") || c.textContent; c.setAttribute("data-lb", o); c.textContent = "Tersalin!"; c.classList.add("ok"); window.caTrack("salin_prompt"); setTimeout(function () { c.textContent = o; c.classList.remove("ok"); }, 1800); });
       return; }
     var pb = e.target.closest("[data-prompt]");
     if (pb) { var b = document.getElementById("pr-" + pb.getAttribute("data-prompt")); var open = b.hidden; b.hidden = !open; pb.setAttribute("aria-expanded", open); }
@@ -96,4 +96,7 @@
   function count(el) { var to = +el.getAttribute("data-n"), t0 = performance.now(); (function f(now) { var p = Math.min(1, (now - t0) / 1600); el.textContent = Math.round(to * (1 - Math.pow(1 - p, 3))); if (p < 1) requestAnimationFrame(f); })(t0); }
   $$(".pf-flip button").forEach(function (b) { b.addEventListener("click", function () { b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") !== "true"); }); });
   var pdf = $("#pfPdf"); if (pdf) { if (!pdf.textContent) pdf.hidden = true; else pdf.addEventListener("click", function () { $$(".rv").forEach(function (e) { e.classList.add("in"); }); window.print(); }); }
+  /* Pelacakan klik tiruan: hanya mencatat nama tombol di memori halaman, tidak mengirim apa pun dan tidak pernah mencatat teks. */
+  window.caTrack = window.caTrack || function (n) { try { (window.__caEv = window.__caEv || []).push({ n: String(n).slice(0, 40), t: Date.now() }); } catch (e) {} };
+  var pc = $("#ppChips"); if (pc) pc.addEventListener("click", function (e) { var b = e.target.closest("button"); if (!b) return; $$("#ppChips button").forEach(function (x) { x.classList.toggle("on", x === b); }); var j = b.getAttribute("data-j"); $$("#ppGrid .pp-card").forEach(function (c) { c.hidden = !!j && c.getAttribute("data-j") !== j; }); window.caTrack("filter_prompt"); });
 })();

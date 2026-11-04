@@ -5,6 +5,15 @@
   var MB = +root.getAttribute("data-mb") || 10, HAL = +root.getAttribute("data-hal") || 30;
   var J = { A: ["Terlalu pendek / seragam", "#c2410c", "#fde8e1"], B: ["Koma berlebihan", "#d97706", "#fff1d6"], C: ["Transisi generik", "#0f9d8a", "#dff5ef"], D: ["Argumen kurang kuat", "#4a2fd6", "#ede8ff"] };
   var S = { sents: [], flags: {}, done: {}, only: "", sel: -1, file: null };
+  window.caTrack = window.caTrack || function (n) { try { (window.__caEv = window.__caEv || []).push({ n: String(n).slice(0, 40), t: Date.now() }); } catch (e) {} };
+  var track = window.caTrack;
+  var ck = $("#btCk"), go = $("#btGo");
+  var ready = function () { go.disabled = !(ck.checked && (S.file || $("#btTx").value.trim().length > 0)); };
+  ck.onchange = ready; $("#btTx").addEventListener("input", ready);
+  var SAMPLE = "Pendidikan itu penting. Selain itu, pendidikan, pelatihan, pengalaman, dan dukungan keluarga, sangat membantu kemajuan seseorang, mahasiswa, serta masyarakat luas. Oleh karena itu, mahasiswa perlu belajar. Menurut saya belajar mandiri menuntut kita menimbang sumber sebelum menyimpulkan sesuatu.";
+  $("#btEx").onclick = function () { $("#btTx").value = SAMPLE; S.file = null; $("#btFn").textContent = ""; fi.value = ""; ready(); track("teks_contoh"); };
+  var badgeN = function () { try { return +localStorage.getItem("ca_tulis") || 0; } catch (e) { return 0; } };
+  var badgeShow = function () { $("#btBadge").hidden = badgeN() < 3; };
   var step = function (n) { document.querySelectorAll(".bt-steps li").forEach(function (l) { l.classList.toggle("on", +l.getAttribute("data-s") === n); }); $("#btIn").hidden = n !== 1; $("#btWait").hidden = n !== 2; $("#btOut").hidden = n !== 3; };
   var err = function (m) { var e = $("#btErr"); e.textContent = m || ""; e.hidden = !m; };
   var drop = $("#btDrop"), fi = $("#btFile");
@@ -13,14 +22,14 @@
     if (!f) return; var ok = /\.(docx|pdf)$/i.test(f.name);
     if (!ok) { err("Format file harus .docx atau .pdf."); return; }
     if (f.size > MB * 1048576) { err("File terlalu besar. Maksimal " + MB + " MB."); return; }
-    S.file = f; $("#btFn").textContent = f.name; err("");
+    S.file = f; $("#btFn").textContent = f.name; err(""); ready();
   };
   fi.onchange = function () { setFile(fi.files[0]); };
   ["dragover", "dragenter"].forEach(function (t) { drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.add("over"); }); });
   ["dragleave", "drop"].forEach(function (t) { drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.remove("over"); if (t === "drop") setFile(e.dataTransfer.files[0]); }); });
 
   $("#btGo").onclick = function () {
-    err(""); var tx = $("#btTx").value.trim();
+    err(""); track("bedah"); var tx = $("#btTx").value.trim();
     if (!S.file && tx.length < 40) { err("Tempel dulu tulisanmu (minimal beberapa kalimat), atau pilih file."); return; }
     var fd = new FormData(); if (S.file) fd.append("file", S.file); else fd.append("text", tx);
     step(2);
@@ -29,7 +38,7 @@
       S.sents = x.j.sents; S.flags = {}; S.done = {}; S.only = ""; S.sel = -1;
       x.j.flags.forEach(function (f) { S.flags[f.n] = f; });
       $("#btTx").value = ""; S.file = null; $("#btFn").textContent = ""; fi.value = "";
-      step(3); draw(); sideReset();
+      step(3); draw(); sideReset(); badgeShow();
     }).catch(function () { step(1); err("Koneksi bermasalah. Coba lagi."); });
   };
 
@@ -57,16 +66,16 @@
     $("#btQ").textContent = S.sents[S.sel].t; $("#btWhy").textContent = f.alasan || ""; $("#btTip").textContent = f.saran || ""; $("#btRw").value = "";
   }
   $("#btRe").onclick = function () {
-    var f = S.flags[S.sel]; if (!f) return; var baru = $("#btRw").value.trim(), btn = $("#btRe"); btn.disabled = true; btn.textContent = "Memeriksa…";
+    var f = S.flags[S.sel]; if (!f) return; track("cek_ulang"); var baru = $("#btRw").value.trim(), btn = $("#btRe"); btn.disabled = true; btn.textContent = "Memeriksa…";
     fetch("/ms/bedah-teks/cek", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ lama: S.sents[S.sel].t, baru: baru, jenis: f.jenis }) })
       .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); }).then(function (x) {
         var fb = $("#btFb"); fb.textContent = "";
         var box = document.createElement("div"); var h = document.createElement("small"), t = document.createElement("h4"), p = document.createElement("p");
         if (!x.ok) { box.className = "bt-fb lagi"; h.textContent = "BELUM BISA DIPERIKSA"; t.textContent = x.j.error || "Gagal memeriksa."; }
-        else { box.className = "bt-fb " + (x.j.beres ? "ok" : "lagi"); h.textContent = "HASIL AUDIT ULANG · KALIMAT " + (S.sel + 1); t.textContent = x.j.judul || (x.j.beres ? "Oke, ini sudah bagus!" : "Masih perlu diperbaiki."); p.textContent = x.j.pesan || ""; if (x.j.beres) { S.done[S.sel] = true; S.sents[S.sel].t = baru; S.sel = -1; draw(); } }
+        else { box.className = "bt-fb " + (x.j.beres ? "ok" : "lagi"); h.textContent = "HASIL AUDIT ULANG · KALIMAT " + (S.sel + 1); t.textContent = x.j.judul || (x.j.beres ? "Oke, ini sudah bagus!" : "Masih perlu diperbaiki."); p.textContent = x.j.pesan || ""; if (x.j.beres) { try { localStorage.setItem("ca_tulis", badgeN() + 1); } catch (e) {} badgeShow(); S.done[S.sel] = true; S.sents[S.sel].t = baru; S.sel = -1; draw(); } }
         box.appendChild(h); box.appendChild(t); box.appendChild(p); fb.appendChild(box);
         if (x.ok && x.j.beres) { $("#btDet").hidden = true; $("#btNoSel").hidden = false; }
       }).catch(function () { var fb = $("#btFb"); fb.textContent = "Koneksi bermasalah. Coba lagi."; }).then(function () { btn.disabled = false; btn.textContent = "Cek kalimat ini lagi"; });
   };
-  $("#btReset").onclick = function () { S = { sents: [], flags: {}, done: {}, only: "", sel: -1, file: null }; $("#btText").textContent = ""; sideReset(); step(1); };
+  $("#btReset").onclick = function () { ready(); S = { sents: [], flags: {}, done: {}, only: "", sel: -1, file: null }; $("#btText").textContent = ""; sideReset(); step(1); };
 })();

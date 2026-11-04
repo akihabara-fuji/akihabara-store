@@ -17,8 +17,20 @@ module.exports = function build(app) {
     const E = K().E; let items = []; try { items = typeof app.locals.ulasanPublic === "function" ? app.locals.ulasanPublic().filter(x => x.teks && x.tgl).slice(0, 3) : []; } catch { items = []; }
     const body = items.length
       ? `<div class="kt-tm">${items.map(x => `<figure><blockquote>${E(x.teks)}</blockquote><figcaption>${E(x.nama)}${x.ket ? " · " + E(x.ket) : ""} · ${E(K().bln(x.tgl))}</figcaption></figure>`).join("")}</div>`
-      : `<p class="kt-empty">Testimoni asli tentang proses belajar akan tampil di sini setelah ada izin dari yang bersangkutan.</p>`;
+      : `<p class="kt-empty">Menunggu cerita proses belajarmu.</p>`;
     return `<section class="kt-sec"><h2>Kata teman belajar</h2>${body}</section>`;
+  }
+
+  const BAN = `<aside class="kt-ban" role="note"><span>Pembaruan: layanan jasa sudah ditutup. Catatan Akademik kini platform edukasi mandiri untuk belajar memakai AI dengan etis.</span><a href="/grup?dari=pembaruan">Ikuti kabar di grup WhatsApp</a></aside>`;
+  function pustaka(k) {
+    const E = k.E, items = [];
+    k.D.KEYS.forEach(id => { const j = k.jenisOf(id); if (j.prompt) items.push({ j: id, label: j.label, t: "Uji kerangka " + j.label.toLowerCase(), p: j.prompt }); });
+    k.materiPub().forEach(m => { if (m.prompt) items.push({ j: m.jenis, label: k.D.J[m.jenis].label, t: m.judul, p: m.prompt }); });
+    const bold = t => E(t).replace(/\[[^\]]+\]/g, x => "<b>" + x + "</b>");
+    const idx = k.D.KEYS;
+    const chips = `<button type="button" data-j="" class="on">Semua</button>` + idx.map(id => `<button type="button" data-j="${id}">${E(k.D.J[id].label)}</button>`).join("");
+    const cards = items.map((x, i) => `<article class="pp-card pp-c${idx.indexOf(x.j) % 5}" data-j="${x.j}"><span class="pp-tag">${E(x.label)}</span><h3>${E(x.t)}</h3><div class="pp-pr" id="pp-${i}"><pre>${E(x.p)}</pre><div class="pp-show">${bold(x.p)}</div></div><button type="button" class="kt-b pp-cp" data-copy="pp-${i}">Salin Prompt</button></article>`).join("");
+    return `<section class="kt-sec" id="pustaka"><h2>Pustaka Prompt</h2><p class="muted">Template untuk Gemini. Isi bagian yang <b>[ditandai]</b>. AI menguji idemu, kamu yang menulis.</p><div class="kt-chips pp-chips" id="ppChips" role="group" aria-label="Kategori prompt">${chips}</div><div class="pp-grid" id="ppGrid">${cards || '<p class="kt-empty">Template prompt akan tampil di sini.</p>'}</div></section>`;
   }
 
   /* ---------- Kelas Tuton ---------- */
@@ -38,7 +50,7 @@ module.exports = function build(app) {
     }).join("");
     const mat = k.materiPub().map(k.matView).map(m => ({ id: m.id, j: m.jenis, t: m.tahap, ju: m.judul, mk: m.mk, v: !!m.video, at: m.at, hit: m.hit }));
     const body = `<main class="wrap kt">
-<section class="kt-hd"><h1>Kelas Tuton</h1><p>Belajar tuton UT dengan langkah yang jelas. Pilih jenisnya, semua ada di bawah.</p></section>
+${BAN}<section class="kt-hd"><h1>Kelas Tuton</h1><p>Belajar tuton UT dengan langkah yang jelas. Pilih jenisnya, semua ada di bawah.</p></section>
 <div class="kt-tabs" role="tablist" aria-label="Pilih jenis tuton">${tabs}</div>
 ${panels}
 <section class="kt-sec" id="materi"><h2>Cari materi</h2>
@@ -47,8 +59,9 @@ ${panels}
 <div class="kt-two kt-tp"><div><h3>Terbaru</h3><ul id="ktNew" class="kt-ln"></ul></div><div><h3>Populer</h3><ul id="ktPop" class="kt-ln"></ul></div></div>
 <script type="application/json" id="ktData">${jsonIn(mat)}</script>
 <script type="application/json" id="ktJ">${jsonIn(k.D.KEYS.map(id => ({ id, label: k.D.J[id].label })))}</script></section>
+${pustaka(k)}
 ${testimoni()}
-<p class="kt-dis">${E(DISC)} Konten bersifat edukasi dan tidak menggantikan ketentuan resmi UT.</p></main><script src="/ruangakademikut/assets/konten.js?v=1" defer></script>`;
+<p class="kt-dis">${E(DISC)} Konten bersifat edukasi dan tidak menggantikan ketentuan resmi UT.</p></main><script src="/ruangakademikut/assets/konten.js?v=2" defer></script>`;
     return { title: "Kelas Tuton: belajar diskusi, tugas, makalah, jurnal, metopen UT", desc: "Kelas Tuton: lima langkah, video, dan template prompt Gemini untuk diskusi, tugas, makalah, jurnal, dan metopen UT. Situs independen, bukan situs resmi UT.", canon: "/ruangakademikut/tutorial-online", body };
   }
 
@@ -62,7 +75,7 @@ ${v.langkah.length ? `<ol class="kt-steps" style="margin-top:20px">${v.langkah.m
 ${v.prompt ? `<div class="kt-prompt" id="pr-m"><div class="kt-pt">Template prompt Gemini</div><pre>${E(v.prompt)}</pre><button type="button" class="kt-copy" data-copy="pr-m">Salin prompt</button></div>` : ""}
 ${v.check.length ? `<h3>Checklist sebelum kirim</h3><ul class="kt-ck">${v.check.map(c => `<li><label><input type="checkbox"> ${E(c)}</label></li>`).join("")}</ul>` : ""}
 <p class="muted"><b>Sumber:</b> ${E(v.sumber)}</p></section>
-<p class="kt-dis">${E(DISC)}</p></main><script src="/ruangakademikut/assets/konten.js?v=1" defer></script>`;
+<p class="kt-dis">${E(DISC)}</p></main><script src="/ruangakademikut/assets/konten.js?v=2" defer></script>`;
     return { title: v.judul + " | Kelas Tuton", desc: v.ringkas || (v.judul + ": panduan Kelas Tuton."), canon: "/ruangakademikut/tutorial-online/materi/" + v.id, body };
   }
 
@@ -72,11 +85,11 @@ ${v.check.length ? `<h3>Checklist sebelum kirim</h3><ul class="kt-ck">${v.check.
     const done = all.filter(x => x.status === "selesai").sort((a, b) => b.tanggal.localeCompare(a.tanggal)), plan = all.filter(x => x.status === "rencana");
     const card = x => `<a class="km-card" data-k="${E(x.kat)}" href="/ruangakademikut/kegiatan/${E(x.slug)}"><div class="km-cv" style="${x.cover ? `background-image:url('${E(x.cover)}')` : "background:" + GRAD[x.kat]}"><span>${E(x.kat)}</span></div><div class="km-b"><div class="km-m">${E(k.tgl(x.tanggal))}${x.tempat ? " · " + E(x.tempat) : ""}</div><div class="km-t">${E(x.judul)}</div>${x.peserta || x.foto.length ? `<div class="km-m">${x.peserta ? x.peserta + " peserta" : ""}${x.peserta && x.foto.length ? " · " : ""}${x.foto.length ? x.foto.length + " foto" : ""}</div>` : ""}</div></a>`;
     const tabs = ["Semua"].concat(k.KAT).map((l, i) => `<button type="button" data-k="${i ? l : ""}" class="${i ? "" : "on"}">${l}</button>`).join("");
-    const body = `<main class="wrap kt"><section class="kt-hd"><h1>Komunitas</h1><p>Jurnal kegiatan kami: sosial, kebersamaan, dan acara kuliah. Semua dengan dokumentasi.</p></section>
+    const body = `<main class="wrap kt">${BAN}<section class="kt-hd"><h1>Komunitas</h1><p>Jurnal kegiatan kami: sosial, kebersamaan, dan acara kuliah. Semua dengan dokumentasi.</p></section>
 <div class="kt-tabs" id="kmTabs" role="group" aria-label="Saring kegiatan">${tabs}</div>
 <section class="km-grid" id="kmGrid">${done.length ? done.map(card).join("") : '<p class="kt-empty">Belum ada kegiatan yang dipublikasikan. Kegiatan yang sudah dilaksanakan akan tampil di sini beserta dokumentasinya.</p>'}</section>
 <section class="kt-sec"><h2>Akan datang</h2>${plan.length ? plan.map(x => `<div class="km-plan"><div><span class="km-tag">Rencana</span><div class="km-t">${E(x.judul)}</div><div class="km-m">${x.tanggal ? E(k.tgl(x.tanggal)) : "Tanggal belum ditentukan"}${x.tempat ? " · " + E(x.tempat) : ""}</div></div><a class="kt-b2" href="/grup?dari=komunitas">Ikuti kabar</a></div>`).join("") : `<div class="km-plan"><div><span class="km-tag">Rencana</span><div class="km-t">Belum ada rencana kegiatan yang diumumkan.</div></div><a class="kt-b2" href="/grup?dari=komunitas">Ikuti kabar</a></div>`}</section>
-<p class="kt-dis">${E(DISC)} Kegiatan komunitas diselenggarakan secara mandiri.</p></main><script src="/ruangakademikut/assets/konten.js?v=1" defer></script>`;
+<p class="kt-dis">${E(DISC)} Kegiatan komunitas diselenggarakan secara mandiri.</p></main><script src="/ruangakademikut/assets/konten.js?v=2" defer></script>`;
     return { title: "Komunitas: jurnal kegiatan sosial, kebersamaan, dan akademik", desc: "Jurnal kegiatan komunitas Catatan Akademik: sosial, kebersamaan, dan acara kuliah, lengkap dengan dokumentasi dan laporan dana. Situs independen, bukan situs resmi UT.", canon: "/ruangakademikut/komunitas", body };
   }
 
@@ -98,7 +111,7 @@ ${x.cerita ? `<section class="kt-sec"><h2>Ceritanya</h2>${x.cerita.split(/\n{2,}
 ${dana}
 ${gal || x.video ? `<section class="kt-sec"><h2>Dokumentasi</h2>${gal ? `<div class="kg-gal">${gal}</div>` : ""}${x.video ? ytBox(x.video, "Video kegiatan") : ""}</section>` : ""}
 ${x.terima ? `<section class="kt-sec"><h2>Terima kasih</h2><p>${E(x.terima)}</p></section>` : ""}
-<p class="kt-dis">${E(DISC)}</p></main><script src="/ruangakademikut/assets/konten.js?v=1" defer></script>`;
+<p class="kt-dis">${E(DISC)}</p></main><script src="/ruangakademikut/assets/konten.js?v=2" defer></script>`;
     return { title: x.judul + " | Komunitas", desc: (x.cerita || x.judul).slice(0, 150), canon: "/ruangakademikut/kegiatan/" + x.slug, body };
   }
 
@@ -128,7 +141,7 @@ ${testimoni()}
 <section class="kt-sec rv pf-honest"><h2>Status, dengan jujur</h2><p>Ini inisiatif independen. Belum ada penunjukan atau afiliasi resmi dengan Universitas Terbuka maupun Google. Semua kegiatan dan angka di halaman ini bersumber dari dokumentasi yang bisa ditunjukkan.</p></section>
 <section class="kt-sec rv pf-end"><h2>Mau belajar bareng atau berkolaborasi?</h2><p>Mulai dari Kelas Tuton, ikut kegiatan komunitas, atau simpan portofolio lengkap.</p><div class="pf-cta"><a class="kt-b" href="/ruangakademikut/tutorial-online">Buka Kelas Tuton</a><button type="button" class="kt-b2" id="pfPdf">${pf.unduh ? "" : "Simpan halaman ini sebagai PDF"}</button>${pf.unduh ? `<a class="kt-b2" href="${E(pf.unduh)}">Unduh portofolio (PDF)</a>` : ""}</div></section>
 ${old ? `<details class="kt-more pf-pol"><summary>Kebijakan editorial dan batasan layanan</summary>${old}<p class="muted"><a href="/ms/privasi">Kebijakan Privasi</a> · <a href="/ms/ketentuan">Ketentuan Layanan</a></p></details>` : ""}
-<p class="kt-dis">${E(DISC)}</p></main></div><script src="/ruangakademikut/assets/konten.js?v=1" defer></script>`;
+<p class="kt-dis">${E(DISC)}</p></main></div><script src="/ruangakademikut/assets/konten.js?v=2" defer></script>`;
     return { title: "Tentang dan Portofolio | Catatan Akademik", desc: "Portofolio Catatan Akademik: inisiatif belajar independen mahasiswa UT tentang tuton, literasi AI, dan komunitas. Bukan situs resmi UT.", canon: "/ruangakademikut/tentang", body };
   }
 
@@ -136,23 +149,27 @@ ${old ? `<details class="kt-more pf-pol"><summary>Kebijakan editorial dan batasa
   function bedahTeks(cfg) {
     const E = K().E;
     const body = `<main class="wrap kt bt" data-mb="${cfg.mb}" data-hal="${cfg.hal}">
-<nav class="kt-bc">Alat UT › Bedah Data UT</nav><section class="kt-hd"><h1>Bedah Data UT</h1><p>Periksa tulisanmu sendiri kalimat demi kalimat. Alat ini menandai, kamu yang memperbaiki.</p></section>
+${BAN}<nav class="kt-bc">Alat UT › Bedah Data UT</nav><section class="kt-hd"><h1>Bedah Data UT</h1><p>Periksa tulisanmu sendiri kalimat demi kalimat. Alat ini menandai, kamu yang memperbaiki.</p></section>
 <ol class="bt-steps" aria-label="Langkah"><li class="on" data-s="1"><span>1</span>Masukkan tulisan</li><li data-s="2"><span>2</span>Diproses</li><li data-s="3"><span>3</span>Hasil</li></ol>
 <section class="card bt-in" id="btIn"><h2>1. Masukkan tulisanmu</h2><p class="muted">Untuk jawaban tugas, makalah, atau jurnal. Salin teksnya, atau pilih file.</p>
 <label for="btTx" class="bt-l">SALIN TEKS</label><textarea id="btTx" placeholder="Tempel tulisanmu di sini" rows="8"></textarea>
 <div class="bt-or"><span></span>atau<span></span></div>
 <div class="bt-l">PILIH FILE</div><div class="bt-drop" id="btDrop"><p>Seret file ke sini, atau pilih file</p><small>Format: .docx atau .pdf · maksimal ${cfg.mb} MB · ${cfg.hal} halaman</small><input type="file" id="btFile" accept=".docx,.pdf,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden><button type="button" class="kt-b2" id="btPick">Pilih file</button><div id="btFn" class="muted"></div></div>
-<div class="bt-go"><button type="button" class="kt-b" id="btGo">Bedah dengan Gemini</button><span class="muted">Teks dan file kamu hanya diproses sementara dan tidak disimpan di server kami. Teks dikirim ke layanan AI Gemini untuk dianalisis.</span></div>
+<div class="bt-ex"><button type="button" class="kt-b2" id="btEx">Coba dengan Teks Contoh</button></div>
+<label class="bt-ck"><input type="checkbox" id="btCk"> <span>Saya setuju untuk menjadikan hasil ini sebagai bahan evaluasi dan tidak menyalin-tempel ke e-Learning UT.</span></label>
+<div class="bt-go"><button type="button" class="kt-b" id="btGo" disabled>Bedah dengan Gemini</button><span class="muted">Teks dan file kamu hanya diproses sementara dan tidak disimpan di server kami. Teks dikirim ke layanan AI Gemini untuk dianalisis.</span></div>
 <p class="bt-err" id="btErr" role="alert" hidden></p></section>
 <section class="card" id="btWait" hidden><h2>Gemini sedang membaca kalimat satu per satu</h2><div class="bt-sweep"><i></i></div><p class="muted">Memeriksa panjang kalimat, tanda koma, transisi, dan kekuatan argumen</p></section>
 <section id="btOut" hidden>
+<div class="bt-lg" aria-label="Arti tanda"><span class="lA"><b>A</b> terlalu pendek/seragam</span><span class="lB"><b>B</b> koma berlebihan</span><span class="lC"><b>C</b> transisi generik</span><span class="lD"><b>D</b> argumen kurang kuat</span></div>
+<div class="bt-badge" id="btBadge" hidden>Penulis Gigih: kamu sudah memperbaiki kalimatmu sendiri.</div>
 <div class="card bt-sum"><div><b>Berwarna = masih perlu diperbaiki. Hitam = sudah beres.</b><div><b id="btDone">0</b> dari <b id="btTot">0</b> kalimat sudah beres</div></div><div class="bt-bar"><i id="btBar"></i></div><div class="bt-filter" id="btFil"></div></div>
 <div class="bt-cols"><div class="card"><div class="bt-ch"><span>TULISAN KAMU</span><small>Ketuk kalimat berwarna</small></div><div id="btText" class="bt-text"></div></div>
 <aside class="card bt-side"><div class="bt-ch"><span>REKOMENDASI GEMINI</span></div><div id="btFb" aria-live="polite"></div><div id="btSel"><p class="muted" id="btNoSel">Ketuk kalimat berwarna di sebelah kiri. Di sini muncul kalimatmu, alasannya, dan saran perbaikannya.</p>
 <div id="btDet" hidden><span class="bt-lbl" id="btLbl"></span><div class="bt-q"><small>KALIMAT KAMU</small><p id="btQ"></p></div><p><b>Kenapa ditandai:</b> <span id="btWhy"></span></p><p><b>Yang bisa kamu lakukan:</b> <span id="btTip"></span></p><label for="btRw" class="bt-l">TULIS VERSIMU SENDIRI</label><textarea id="btRw" rows="3" placeholder="Tulis ulang kalimat ini dengan kata-katamu"></textarea><button type="button" class="kt-b" id="btRe">Cek kalimat ini lagi</button><p class="muted">Alat ini tidak menulis ulang untukmu. Kalau versimu sudah baik, tandanya hilang dan kalimat jadi hitam.</p></div></div><p class="muted" id="btAll" hidden>Semua tanda sudah beres. Sekarang baca ulang sekali lagi dengan suaramu sendiri.</p>
 <p class="muted bt-disc">Penandaan ini alat bantu belajar, bukan jaminan skor detektor apa pun.</p></aside></div>
 <button type="button" class="kt-b2" id="btReset">Mulai dari awal</button></section>
-<p class="kt-dis">${E(DISC)}</p></main><script src="/ruangakademikut/assets/bedah-teks.js?v=1" defer></script>`;
+<p class="kt-dis">${E(DISC)}</p></main><script src="/ruangakademikut/assets/bedah-teks.js?v=2" defer></script>`;
     return { title: "Bedah Data UT: periksa tulisanmu kalimat demi kalimat | Catatan Akademik", desc: "Alat bantu belajar: Gemini menandai kalimat yang terlalu pendek, koma berlebihan, transisi generik, dan argumen kurang kuat. Kamu yang memperbaiki. Bukan jaminan skor detektor.", canon: "/ruangakademikut/bedah-data-ut", body };
   }
   return { tuton, materi, komunitas, kegiatan, tentang, bedahTeks };
