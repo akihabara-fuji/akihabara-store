@@ -10,10 +10,11 @@ function navLinks({ active = "", cek = false } = {}) {
   const on = k => (active === k ? " on" : "");
   const dd = '<details class="dd"><summary class="dds' + on("tuton") + '">Kelas Tuton</summary><div class="ddp desc"><a href="/ruangakademikut/tutorial-online"><b>Semua Kelas Tuton</b><small>Pilih jenis, belajar di tempat</small></a>'
     + J.map(k => '<a href="/ruangakademikut/tutorial-online?j=' + k + '"><b>' + JN[k][0] + "</b><small>" + JN[k][1] + "</small></a>").join("") + "</div></details>";
-  return '<nav class="links" id="links" aria-label="Menu utama">' + dd
-    + '<a href="/ruangakademikut/komunitas" class="' + on("komunitas").trim() + '">Komunitas</a>'
-    + ALAT.replace("{ON}", on("alat"))
+  return '<nav class="links" id="links" aria-label="Menu utama">'
     + '<a href="/ruangakademikut/panduan-maba" class="' + on("maba").trim() + '">Panduan Maba</a>'
+    + dd
+    + ALAT.replace("{ON}", on("alat"))
+    + '<a href="/ruangakademikut/komunitas" class="' + on("komunitas").trim() + '">Komunitas</a>'
     + '<a href="/ruangakademikut/blog-ut" class="' + on("blog").trim() + '">Blog</a>'
     + (cek ? '<a href="/ruangakademikut/pesanan" class="only-m">Cek Pesanan</a>' : "") + "</nav>";
 }
