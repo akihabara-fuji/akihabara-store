@@ -460,7 +460,7 @@ module.exports = function mount(ctx) {
     if ("metaDesc" in b) p.metaDesc = str(b.metaDesc, 170);
     if ("hookService" in b) p.hookService = HOOK_KEYS.includes(b.hookService) || b.hookService === "off" ? b.hookService : "";
     if ("hookText" in b) p.hookText = str(b.hookText, 120);
-    if ("recommendedAt" in b) p.recommendedAt = /^\d{4}-\d{2}-\d{2}$/.test(b.recommendedAt) ? b.recommendedAt : "";
+    if ("recommendedAt" in b) p.recommendedAt = /^\d{4}-\d{2}-\d{2}(T([01]\d|2[0-3]):[0-5]\d)?$/.test(b.recommendedAt) ? b.recommendedAt : "";
     if ("recommendedWhy" in b) p.recommendedWhy = str(b.recommendedWhy, 160);
     if (v.status === "scheduled") { p.publishAt = v.publishAt; p.publishedAt = v.publishAt; } else delete p.publishAt;
     if (v.status === "published" && (!p.publishedAt || Date.parse(p.publishedAt) > Date.now())) p.publishedAt = now;
@@ -565,7 +565,7 @@ module.exports = function mount(ctx) {
   app.post("/ms/admin/posts/:id/recommend", requireAdmin, adminJson, async (req, res) => {
     const p = blog.posts.find(x => x.id === req.params.id); if (!p) return res.status(404).json({ error: "Tulisan tidak ditemukan." });
     const b = req.body || {};
-    if ("recommendedAt" in b) { const d = String(b.recommendedAt || ""); if (d && !/^\d{4}-\d{2}-\d{2}$/.test(d)) return res.status(400).json({ error: "Format tanggal tidak benar." }); p.recommendedAt = d; }
+    if ("recommendedAt" in b) { const d = String(b.recommendedAt || ""); if (d && !/^\d{4}-\d{2}-\d{2}(T([01]\d|2[0-3]):[0-5]\d)?$/.test(d)) return res.status(400).json({ error: "Format tanggal dan jam tidak benar." }); p.recommendedAt = d; }
     if ("recommendedWhy" in b) p.recommendedWhy = str(b.recommendedWhy, 160);
     await saveBlog(); res.json({ ok: true, recommendedAt: p.recommendedAt || "", recommendedWhy: p.recommendedWhy || "" });
   });

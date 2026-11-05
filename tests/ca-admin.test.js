@@ -202,6 +202,9 @@ test("Draf: rekomendasi tayang dan catatan bisa diisi langsung, tanggal salah di
     assert.strictEqual((await call(`/ms/admin/posts/${id}/recommend`, { cookie: own, method: "POST", json: { recommendedAt: "03/11/2026" } })).status, 400);
     const only = await call(`/ms/admin/posts/${id}/recommend`, { cookie: own, method: "POST", json: { recommendedWhy: "Awal pekan" } });
     assert.strictEqual(only.body.recommendedAt, "2026-11-03", "mengubah catatan tidak menghapus tanggal");
+    const jam = await call(`/ms/admin/posts/${id}/recommend`, { cookie: own, method: "POST", json: { recommendedAt: "2026-11-06T19:30" } });
+    assert.strictEqual(jam.body.recommendedAt, "2026-11-06T19:30", "tanggal dengan jam diterima");
+    assert.strictEqual((await call(`/ms/admin/posts/${id}/recommend`, { cookie: own, method: "POST", json: { recommendedAt: "2026-11-06T25:99" } })).status, 400, "jam tidak valid ditolak");
     const clr = await call(`/ms/admin/posts/${id}/recommend`, { cookie: own, method: "POST", json: { recommendedAt: "" } });
     assert.strictEqual(clr.body.recommendedAt, "");
     assert.strictEqual((await call(`/ms/admin/posts/nope/recommend`, { cookie: own, method: "POST", json: {} })).status, 404);
