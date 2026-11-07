@@ -84,7 +84,8 @@ x=$(c $CA /ruangakademikut/audit); echo "portal CA audit $x"; [ "$x" = 200 ] || 
 has $CA /admin/ 'Admin · Catatan Akademik' || { echo "Panel admin CA tidak tampil di /admin"; false; }
 has $CA /ms/layanan/config 'metopen' || { echo "Konfigurasi layanan tidak terbaca"; false; }
 echo "Isi halaman: OK"
-for u in /ms/admin/ca/me /ms/admin/posts /ms/admin/ca/orders; do x=$(c $CA $u); echo "API $u tanpa login: $x"; [ "$x" = 401 ]; done
+for u in /ms/admin/ca/me /ms/admin/posts /ms/admin/ca/orders /ms/admin/studio/NA-0; do x=$(c $CA $u); echo "API $u tanpa login: $x"; [ "$x" = 401 ]; done
+has $CA /ms/admin/studio-page 'id="mB"' || { echo "Halaman Studio tidak tampil"; false; }
 x=$(c $CA /halaman-tidak-ada); echo "404: $x"; [ "$x" = 404 ]
 trap - ERR
 relock
