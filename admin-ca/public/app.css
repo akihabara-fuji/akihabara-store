@@ -214,3 +214,55 @@ table.t input[type=checkbox]{width:17px;height:17px;cursor:pointer;accent-color:
 .steps .st{display:flex;flex-direction:column;gap:8px;align-items:flex-start;border:1px solid var(--border);border-radius:12px;padding:12px}
 .steps .st span{font-size:13px;color:var(--muted,var(--text))}
 .stu-h{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+
+/* ===== Tampilan kaca (hanya gaya; markup, fungsi, dan rute tidak diubah) =====
+   Latar gradien teal-biru, kartu kaca buram, sidebar dan topbar melayang, kartu naik saat disentuh.
+   Dialog, menu, dan toast tetap solid agar terbaca. */
+:root{
+  --solid:#ffffff;
+  --glass:rgba(255,255,255,.62);--glass2:rgba(255,255,255,.42);--glass-b:rgba(255,255,255,.75);
+  --bgA:#cfe9f4;--bgB:#a9c8f3;--bgC:#e4f3ee;--gshadow:0 10px 36px rgba(20,60,110,.14);
+  --acc-grad:linear-gradient(135deg,#2f7bff,#22b8cf);
+}
+[data-theme=dark]{
+  --solid:#13213f;
+  --glass:rgba(255,255,255,.075);--glass2:rgba(255,255,255,.045);--glass-b:rgba(255,255,255,.14);
+  --bgA:#0e3d4f;--bgB:#0b2547;--bgC:#0a5a63;--gshadow:0 14px 44px rgba(0,0,0,.35);
+  --side:rgba(255,255,255,.07);
+}
+body{background:radial-gradient(900px 600px at 8% 0%,var(--bgC),transparent 60%),radial-gradient(900px 700px at 100% 100%,var(--bgA),transparent 60%),linear-gradient(135deg,var(--bgB),var(--bgA));background-attachment:fixed;background-color:var(--bgB)}
+.shell{padding:14px;gap:14px;grid-template-columns:262px minmax(0,1fr)}
+.side{top:14px;height:calc(100vh - 28px);border-radius:24px;border:1px solid var(--glass-b);box-shadow:var(--gshadow);backdrop-filter:blur(22px) saturate(1.3);-webkit-backdrop-filter:blur(22px) saturate(1.3)}
+html:not([data-theme=dark]) .side{background:rgba(255,255,255,.55);color:#16324f;--side-text:#16324f;--side-muted:#58708c;--side2:rgba(80,130,190,.16)}
+html:not([data-theme=dark]) .side .brand,html:not([data-theme=dark]) .side .me b{color:#0b1a36}
+html:not([data-theme=dark]) .side a.nav:hover,html:not([data-theme=dark]) .side button.subtog:hover{color:#0b1a36}
+.side a.nav.on{background:var(--acc-grad);color:#fff;box-shadow:0 6px 18px rgba(47,123,255,.38)}
+.top{top:14px;border:1px solid var(--glass-b);border-radius:18px;background:var(--glass);box-shadow:var(--gshadow);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.page{padding:18px 4px 48px}
+.card,.stat,.bulk,.note-item,.cp-stage{background:var(--glass);border-color:var(--glass-b)}
+.card,.stat{box-shadow:var(--gshadow);backdrop-filter:blur(18px) saturate(1.2);-webkit-backdrop-filter:blur(18px) saturate(1.2)}
+.card>.hd{border-bottom-color:var(--glass-b)}
+.stat,.stat.is-link,.stat-a{transition:transform .22s ease,box-shadow .22s ease}
+.stat.is-link:hover,.stat-a:hover{transform:translateY(-4px)}
+.stat .ic{background:linear-gradient(135deg,rgba(47,123,255,.2),rgba(34,184,207,.2))}
+.btn:not(.pri):not(.ok):not(.bad),.tabs a,.tabs button,input.in,select.in,textarea.in{background:var(--glass);border-color:var(--glass-b)}
+.btn.pri,.tabs .on{background:var(--acc-grad);border-color:transparent;color:#fff}
+.btn.pri:hover{background:var(--acc-grad);filter:brightness(1.08)}
+table.t th{background:transparent;border-bottom-color:var(--glass-b)}
+table.t td,table.t tr:last-child td{border-bottom-color:var(--glass-b)}
+table.t tr.click:hover td{background:rgba(110,165,235,.14)}
+.pager{border-top-color:var(--glass-b)}
+dialog.dlg,.menu,.toast,.login-card{background:var(--solid)}
+.page>*{animation:glin .45s cubic-bezier(.2,.7,.2,1) both}
+.page>*:nth-child(2){animation-delay:.04s}.page>*:nth-child(3){animation-delay:.08s}.page>*:nth-child(4){animation-delay:.12s}
+@keyframes glin{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@media (max-width:860px){
+  .shell{padding:8px;grid-template-columns:minmax(0,1fr)}
+  .side{top:0;height:100vh;border-radius:0 24px 24px 0;background:var(--side);backdrop-filter:none;-webkit-backdrop-filter:none}
+  html:not([data-theme=dark]) .side{background:#eef4fb}
+  .top{top:8px}
+  .page{padding:14px 2px 40px}
+}
+@media (prefers-reduced-motion:reduce){.page>*{animation:none}.stat.is-link:hover,.stat-a:hover{transform:none}}
+.chips a,.steps .st{background:var(--glass);border-color:var(--glass-b)}
+.chips a.on{background:var(--acc-grad);border-color:transparent;color:#fff}
