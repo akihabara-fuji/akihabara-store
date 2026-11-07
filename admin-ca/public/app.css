@@ -266,3 +266,7 @@ dialog.dlg,.menu,.toast,.login-card{background:var(--solid)}
 @media (prefers-reduced-motion:reduce){.page>*{animation:none}.stat.is-link:hover,.stat-a:hover{transform:none}}
 .chips a,.steps .st{background:var(--glass);border-color:var(--glass-b)}
 .chips a.on{background:var(--acc-grad);border-color:transparent;color:#fff}
+/* kolom cari + tombol sejajar satu baris di header kartu */
+.card>.hd{flex-wrap:wrap}
+.card>.hd form.bar{flex-wrap:nowrap;flex:0 1 auto}
+.card>.hd form.bar .in{min-width:0;flex:1 1 200px}
