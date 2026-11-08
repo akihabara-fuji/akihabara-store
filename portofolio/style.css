@@ -295,3 +295,5 @@ p,.kd,.body,.sub,li{text-wrap:pretty}
 @media(hover:hover) and (pointer:fine) and (min-width:861px){.kgrid{transition:grid-template-columns .5s cubic-bezier(.23,1,.32,1)}.kgrid:has(.klist:hover){grid-template-columns:430px 1fr}.klist .krow{transition:padding .3s,background .3s,opacity .3s}.klist:hover .krow:not(:hover):not(.on){opacity:.5}}
 @media(prefers-reduced-motion:reduce){.kgrid{transition:none!important}}
 @media(min-width:861px) and (max-height:780px){.kdet:has(.cs) ul{display:none}.kph .lb img{height:88px}}
+.pc{position:fixed;left:0;top:0;width:100vw;height:100vh;pointer-events:none;mix-blend-mode:screen;z-index:40}
+.pw.pa .pose{opacity:0!important;transition:none}.pw .pose{transition:opacity 1s ease}
