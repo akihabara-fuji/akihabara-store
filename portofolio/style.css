@@ -213,3 +213,8 @@ body.hov .cd{scale:.3}
 body.hovb .cr{scale:2.3;background:rgba(255,138,61,.2);border-color:#FFB07A}
 body.prs .cr{scale:.6}
 @media(prefers-reduced-motion:reduce){.btn::before,.rp{display:none}}
+
+canvas#inkT{position:fixed;inset:0;width:100%;height:100%;z-index:98;pointer-events:none}
+.cr,.cd{display:none!important}
+html.cur,html.cur *{cursor:auto!important}
+html.cur a,html.cur button,html.cur [data-go]{cursor:pointer!important}
