@@ -11,15 +11,16 @@ fail(){ echo "GAGAL di baris $1, rollback"; [ -d "$BAK" ] && { rm -rf "$ROOT"; m
 trap 'fail $LINENO' ERR
 set -e
 mkdir -p "$NEW/assets"
-for f in index.html style.css script.js assets/m1.webp; do curl -fsSL "$RAW/$f" -o "$NEW/$f"; done
+for f in index.html style.css script.js assets/m1.webp og.jpg favicon.svg apple-touch-icon.png robots.txt sitemap.xml; do curl -fsSL "$RAW/$f" -o "$NEW/$f"; done
 grep -q 'Dari ide' "$NEW/index.html"
 [ "$(stat -c %s "$NEW/assets/m1.webp")" -gt 10000 ]
 cp -a "$ROOT" "$BAK"
 rm -f "$ROOT"/index.html "$ROOT"/style.css "$ROOT"/script.js
 cp "$NEW"/index.html "$NEW"/style.css "$NEW"/script.js "$ROOT"/
 mkdir -p "$ROOT/assets" && cp "$NEW/assets/m1.webp" "$ROOT/assets/"
+cp "$NEW"/og.jpg "$NEW"/favicon.svg "$NEW"/apple-touch-icon.png "$NEW"/robots.txt "$NEW"/sitemap.xml "$ROOT"/
 chown -R www-data:www-data "$ROOT"; chmod -R a+rX "$ROOT"
-for p in / /style.css /script.js /assets/m1.webp; do
+for p in / /style.css /script.js /assets/m1.webp /og.jpg /favicon.svg /robots.txt /sitemap.xml; do
   s=$(curl -s -o /dev/null -w '%{http_code}' -H 'Host: dikapriyadi.catatanakademik.com' "http://127.0.0.1$p"); echo "$p $s"
   [ "$s" = 200 ] || [ "$s" = 301 ] || fail $LINENO
 done

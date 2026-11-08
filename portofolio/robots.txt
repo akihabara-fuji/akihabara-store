@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://dikapriyadi.catatanakademik.com/sitemap.xml
