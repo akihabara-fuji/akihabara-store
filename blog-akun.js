@@ -61,7 +61,10 @@ module.exports = function mount(ctx) {
     "kuliah-sambil-kerja": ["Kuliah Sambil Kerja", /\b(sambil bekerja|sambil kerja|karyawan)\b/i],
     "tips-lulus-ut": ["Tips Lulus UT", /\b(lulus|wisuda|tips sukses)\b/i],
   };
-  const tagLabel = t => (TAGS[t] ? TAGS[t][0] : String(t).replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase()));
+  const TAG_ACR = { myut: "MyUT", ut: "UT", ktpu: "KTPU", pkbjj: "PKBJJ", uaop: "UAOP", utm: "UTM", uobm: "UObM", olop: "OLOP", uas: "UAS", uts: "UTS", ukt: "UKT", ips: "IPS", ipk: "IPK", dnu: "DNU", tuton: "Tuton", tmk: "TMK", ttm: "TTM", tuwe: "TUWE", taps: "TAPS", sia: "SIA", seb: "SEB", wa: "WA", pdf: "PDF", ai: "AI" };
+  const tagLabel = t => (TAGS[t] ? TAGS[t][0] : String(t).replace(/-/g, " ").replace(/\b[\w]+/g, w => TAG_ACR[w.toLowerCase()] || (w.charAt(0).toUpperCase() + w.slice(1))));
+  /* Kalimat pembuka yang tersimpan terpotong di 260 huruf (di tengah kata): rapikan saat tampil. Potong di akhir kalimat terakhir, atau di kata terakhir lalu beri titik tiga. */
+  const tidyLead = e => { const t = String(e || "").trim(); if (!t || /[.!?…")\]]$/.test(t)) return t; const m = t.match(/^[\s\S]*[.!?](?=\s)/); if (m && m[0].length >= 60) return m[0]; return t.replace(/\s+\S*$/, "").replace(/[,;:\-–—\s]+$/, "") + "…"; };
   /* Saran kategori (hanya untuk dua kategori akademik): pengumuman/jadwal = Info UT; cara/tips/panduan belajar = Tips Kuliah UT.
      Hanya usulan untuk admin; tidak mengubah apa pun sendiri. */
   function suggestTopic(p) {
@@ -166,7 +169,7 @@ module.exports = function mount(ctx) {
   const shortDate = iso => new Date(iso).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Jakarta" });
   /* hi=true untuk gambar utama di layar pertama (kandidat LCP): dimuat segera dan diprioritaskan, bukan lazy. */
   const cardCover = (p, hi = false) => { const src = p.cover || autoCover(p); return src ? `<img src="${esc(src)}" alt="${esc(p.coverAlt || "")}" ${hi ? 'fetchpriority="high" decoding="async"' : 'loading="lazy" decoding="async"'}>` : posterHtml(p); };
-  const blogCard = p => `<article class="bx-card"><a href="/blog/${esc(p.slug)}"><div class="bx-cv">${cardCover(p)}</div><div class="bx-b"><span class="bx-tag">${esc(tl(p.topic))}</span><h3>${esc(p.title)}</h3>${p.excerpt ? `<p>${esc(p.excerpt)}</p>` : ""}<div class="bx-ft"><span><time datetime="${esc(p.publishedAt)}">${esc(shortDate(p.publishedAt))}</time> · ${readMin(p)} menit baca</span><span class="bx-go">Baca <i aria-hidden="true">→</i></span></div></div></a></article>`;
+  const blogCard = p => `<article class="bx-card"><a href="/blog/${esc(p.slug)}"><div class="bx-cv">${cardCover(p)}</div><div class="bx-b"><span class="bx-tag">${esc(tl(p.topic))}</span><h3>${esc(p.title)}</h3>${p.excerpt ? `<p>${esc(tidyLead(p.excerpt))}</p>` : ""}<div class="bx-ft"><span><time datetime="${esc(p.publishedAt)}">${esc(shortDate(p.publishedAt))}</time> · ${readMin(p)} menit baca</span><span class="bx-go">Baca <i aria-hidden="true">→</i></span></div></div></a></article>`;
   /* Daftar publik (kartu, filter, tag, terkait, RSS ringkas): di domain akademik topik di luar fokus UT tidak ditampilkan. Alamat langsung artikelnya tetap bisa dibuka (noindex), jadi tidak ada tautan lama yang putus. */
   const listed = () => published().filter(p => !OFF_TOPIC.includes(p.topic));
   const topicsShown = () => Object.keys(TOPICS).filter(k => !ACAD_ONLY || k === "study" || k === "updateut" || (!OFF_TOPIC.includes(k) && blog.posts.some(p => p.topic === k && isLive(p))));
@@ -192,7 +195,7 @@ module.exports = function mount(ctx) {
         <p class="bx-lead">${ACAD_ONLY ? "Jadwal, registrasi, ujian, tugas, Metopen, tips belajar, dan pengalaman mahasiswa UT. Bukan situs resmi UT: selalu cocokkan dengan pengumuman resmi di ut.ac.id." : "Catatan tentang belajar, social media, AI, dan hal-hal yang lagi ramai."}</p>
         <form class="bx-search" role="search" action="${base}" method="get"><label class="bx-sr" for="bxq">Cari artikel</label><input id="bxq" type="search" name="q" value="${esc(q)}" maxlength="80" placeholder="Cari artikel, contoh: jadwal ujian, registrasi, tugas…"><button type="submit">Cari</button></form>
         <nav class="bx-chips" aria-label="Filter kategori">${chips}</nav>${popHtml}
-      </div>${featured ? `<article class="bx-feat"><a href="/blog/${esc(featured.slug)}"><div class="bx-cv">${cardCover(featured, true)}<span class="bx-badge">Artikel Pilihan</span></div><div class="bx-b"><h2>${esc(featured.title)}</h2>${featured.excerpt ? `<p>${esc(featured.excerpt)}</p>` : ""}<div class="bx-ft"><span><time datetime="${esc(featured.publishedAt)}">${esc(shortDate(featured.publishedAt))}</time> · ${esc(tl(featured.topic))}</span><span class="bx-go">Baca selengkapnya <i aria-hidden="true">→</i></span></div></div></a></article>` : ""}</section>`;
+      </div>${featured ? `<article class="bx-feat"><a href="/blog/${esc(featured.slug)}"><div class="bx-cv">${cardCover(featured, true)}<span class="bx-badge">Artikel Pilihan</span></div><div class="bx-b"><h2>${esc(featured.title)}</h2>${featured.excerpt ? `<p>${esc(tidyLead(featured.excerpt))}</p>` : ""}<div class="bx-ft"><span><time datetime="${esc(featured.publishedAt)}">${esc(shortDate(featured.publishedAt))}</time> · ${esc(tl(featured.topic))}</span><span class="bx-go">Baca selengkapnya <i aria-hidden="true">→</i></span></div></div></a></article>` : ""}</section>`;
     const what = q ? `Hasil pencarian “${esc(q)}”` : tag ? `Artikel tentang ${esc(tagLabel(tag))}` : f ? esc(TOPICS[f].label) : "Artikel Terbaru";
     const head = `<div class="bx-head"><h2>${what}${!q && !tag && !f ? '<img class="bx-mc" src="/ruangakademikut/assets/ca/mc-16.webp" alt="" width="40" height="40">' : ""}</h2>${filtering ? `<span class="bx-count">${list.length} artikel · <a href="${base}">Hapus filter</a></span>` : ""}</div>`;
     const grid = latest.length ? `<div class="bx-grid">${latest.map(blogCard).join("")}</div>` : `<div class="bx-empty"><img class="bx-mc" src="/ruangakademikut/assets/ca/mc-21.webp" alt="" width="56" height="56"><b>Belum ada artikel yang cocok.</b><span>Coba kata lain, atau <a href="${base}">lihat semua artikel</a>.</span></div>`;
@@ -823,7 +826,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
   const nf = n => new Intl.NumberFormat("id-ID").format(n);
   function articlePage(p, { preview = false } = {}) {
     const plain = String(p.body || "").replace(IMG_MD, " ").replace(/[#*_>`\[\]()!-]/g, " ").replace(/\s+/g, " ").trim();
-    const desc = p.metaDesc || p.excerpt || (plain.length > 155 ? plain.slice(0, 152).replace(/\s+\S*$/, "") + "…" : plain) || p.title;
+    const desc = p.metaDesc || tidyLead(p.excerpt) || (plain.length > 155 ? plain.slice(0, 152).replace(/\s+\S*$/, "") + "…" : plain) || p.title;
     const cvSrc = p.cover || (preview ? "" : autoCover(p));
     const img = cvSrc ? (/^https?:/.test(cvSrc) ? cvSrc : SITE + cvSrc) : SITE + "/icon-512.png";
     const url = `${SITE}/blog/${p.slug}`;
@@ -872,7 +875,7 @@ fetch("/ms/auth/me",{cache:"no-store"}).then(function(r){return r.json()}).then(
       <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Beranda</a><span aria-hidden="true">/</span><a href="/blog">Blog</a><span aria-hidden="true">/</span><a href="${topicLink}">${esc(tl(p.topic))}</a><span aria-hidden="true">/</span><span aria-current="page">${esc(p.title)}</span></nav>
       <div class="ax-meta"><a class="bx-tag" href="${topicLink}">${esc(tl(p.topic))}</a><time datetime="${esc(pub)}">${esc(shortDate(pub))}</time>${showUpd ? `<span>Diperbarui <time datetime="${esc(mod)}">${esc(shortDate(mod))}</time></span>` : ""}<span>${readMin(p)} menit baca</span><span class="ax-views" title="Jumlah pembaca artikel ini"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/></svg>${nf(viewsOf(p.slug).total)} dilihat</span></div>
       ${hookTop}<h1>${esc(p.title)}</h1>
-      ${p.excerpt ? `<p class="ax-lead">${esc(p.excerpt)}</p>` : ""}
+      ${p.excerpt ? `<p class="ax-lead">${esc(tidyLead(p.excerpt))}</p>` : ""}
       <div class="ax-by">Oleh <b>${ACAD_ONLY ? `<a href="/ruangakademikut/tentang" style="color:inherit">${esc(author)}</a>` : esc(author)}</b></div>
       ${coverFig}
       ${toc.length >= 3 ? `<details class="ax-toc ax-toc-in"><summary>Daftar Isi</summary>${tocList}</details>` : ""}
