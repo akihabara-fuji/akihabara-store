@@ -284,3 +284,14 @@ p,.kd,.body,.sub,li{text-wrap:pretty}
 .btn.cv{border:1px solid var(--btn);color:var(--tx);background:transparent;margin:18px 0 0}.gal+*{margin-top:0}
 #about .btn.cv{display:flex;width:max-content;margin-top:14px}#kontak .btn.cv{margin:0 0 0 12px}
 @media(max-width:860px){#kontak .btn.cv{margin:12px 0 0;display:flex}}
+/* studi kasus + belah layar */
+.cs{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin:0 0 16px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:rgba(17,27,48,.5)}
+.cs>div{padding:14px 16px;border-left:1px solid var(--line);transition:background .3s}.cs>div:first-child{border-left:0}
+.cs>div:hover{background:rgba(255,138,61,.07)}
+.cs b{display:block;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ac);margin-bottom:6px}
+.cs p{margin:0;font-size:13px;line-height:1.55;color:var(--tx)}
+.kdet:has(.cs) .kd{display:none}.kdet:has(.cs) li:nth-child(n+4){display:none}
+@media(max-width:860px){.cs{grid-template-columns:1fr}.cs>div{border-left:0;border-top:1px solid var(--line)}.cs>div:first-child{border-top:0}.kdet:has(.cs) .kd{display:block}}
+@media(hover:hover) and (pointer:fine) and (min-width:861px){.kgrid{transition:grid-template-columns .5s cubic-bezier(.23,1,.32,1)}.kgrid:has(.klist:hover){grid-template-columns:430px 1fr}.klist .krow{transition:padding .3s,background .3s,opacity .3s}.klist:hover .krow:not(:hover):not(.on){opacity:.5}}
+@media(prefers-reduced-motion:reduce){.kgrid{transition:none!important}}
+@media(min-width:861px) and (max-height:780px){.kdet:has(.cs) ul{display:none}.kph .lb img{height:88px}}
