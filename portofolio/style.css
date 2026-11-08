@@ -260,3 +260,27 @@ p,.kd,.body,.sub,li{text-wrap:pretty}
 .kdet.on>*{animation:up .6s cubic-bezier(.23,1,.32,1) both}
 .kdet.on>*:nth-child(2){animation-delay:.06s}.kdet.on>*:nth-child(3){animation-delay:.12s}.kdet.on>*:nth-child(4){animation-delay:.18s}.kdet.on>*:nth-child(5){animation-delay:.24s}.kdet.on>*:nth-child(6){animation-delay:.3s}
 @media(prefers-reduced-motion:reduce){#ld{display:none}.wm>span{transform:none!important}.mq-t{animation:none}}
+/* galeri, penghargaan, tombol CV, lightbox */
+.kph{display:flex;flex-wrap:wrap;gap:12px;margin-top:6px}
+.lb{display:block;padding:0;margin:0;border:1px solid var(--line);background:#0e1626;border-radius:10px;overflow:hidden;cursor:zoom-in;position:relative;line-height:0;transform:perspective(700px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateY(var(--ty,0px));transition:transform .35s cubic-bezier(.23,1,.32,1),border-color .25s,box-shadow .35s;box-shadow:0 8px 22px -12px rgba(0,0,0,.7)}
+.lb img{display:block;width:auto;transition:transform .6s cubic-bezier(.23,1,.32,1)}
+.lb::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.16) 50%,transparent 65%);transform:translateX(-120%);pointer-events:none}
+.lb:focus-visible{outline:2px solid var(--ac);outline-offset:3px}
+.kph .lb img{height:104px}.gal .lb img{height:112px}.fph .lb img{height:60px}
+.gal{margin-top:20px;display:flex;gap:12px}.fph{display:flex;gap:10px;margin-top:10px}.fph .lb{border-radius:8px}
+.btn.cv{margin-top:18px;margin-right:10px}.btn.cv::after{content:"";width:14px;height:14px;margin-left:10px;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 20h14'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 20h14'/%3E%3C/svg%3E") center/contain no-repeat;transition:transform .3s}
+.btn.cv:hover::after{transform:translateY(3px)}
+@media(hover:hover) and (pointer:fine){.lb:hover{--ty:-3px;border-color:var(--ac);box-shadow:0 16px 32px -12px rgba(255,138,61,.4),0 4px 10px rgba(0,0,0,.45)}.lb:hover img{transform:scale(1.05)}.lb:hover::after{transform:translateX(120%);transition:transform .8s cubic-bezier(.23,1,.32,1)}}
+.lbx{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(5,9,18,.9);-webkit-backdrop-filter:blur(14px) saturate(160%);backdrop-filter:blur(14px) saturate(160%);opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s}
+.lbx.on{opacity:1;visibility:visible}
+.lbx img{max-width:min(90vw,1400px);max-height:82vh;border-radius:12px;box-shadow:0 30px 80px rgba(0,0,0,.6);transform:scale(.95);opacity:0;transition:transform .35s cubic-bezier(.23,1,.32,1),opacity .25s;background:#0e1626}
+.lbx.on img.rd{transform:scale(1);opacity:1}
+.lbx button{position:absolute;width:48px;height:48px;border-radius:50%;border:1px solid var(--btn);background:rgba(17,27,48,.8);color:var(--tx);font-size:20px;cursor:pointer;transition:transform .2s,border-color .2s,background .2s}
+.lbx button:hover{border-color:var(--ac);background:rgba(255,138,61,.15)}.lbx button:active{transform:scale(.95)}
+.lbx .x{top:20px;right:20px}.lbx .pv{left:20px;top:50%;margin-top:-24px}.lbx .nx{right:20px;top:50%;margin-top:-24px}
+.lbx .ct{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:13px;color:var(--mu);letter-spacing:.04em}
+@media(max-width:860px){.kph .lb img{height:84px}.lbx .pv,.lbx .nx{top:auto;bottom:16px;margin:0}.lbx .pv{left:calc(50% - 60px)}.lbx .nx{right:calc(50% - 60px)}.lbx .ct{bottom:78px}}
+@media(prefers-reduced-motion:reduce){.lb,.lb img,.lbx,.lbx img{transition:none!important}.lb::after{display:none}}
+.btn.cv{border:1px solid var(--btn);color:var(--tx);background:transparent;margin:18px 0 0}.gal+*{margin-top:0}
+#about .btn.cv{display:flex;width:max-content;margin-top:14px}#kontak .btn.cv{margin:0 0 0 12px}
+@media(max-width:860px){#kontak .btn.cv{margin:12px 0 0;display:flex}}
