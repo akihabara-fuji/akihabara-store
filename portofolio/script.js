@@ -1,6 +1,6 @@
 (function(){
 var $=function(s,r){return (r||document).querySelector(s)},$$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
-var ids=['home','about','skills','experience','karya','kontak'],cur='home';
+var ids=['home','karya','about','skills','experience','kontak'],cur='home';
 var drawer=$('.drawer'),burger=$('.burger');
 function closeDrawer(){drawer.classList.remove('open');burger.classList.remove('x');burger.setAttribute('aria-expanded','false');drawer.setAttribute('aria-hidden','true')}
 var main=$('main'),rmq=matchMedia('(prefers-reduced-motion:reduce)').matches;
