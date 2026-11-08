@@ -189,3 +189,27 @@ main{overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;overscroll-behavior:
 .hs{height:calc((100svh - var(--top))*3.4)}
 .klist{max-height:calc(100svh - var(--top) - 220px)}
 @media(max-width:860px){.klist{max-height:none}}
+
+/* efek tombol + kursor */
+.btn,.rt,.nl,.krow,.rm,.dots button,.burger,.crows a,.logo{position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent}
+.top .logo,.top .rt{overflow:hidden}
+.rp{position:absolute;border-radius:50%;pointer-events:none;background:rgba(255,255,255,.32);transform:scale(0);animation:rp .62s cubic-bezier(.2,.7,.2,1) forwards;z-index:0}
+.btn.pri .rp,.rt .rp,.nl.on .rp{background:rgba(11,18,32,.22)}
+@keyframes rp{to{transform:scale(1);opacity:0}}
+.btn{transition:transform .2s cubic-bezier(.23,1,.32,1),box-shadow .25s,border-color .25s,background .25s,color .25s,translate .25s cubic-bezier(.23,1,.32,1)}
+.btn::before{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.35) 50%,transparent 70%);transform:translateX(-120%);transition:transform .6s cubic-bezier(.23,1,.32,1);pointer-events:none}
+.btn:hover::before{transform:translateX(120%)}
+.btn.pri:hover{box-shadow:0 14px 34px -10px rgba(255,138,61,.65)}
+.btn:not(.pri):hover{border-color:var(--ac);background:rgba(255,138,61,.1);color:#fff}
+.rt{transition:transform .2s,box-shadow .25s,background .25s,translate .25s cubic-bezier(.23,1,.32,1)}
+.top .rt:hover{box-shadow:0 12px 28px -10px rgba(255,138,61,.7);background:#ff9d5e}
+.rt:active,.btn:active,.burger:active,.dots button:active,.krow:active,.logo:active{transform:scale(.95)}
+.logo,.burger,.dots button{transition:transform .2s,background .25s,border-color .25s,translate .25s cubic-bezier(.23,1,.32,1)}
+.logo:hover{border-color:var(--ac)}.burger:hover{border-color:var(--ac);background:rgba(255,138,61,.1)}
+.dots button:hover{background:var(--ac);transform:scale(1.35)}
+.rm i{transition:transform .3s}.rm:hover i{transform:translateX(5px)}.rm:hover{filter:brightness(1.15)}
+.cr{transition:scale .3s cubic-bezier(.2,.8,.2,1),background .25s,border-color .25s,opacity .3s,width .3s,height .3s,margin .3s}
+body.hov .cd{scale:.3}
+body.hovb .cr{scale:2.3;background:rgba(255,138,61,.2);border-color:#FFB07A}
+body.prs .cr{scale:.6}
+@media(prefers-reduced-motion:reduce){.btn::before,.rp{display:none}}
