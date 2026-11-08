@@ -3,16 +3,36 @@ var $=function(s,r){return (r||document).querySelector(s)},$$=function(s,r){retu
 var ids=['home','about','skills','experience','karya','kontak'],cur='home';
 var drawer=$('.drawer'),burger=$('.burger');
 function closeDrawer(){drawer.classList.remove('open');burger.classList.remove('x');burger.setAttribute('aria-expanded','false');drawer.setAttribute('aria-hidden','true')}
-function show(id,push){
-  if(ids.indexOf(id)<0)id='home';
-  cur=id;
-  $$('.screen').forEach(function(s){s.classList.toggle('on',s.id===id)});
+var main=$('main'),rmq=matchMedia('(prefers-reduced-motion:reduce)').matches;
+var done=0;
+function setActive(id){
+  if(id===cur&&done)return;
+  cur=id;done=1;
   $$('.nl').forEach(function(a){a.classList.toggle('on',a.getAttribute('data-go')===id)});
-  var s=document.getElementById(id);if(s&&id!=='home')s.scrollTop=0;
-  if(push!==false&&location.hash!=='#'+id)history.pushState(null,'','#'+id);
-  closeDrawer();
   document.title=(id==='home'?'Dika Priyadi – AI Automation & Digital Solutions Builder':id.charAt(0).toUpperCase()+id.slice(1)+' – Dika Priyadi');
 }
+function show(id,push,instant){
+  if(ids.indexOf(id)<0)id='home';
+  var s=document.getElementById(id);
+  main.scrollTo({top:id==='home'?0:s.offsetTop,behavior:(instant||rmq)?'auto':'smooth'});
+  setActive(id);
+  if(push!==false&&location.hash!=='#'+id)history.pushState(null,'','#'+id);
+  closeDrawer();
+}
+var ticking=0;
+function spy(){
+  ticking=0;
+  var y=main.scrollTop+main.clientHeight*.4,id='home';
+  ids.forEach(function(k){var e=document.getElementById(k);if(e&&e.offsetTop<=y)id=k});
+  setActive(id);
+  if(id!=='home'&&(location.hash||'')!=='#'+id)history.replaceState(null,'','#'+id);
+  else if(id==='home'&&location.hash&&location.hash!=='#home')history.replaceState(null,'','#home');
+}
+main.addEventListener('scroll',function(){if(!ticking){ticking=1;requestAnimationFrame(spy)}},{passive:true});
+if('IntersectionObserver' in window){
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target)}})},{root:main,threshold:.15});
+  $$('.screen').forEach(function(s){io.observe(s)});
+}else $$('.screen').forEach(function(s){s.classList.add('on')});
 document.addEventListener('click',function(e){
   var a=e.target.closest&&e.target.closest('[data-go]');
   if(a){e.preventDefault();show(a.getAttribute('data-go'));
@@ -27,7 +47,7 @@ burger.addEventListener('click',function(){
 });
 /* hero: tiga pose sinkron dengan progres scroll */
 (function(){
-var sc=$('#home'),poses=$$('.pose'),A=$('.hl-a'),B=$('.hl-b'),sd=$('.side'),vt=$('.vt'),hint=$('.hint'),dots=$$('.dots button'),n=poses.length;
+var sc=$('main'),hs=$('.hs'),hk=$('.hk'),poses=$$('.pose'),A=$('.hl-a'),B=$('.hl-b'),sd=$('.side'),vt=$('.vt'),hint=$('.hint'),dots=$$('.dots button'),n=poses.length;
 if(!sc||!n)return;
 var hx=poses.map(function(p){return +p.getAttribute('data-hx')||.5});
 poses.forEach(function(p,i){p.style.transformOrigin=(hx[i]*100)+'% 100%'});
@@ -47,9 +67,10 @@ function draw(p){
   if(st!==lastOn){lastOn=st;dots.forEach(function(d,i){d.classList.toggle('on',i===st)})}
 }
 function frame(){cur+=(tgt-cur)*(rm?1:.13);if(Math.abs(tgt-cur)<.0005)cur=tgt;draw(cur);raf=cur===tgt?0:requestAnimationFrame(frame)}
-function read(){var m=sc.scrollHeight-sc.clientHeight;tgt=m>0?sc.scrollTop/m:0;if(!raf)raf=requestAnimationFrame(frame)}
+function span(){return hs.offsetHeight-hk.clientHeight}
+function read(){var m=span();tgt=m>0?Math.min(1,sc.scrollTop/m):0;if(!raf)raf=requestAnimationFrame(frame)}
 sc.addEventListener('scroll',read,{passive:true});addEventListener('resize',function(){read();draw(cur)});
-dots.forEach(function(d,i){d.addEventListener('click',function(){var m=sc.scrollHeight-sc.clientHeight;sc.scrollTo({top:m*[.02,.46,.98][i],behavior:rm?'auto':'smooth'})})});
+dots.forEach(function(d,i){d.addEventListener('click',function(){var m=span();sc.scrollTo({top:m*[.02,.46,.98][i],behavior:rm?'auto':'smooth'})})});
 draw(0);read();
 })();
 /* karya */
@@ -79,5 +100,5 @@ if(window.matchMedia&&matchMedia('(hover:hover) and (pointer:fine)').matches){
   document.addEventListener('mousedown',function(){document.body.classList.add('prs')});
   document.addEventListener('mouseup',function(){document.body.classList.remove('prs')});
 }
-show((location.hash||'#home').slice(1),false);
+setTimeout(function(){show((location.hash||'#home').slice(1),false,true)},60);
 })();

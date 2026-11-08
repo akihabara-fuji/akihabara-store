@@ -180,3 +180,12 @@ h1{font-size:clamp(52px,16vw,64px)}.stats{gap:28px;flex-wrap:wrap}.stats b{font-
 @media(max-width:860px){.pw{-webkit-mask-image:none;mask-image:none}.pose{-webkit-mask-image:linear-gradient(#000 70%,transparent 98%);mask-image:linear-gradient(#000 70%,transparent 98%)}}
 @media(max-width:860px){.pw{height:76%}.hl-b{left:0;right:0;bottom:0;padding:56px 20px 34px;background:linear-gradient(rgba(11,18,32,0),rgba(11,18,32,.9) 30%)}}
 .side{top:50%}
+
+/* gulir tunggal: semua section tersusun, halaman digulir biasa */
+main{overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;overscroll-behavior:contain}
+.screen{position:relative;inset:auto;display:block;overflow:visible;min-height:calc(100svh - var(--top))}
+.screen>.wrap{min-height:calc(100svh - var(--top))}
+#home{min-height:0}
+.hs{height:calc((100svh - var(--top))*3.4)}
+.klist{max-height:calc(100svh - var(--top) - 220px)}
+@media(max-width:860px){.klist{max-height:none}}
