@@ -122,5 +122,26 @@ if(window.matchMedia&&matchMedia('(pointer:fine)').matches&&!rmq){
     if(act){var g2=g.createRadialGradient(hx,hy,0,hx,hy,16);g2.addColorStop(0,'rgba(255,240,225,.95)');g2.addColorStop(.35,'rgba(255,176,122,.8)');g2.addColorStop(1,'rgba(255,100,20,0)');g.fillStyle=g2;g.beginPath();g.arc(hx,hy,16,0,7);g.fill()}
     requestAnimationFrame(loop)})(performance.now());
 }
+/* animasi tahap 1: progress, counter, judul per kata, marquee perangkat */
+(function(){
+  var pgb=document.getElementById('pg');
+  if(pgb){var pt=0;main.addEventListener('scroll',function(){if(pt)return;pt=1;requestAnimationFrame(function(){pt=0;var m=main.scrollHeight-main.clientHeight;pgb.style.transform='scaleX('+(m>0?Math.min(1,main.scrollTop/m):0).toFixed(4)+')'})},{passive:true})}
+  if(rmq)return;
+  /* judul per kata */
+  function split(n){Array.prototype.slice.call(n.childNodes).forEach(function(c){
+    if(c.nodeType===3){var f=document.createDocumentFragment();c.textContent.split(/(\s+)/).forEach(function(w){if(!w)return;if(/^\s+$/.test(w)){f.appendChild(document.createTextNode(' '));return}var o=document.createElement('span');o.className='wm';var i=document.createElement('span');i.textContent=w;o.appendChild(i);f.appendChild(o)});c.parentNode.replaceChild(f,c)}
+    else if(c.nodeType===1&&c.tagName!=='BR'&&!(c.classList&&c.classList.contains('shim')))split(c)})}
+  $$('.screen:not(#home) h2').forEach(function(h){h.setAttribute('aria-label',h.textContent.replace(/\s+/g,' ').trim());split(h);h.querySelectorAll('.wm>span').forEach(function(s,i){s.style.setProperty('--i',i)})});
+  /* counter angka */
+  $$('.stats.big b').forEach(function(b){
+    var m=b.textContent.match(/^(\d+)(.*)$/);if(!m)return;var to=+m[1],suf=m[2],done=0;b.textContent='0'+suf;
+    function run(){if(done)return;done=1;var t0=performance.now(),d=1200;(function f(t){var p=Math.min(1,(t-t0)/d),e=1-Math.pow(1-p,3);b.textContent=Math.round(to*e)+suf;if(p<1)requestAnimationFrame(f)})(t0)}
+    if('IntersectionObserver'in window){var io=new IntersectionObserver(function(es){if(es[0].isIntersecting){run();io.disconnect()}},{root:main,threshold:.6});io.observe(b)}else run()});
+  /* marquee perangkat */
+  var tw=document.querySelector('.tools>div');
+  if(tw){var tr=document.createElement('div');tr.className='mq-t';var sp=Array.prototype.slice.call(tw.children);
+    sp.forEach(function(s){tr.appendChild(s)});sp.forEach(function(s){var c=s.cloneNode(true);c.setAttribute('aria-hidden','true');tr.appendChild(c)});
+    tw.appendChild(tr);tw.classList.add('mq')}
+})();
 setTimeout(function(){show((location.hash||'#home').slice(1),false,true)},60);
 })();

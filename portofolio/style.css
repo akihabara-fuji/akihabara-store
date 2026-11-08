@@ -239,3 +239,24 @@ p,.kd,.body,.sub,li{text-wrap:pretty}
 @media(max-width:860px){.home .sub,.hl-b .sub{font-size:16px}.crows strong{font-size:16px}}
 
 .hint span,.hint{font-size:12px}
+
+/* animasi tahap 1 */
+#ld{position:fixed;inset:0;z-index:300;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;animation:ldout .6s cubic-bezier(.77,0,.175,1) 1.15s forwards}
+#ld span{font:300 30px/1 var(--serif);color:var(--h);letter-spacing:-.01em;opacity:0;animation:ldin .6s cubic-bezier(.23,1,.32,1) .1s forwards}
+#ld i{display:block;width:120px;height:2px;background:var(--line);position:relative;overflow:hidden}
+#ld i::after{content:"";position:absolute;inset:0;background:var(--ac);transform:scaleX(0);transform-origin:left;animation:ldbar .9s cubic-bezier(.77,0,.175,1) .2s forwards}
+@keyframes ldin{to{opacity:1}}@keyframes ldbar{to{transform:scaleX(1)}}
+@keyframes ldout{to{opacity:0;visibility:hidden}}
+#pg{position:fixed;left:0;top:0;height:2px;width:100%;background:var(--ac);transform:scaleX(0);transform-origin:left;z-index:120;pointer-events:none}
+.wm{display:inline-block;overflow:hidden;vertical-align:top;padding:0 .08em .14em 0;margin:0 -.08em -.14em 0}
+.wm>span{display:inline-block;transform:translateY(108%);transition:transform .75s cubic-bezier(.23,1,.32,1);transition-delay:calc(var(--i,0)*60ms + .1s)}
+.screen.on .wm>span{transform:none}
+.tools>div.mq{display:block;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
+.mq-t{display:flex;width:max-content;animation:mq 38s linear infinite}
+.mq-t span{flex:none;margin-right:10px}
+.tools:hover .mq-t{animation-play-state:paused}
+@keyframes mq{to{transform:translateX(-50%)}}
+.kdet.on{animation:none}
+.kdet.on>*{animation:up .6s cubic-bezier(.23,1,.32,1) both}
+.kdet.on>*:nth-child(2){animation-delay:.06s}.kdet.on>*:nth-child(3){animation-delay:.12s}.kdet.on>*:nth-child(4){animation-delay:.18s}.kdet.on>*:nth-child(5){animation-delay:.24s}.kdet.on>*:nth-child(6){animation-delay:.3s}
+@media(prefers-reduced-motion:reduce){#ld{display:none}.wm>span{transform:none!important}.mq-t{animation:none}}
