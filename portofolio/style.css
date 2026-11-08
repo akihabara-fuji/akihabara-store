@@ -406,3 +406,8 @@ a.ft:hover{color:var(--ac)}.ft i{font-style:normal;color:var(--ac);transition:tr
 .mt{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
 .mt img{position:absolute;left:0;top:0;width:132px;height:92px;object-fit:cover;border-radius:10px;border:1px solid rgba(255,255,255,.14);box-shadow:0 16px 34px -12px rgba(0,0,0,.8);opacity:0;will-change:transform,opacity;pointer-events:none;user-select:none}
 @media(hover:none),(prefers-reduced-motion:reduce){.mt{display:none}}
+.ktabs{display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 0}
+.kt_{font:600 13px var(--sans);color:var(--mu);background:transparent;border:1px solid var(--line);border-radius:999px;padding:8px 16px;min-height:40px;cursor:pointer;transition:color .25s,border-color .25s,background .25s,transform .2s}
+.kt_:hover{color:var(--h);border-color:var(--btn)}.kt_:active{transform:scale(.96)}
+.kt_.on{color:var(--h);border-color:var(--ac);background:rgba(255,138,61,.12)}
+@media(min-width:861px) and (max-height:780px){.kt_{padding:5px 14px;min-height:32px}}
