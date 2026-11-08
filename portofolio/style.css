@@ -411,3 +411,48 @@ a.ft:hover{color:var(--ac)}.ft i{font-style:normal;color:var(--ac);transition:tr
 .kt_:hover{color:var(--h);border-color:var(--btn)}.kt_:active{transform:scale(.96)}
 .kt_.on{color:var(--h);border-color:var(--ac);background:rgba(255,138,61,.12)}
 @media(min-width:861px) and (max-height:780px){.kt_{padding:5px 14px;min-height:32px}}
+
+/* trail v2: kartu dengan keterangan, hanya di area kosong */
+.mt .mc{position:absolute;left:0;top:0;width:172px;padding:0 0 10px;border-radius:12px;background:#101a30;border:1px solid var(--btn);box-shadow:0 18px 38px -14px rgba(0,0,0,.85);opacity:0;will-change:transform,opacity;overflow:hidden}
+.mt .mc img{position:static;display:block;width:100%;height:72px;object-fit:cover;border:0;border-radius:0;box-shadow:none;opacity:1}
+.mt .mc b{display:block;margin:8px 12px 0;font:400 14px/1.25 var(--serif);color:var(--h);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mt .mc i{display:block;margin:2px 12px 0;font:normal 11px/1.3 var(--sans);color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mt{display:none!important}
+/* karya: animasi Pengalaman Facility (garis waktu) */
+.tl{margin:14px 0 4px}
+.tsc{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.tsc span{font-size:12.5px;font-weight:600;border:1px solid var(--line);border-radius:999px;padding:5px 12px;color:var(--tx);opacity:0;animation:tsin .6s cubic-bezier(.23,1,.32,1) both}
+.tsc span:nth-child(1){animation-delay:.1s}.tsc span:nth-child(2){animation-delay:.2s}.tsc span:nth-child(3){animation-delay:.3s}.tsc span:nth-child(4){animation-delay:.4s}.tsc span:nth-child(5){animation-delay:.5s}
+@keyframes tsin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.tt{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding-top:30px}
+.tt::before{content:"";position:absolute;left:6px;right:6px;top:7px;height:2px;background:var(--line)}
+.tt::after{content:"";position:absolute;left:6px;right:6px;top:7px;height:2px;background:var(--ac);transform-origin:left;animation:tlfill 8s cubic-bezier(.65,0,.35,1) infinite}
+@keyframes tlfill{0%{transform:scaleX(0)}55%,88%{transform:scaleX(1);opacity:1}100%{transform:scaleX(1);opacity:0}}
+.tn{position:relative}
+.tn>i{position:absolute;left:0;top:-30px;width:16px;height:16px;border-radius:50%;background:#101a30;border:2px solid var(--btn);animation:tnon 8s infinite both}
+.tn:nth-child(2)>i{animation-delay:.15s}
+@keyframes tnon{0%,6%{border-color:var(--btn);background:#101a30;transform:scale(1)}14%{border-color:var(--ac);background:var(--ac);transform:scale(1.35)}22%,88%{border-color:var(--ac);background:var(--ac);transform:scale(1)}100%{border-color:var(--btn);background:#101a30}}
+.tn:nth-child(1)>i{animation-name:tnon1}.tn:nth-child(2)>i{animation-name:tnon2}.tn:nth-child(3)>i{animation-name:tnon3}.tn:nth-child(4)>i{animation-name:tnon4}
+@keyframes tnon1{0%,2%{background:#101a30;border-color:var(--btn);transform:scale(1)}8%{background:var(--ac);border-color:var(--ac);transform:scale(1.4)}14%,88%{background:var(--ac);border-color:var(--ac);transform:scale(1)}100%{background:#101a30;border-color:var(--btn)}}
+@keyframes tnon2{0%,16%{background:#101a30;border-color:var(--btn);transform:scale(1)}24%{background:var(--ac);border-color:var(--ac);transform:scale(1.4)}30%,88%{background:var(--ac);border-color:var(--ac);transform:scale(1)}100%{background:#101a30;border-color:var(--btn)}}
+@keyframes tnon3{0%,32%{background:#101a30;border-color:var(--btn);transform:scale(1)}40%{background:var(--ac);border-color:var(--ac);transform:scale(1.4)}46%,88%{background:var(--ac);border-color:var(--ac);transform:scale(1)}100%{background:#101a30;border-color:var(--btn)}}
+@keyframes tnon4{0%,48%{background:#101a30;border-color:var(--btn);transform:scale(1)}56%{background:var(--ac);border-color:var(--ac);transform:scale(1.4)}62%,88%{background:var(--ac);border-color:var(--ac);transform:scale(1)}100%{background:#101a30;border-color:var(--btn)}}
+.tn b{display:block;font-size:12px;letter-spacing:.1em;color:var(--ac);margin-bottom:4px}
+.tn strong{display:block;font:400 17px/1.25 var(--serif);color:var(--h);margin-bottom:4px}
+.tn p{margin:0;font-size:13px;line-height:1.45;color:var(--mu)}
+.tm{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;margin-top:20px;font-size:13px;color:var(--mu)}
+.tm em{font:400 22px var(--serif);font-style:normal;color:var(--h)}
+.tm u{display:block;height:6px;border-radius:99px;background:var(--line);overflow:hidden;text-decoration:none}
+.tm s{display:block;height:100%;background:linear-gradient(90deg,var(--ac),#ffb27a);transform-origin:left;animation:tmgrow 8s cubic-bezier(.65,0,.35,1) infinite;text-decoration:none}
+@keyframes tmgrow{0%,6%{transform:scaleX(.26)}60%,88%{transform:scaleX(1)}100%{transform:scaleX(.26)}}
+.tm small{grid-column:1/-1;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase}
+.tl .fc{justify-content:flex-start;margin-top:14px}
+/* karya: animasi Layanan Freelance (kartu mengipas) */
+.fan{position:relative;height:150px;max-width:840px;margin:26px auto 8px;--st:150px}
+.fn{position:absolute;left:50%;top:0;width:158px;margin-left:-79px;min-height:112px;padding:14px 14px 12px;border-radius:12px;background:linear-gradient(160deg,#16233f,#0f192e);border:1px solid var(--btn);box-shadow:0 14px 30px -14px rgba(0,0,0,.85);display:flex;flex-direction:column;gap:6px;animation:fanx 7s cubic-bezier(.65,0,.35,1) infinite;z-index:calc(5 - var(--o))}
+.fn b{font:400 16px/1.2 var(--serif);color:var(--h)}.fn span{font-size:12px;line-height:1.4;color:var(--mu)}
+.fn:hover{border-color:var(--ac);z-index:9}
+@keyframes fanx{0%,8%{transform:translateX(calc(var(--o)*7px)) rotate(calc(var(--o)*2deg))}30%,66%{transform:translateX(calc(var(--o)*var(--st))) rotate(calc(var(--o)*3deg)) translateY(calc(var(--o)*var(--o)*4px))}92%,100%{transform:translateX(calc(var(--o)*7px)) rotate(calc(var(--o)*2deg))}}
+@media(max-width:860px){.tt{grid-template-columns:1fr;gap:18px;padding-top:0;padding-left:26px}.tt::before,.tt::after{left:7px;right:auto;top:6px;bottom:6px;width:2px;height:auto;transform-origin:top}.tt::after{animation-name:tlfillv}.tn>i{left:-26px;top:3px}@keyframes tlfillv{0%{transform:scaleY(0)}55%,88%{transform:scaleY(1);opacity:1}100%{transform:scaleY(1);opacity:0}}.fan{--st:62px;height:140px}.fn{width:128px;margin-left:-64px;min-height:104px;padding:12px}}
+@media(prefers-reduced-motion:reduce){.tt::after,.tn>i,.tm s,.fn,.tsc span{animation:none!important}.tsc span{opacity:1}.tt::after{transform:none}.fn{transform:translateX(calc(var(--o)*var(--st))) rotate(calc(var(--o)*2deg))}}
+@media(min-width:861px) and (max-height:780px){.fan{height:128px;margin-top:16px}.tsc{margin-bottom:12px}.tm{margin-top:12px}.kdet:has(.tl) .kd,.kdet:has(.fan) .kd{font-size:14px}}
