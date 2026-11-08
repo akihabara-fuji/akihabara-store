@@ -12,7 +12,7 @@ trap 'fail $LINENO' ERR
 set -e
 mkdir -p "$NEW/assets"
 for f in index.html style.css script.js assets/m1.webp assets/CV_Dika_Priyadi.pdf assets/k-admin.webp assets/k-analisa1.webp assets/k-analisa2.webp assets/k-bot.webp assets/f-lapangan.webp assets/f-kafe.webp assets/f-selamat.webp assets/f-sadewa.webp assets/f-ramadhan.webp og.jpg favicon.svg apple-touch-icon.png robots.txt sitemap.xml; do curl -fsSL "$RAW/$f" -o "$NEW/$f"; done
-grep -q 'Dari ide' "$NEW/index.html"
+grep -q 'Solusi digital' "$NEW/index.html"
 [ "$(stat -c %s "$NEW/assets/m1.webp")" -gt 10000 ]
 cp -a "$ROOT" "$BAK"
 rm -f "$ROOT"/index.html "$ROOT"/style.css "$ROOT"/script.js
