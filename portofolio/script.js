@@ -260,5 +260,29 @@ L.addEventListener('keydown',function(e){if(e.key==='ArrowRight'){e.preventDefau
 })();
 
 (function(){function fw(){var f=document.querySelector('.fl');if(f)f.style.setProperty('--flw',Math.max(0,f.clientWidth*.76-10)+'px')}fw();addEventListener('resize',fw);var r=document.querySelectorAll('.krow');r.forEach(function(b){b.addEventListener('click',function(){setTimeout(fw,60)})})})();
+
+(function(){var sec=document.getElementById('karya');if(!sec)return;
+if(!window.matchMedia('(hover:hover) and (pointer:fine)').matches||window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+var layer=document.createElement('div');layer.className='mt';layer.setAttribute('aria-hidden','true');sec.insertBefore(layer,sec.firstChild);
+var srcs=[];sec.querySelectorAll('.kph img, .lb img').forEach(function(i){var u=i.getAttribute('src');if(u&&srcs.indexOf(u)<0)srcs.push(u)});
+if(!srcs.length)return;
+var N=0,live=0,lx=null,ly=null,acc=0,lt=0,DIST=96,MAX=12,W=132,H=92;
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function emit(x,y,dx,dy){if(live>=MAX)return;var d=Math.hypot(dx,dy)||1,rot=clamp(dx/d*16+dy/d*4,-20,20);
+ var im=new Image();im.src=srcs[N++%srcs.length];im.alt='';im.draggable=false;layer.appendChild(im);live++;
+ var bx='translate('+(x-W/2).toFixed(1)+'px,'+(y-H/2).toFixed(1)+'px) ';
+ var a=im.animate([
+  {transform:bx+'scale(.55) rotate('+(rot*1.8)+'deg)',opacity:0,offset:0,easing:'cubic-bezier(.34,1.56,.64,1)'},
+  {transform:bx+'scale(1) rotate('+rot+'deg)',opacity:.72,offset:.26,easing:'linear'},
+  {transform:bx+'scale(1) rotate('+rot+'deg)',opacity:.72,offset:.62,easing:'cubic-bezier(.4,0,1,1)'},
+  {transform:bx+'translateY(-10px) scale(.9) rotate('+(rot*.6)+'deg)',opacity:0,offset:1}
+ ],{duration:1400,fill:'both'});
+ a.onfinish=function(){im.remove();live--}}
+sec.addEventListener('pointermove',function(e){if(e.pointerType==='touch')return;var r=sec.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
+ if(lx===null){lx=x;ly=y;return}
+ var dx=x-lx,dy=y-ly;acc+=Math.hypot(dx,dy);lx=x;ly=y;var t=performance.now();
+ if(acc>=DIST&&t-lt>45){emit(x,y,dx,dy);acc=0;lt=t}});
+sec.addEventListener('pointerleave',function(){lx=null;acc=0});
+})();
 setTimeout(function(){show((location.hash||'#home').slice(1),false,true)},60);
 })();

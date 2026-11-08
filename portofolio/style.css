@@ -400,3 +400,9 @@ a.ft:hover{color:var(--ac)}.ft i{font-style:normal;color:var(--ac);transition:tr
 .kdet:has(.fl) .kd{max-width:760px}
 @media(max-width:860px){.fl{grid-template-columns:1fr;gap:18px;margin-top:14px}.fl::before,.fl::after{display:none}.fs{text-align:left;display:grid;grid-template-columns:46px 1fr;column-gap:14px;padding:0}.fs>b{grid-row:1/4;margin:0}.fs p{margin:0;max-width:none}.fc{justify-content:flex-start}}
 @media(prefers-reduced-motion:reduce){.fl::after,.fs>b{animation:none}}
+/* motion trail (karya) */
+#karya{position:relative}
+#karya .wrap{position:relative;z-index:1}
+.mt{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.mt img{position:absolute;left:0;top:0;width:132px;height:92px;object-fit:cover;border-radius:10px;border:1px solid rgba(255,255,255,.14);box-shadow:0 16px 34px -12px rgba(0,0,0,.8);opacity:0;will-change:transform,opacity;pointer-events:none;user-select:none}
+@media(hover:none),(prefers-reduced-motion:reduce){.mt{display:none}}
