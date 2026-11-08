@@ -239,5 +239,24 @@ st.addEventListener('keydown',function(e){if(e.key==='ArrowRight'){e.preventDefa
 document.querySelector('.op').addEventListener('click',function(){step(-1)});document.querySelector('.on_').addEventListener('click',function(){step(1)});
 addEventListener('resize',draw);draw();requestAnimationFrame(tick);
 })();
+
+(function(){var L=document.querySelector('.klist');if(!L)return;var wrap=L.parentNode,rows=[].slice.call(L.querySelectorAll('.krow')),rm=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+var last=L.scrollLeft,sk=0,down=false,sx=0,sl=0,moved=0,vel=0,lx=0,raf=0,inert=0;
+function tick(){var d=L.scrollLeft-last;last=L.scrollLeft;var t=rm?0:Math.max(-13,Math.min(13,-d*.9));sk+=(t-sk)*.2;if(Math.abs(sk)<.02&&!t)sk=0;L.style.setProperty('--sk',sk.toFixed(2)+'deg');raf=requestAnimationFrame(tick)}
+raf=requestAnimationFrame(tick);
+function center(b,smooth){var x=b.offsetLeft-(L.clientWidth-b.offsetWidth)/2;L.scrollTo({left:x,behavior:smooth&&!rm?'smooth':'auto'})}
+L.addEventListener('pointerdown',function(e){if(e.pointerType==='touch')return;down=true;moved=0;sx=e.clientX;sl=L.scrollLeft;lx=e.clientX;vel=0;cancelAnimationFrame(inert);L.setPointerCapture(e.pointerId)});
+L.addEventListener('pointermove',function(e){if(!down)return;var dx=e.clientX-sx;moved=Math.max(moved,Math.abs(dx));if(moved>5)L.classList.add('dg');L.scrollLeft=sl-dx;vel=lx-e.clientX;lx=e.clientX});
+function up(e){if(!down)return;down=false;try{L.releasePointerCapture(e.pointerId)}catch(_){}
+ var wasDrag=moved>5;setTimeout(function(){L.classList.remove('dg')},0);
+ if(wasDrag&&!rm){(function f(){vel*=.94;L.scrollLeft+=vel;if(Math.abs(vel)>.5)inert=requestAnimationFrame(f)})()}
+ else if(!wasDrag){var b=e.target.closest&&e.target.closest('.krow');if(b)b.click()}}
+L.addEventListener('pointerup',up);L.addEventListener('pointercancel',up);
+rows.forEach(function(b){b.addEventListener('click',function(){center(b,true)})});
+function cur(){return rows.findIndex(function(b){return b.classList.contains('on')})}
+function step(n){var i=Math.max(0,Math.min(rows.length-1,cur()+n));rows[i].click()}
+var p=wrap.querySelector('.kp'),x=wrap.querySelector('.kx');if(p)p.onclick=function(){step(-1)};if(x)x.onclick=function(){step(1)};
+L.addEventListener('keydown',function(e){if(e.key==='ArrowRight'){e.preventDefault();step(1)}else if(e.key==='ArrowLeft'){e.preventDefault();step(-1)}});
+})();
 setTimeout(function(){show((location.hash||'#home').slice(1),false,true)},60);
 })();
