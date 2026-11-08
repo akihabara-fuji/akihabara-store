@@ -297,3 +297,12 @@ p,.kd,.body,.sub,li{text-wrap:pretty}
 @media(min-width:861px) and (max-height:780px){.kdet:has(.cs) ul{display:none}.kph .lb img{height:88px}}
 .pc{position:fixed;left:0;top:0;width:100vw;height:100vh;pointer-events:none;mix-blend-mode:screen;z-index:40}
 .pw.pa .pose{opacity:0!important;transition:none}.pw .pose{transition:opacity 1s ease}
+/* status proyek */
+.sd{display:inline-block;width:7px;height:7px;border-radius:50%;margin-left:auto;margin-right:8px;flex:none;align-self:center;background:#8aa0c4}
+.sd.s-B{background:#4ade80;box-shadow:0 0 0 3px rgba(74,222,128,.15)}.sd.s-D{background:var(--ac);box-shadow:0 0 0 3px rgba(255,138,61,.15)}
+.stp{display:inline-block;margin-left:10px;padding:3px 9px;border-radius:999px;font-size:11px;letter-spacing:.06em;text-transform:none;font-weight:500;border:1px solid var(--line);color:var(--tx);vertical-align:middle}
+.stp.s-B{border-color:rgba(74,222,128,.45);color:#86efac}.stp.s-D{border-color:rgba(255,138,61,.5);color:#ffb27d}
+@media(min-width:861px) and (max-height:780px){.klist .krow{padding-top:6px;padding-bottom:6px}.klist .kgrp{margin-top:8px}}
+.klist>*{flex-shrink:0}
+@media(min-width:861px){.krow em{display:none}.krow{padding-top:8px;padding-bottom:8px}}
+@media(min-width:861px) and (max-height:780px){.krow{padding-top:5px;padding-bottom:5px}.klist .kgrp{margin:6px 0 2px}.kdet h3{margin-bottom:8px}}
