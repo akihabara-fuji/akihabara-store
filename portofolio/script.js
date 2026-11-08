@@ -9,7 +9,7 @@ function setActive(id){
   if(id===cur&&done)return;
   cur=id;done=1;
   $$('.nl').forEach(function(a){a.classList.toggle('on',a.getAttribute('data-go')===id)});
-  document.title=(id==='home'?'Dika Priyadi – AI Automation & Digital Solutions Builder':id.charAt(0).toUpperCase()+id.slice(1)+' – Dika Priyadi');
+  document.title=(id==='home'?'Dika Priyadi – AI Automation & Digital Solutions Builder':({about:'Tentang',skills:'Keahlian',experience:'Pengalaman',karya:'Karya',kontak:'Kontak'}[id]||id)+' – Dika Priyadi');
 }
 function show(id,push,instant){
   if(ids.indexOf(id)<0)id='home';
