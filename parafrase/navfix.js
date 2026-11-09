@@ -8,8 +8,8 @@ const ALAT = '<details class="dd"><summary class="dds{ON}">Alat UT</summary><div
 /* active: tuton | komunitas | alat | maba | blog | "" */
 function navLinks({ active = "", cek = false } = {}) {
   const on = k => (active === k ? " on" : "");
-  const dd = '<details class="dd"><summary class="dds' + on("tuton") + '">Kelas Tuton</summary><div class="ddp desc"><a href="/ruangakademikut/tutorial-online"><b>Semua Kelas Tuton</b><small>Pilih jenis, belajar di tempat</small></a>'
-    + J.map(k => '<a href="/ruangakademikut/tutorial-online?j=' + k + '"><b>' + JN[k][0] + "</b><small>" + JN[k][1] + "</small></a>").join("") + "</div></details>";
+  /* Kelas Tuton: satu tautan biasa (bukan dropdown). Pilihan jenis (Diskusi, Tugas, Makalah, Jurnal, Metopen) ada di halamannya sendiri. */
+  const dd = '<a href="/ruangakademikut/tutorial-online" class="' + on("tuton").trim() + '">Kelas Tuton</a>';
   return '<nav class="links" id="links" aria-label="Menu utama">'
     + '<a href="/ruangakademikut/panduan-maba" class="' + on("maba").trim() + '">Panduan Maba</a>'
     + dd
