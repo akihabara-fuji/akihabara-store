@@ -101,8 +101,8 @@
  },
  "skills": {
   "lab": "03 · Keahlian",
-  "h2a": "Keahlian yang",
-  "h2b": "saya terapkan.",
+  "h2a": "Keahlian",
+  "h2b": "& alur kerja.",
   "cols": [
    {
     "t": "AI & digital",
@@ -365,6 +365,114 @@
       "k": 10,
       "l": "Portofolio & PPT"
      }
+    ]
+   }
+  ],
+  "intro": "Klik satu folder untuk melihat alur kerja lengkapnya.",
+  "cta": "Tanya via WhatsApp",
+  "folders": [
+   {
+    "t": "Analisis Media Sosial",
+    "d": "Skor 0–100 dan rencana perbaikan akun",
+    "video": "",
+    "steps": [
+     [
+      "Audit profil",
+      "Bio, foto, tautan, dan konsistensi tema."
+     ],
+     [
+      "Hook",
+      "Tiga detik pertama: kuat atau lemah."
+     ],
+     [
+      "Isi dan format",
+      "Durasi, alur cerita, teks di layar."
+     ],
+     [
+      "CTA",
+      "Ajakan akhir yang jelas dan terukur."
+     ],
+     [
+      "Riset",
+      "Topik, kata kunci, konten pembanding."
+     ],
+     [
+      "Skor",
+      "Nilai per bagian dan nilai total 0–100."
+     ],
+     [
+      "Rencana",
+      "Tiga aksi prioritas dan jadwal unggah."
+     ]
+    ]
+   },
+   {
+    "t": "Bot WhatsApp",
+    "d": "Mengelola grup dan melayani pesan",
+    "video": "",
+    "steps": [
+     [
+      "Tujuan",
+      "Apa yang dilayani bot."
+     ],
+     [
+      "Aturan balasan",
+      "Kata kunci dan jawaban."
+     ],
+     [
+      "Uji",
+      "Skenario percobaan sebelum dipakai."
+     ],
+     [
+      "Pantau",
+      "Catatan error dan perbaikan."
+     ]
+    ]
+   },
+   {
+    "t": "Konten AI dan Presentasi",
+    "d": "Dari ide ke video dan slide",
+    "video": "",
+    "steps": [
+     [
+      "Brief",
+      "Tujuan dan audiens."
+     ],
+     [
+      "Naskah",
+      "Hook, isi, dan CTA."
+     ],
+     [
+      "Produksi",
+      "Alat yang dipakai."
+     ],
+     [
+      "Terbit",
+      "Cek, lalu jadwalkan."
+     ]
+    ]
+   },
+   {
+    "t": "Sistem dan Web",
+    "d": "Dari kebutuhan ke situs yang dipakai",
+    "video": "",
+    "steps": [
+     [
+      "Kebutuhan",
+      "Pengguna dan masalah yang diselesaikan."
+     ],
+     [
+      "Mock",
+      "Disetujui sebelum dibuat."
+     ],
+     [
+      "Bangun",
+      "Diuji per elemen."
+     ],
+     [
+      "Rawat",
+      "Rilis dan perbaikan berkala."
+     ]
     ]
    }
   ]

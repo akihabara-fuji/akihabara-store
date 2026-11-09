@@ -266,5 +266,12 @@ function mark(g){tabs.forEach(function(t){var on=t.getAttribute('data-g')===g;t.
 tabs.forEach(function(t){t.addEventListener('click',function(){var r=rows[+t.getAttribute('data-kt')];if(r)r.click()})});
 rows.forEach(function(b){b.addEventListener('click',function(){mark(b.getAttribute('data-g'))})});
 })();
+(function(){var ov=document.getElementById('kfoOv');if(!ov)return;var from=null;
+function close(){ov.classList.remove('on');ov.setAttribute('aria-hidden','true');[].forEach.call(ov.querySelectorAll('.kfo-p'),function(p){p.hidden=true});if(from)from.focus()}
+function open(i,btn){from=btn;[].forEach.call(ov.querySelectorAll('.kfo-p'),function(p){p.hidden=p.getAttribute('data-kp')!==String(i)});var pn=ov.querySelector('.kfo-p[data-kp="'+i+'"]');if(!pn)return;var cl=pn.cloneNode(true);pn.parentNode.replaceChild(cl,pn);ov.classList.add('on');ov.setAttribute('aria-hidden','false');var x=cl.querySelector('.kfo-x');x.addEventListener('click',close);x.focus()}
+[].forEach.call(document.querySelectorAll('.kfo'),function(b){b.addEventListener('click',function(){open(b.getAttribute('data-kf'),b)})});
+ov.addEventListener('click',function(e){if(e.target===ov)close()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&ov.classList.contains('on'))close()});
+})();
 setTimeout(function(){show((location.hash||'#home').slice(1),false,true)},60);
 })();
