@@ -68,7 +68,7 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
     if (texts) out = texts.apply(out, opts.over || null, { mark: opts.mark, edit: opts.edit });
     out = (TRACK.has(file) && !opts.preview ? out.replace("</head>", '<script async src="/t.js"></script></head>') : out).replaceAll("{{SITE}}", SITE);
     const on = k => !!(settings && settings.get(k));
-    out = navfix.fix(out, { file, active: opts.vars ? (opts.vars.active || "") : undefined, cek: on("tampil_cek_pesanan"), harga: on("tampil_harga_pesan") });
+    out = navfix.fix(out, { file, active: opts.vars ? (opts.vars.active || "") : undefined, cek: on("tampil_cek_pesanan"), harga: on("tampil_harga_pesan") || file === "cek.html" });
     return tema.inject(shorten(out), settings ? settings.get("ca_tema") : "");
   }
   const page = file => (req, res) => {
