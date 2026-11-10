@@ -205,7 +205,6 @@ module.exports = function mountBedah({ library = null, app, express, db, setting
         let aiErr = null;
         if (ai && !ai.ok) { aiErr = ai.error || null; warn.push(ai.error); ai = null; }
         if (sim && !sim.ok) { warn.push(sim.error); sim = null; }
-        if (!sim) return res.status(400).json({ error: "Unggah laporan Similarity Drillbit (PDF) yang kamu terima dari UT. Semua berkas wajib diisi." });
         if (!ai) {
           const why = aiErr ? aiErr : kinds.filter(k => k === "sim").length >= 2 ? "Kedua file yang kamu unggah terbaca sebagai laporan Similarity, belum ada laporan AI." : !aiBuf ? "Kolom Laporan AI Drillbit masih kosong." : "File yang kamu masukkan di kolom Laporan AI tidak dikenali sebagai laporan AI Drillbit dari UT.";
           return res.status(400).json({ error: (mode === "cek" ? "Laporan AI Drillbit belum terbaca. " : "Bedah fokus pada tanda dari UT. ") + why + " Unggah PDF laporan AI Drillbit asli yang kamu terima dari UT." });

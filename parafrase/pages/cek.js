@@ -40,7 +40,7 @@
   var fO = $("fOrig"), fA = $("fAi"), fS = $("fSim"), fW = $("fWa");
   function waOk() { return /^8\d{8,12}$/.test(fW.value.replace(/\D/g, "").replace(/^62/, "").replace(/^0/, "")); }
   function missing1() {
-    var m = []; if (!fO.files[0]) m.push("file asli (langkah 1)"); if (!fA.files[0]) m.push("laporan AI Drillbit (langkah 2)"); if (!fS.files[0]) m.push("laporan Similarity Drillbit (langkah 3)"); if (!waOk()) m.push("nomor WhatsApp yang benar (langkah 4, contoh 0812xxxxxxxx)");
+    var m = []; if (!fO.files[0]) m.push("file asli (langkah 1)"); if (!fA.files[0]) m.push("laporan AI Drillbit (langkah 2)"); if (!waOk()) m.push("nomor WhatsApp yang benar (langkah 4, contoh 0812xxxxxxxx)");
     return m;
   }
   /* Kotak pemberitahuan solid (tidak transparan): kuning = belum lengkap, hijau = siap. */
@@ -66,9 +66,9 @@
 
   $("go").onclick = function () {
     showErr(""); var m = missing1(); if (m.length) { ready(); var hh = $("goHint"); if (hh.scrollIntoView) hh.scrollIntoView({ block: "center", behavior: "smooth" }); return; }
-    var tot = fO.files[0].size + fA.files[0].size + fS.files[0].size;
+    var tot = fO.files[0].size + fA.files[0].size + (fS.files[0] ? fS.files[0].size : 0);
     if (tot > TOTAL_MAX_MB * 1048576) { showErr("Total ukuran ketiga file " + (Math.round(tot / 104857.6) / 10).toString().replace(".", ",") + " MB, melebihi batas " + TOTAL_MAX_MB + " MB sekali kirim. Yang perlu kamu lakukan: kecilkan salah satu file (simpan ulang PDF dengan ukuran lebih kecil), lalu unggah lagi."); return; }
-    var fd = new FormData(); fd.append("file", fO.files[0]); fd.append("ai", fA.files[0]); fd.append("sim", fS.files[0]); fd.append("wa", fW.value);
+    var fd = new FormData(); fd.append("file", fO.files[0]); fd.append("ai", fA.files[0]); if (fS.files[0]) fd.append("sim", fS.files[0]); fd.append("wa", fW.value);
     $("go").disabled = true; st.wa = fW.value;
     window.pfScan.start($("busy"), ["Mengunggah file…", "Membaca laporan Drillbit…", "Memetakan blok UT ke dokumenmu…", "Menyusun hasil…"]);
     send("/ms/cek/upload", { method: "POST", body: fd }, 180000).then(function (x) {
