@@ -520,7 +520,16 @@ window.auditOkList = function (sc, box) {
       var b = document.createElement("b"); b.textContent = "Masuk dulu untuk memakai layanan ini"; n.appendChild(b);
       var p = document.createElement("p"); p.style.margin = "6px 0 10px"; p.textContent = "Dengan akun, dokumen dan hasilmu tersimpan rapi dan kami bisa mengabarimu lewat email. Daftar gratis."; n.appendChild(p);
       var a = document.createElement("a"); a.className = "btn"; a.href = "/ms/masuk?next=" + encodeURIComponent(location.pathname); a.textContent = "Masuk atau daftar"; n.appendChild(a);
+      n.style.borderColor = "#d32f2f";
       box.insertBefore(n, box.firstChild);
+      /* Peringatan merah di dekat tombol utama (bagian bawah), supaya tidak terlewat setelah gulir. */
+      var w = document.createElement("div"); w.setAttribute("role", "alert"); w.id = "needLoginWarn";
+      w.style.cssText = "background:#C62828;color:#fff;border:2px solid #7f1010;border-radius:12px;padding:14px 16px;margin:10px 0;text-align:left;font-size:14.5px;line-height:1.5;font-weight:700;opacity:1";
+      var wt = document.createElement("div"); wt.style.cssText = "font-size:15.5px;margin-bottom:4px"; wt.textContent = "PERHATIAN: kamu belum login"; w.appendChild(wt);
+      var wp = document.createElement("div"); wp.style.cssText = "font-weight:600"; wp.textContent = "Kolom dan tombol di atas belum bisa dipakai sebelum kamu masuk. Tekan tombol di bawah, masuk atau daftar (gratis), lalu kamu akan kembali ke halaman ini."; w.appendChild(wp);
+      var wa = document.createElement("a"); wa.href = "/ms/masuk?next=" + encodeURIComponent(location.pathname); wa.textContent = "Masuk atau daftar sekarang"; wa.style.cssText = "display:inline-block;margin-top:10px;background:#fff;color:#8e1b1b;font-weight:800;padding:10px 16px;border-radius:10px;text-decoration:none"; w.appendChild(wa);
+      var main = box.querySelector("button.btn"); if (main && main.parentNode) main.parentNode.insertBefore(w, main.nextSibling); else box.appendChild(w);
+      window.PF = window.PF || {}; window.PF.needLogin = true; document.dispatchEvent(new CustomEvent("pf-login-needed"));
       [].forEach.call(box.querySelectorAll("input,select,textarea,button"), function (x) { x.disabled = true; });
     }).catch(function () { /* gagal cek: server tetap menolak unggahan tanpa login */ });
   }

@@ -51,7 +51,9 @@
     var m = missing1();
     var h = $("goHint"); if (!h) { h = el("p"); h.id = "goHint"; h.setAttribute("role", "status"); $("go").parentNode.insertBefore(h, $("go").nextSibling); }
     note(h, m.length ? "Belum lengkap. Isi dulu: " + m.join(", ") + "." : "Semua sudah terisi. Tekan tombol Unggah.", !m.length);
+    h.style.display = window.PF && window.PF.needLogin ? "none" : "";
   }
+  document.addEventListener("pf-login-needed", function () { ready(); });
   function checkFile(input, kind) {
     showErr(""); var f = input.files[0]; if (!f) { ready(); return; }
     var c = cfg(), max = (c && c.file_max_mb) || 10;
