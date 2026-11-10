@@ -196,16 +196,20 @@ module.exports = function mountBedah({ library = null, app, express, db, setting
         for (const [buf, label] of [[aiBuf, "AI"], [simBuf, "Similarity"]]) if (buf && buf.slice(0, 4).toString() !== "%PDF") return res.status(415).json({ error: `Laporan ${label} harus berupa PDF asli dari UT.` });
         // jenis ditentukan dari isi laporan, bukan dari kolom yang dipilih (supaya tertukar pun tetap terbaca)
         let aiRaw = null, simRaw = null;
-        const files = []; if (aiBuf) files.push(aiBuf); if (simBuf) files.push(simBuf);
+        const files = [], kinds = []; if (aiBuf) files.push(aiBuf); if (simBuf) files.push(simBuf);
         for (const b of files) {
-          const k = await drillbit.detectKind(b);
+          const k = await drillbit.detectKind(b); kinds.push(k);
           if (k === "ai") { ai = ai || await drillbit.parseAi(b); aiRaw = aiRaw || b; } else if (k === "sim") { sim = sim || await drillbit.parseSim(b); simRaw = simRaw || b; }
           else warn.push("Satu file laporan tidak dikenali sebagai laporan Drillbit dari UT. File itu dilewati.");
         }
-        if (ai && !ai.ok) { warn.push(ai.error); ai = null; }
+        let aiErr = null;
+        if (ai && !ai.ok) { aiErr = ai.error || null; warn.push(ai.error); ai = null; }
         if (sim && !sim.ok) { warn.push(sim.error); sim = null; }
         if (!sim) return res.status(400).json({ error: "Unggah laporan Similarity Drillbit (PDF) yang kamu terima dari UT. Semua berkas wajib diisi." });
-        if (!ai) return res.status(400).json({ error: "Bedah fokus pada tanda dari UT. Unggah laporan AI Drillbit (PDF) yang kamu terima dari UT." });
+        if (!ai) {
+          const why = aiErr ? aiErr : kinds.filter(k => k === "sim").length >= 2 ? "Kedua file yang kamu unggah terbaca sebagai laporan Similarity, belum ada laporan AI." : !aiBuf ? "Kolom Laporan AI Drillbit masih kosong." : "File yang kamu masukkan di kolom Laporan AI tidak dikenali sebagai laporan AI Drillbit dari UT.";
+          return res.status(400).json({ error: (mode === "cek" ? "Laporan AI Drillbit belum terbaca. " : "Bedah fokus pada tanda dari UT. ") + why + " Unggah PDF laporan AI Drillbit asli yang kamu terima dari UT." });
+        }
         if (ai && ai.confidence === "rendah") warn.push("Sorotan biru pada laporan AI tidak terbaca utuh, jadi blok ditampilkan sebagai angka dan tidak dipetakan ke kalimat.");
         const r = await analyseDoc(f.buffer, ai && ai.confidence !== "rendah" ? ai : null, cfg);
         const bq = orders.bedahQuote(r.words, cfg), utKey = utIndex(r.map), ranked = rankFindings(r.findings, utKey);
