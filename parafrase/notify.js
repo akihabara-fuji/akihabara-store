@@ -38,7 +38,9 @@ module.exports = function createNotifier({ db, settings, fetchImpl }) {
   const days = cfg => Math.max(1, Math.round((cfg.retention_hours || 720) / 24));
   const T = {
     ditolak: o => `Halo, bukti bayar pesanan ${o.id} belum bisa diverifikasi (${o.reject_reason || "tidak sesuai"}). Silakan unggah bukti yang benar di: ${link(o)}`,
-    selesai: (o, cfg) => `Pesanan ${o.id} selesai! Unduh hasil Word-nya di: ${link(o)} . File dihapus otomatis ${days(cfg)} hari setelah diunggah, jadi segera unduh. Ada 1x revisi gratis, hubungi admin (nomor di bawah).`,
+    diterima: o => `Halo, file dan pembayaran pesanan ${o.id} sudah kami terima dan masuk antrean. Pantau statusnya di: ${link(o)}`,
+    dikerjakan: o => `Pesanan ${o.id} sekarang sedang dikerjakan admin. Kami kabari lagi begitu selesai. Status: ${link(o)}`,
+    selesai: (o, cfg) => `Pesanan ${o.id} sudah selesai! Unduh hasil Word-nya di: ${link(o)} . File dihapus otomatis ${days(cfg)} hari setelah diunggah, jadi segera unduh. Ada 1x revisi gratis, hubungi admin (nomor di bawah).\n\nTerima kasih sudah memakai Catatan Akademik. Jangan lupa follow Instagram https://instagram.com/catatanakademikut dan TikTok https://www.tiktok.com/@akihabara.fuzi ya.`,
   };
   const footer = cfg => cfg.admin_wa_number ? `\n\nPesan otomatis, mohon tidak dibalas ke nomor ini. Pertanyaan atau revisi? Hubungi admin: https://wa.me/${cfg.admin_wa_number}` : `\n\nPesan otomatis, mohon tidak dibalas ke nomor ini.`;
   function send(kind, o, now = Date.now()) {

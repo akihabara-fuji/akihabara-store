@@ -55,7 +55,8 @@ test("WhatsApp: pesan masuk outbox tanpa duplikat; webhook mengirim; tanpa webho
   try {
     const j = await paid(t, "w");
     let rows = t.m.db.prepare("SELECT kind,status,to_number,text FROM wa_outbox WHERE order_id=?").all(j.orderId);
-    assert.deepStrictEqual(rows, [], "konfirmasi bayar tidak mengirim WA: hanya 2 pesan (selesai, ditolak)");
+    assert.deepStrictEqual(rows.map(r => r.kind), ["diterima"], "konfirmasi bayar mengirim WA 'diterima'");
+    t.m.db.prepare("DELETE FROM wa_outbox WHERE order_id=?").run(j.orderId);
     const o = t.m.orders.byToken(j.token);
     assert.strictEqual(t.m.notifier.send("selesai", o), true);
     rows = t.m.db.prepare("SELECT kind,status,to_number,text FROM wa_outbox WHERE order_id=?").all(j.orderId);
@@ -68,8 +69,8 @@ test("WhatsApp: pesan masuk outbox tanpa duplikat; webhook mengirim; tanpa webho
     process.env.PARAFRASE_WA_WEBHOOK = "http://127.0.0.1:" + hook.address().port; process.env.PARAFRASE_WA_SECRET = "rahasia";
     try {
       t.m.orders.startWork(j.orderId);
-      assert.strictEqual(t.m.db.prepare("SELECT COUNT(*) n FROM wa_outbox WHERE kind='dikerjakan'").get().n, 0, "mulai dikerjakan tidak kirim WA");
-      t.m.db.prepare("DELETE FROM wa_outbox WHERE kind='selesai'").run();
+      assert.strictEqual(t.m.db.prepare("SELECT COUNT(*) n FROM wa_outbox WHERE kind='dikerjakan'").get().n, 1, "mulai dikerjakan mengirim WA");
+      t.m.db.prepare("DELETE FROM wa_outbox WHERE kind IN ('selesai','dikerjakan')").run();
       assert.strictEqual(t.m.notifier.send("selesai", t.m.orders.byToken(j.token)), true);
       assert.strictEqual(await t.m.notifier.flush(), 1);
       assert.strictEqual(calls[0].auth, "Bearer rahasia"); assert.strictEqual(calls[0].body.to, "6281234567890");

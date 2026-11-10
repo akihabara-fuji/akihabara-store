@@ -294,6 +294,7 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
       }
       event(orderId, "dikonfirmasi", source, now);
       const done = db.prepare("SELECT * FROM orders WHERE id=?").get(orderId);
+      if (done.status === "baru_dibayar") { try { notifier.send("diterima", done, now); } catch (e) { console.error("[parafrase] notif diterima:", e && e.message); } }
       return done;
     })();
   }
@@ -415,7 +416,9 @@ module.exports = function mountOrders({ app, express, db, settings, root, sameOr
       if (!["baru_dibayar", "dianalisis"].includes(o.status)) throw Object.assign(new Error("Pesanan ini tidak bisa dimulai: " + o.status), { status: 409 });
       db.prepare("UPDATE orders SET status='dikerjakan', work_started_at=?, updated_at=? WHERE id=?").run(now, now, orderId);
       event(orderId, "dikerjakan", null, now);
-      return db.prepare("SELECT * FROM orders WHERE id=?").get(orderId);
+      const started = db.prepare("SELECT * FROM orders WHERE id=?").get(orderId);
+      try { notifier.send("dikerjakan", started, now); } catch (e) { console.error("[parafrase] notif dikerjakan:", e && e.message); }
+      return started;
     })();
   }
   app.post("/ms/admin/parafrase/orders/:id/start", requireAdmin, wrap(req => startWork(String(req.params.id))));
