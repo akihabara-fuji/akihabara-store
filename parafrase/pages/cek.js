@@ -10,7 +10,7 @@
   /* Pesan galat: apa yang terjadi, apa yang harus dilakukan, dan jalan pintas ke admin bila perlu. */
   function showErr(m, help) {
     ["err", "err2"].forEach(function (id) {
-      var e = $(id); e.textContent = m || ""; e.classList.toggle("hidden", !m);
+      var e = $(id); e.textContent = m || ""; e.classList.toggle("hidden", !m); e.style.cssText = m ? "background:#FFD3D3;color:#6e0808;border:2px solid #d32f2f;border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.5;font-weight:700;opacity:1" : "";
       if (m && help) { var h = adminHref(typeof help === "string" ? help : ""); if (h) { var a = document.createElement("a"); a.href = h; a.target = "_blank"; a.rel = "noopener"; a.textContent = "Chat admin lewat WhatsApp"; a.style.cssText = "display:inline-block;margin-top:8px;font-weight:700;text-decoration:underline;color:inherit"; e.appendChild(document.createElement("br")); e.appendChild(a); } }
     });
     if (m) { var t = $(st.up ? "err2" : "err"); if (t && t.scrollIntoView) t.scrollIntoView({ block: "center", behavior: "smooth" }); }
@@ -43,10 +43,14 @@
     var m = []; if (!fO.files[0]) m.push("file asli (langkah 1)"); if (!fA.files[0]) m.push("laporan AI Drillbit (langkah 2)"); if (!fS.files[0]) m.push("laporan Similarity Drillbit (langkah 3)"); if (!waOk()) m.push("nomor WhatsApp yang benar (langkah 4, contoh 0812xxxxxxxx)");
     return m;
   }
+  /* Kotak pemberitahuan solid (tidak transparan): kuning = belum lengkap, hijau = siap. */
+  function note(e, m, ok) {
+    e.textContent = m; e.style.cssText = "margin:0;padding:12px 14px;border-radius:12px;font-size:14px;line-height:1.5;font-weight:700;opacity:1;" + (ok ? "background:#BFF0D4;color:#08351f;border:2px solid #2e9e63" : "background:#FFE08A;color:#3d2a00;border:2px solid #d99a00");
+  }
   function ready() {
-    var m = missing1(); $("go").style.opacity = m.length ? ".55" : "";
-    var h = $("goHint"); if (!h) { h = el("p", "margin:0;font-size:13px", null, "muted"); h.id = "goHint"; $("go").parentNode.insertBefore(h, $("go").nextSibling); }
-    h.textContent = m.length ? "Tombol aktif setelah kamu mengisi: " + m.join(", ") + "." : "Semua sudah terisi. Tekan tombol untuk mengunggah.";
+    var m = missing1();
+    var h = $("goHint"); if (!h) { h = el("p"); h.id = "goHint"; h.setAttribute("role", "status"); $("go").parentNode.insertBefore(h, $("go").nextSibling); }
+    note(h, m.length ? "Belum lengkap. Isi dulu: " + m.join(", ") + "." : "Semua sudah terisi. Tekan tombol Unggah.", !m.length);
   }
   function checkFile(input, kind) {
     showErr(""); var f = input.files[0]; if (!f) { ready(); return; }
@@ -59,7 +63,7 @@
   fW.oninput = ready; ready();
 
   $("go").onclick = function () {
-    showErr(""); var m = missing1(); if (m.length) { showErr("Belum lengkap. Isi dulu: " + m.join(", ") + "."); return; }
+    showErr(""); var m = missing1(); if (m.length) { ready(); var hh = $("goHint"); if (hh.scrollIntoView) hh.scrollIntoView({ block: "center", behavior: "smooth" }); return; }
     var tot = fO.files[0].size + fA.files[0].size + fS.files[0].size;
     if (tot > TOTAL_MAX_MB * 1048576) { showErr("Total ukuran ketiga file " + (Math.round(tot / 104857.6) / 10).toString().replace(".", ",") + " MB, melebihi batas " + TOTAL_MAX_MB + " MB sekali kirim. Yang perlu kamu lakukan: kecilkan salah satu file (simpan ulang PDF dengan ukuran lebih kecil), lalu unggah lagi."); return; }
     var fd = new FormData(); fd.append("file", fO.files[0]); fd.append("ai", fA.files[0]); fd.append("sim", fS.files[0]); fd.append("wa", fW.value);
@@ -128,7 +132,7 @@
   function payLabel() { return "Bayar dengan QRIS"; }
   function loadCfg(cb) { fetch("/ms/public-config", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (c) { window.PF.cfg = c; cb(true); }).catch(function () { cb(false); }); }
   function cfgWait() {
-    $("total").textContent = "Memuat harga…"; $("pay").style.opacity = ".55";
+    $("total").textContent = "Memuat harga…";
     var h = $("payhint"); h.textContent = "Daftar harga sedang dimuat…";
     var tries = 0; (function go() { loadCfg(function (ok) {
       if (ok) { price(); return; }
@@ -159,8 +163,7 @@
   function gate() {
     var dl = dlDate(), dlok = dl && dl.getTime() > Date.now(), m = missing2(), ag = $("agree").closest("label");
     $("dlwarn").textContent = dlok && dl.getTime() - Date.now() < 86400000 ? "Deadline kurang dari 24 jam, kami sarankan jalur cepat." : "";
-    $("pay").style.opacity = m.length ? ".55" : "";
-    $("payhint").textContent = m.length ? "Tombol bayar aktif setelah kamu: " + m.join("; ") + "." : "Pembayaran QRIS dibuka di langkah berikutnya.";
+    note($("payhint"), m.length ? "Belum lengkap. Yang perlu kamu lakukan: " + m.join("; ") + "." : "Semua syarat terpenuhi. Pembayaran QRIS dibuka di langkah berikutnya.", !m.length);
     if (ag) ag.style.outline = $("agree").checked ? "" : "2px dashed #ffb347"; if (ag) ag.style.outlineOffset = "4px";
   }
   ["dl", "dljam", "agree"].forEach(function (id) { $(id).addEventListener("input", gate); $(id).addEventListener("change", gate); });
@@ -168,7 +171,7 @@
 
   $("pay").onclick = function () {
     showErr(""); var dl = dlDate(); if (!st.up) return;
-    var m = missing2(); if (m.length) { showErr("Belum bisa lanjut. Yang perlu kamu lakukan: " + m.join("; ") + "."); gate(); var f = !cfg() ? null : !(dl && dl.getTime() > Date.now()) ? $("dl") : $("agree"); if (f && f.focus) f.focus(); return; }
+    var m = missing2(); if (m.length) { gate(); var ph = $("payhint"); if (ph.scrollIntoView) ph.scrollIntoView({ block: "center", behavior: "smooth" }); var f = !cfg() ? null : !(dl && dl.getTime() > Date.now()) ? $("dl") : $("agree"); if (f && f.focus) f.focus(); return; }
     $("pay").disabled = true; $("pay").textContent = "Membuat pesanan…";
     send("/ms/parafrase/order", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({
       uploadId: st.up.uploadId, wa: st.wa, title: st.up.file.name.replace(/\.[a-z0-9]{1,5}$/i, ""), language: "id", docType: "umum",
