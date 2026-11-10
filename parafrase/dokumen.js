@@ -136,8 +136,21 @@ module.exports = function mountDokumen({ app, express, db, root, requireAdmin })
     res.set("Cache-Control", "no-store").json({ item: view(r), data });
   });
 
+  /* Pesanan Cek & Parafrase dibuat setelah file tersimpan di pustaka, jadi barisnya belum tahu pesanan mana yang memakainya.
+     Cocokkan lewat sidik file (sha256) supaya detail pesanan menampilkan file asli, laporan AI, dan laporan similarity milik akun itu. Aman dijalankan berulang. */
+  function linkOrders() {
+    try {
+      const todo = db.prepare("SELECT o.id oid, u.sha256 sha, o.wa_number wa FROM orders o JOIN uploads u ON u.order_id=o.id WHERE o.doc_type<>'layanan' AND NOT EXISTS (SELECT 1 FROM doc_library d WHERE d.order_id=o.id)").all();
+      for (const t of todo) {
+        const hit = db.prepare("SELECT id FROM doc_library WHERE order_id IS NULL AND data LIKE ? ORDER BY (wa=?) DESC, created_at DESC LIMIT 1").get('%"sha":"' + t.sha + '"%', t.wa);
+        if (hit) db.prepare("UPDATE doc_library SET order_id=? WHERE id=?").run(t.oid, hit.id);
+      }
+    } catch (e) { console.error("[dokumen] tautkan pesanan:", e && e.message); }
+  }
+  linkOrders();
   app.get(base, requireAdmin, (req, res) => {
     res.set("Cache-Control", "no-store");
+    linkOrders();
     const q = clip(req.query.q, 80).toLowerCase(), kind = KINDS.includes(req.query.kind) ? req.query.kind : "";
     const rows = db.prepare("SELECT * FROM doc_library WHERE expires_at>? OR pinned=1 OR purged_at IS NOT NULL ORDER BY pinned DESC, created_at DESC LIMIT 500").all(nowMs())
       .filter(r => (!kind || r.kind === kind) && (!q || (r.name + " " + r.title + " " + r.note + " " + (r.student_name || "") + " " + (r.nim || "") + " " + (r.wa || "") + " " + (r.order_id || "")).toLowerCase().includes(q)));
