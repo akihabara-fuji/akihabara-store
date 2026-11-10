@@ -1071,5 +1071,173 @@
     "url": "https://www.tiktok.com/@akihabara.fuzi"
    }
   ]
+ },
+ "home2": {
+  "nama": "Dika Priyadi",
+  "roles": [
+   "AI Video Creator",
+   "Social Media Specialist",
+   "AI Automation",
+   "Digital Solutions"
+  ],
+  "bio": "Mengubah ide, data, dan masalah operasional menjadi konten, sistem, dan solusi digital yang dapat dipakai.",
+  "btn1": "Lihat karya",
+  "btn2": "Unduh CV",
+  "chips": [
+   "AI Video Creator",
+   "Social Media Specialist",
+   "AI Automation"
+  ],
+  "feat_lab": "Karya pilihan",
+  "feat": [
+   {
+    "t": "AI Video Commercial",
+    "s": "Produksi video iklan dengan AI + editing",
+    "to": 5,
+    "ph": "m-vid"
+   },
+   {
+    "t": "Social Media Analysis",
+    "s": "Audit, strategi, dan optimasi akun",
+    "to": 6,
+    "ph": "m-sos"
+   },
+   {
+    "t": "WhatsApp Bot",
+    "s": "Otomasi layanan dan informasi",
+    "to": 4,
+    "ph": "m-bot"
+   }
+  ],
+  "stats": [
+   {
+    "b": "12+",
+    "s": "tahun operasional & supervisi"
+   },
+   {
+    "b": "4",
+    "s": "perusahaan: ISS, Mercu Buana, APS, Horizon"
+   },
+   {
+    "b": "3",
+    "s": "jalur keahlian utama"
+   },
+   {
+    "b": "2",
+    "s": "bot WhatsApp aktif di VPS"
+   }
+  ],
+  "cta_lab": "Siap berkolaborasi?",
+  "cta_sub": "Butuh konten, strategi media sosial, atau solusi AI untuk bisnis atau tim? Mari diskusi.",
+  "cta_btn": "Hubungi saya",
+  "cards": [
+   {
+    "n": "01",
+    "t": "AI Video Creator",
+    "d": "Produksi video komersial, konten edukasi, dan video media sosial dengan dukungan AI.",
+    "chk": [
+     "Ide & Creative Brief",
+     "Script & Storyboard",
+     "Generasi Visual + Video AI",
+     "Editing (CapCut, Remotion)",
+     "Sound Design & Voice-over",
+     "Output multi-platform (9:16, 16:9)"
+    ],
+    "ph": "vid3"
+   },
+   {
+    "n": "02",
+    "t": "Social Media Specialist",
+    "d": "Analisis, strategi, produksi, dan optimasi konten untuk pertumbuhan akun.",
+    "chk": [
+     "Audit & Analisis Akun",
+     "Riset Audiens & Kompetitor",
+     "Strategi & Content Pillar",
+     "Content Calendar",
+     "Produksi Konten (Video, Carousel)",
+     "Monitoring & Reporting (KPI)"
+    ],
+    "ph": "sos"
+   },
+   {
+    "n": "03",
+    "t": "AI Automation",
+    "d": "Merancang workflow AI untuk mengotomasi pekerjaan berulang.",
+    "chk": [
+     "Desain alur kerja AI",
+     "Integrasi multi-tools (GPT, Gemini, Claude)",
+     "Otomasi konten dan data",
+     "Implementasi di server/VPS",
+     "Monitoring & maintenance"
+    ],
+    "ph": "auto"
+   },
+   {
+    "n": "04",
+    "t": "WhatsApp Bot",
+    "d": "Bot layanan untuk edukasi, informasi, dan kebutuhan operasional.",
+    "chk": [
+     "Rancang alur percakapan",
+     "Integrasi AI (GPT/Gemini)",
+     "Menu layanan & FAQ",
+     "Notifikasi otomatis",
+     "Implementasi di VPS & uji coba"
+    ],
+    "ph": "bot"
+   },
+   {
+    "n": "05",
+    "t": "Digital Platform & Website",
+    "d": "Pengembangan dan pengelolaan website edukasi, content hub, dan platform layanan.",
+    "chk": [
+     "Perencanaan & struktur",
+     "Produksi konten & SEO",
+     "Integrasi fitur & tools",
+     "Maintenance & optimasi"
+    ],
+    "ph": "web"
+   },
+   {
+    "n": "06",
+    "t": "Facility Management",
+    "d": "Pengalaman 12+ tahun supervisi operasional dan pengelolaan tim.",
+    "chk": [
+     "Supervisi operasional & housekeeping",
+     "Manajemen tim hingga 93 staf",
+     "Penyusunan SOP & kontrol mutu",
+     "Pelatihan & evaluasi kinerja",
+     "Area: apartemen, kampus, RS, MRT, KCIC"
+    ],
+    "ph": "fm"
+   },
+   {
+    "n": "07",
+    "t": "Cara Kerja",
+    "d": "Alur kerja yang saya terapkan di setiap proyek.",
+    "chk": [
+     "Pahami kebutuhan & tujuan",
+     "Analisis data & masalah",
+     "Rencana strategi & langkah",
+     "Produksi solusi (konten, sistem)",
+     "Uji, evaluasi & perbaikan",
+     "Optimasi berdasarkan hasil"
+    ],
+    "ph": "how"
+   },
+   {
+    "n": "08",
+    "t": "Skills, Tools & Experience",
+    "d": "Ringkasan keahlian, perangkat, dan pengalaman kerja.",
+    "chk": [
+     "AI Video, Editing, Motion",
+     "Social Media Strategy & Analisis",
+     "Konten & SEO",
+     "AI Automation, Bot, Workflow",
+     "Web & Digital Platform",
+     "Manajemen tim & operasional"
+    ],
+    "ph": "sk"
+   }
+  ]
  }
 }

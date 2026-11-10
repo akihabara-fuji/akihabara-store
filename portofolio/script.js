@@ -48,6 +48,7 @@ burger.addEventListener('click',function(){
 /* hero: tiga pose sinkron dengan progres scroll */
 (function(){
 var sc=$('main'),hs=$('.hs'),hk=$('.hk'),poses=$$('.pose'),A=$('.hl-a'),B=$('.hl-b'),sd=$('.side'),vt=$('.vt'),hint=$('.hint'),dots=$$('.dots button'),n=poses.length;
+if(!poses.length||!hs||!hk){return}
 if(!sc||!n)return;
 var hx=poses.map(function(p){return +p.getAttribute('data-hx')||.5});
 poses.forEach(function(p,i){p.style.transformOrigin=(hx[i]*100)+'% 100%'});
