@@ -6,7 +6,7 @@ Web: https://dikapriyadi.catatanakademik.com | Posisi: AI Automation | Teks form
 - portofolio-src/content.default.json = isi teks/data. portofolio-src/render.js = pembuat HTML. portofolio-src/build.sh = bangun.
 - portofolio/ = hasil yang dideploy (index.html hasil build, style.css, script.js, assets/). style.css dan script.js diedit langsung.
 - JANGAN edit portofolio/index.html langsung; ubah JSON/render.js lalu build.
-- Build: `git pull` lalu `bash portofolio-src/build.sh <versi>`. Versi wajib naik tiap deploy (nginx cache css/js 1 tahun). Versi live terakhir: 20261136.
+- Build: `git pull` lalu `bash portofolio-src/build.sh <versi>`. Versi wajib naik tiap deploy (nginx cache css/js 1 tahun). Versi live terakhir: 20261137.
 - Uji: Playwright, Chrome di /usr/bin/google-chrome, ukuran 1440x900, 1366x700, 390x844. Tanpa pageerror, tanpa scroll horizontal.
 
 ## Struktur halaman
@@ -45,3 +45,4 @@ Web: https://dikapriyadi.catatanakademik.com | Posisi: AI Automation | Teks form
 ## Riwayat commit penting
 Keahlian jadi folder skill dengan panel alur kerja (versi 20261136; data di skills.folders, video opsional lewat field video)
 25bc308 (live) animasi per kelompok, trail dihapus | 37f184b tab Karya | fff5d02 AI dulu, facility bawah | abd7cbf Karya jadi bagian 01
+Beranda: sapaan "Halo, saya" + nama + bio di tahap awal (home.hi, home.nama); folder Keahlian jadi dropdown di bawah grid, bukan modal (versi 20261137)

@@ -491,3 +491,24 @@ a.ft:hover{color:var(--ac)}.ft i{font-style:normal;color:var(--ac);transition:tr
 @keyframes kfoF{from{opacity:0}}@keyframes kfoP{from{opacity:0;transform:translateY(30px) scale(.94)}}@keyframes kfoU{to{opacity:1;transform:none}}@keyframes kfoL{from{transform:scaleY(0)}}
 @media(max-width:900px){.kfog{grid-template-columns:repeat(2,minmax(0,1fr))}.kfo-p{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.kfo-s li{opacity:1;transform:none;animation:none}.kfo-s:before,.kfo-p,.kfo-ov.on{animation:none}}
+
+/* v20261137: hero sapaan + folder keahlian jadi dropdown */
+.side{align-items:center}
+.hi-l,.hi-r{pointer-events:auto;display:flex;flex-direction:column;align-items:flex-start;gap:18px;max-width:340px}
+.hi-r{max-width:300px;padding-right:26px}
+.hi-s{font:600 14px var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--ac)}
+.hi-n{font:400 clamp(44px,5.4vw,78px)/.98 var(--serif);letter-spacing:-.02em;color:var(--h)}
+.hi-r p{margin:0;font-size:16px;line-height:1.55;color:var(--tx)}
+.kfo-ov{position:static;inset:auto;z-index:auto;background:none;-webkit-backdrop-filter:none;backdrop-filter:none;padding:0;margin-top:18px}
+.kfo-ov.on{display:block;animation:none}
+.kfo-p{width:100%;max-height:none;overflow:visible;padding:24px 26px;border-radius:18px;grid-template-columns:.8fr 2fr;animation:kfoD .45s cubic-bezier(.2,.9,.3,1)}
+@keyframes kfoD{from{opacity:0;transform:translateY(-14px)}}
+.kfo-p h3{font-size:28px}
+.kfo-s{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 28px;padding:0}
+.kfo-s:before{display:none}
+.kfo-s li{padding-left:38px}
+.kfo-s li:before{left:0}
+.kfo.op{border-color:var(--ac);transform:translateY(-6px)}
+.kfo.op .kfo-pk i{transform:translateY(-10px)}
+@media(max-width:900px){.kfo-p{grid-template-columns:1fr}.kfo-s{grid-template-columns:1fr}}
+@media(max-width:860px){.side{display:flex;top:84px;bottom:auto;left:20px;right:20px}.hi-r,.hi-l .btn{display:none}.hi-l{gap:8px;max-width:none}.hi-n{font-size:40px}.hi-s{font-size:12px}}
