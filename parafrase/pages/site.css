@@ -192,6 +192,21 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;line-height:
 .alur-i:hover{background:var(--surface2)}
 .alur-i.on{border-color:var(--link);box-shadow:inset 0 0 0 1px var(--link);background:var(--surface2)}
 .alur-i.on b{color:var(--link)}
+
+.alur-i{border-width:2px}
+.alur-i small{margin-top:4px}
+.alur-i .pl,.alur-i .mn{display:block;font-size:12.5px;line-height:1.4;margin-top:5px;font-weight:600}
+.alur-i .pl{color:#3fcf7a}.alur-i .mn{color:#ff8a80}
+.alur-i i{font-style:normal;font-weight:900;display:inline-block;width:16px;text-align:center}
+.alur-i.adm{border-color:#f5a524;background:rgba(245,165,36,.12)}
+.alur-i.adm b{color:#ffbf47;font-size:16px}
+.alur-i.adm.on{background:rgba(245,165,36,.26);box-shadow:0 0 0 2px #f5a524}
+.alur-i.sdr{border-color:#2fd0a8;background:rgba(47,208,168,.11)}
+.alur-i.sdr b{color:#4fe3be;font-size:16px}
+.alur-i.sdr.on{background:rgba(47,208,168,.24);box-shadow:0 0 0 2px #2fd0a8}
+.alur-i.adm:hover,.alur-i.sdr:hover{filter:brightness(1.12)}
+:root[data-theme="light"] .alur-i .pl{color:#0f7a3c}:root[data-theme="light"] .alur-i .mn{color:#b3261e}
+:root[data-theme="light"] .alur-i.adm b{color:#a85d00}:root[data-theme="light"] .alur-i.sdr b{color:#0a7a61}
 @media(max-width:560px){.alur{grid-template-columns:1fr}}
 /* Ikon: keranjang (Cek Pesanan) dan mode gelap/terang */
 .nav .nav-ord{font-size:17px;line-height:1;padding:8px 11px}

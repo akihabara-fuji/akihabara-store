@@ -520,8 +520,6 @@ window.auditOkList = function (sc, box) {
       var b = document.createElement("b"); b.textContent = "Masuk dulu untuk memakai layanan ini"; n.appendChild(b);
       var p = document.createElement("p"); p.style.margin = "6px 0 10px"; p.textContent = "Dengan akun, dokumen dan hasilmu tersimpan rapi dan kami bisa mengabarimu lewat email. Daftar gratis."; n.appendChild(p);
       var a = document.createElement("a"); a.className = "btn"; a.href = "/ms/masuk?next=" + encodeURIComponent(location.pathname); a.textContent = "Masuk atau daftar"; n.appendChild(a);
-      n.style.borderColor = "#d32f2f";
-      box.insertBefore(n, box.firstChild);
       /* Peringatan merah di dekat tombol utama (bagian bawah), supaya tidak terlewat setelah gulir. */
       var w = document.createElement("div"); w.setAttribute("role", "alert"); w.id = "needLoginWarn";
       w.style.cssText = "background:#C62828;color:#fff;border:2px solid #7f1010;border-radius:12px;padding:14px 16px;margin:10px 0;text-align:left;font-size:14.5px;line-height:1.5;font-weight:700;opacity:1";
