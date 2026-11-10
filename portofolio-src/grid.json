@@ -1,0 +1,291 @@
+{
+ "meta": {
+  "title": "Dika Priyadi – AI Automation & Digital Solutions Builder",
+  "desc": "Portofolio Dika Priyadi: AI automation, platform web, dan bot WhatsApp, ditopang pengalaman memimpin operasional lebih dari 12 tahun."
+ },
+ "hero": {
+  "label": "AI Automation & Digital Solutions Builder",
+  "h1a": "Solusi digital",
+  "h1b": "berbasis AI.",
+  "sub": "Website, bot WhatsApp, dan alur kerja AI yang dipakai dalam penggunaan nyata.",
+  "stats": [
+   {
+    "b": "12+",
+    "s": "tahun memimpin operasional"
+   },
+   {
+    "b": "93",
+    "s": "staf dalam tim terbesar"
+   },
+   {
+    "b": "2",
+    "s": "bot WhatsApp aktif"
+   }
+  ],
+  "photo": "assets/m1.webp",
+  "photoAlt": "Dika Priyadi menghadap ke depan, mengenakan kemeja navy",
+  "ai": "Visual dihasilkan AI",
+  "cv": "assets/CV_Dika_Priyadi.pdf",
+  "cvLabel": "Unduh CV",
+  "wa": "https://wa.me/6285722227544",
+  "waLabel": "Hubungi via WhatsApp"
+ },
+ "intro": "Pilih satu kartu untuk melihat isinya.",
+ "cta": "Tanya via WhatsApp",
+ "cards": [
+  {
+   "t": "Analisis Media Sosial",
+   "d": "Skor 0–100 dan rencana perbaikan akun",
+   "cover": "assets/k-analisa1.webp",
+   "video": "",
+   "items": [
+    {
+     "t": "Contoh hasil analisis",
+     "d": "Halaman utama alat analisis akun TikTok",
+     "img": "assets/k-analisa1.webp",
+     "alt": "Halaman utama alat analisis akun TikTok"
+    },
+    {
+     "t": "Audit profil",
+     "d": "Bio, foto, tautan, dan konsistensi tema."
+    },
+    {
+     "t": "Hook",
+     "d": "Tiga detik pertama: kuat atau lemah."
+    },
+    {
+     "t": "Isi dan format",
+     "d": "Durasi, alur cerita, teks di layar."
+    },
+    {
+     "t": "CTA",
+     "d": "Ajakan akhir yang jelas dan terukur."
+    },
+    {
+     "t": "Riset",
+     "d": "Topik, kata kunci, konten pembanding."
+    },
+    {
+     "t": "Skor",
+     "d": "Nilai per bagian dan nilai total 0–100."
+    },
+    {
+     "t": "Rencana",
+     "d": "Tiga aksi prioritas dan jadwal unggah."
+    },
+    {
+     "t": "Contoh laporan",
+     "d": "Fitur adu dua akun pada alat analisis",
+     "img": "assets/k-analisa2.webp",
+     "alt": "Fitur adu dua akun pada alat analisis"
+    }
+   ]
+  },
+  {
+   "t": "Bot WhatsApp",
+   "d": "Mengelola grup dan melayani pesan",
+   "cover": "assets/k-bot.webp",
+   "video": "",
+   "items": [
+    {
+     "t": "Bot yang berjalan",
+     "d": "Contoh percakapan bot WhatsApp berbahasa natural",
+     "img": "assets/k-bot.webp",
+     "alt": "Contoh percakapan bot WhatsApp berbahasa natural"
+    },
+    {
+     "t": "Tujuan",
+     "d": "Apa yang dilayani bot."
+    },
+    {
+     "t": "Aturan balasan",
+     "d": "Kata kunci dan jawaban."
+    },
+    {
+     "t": "Uji",
+     "d": "Skenario percobaan sebelum dipakai."
+    },
+    {
+     "t": "Pantau",
+     "d": "Catatan error dan perbaikan."
+    }
+   ]
+  },
+  {
+   "t": "Konten AI dan Presentasi",
+   "d": "Dari ide ke video dan slide",
+   "cover": "",
+   "video": "",
+   "items": [
+    {
+     "t": "Brief",
+     "d": "Tujuan dan audiens."
+    },
+    {
+     "t": "Naskah",
+     "d": "Hook, isi, dan CTA."
+    },
+    {
+     "t": "Produksi",
+     "d": "Alat yang dipakai."
+    },
+    {
+     "t": "Terbit",
+     "d": "Cek, lalu jadwalkan."
+    }
+   ]
+  },
+  {
+   "t": "Sistem dan Web",
+   "d": "Dari kebutuhan ke situs yang dipakai",
+   "cover": "assets/k-admin.webp",
+   "video": "",
+   "items": [
+    {
+     "t": "CatatanAkademik.com",
+     "d": "Dasbor panel admin CatatanAkademik.com",
+     "img": "assets/k-admin.webp",
+     "alt": "Dasbor panel admin CatatanAkademik.com",
+     "url": "https://catatanakademik.com"
+    },
+    {
+     "t": "Kebutuhan",
+     "d": "Pengguna dan masalah yang diselesaikan."
+    },
+    {
+     "t": "Mock",
+     "d": "Disetujui sebelum dibuat."
+    },
+    {
+     "t": "Bangun",
+     "d": "Diuji per elemen."
+    },
+    {
+     "t": "Rawat",
+     "d": "Rilis dan perbaikan berkala."
+    }
+   ]
+  },
+  {
+   "t": "Pengalaman",
+   "d": "12+ tahun memimpin operasional",
+   "cover": "assets/f-lapangan.webp",
+   "video": "",
+   "items": [
+    {
+     "tag": "Sekarang",
+     "t": "Pengelola Proyek Web dan Otomasi",
+     "d": "Mandiri · Jakarta Barat"
+    },
+    {
+     "tag": "2024–2026",
+     "t": "PT Horizon Internusa Persada",
+     "d": "Acting Supervisor Facility Management"
+    },
+    {
+     "tag": "2022–2024",
+     "t": "PT Angkasa Pura Support",
+     "d": "Facility Management · Best Employee Project MRT Jakarta 2023"
+    },
+    {
+     "tag": "2021–2022",
+     "t": "Mercu Buana Center",
+     "d": "Facility Management"
+    },
+    {
+     "tag": "2014–2021",
+     "t": "ISS Indonesia",
+     "d": "Facility Management"
+    },
+    {
+     "t": "Di lapangan",
+     "d": "Mengawasi kegiatan lapangan bersama tim",
+     "img": "assets/f-lapangan.webp",
+     "alt": "Mengawasi kegiatan lapangan bersama tim"
+    },
+    {
+     "t": "Di lapangan",
+     "d": "Kegiatan bersama rekan kerja PT ISS Indonesia",
+     "img": "assets/f-ramadhan.webp",
+     "alt": "Kegiatan bersama rekan kerja PT ISS Indonesia"
+    },
+    {
+     "t": "Penghargaan",
+     "d": "Pengumuman pemenang Sadewa The Best Employee 83",
+     "img": "assets/f-selamat.webp",
+     "alt": "Pengumuman pemenang Sadewa The Best Employee 83"
+    },
+    {
+     "t": "Penghargaan",
+     "d": "Piagam Sadewa Club Best Employee Award 2018, ISS",
+     "img": "assets/f-sadewa.webp",
+     "alt": "Piagam Sadewa Club Best Employee Award 2018, ISS"
+    }
+   ]
+  },
+  {
+   "t": "Profil dan Kontak",
+   "d": "Pendidikan, CV, dan cara menghubungi",
+   "cover": "assets/f-kafe.webp",
+   "video": "",
+   "items": [
+    {
+     "t": "Pendidikan",
+     "d": "S1 Manajemen, Universitas Terbuka. Sedang berjalan."
+    },
+    {
+     "t": "Penghargaan",
+     "d": "Best Employee Project MRT Jakarta, Angkasa Pura Support (2023). Best Employee ISS Indonesia."
+    },
+    {
+     "t": "Aktivitas",
+     "d": "Admin mahasiswa baru Universitas Terbuka. Bahasa: Indonesia; Inggris (dasar)."
+    },
+    {
+     "t": "CV",
+     "d": "Unduh CV (PDF)",
+     "url": "assets/CV_Dika_Priyadi.pdf"
+    },
+    {
+     "t": "WhatsApp",
+     "d": "Chat langsung untuk berdiskusi",
+     "url": "https://wa.me/6285722227544"
+    },
+    {
+     "t": "Email",
+     "d": "Kirim pesan lewat email",
+     "url": "mailto:dika.priyadi@catatanakademik.com"
+    },
+    {
+     "t": "LinkedIn",
+     "d": "Profil profesional",
+     "url": "https://linkedin.com/in/dika-priyadi-827aa0126"
+    },
+    {
+     "t": "Instagram",
+     "d": "@deikaru.dz",
+     "url": "https://instagram.com/deikaru.dz"
+    },
+    {
+     "t": "TikTok",
+     "d": "@akihabara.fuzi",
+     "url": "https://www.tiktok.com/@akihabara.fuzi"
+    }
+   ]
+  }
+ ],
+ "tools": [
+  "ChatGPT",
+  "Google Gemini",
+  "Claude",
+  "Google Flow",
+  "Canva",
+  "CapCut",
+  "VPS",
+  "Nginx",
+  "PM2",
+  "SSL",
+  "GitHub",
+  "Domain"
+ ]
+}
