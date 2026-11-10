@@ -6,7 +6,7 @@ Web: https://dikapriyadi.catatanakademik.com | Posisi: AI Automation | Teks form
 - portofolio-src/content.default.json = isi teks/data. portofolio-src/render.js = pembuat HTML. portofolio-src/build.sh = bangun.
 - portofolio/ = hasil yang dideploy (index.html hasil build, style.css, script.js, assets/). style.css dan script.js diedit langsung.
 - JANGAN edit portofolio/index.html langsung; ubah JSON/render.js lalu build.
-- Build: `git pull` lalu `bash portofolio-src/build.sh <versi>`. Versi wajib naik tiap deploy (nginx cache css/js 1 tahun). Versi live terakhir: 20261137.
+- Build: `git pull` lalu `bash portofolio-src/build.sh <versi>`. Versi wajib naik tiap deploy (nginx cache css/js 1 tahun). Versi live terakhir: 20261138 (kartu MGA + Social Media Specialist, Cara kerja di Tentang, chip jalur di hero; indeks kartu bergeser +2 setelah Produksi Konten AI).
 - Uji: Playwright, Chrome di /usr/bin/google-chrome, ukuran 1440x900, 1366x700, 390x844. Tanpa pageerror, tanpa scroll horizontal.
 
 ## Struktur halaman
