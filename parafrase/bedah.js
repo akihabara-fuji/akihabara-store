@@ -196,16 +196,23 @@ module.exports = function mountBedah({ library = null, app, express, db, setting
         for (const [buf, label] of [[aiBuf, "AI"], [simBuf, "Similarity"]]) if (buf && buf.slice(0, 4).toString() !== "%PDF") return res.status(415).json({ error: `Laporan ${label} harus berupa PDF asli dari UT.` });
         // jenis ditentukan dari isi laporan, bukan dari kolom yang dipilih (supaya tertukar pun tetap terbaca)
         let aiRaw = null, simRaw = null;
-        const files = [], kinds = []; if (aiBuf) files.push(aiBuf); if (simBuf) files.push(simBuf);
+        const files = [], kinds = [], slotOf = new Map(); if (aiBuf) { files.push(aiBuf); slotOf.set(aiBuf, "ai"); } if (simBuf) { files.push(simBuf); slotOf.set(simBuf, "sim"); }
         for (const b of files) {
-          const k = await drillbit.detectKind(b); kinds.push(k);
+          let k = await drillbit.detectKind(b).catch(() => null);
+          /* Cek & Parafrase dibuat longgar: isi tidak dikenali otomatis, percayai kolom yang dipilih dan simpan untuk admin (diperiksa manual). */
+          if (!k && mode === "cek") {
+            const slot = slotOf.get(b);
+            if (slot === "ai") { try { const t = await drillbit.parseAi(b); if (t && t.ok) k = "ai"; } catch { /* dibaca manual */ } }
+            if (!k) { if (slot === "ai") aiRaw = aiRaw || b; else simRaw = simRaw || b; warn.push(slot === "ai" ? "Laporan AI tidak terbaca otomatis. Filemu tetap diterima dan akan diperiksa admin secara manual." : "Laporan Similarity tidak terbaca otomatis. Filemu tetap diterima dan akan diperiksa admin."); continue; }
+          }
+          kinds.push(k);
           if (k === "ai") { ai = ai || await drillbit.parseAi(b); aiRaw = aiRaw || b; } else if (k === "sim") { sim = sim || await drillbit.parseSim(b); simRaw = simRaw || b; }
           else warn.push("Satu file laporan tidak dikenali sebagai laporan Drillbit dari UT. File itu dilewati.");
         }
         let aiErr = null;
         if (ai && !ai.ok) { aiErr = ai.error || null; warn.push(ai.error); ai = null; }
         if (sim && !sim.ok) { warn.push(sim.error); sim = null; }
-        if (!ai) {
+        if (!ai && !(mode === "cek" && aiBuf)) {
           const why = aiErr ? aiErr : kinds.filter(k => k === "sim").length >= 2 ? "Kedua file yang kamu unggah terbaca sebagai laporan Similarity, belum ada laporan AI." : !aiBuf ? "Kolom Laporan AI Drillbit masih kosong." : "File yang kamu masukkan di kolom Laporan AI tidak dikenali sebagai laporan AI Drillbit dari UT.";
           return res.status(400).json({ error: (mode === "cek" ? "Laporan AI Drillbit belum terbaca. " : "Bedah fokus pada tanda dari UT. ") + why + " Unggah PDF laporan AI Drillbit asli yang kamu terima dari UT." });
         }
@@ -233,7 +240,7 @@ module.exports = function mountBedah({ library = null, app, express, db, setting
           for (const rep of [aiRaw, simRaw]) if ((!id.nim || !id.nama) && rep) { const h = idFromLines((await drillbit.headText(rep)).split("\n")); id = { nim: id.nim || h.nim, nama: id.nama || h.nama }; }
           stNama = id.nama; stNim = id.nim;
         } catch { /* tanpa nama/NIM: dikelompokkan lewat nomor WA */ }
-        if (library) { try { await library.saveBedah({ service: mode, user: userFrom ? userFrom(req) : null, wa: waNum, nama: stNama, nim: stNim, name, buf: f.buffer, aiBuf: ai ? aiRaw : null, simBuf: sim ? simRaw : null, ai, sim, words: r.words, problemPct: r.problem && r.problem.pct }); } catch (e) { console.error("[bedah] simpan ke Dokumen gagal:", e && e.message); } }
+        if (library) { try { await library.saveBedah({ service: mode, user: userFrom ? userFrom(req) : null, wa: waNum, nama: stNama, nim: stNim, name, buf: f.buffer, aiBuf: ai || mode === "cek" ? aiRaw : null, simBuf: sim || mode === "cek" ? simRaw : null, ai, sim, words: r.words, problemPct: r.problem && r.problem.pct }); } catch (e) { console.error("[bedah] simpan ke Dokumen gagal:", e && e.message); } }
         // data kalibrasi hanya bila mahasiswa memberi izin
         let kode = null;
         if (mode !== "cek" && String((req.body || {}).izin) === "1" && (ai || sim)) {
