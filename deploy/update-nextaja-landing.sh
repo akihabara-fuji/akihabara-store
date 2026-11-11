@@ -12,6 +12,10 @@ F=public/index.html
 if ! cmp -s "$APP/$F" "$T/base/$F" && ! cmp -s "$APP/$F" "$T/new/$F"; then
   echo "BERHENTI: $F di VPS beda dengan versi sebelumnya ($BASE). Tidak ada yang diubah."; diff <(cat "$APP/$F") "$T/base/$F" | head -c 600 || true; exit 1
 fi
+LOCK=0; command -v ca-lock >/dev/null && LOCK=1
+relock(){ [ $LOCK = 1 ] && ca-lock lock >/dev/null && echo "Kode dikunci lagi (ca-lock)." || true; }
+trap 'relock; rm -rf "$T"' EXIT
+[ $LOCK = 1 ] && ca-lock unlock >/dev/null
 BK=/root/nextaja-landing-backup-$(date +%Y%m%d-%H%M%S).html; cp "$APP/$F" "$BK"; echo "Backup: $BK"
 cp "$T/new/$F" "$APP/$F"
 sleep 1
