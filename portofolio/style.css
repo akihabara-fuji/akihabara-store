@@ -593,3 +593,11 @@ a.ft:hover{color:var(--ac)}.ft i{font-style:normal;color:var(--ac);transition:tr
 @media(max-width:1100px){.lp{padding:0 32px 28px}.lp-r{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:780px){#home.home-v4{padding-top:calc(var(--top) + 16px)}.lp{padding:0 20px 24px;gap:22px}.lp-r{grid-template-columns:1fr;gap:12px}.lp-ph{max-width:220px;margin:0 auto}.lp-stats{grid-template-columns:repeat(2,1fr)}.lp-fg{grid-template-columns:1fr;gap:8px}.lp-fc{flex-direction:row;align-items:center}.lp-fph{width:72px;aspect-ratio:1;flex:none}.lp-cm{height:92px}}
 @media(prefers-reduced-motion:reduce){.lp-c{animation:none;opacity:1;transform:none}}
+
+/* v20261144: rincian di bawah hero */
+.lp-below{padding-top:56px;padding-bottom:72px}
+.lp-below .lp-chips{order:1}.lp-below .lp-r{order:2}.lp-below .lp-feat{order:3}.lp-below .lp-stats{order:4}.lp-below .lp-cta{order:5}
+.lp-below .lp-c{animation:none;opacity:1;transform:none}
+.lp-btns{display:flex;gap:10px;flex-wrap:wrap}
+.lp-below .lp-stats{grid-template-columns:repeat(4,1fr)}
+@media(max-width:780px){.lp-below{padding-top:36px;padding-bottom:48px}.lp-below .lp-stats{grid-template-columns:repeat(2,1fr)}}

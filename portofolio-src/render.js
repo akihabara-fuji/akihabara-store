@@ -43,6 +43,16 @@ function render(c, ver) {
 <div class="drawer" aria-hidden="true">${NAV.map((n, i) => `<a href="#${n[0]}" data-go="${n[0]}"><b>${pad(i)}</b><span>${n[1]}</span><i>&rarr;</i></a>`).join('')}</div>
 <main>
 `;
+  // HOME: rincian di bawah hero
+  const h2 = c.home2 || {}, picks = [5, 6, 0];
+  const cvu2 = (c.about || {}).cv && /^assets\/[\w\-.]+\.pdf$/i.test(((c.about || {}).cv || {}).url || '') ? (c.about || {}).cv : null;
+  const below = arr(h2.cards).length ? `<div class="lp lp-below"><div class="lp-l">
+  <div class="lp-chips">${arr(h2.chips).map((q, i) => `<a href="#karya" data-go="karya" data-pick="${picks[i] || 0}"><b>${pad(i)}</b><span>${esc(q)}</span></a>`).join('')}</div>
+  <div class="lp-feat"><p class="lab">${esc(h2.feat_lab)}</p><div class="lp-fg">${arr(h2.feat).map(f => `<a class="lp-fc" href="#karya" data-go="karya" data-pick="${+f.to}"><div class="lp-fph lp-fph-${esc(f.ph)}"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="rgba(255,138,61,.15)"/><path d="M10 8l6 4-6 4z" fill="var(--ac)"/></svg></div><strong>${esc(f.t)}</strong><span>${esc(f.s)}</span></a>`).join('')}</div></div>
+  <div class="lp-stats">${arr(h2.stats).map(s => `<div><b>${esc(s.b)}</b><span>${esc(s.s)}</span></div>`).join('')}</div>
+  <div class="lp-cta"><h3>${esc(h2.cta_lab)}</h3><p>${esc(h2.cta_sub)}</p><div class="lp-btns"><a class="btn pri" href="${att(safeUrl(t.btnUrl))}" target="_blank" rel="noopener">${esc(h2.cta_btn)} <i>&rarr;</i></a>${cvu2 ? `<a class="btn gh cv" href="${att(cvu2.url)}" download>${esc(h2.btn2)}</a>` : ''}</div></div>
+</div>
+<div class="lp-r">${arr(h2.cards).map((cd, i) => `<article class="lp-c" style="--d:${(0.08 * i).toFixed(2)}s"><header><b class="lp-cn">${esc(cd.n)}</b><div class="lp-ch"><h3>${esc(cd.t)}</h3><p>${esc(cd.d)}</p></div></header><div class="lp-cm" aria-hidden="true"><div class="lp-cm-i"></div></div><ul class="lp-cl">${arr(cd.chk).map(l => `<li>${esc(l)}</li>`).join('')}</ul></article>`).join('')}</div></div>` : '';
   // HOME
   o += `<section class="screen on" id="home" data-s="home" tabindex="0" aria-label="Beranda"><div class="hs"><div class="hk">
 <h1 class="hl-a" aria-label="${att(h.nameA)} ${att(h.nameB)}"><span class="ln"><span>${esc(h.nameA)}</span></span><span class="ln"><span class="ac">${esc(h.nameB)}</span></span></h1>
@@ -51,7 +61,7 @@ function render(c, ver) {
 <p class="vt" aria-hidden="true">${esc(h.label)}</p>
 <div class="hl-b" aria-hidden="true"><p class="tg">${esc(h.h1a)}<br><em>${esc(h.h1b)}</em></p><p class="sub">${esc(h.sub)}</p><div class="btns"><a class="btn pri" href="#karya" data-go="karya" tabindex="-1">${esc(h.btn1)}</a><a class="btn gh" href="#kontak" data-go="kontak" tabindex="-1">${esc(h.btn2)}</a></div><p class="fl">${arr(h.stats).map(d => `<span><b>${esc(d.b)}</b> ${esc(d.s)}</span>`).join('')}</p></div>
 <div class="hint"><span>${esc(h.hint)}</span><i></i><span class="dots">${[0, 1, 2].map(i => `<button type="button" data-d="${i}" aria-label="Tahap ${i + 1}"></button>`).join('')}</span></div>
-<span class="ai">${esc(h.ai)}</span></div></div></section>
+<span class="ai">${esc(h.ai)}</span></div></div>${below}</section>
 `;
   // ABOUT
   const aph = imgUrl(a.photo), gal = phs(a.gallery, 'Dika Priyadi'), cvu = a.cv && /^assets\/[\w\-.]+\.pdf$/i.test(a.cv.url || '') ? a.cv : null;
