@@ -31,7 +31,7 @@ const SV = {
 const MAX_FILES = 5, MAX_MB = 10;
 const MAGIC = { docx: b => b.slice(0, 2).toString() === "PK", pdf: b => b.slice(0, 4).toString() === "%PDF", png: b => b.slice(0, 4).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47])), jpg: b => b[0] === 0xff && b[1] === 0xd8, jpeg: b => b[0] === 0xff && b[1] === 0xd8, txt: b => !b.includes(0) };
 
-module.exports = function mountLayanan({ app, express, db, settings, orders, root, sameOrigin, secret, requireAdmin, userFrom }) {
+module.exports = function mountLayanan({ app, express, db, settings, orders, notifier, root, sameOrigin, secret, requireAdmin, userFrom }) {
   const priceOf = k => { const v = settings.get("price_" + k); return Number.isInteger(v) ? v : SV[k].price; };
   /* Layanan ditutup: kode ada di layanan_nonaktif, atau satu keluarga dengan Tugas yang ditutup (Makalah dan Jurnal ikut Tugas). */
   const offList = () => String(settings.get("layanan_nonaktif") || "").split(",").filter(Boolean);
@@ -147,7 +147,9 @@ module.exports = function mountLayanan({ app, express, db, settings, orders, roo
   app.post("/ms/admin/layanan/:id/mulai", requireAdmin, (req, res) => {
     const now = Date.now(), r = db.prepare("UPDATE orders SET status='dikerjakan', work_started_at=?, updated_at=? WHERE id=? AND doc_type='layanan' AND status='baru_dibayar'").run(now, now, String(req.params.id));
     if (!r.changes) return res.status(409).json({ error: "Pesanan tidak bisa dimulai." });
-    orders.event(String(req.params.id), "dikerjakan", null, now); res.json({ ok: true });
+    orders.event(String(req.params.id), "dikerjakan", null, now);
+    try { const o = db.prepare("SELECT * FROM orders WHERE id=?").get(String(req.params.id)); if (o && notifier) notifier.send("dikerjakan", o, now); } catch (e) { console.error("[layanan] notif dikerjakan:", e && e.message); }
+    res.json({ ok: true });
   });
   const resUp = multer({ storage: multer.memoryStorage(), limits: { fileSize: 25 * 1048576, files: 1, fields: 4 } }).single("file");
   app.post("/ms/admin/layanan/:id/hasil", requireAdmin, (req, res) => {
@@ -173,6 +175,7 @@ module.exports = function mountLayanan({ app, express, db, settings, orders, roo
         const hrs = o.service === "simulasi" ? 168 : (settings.getAll().retention_hours || 24); // simulasi disimpan 7 hari karena tanya jawab dibuka belakangan
         db.prepare("UPDATE orders SET status='terkirim', result_path=COALESCE(?,result_path), result_name=COALESCE(?,result_name), result_text=COALESCE(?,result_text), sent_at=?, delete_at=?, reminder_sent_at=NULL, updated_at=? WHERE id=?").run(rel, name, text || null, now, now + hrs * 3600e3, now, id);
         orders.event(id, "hasil_dikirim", null, now);
+        try { const o2 = db.prepare("SELECT * FROM orders WHERE id=?").get(id); if (o2 && notifier) notifier.send("selesai", { ...o2, revision_no: now }, now); } catch (e) { console.error("[layanan] notif selesai:", e && e.message); }
         res.json({ ok: true });
       } catch (e) { res.status(e.status || 500).json({ error: e.message }); }
     });

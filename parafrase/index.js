@@ -122,7 +122,7 @@ else if(/\\/(?:ruangakademikut\\/)?(layanan|cek-parafrase-mandiri|audit)(?:[\\/?
     }
     res.set({ "Cache-Control": "no-store", "X-Robots-Tag": "noindex" }).redirect(302, `/blog/${slug}?utm_source=${src}&utm_medium=social&utm_campaign=studio`);
   });
-  mountLayanan({ app, express, db, settings, orders, root: ROOT, sameOrigin: sameOrigin || (() => true), secret, requireAdmin, userFrom });
+  mountLayanan({ app, express, db, settings, orders, notifier, root: ROOT, sameOrigin: sameOrigin || (() => true), secret, requireAdmin, userFrom });
   const t = setInterval(() => { uploads.purgeExpired().catch(() => {}); orders.expireUnpaid().catch(() => {}); orders.sweepRetention().catch(() => {}); dokumen.purgeExpired().catch(() => {}); }, 10 * 60 * 1000); t.unref();
   const t2 = setInterval(() => notifier.flush().catch(() => {}), 30 * 1000); t2.unref();
 
