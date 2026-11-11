@@ -29,8 +29,9 @@ blk='''    location = /analisa-tiktok { return 301 /analisa-tiktok/; }
         sub_filter 'href="/"' 'href="/analisa-tiktok/"';
     }
 ''' % p
-k='    location /nugas'
+k='location = /nugas'
 i=s.find(k)
+if i>=0: i=s.rfind('\n',0,i)+1
 if i<0: print('anchor hilang'); sys.exit(1)
 open(f,'w').write(s[:i]+blk+s[i:])
 PY
