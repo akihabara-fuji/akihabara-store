@@ -50,17 +50,19 @@ function render(c, ver) {
   if (arr(h2.cards).length) {
     const cvu2 = (c.about || {}).cv && /^assets\/[\w\-.]+\.pdf$/i.test(((c.about || {}).cv || {}).url || '') ? (c.about || {}).cv : null;
     o += `<section class="screen on home-v4" id="home" data-s="home" tabindex="0" aria-label="Beranda">
-<div class="lp wrap">
-<aside class="lp-l">
+<div class="lp">
+<div class="lp-l">
   <div class="lp-prof">
     <span class="lp-tag"><i></i>Portofolio Profesional</span>
     <div class="lp-ph"><img src="assets/m1.webp" alt="Foto Dika Priyadi" width="527" height="724" loading="eager" decoding="async" fetchpriority="high"></div>
+    <div class="lp-pr">
     <h1 class="lp-nm"><span>${esc(h2.nama)}</span></h1>
     <p class="lp-rl">${arr(h2.roles).map(x => esc(x)).join(' <em>·</em> ')}</p>
     <p class="lp-bio">${esc(h2.bio)}</p>
     <div class="lp-btns">
       <a class="btn pri" href="#karya" data-go="karya">${esc(h2.btn1)} <i>&rarr;</i></a>
       ${cvu2 ? `<a class="btn gh cv" href="${att(cvu2.url)}" download>${esc(h2.btn2)}</a>` : ''}
+    </div>
     </div>
   </div>
   <div class="lp-chips">${arr(h2.chips).map((r, i) => `<a href="#karya" data-go="karya" data-pick="${picks[i] || 0}"><b>${pad(i)}</b><span>${esc(r)}</span></a>`).join('')}</div>
@@ -74,7 +76,6 @@ function render(c, ver) {
     <p>${esc(h2.cta_sub)}</p>
     <a class="btn pri" href="${att(safeUrl(t.btnUrl))}" target="_blank" rel="noopener">${esc(h2.cta_btn)} <i>&rarr;</i></a>
   </div>
-</aside>
 <div class="lp-r">${arr(h2.cards).map((cd, i) => `<article class="lp-c lp-c-${esc(cd.ph)}" style="--d:${(0.08 * i).toFixed(2)}s">
   <header><b class="lp-cn">${esc(cd.n)}</b><div class="lp-ch"><h3>${esc(cd.t)}</h3><p>${esc(cd.d)}</p></div></header>
   <div class="lp-cm" aria-hidden="true"><div class="lp-cm-i"></div></div>
