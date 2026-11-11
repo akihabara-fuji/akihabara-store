@@ -30,11 +30,13 @@ const GROUPS = {
   revisi: { label: "Perlu revisi", where: `service LIKE 'revisi%' AND status IN ('menunggu_verifikasi',${PROCESS.map(s => `'${s}'`).join(",")})` },
   selesai: { label: "Selesai", where: "status='terkirim'" },
   batal: { label: "Dibatalkan", where: "status IN ('dibatalkan','kedaluwarsa','dikembalikan')" },
+  mandiri: { label: "Dikerjakan sendiri (Bedah)", where: "doc_type='bedah'" },
+  oleh_admin: { label: "Dikerjakan admin (Cek & Parafrase)", where: "doc_type NOT IN ('layanan','audit','bedah')" },
   klien: { label: "Klien sudah bayar", where: "confirmed_at IS NOT NULL AND COALESCE(confirmed_by,'')<>'gratis'" },
   upload: { label: "Cuma upload (belum bayar)", where: "(confirmed_at IS NULL OR COALESCE(confirmed_by,'')='gratis')" },
 };
 let labelOf = k => (SV[k] || {}).label; // diganti di mountCaAdmin agar ikut nama buatan admin
-const svcLabel = o => o.doc_type === "layanan" ? (labelOf(o.service) || o.service || "Layanan") : o.doc_type === "audit" ? "Audit Dokumen" : "Cek & Parafrase";
+const svcLabel = o => o.doc_type === "layanan" ? (labelOf(o.service) || o.service || "Layanan") : o.doc_type === "audit" ? "Audit Dokumen" : o.doc_type === "bedah" ? "Bedah Laporan (dikerjakan sendiri)" : "Cek & Parafrase (dikerjakan admin)";
 const WIB = 7 * 3600e3;
 const dayKey = ms => new Date(ms + WIB).toISOString().slice(0, 10);
 const dayStart = s => /^\d{4}-\d{2}-\d{2}$/.test(s || "") ? Date.parse(`${s}T00:00:00+07:00`) : NaN;

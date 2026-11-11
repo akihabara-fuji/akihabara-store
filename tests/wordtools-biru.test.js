@@ -23,3 +23,12 @@ test("buildBlue: hanya kalimat bertanda yang biru, teks dan huruf lain tetap, ta
   assert.ok(/w:rFonts w:ascii="Arial"/.test(xml) && /<w:b\/>/.test(xml) && /w:sz w:val="24"/.test(xml));
   assert.ok(!/w:shd/.test(xml) && !z.file("word/comments.xml") && !z.file("word/settings.xml"));
 });
+test("buildColored: catatan 'tidak menjamin nilai Drillbit turun' ada di paragraf pertama, kalimat tetap berwarna dengan rekomendasi", async () => {
+  const buf = await makeDocx(["Kalimat satu ada di sini. Kalimat dua yang ditandai UT. Kalimat tiga biasa saja."]);
+  const a = await analyze(buf);
+  const out = await wordtools.buildColored(buf, [{ para_idx: a.paragraphs[0].idx, sent_idx: 1, code: "X", reason: "", note: "Perbaiki: tambah data sendiri." }], Date.now(), { notice: "CATATAN: Hasil ini tidak menjamin nilai Drillbit turun." });
+  const z = await JSZip.loadAsync(out), xml = await z.file("word/document.xml").async("string");
+  assert.ok(xml.indexOf("tidak menjamin nilai Drillbit turun") < xml.indexOf("Kalimat satu"));
+  assert.match(xml, /w:shd/); assert.ok(z.file("word/comments.xml"));
+  assert.match(await z.file("word/comments.xml").async("string"), /tambah data sendiri/);
+});

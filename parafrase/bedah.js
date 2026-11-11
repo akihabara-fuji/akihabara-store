@@ -23,6 +23,7 @@ const banding = require("./banding");
 const studio = require("./studio");
 
 const MAX_MB = 10, RATE = { max: 10, windowMs: 3600 * 1000 }, UPLOAD_TTL_MS = 2 * 3600 * 1000;
+const NOTICE = "CATATAN: Hasil ini tidak menjamin nilai Drillbit turun. Kalimat berwarna dan rekomendasi hanya penunjuk arah. Semua tetap harus kamu kerjakan sendiri dengan teliti, lalu cek ulang dengan laporan Drillbit baru dari UT.";
 const PAID = new Set(["baru_dibayar", "dianalisis", "dikerjakan", "cek_ulang", "terkirim"]);
 const COLOR_NAME = Object.fromEntries(Object.entries(rules.CODES).map(([k, v]) => [k, v.color]));
 
@@ -402,8 +403,8 @@ module.exports = function mountBedah({ library = null, app, express, db, setting
       const items = utItems(c.r.a.paragraphs, c.saved.hits || []);
       const rows = markRows(items);
       const pdf = isPdf(c.buf);
-      const out = pdf ? await reportDocx({ title: c.o.title, note: "File aslimu PDF, jadi laporan ini berupa daftar kalimat yang ditandai UT beserta diagnosisnya. Unggah .docx bila ingin tanda langsung di dokumenmu." }, items.map(x => ({ n: x.n, code: "X", color: "Blok UT " + x.block, where: x.where, text: x.text, reason: x.tags.map(g => g.label).join("; "), target: x.tags.map(g => "Perbaiki: " + g.fix + " Jangan: " + g.jangan).join(" | ") })))
-        : await wordtools.buildColored(c.buf, rows);
+      const out = pdf ? await reportDocx({ title: c.o.title, note: "File aslimu PDF, jadi laporan ini berupa daftar kalimat yang ditandai UT beserta diagnosisnya. Unggah .docx bila ingin tanda langsung di dokumenmu. " + NOTICE }, items.map(x => ({ n: x.n, code: "X", color: "Blok UT " + x.block, where: x.where, text: x.text, reason: x.tags.map(g => g.label).join("; "), target: x.tags.map(g => "Perbaiki: " + g.fix + " Jangan: " + g.jangan).join(" | ") })))
+        : await wordtools.buildColored(c.buf, rows, Date.now(), { notice: NOTICE });
       res.set({ "Content-Disposition": `attachment; filename="${c.o.id} bedah laporan.docx"` }).type("application/vnd.openxmlformats-officedocument.wordprocessingml.document").send(out);
       orders.event(c.o.id, "bedah_diunduh", null);
     } catch (e) {
@@ -483,10 +484,10 @@ module.exports = function mountBedah({ library = null, app, express, db, setting
       const o = { id: row.id, title: row.title || row.name, status: od ? od.status : "belum dipesan", wa_number: row.wa || (od && od.wa_number) || "", word_count: row.words || r.words };
       return { o, orderId, base: row.id, saved: { ai: data.ai || null, sim: data.sim || null }, buf, a: r.a, bibAt: r.bibAt, items, pdf: isPdf(buf) };
     }
-    async function studioCtx(id) {
+    async function studioCtx(id, allowBedah) {
       if (/^[a-f0-9]{16}$/.test(String(id || ""))) return studioDoc(String(id));
       const o = db.prepare("SELECT * FROM orders WHERE id=?").get(String(id || ""));
-      if (!o || ["layanan", "audit", "bedah"].includes(o.doc_type) || !o.original_file) throw sErr(404, "Pesanan Cek & Parafrase tidak ditemukan.");
+      if (!o || ["layanan", "audit"].includes(o.doc_type) || (o.doc_type === "bedah" && !allowBedah) || !o.original_file) throw sErr(404, "Pesanan Cek & Parafrase tidak ditemukan.");
       if (o.files_deleted_at) throw sErr(410, "File pesanan sudah dihapus.");
       const base = path.basename(o.original_file).replace(/\.(docx|pdf)$/i, "");
       let saved; try { saved = JSON.parse(await fsp.readFile(path.join(docsDir, base + ".bedah.json"), "utf8")); } catch { throw sErr(409, "Pesanan ini tidak lewat alur laporan UT, jadi tidak ada tanda UT untuk Studio."); }
@@ -527,14 +528,25 @@ module.exports = function mountBedah({ library = null, app, express, db, setting
     app.get("/ms/admin/studio/:id/word", requireAdmin, async (req, res) => {
       res.set("Cache-Control", "no-store");
       try {
-        const c = await studioCtx(req.params.id);
+        const c = await studioCtx(req.params.id, true);
         const marks = new Set(c.items.flatMap(x => (x.parts && x.parts.length ? x.parts : [[x.para_idx, x.sent_idx]]).map(([pi, si]) => pi + ":" + si)));
         const notes = new Map(); for (const x of c.items) { if (!notes.has(x.para_idx)) notes.set(x.para_idx, []); { const [h, ...r] = noteOf(x).split("\n"); notes.get(x.para_idx).push("Rekomendasi · " + h + "\nKalimat: \u201c" + (x.text.length > 140 ? x.text.slice(0, 140) + "…" : x.text) + "\u201d\n" + r.join("\n")); } }
         const rek = req.query.rekomendasi === "1";
-        const out = rek ? (c.pdf ? await studio.plainDocx(c.a.paragraphs, null, marks, notes) : await wordtools.buildColored(c.buf, markRows(c.items)))
+        const out = rek ? (c.pdf ? await studio.plainDocx(c.a.paragraphs, null, marks, notes) : await wordtools.buildColored(c.buf, markRows(c.items), Date.now(), { notice: NOTICE }))
           : (c.pdf ? await studio.plainDocx(c.a.paragraphs, null, marks, null, true) : await wordtools.buildBlue(c.buf, markRows(c.items)));
         res.set({ "Content-Disposition": `attachment; filename="${c.o.id} ${rek ? "untuk diedit" : "tanda biru"}.docx"` }).type("application/vnd.openxmlformats-officedocument.wordprocessingml.document").send(out);
       } catch (e) { sFail(res, e, "word"); }
+    });
+    app.get("/ms/admin/pesanan/:id/asli", requireAdmin, async (req, res) => {
+      res.set("Cache-Control", "no-store");
+      try {
+        const o = db.prepare("SELECT * FROM orders WHERE id=?").get(String(req.params.id || ""));
+        if (!o || ["layanan"].includes(o.doc_type) || !o.original_file) throw sErr(404, "File pesanan tidak ditemukan.");
+        if (o.files_deleted_at) throw sErr(410, "File pesanan sudah dihapus sesuai masa simpan.");
+        const ext = (path.extname(o.original_file) || ".docx").toLowerCase();
+        const buf = await fsp.readFile(orders.priv(o.original_file));
+        res.set({ "Content-Disposition": `attachment; filename="${o.id} file asli${ext}"` }).type(ext === ".pdf" ? "application/pdf" : "application/vnd.openxmlformats-officedocument.wordprocessingml.document").send(buf);
+      } catch (e) { sFail(res, e, "asli"); }
     });
     app.post("/ms/admin/studio/:id/import", requireAdmin, (req, res) => {
       multer({ storage: multer.memoryStorage(), limits: { fileSize: settings.get("file_max_mb") * 1048576, files: 1 } }).single("file")(req, res, async err => {

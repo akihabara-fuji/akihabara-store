@@ -297,6 +297,7 @@
       $("dl").href = "/ms/bedah/download/" + tk; setupBand(tk); setupLap(tk);
       var b = $("pbody"); b.innerHTML = "";
       var rg = el("div", "display:flex;flex-wrap:wrap;gap:16px;margin-bottom:12px"); renderRings({ ut: j.ut && { pct: j.ut.pct, matchedWords: j.ut.matchedWords, totalWords: j.ut.totalWords, blocks: j.ut.blocks || [] }, sim: j.sim }, rg); b.appendChild(rg);
+      b.appendChild(el("div", "margin:8px 0;padding:10px 12px;border:1px solid #f5c542;background:rgba(245,197,66,.12);border-radius:10px;font-size:13.5px", "Catatan: hasil ini tidak menjamin nilai Drillbit turun. Kalimat berwarna dan rekomendasi hanya penunjuk arah; semua tetap harus kamu kerjakan sendiri dengan teliti, lalu cek ulang dengan laporan Drillbit baru dari UT."));
       var pk = el("div", "margin:10px 0"); protokolBox(j.protokol, pk); b.appendChild(pk);
       var bl = el("div"); blockList(j.blocks, bl); b.appendChild(bl);
       b.appendChild(el("h3", "margin:14px 0 6px", "Semua kalimat yang ditandai UT (" + j.total + ")"));

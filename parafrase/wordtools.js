@@ -134,6 +134,14 @@ async function enableTrackRevisions(zip) {
   zip.file("word/settings.xml", ser(doc));
 }
 
+/* Catatan peringatan di paragraf pertama dokumen (kotak kuning, huruf tebal merah). */
+function addNotice(doc, body, text) {
+  const p = wel(doc, "p"), ppr = wel(doc, "pPr"), r = wel(doc, "r"), rpr = wel(doc, "rPr"), t = wel(doc, "t");
+  ppr.appendChild(wel(doc, "shd", { val: "clear", color: "auto", fill: "FFF2CC" })); p.appendChild(ppr);
+  rpr.appendChild(wel(doc, "b")); rpr.appendChild(wel(doc, "color", { val: "C00000" })); r.appendChild(rpr);
+  t.setAttribute("xml:space", "preserve"); t.appendChild(doc.createTextNode(text)); r.appendChild(t); p.appendChild(r);
+  body.insertBefore(p, body.firstChild);
+}
 async function buildColored(buf, findings, now = Date.now(), opt = {}) {
   const zip = await openDocx(buf);
   const { doc, body } = parseBody(await readText(zip, "word/document.xml"));
@@ -144,6 +152,7 @@ async function buildColored(buf, findings, now = Date.now(), opt = {}) {
   if (zip.file("word/comments.xml")) { existing = parse(await zip.file("word/comments.xml").async("string")); for (const c of kids(existing.documentElement)) maxId = Math.max(maxId, parseInt(c.getAttributeNS(W, "id") || c.getAttribute("w:id"), 10) || 0); }
   let id = maxId; const comments = [];
   for (const [idx, fs] of byPara) if (nodes[idx]) colorParagraph(doc, nodes[idx].node, fs, () => ++id, comments, opt);
+  if (opt.notice) addNotice(doc, body, opt.notice);
   zip.file("word/document.xml", ser(doc));
   if (comments.length) {
     const cdoc = existing || parse(`${DECL}<w:comments xmlns:w="${W}"/>`);
