@@ -6,6 +6,7 @@ P=$(grep -o 'proxy_pass http://127.0.0.1:[0-9]*' /etc/nginx/sites-enabled/analis
 [ -n "$P" ] || { echo "port analisa tidak ketemu"; exit 1; }
 if grep -q '/analisa-tiktok' "$F"; then echo "sudah terpasang"; exit 0; fi
 B=/root/nextaja.nginx.bak-$(date +%s); cp "$F" "$B"
+chattr -i "$F"; trap 'chattr +i "$F"' EXIT
 python3 - "$P" <<'PY'
 import sys
 p=sys.argv[1]; f='/etc/nginx/sites-enabled/nextaja'; s=open(f).read()
