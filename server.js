@@ -279,15 +279,23 @@ app.post("/ms/admin/restore", requireAdmin, express.json({ limit: "4kb" }), asyn
 });
 
 /* ---------------- halaman ---------------- */
+/* nextaja.com tidak lagi memuat urusan UT (semua pindah ke catatanakademik.com): buang dari data yang tampil. */
+const UT_RE = /\bUT\b|akademik|tugas|diskusi|metopen|makalah|tutor|mahasiswa|semester|skripsi/i;
+function stripUt(st) {
+  const s = { ...st };
+  for (const k of ["heroEyebrow", "heroTitle", "heroLead"]) if (UT_RE.test(s[k] || "")) delete s[k];
+  if (Array.isArray(s.marquee)) s.marquee = s.marquee.filter(x => !UT_RE.test(x));
+  return s;
+}
 function publicStore() {
-  const st = withWa(store.settings);
+  const st = withWa(stripUt(store.settings));
   const show = st.showPrices === true;
   return {
     settings: show ? st : { ...st, analisaPrice: "" },
     products: store.products.filter(p => p.active).map(p => (show ? p : { ...p, price: 0, old: 0 })),
     services: store.services.filter(s => s.active).map(s => ({ ...s, icon: ICONS[s.icon] || ICONS.sparkle })),
-    reviews: (store.reviews || []).filter(r => r.active),
-    faq: store.faq,
+    reviews: (store.reviews || []).filter(r => r.active && r.area !== "akademik"),
+    faq: (store.faq || []).filter(f => !UT_RE.test(`${f.q} ${f.a}`)),
   };
 }
 const SITE = (process.env.SITE_URL || "https://nextaja.com").replace(/\/+$/, "");
