@@ -272,7 +272,7 @@
     return `<b>${esc(who)}</b>: ${esc(what)}${obj}`;
   }
   function bindRows(root = $("#page")) { $$("tr[data-href]", root).forEach(tr => tr.addEventListener("click", e => { if (!e.target.closest("a,button,select,input")) location.hash = tr.dataset.href; })); }
-  const orderTable = items => items.length ? `<table class="t"><thead><tr><th>ID Pesanan</th><th>Layanan</th><th>Pelanggan (WA)</th><th class="num">Total</th><th>Status</th><th>Tanggal</th></tr></thead><tbody>${items.map(o => `<tr class="click" data-href="#/orders/${esc(o.id)}"><td class="mono"><a href="#/orders/${esc(o.id)}">${esc(o.id)}</a></td><td>${esc(o.service)}</td><td class="mono">${esc(o.wa)}</td><td class="num">${rp(o.total)}</td><td>${badge(o.statusLabel, o.tone)}</td><td class="muted">${dt(o.createdAt)}</td></tr>`).join("")}</tbody></table>` : '<div class="empty">Belum ada pesanan.</div>';
+  const orderTable = items => items.length ? `<table class="t"><thead><tr><th>ID Pesanan</th><th>Layanan</th><th>Nama</th><th>Pelanggan (WA)</th><th class="num">Total</th><th>Status</th><th>Tanggal</th></tr></thead><tbody>${items.map(o => `<tr class="click" data-href="#/orders/${esc(o.id)}"><td class="mono"><a href="#/orders/${esc(o.id)}">${esc(o.id)}</a></td><td>${esc(o.service)}</td><td><b>${esc(o.name || "-")}</b></td><td class="mono">${esc(o.wa)}</td><td class="num">${rp(o.total)}</td><td>${badge(o.statusLabel, o.tone)} ${o.paid ? badge("Klien bayar", "ok") : badge("Belum bayar", "mute")}</td><td class="muted">${dt(o.createdAt)}</td></tr>`).join("")}</tbody></table>` : '<div class="empty">Belum ada pesanan.</div>';
 
 
   /* ================= STUDIO POSTING SOSMED =================
@@ -814,7 +814,7 @@
     setPage("Pesanan Layanan", "Kelola dan verifikasi pesanan dari pelanggan", `
       <nav class="chips" aria-label="Filter status pesanan">${Object.entries(d.groups).map(([k, l]) => `<a href="#/orders?group=${k}" class="${group === k ? "on" : ""}">${esc(k === "semua" ? "Semua" : l)} <span class="n">${num(d.counts[k])}</span></a>`).join("")}</nav>
       <div class="card"><div class="hd"><form class="bar" id="of" style="flex:1">
-        <input class="in grow" type="search" name="q" placeholder="Cari ID pesanan, nomor WA, judul, atau layanan…" value="${esc(q.get("q") || "")}">
+        <input class="in grow" type="search" name="q" placeholder="Cari nama, ID pesanan, nomor WA, judul, atau layanan…" value="${esc(q.get("q") || "")}">
         <select class="in" name="kind" style="width:auto"><option value="">Semua jenis</option><option value="layanan" ${q.get("kind") === "layanan" ? "selected" : ""}>Tugas/Diskusi/Metopen/Revisi</option><option value="parafrase" ${q.get("kind") === "parafrase" ? "selected" : ""}>Cek & Parafrase</option><option value="audit" ${q.get("kind") === "audit" ? "selected" : ""}>Audit Dokumen</option></select>
         <label class="sr" for="ofFrom">Dari tanggal</label><input class="in" id="ofFrom" type="date" name="from" value="${esc(q.get("from") || "")}" style="width:auto"><label class="sr" for="ofTo">Sampai tanggal</label><input class="in" id="ofTo" type="date" name="to" value="${esc(q.get("to") || "")}" style="width:auto">
         <button class="btn">Terapkan</button></form></div>

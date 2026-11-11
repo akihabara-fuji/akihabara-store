@@ -30,6 +30,8 @@ const GROUPS = {
   revisi: { label: "Perlu revisi", where: `service LIKE 'revisi%' AND status IN ('menunggu_verifikasi',${PROCESS.map(s => `'${s}'`).join(",")})` },
   selesai: { label: "Selesai", where: "status='terkirim'" },
   batal: { label: "Dibatalkan", where: "status IN ('dibatalkan','kedaluwarsa','dikembalikan')" },
+  klien: { label: "Klien sudah bayar", where: "confirmed_at IS NOT NULL AND COALESCE(confirmed_by,'')<>'gratis'" },
+  upload: { label: "Cuma upload (belum bayar)", where: "(confirmed_at IS NULL OR COALESCE(confirmed_by,'')='gratis')" },
 };
 let labelOf = k => (SV[k] || {}).label; // diganti di mountCaAdmin agar ikut nama buatan admin
 const svcLabel = o => o.doc_type === "layanan" ? (labelOf(o.service) || o.service || "Layanan") : o.doc_type === "audit" ? "Audit Dokumen" : "Cek & Parafrase";
@@ -56,8 +58,9 @@ module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, b
   labelOf = k => labelFor(settings, k);
   const one = id => db.prepare("SELECT * FROM orders WHERE id=?").get(String(id));
   const row = o => ({ id: o.id, service: svcLabel(o), kind: o.doc_type, status: o.status, statusLabel: (STATUS[o.status] || {}).label || o.status, tone: (STATUS[o.status] || {}).tone || "mute",
-    title: o.title, wa: o.wa_number, total: o.total, uniqueCode: o.unique_code, lane: o.lane, createdAt: o.created_at, proofAt: o.proof_uploaded_at, confirmedAt: o.confirmed_at, confirmedBy: o.confirmed_by, parent: o.parent_order_id, deadlineAt: o.deadline_at });
+    title: o.title, wa: o.wa_number, name: nameOf(o), paid: isPaid(o), total: o.total, uniqueCode: o.unique_code, lane: o.lane, createdAt: o.created_at, proofAt: o.proof_uploaded_at, confirmedAt: o.confirmed_at, confirmedBy: o.confirmed_by, parent: o.parent_order_id, deadlineAt: o.deadline_at });
   const isPaid = o => !!o.confirmed_at && o.confirmed_by !== "gratis";
+  const nameOf = o => { try { const u = o.user_id && blog.userById(String(o.user_id)); return u ? str(u.name, 60) : ""; } catch { return ""; } };
 
 
   /* Rekomendasi dan audit kesehatan web: dihitung dari data yang sudah ada, muncul hanya bila datanya cukup. Tidak ada angka karangan. */
@@ -146,7 +149,11 @@ module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, b
   function orderWhere(q) {
     const g = GROUPS[q.group] || GROUPS.semua, w = [g.where], a = [];
     const s = str(q.q, 60);
-    if (s) { w.push("(id LIKE ? OR wa_number LIKE ? OR title LIKE ? OR service LIKE ?)"); const like = `%${s.replace(/[%_]/g, "")}%`; a.push(like, like.replace(/^%0/, "%62"), like, like); }
+    if (s) {
+      const like = `%${s.replace(/[%_]/g, "")}%`, low = s.toLowerCase();
+      let uids = []; try { uids = (blog.usersAll ? blog.usersAll() : []).filter(u => String(u.name || "").toLowerCase().includes(low)).map(u => String(u.id)).slice(0, 50); } catch {}
+      w.push(`(id LIKE ? OR wa_number LIKE ? OR title LIKE ? OR service LIKE ?${uids.length ? ` OR user_id IN (${uids.map(() => "?").join(",")})` : ""})`); a.push(like, like.replace(/^%0/, "%62"), like, like, ...uids);
+    }
     if (q.kind && ["layanan", "audit", "parafrase"].includes(q.kind)) { if (q.kind === "parafrase") w.push("doc_type NOT IN ('layanan','audit')"); else { w.push("doc_type=?"); a.push(q.kind); } }
     const f = dayStart(q.from), t = dayStart(q.to);
     if (Number.isFinite(f)) { w.push("created_at>=?"); a.push(f); }
