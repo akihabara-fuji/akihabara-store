@@ -27,6 +27,16 @@ function setShading(doc, run, fill) {
   const before = kids(rPr).find(c => AFTER_SHD.has(c.localName));
   before ? rPr.insertBefore(shd, before) : rPr.appendChild(shd);
 }
+const AFTER_COLOR = new Set(["spacing", "w", "kern", "position", "sz", "szCs", "highlight", "u", "effect", "bdr", "shd", "fitText", "vertAlign", "rtl", "cs", "em", "lang", "eastAsianLayout", "specVanish", "oMath"]);
+/* Mode biru: hanya warna huruf 0000FF pada teks yang ditandai; isi, huruf, dan tata letak lain tidak berubah. */
+function setBlue(doc, run) {
+  let rPr = kids(run).find(c => isW(c, "rPr"));
+  if (!rPr) { rPr = wel(doc, "rPr"); run.insertBefore(rPr, run.firstChild); }
+  for (const c of kids(rPr)) if (isW(c, "color")) rPr.removeChild(c);
+  const col = wel(doc, "color", { val: "0000FF" });
+  const before = kids(rPr).find(c => AFTER_COLOR.has(c.localName));
+  before ? rPr.insertBefore(col, before) : rPr.appendChild(col);
+}
 const runText = r => { let t = "", plain = true; for (const c of kids(r)) { if (isW(c, "rPr")) continue; if (isW(c, "t")) t += c.textContent; else if (isW(c, "tab")) { t += "\t"; plain = false; } else if (isW(c, "br") || isW(c, "cr")) { t += "\n"; plain = false; } else plain = false; } return { t, plain }; };
 const mkRunLike = (doc, src, text) => {
   const r = src.cloneNode(false);
@@ -35,7 +45,8 @@ const mkRunLike = (doc, src, text) => {
   return r;
 };
 
-function colorParagraph(doc, p, rawFindings, nextId, comments) {
+function colorParagraph(doc, p, rawFindings, nextId, comments, opt = {}) {
+  const mark = (d, r, fill) => opt.blue ? setBlue(d, r) : setShading(d, r, fill);
   const bySent = new Map();
   for (const f of rawFindings) (bySent.get(f.sent_idx) || bySent.set(f.sent_idx, []).get(f.sent_idx)).push(f);
   const children = kids(p).filter(c => !isW(c, "pPr"));
@@ -43,6 +54,7 @@ function colorParagraph(doc, p, rawFindings, nextId, comments) {
   const runs = children.filter(c => isW(c, "r"));
   const simple = children.every(c => c.namespaceURI === W && passthrough.has(c.localName)) && runs.length > 0;
   const addComment = (startRef, endRef, fs) => {
+    if (opt.blue) return;
     const id = nextId(); comments.push({ id, text: fs.map(f => f.note ? f.note : `[${f.code}] ${f.reason}\n${(CODES[f.code] || {}).target || ""}\nKalimat pembantu: ${helperFor(f.code, f.text, f.reason)}`).join("\n\n") });
     p.insertBefore(wel(doc, "commentRangeStart", { id }), startRef);
     const after = endRef.nextSibling;
@@ -53,7 +65,7 @@ function colorParagraph(doc, p, rawFindings, nextId, comments) {
 
   if (!simple) { // paragraf rumit: warnai seluruh paragraf, satu komentar
     if (!runs.length) return;
-    runs.forEach(r => setShading(doc, r, primaryFill(rawFindings)));
+    runs.forEach(r => mark(doc, r, primaryFill(rawFindings)));
     addComment(runs[0], runs[runs.length - 1], rawFindings);
     return;
   }
@@ -67,7 +79,7 @@ function colorParagraph(doc, p, rawFindings, nextId, comments) {
   const sents = splitSentences(raw), spans = new Map(); let pos = 0, ok = true;
   sents.forEach((s, i) => { const at = norm.indexOf(s, pos); if (at < 0) { ok = false; return; } spans.set(i, [map[at], map[at + s.length - 1] + 1]); pos = at + s.length; });
   const flagged = [...bySent.keys()].filter(i => spans.has(i));
-  if (!ok || !flagged.length) { runs.forEach(r => setShading(doc, r, primaryFill(rawFindings))); addComment(runs[0], runs[runs.length - 1], rawFindings); return; }
+  if (!ok || !flagged.length) { runs.forEach(r => mark(doc, r, primaryFill(rawFindings))); addComment(runs[0], runs[runs.length - 1], rawFindings); return; }
 
   // titik potong per kalimat bertanda, lalu bangun ulang run
   const cover = off => { for (const i of flagged) { const [a, b] = spans.get(i); if (off >= a && off < b) return i; } return -1; };
@@ -84,7 +96,7 @@ function colorParagraph(doc, p, rawFindings, nextId, comments) {
     }
     for (const pc of pieces) {
       const node = pc.reuse ? pc.node : mkRunLike(doc, r, pc.text);
-      if (pc.sent >= 0) { setShading(doc, node, primaryFill(bySent.get(pc.sent))); const e = sentRuns.get(pc.sent) || { first: node }; e.last = node; sentRuns.set(pc.sent, e); }
+      if (pc.sent >= 0) { mark(doc, node, primaryFill(bySent.get(pc.sent))); const e = sentRuns.get(pc.sent) || { first: node }; e.last = node; sentRuns.set(pc.sent, e); }
       if (!pc.reuse) p.insertBefore(node, r);
     }
     if (!pieces[0].reuse) p.removeChild(r);
@@ -122,7 +134,7 @@ async function enableTrackRevisions(zip) {
   zip.file("word/settings.xml", ser(doc));
 }
 
-async function buildColored(buf, findings, now = Date.now()) {
+async function buildColored(buf, findings, now = Date.now(), opt = {}) {
   const zip = await openDocx(buf);
   const { doc, body } = parseBody(await readText(zip, "word/document.xml"));
   const nodes = paragraphNodes(body), byPara = new Map();
@@ -131,7 +143,7 @@ async function buildColored(buf, findings, now = Date.now()) {
   let existing = null, maxId = -1;
   if (zip.file("word/comments.xml")) { existing = parse(await zip.file("word/comments.xml").async("string")); for (const c of kids(existing.documentElement)) maxId = Math.max(maxId, parseInt(c.getAttributeNS(W, "id") || c.getAttribute("w:id"), 10) || 0); }
   let id = maxId; const comments = [];
-  for (const [idx, fs] of byPara) if (nodes[idx]) colorParagraph(doc, nodes[idx].node, fs, () => ++id, comments);
+  for (const [idx, fs] of byPara) if (nodes[idx]) colorParagraph(doc, nodes[idx].node, fs, () => ++id, comments, opt);
   zip.file("word/document.xml", ser(doc));
   if (comments.length) {
     const cdoc = existing || parse(`${DECL}<w:comments xmlns:w="${W}"/>`);
@@ -143,7 +155,7 @@ async function buildColored(buf, findings, now = Date.now()) {
     zip.file("word/comments.xml", ser(cdoc));
     if (!existing) await addPart(zip, "word/comments.xml", "application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml", "http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments", "comments.xml", "word/_rels/document.xml.rels");
   }
-  await enableTrackRevisions(zip);
+  if (!opt.blue) await enableTrackRevisions(zip);
   return zip.generateAsync({ type: "nodebuffer", compression: "DEFLATE" });
 }
 
@@ -206,4 +218,5 @@ async function acceptAndClean(buf) {
   return zip.generateAsync({ type: "nodebuffer", compression: "DEFLATE" });
 }
 
-module.exports = { buildColored, recheck, acceptAndClean, FILL, MARK };
+const buildBlue = (buf, findings) => buildColored(buf, findings, Date.now(), { blue: true });
+module.exports = { buildBlue, buildColored, recheck, acceptAndClean, FILL, MARK };

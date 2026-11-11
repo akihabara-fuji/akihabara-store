@@ -992,7 +992,7 @@
         ${row(1, "File asli (Word/PDF)", kept ? bTag("Ada · tidak pernah diubah", "ok") : bTag("Dihapus otomatis " + dd(x.purgedAt)), dl(`${P}/${x.id}/unduh`, true))}
         ${row(2, "Laporan AI Drillbit (PDF)", x.hasAi && kept ? (x.aiPct != null ? bTag("Terbaca · AI UT " + f(x.aiPct) + "%", "ok") : bTag("Gagal dibaca: sorotan biru tidak utuh", "wr")) : x.aiPct != null ? bTag("Angka tersimpan · AI UT " + f(x.aiPct) + "%") : bTag("Belum ada"), dl(`${P}/${x.id}/unduh?f=ai`, x.hasAi))}
         ${row(3, "Laporan Similarity (PDF)", x.hasSim && kept ? bTag("Terbaca" + (x.simPct != null ? " · " + f(x.simPct) + "%" : ""), "ok") : x.simPct != null ? bTag("Angka tersimpan · " + f(x.simPct) + "%") : bTag("Belum ada"), dl(`${P}/${x.id}/unduh?f=sim`, x.hasSim))}
-        ${row(4, "Word tanda UT + rekomendasi", x.hasAi && kept ? bTag("Otomatis, hanya untuk admin") : bTag("Butuh laporan AI"), x.hasAi && kept ? `<a class="btn sm" href="/ms/admin/studio/${x.id}/word">Unduh</a>` : "")}
+        ${row(4, "Word asli, kalimat UT berwarna biru", x.hasAi && kept ? bTag("Otomatis, hanya untuk admin") : bTag("Butuh laporan AI"), x.hasAi && kept ? `<a class="btn sm" href="/ms/admin/studio/${x.id}/word">Unduh</a>` : "")}
         ${row(5, "Hasil final (siap kirim)", x.status === "perbaikan_dikirim" ? bTag("Sudah dikirim", "ok") : bTag("Dibuat di Studio Parafrase", "wr"), x.hasAi && kept ? `<a class="btn sm pri" href="/ms/admin/studio-page?id=${x.id}" target="_blank" rel="noopener">Buka Studio</a>` : "")}
       </tbody></table></div>`;
     };
@@ -1073,7 +1073,7 @@
         ["1. File asli", esc(x.name), `${P}/${id}/unduh`, true],
         ["2. Laporan AI Drillbit", x.hasAi ? "PDF dari UT" : "Belum ada", `${P}/${id}/unduh?f=ai`, x.hasAi],
         ["3. Laporan Similarity", x.hasSim ? "PDF dari UT" : "Belum ada", `${P}/${id}/unduh?f=sim`, x.hasSim],
-        ["4. Word tanda UT + rekomendasi", x.hasAi ? "Kalimat biru UT ditandai, rekomendasi di tiap tanda" : "Butuh laporan AI", `/ms/admin/studio/${id}/word`, x.hasAi]
+        ["4. Word asli, kalimat UT berwarna biru", x.hasAi ? "File asli pelanggan, hanya teks yang ditandai UT jadi biru" : "Butuh laporan AI", `/ms/admin/studio/${id}/word`, x.hasAi]
       ].map(([t, sub, href, ok]) => `<div class="card"><div class="bd"><div class="small muted">${t}</div><div class="small" style="margin:2px 0 8px;overflow-wrap:anywhere">${sub}</div>${ok ? `<a class="btn sm${t[0] === "4" ? " pri" : ""}" href="${href}">Unduh</a>` : ""}</div></div>`).join("")}</div></div></div>
 
       <div class="card"><div class="bd"><div class="grid g2"><div><div class="small muted">Nama file</div><b>${esc(x.name)}</b></div><div><div class="small muted">Jumlah kata</div><b>${num(x.words || d.words)}</b></div></div>

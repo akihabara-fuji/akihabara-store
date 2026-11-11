@@ -153,12 +153,12 @@ function rewriteParagraphs(paragraphs, edits) {
 }
 const xe = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 /* texts: teks per paragraf; marks: Set "paraIdx:sentIdx" yang disorot (untuk Word edit). */
-async function plainDocx(paragraphs, texts, marks, notes) {
+async function plainDocx(paragraphs, texts, marks, notes, blue) {
   const JSZip = require("jszip"), zip = new JSZip();
   const body = paragraphs.map((p, i) => {
     const t = String(texts ? texts[i] : p.text || ""); if (!t.trim()) return "";
     const ss = marks ? splitSentences(t) : [t];
-    const runs = ss.map((x, j) => `<w:r>${marks && marks.has(p.idx + ":" + j) ? '<w:rPr><w:shd w:val="clear" w:color="auto" w:fill="B2EBF2"/></w:rPr>' : ""}<w:t xml:space="preserve">${xe(x)}${j < ss.length - 1 ? " " : ""}</w:t></w:r>`).join("");
+    const runs = ss.map((x, j) => `<w:r>${marks && marks.has(p.idx + ":" + j) ? (blue ? '<w:rPr><w:color w:val="0000FF"/></w:rPr>' : '<w:rPr><w:shd w:val="clear" w:color="auto" w:fill="B2EBF2"/></w:rPr>') : ""}<w:t xml:space="preserve">${xe(x)}${j < ss.length - 1 ? " " : ""}</w:t></w:r>`).join("");
     let out = `<w:p><w:pPr><w:spacing w:after="160" w:line="360" w:lineRule="auto"/><w:jc w:val="both"/></w:pPr>${runs}</w:p>`;
     /* Rekomendasi per kalimat biru: kotak abu di bawah paragrafnya (Word hasil kirim tidak memuat ini; hanya untuk admin). */
     for (const n of (notes && notes.get(p.idx)) || []) {
