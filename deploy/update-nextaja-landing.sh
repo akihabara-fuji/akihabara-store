@@ -19,7 +19,8 @@ trap 'relock; rm -rf "$T"' EXIT
 BK=/root/nextaja-landing-backup-$(date +%Y%m%d-%H%M%S).html; cp "$APP/$F" "$BK"; echo "Backup: $BK"
 cp "$T/new/$F" "$APP/$F"
 sleep 1
-if curl -fsS http://127.0.0.1:3200/ | grep -q "Analisa Akun TikTok" && ! curl -fsS http://127.0.0.1:3200/ | grep -qi "Mahasiswa UT"; then
+PAGE=$(curl -fsS http://127.0.0.1:3200/ || true)
+if [[ "$PAGE" == *"Analisa Akun TikTok"* && "$PAGE" != *"Saya Mahasiswa UT"* ]]; then
   echo "SELESAI. Beranda nextaja versi ${REF:0:7} aktif."
 else
   cp "$BK" "$APP/$F"; echo "GAGAL verifikasi, dikembalikan dari $BK"; exit 1
