@@ -712,9 +712,113 @@
      "Gemini",
      "Google Flow"
     ],
-    "photos": [],
+    "photos": [
+     {
+      "src": "assets/c-1.webp",
+      "alt": "Carousel Instagram Info Ujian UT, slide 1"
+     },
+     {
+      "src": "assets/c-2.webp",
+      "alt": "Carousel Instagram Info Ujian UT, slide 2"
+     },
+     {
+      "src": "assets/c-3.webp",
+      "alt": "Carousel Instagram Info Ujian UT, slide 3"
+     },
+     {
+      "src": "assets/c-4.webp",
+      "alt": "Carousel Instagram Info Ujian UT, slide 4"
+     },
+     {
+      "src": "assets/c-5.webp",
+      "alt": "Carousel Instagram Info Ujian UT, slide 5"
+     },
+     {
+      "src": "assets/c-6.webp",
+      "alt": "Carousel Instagram Info Ujian UT, slide 6"
+     },
+     {
+      "src": "assets/c-7.webp",
+      "alt": "Carousel Instagram Info Ujian UT, slide 7"
+     }
+    ],
     "grp": "Proyek digital",
-    "st": "Berjalan"
+    "st": "Berjalan",
+    "vfolders": [
+     {
+      "t": "Carousel Instagram",
+      "d": "Info Ujian UT, 7 slide",
+      "photos": true
+     },
+     {
+      "t": "Konten edukasi",
+      "d": "Video info dan tips untuk mahasiswa",
+      "vids": [
+       {
+        "src": "assets/v-cek-nilai.mp4",
+        "poster": "assets/v-cek-nilai.webp",
+        "t": "Cek nilai"
+       },
+       {
+        "src": "assets/v-uaop.mp4",
+        "poster": "assets/v-uaop.webp",
+        "t": "Video info UAOP"
+       },
+       {
+        "src": "assets/v-showcase.mp4",
+        "poster": "assets/v-showcase.webp",
+        "t": "Showcase"
+       },
+       {
+        "src": "assets/v-explainer.mp4",
+        "poster": "assets/v-explainer.webp",
+        "t": "Explainer"
+       }
+      ]
+     },
+     {
+      "t": "Konten affiliate",
+      "d": "Iklan produk fashion dan makanan",
+      "vids": [
+       {
+        "src": "assets/v-jeans-flare.mp4",
+        "poster": "assets/v-jeans-flare.webp",
+        "t": "Iklan jeans flare"
+       },
+       {
+        "src": "assets/v-jeans-wide.mp4",
+        "poster": "assets/v-jeans-wide.webp",
+        "t": "Iklan jeans wide leg"
+       },
+       {
+        "src": "assets/v-es-krim.mp4",
+        "poster": "assets/v-es-krim.webp",
+        "t": "Iklan es krim buah"
+       }
+      ]
+     },
+     {
+      "t": "Iklan layanan AI",
+      "d": "Analisis akun, riset, dan konsep iklan",
+      "vids": [
+       {
+        "src": "assets/v-naya-1.mp4",
+        "poster": "assets/v-naya-1.webp",
+        "t": "Analisis akun, Naya"
+       },
+       {
+        "src": "assets/v-tuntasync.mp4",
+        "poster": "assets/v-tuntasync.webp",
+        "t": "Tuntasync"
+       },
+       {
+        "src": "assets/v-mga-iklan.mp4",
+        "poster": "assets/v-mga-iklan.webp",
+        "t": "Konsep iklan MGA"
+       }
+      ]
+     }
+    ]
    },
    {
     "name": "AI Video Commercial: MGA",
