@@ -1,0 +1,14 @@
+{
+  "name": "wabot-baru",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Bot WhatsApp Catatan Akademik: WA1 (grup) dan WA2 (jualan + notifikasi order)",
+  "scripts": { "test": "node --test --test-concurrency=1 tests/*.test.js" },
+  "dependencies": {
+    "baileys": "7.0.0-rc14",
+    "better-sqlite3": "^13.0.3",
+    "pino": "^10.3.1",
+    "qrcode": "^1.5.4"
+  }
+}
