@@ -47,19 +47,15 @@ export function createWa1({ cfg, db, wa, ai, log, now = () => Date.now() }) {
 
   async function handle(n) {
     if (n.fromMe || !n.text) return;
-    if (!n.isGroup) { // khusus grup: balas satu kali per hari
-      const c = bump(db, "sent_log", dayKey(now()), n.chat, "dm_info");
-      if (c === 1) await say(n.chat, `Halo kak 👋 Aku ${cfg.botName}, asisten khusus grup, jadi tidak melayani chat pribadi. Untuk pesan layanan Catatan Akademik, hubungi admin ya 🙏`);
-      return;
-    }
-    if (await handleSpam(n)) return;
-    if (!addressed(n)) return;
+    if (n.isGroup && (await handleSpam(n))) return;
+    if (n.isGroup && !addressed(n)) return; // di grup hanya menjawab bila dipanggil; di chat pribadi selalu menjawab
     const text = stripWake(n.text, cfg.botName), it = parseIntent(text, now());
     const by = who(n), chat = n.chat;
     switch (it.intent) {
       case "kosong": case "bantuan": return say(chat, HELP(cfg.botName));
       case "status": return say(chat, `Aku aktif kak ✅ Anti-spam: ${spam.getCfg(chat).antispam ? "nyala" : "mati"}. AI: ${ai.ready() ? "siap" : "belum diatur"}.`);
       case "antispam": case "izin_domain": case "cabut_domain": {
+        if (!n.isGroup) return say(chat, "Pengaturan anti-spam hanya bisa dipakai di dalam grup kak 🙏");
         if (!(await isGroupAdmin(n))) return say(chat, "Perintah ini khusus admin grup ya kak 🙏");
         if (it.intent === "antispam") { spam.setCfg(chat, { antispam: it.on ? 1 : 0 }); return say(chat, `Anti-spam ${it.on ? "dinyalakan" : "dimatikan"} untuk grup ini.`); }
         const d = hostOf(it.domain); if (!d) return say(chat, "Domainnya belum jelas kak, contoh: izinkan youtube.com");
@@ -85,7 +81,7 @@ export function createWa1({ cfg, db, wa, ai, log, now = () => Date.now() }) {
 
   async function tanya(n, q) {
     if (q.length < 4) return say(n.chat, HELP(cfg.botName));
-    const sys = persona(cfg.botName, "asisten belajar untuk siswa, mahasiswa, dan guru di grup WhatsApp") + " Bantu menjelaskan materi, membuat soal latihan, ringkasan, atau perangkat ajar. Jangan menulis tugas penuh untuk dikumpulkan; arahkan cara mengerjakannya. Tolak dengan sopan permintaan di luar belajar/mengajar.";
+    const sys = persona(cfg.botName, n.isGroup ? "asisten belajar untuk siswa, mahasiswa, dan guru di grup WhatsApp" : "teman ngobrol dan asisten belajar untuk siswa, mahasiswa, dan guru di chat pribadi WhatsApp") + (n.isGroup ? "" : " Di chat pribadi kamu boleh ngobrol santai dan menemani, tetap ramah dan jujur; jika topiknya berat (krisis, bahaya), sarankan bicara ke orang tepercaya atau profesional.") + " Bantu menjelaskan materi, membuat soal latihan, ringkasan, atau perangkat ajar. Jangan menulis tugas penuh untuk dikumpulkan; arahkan cara mengerjakannya. Di grup, tolak dengan sopan permintaan di luar belajar/mengajar.";
     const r = await ai.ask({ system: sys, user: q, who: who(n) });
     if (r.ok) return say(n.chat, r.text);
     return say(n.chat, r.reason === "batas_harian" ? AI_LIMIT : AI_DOWN);

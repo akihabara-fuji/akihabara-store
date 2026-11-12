@@ -58,6 +58,10 @@ test("belajar lewat AI; batas harian; AI mati", async () => {
   await s.bot.handle(msg("nara jelasin apa itu variabel")); assert.match(last(s), /habis/);
   const d = setup({ noKey: true }); await d.bot.handle(msg("nara jelasin apa itu hipotesis")); assert.match(last(d), /sibuk/);
 });
-test("chat pribadi: balas info sekali per hari saja", async () => {
-  const s = setup(); await s.bot.handle(msg("halo", { isGroup: false, chat: "6281@s.whatsapp.net" })); await s.bot.handle(msg("halo lagi", { isGroup: false, chat: "6281@s.whatsapp.net" })); assert.equal(s.wa.sent.length, 1);
+test("chat pribadi: dijawab tanpa dipanggil (ngobrol, catatan, kas pribadi)", async () => {
+  const s = setup(); const dm = (t) => msg(t, { isGroup: false, chat: "6281@s.whatsapp.net" });
+  await s.bot.handle(dm("halo, lagi capek nih")); assert.equal(s.wa.sent.length, 1); assert.match(last(s), /dugaan sementara/);
+  await s.bot.handle(dm("catat beli buku")); assert.match(last(s), /#1/);
+  await s.bot.handle(dm("masuk 100rb gaji")); await s.bot.handle(dm("saldo")); assert.match(last(s), /Rp100\.000/);
+  await s.bot.handle(dm("antispam off")); assert.match(last(s), /dalam grup/);
 });
