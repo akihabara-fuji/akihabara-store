@@ -2,6 +2,8 @@
 # Arahkan notifikasi order situs ke WA2 BARU (port 3400). Aman: WA2 lama tidak tertaut sehingga notifikasi lama memang gagal. Backup .env dulu.
 set -eu; [ "$(id -u)" = 0 ] || { echo "Jalankan sebagai root"; exit 1; }
 NEXT=/var/www/mahyra-serv; ENV=$NEXT/.env; [ -s /opt/wabot2/secret ] || { echo "pasang bot baru dulu"; exit 1; }
+command -v ca-lock >/dev/null && ca-lock unlock || true
+trap 'command -v ca-lock >/dev/null && ca-lock lock || true' EXIT
 cp $ENV $ENV.bak-wabot2-$(date +%Y%m%d-%H%M%S)
 setk() { if grep -q "^$1=" $ENV; then sed -i "s|^$1=.*|$1=$2|" $ENV; else echo "$1=$2" >> $ENV; fi; }
 setk PARAFRASE_WA_SECRET "$(cat /opt/wabot2/secret)"; setk PARAFRASE_WA_WEBHOOK "http://127.0.0.1:3400/kirim"
