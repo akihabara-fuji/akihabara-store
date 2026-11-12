@@ -22,3 +22,9 @@ h "FITUR (grep perintah/handler)"; grep -ohE "(case|startsWith\()\s*['\"][!/.]?[
 h "FILE KONFIG/ENV (nama saja)"; ls -a $A | grep -vE "node_modules|auth_info" | tr '\n' ' '; echo; grep -oE "^[A-Z_]+=" $A/.env 2>/dev/null | tr '\n' ' '; echo
 h "AI/9ROUTER"; grep -rlE "9router|AI_BASE_URL|openai|anthropic" $A/src 2>/dev/null | head; grep -E "^(AI_BASE_URL|AI_MODEL)=" $A/.env 2>/dev/null | sed 's/=.*key.*/=***/'
 fi
+if [ "$P" = 4 ]; then
+h "LOG TERAKHIR (30 baris, bersih)"; journalctl -u wabot -n 400 --no-pager 2>/dev/null | grep -vE "closed: -1|^\s*$|^\S+ \S+ \S+ \S+ node\[[0-9]+\]:\s+[\]\}\[\{,]*\s*$" | tail -30 | cut -c1-150
+h "AI/9ROUTER"; B=$(grep -E "^NINE_ROUTER_BASE=" $A/.env | cut -d= -f2-); echo "base: $(echo "$B" | sed -E 's#(://[^/]{0,40}).*#\1#')"; [ -n "$B" ] && curl -s -m 8 -o /dev/null -w "9router http %{http_code}\n" "$B/models" || echo "kosong"
+h "PESAN MASUK 3 JAM"; journalctl -u wabot --since "3 hours ago" --no-pager | grep -ciE "pesan|message|from|dari"
+h "SOCKET"; journalctl -u wabot --since "6 hours ago" --no-pager | grep -iE "terhubung|connected|open|logged|pairing|qr" | tail -6 | cut -c1-150
+fi
