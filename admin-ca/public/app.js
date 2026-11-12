@@ -44,7 +44,7 @@
     { items: [["dashboard", "Dashboard", "home", ALL]] },
     { h: "Pesanan", items: [["g:pesanan", "Pesanan", "box", CS], ["customers", "Pelanggan", "users", CS]] },
     { h: "Isi situs", items: [["tuton", "Kelas Tuton", "doc", ED], ["g:artikel", "Artikel", "doc", ED], ["komunitas", "Komunitas", "users", ED], ["g:media", "Media", "img", ED], ["studio", "Studio Sosmed", "send", ED], ["g:tampilan", "Tampilan", "pen", ED]] },
-    { h: "Pengaturan", items: [["services", "Layanan & Harga", "price", OWN], ["g:laporan", "Laporan", "chart", ED], ["g:pengaturan", "Pengaturan", "cog", OWN]] },
+    { h: "Pengaturan", items: [["services", "Layanan & Harga", "price", OWN], ["wa", "Bot WhatsApp", "send", OWN], ["g:laporan", "Laporan", "chart", ED], ["g:pengaturan", "Pengaturan", "cog", OWN]] },
   ];
   const baseOf = h => String(h || "").split("?")[0];
   const tabOn = (r, b) => b === r || (r === "orders" && b.startsWith("orders/")) || (r === "posts" && b.startsWith("posts/") && b !== "posts/new") || (r === "dokumen" && (b.startsWith("dokumen/") || b === "tools/parafrase"));
@@ -163,7 +163,7 @@
     [/^studio$/, ED, pStudio], [/^images$/, ED, pImages], [/^tema$/, OWN, pTema], [/^taxonomy$/, ED, pTaxonomy], [/^media$/, ED, pMedia], [/^comments$/, ED, pComments],
     [/^orders$/, CS, pOrders], [/^orders\/([A-Za-z0-9-]+)$/, CS, m => pOrder(m[1])], [/^payments$/, CS, pPayments],
     [/^tools\/(parafrase|layanan)$/, CS, m => pEmbed(m[1])], [/^customers$/, CS, pCustomers],
-    [/^testimonials$/, ED, pTestimonials], [/^dokumen$/, OWN, pDokumen], [/^dokumen\/([a-f0-9]{16})$/, OWN, m => pDokumenDetail(m[1])], [/^editor$/, OWN, pPageEditor], [/^texts$/, OWN, pTexts], [/^services$/, OWN, pServices], [/^reports$/, OWN, pReports], [/^settings$/, OWN, pSettings], [/^seo$/, OWN, pSeo], [/^admins$/, OWN, pAdmins], [/^log$/, OWN, pLog], [/^account$/, ALL, pAccount],
+    [/^testimonials$/, ED, pTestimonials], [/^dokumen$/, OWN, pDokumen], [/^dokumen\/([a-f0-9]{16})$/, OWN, m => pDokumenDetail(m[1])], [/^editor$/, OWN, pPageEditor], [/^texts$/, OWN, pTexts], [/^services$/, OWN, pServices], [/^wa$/, OWN, pWa], [/^reports$/, OWN, pReports], [/^settings$/, OWN, pSettings], [/^seo$/, OWN, pSeo], [/^admins$/, OWN, pAdmins], [/^log$/, OWN, pLog], [/^account$/, ALL, pAccount],
   ];
   const params = () => new URLSearchParams((location.hash.split("?")[1]) || "");
   const go = (path, q) => { const s = q ? "?" + new URLSearchParams(Object.entries(q).filter(([, v]) => v !== "" && v != null)).toString() : ""; location.hash = "#/" + path + (s === "?" ? "" : s); };
@@ -1125,6 +1125,37 @@
     $$("[data-e]").forEach(b => b.onclick = () => { const x = d.items.find(i => i.id === b.dataset.e); eid = x.id; f.nama.value = x.nama; f.ket.value = x.ket || ""; f.teks.value = x.teks; f.tampil.checked = !!x.tampil; f.izin.checked = true; f.izin.required = false; $("#tmT").textContent = "Ubah testimoni"; $("#tmI").textContent = "Gambar lama tetap dipakai kecuali Anda memilih gambar baru."; f.scrollIntoView({ behavior: "smooth", block: "center" }); f.nama.focus(); });
     $$("[data-t]").forEach(b => b.onclick = async () => { try { await api("/ms/admin/ulasan/" + b.dataset.t + "/toggle", { method: "POST" }); route(); } catch (err) { fail(err); } });
     $$("[data-d]").forEach(b => b.onclick = async () => { if (!await confirmAct("Hapus testimoni ini?", "Dihapus permanen beserta gambarnya. Bila ragu, pakai Sembunyikan.", "Hapus", "bad")) return; try { await api("/ms/admin/ulasan/" + b.dataset.d, { method: "DELETE" }); toast("Dihapus"); route(); } catch (err) { fail(err); } });
+  }
+  const WA_STATE = { tersambung: ["ok", "Tersambung"], menunggu_qr: ["warn", "Menunggu scan QR"], menyambung: ["warn", "Menyambung…"], menyambung_ulang: ["warn", "Menyambung ulang…"], keluar: ["bad", "Logout: perlu scan QR"], mulai: ["warn", "Mulai…"] };
+  async function pWa() {
+    const NAMA = { wa1: "WA 1 · Bot grup", wa2: "WA 2 · Jualan & notifikasi order" };
+    let timer = null;
+    async function draw() {
+      const d = await api("/ms/admin/ca/wa");
+      const card = k => {
+        const b = d[k] || {}, st = b.down ? ["bad", "Bot belum berjalan"] : (WA_STATE[b.state] || ["warn", b.state || "?"]);
+        return `<div class="card"><div class="hd"><h2>${NAMA[k]}</h2>${badge(st[1], st[0])}</div><div class="bd">
+          ${b.number ? `<p class="small">Nomor: <b>${esc(b.number)}</b>${b.connectedSince ? ` · tersambung sejak ${esc(new Date(b.connectedSince).toLocaleString("id-ID"))}` : ""}</p>` : ""}
+          ${b.lastError && b.state !== "tersambung" ? `<p class="small muted">Terakhir: ${esc(b.lastError)}</p>` : ""}
+          ${b.state === "menunggu_qr" ? `<div id="qr-${k}" class="small muted">Memuat QR…</div><p class="small muted">Buka WhatsApp di HP nomor ini → Perangkat tertaut → Tautkan perangkat → scan. QR berganti otomatis tiap ±20 detik.</p>` : ""}
+          ${b.down ? "" : `<button class="btn" data-relink="${k}" type="button">Tautkan ulang nomor</button>`}</div></div>`;
+      };
+      const o = d.outbox || {}, recent = d.recent || [];
+      setPage("Bot WhatsApp", "Status dua bot, scan QR, dan kotak keluar notifikasi order", `${card("wa1")}${card("wa2")}
+        <div class="card"><div class="hd"><h2>Kotak keluar notifikasi order</h2></div><div class="bd">
+          <p class="small">Terkirim ${num(o.sent)} · Antre ${num(o.queued)} · Manual ${num(o.manual)} · <b>Gagal ${num(o.failed)}</b></p>
+          ${o.failed ? `<button class="btn" id="waRetry" type="button">Kirim ulang yang gagal (${num(o.failed)})</button>` : ""}
+          <div class="tbl-wrap"><table class="t"><thead><tr><th>#</th><th>Pesanan</th><th>Tujuan</th><th>Jenis</th><th>Status</th><th>Catatan</th></tr></thead><tbody>${recent.map(r => `<tr><td>${r.id}</td><td>${esc(r.order_id || "-")}</td><td>${esc(r.to_number)}</td><td>${esc(r.kind)}</td><td>${esc(r.status)}</td><td class="small muted">${esc(r.last_error || "")}</td></tr>`).join("") || '<tr><td colspan="6" class="muted">Belum ada.</td></tr>'}</tbody></table></div></div></div>`);
+      for (const k of ["wa1", "wa2"]) if ((d[k] || {}).state === "menunggu_qr") { try { const q = await api(`/ms/admin/ca/wa/${k}/qr`); const el = $("#qr-" + k); if (el) el.innerHTML = q.qr ? `<img alt="QR WhatsApp ${k}" src="${q.qr}" style="width:260px;max-width:100%;background:#fff;padding:8px;border-radius:8px">` : "QR belum siap, tunggu sebentar…"; } catch { /* abaikan */ } }
+      $$("[data-relink]").forEach(btn => btn.onclick = () => {
+        if (btn.dataset.sure !== "1") { btn.dataset.sure = "1"; btn.textContent = "Yakin? Klik lagi untuk memutus sesi lama & minta QR baru"; return; }
+        busy(btn, async () => { await api(`/ms/admin/ca/wa/${btn.dataset.relink}/relink`, { json: {} }); toast("Sesi lama disimpan ke samping. Menunggu QR baru…"); setTimeout(draw, 3000); });
+      });
+      const rt = $("#waRetry"); if (rt) rt.onclick = () => busy(rt, async () => { const r = await api("/ms/admin/ca/wa/outbox/retry", { json: {} }); toast(`${r.diulang} pesan diantrekan ulang`); draw(); });
+    }
+    await draw();
+    const tick = () => { if (!location.hash.startsWith("#/wa")) return; draw().catch(() => {}); timer = setTimeout(tick, 8000); };
+    timer = setTimeout(tick, 8000);
   }
   async function pServices() {
     const d = await api("/ms/admin/ca/services");

@@ -87,6 +87,22 @@ module.exports = function mountCaAdmin({ app, express, db, auth, requireAdmin, b
     ] };
   }
 
+  /* ---------------- bot WhatsApp (status, QR, kotak keluar) ---------------- */
+  const BOTS = { wa1: process.env.WABOT_WA1_URL || "http://127.0.0.1:3401", wa2: process.env.WABOT_WA2_URL || "http://127.0.0.1:3400" };
+  const botCall = async (slot, path, method) => { const r = await fetch(BOTS[slot] + path, { method: method || "GET", headers: { authorization: "Bearer " + (process.env.PARAFRASE_WA_SECRET || "") }, signal: AbortSignal.timeout(5000) }); return r.ok ? r.json() : null; };
+  const ownerOnly = (req) => { if (req.admin.role !== "owner") throw Object.assign(new Error("Khusus pemilik."), { status: 403 }); };
+  app.get("/ms/admin/ca/wa", requireAdmin, send(async req => {
+    ownerOnly(req);
+    const out = {}; for (const k of Object.keys(BOTS)) { try { out[k] = (await botCall(k, "/status")) || { down: true }; } catch { out[k] = { down: true }; } }
+    const rows = db.prepare("SELECT status, COUNT(*) n FROM wa_outbox GROUP BY status").all();
+    out.outbox = Object.fromEntries(rows.map(r => [r.status, r.n]));
+    out.recent = db.prepare("SELECT id, order_id, to_number, kind, status, attempts, last_error, created_at FROM wa_outbox ORDER BY id DESC LIMIT 15").all();
+    return out;
+  }));
+  app.get("/ms/admin/ca/wa/:slot/qr", requireAdmin, send(async req => { ownerOnly(req); if (!BOTS[req.params.slot]) throw Object.assign(new Error("Bot tidak dikenal."), { status: 404 }); try { return (await botCall(req.params.slot, "/qr")) || { qr: null }; } catch { return { qr: null }; } }));
+  app.post("/ms/admin/ca/wa/:slot/relink", requireAdmin, J, send(async req => { ownerOnly(req); if (!BOTS[req.params.slot]) throw Object.assign(new Error("Bot tidak dikenal."), { status: 404 }); await botCall(req.params.slot, "/relink", "POST"); return { ok: true }; }));
+  app.post("/ms/admin/ca/wa/outbox/retry", requireAdmin, J, send(req => { ownerOnly(req); const r = db.prepare("UPDATE wa_outbox SET status='queued', attempts=0, last_error=NULL WHERE status='failed'").run(); return { ok: true, diulang: r.changes }; }));
+
   /* ---------------- pemeriksaan sistem ---------------- */
   /* Daftar cek cepat untuk pemilik: pengaturan penting yang kosong dan masalah konten (artikel kembar, terbit serentak, di luar niche).
      Hanya membaca; tidak mengubah apa pun. Tiap butir: tone ok|warn|bad, teks, dan tautan ke menu terkait bila ada. */
