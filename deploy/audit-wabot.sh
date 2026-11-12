@@ -42,3 +42,10 @@ h "ENV di unit systemd (nama saja)"; systemctl show wabot -p Environment -p Envi
 h "Tes keluar jaringan"; for u in https://generativelanguage.googleapis.com https://api.openai.com https://web.whatsapp.com; do curl -s -m 8 -o /dev/null -w "$u %{http_code} %{time_total}s\n" $u; done
 h "Port 9router di VPS?"; (ss -ltn | grep -E ":(20128|3000|4000|8080)\b" | head -3) ; grep -rhoE "http://[0-9a-z.:-]+/v1" $A/.env $A/src/*.js 2>/dev/null | sort -u | head -3
 fi
+if [ "$P" = 7 ]; then
+B=$(grep -E "^NINE_ROUTER_BASE_URL=" $A/.env | cut -d= -f2-); K=$(grep -E "^NINE_ROUTER_API_KEY=" $A/.env | cut -d= -f2-); M=$(grep -E "^AI_MODEL=" $A/.env | cut -d= -f2-)
+h "config"; echo "base=$B model=$M provider=$(grep -E '^AI_PROVIDER=' $A/.env | cut -d= -f2-) key_terisi=$([ -n "$K" ] && echo ya || echo TIDAK)"
+h "daftar model 9router"; curl -s -m 10 -H "Authorization: Bearer $K" "$B/models" -w "\nhttp %{http_code} %{time_total}s\n" | sed -E 's/"object":"model",?//g' | grep -oE '"id":"[^"]+"|http [0-9]+ [0-9.]+s' | head -25 | tr '\n' ' '; echo
+h "tes chat model aktif"; curl -s -m 30 -o /tmp/c.json -w "http %{http_code} dalam %{time_total}s\n" "$B/chat/completions" -H "Authorization: Bearer $K" -H 'Content-Type: application/json' -d "{\"model\":\"$M\",\"messages\":[{\"role\":\"user\",\"content\":\"balas satu kata: ok\"}],\"max_tokens\":20}"; head -c 350 /tmp/c.json | sed -E 's/(sk|AIza)[A-Za-z0-9_-]{8,}/***/g'; echo; rm -f /tmp/c.json
+h "pm2/9router jalan?"; (pm2 list 2>/dev/null | grep -iE "9router|router" | head -3) ; systemctl list-units --type=service --no-legend 2>/dev/null | grep -iE "9router|router" | head -3
+fi
