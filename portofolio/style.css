@@ -647,3 +647,17 @@ a.ft:hover{color:var(--ac)}.ft i{font-style:normal;color:var(--ac);transition:tr
 .kvo:nth-child(4) .kvp,.kvo:nth-child(4) .kf,.kvo:nth-child(4) .ks{animation-delay:-3.6s}
 .kvo summary:hover .kvp{animation-duration:2.4s}
 }
+/* rail karya: kartu melayang 3D */
+@property --rx{syntax:"<angle>";inherits:false;initial-value:0deg}
+@property --ry{syntax:"<angle>";inherits:false;initial-value:0deg}
+@property --fy{syntax:"<length>";inherits:false;initial-value:0px}
+@keyframes kFloatA{0%,100%{--rx:7deg;--ry:-16deg;--fy:0px}50%{--rx:2deg;--ry:12deg;--fy:-9px}}
+@keyframes kFloatB{0%,100%{--rx:3deg;--ry:14deg;--fy:-7px}50%{--rx:8deg;--ry:-12deg;--fy:2px}}
+.kwrap .klist{perspective:900px;padding-top:22px;padding-bottom:18px}
+@media(prefers-reduced-motion:no-preference){
+.klist .krow{transform:perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) skewX(var(--sk,0deg)) translateY(calc(var(--ty) + var(--fy)));animation:kFloatA 6s ease-in-out infinite}
+.klist .krow:nth-of-type(even){animation-name:kFloatB;animation-duration:7s}
+.klist .krow:nth-of-type(3n){animation-delay:-2s}.klist .krow:nth-of-type(3n+1){animation-delay:-4s}
+.klist .krow:hover,.klist .krow.on{animation-play-state:paused}
+.klist .krow:hover{--ty:-8px}
+}
