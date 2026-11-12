@@ -36,7 +36,7 @@ if('IntersectionObserver' in window){
 document.addEventListener('click',function(e){
   var a=e.target.closest&&e.target.closest('[data-go]');
   if(a){e.preventDefault();show(a.getAttribute('data-go'));
-    var pk=a.getAttribute('data-pick');if(pk!==null){var r=$$('.krow')[+pk];if(r)r.click()}
+    var pk=a.getAttribute('data-pick');if(pk!==null){if(window.kmOpen)window.kmOpen(+pk)}
     if(document.activeElement&&document.activeElement.blur&&a.closest('.ddm'))document.activeElement.blur()}
 });
 window.addEventListener('popstate',function(){show((location.hash||'#home').slice(1),false)});
@@ -275,4 +275,71 @@ ov.addEventListener('click',function(e){if(e.target===ov)close()});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&ov.classList.contains('on'))close()});
 })();
 setTimeout(function(){show((location.hash||'#home').slice(1),false,true)},60);
+})();
+;(function(){
+var G=[
+ {label:'Fokus AI Automation',art:'ember',seed:11,f:[[0,'AI Automation','Fokus utama',null],[1,'Koordinasi Workflow AI','GPT, Gemini, Claude',null],[2,'Bot WhatsApp','Dua bot di VPS','assets/k-bot.webp'],[3,'CatatanAkademik.com','Platform edukasi UT','assets/k-admin.webp']]},
+ {label:'Konten & Analisis',art:'dusk',seed:5,f:[[4,'Produksi Konten AI','Carousel, artikel, video','assets/c-1.webp'],[5,'AI Video Commercial: MGA','Konsep iklan 9:16','assets/v-mga-iklan.webp'],[6,'Social Media Specialist','Audit, strategi, laporan',null],[8,'Analisa Sahabat Analisis','Skor akun 0-100','assets/k-analisa1.webp']]},
+ {label:'Alat & Pengembangan',art:'glacier',seed:8,f:[[7,'Bedah Laporan & Cek Parafrase','Pemeriksaan dokumen UT',null],[9,'Media Belajar AI Guru TK/SD','Sedang dikembangkan',null],[10,'Studio Konten','Sedang dikembangkan',null]]},
+ {label:'Layanan Freelance',art:'aurora',seed:3,f:[[11,'Layanan Freelance','Yang bisa dikerjakan',null],[12,'Portofolio Web dan Presentasi','Portofolio, PPT, desain',null],[13,'Media Sosial dan Konten Edukasi','Feed, konten, akademik',null]]},
+ {label:'Pengalaman Facility',art:'verdant',seed:9,f:[[14,'Pengalaman Facility','Sejak 2014',null],[15,'Supervisor Facility Management','Pengalaman lapangan','assets/f-lapangan.webp'],[16,'Facility Care Training','Pelatihan tim facility',null]]}
+];
+var ov=document.getElementById('kmOv'),body=document.getElementById('kmBody'),host=document.getElementById('kfm');
+if(!ov||!host)return;
+function close(){ov.hidden=true;document.documentElement.classList.remove('kmo')}
+window.kmOpen=function(k){var a=document.querySelector('#kdets .kdet[data-k="'+k+'"]');if(!a)return;body.innerHTML=a.innerHTML;body.scrollTop=0;ov.hidden=false;document.documentElement.classList.add('kmo');ov.querySelector('.kmx').focus()};
+ov.addEventListener('click',function(e){if(e.target===ov||e.target.closest('.kmx'))close();else{var p=e.target.closest('[data-pick]');if(p){e.preventDefault();window.kmOpen(+p.getAttribute('data-pick'))}}});
+addEventListener('keydown',function(e){if(e.key==='Escape'&&!ov.hidden)close()});
+var VG=null,vo=null;
+window.kvOpen=function(j,key){return vidOpen(j,key)};
+function vidOpen(j,key){
+ key=key||'k1';VG=window.GF_DATA[key];
+ if(!vo){vo=document.createElement('div');vo.className='kmov kvo2';vo.hidden=true;
+  vo.innerHTML='<div class="kv2" role="dialog" aria-modal="true"><div class="kvbg"></div><button type="button" class="kmx" aria-label="Tutup">&times;</button><div class="kvst"><div class="kvfr"><video playsinline controls></video></div></div><div class="kvsd"><p class="lab">Video Karya &middot; dibuat dengan AI</p><h3 class="kvt"></h3><p class="kvm"></p><div class="kvl"></div></div></div>';
+  document.body.appendChild(vo);
+  vo.addEventListener('click',function(e){if(e.target===vo||e.target.closest('.kmx'))vc()});
+  addEventListener('keydown',function(e){if(vo.hidden)return;if(e.key==='Escape')vc();else if(e.key==='ArrowRight')play((cur+1)%VG.files.length);else if(e.key==='ArrowLeft')play((cur+VG.files.length-1)%VG.files.length)});
+  var v=vo.querySelector('video');
+  v.addEventListener('loadedmetadata',function(){if(v.videoWidth&&v.videoHeight){ratio=v.videoWidth/v.videoHeight;fit()}});addEventListener('resize',function(){if(!vo.hidden)fit()});
+  v.addEventListener('ended',function(){play((cur+1)%VG.files.length)})}
+ var L=vo.querySelector('.kvl');L.innerHTML='';VG.files.forEach(function(f,i){var b=document.createElement('button');b.type='button';b.innerHTML='<i>'+(i+1<10?'0':'')+(i+1)+'</i><img src="'+f.image+'" alt="" loading="lazy"><span><b>'+f.name+'</b><small>'+f.meta+'</small></span><em aria-hidden="true"><u></u><u></u><u></u></em>';b.onclick=function(){play(i)};L.appendChild(b)});
+ var X=vo.querySelector('.kvx');if(X)X.remove();
+ if(VG.analysis||VG.carousel||VG.pillars){X=document.createElement('button');X.type='button';X.className='kvx';X.textContent='Proses analisa, carousel & strategi \u2192';X.onclick=function(){vc();if(window.__od)window.__od(key)};vo.querySelector('.kvsd').appendChild(X)}
+ vo.querySelector('.lab').textContent=(VG.title||'Video Karya')+' \u00b7 dibuat dengan AI';
+ vo.hidden=false;document.documentElement.classList.add('kmo');play(j);fit();
+}
+var cur=0,ratio=9/16;
+function fit(){var st=vo.querySelector('.kvst'),fr=vo.querySelector('.kvfr'),W=st.clientWidth,H=st.clientHeight;if(!W||!H)return;var w=Math.min(W,H*ratio),h=w/ratio;fr.style.width=Math.floor(w)+'px';fr.style.height=Math.floor(h)+'px'}
+function vc(){var v=vo.querySelector('video');v.pause();v.removeAttribute('src');v.load();vo.hidden=true;document.documentElement.classList.remove('kmo')}
+function play(i){var f=VG.files[i],v=vo.querySelector('video');cur=i;ratio=/9:16/.test(f.meta)?9/16:16/9;fit();v.src=f.src;v.poster=f.image;vo.querySelector('.kvt').textContent=f.name;vo.querySelector('.kvm').textContent=f.meta+' · '+(i+1)+' dari '+VG.files.length;vo.querySelector('.kvbg').style.backgroundImage='url('+f.image+')';[].forEach.call(vo.querySelectorAll('.kvl button'),function(b,k){b.classList.toggle('on',k===i)});var on=vo.querySelector('.kvl button.on');if(on&&on.scrollIntoView)on.scrollIntoView({block:'nearest',inline:'nearest'});var p=v.play();if(p&&p.catch)p.catch(function(){})}
+function build(){
+ VG=window.GF_DATA.k1;
+ var gs=[{label:'Video Karya',meta:VG.files.length+' video',art:'ember',seed:11,files:VG.files.map(function(f){return{name:f.name,meta:f.meta,image:f.image}}),vid:1}].concat(G.map(function(g){return{label:g.label,art:g.art,seed:g.seed,k:g.f.map(function(x){return x[0]}),files:g.f.map(function(x){var o={name:x[1],meta:x[2]};if(x[3])o.image=x[3];else o.art=g.art;return o})}}));
+ window.gfMenu(host,gs,function(i,j){
+  var g=gs[i];
+  if(g.vid){vidOpen(j)}
+  else window.kmOpen(g.k[j])});
+ var tw=0,tq=setInterval(function(){tw++;if(host.querySelector('.kring-r')){clearInterval(tq);ring()}else if(tw>60)clearInterval(tq)},50);
+}
+function ring(){
+ var R=host.querySelector('.kring-r');if(!R)return;
+ var its=[].slice.call(R.querySelectorAll('.kring-i')),n=its.length,step=360/n,a=0,paused=false,drag=false,sx=0,sa=0,moved=0,tgt=null;
+ function paint(){R.style.transform='rotateY('+a+'deg)';its.forEach(function(el,i){var c=Math.cos((i*step+a)*Math.PI/180);el.style.opacity=(.18+.82*Math.max(0,(c+.2)/1.2)).toFixed(2);el.style.pointerEvents=c>.35?'auto':'none';el.style.zIndex=Math.round(c*100)+100})}
+ paint();
+ function snap(){tgt=-Math.round(a/step)*step}
+ var rm=matchMedia('(prefers-reduced-motion:reduce)').matches;
+ (function loop(){if(tgt!==null){a+=(tgt-a)*.12;if(Math.abs(tgt-a)<.2){a=tgt;tgt=null}paint()}else if(!paused&&!drag&&!rm){a-=.06;paint()}requestAnimationFrame(loop)})();
+ host.addEventListener('pointerenter',function(){paused=true});host.addEventListener('pointerleave',function(){paused=false;drag=false});
+ host.addEventListener('pointerdown',function(e){if(e.target.closest('.kfm-nv'))return;drag=true;moved=0;sx=e.clientX;sa=a;tgt=null});
+ addEventListener('pointermove',function(e){if(!drag)return;var d=e.clientX-sx;moved=Math.max(moved,Math.abs(d));a=sa+d*.35;paint()});
+ addEventListener('pointerup',function(){if(drag){drag=false;if(moved>6)snap()}});
+ host.addEventListener('click',function(e){if(moved>6){e.stopPropagation();e.preventDefault();moved=0}},true);
+ window.kfmFront=function(i){var d=((a+i*step)%360+540)%360-180;tgt=a-d};
+ function go(dir){tgt=(tgt===null?-Math.round(a/step)*step:tgt)+dir*step}
+ var p=document.createElement('button'),q=document.createElement('button');p.className='kfm-nv l';q.className='kfm-nv r';p.type=q.type='button';p.setAttribute('aria-label','Sebelumnya');q.setAttribute('aria-label','Berikutnya');p.innerHTML='&larr;';q.innerHTML='&rarr;';
+ p.onclick=function(){go(1)};q.onclick=function(){go(-1)};host.appendChild(p);host.appendChild(q);
+}
+var od=window.openDtl;
+var wt=setInterval(function(){if(window.openDtl&&window.openDtl!==od&&window.openDtl.__w)return clearInterval(wt);if(!window.openDtl)return;var o=window.openDtl;if(o.__w)return clearInterval(wt);var w=function(k){if(!k||k==='k1'||k==='k2'){window.__od=o;window.kvOpen(0,k||'k1');return}return o.apply(this,arguments)};w.__w=1;window.openDtl=w;clearInterval(wt)},100);
+var nn=0,t=setInterval(function(){nn++;if(window.gfMenu&&window.GF_DATA&&window.openDtl){clearInterval(t);build()}else if(nn>150)clearInterval(t)},100);
 })();
