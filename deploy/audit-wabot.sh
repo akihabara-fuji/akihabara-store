@@ -28,3 +28,10 @@ h "AI/9ROUTER"; B=$(grep -E "^NINE_ROUTER_BASE=" $A/.env | cut -d= -f2-); echo "
 h "PESAN MASUK 3 JAM"; journalctl -u wabot --since "3 hours ago" --no-pager | grep -ciE "pesan|message|from|dari"
 h "SOCKET"; journalctl -u wabot --since "6 hours ago" --no-pager | grep -iE "terhubung|connected|open|logged|pairing|qr" | tail -6 | cut -c1-150
 fi
+if [ "$P" = 5 ]; then
+h "AI konfigurasi"; grep -E "^(AI_PROVIDER|AI_MODEL|NINE_ROUTER_BASE)=" $A/.env | sed -E 's/(KEY|key)=.*/\1=***/'; grep -cE "^(GEMINI|GOOGLE)[A-Z_]*KEY=.+" $A/.env | sed 's/^/jumlah kunci Gemini terisi: /'
+h "AI gagal 24 jam"; J=$(journalctl -u wabot --since "24 hours ago" --no-pager); echo "Gemini gagal: $(echo "$J" | grep -c 'Gemini gagal')"; echo "$J" | grep -iE "Gemini gagal|AI gagal|9router" | sed -E 's/^.*node\[[0-9]+\]: //' | sort | uniq -c | sort -rn | head -5 | cut -c1-140
+h "Tes Gemini langsung"; K=$(grep -E "^(GEMINI_API_KEY|GOOGLE_API_KEY|GEMINI_KEY)=" $A/.env | head -1 | cut -d= -f2-); M=$(grep -E "^AI_MODEL=" $A/.env | cut -d= -f2-); if [ -n "$K" ]; then curl -s -m 25 -o /tmp/g.json -w "http %{http_code} dalam %{time_total}s\n" "https://generativelanguage.googleapis.com/v1beta/models/$M:generateContent?key=$K" -H 'Content-Type: application/json' -d '{"contents":[{"parts":[{"text":"balas: ok"}]}]}'; head -c 300 /tmp/g.json | sed -E 's/AIza[A-Za-z0-9_-]+/***/g'; echo; rm -f /tmp/g.json; else echo "kunci Gemini tidak ketemu di .env"; fi
+h "Sebab sambung ulang"; echo "$J" | grep -iE "statusCode|reason|DisconnectReason|restartRequired|closed:" | grep -v "closed: -1" | sed -E 's/^.*node\[[0-9]+\]: //' | sort | uniq -c | sort -rn | head -6 | cut -c1-140
+echo "$J" | grep -B3 "BOT GRUP BERHASIL" | grep -viE "upsert|masuk" | tail -8 | sed -E 's/^.*node\[[0-9]+\]: //' | cut -c1-140
+fi
