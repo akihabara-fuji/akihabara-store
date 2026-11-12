@@ -159,51 +159,7 @@ document.addEventListener('keydown',function(e){if(!bx.classList.contains('on'))
 if(fine&&!rmo)document.querySelectorAll('.lb').forEach(function(b){b.addEventListener('pointermove',function(e){var r=b.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;b.style.setProperty('--ry',(x*10).toFixed(2)+'deg');b.style.setProperty('--rx',(-y*10).toFixed(2)+'deg')});b.addEventListener('pointerleave',function(){b.style.setProperty('--ry','0deg');b.style.setProperty('--rx','0deg')})});
 })();
 
-(function(){
-var pw=document.querySelector('.pw'),img=pw&&pw.querySelector('.pose');
-if(!pw||!img||matchMedia('(prefers-reduced-motion:reduce)').matches)return;
-var fine=matchMedia('(pointer:fine)').matches,N=fine?13000:6500,cv=document.createElement('canvas');
-cv.className='pc';cv.setAttribute('aria-hidden','true');document.body.appendChild(cv);
-var cx=cv.getContext('2d'),W=0,H=0,D=Math.min(devicePixelRatio||1,1.5),buf,u32,P=null,t0=0,mx=-999,my=-999,vis=true,run=false,ox=0,oy=0,sc=1;
-function size(){W=Math.max(2,Math.round(innerWidth*D));H=Math.max(2,Math.round(innerHeight*D));cv.width=W;cv.height=H;buf=cx.createImageData(W,H);u32=new Uint32Array(buf.data.buffer)}
-function rnd(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
-function build(){
-  var o=document.createElement('canvas'),w=img.naturalWidth,h=img.naturalHeight;o.width=w;o.height=h;var c=o.getContext('2d');c.drawImage(img,0,0);var d=c.getImageData(0,0,w,h).data,r=rnd(7),pts=[],tries=0;
-  while(pts.length<N&&tries<N*40){tries++;var x=(r()*w)|0,y=(r()*h)|0,i=(y*w+x)*4;if(d[i+3]>150){pts.push([x/w,y/h,d[i],d[i+1],d[i+2]])}}
-  var n=pts.length;P={n:n,hx:new Float32Array(n),hy:new Float32Array(n),x:new Float32Array(n),y:new Float32Array(n),vx:new Float32Array(n),vy:new Float32Array(n),dl:new Float32Array(n),c:new Uint8Array(n*3),z:new Float32Array(n)};
-  for(var k=0;k<n;k++){var q=pts[k];P.hx[k]=q[0];P.hy[k]=q[1];P.c[k*3]=Math.min(255,q[2]*1.25+30);P.c[k*3+1]=Math.min(255,q[3]*1.25+30);P.c[k*3+2]=Math.min(255,q[4]*1.25+40);P.dl[k]=(1-q[1])*0.6+r()*0.35;P.z[k]=r()}
-  for(var k=0;k<n;k++){P.x[k]=Math.random()*W;P.y[k]=Math.random()*H}
-}
-function frame(now){
-  if(!run)return;requestAnimationFrame(frame);var hm=document.getElementById('home');var hr=hm&&hm.getBoundingClientRect();vis=!hm||(hr.bottom>innerHeight*.45&&hr.top<innerHeight*.55);if(!vis||document.hidden||!P){if(cv.style.visibility!=='hidden'){cv.style.visibility='hidden'}return}cv.style.visibility='';
-  var t=(now-t0)/1000,ir=img.getBoundingClientRect();sc=1;
-  var L=ir.left*D,T=ir.top*D,IW=ir.width*D,IH=ir.height*D;
-  var mxx=mx*D,myy=my*D,rad=(fine?85:60)*D,r2=rad*rad;
-  var asm=Math.min(1,Math.max(0,(t-0.2)/1.6));
-  u32.fill(0);var n=P.n,hx=P.hx,hy=P.hy,x=P.x,y=P.y,vx=P.vx,vy=P.vy,dl=P.dl,cc=P.c,z=P.z;
-  var rest=t>2.2?Math.max(.38,1-(t-2.2)*.9):1;
-  for(var k=0;k<n;k++){
-    if(t<dl[k])continue;
-    var tx=L+hx[k]*IW+Math.sin(t*.9+z[k]*6.28)*1.1*D,ty=T+hy[k]*IH+Math.cos(t*.8+z[k]*6.28)*1.1*D;
-    var dx=x[k]-mxx,dy=y[k]-myy,d2=dx*dx+dy*dy,heat=0;
-    if(d2<r2&&d2>1){var d=Math.sqrt(d2),f=(1-d/rad)*(1-d/rad)*9*D;vx[k]+=dx/d*f;vy[k]+=dy/d*f;heat=1}
-    vx[k]+=(tx-x[k])*.045;vy[k]+=(ty-y[k])*.045;vx[k]*=.86;vy[k]*=.86;x[k]+=vx[k];y[k]+=vy[k];
-    var off=Math.abs(tx-x[k])+Math.abs(ty-y[k]),hot=Math.min(1,off/(40*D));
-    var rr=cc[k*3],gg=cc[k*3+1],bb=cc[k*3+2];
-    var a=(.5+.5*asm)*rest*255|0;if(hot>.05){rr=rr+(255-rr)*hot;gg=gg+(138-gg)*hot;bb=bb+(61-bb)*hot;a=Math.min(255,a+hot*160|0)}
-    var px=x[k]|0,py=y[k]|0;if(px<0||py<0||px>=W-1||py>=H-1)continue;
-    var col=(a<<24)|((bb|0)<<16)|((gg|0)<<8)|(rr|0),i=py*W+px;u32[i]=col;u32[i+1]=col;if(D>1||hot>.3){u32[i+W]=col;u32[i+W+1]=col}
-  }
-  cx.putImageData(buf,0,0);
-  if(t>1.7&&pw.classList.contains('pa'))pw.classList.remove('pa');
-}
-function start(){size();build();t0=performance.now()+1450;pw.classList.add('pa');run=true;requestAnimationFrame(frame)}
-addEventListener('pointermove',function(e){mx=e.clientX;my=e.clientY},{passive:true});
-addEventListener('pointerleave',function(){mx=my=-999});
-addEventListener('resize',function(){if(P){size();}});
-if('IntersectionObserver' in window)new IntersectionObserver(function(es){vis=es[0].isIntersecting}).observe(pw);
-if(img.complete&&img.naturalWidth)start();else img.addEventListener('load',start);
-})();
+
 
 (function(){
 var st=document.querySelector('.ost');if(!st)return;
@@ -278,11 +234,10 @@ setTimeout(function(){show((location.hash||'#home').slice(1),false,true)},60);
 })();
 ;(function(){
 var G=[
+ {label:'Konten & Analisis',art:'dusk',seed:5,f:[[4,'Produksi Konten AI','Carousel, artikel, video','assets/c-1.webp'],[6,'Analisis akun (1)','Video · Social Media','v/naya1.jpg','v:k2:0'],[6,'Analisis akun (2)','Video · Social Media','v/naya2.jpg','v:k2:1'],[6,'Proses analisa akun','6 tangkapan layar + penjelasan','v/an2.jpg','d:k2'],[6,'Carousel, pilar & kalender','Strategi konten 1 minggu','v/car1.jpg','d:k2']]},
  {label:'Fokus AI Automation',art:'ember',seed:11,f:[[0,'AI Automation','Fokus utama',null],[1,'Koordinasi Workflow AI','GPT, Gemini, Claude',null],[2,'Bot WhatsApp','Dua bot di VPS','assets/k-bot.webp'],[3,'CatatanAkademik.com','Platform edukasi UT','assets/k-admin.webp']]},
- {label:'Konten & Analisis',art:'dusk',seed:5,f:[[4,'Produksi Konten AI','Carousel, artikel, video','assets/c-1.webp'],[5,'AI Video Commercial: MGA','Konsep iklan 9:16','assets/v-mga-iklan.webp'],[6,'Social Media Specialist','Audit, strategi, laporan',null],[8,'Analisa Sahabat Analisis','Skor akun 0-100','assets/k-analisa1.webp']]},
  {label:'Alat & Pengembangan',art:'glacier',seed:8,f:[[7,'Bedah Laporan & Cek Parafrase','Pemeriksaan dokumen UT',null],[9,'Media Belajar AI Guru TK/SD','Sedang dikembangkan',null],[10,'Studio Konten','Sedang dikembangkan',null]]},
- {label:'Layanan Freelance',art:'aurora',seed:3,f:[[11,'Layanan Freelance','Yang bisa dikerjakan',null],[12,'Portofolio Web dan Presentasi','Portofolio, PPT, desain',null],[13,'Media Sosial dan Konten Edukasi','Feed, konten, akademik',null]]},
- {label:'Pengalaman Facility',art:'verdant',seed:9,f:[[14,'Pengalaman Facility','Sejak 2014',null],[15,'Supervisor Facility Management','Pengalaman lapangan','assets/f-lapangan.webp'],[16,'Facility Care Training','Pelatihan tim facility',null]]}
+ {label:'Layanan Freelance',art:'aurora',seed:3,f:[[11,'Layanan Freelance','Yang bisa dikerjakan',null],[12,'Portofolio Web dan Presentasi','Portofolio, PPT, desain',null],[13,'Media Sosial dan Konten Edukasi','Feed, konten, akademik',null]]}
 ];
 var ov=document.getElementById('kmOv'),body=document.getElementById('kmBody'),host=document.getElementById('kfm');
 if(!ov||!host)return;
@@ -290,35 +245,52 @@ function close(){ov.hidden=true;document.documentElement.classList.remove('kmo')
 window.kmOpen=function(k){var a=document.querySelector('#kdets .kdet[data-k="'+k+'"]');if(!a)return;body.innerHTML=a.innerHTML;body.scrollTop=0;ov.hidden=false;document.documentElement.classList.add('kmo');ov.querySelector('.kmx').focus()};
 ov.addEventListener('click',function(e){if(e.target===ov||e.target.closest('.kmx'))close();else{var p=e.target.closest('[data-pick]');if(p){e.preventDefault();window.kmOpen(+p.getAttribute('data-pick'))}}});
 addEventListener('keydown',function(e){if(e.key==='Escape'&&!ov.hidden)close()});
-var VG=null,vo=null;
-window.kvOpen=function(j,key){return vidOpen(j,key)};
-function vidOpen(j,key){
- key=key||'k1';VG=window.GF_DATA[key];
+var vo=null,ALL=[],GRP=[],cur=0,ratio=9/16;
+var SC='';
+function mk(){ALL=[];GRP=[];for(var n=1;n<=8;n++){var k='k'+n,D=window.GF_DATA&&window.GF_DATA[k];if(!D||!D.files||!D.files.length||(SC&&k!==SC))continue;var st=ALL.length;D.files.forEach(function(f){ALL.push({name:f.name,meta:f.meta,image:f.image,src:f.src,key:k})});GRP.push({key:k,n:('0'+n).slice(-2),title:D.title,start:st,count:D.files.length,extra:!!(D.analysis||D.carousel||D.pillars)})}}
+window.kvOpen=function(j,key){SC=key||'k1';mk();vidOpen(j||0)};
+window.kvDoc=function(key){window.kvOpen(0,key);tab('d',key)};
+function grpOf(i){var r=GRP[0];GRP.forEach(function(g){if(i>=g.start)r=g});return r}
+function vidOpen(j){
+ if(!ALL.length)mk();
  if(!vo){vo=document.createElement('div');vo.className='kmov kvo2';vo.hidden=true;
-  vo.innerHTML='<div class="kv2" role="dialog" aria-modal="true"><div class="kvbg"></div><button type="button" class="kmx" aria-label="Tutup">&times;</button><div class="kvst"><div class="kvfr"><video playsinline controls></video></div></div><div class="kvsd"><p class="lab">Video Karya &middot; dibuat dengan AI</p><h3 class="kvt"></h3><p class="kvm"></p><div class="kvl"></div></div></div>';
+  vo.innerHTML='<div class="kv2" role="dialog" aria-modal="true"><div class="kvbg"></div><div class="kvtabs"><button type="button" class="on" data-t="v">Video</button><button type="button" data-t="d">Analisis &amp; strategi</button></div><div class="kvdoc"></div><button type="button" class="kmx" aria-label="Tutup">&times;</button><div class="kvst"><div class="kvfr"><video playsinline controls></video></div></div><div class="kvsd"><p class="lab"></p><h3 class="kvt"></h3><p class="kvm"></p><div class="kvl"></div></div></div>';
   document.body.appendChild(vo);
-  vo.addEventListener('click',function(e){if(e.target===vo||e.target.closest('.kmx'))vc()});
-  addEventListener('keydown',function(e){if(vo.hidden)return;if(e.key==='Escape')vc();else if(e.key==='ArrowRight')play((cur+1)%VG.files.length);else if(e.key==='ArrowLeft')play((cur+VG.files.length-1)%VG.files.length)});
+  vo.addEventListener('click',function(e){if(e.target===vo||e.target.closest('.kmx')){vc();return}
+   var t=e.target.closest('.kvtabs button');if(t){tab(t.getAttribute('data-t'));return}
+   var z=e.target.closest('[data-z]');if(z)zoom(z.getAttribute('data-z'))});
+  addEventListener('keydown',function(e){if(vo.hidden)return;if(e.key==='Escape')vc();else if(e.key==='ArrowRight')play((cur+1)%ALL.length);else if(e.key==='ArrowLeft')play((cur+ALL.length-1)%ALL.length)});
   var v=vo.querySelector('video');
   v.addEventListener('loadedmetadata',function(){if(v.videoWidth&&v.videoHeight){ratio=v.videoWidth/v.videoHeight;fit()}});addEventListener('resize',function(){if(!vo.hidden)fit()});
-  v.addEventListener('ended',function(){play((cur+1)%VG.files.length)})}
- var L=vo.querySelector('.kvl');L.innerHTML='';VG.files.forEach(function(f,i){var b=document.createElement('button');b.type='button';b.innerHTML='<i>'+(i+1<10?'0':'')+(i+1)+'</i><img src="'+f.image+'" alt="" loading="lazy"><span><b>'+f.name+'</b><small>'+f.meta+'</small></span><em aria-hidden="true"><u></u><u></u><u></u></em>';b.onclick=function(){play(i)};L.appendChild(b)});
- var X=vo.querySelector('.kvx');if(X)X.remove();
- if(VG.analysis||VG.carousel||VG.pillars){X=document.createElement('button');X.type='button';X.className='kvx';X.textContent='Proses analisa, carousel & strategi \u2192';X.onclick=function(){vc();if(window.__od)window.__od(key)};vo.querySelector('.kvsd').appendChild(X)}
- vo.querySelector('.lab').textContent=(VG.title||'Video Karya')+' \u00b7 dibuat dengan AI';
+  v.addEventListener('ended',function(){play((cur+1)%ALL.length)})}
+ var L=vo.querySelector('.kvl');L.innerHTML='';
+ GRP.forEach(function(g){var h=document.createElement('p');h.className='kvg';h.innerHTML='<b>'+g.n+'</b> '+g.title+' <small>'+g.count+' video</small>';L.appendChild(h);
+  for(var i=g.start;i<g.start+g.count;i++)(function(i){var f=ALL[i],b=document.createElement('button');b.type='button';b.className='kvi';b.innerHTML='<img src="'+f.image+'" alt="" loading="lazy"><span><b>'+f.name+'</b><small>'+f.meta+'</small></span><em aria-hidden="true"><u></u><u></u><u></u></em>';b.onclick=function(){play(i)};L.appendChild(b)})(i);
+  if(g.extra){var X=document.createElement('button');X.type='button';X.className='kvx';X.textContent='Proses analisa, carousel & strategi →';X.onclick=function(){tab('d',g.key)};L.appendChild(X)}});
+ buildDoc();
+ vo.querySelector('.lab').textContent=(SC==='k1'?'Video Karya':'Kartu '+GRP[0].n+' · '+GRP[0].title)+' · '+ALL.length+' video · dibuat dengan AI';
  vo.hidden=false;document.documentElement.classList.add('kmo');play(j);fit();
 }
-var cur=0,ratio=9/16;
+function tab(t,key){var k=vo.querySelector('.kv2');k.classList.toggle('kv-doc',t==='d');[].forEach.call(vo.querySelectorAll('.kvtabs button'),function(b){b.classList.toggle('on',b.getAttribute('data-t')===t)});if(t==='d'){var d=vo.querySelector('.kvdoc');d.scrollTop=0;if(key){var e=d.querySelector('[data-g="'+key+'"]');if(e)e.scrollIntoView({block:'start'})}}else fit()}
+function zoom(src){var z=document.createElement('div');z.className='kvz';z.innerHTML='<img src="'+src+'" alt="">';z.onclick=function(){z.remove()};document.body.appendChild(z)}
+function buildDoc(){var d=vo.querySelector('.kvdoc'),h='',any=0;
+ GRP.forEach(function(g){var D=window.GF_DATA[g.key];if(!g.extra)return;any=1;h+='<section data-g="'+g.key+'"><p class="kvh"><b>'+g.n+'</b> '+g.title+'</p>';
+  if(D.analysis){h+='<h4>Proses analisa akun</h4><p class="cnote">Dijalankan dengan web analisa akun buatan sendiri, dikembangkan dengan bantuan AI. Klik gambar untuk memperbesar.</p><div class="kda">';D.analysis.forEach(function(a){h+='<figure data-z="'+a.i+'"><img src="'+a.i+'" alt="'+a.t+'" loading="lazy"><figcaption><b>'+a.t+'</b><span>'+a.d+'</span></figcaption></figure>'});h+='</div>'}
+  if(D.carousel){h+='<h4>Carousel Instagram</h4><p class="cnote">Contoh carousel edukasi 7 slide. Geser ke samping, klik untuk memperbesar.</p><div class="kdc">';D.carousel.forEach(function(c,i){h+='<img data-z="'+c+'" src="'+c+'" alt="Slide '+(i+1)+'" loading="lazy">'});h+='</div>'}
+  if(D.pillars){h+='<h4>Strategi &amp; Content Pillar</h4><p class="cnote">Rekomendasi tiga pilar konten untuk akun contoh, disusun dari hasil analisa di atas.</p><div class="kdp">';D.pillars.forEach(function(p){h+='<div><b>'+p.n+' &middot; '+p.t+'</b><span>'+p.d+'</span></div>'});h+='</div>'}
+  if(D.calendar){h+='<h4>Content Calendar (1 minggu)</h4><p class="cnote">Contoh perencanaan konten mingguan.</p><div class="kdk">';D.calendar.forEach(function(r){h+='<div><b>'+r[0]+'</b><em>'+r[1]+'</em><span>'+r[2]+'</span></div>'});h+='</div>'}
+  h+='</section>'});
+ d.innerHTML=h;vo.querySelector('.kv2').classList.toggle('kv-t',!!any);tab('v')}
 function fit(){var st=vo.querySelector('.kvst'),fr=vo.querySelector('.kvfr'),W=st.clientWidth,H=st.clientHeight;if(!W||!H)return;var w=Math.min(W,H*ratio),h=w/ratio;fr.style.width=Math.floor(w)+'px';fr.style.height=Math.floor(h)+'px'}
 function vc(){var v=vo.querySelector('video');v.pause();v.removeAttribute('src');v.load();vo.hidden=true;document.documentElement.classList.remove('kmo')}
-function play(i){var f=VG.files[i],v=vo.querySelector('video');cur=i;ratio=/9:16/.test(f.meta)?9/16:16/9;fit();v.src=f.src;v.poster=f.image;vo.querySelector('.kvt').textContent=f.name;vo.querySelector('.kvm').textContent=f.meta+' · '+(i+1)+' dari '+VG.files.length;vo.querySelector('.kvbg').style.backgroundImage='url('+f.image+')';[].forEach.call(vo.querySelectorAll('.kvl button'),function(b,k){b.classList.toggle('on',k===i)});var on=vo.querySelector('.kvl button.on');if(on&&on.scrollIntoView)on.scrollIntoView({block:'nearest',inline:'nearest'});var p=v.play();if(p&&p.catch)p.catch(function(){})}
+function play(i){var f=ALL[i],g=grpOf(i),v=vo.querySelector('video');cur=i;ratio=/9:16/.test(f.meta)?9/16:16/9;fit();v.src=f.src;v.poster=f.image;vo.querySelector('.kvt').textContent=f.name;vo.querySelector('.kvm').textContent=f.meta+' · Kartu '+g.n+' '+g.title;vo.querySelector('.kvbg').style.backgroundImage='url('+f.image+')';[].forEach.call(vo.querySelectorAll('.kvl button.kvi'),function(b,k){b.classList.toggle('on',k===i)});var on=vo.querySelector('.kvl button.on');if(on&&on.scrollIntoView)on.scrollIntoView({block:'nearest',inline:'nearest'});var p=v.play();if(p&&p.catch)p.catch(function(){})}
 function build(){
- VG=window.GF_DATA.k1;
- var gs=[{label:'Video Karya',meta:VG.files.length+' video',art:'ember',seed:11,files:VG.files.map(function(f){return{name:f.name,meta:f.meta,image:f.image}}),vid:1}].concat(G.map(function(g){return{label:g.label,art:g.art,seed:g.seed,k:g.f.map(function(x){return x[0]}),files:g.f.map(function(x){var o={name:x[1],meta:x[2]};if(x[3])o.image=x[3];else o.art=g.art;return o})}}));
+ SC='k1';mk();
+ var gs=[{label:'Video Karya',meta:ALL.length+' video',art:'ember',seed:11,files:ALL.map(function(f){return{name:f.name,meta:f.meta,image:f.image}}),vid:1}].concat(G.map(function(g){return{label:g.label,art:g.art,seed:g.seed,k:g.f.map(function(x){return x[0]}),act:g.f.map(function(x){return x[4]||''}),files:g.f.map(function(x){var o={name:x[1],meta:x[2]};if(x[3])o.image=x[3];else o.art=g.art;return o})}}));
  window.gfMenu(host,gs,function(i,j){
   var g=gs[i];
-  if(g.vid){vidOpen(j)}
-  else window.kmOpen(g.k[j])});
+  if(g.vid){SC='k1';mk();vidOpen(j)}
+  else{var ac=(g.act&&g.act[j])||'';if(ac){var p=ac.split(':');if(p[0]==='v')window.kvOpen(+p[2],p[1]);else window.kvDoc(p[1])}else window.kmOpen(g.k[j])}});
  var tw=0,tq=setInterval(function(){tw++;if(host.querySelector('.kring-r')){clearInterval(tq);ring()}else if(tw>60)clearInterval(tq)},50);
 }
 function ring(){
@@ -343,3 +315,5 @@ var od=window.openDtl;
 var wt=setInterval(function(){if(window.openDtl&&window.openDtl!==od&&window.openDtl.__w)return clearInterval(wt);if(!window.openDtl)return;var o=window.openDtl;if(o.__w)return clearInterval(wt);var w=function(k){if(!k||k==='k1'||k==='k2'){window.__od=o;window.kvOpen(0,k||'k1');return}return o.apply(this,arguments)};w.__w=1;window.openDtl=w;clearInterval(wt)},100);
 var nn=0,t=setInterval(function(){nn++;if(window.gfMenu&&window.GF_DATA&&window.openDtl){clearInterval(t);build()}else if(nn>150)clearInterval(t)},100);
 })();
+
+;(function(){document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-vk]');if(!a||!window.kvOpen)return;e.preventDefault();e.stopImmediatePropagation();window.kvOpen(0,a.getAttribute('data-vk'))},true)})();
