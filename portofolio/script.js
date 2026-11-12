@@ -9,7 +9,7 @@ function setActive(id){
   if(id===cur&&done)return;
   cur=id;done=1;
   $$('.nl').forEach(function(a){a.classList.toggle('on',a.getAttribute('data-go')===id)});
-  document.title=(id==='home'?'Dika Priyadi – AI Automation & Digital Solutions Builder':({about:'Tentang',skills:'Keahlian',experience:'Pengalaman',karya:'Karya',kontak:'Kontak'}[id]||id)+' – Dika Priyadi');
+  document.title=(id==='home'?'Dika Priyadi – Perancang Otomasi AI & Solusi Digital':({about:'Tentang',skills:'Keahlian',experience:'Pengalaman',karya:'Karya',kontak:'Kontak'}[id]||id)+' – Dika Priyadi');
 }
 function show(id,push,instant){
   if(ids.indexOf(id)<0)id='home';
@@ -234,10 +234,10 @@ setTimeout(function(){show((location.hash||'#home').slice(1),false,true)},60);
 })();
 ;(function(){
 var G=[
- {label:'Konten & Analisis',art:'dusk',seed:5,f:[[4,'Produksi Konten AI','Carousel, artikel, video','assets/c-1.webp'],[6,'Analisis akun (1)','Video · Social Media','v/naya1.jpg','v:k2:0'],[6,'Analisis akun (2)','Video · Social Media','v/naya2.jpg','v:k2:1'],[6,'Proses analisa akun','6 tangkapan layar + penjelasan','v/an2.jpg','d:k2'],[6,'Carousel, pilar & kalender','Strategi konten 1 minggu','v/car1.jpg','d:k2']]},
- {label:'Fokus AI Automation',art:'ember',seed:11,f:[[0,'AI Automation','Fokus utama',null],[1,'Koordinasi Workflow AI','GPT, Gemini, Claude',null],[2,'Bot WhatsApp','Dua bot di VPS','assets/k-bot.webp'],[3,'CatatanAkademik.com','Platform edukasi UT','assets/k-admin.webp'],[2,'Iklan WhatsApp Bot','Video · dibuat dengan AI','v/bot.jpg','v:k4:0']]},
- {label:'Alat & Pengembangan',art:'glacier',seed:8,f:[[7,'Bedah Laporan & Cek Parafrase','Pemeriksaan dokumen UT',null],[9,'Media Belajar AI Guru TK/SD','Sedang dikembangkan',null],[10,'Studio Konten','Sedang dikembangkan',null]]},
- {label:'Layanan Freelance',art:'aurora',seed:3,f:[[11,'Layanan Freelance','Yang bisa dikerjakan',null],[12,'Portofolio Web dan Presentasi','Portofolio, PPT, desain',null],[13,'Media Sosial dan Konten Edukasi','Feed, konten, akademik',null]]}
+ {label:'Konten & Analisis',art:'dusk',seed:5,f:[[4,'Produksi Konten AI','Carousel, artikel, video','assets/c-1.webp'],[6,'Analisis akun (1)','Video · Media Sosial','v/naya1.jpg','v:k2:0'],[6,'Analisis akun (2)','Video · Media Sosial','v/naya2.jpg','v:k2:1'],[6,'Proses analisa akun','6 tangkapan layar + penjelasan','v/an2.jpg','d:k2'],[6,'Carousel, pilar & kalender','Strategi konten 1 minggu','v/car1.jpg','d:k2']]},
+ {label:'Fokus Otomasi AI',art:'ember',seed:11,f:[[0,'Otomasi AI','Fokus utama',null],[1,'Koordinasi Alur Kerja AI','GPT, Gemini, Claude',null],[2,'Bot WhatsApp','Dua bot di VPS','assets/k-bot.webp'],[3,'CatatanAkademik.com','Platform edukasi UT','assets/k-admin.webp'],[2,'Iklan Bot WhatsApp','Video · dibuat dengan AI','v/bot.jpg','v:k4:0']]},
+ {label:'Alat & Pengembangan',art:'glacier',seed:8,f:[[7,'Bedah Laporan & Cek Parafrase','Pemeriksaan dokumen UT',null],[8,'Analisa Sahabat Analisis','Alat analisa akun',null]]},
+ {label:'Layanan Lepas',art:'aurora',seed:3,f:[[11,'Layanan Lepas','Yang bisa dikerjakan',null],[12,'Portofolio Web dan Presentasi','Portofolio, PPT, desain',null],[13,'Media Sosial dan Konten Edukasi','Feed, konten, akademik',null]]}
 ];
 var ov=document.getElementById('kmOv'),body=document.getElementById('kmBody'),host=document.getElementById('kfm');
 if(!ov||!host)return;
@@ -277,8 +277,8 @@ function buildDoc(){var d=vo.querySelector('.kvdoc'),h='',any=0;
  GRP.forEach(function(g){var D=window.GF_DATA[g.key];if(!g.extra)return;any=1;h+='<section data-g="'+g.key+'"><p class="kvh"><b>'+g.n+'</b> '+g.title+'</p>';
   if(D.analysis){h+='<h4>Proses analisa akun</h4><p class="cnote">Dijalankan dengan web analisa akun buatan sendiri, dikembangkan dengan bantuan AI. Klik gambar untuk memperbesar.</p><div class="kda">';D.analysis.forEach(function(a){h+='<figure data-z="'+a.i+'"><img src="'+a.i+'" alt="'+a.t+'" loading="lazy"><figcaption><b>'+a.t+'</b><span>'+a.d+'</span></figcaption></figure>'});h+='</div>'}
   if(D.carousel){h+='<h4>Carousel Instagram</h4><p class="cnote">Contoh carousel edukasi 7 slide. Geser ke samping, klik untuk memperbesar.</p><div class="kdc">';D.carousel.forEach(function(c,i){h+='<img data-z="'+c+'" src="'+c+'" alt="Slide '+(i+1)+'" loading="lazy">'});h+='</div>'}
-  if(D.pillars){h+='<h4>Strategi &amp; Content Pillar</h4><p class="cnote">Rekomendasi tiga pilar konten untuk akun contoh, disusun dari hasil analisa di atas.</p><div class="kdp">';D.pillars.forEach(function(p){h+='<div><b>'+p.n+' &middot; '+p.t+'</b><span>'+p.d+'</span></div>'});h+='</div>'}
-  if(D.calendar){h+='<h4>Content Calendar (1 minggu)</h4><p class="cnote">Contoh perencanaan konten mingguan.</p><div class="kdk">';D.calendar.forEach(function(r){h+='<div><b>'+r[0]+'</b><em>'+r[1]+'</em><span>'+r[2]+'</span></div>'});h+='</div>'}
+  if(D.pillars){h+='<h4>Strategi &amp; Pilar Konten</h4><p class="cnote">Rekomendasi tiga pilar konten untuk akun contoh, disusun dari hasil analisa di atas.</p><div class="kdp">';D.pillars.forEach(function(p){h+='<div><b>'+p.n+' &middot; '+p.t+'</b><span>'+p.d+'</span></div>'});h+='</div>'}
+  if(D.calendar){h+='<h4>Kalender Konten (1 minggu)</h4><p class="cnote">Contoh perencanaan konten mingguan.</p><div class="kdk">';D.calendar.forEach(function(r){h+='<div><b>'+r[0]+'</b><em>'+r[1]+'</em><span>'+r[2]+'</span></div>'});h+='</div>'}
   h+='</section>'});
  d.innerHTML=h;vo.querySelector('.kv2').classList.toggle('kv-t',!!any);tab('v')}
 function fit(){var st=vo.querySelector('.kvst'),fr=vo.querySelector('.kvfr'),W=st.clientWidth,H=st.clientHeight;if(!W||!H)return;var w=Math.min(W,H*ratio),h=w/ratio;fr.style.width=Math.floor(w)+'px';fr.style.height=Math.floor(h)+'px'}
