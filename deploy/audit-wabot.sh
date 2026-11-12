@@ -35,3 +35,10 @@ h "Tes Gemini langsung"; K=$(grep -E "^(GEMINI_API_KEY|GOOGLE_API_KEY|GEMINI_KEY
 h "Sebab sambung ulang"; echo "$J" | grep -iE "statusCode|reason|DisconnectReason|restartRequired|closed:" | grep -v "closed: -1" | sed -E 's/^.*node\[[0-9]+\]: //' | sort | uniq -c | sort -rn | head -6 | cut -c1-140
 echo "$J" | grep -B3 "BOT GRUP BERHASIL" | grep -viE "upsert|masuk" | tail -8 | sed -E 's/^.*node\[[0-9]+\]: //' | cut -c1-140
 fi
+if [ "$P" = 6 ]; then
+h "ENV yang dipakai kode (src)"; grep -ohE "process\.env\.[A-Z0-9_]+" $A/src/*.js | sort -u | sed 's/process.env.//' | tr '\n' ' '; echo
+h "ENV terisi di .env (nama saja)"; grep -E "^[A-Z0-9_]+=.+" $A/.env | cut -d= -f1 | tr '\n' ' '; echo
+h "ENV di unit systemd (nama saja)"; systemctl show wabot -p Environment -p EnvironmentFiles | sed -E 's/=[^ ]*/=*/g' | cut -c1-200
+h "Tes keluar jaringan"; for u in https://generativelanguage.googleapis.com https://api.openai.com https://web.whatsapp.com; do curl -s -m 8 -o /dev/null -w "$u %{http_code} %{time_total}s\n" $u; done
+h "Port 9router di VPS?"; (ss -ltn | grep -E ":(20128|3000|4000|8080)\b" | head -3) ; grep -rhoE "http://[0-9a-z.:-]+/v1" $A/.env $A/src/*.js 2>/dev/null | sort -u | head -3
+fi
