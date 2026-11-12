@@ -235,7 +235,7 @@ setTimeout(function(){show((location.hash||'#home').slice(1),false,true)},60);
 ;(function(){
 var G=[
  {label:'Konten & Analisis',art:'dusk',seed:5,f:[[4,'Produksi Konten AI','Carousel, artikel, video','assets/c-1.webp'],[6,'Analisis akun (1)','Video · Social Media','v/naya1.jpg','v:k2:0'],[6,'Analisis akun (2)','Video · Social Media','v/naya2.jpg','v:k2:1'],[6,'Proses analisa akun','6 tangkapan layar + penjelasan','v/an2.jpg','d:k2'],[6,'Carousel, pilar & kalender','Strategi konten 1 minggu','v/car1.jpg','d:k2']]},
- {label:'Fokus AI Automation',art:'ember',seed:11,f:[[0,'AI Automation','Fokus utama',null],[1,'Koordinasi Workflow AI','GPT, Gemini, Claude',null],[2,'Bot WhatsApp','Dua bot di VPS','assets/k-bot.webp'],[3,'CatatanAkademik.com','Platform edukasi UT','assets/k-admin.webp']]},
+ {label:'Fokus AI Automation',art:'ember',seed:11,f:[[0,'AI Automation','Fokus utama',null],[1,'Koordinasi Workflow AI','GPT, Gemini, Claude',null],[2,'Bot WhatsApp','Dua bot di VPS','assets/k-bot.webp'],[3,'CatatanAkademik.com','Platform edukasi UT','assets/k-admin.webp'],[2,'Iklan WhatsApp Bot','Video · dibuat dengan AI','v/bot.jpg','v:k4:0']]},
  {label:'Alat & Pengembangan',art:'glacier',seed:8,f:[[7,'Bedah Laporan & Cek Parafrase','Pemeriksaan dokumen UT',null],[9,'Media Belajar AI Guru TK/SD','Sedang dikembangkan',null],[10,'Studio Konten','Sedang dikembangkan',null]]},
  {label:'Layanan Freelance',art:'aurora',seed:3,f:[[11,'Layanan Freelance','Yang bisa dikerjakan',null],[12,'Portofolio Web dan Presentasi','Portofolio, PPT, desain',null],[13,'Media Sosial dan Konten Edukasi','Feed, konten, akademik',null]]}
 ];
@@ -271,7 +271,7 @@ function vidOpen(j){
  vo.querySelector('.lab').textContent=(SC==='k1'?'Video Karya':'Kartu '+GRP[0].n+' · '+GRP[0].title)+' · '+ALL.length+' video · dibuat dengan AI';
  vo.hidden=false;document.documentElement.classList.add('kmo');play(j);fit();
 }
-function tab(t,key){var k=vo.querySelector('.kv2');k.classList.toggle('kv-doc',t==='d');[].forEach.call(vo.querySelectorAll('.kvtabs button'),function(b){b.classList.toggle('on',b.getAttribute('data-t')===t)});if(t==='d'){var d=vo.querySelector('.kvdoc');d.scrollTop=0;if(key){var e=d.querySelector('[data-g="'+key+'"]');if(e)e.scrollIntoView({block:'start'})}}else fit()}
+function tab(t,key){var k=vo.querySelector('.kv2');k.classList.toggle('kv-doc',t==='d');[].forEach.call(vo.querySelectorAll('.kvtabs button'),function(b){b.classList.toggle('on',b.getAttribute('data-t')===t)});if(t==='d'){var d=vo.querySelector('.kvdoc');d.scrollTop=0;if(key){var e=d.querySelector('[data-g="'+key+'"]');if(e)d.scrollTop=e.offsetTop-d.offsetTop}}else fit()}
 function zoom(src){var z=document.createElement('div');z.className='kvz';z.innerHTML='<img src="'+src+'" alt="">';z.onclick=function(){z.remove()};document.body.appendChild(z)}
 function buildDoc(){var d=vo.querySelector('.kvdoc'),h='',any=0;
  GRP.forEach(function(g){var D=window.GF_DATA[g.key];if(!g.extra)return;any=1;h+='<section data-g="'+g.key+'"><p class="kvh"><b>'+g.n+'</b> '+g.title+'</p>';
@@ -312,7 +312,7 @@ function ring(){
  p.onclick=function(){go(1)};q.onclick=function(){go(-1)};host.appendChild(p);host.appendChild(q);
 }
 var od=window.openDtl;
-var wt=setInterval(function(){if(window.openDtl&&window.openDtl!==od&&window.openDtl.__w)return clearInterval(wt);if(!window.openDtl)return;var o=window.openDtl;if(o.__w)return clearInterval(wt);var w=function(k){if(!k||k==='k1'||k==='k2'){window.__od=o;window.kvOpen(0,k||'k1');return}return o.apply(this,arguments)};w.__w=1;window.openDtl=w;clearInterval(wt)},100);
+var wt=setInterval(function(){if(window.openDtl&&window.openDtl!==od&&window.openDtl.__w)return clearInterval(wt);if(!window.openDtl)return;var o=window.openDtl;if(o.__w)return clearInterval(wt);var w=function(k){if(!k||k==='k1'||k==='k2'||k==='k4'){window.__od=o;window.kvOpen(0,k||'k1');return}return o.apply(this,arguments)};w.__w=1;window.openDtl=w;clearInterval(wt)},100);
 var nn=0,t=setInterval(function(){nn++;if(window.gfMenu&&window.GF_DATA&&window.openDtl){clearInterval(t);build()}else if(nn>150)clearInterval(t)},100);
 })();
 
