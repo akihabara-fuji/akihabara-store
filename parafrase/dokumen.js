@@ -223,6 +223,40 @@ module.exports = function mountDokumen({ app, express, db, root, requireAdmin })
     });
   });
 
+  /* Kirim perbaikan ke WhatsApp mahasiswa: buat tautan unduh berbatas waktu, catat pesan di wa_outbox (dikirim bot dalam ~30 detik), dan beri info status. */
+  db.exec("CREATE TABLE IF NOT EXISTS doc_fix_links(token TEXT PRIMARY KEY, doc_id TEXT NOT NULL, created_at INTEGER NOT NULL, expires_at INTEGER NOT NULL)");
+  const FIX_DAYS = 14;
+  const fixSite = () => (process.env.ACAD_URL || process.env.SITE_URL || "https://nextaja.com").replace(/\/+$/, "");
+  app.post(base + "/:id/kirim-wa", requireAdmin, (req, res) => {
+    res.set("Cache-Control", "no-store");
+    const r = /^[a-f0-9]{16}$/.test(req.params.id) && db.prepare("SELECT * FROM doc_library WHERE id=?").get(req.params.id);
+    if (!r) return res.status(404).json({ error: "Dokumen tidak ditemukan." });
+    const to = wa62(r.wa);
+    if (!to) return res.status(400).json({ error: "Nomor WhatsApp mahasiswa belum diisi atau tidak valid. Isi di kolom WhatsApp lalu Simpan data." });
+    if (!r.fix_path || r.purged_at) return res.status(409).json({ error: "File perbaikan belum ada. Pilih file perbaikan dulu." });
+    const now = nowMs(), token = crypto.randomBytes(20).toString("hex");
+    db.prepare("INSERT INTO doc_fix_links(token,doc_id,created_at,expires_at) VALUES(?,?,?,?)").run(token, r.id, now, now + FIX_DAYS * 864e5);
+    const nm = clip(r.student_name, 40), hook = !!process.env.PARAFRASE_WA_WEBHOOK;
+    const text = `Halo${nm ? " kak " + nm : ""}, nama gw Fathan dari Catatan Akademik. File perbaikan "${clip(r.title || r.name, 80)}" sudah siap. Unduh di: ${fixSite()}/ms/perbaikan/${token}\n\nTautan aktif ${FIX_DAYS} hari. Catatan: hasil ini tidak menjamin nilai Drillbit turun. Mohon periksa dengan teliti, lalu cek ulang dengan laporan Drillbit baru dari UT.\n\nPesan otomatis, mohon tidak dibalas ke nomor ini.`;
+    let queued = true;
+    try { db.prepare("INSERT INTO wa_outbox(order_id,to_number,kind,text,status,dedupe_key,created_at) VALUES(?,?,?,?,?,?,?)").run(r.order_id || null, to, "perbaikan", text, hook ? "queued" : "manual", `fix:${r.id}:${now}`, now); } catch (e) { queued = false; console.error("[dokumen] kirim-wa:", e && e.message); }
+    if (!queued) return res.status(500).json({ error: "Pesan gagal dicatat. Coba lagi." });
+    db.prepare("UPDATE doc_library SET fix_sent_at=?, status='perbaikan_dikirim' WHERE id=?").run(now, r.id);
+    res.json({ ok: true, mode: hook ? "otomatis" : "manual", waLink: `https://wa.me/${to}?text=${encodeURIComponent(text)}` });
+  });
+  app.get(base + "/:id/wa-status", requireAdmin, (req, res) => {
+    res.set("Cache-Control", "no-store");
+    const row = db.prepare("SELECT status, attempts, last_error, created_at, sent_at FROM wa_outbox WHERE dedupe_key LIKE ? ORDER BY id DESC LIMIT 1").get(`fix:${String(req.params.id).replace(/[^a-f0-9]/g, "")}:%`);
+    res.json({ item: row || null });
+  });
+  app.get("/ms/perbaikan/:token", (req, res) => {
+    res.set({ "Cache-Control": "no-store", "X-Robots-Tag": "noindex" });
+    const l = /^[a-f0-9]{40}$/.test(req.params.token) && db.prepare("SELECT * FROM doc_fix_links WHERE token=?").get(req.params.token);
+    const r = l && l.expires_at > nowMs() && db.prepare("SELECT * FROM doc_library WHERE id=?").get(l.doc_id);
+    if (!r || !r.fix_path || r.purged_at) return res.status(404).type("text/plain").send("Tautan tidak berlaku atau file sudah dihapus. Hubungi admin.");
+    res.download(path.join(priv, r.fix_path), r.fix_name || "perbaikan.docx");
+  });
+
   app.get(base + "/:id/unduh", requireAdmin, (req, res) => {
     const r = /^[a-f0-9]{16}$/.test(req.params.id) && db.prepare("SELECT * FROM doc_library WHERE id=?").get(req.params.id);
     if (!r) return res.status(404).json({ error: "Dokumen tidak ditemukan." });
