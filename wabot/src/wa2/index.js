@@ -71,7 +71,7 @@ export function createWa2({ cfg, db, wa, ai, site, log, now = () => Date.now() }
       if (!first) return;
       s.greeted = 1; return reply(n.chat, s, `Halo kak 👋 Aku asisten otomatis Catatan Akademik / NextAja. Admin akan membalas pesan kakak secepatnya ya. Lihat layanan di nextaja.com. (Balas *BERHENTI* kalau tidak ingin dihubungi.)`);
     }
-    const sys = persona(cfg.botName === "Nara" ? "Nara" : cfg.botName, "asisten otomatis penjualan Catatan Akademik dan NextAja (bukan manusia; akui itu bila ditanya)") +
+    const sys = persona(cfg.botName, "asisten otomatis penjualan Catatan Akademik dan NextAja (bukan manusia; akui itu bila ditanya)") +
       `\n\nPengetahuan resmi (satu-satunya sumber harga & layanan):\n${know}\n\nAturan: jangan menjanjikan hasil/nilai; jangan menerima atau meminta password/kode OTP/data bank; pembayaran hanya lewat halaman pesanan di situs; jangan menekan atau membujuk berlebihan; jika kakak sudah jelas tidak berminat, hormati. Jika pertanyaan di luar pengetahuan di atas, atau pelanggan ingin bicara dengan manusia, awali jawaban dengan [ADMIN] lalu satu kalimat singkat.${first ? "\nIni pesan pertama: perkenalkan diri sebagai asisten otomatis dalam satu kalimat." : ""}`;
     const r = await ai.ask({ system: sys, user: n.text.slice(0, 800), who: "sales:" + n.chat, free: true });
     if (!r.ok) { if (first) { s.greeted = 1; await reply(n.chat, s, "Halo kak 👋 Aku asisten otomatis NextAja. Saat ini aku belum bisa jawab detail, admin akan membalas ya 🙏"); } return; }

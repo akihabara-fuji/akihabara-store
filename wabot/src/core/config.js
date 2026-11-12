@@ -6,7 +6,7 @@ export function loadConfig(env = process.env) {
     slot: env.SLOT || "wa1",
     dataDir: env.DATA_DIR || "/opt/wabot2/data",
     authDir: env.AUTH_DIR || "/opt/wabot2/auth/" + (env.SLOT || "wa1"),
-    botName: env.BOT_NAME || "Nara",
+    botName: env.BOT_NAME || "Putri",
     admins: String(env.ADMIN_NUMBERS || "6285722227544").split(",").map(digits).filter(Boolean),
     gemini: { key: env.GEMINI_API_KEY || "", model: env.GEMINI_MODEL || "", base: env.GEMINI_BASE || "https://generativelanguage.googleapis.com/v1beta" },
     siteUrl: (env.SITE_INTERNAL_URL || "http://127.0.0.1:3200").replace(/\/+$/, ""),

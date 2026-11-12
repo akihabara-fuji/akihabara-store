@@ -17,13 +17,13 @@ const last = s => s.wa.sent[s.wa.sent.length - 1]?.text;
 
 test("diam bila tidak dipanggil", async () => { const s = setup(); await s.bot.handle(msg("halo semua")); assert.equal(s.wa.sent.length, 0); });
 test("catatan: simpan, lihat, hapus", async () => {
-  const s = setup(); await s.bot.handle(msg("Nara, catat tugas statistik dikumpul Jumat")); assert.match(last(s), /#1/);
+  const s = setup(); await s.bot.handle(msg("Putri, catat tugas statistik dikumpul Jumat")); assert.match(last(s), /#1/);
   await s.bot.handle(msg("nara catatan")); assert.match(last(s), /tugas statistik/);
   await s.bot.handle(msg("nara hapus catatan 1")); assert.match(last(s), /dihapus/);
   await s.bot.handle(msg("nara catatan")); assert.match(last(s), /Belum ada/);
 });
 test("pengingat: buat, daftar, jatuh tempo terkirim sekali", async () => {
-  const s = setup(); await s.bot.handle(msg("Nara ingatkan 30 menit lagi kumpul laporan")); assert.match(last(s), /kumpul laporan/);
+  const s = setup(); await s.bot.handle(msg("Putri ingatkan 30 menit lagi kumpul laporan")); assert.match(last(s), /kumpul laporan/);
   await s.bot.tick(); const n0 = s.wa.sent.length; s.adv(31 * 60e3); await s.bot.tick(); assert.equal(s.wa.sent.length, n0 + 1); assert.match(last(s), /Pengingat: kumpul laporan/);
   await s.bot.tick(); assert.equal(s.wa.sent.length, n0 + 1);
 });
