@@ -757,22 +757,26 @@
        {
         "src": "assets/v-cek-nilai.mp4",
         "poster": "assets/v-cek-nilai.webp",
-        "t": "Cek nilai"
+        "t": "Cek nilai",
+        "c": "Info cara melihat nilai UAS Universitas Terbuka dalam video motion pendek."
        },
        {
         "src": "assets/v-uaop.mp4",
         "poster": "assets/v-uaop.webp",
-        "t": "Video info UAOP"
+        "t": "Video info UAOP",
+        "c": "Penjelasan tata cara UAOP UT dalam video motion berdurasi 32 detik."
        },
        {
         "src": "assets/v-showcase.mp4",
         "poster": "assets/v-showcase.webp",
-        "t": "Showcase"
+        "t": "Showcase",
+        "c": "Contoh gaya video motion dengan teks kata kunci besar yang muncul bergantian."
        },
        {
         "src": "assets/v-explainer.mp4",
         "poster": "assets/v-explainer.webp",
-        "t": "Explainer"
+        "t": "Explainer",
+        "c": "Penjelasan singkat cara membuat video motion secara gratis."
        }
       ]
      },
@@ -783,17 +787,20 @@
        {
         "src": "assets/v-jeans-flare.mp4",
         "poster": "assets/v-jeans-flare.webp",
-        "t": "Iklan jeans flare"
+        "t": "Iklan jeans flare",
+        "c": "Iklan AI 10 detik: model memperagakan celana jeans flare."
        },
        {
         "src": "assets/v-jeans-wide.mp4",
         "poster": "assets/v-jeans-wide.webp",
-        "t": "Iklan jeans wide leg"
+        "t": "Iklan jeans wide leg",
+        "c": "Iklan AI 10 detik: model memperagakan celana jeans wide leg."
        },
        {
         "src": "assets/v-es-krim.mp4",
         "poster": "assets/v-es-krim.webp",
-        "t": "Iklan es krim buah"
+        "t": "Iklan es krim buah",
+        "c": "Iklan AI 10 detik: anak menikmati es krim rasa buah."
        }
       ]
      },
@@ -804,17 +811,20 @@
        {
         "src": "assets/v-naya-1.mp4",
         "poster": "assets/v-naya-1.webp",
-        "t": "Analisis akun, Naya"
+        "t": "Analisis akun, Naya",
+        "c": "Klip AI 10 detik: karakter Naya menganalisis akun media sosial untuk promosi layanan analisis akun."
        },
        {
         "src": "assets/v-tuntasync.mp4",
         "poster": "assets/v-tuntasync.webp",
-        "t": "Tuntasync"
+        "t": "Tuntasync",
+        "c": "Klip AI 8 detik: mahasiswa memakai Tuntasync untuk riset."
        },
        {
         "src": "assets/v-mga-iklan.mp4",
         "poster": "assets/v-mga-iklan.webp",
-        "t": "Konsep iklan MGA"
+        "t": "Konsep iklan MGA",
+        "c": "Klip konsep iklan AI untuk MGA (proyek konsep, bukan iklan tayang)."
        }
       ]
      }

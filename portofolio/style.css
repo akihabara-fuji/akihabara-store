@@ -661,3 +661,6 @@ a.ft:hover{color:var(--ac)}.ft i{font-style:normal;color:var(--ac);transition:tr
 .klist .krow:hover,.klist .krow.on{animation-play-state:paused}
 .klist .krow:hover{--ty:-8px}
 }
+.kvf figcaption{max-width:220px;min-width:140px;width:max-content}
+.kvf figcaption b{display:block;font-size:.76rem;color:var(--h);font-weight:600;margin-bottom:2px}
+.kvf figcaption span{display:block;font-size:.72rem;line-height:1.4}
