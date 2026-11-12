@@ -19,6 +19,7 @@ rm -f "$ROOT"/index.html "$ROOT"/style.css "$ROOT"/script.js "$ROOT"/lanyard.js 
 cp "$NEW"/index.html "$NEW"/style.css "$NEW"/script.js "$NEW"/lanyard.js "$NEW"/gf.js "$ROOT"/
 mkdir -p "$ROOT/v" && cp "$NEW"/v/* "$ROOT/v/"
 mkdir -p "$ROOT/assets" && cp "$NEW"/assets/* "$ROOT/assets/"
+cp "$NEW"/karya.json "$ROOT"/
 cp "$NEW"/og.jpg "$NEW"/favicon.svg "$NEW"/apple-touch-icon.png "$NEW"/robots.txt "$NEW"/sitemap.xml "$ROOT"/
 chown -R www-data:www-data "$ROOT"; chmod -R a+rX "$ROOT"
 for p in / /style.css /script.js /lanyard.js /gf.js /karya.json /v/hero_robot.webp /v/jeans_full.mp4 /v/bot_full.mp4 /assets/m1.webp /assets/CV_Dika_Priyadi.pdf /assets/k-bot.webp /assets/f-sadewa.webp /assets/c-1.webp /assets/v-uaop.mp4 /og.jpg /favicon.svg /robots.txt /sitemap.xml; do
