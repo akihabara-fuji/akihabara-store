@@ -1,0 +1,95 @@
+[
+ {
+  "judul": "Iklan Bot WhatsApp",
+  "poster": "v/bot.jpg",
+  "video": "v/bot_full.mp4",
+  "keterangan": "Video dibuat dengan AI.",
+  "kategori": "Video"
+ },
+ {
+  "judul": "Iklan fashion (flare)",
+  "poster": "v/jeans.jpg",
+  "video": "v/jeans_full.mp4",
+  "keterangan": "Video dibuat dengan AI.",
+  "kategori": "Video"
+ },
+ {
+  "judul": "Iklan fashion (wide leg)",
+  "poster": "v/wide.jpg",
+  "video": "v/wide_full.mp4",
+  "keterangan": "Video dibuat dengan AI.",
+  "kategori": "Video"
+ },
+ {
+  "judul": "Iklan produk (es)",
+  "poster": "v/es.jpg",
+  "video": "v/es_full.mp4",
+  "keterangan": "Video dibuat dengan AI.",
+  "kategori": "Video"
+ },
+ {
+  "judul": "Motion brand (Tuntasync)",
+  "poster": "v/tuntasync.jpg",
+  "video": "v/tuntasync_full.mp4",
+  "keterangan": "Video dibuat dengan AI.",
+  "kategori": "Video"
+ },
+ {
+  "judul": "Promo riset (Tuntasync)",
+  "poster": "v/student.jpg",
+  "video": "v/student_full.mp4",
+  "keterangan": "Video dibuat dengan AI.",
+  "kategori": "Video"
+ },
+ {
+  "judul": "Iklan baju anak",
+  "poster": "v/kids.jpg",
+  "video": "v/kids_full.mp4",
+  "keterangan": "Video dibuat dengan AI.",
+  "kategori": "Video"
+ },
+ {
+  "judul": "Iklan blouse",
+  "poster": "v/blouse.jpg",
+  "video": "v/blouse_full.mp4",
+  "keterangan": "Video dibuat dengan AI.",
+  "kategori": "Video"
+ },
+ {
+  "judul": "Video edukasi UAOP",
+  "poster": "v/uaop.jpg",
+  "video": "v/uaop_full.mp4",
+  "keterangan": "Video dibuat dengan AI.",
+  "kategori": "Video"
+ },
+ {
+  "judul": "Analisis akun (1)",
+  "poster": "v/naya1.jpg",
+  "video": "v/naya1_full.mp4",
+  "keterangan": "Video dibuat dengan AI.",
+  "kategori": "Video"
+ },
+ {
+  "judul": "Analisis akun (2)",
+  "poster": "v/naya2.jpg",
+  "video": "v/naya2_full.mp4",
+  "keterangan": "Video dibuat dengan AI.",
+  "kategori": "Video"
+ },
+ {
+  "judul": "Carousel Info Ujian UT",
+  "poster": "v/car1.jpg",
+  "video": "",
+  "keterangan": "Carousel Instagram, 7 slide.",
+  "kategori": "Carousel",
+  "slides": [
+   "v/car1.jpg",
+   "v/car2.jpg",
+   "v/car3.jpg",
+   "v/car4.jpg",
+   "v/car5.jpg",
+   "v/car6.jpg",
+   "v/car7.jpg"
+  ]
+ }
+]
