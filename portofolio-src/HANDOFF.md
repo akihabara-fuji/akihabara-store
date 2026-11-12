@@ -6,7 +6,7 @@ Web: https://dikapriyadi.catatanakademik.com | Posisi: AI Automation | Teks form
 - portofolio-src/content.default.json = isi teks/data. portofolio-src/render.js = pembuat HTML. portofolio-src/build.sh = bangun.
 - portofolio/ = hasil yang dideploy (index.html hasil build, style.css, script.js, assets/). style.css dan script.js diedit langsung.
 - JANGAN edit portofolio/index.html langsung; ubah JSON/render.js lalu build.
-- Build: `git pull` lalu `bash portofolio-src/build.sh <versi>`. Versi wajib naik tiap deploy (nginx cache css/js 1 tahun). Versi live terakhir: 20261144 (Beranda = hero asli DIKA PRIYADI di atas + rincian di bawah: chip jalur, 8 kartu bernomor, karya pilihan, angka, CTA)
+- Build: `git pull` lalu `bash portofolio-src/build.sh <versi>`. Versi wajib naik tiap deploy (nginx cache css/js 1 tahun). Versi live terakhir: 20261145 (kartu 05 punya 4 folder 3D: carousel IG, konten edukasi, affiliate, iklan layanan AI, 10 video ber-caption, aset c-*.webp dan v-*.mp4 wajib masuk daftar update-portofolio.sh; rail Karya kartu melayang 3D; sebelumnya 20261144: Beranda = hero asli DIKA PRIYADI di atas + rincian di bawah: chip jalur, 8 kartu bernomor, karya pilihan, angka, CTA)
 - Uji: Playwright, Chrome di /usr/bin/google-chrome, ukuran 1440x900, 1366x700, 390x844. Tanpa pageerror, tanpa scroll horizontal.
 
 ## Struktur halaman
