@@ -213,7 +213,7 @@ function hup(){var r=hero.getBoundingClientRect(),total=hero.offsetHeight-vh;if(
 function htick(){cur+=(tgt-cur)*.08;
 var meet=Math.max(0,Math.min(1,cur/.18)),e=meet*meet*meet*(meet*(meet*6-15)+10),sp=16*(1-e);
 robot.style.setProperty('--hx',(-sp)+'vw');human.style.setProperty('--hx',sp+'vw');
-var ft=Math.max(0,Math.min(1,(cur-.21)/.12)),fo=1-(ft*ft*ft*(ft*(ft*6-15)+10)),hop=(.55+e*.45)*fo;
+var ft=Math.max(0,Math.min(1,(cur-.21)/.12)),fo=1-(ft*ft*ft*(ft*(ft*6-15)+10)),hop=e*fo;
 robot.style.setProperty('--hop',hop.toFixed(3));human.style.setProperty('--hop',hop.toFixed(3));badge.style.opacity=hop.toFixed(3);
 var t1=Math.max(0,Math.min(1,(cur-.08)/.22));h1.style.opacity=t1;h1.style.transform='translateY('+((1-t1)*20)+'px)';
 var t2=Math.max(0,Math.min(1,(cur-.22)/.22));sub.style.opacity=t2;sub.style.transform='translateY('+((1-t2)*20)+'px)';
