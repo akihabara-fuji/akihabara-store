@@ -1,80 +1,123 @@
 [
  {
+  "judul": "Video penjelasan Produksi Konten AI",
+  "poster": "v/produksi_ai.jpg",
+  "video": "v/produksi_ai_full.mp4",
+  "keterangan": "Video 10 detik yang menjelaskan layanan Produksi Konten AI. Visual dihasilkan AI.",
+  "kategori": "Video",
+  "keahlian": [
+   "Produksi Konten AI"
+  ]
+ },
+ {
   "judul": "Iklan Bot WhatsApp",
   "poster": "v/bot.jpg",
   "video": "v/bot_full.mp4",
   "keterangan": "Video dibuat dengan AI.",
-  "kategori": "Video"
+  "kategori": "Video",
+  "keahlian": [
+   "Sistem Otomasi AI"
+  ]
  },
  {
   "judul": "Iklan fashion (flare)",
   "poster": "v/jeans.jpg",
   "video": "v/jeans_full.mp4",
   "keterangan": "Video dibuat dengan AI.",
-  "kategori": "Video"
+  "kategori": "Video",
+  "keahlian": [
+   "Produksi Konten AI"
+  ]
  },
  {
   "judul": "Iklan fashion (wide leg)",
   "poster": "v/wide.jpg",
   "video": "v/wide_full.mp4",
   "keterangan": "Video dibuat dengan AI.",
-  "kategori": "Video"
+  "kategori": "Video",
+  "keahlian": [
+   "Produksi Konten AI"
+  ]
  },
  {
   "judul": "Iklan produk (es)",
   "poster": "v/es.jpg",
   "video": "v/es_full.mp4",
   "keterangan": "Video dibuat dengan AI.",
-  "kategori": "Video"
+  "kategori": "Video",
+  "keahlian": [
+   "Produksi Konten AI"
+  ]
  },
  {
   "judul": "Motion brand (Tuntasync)",
   "poster": "v/tuntasync.jpg",
   "video": "v/tuntasync_full.mp4",
   "keterangan": "Video dibuat dengan AI.",
-  "kategori": "Video"
+  "kategori": "Video",
+  "keahlian": [
+   "Produksi Konten AI"
+  ]
  },
  {
   "judul": "Promo riset (Tuntasync)",
   "poster": "v/student.jpg",
   "video": "v/student_full.mp4",
   "keterangan": "Video dibuat dengan AI.",
-  "kategori": "Video"
+  "kategori": "Video",
+  "keahlian": [
+   "Produksi Konten AI"
+  ]
  },
  {
   "judul": "Iklan baju anak",
   "poster": "v/kids.jpg",
   "video": "v/kids_full.mp4",
   "keterangan": "Video dibuat dengan AI.",
-  "kategori": "Video"
+  "kategori": "Video",
+  "keahlian": [
+   "Produksi Konten AI"
+  ]
  },
  {
   "judul": "Iklan blouse",
   "poster": "v/blouse.jpg",
   "video": "v/blouse_full.mp4",
   "keterangan": "Video dibuat dengan AI.",
-  "kategori": "Video"
+  "kategori": "Video",
+  "keahlian": [
+   "Produksi Konten AI"
+  ]
  },
  {
   "judul": "Video edukasi UAOP",
   "poster": "v/uaop.jpg",
   "video": "v/uaop_full.mp4",
   "keterangan": "Video dibuat dengan AI.",
-  "kategori": "Video"
+  "kategori": "Video",
+  "keahlian": [
+   "Situs Web dengan AI"
+  ]
  },
  {
   "judul": "Analisis akun (1)",
   "poster": "v/naya1.jpg",
   "video": "v/naya1_full.mp4",
   "keterangan": "Video dibuat dengan AI.",
-  "kategori": "Video"
+  "kategori": "Video",
+  "keahlian": [
+   "Analisis Media Sosial"
+  ]
  },
  {
   "judul": "Analisis akun (2)",
   "poster": "v/naya2.jpg",
   "video": "v/naya2_full.mp4",
   "keterangan": "Video dibuat dengan AI.",
-  "kategori": "Video"
+  "kategori": "Video",
+  "keahlian": [
+   "Analisis Media Sosial"
+  ]
  },
  {
   "judul": "Carousel Info Ujian UT",
@@ -90,6 +133,10 @@
    "v/car5.jpg",
    "v/car6.jpg",
    "v/car7.jpg"
+  ],
+  "keahlian": [
+   "Produksi Konten AI",
+   "Situs Web dengan AI"
   ]
  }
 ]
