@@ -21,7 +21,7 @@ rm -f "$ROOT"/index.html "$ROOT"/cara-pesan.html "$ROOT"/style.css "$ROOT"/scrip
 cp "$NEW"/index.html "$NEW"/cara-pesan.html "$NEW"/style.css "$NEW"/script.js "$NEW"/favicon.svg "$NEW"/robots.txt "$NEW"/sitemap.xml "$ROOT"/
 chown -R www-data:www-data "$ROOT"; chmod -R a+rX "$ROOT"
 for p in / /cara-pesan.html /style.css /script.js /favicon.svg /robots.txt /sitemap.xml; do
-  s=$(curl -s -o /dev/null -w '%{http_code}' -H 'Host: heyaipeople.site' "http://127.0.0.1$p"); echo "$p $s"
+  s=$(curl -sk -o /dev/null -w '%{http_code}' -H 'Host: heyaipeople.site' "https://127.0.0.1$p"); echo "$p $s"
   [ "$s" = 200 ] || fail $LINENO
 done
 echo "OK, commit $C live. Cadangan: $BAK"
