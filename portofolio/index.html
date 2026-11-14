@@ -269,18 +269,21 @@ cue.style.opacity=Math.max(0,Math.min(1,1-cur*6));
 requestAnimationFrame(htick)}
 addEventListener('scroll',hup,{passive:true});addEventListener('resize',hup);hup();htick();
 })();
-/* Tentang: foto muncul duluan saat digulir, lalu teks menyusul */
+/* Tentang: foto muncul duluan saat digulir, lalu teks menyusul (desktop); transisi halus saat lebar layar digeser melewati 860px */
 (function(){var sec=$('.sec.ab');if(!sec)return;var ph=$('#aph',sec),abx=$('.abx',sec);if(!ph||!abx)return;
-if(innerWidth<860){ph.style.opacity=1;abx.style.opacity=1;return}
-var atgt=0,acur=0;
-function aup(){var r=sec.getBoundingClientRect(),total=sec.offsetHeight-vh;if(total<=0)return;atgt=Math.max(0,Math.min(1,-r.top/total))}
+var mq=matchMedia('(max-width:860px)');var atgt=0,acur=0;
+function aup(){if(mq.matches)return;var r=sec.getBoundingClientRect(),total=sec.offsetHeight-vh;if(total<=0)return;atgt=Math.max(0,Math.min(1,-r.top/total))}
 function atick(){acur+=(atgt-acur)*.08;
 var p1=Math.max(0,Math.min(1,acur/.32)),pe=p1*p1*p1*(p1*(p1*6-15)+10);
 ph.style.opacity=pe.toFixed(3);ph.style.transform='translateY('+((1-pe)*18)+'px)';
 var t1=Math.max(0,Math.min(1,(acur-.38)/.3)),te=t1*t1*t1*(t1*(t1*6-15)+10);
 abx.style.opacity=te.toFixed(3);abx.style.transform='translateY('+((1-te)*20)+'px)';
 requestAnimationFrame(atick)}
-addEventListener('scroll',aup,{passive:true});addEventListener('resize',aup);aup();atick();
+function onBreak(){sec.style.transition='opacity .22s ease';sec.style.opacity='0';
+setTimeout(function(){if(!mq.matches){aup();acur=atgt}sec.style.opacity='1';setTimeout(function(){sec.style.transition='';},260)},140)}
+if(mq.addEventListener)mq.addEventListener('change',onBreak);else if(mq.addListener)mq.addListener(onBreak);
+if(mq.matches){ph.style.opacity=1;abx.style.opacity=1}
+addEventListener('scroll',aup,{passive:true});addEventListener('resize',aup);aup();if(!mq.matches)acur=atgt;atick();
 })();
 /* smooth scroll (lerp) */
 var cur=scrollY,tgt=scrollY,raf=0,last=0,modal=false;
