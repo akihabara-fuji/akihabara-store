@@ -34,13 +34,20 @@
     <p>Pilih produk, cek penjelasannya, lalu pesan lewat WhatsApp admin.</p>
   </div>
 
-  <div class="catgrid">
-    <a class="pcard" href="produk-contoh.html">
+  <div class="catfilter" id="catfilter" role="tablist" aria-label="Filter kategori produk">
+    <button class="catchip is-active" data-cat="all">Semua</button>
+    <button class="catchip" data-cat="prompt">Paket Prompt</button>
+    <button class="catchip" data-cat="template">Template</button>
+    <button class="catchip" data-cat="panduan">Panduan</button>
+  </div>
+
+  <div class="catgrid" id="catgrid">
+    <a class="pcard" href="produk-contoh.html" data-cat="prompt">
       <div class="pcard-thumb">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10M7 13h6"/></svg>
       </div>
       <div class="pcard-body">
-        <span class="pcard-tag">Contoh kategori</span>
+        <span class="pcard-tag">Paket Prompt</span>
         <h3>[Contoh] Paket Prompt — nama produk</h3>
         <p>Satu kalimat jelas: produk ini buat ngapain dan siapa yang cocok pakai.</p>
         <div class="pcard-foot">
@@ -50,14 +57,26 @@
       </div>
     </a>
 
-    <div class="pcard pcard-empty">
+    <div class="pcard pcard-empty" data-cat="template">
+      <div class="pcard-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 10h16"/></svg></div>
+      <div class="pcard-body">
+        <span class="pcard-tag">Template</span>
+        <h3>[Contoh] Slot kategori Template</h3>
+        <p>Muncul di sini begitu produk kategori Template ditambahkan beneran.</p>
+      </div>
+    </div>
+
+    <div class="pcard pcard-empty" data-cat="panduan">
       <div class="pcard-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></div>
       <div class="pcard-body">
-        <h3>Slot produk berikutnya</h3>
-        <p>Muncul otomatis begitu produk kedua ditambahkan.</p>
+        <span class="pcard-tag">Panduan</span>
+        <h3>[Contoh] Slot kategori Panduan</h3>
+        <p>Muncul di sini begitu produk kategori Panduan ditambahkan beneran.</p>
       </div>
     </div>
   </div>
+
+  <p class="catempty" id="catempty" hidden>Belum ada produk di kategori ini.</p>
 </section>
 
 <footer class="wrap">
@@ -71,5 +90,26 @@
 </footer>
 
 <script src="script.js"></script>
+<script>
+(function(){
+  var chips = document.querySelectorAll('#catfilter .catchip');
+  var cards = document.querySelectorAll('#catgrid [data-cat]');
+  var emptyMsg = document.getElementById('catempty');
+  chips.forEach(function(chip){
+    chip.addEventListener('click', function(){
+      chips.forEach(function(c){ c.classList.remove('is-active'); });
+      chip.classList.add('is-active');
+      var cat = chip.dataset.cat;
+      var visible = 0;
+      cards.forEach(function(card){
+        var show = cat === 'all' || card.dataset.cat === cat;
+        card.style.display = show ? '' : 'none';
+        if(show) visible++;
+      });
+      emptyMsg.hidden = visible > 0;
+    });
+  });
+})();
+</script>
 </body>
 </html>

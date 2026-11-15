@@ -166,6 +166,15 @@ footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-s
 }
 
 /* katalog */
+.catfilter{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:22px}
+.catchip{
+  font-family:'Space Grotesk',sans-serif;font-size:.86rem;font-weight:600;color:var(--muted);
+  background:var(--card2);border:1px solid var(--line);border-radius:999px;
+  padding:8px 16px;cursor:pointer;transition:color .15s,border-color .15s,background .15s;
+}
+.catchip:hover{color:var(--txt)}
+.catchip.is-active{color:var(--accent-ink);background:var(--accent);border-color:var(--accent)}
+.catempty{color:var(--muted);font-size:.92rem;padding:24px 0}
 .catgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
 .pcard{
   display:flex;flex-direction:column;background:var(--card2);border:1px solid var(--line);
