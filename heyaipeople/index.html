@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>heyaipeople — Toko Template Remotion 2D</title>
-    <meta name="description" content="Template & komponen video motion 2D berbasis Remotion (React + TypeScript), tinggal ganti teks lalu render. Pemesanan manual lewat WhatsApp admin.">
+    <title>heyaipeople — Marketplace Prompt Foto AI &amp; Storyboard Video 2D</title>
+    <meta name="description" content="Prompt foto AI siap pakai dan paket storyboard gambar ke video AI (Remotion 2D). Lihat hasil & preview dulu, pemesanan manual lewat WhatsApp admin.">
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="canonical" href="https://heyaipeople.site/">
     <!-- Tailwind CSS -->
@@ -32,17 +32,17 @@
                     },
                     animation: {
                         'float-slow': 'floatSlow 6s ease-in-out infinite',
-                        'float-delayed': 'floatSlow 7s ease-in-out 2s infinite',
+                        'float-delayed': 'floatSlow 7s ease-in-out 1.8s infinite',
                         'float-reverse': 'floatReverse 6.5s ease-in-out 1s infinite',
                     },
                     keyframes: {
                         floatSlow: {
                             '0%, 100%': { transform: 'translateY(0px) rotate(var(--tw-rotate, 0deg))' },
-                            '50%': { transform: 'translateY(-10px) rotate(var(--tw-rotate, 0deg))' },
+                            '50%': { transform: 'translateY(-8px) rotate(var(--tw-rotate, 0deg))' },
                         },
                         floatReverse: {
                             '0%, 100%': { transform: 'translateY(0px) rotate(var(--tw-rotate, 0deg))' },
-                            '50%': { transform: 'translateY(9px) rotate(var(--tw-rotate, 0deg))' },
+                            '50%': { transform: 'translateY(7px) rotate(var(--tw-rotate, 0deg))' },
                         }
                     }
                 }
@@ -54,10 +54,9 @@
             background-color: #FAFAFA;
             color: #09090B;
         }
-        /* Scrollbar bersih mode terang */
         ::-webkit-scrollbar {
-            width: 7px;
-            height: 7px;
+            width: 6px;
+            height: 6px;
         }
         ::-webkit-scrollbar-track {
             background: #F4F4F5;
@@ -69,551 +68,405 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #A1A1AA;
         }
-        /* Radial fade di tengah hero agar teks tetap tajam di atas ASCII Matrix */
         .hero-radial-mask {
-            background: radial-gradient(circle at 50% 46%, rgba(250, 250, 250, 0.96) 0%, rgba(250, 250, 250, 0.78) 38%, rgba(250, 250, 250, 0.1) 75%, rgba(250, 250, 250, 0) 100%);
+            background: radial-gradient(circle at 50% 48%, rgba(250, 250, 250, 0.97) 0%, rgba(250, 250, 250, 0.84) 36%, rgba(250, 250, 250, 0.15) 72%, rgba(250, 250, 250, 0) 100%);
         }
-        /* Range Scrubber Remotion Sandbox */
-        input[type="range"].remotion-scrubber {
-            -webkit-appearance: none;
-            background: transparent;
-        }
-        input[type="range"].remotion-scrubber::-webkit-slider-runnable-track {
-            height: 6px;
-            border-radius: 9999px;
-            background: #E4E4E7;
-        }
-        input[type="range"].remotion-scrubber::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 16px;
-            width: 10px;
-            border-radius: 3px;
-            background: #FF4D1C;
-            border: 2px solid #FFFFFF;
-            margin-top: -5px;
-            cursor: ew-resize;
-            box-shadow: 0 2px 6px rgba(255, 77, 28, 0.45);
-        }
-        /* Caption outline ala TikTok / YouTube Shorts */
         .caption-stroke {
             text-shadow:
-                -1.5px -1.5px 0 #09090B,
-                 1.5px -1.5px 0 #09090B,
-                -1.5px  1.5px 0 #09090B,
-                 1.5px  1.5px 0 #09090B,
-                 0px    3px   4px rgba(0,0,0,0.45);
+                -1.2px -1.2px 0 #09090B,
+                 1.2px -1.2px 0 #09090B,
+                -1.2px  1.2px 0 #09090B,
+                 1.2px  1.2px 0 #09090B,
+                 0px    2px   3px rgba(0,0,0,0.4);
+        }
+        .prompt-locked-blur {
+            filter: blur(4px);
+            user-select: none;
+            pointer-events: none;
         }
     </style>
 </head>
-<body class="antialiased selection:bg-orange-500/20 selection:text-orange-900 overflow-x-hidden">
+<body class="antialiased selection:bg-orange-500/20 selection:text-orange-950 overflow-x-hidden">
 
-    <!-- 1. BACKGROUND CANVAS (ASCII / HALFTONE MATRIX INTERAKTIF) -->
+    <!-- 1. INTERACTIVE ASCII / HALFTONE MATRIX CANVAS -->
     <canvas id="ascii-matrix-canvas" class="fixed inset-0 w-full h-full pointer-events-none z-0"></canvas>
 
-    <!-- PENANDA DRAFT: 6 produk di katalog ini contoh struktur, belum tentu template nyata -->
-    <div class="relative z-50 bg-amber-50 border-b border-amber-200 text-amber-800 text-center text-xs sm:text-[13px] py-2 px-4">
-        ⚠ <strong>KERANGKA / DRAFT</strong> — 6 produk Remotion 2D di katalog ini contoh struktur &amp; harga, belum tentu template yang sudah jadi. Cek &amp; ganti dengan produk asli sebelum publish final.
-    </div>
+    <div class="relative z-50 bg-amber-50 border-b border-amber-200 text-amber-800 text-center text-xs sm:text-[13px] py-2 px-4">⚠ <strong>KERANGKA / DRAFT</strong> — 10 produk prompt di katalog ini contoh struktur &amp; harga, belum tentu prompt yang sudah final. Cek &amp; ganti dengan katalog asli sebelum publish final.</div>
 
-    <!-- 2. FLOATING PILL NAVBAR (PERSIS REFERENSI TAYANG STUDIO) -->
-    <header class="sticky top-4 z-40 px-4">
-        <nav class="max-w-5xl mx-auto h-14 px-3 sm:px-4 rounded-full bg-white/90 backdrop-blur-md border border-zinc-200/80 shadow-[0_8px_30px_rgba(0,0,0,0.04)] flex items-center justify-between gap-2">
-            
-            <!-- Brand Kiri: Ikon Rubah/Bot Geometri Oranye + heyaipeople .site -->
+    <!-- 2. FLOATING PILL TOP NAVBAR -->
+    <header class="sticky top-3 z-40 px-4">
+        <nav class="max-w-5xl mx-auto h-13 py-2 px-3 sm:px-4 rounded-full bg-white/92 backdrop-blur-md border border-zinc-200/85 shadow-[0_6px_24px_rgba(0,0,0,0.04)] flex items-center justify-between gap-2">
+            <!-- Brand -->
             <a href="#" class="flex items-center gap-2 pl-1 group shrink-0">
-                <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#FF4D1C] to-amber-500 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
-                    <!-- SVG Cute Geometric 2D Fox/Bot Mark -->
-                    <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+                <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#FF4D1C] to-amber-500 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
+                    <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M4 3L8.5 7.5H15.5L20 3L19 13.5L12 20.5L5 13.5L4 3Z"/>
                         <circle cx="9.2" cy="12" r="1.2" fill="#18181B"/>
                         <circle cx="14.8" cy="12" r="1.2" fill="#18181B"/>
-                        <path d="M10.8 15L12 16.3L13.2 15H10.8Z" fill="#18181B"/>
                     </svg>
                 </div>
                 <div class="flex items-baseline tracking-tight">
-                    <span class="font-display font-extrabold text-sm sm:text-base text-zinc-950">heyaipeople</span>
-                    <span class="font-sans font-medium text-xs sm:text-sm text-zinc-400 ml-0.5">.site</span>
+                    <span class="font-display font-extrabold text-sm sm:text-[15px] text-zinc-950">heyaipeople</span>
+                    <span class="font-sans font-medium text-xs text-zinc-400">.site</span>
+                    <span class="hidden lg:inline-block ml-2 px-2 py-0.5 rounded-md bg-zinc-100 text-[10px] font-mono font-semibold text-zinc-600">Prompt &amp; Remotion 2D</span>
                 </div>
             </a>
 
-            <!-- Link Navigasi Tengah (Bahasa Indonesia) -->
-            <div class="hidden md:flex items-center gap-5 lg:gap-6 text-[13px] font-medium text-zinc-600">
+            <!-- Anchor Links -->
+            <div class="hidden md:flex items-center gap-5 text-[13px] font-medium text-zinc-600">
+                <a href="#prompt-foto" class="hover:text-zinc-950 transition">Prompt Foto</a>
+                <a href="#storyboard-video" class="hover:text-zinc-950 transition">Storyboard &rarr; Video</a>
                 <a href="#cara-kerja" class="hover:text-zinc-950 transition">Cara Kerja</a>
-                <a href="#katalog" class="hover:text-zinc-950 transition">Katalog 2D</a>
-                <a href="#paket-harga" class="hover:text-zinc-950 transition">Paket Harga</a>
-                <a href="#faq" class="hover:text-zinc-950 transition">FAQ</a>
-                <a href="https://wa.me/6285722227544" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-zinc-200 bg-zinc-50/80 hover:bg-emerald-50 hover:border-emerald-200 text-zinc-800 transition">
-                    <span class="w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center">
-                        <i data-lucide="message-circle" class="w-2.5 h-2.5 fill-white"></i>
-                    </span>
-                    <span class="text-xs font-semibold">WhatsApp</span>
-                </a>
+                <a href="#bundling" class="hover:text-zinc-950 transition">Bundling</a>
             </div>
 
-            <!-- Aksi Kanan: Keranjang (0) + Tombol Hitam Beli Paket -->
-            <div class="flex items-center gap-2 shrink-0">
-                <button onclick="openCartDrawer()" class="px-3 py-1.5 rounded-full text-xs sm:text-[13px] font-semibold text-zinc-700 hover:text-zinc-950 hover:bg-zinc-100 transition flex items-center gap-1.5 cursor-pointer">
-                    <i data-lucide="shopping-bag" class="w-3.5 h-3.5 text-zinc-600"></i>
+            <!-- Right Actions: Contoh Terbuka + WhatsApp + Keranjang -->
+            <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                <button onclick="openUnlockedModal()" class="px-2.5 py-1.5 rounded-full bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 text-emerald-800 text-[11px] sm:text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer">
+                    <i data-lucide="unlock" class="w-3 h-3 text-emerald-600"></i>
+                    <span class="hidden sm:inline">Contoh Terbuka:</span>
+                    <span id="nav-unlocked-count" class="font-mono font-bold">1</span>
+                </button>
+                <a href="https://wa.me/6285722227544" target="_blank" rel="noopener" class="hidden sm:flex px-2.5 py-1.5 rounded-full bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 text-emerald-800 text-[11px] font-semibold items-center gap-1.5 transition">
+                    <i data-lucide="message-circle" class="w-3 h-3 text-emerald-600"></i>
+                    <span>WhatsApp</span>
+                </a>
+                <button onclick="openCartDrawer()" class="px-3.5 py-1.5 rounded-full bg-zinc-950 hover:bg-zinc-800 text-white text-xs font-semibold shadow-xs flex items-center gap-1.5 transition active:scale-95 cursor-pointer">
+                    <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
                     <span>Keranjang (<span id="nav-cart-count">1</span>)</span>
                 </button>
-                <a href="#paket-harga" class="px-4 py-2 rounded-full bg-zinc-950 hover:bg-zinc-800 text-white text-xs sm:text-[13px] font-semibold shadow-sm transition active:scale-95">
-                    Beli Paket
-                </a>
             </div>
         </nav>
     </header>
 
-    <!-- 3. HERO SECTION (KOMPOSISI PERSIS REFERENSI SCREENSHOT) -->
-    <section class="relative z-10 pt-10 pb-20 lg:pt-14 lg:pb-28 overflow-hidden">
-        <!-- Lapisan Radial White Fade agar teks headline super tajam -->
+    <!-- 3. COMPACT AUDITED HERO SECTION (FITS CLEANLY ABOVE THE FOLD) -->
+    <section class="relative z-10 pt-6 pb-12 lg:pt-9 lg:pb-16 overflow-hidden">
         <div class="absolute inset-0 hero-radial-mask pointer-events-none"></div>
 
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 relative">
             
-            <!-- ==========================================================
-                 FLOATING APP / TECH ICON TILES (6 UBIN IKON MELAYANG)
-                 ========================================================== -->
-            <!-- 1. Top-Left: Claude / AI Spark Burst (#D97757) -->
-            <div style="--tw-rotate: -6deg;" class="hidden sm:flex animate-float-slow absolute -top-2 left-[4%] lg:left-[7%] w-14 h-14 lg:w-16 lg:h-16 rounded-2xl bg-white shadow-[0_12px_30px_rgba(0,0,0,0.07)] border border-zinc-100 items-center justify-center -rotate-6 select-none">
-                <svg class="w-8 h-8 text-[#D97757]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
-                    <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07M7.5 2.8l9 18.4M16.5 2.8l-9 18.4"/>
+            <!-- 6 FLOATING ROUNDED WHITE TECH/AI ICON TILES (PROPORTIONAL 48px-54px) -->
+            <!-- 1. Midjourney / Flux Burst -->
+            <div style="--tw-rotate: -6deg;" class="hidden sm:flex animate-float-slow absolute top-1 left-[3%] lg:left-[5%] w-12 h-12 lg:w-[54px] lg:h-[54px] rounded-2xl bg-white shadow-[0_10px_24px_rgba(0,0,0,0.06)] border border-zinc-100 items-center justify-center -rotate-6 select-none" title="Flux.1 & Midjourney">
+                <svg class="w-6 h-6 text-[#D97757]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                    <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07"/>
                 </svg>
             </div>
 
-            <!-- 2. Top-Center-Left: Gemini / Motion Starburst (#6366F1) -->
-            <div style="--tw-rotate: 6deg;" class="hidden md:flex animate-float-delayed absolute -top-6 left-[25%] lg:left-[27%] w-14 h-14 lg:w-16 lg:h-16 rounded-2xl bg-white shadow-[0_12px_30px_rgba(0,0,0,0.07)] border border-zinc-100 items-center justify-center rotate-6 select-none">
-                <svg class="w-8 h-8 text-[#6366F1]" viewBox="0 0 24 24" fill="currentColor">
+            <!-- 2. Gemini / AI Spark -->
+            <div style="--tw-rotate: 6deg;" class="hidden md:flex animate-float-delayed absolute -top-3 left-[24%] lg:left-[26%] w-12 h-12 rounded-2xl bg-white shadow-[0_10px_24px_rgba(0,0,0,0.06)] border border-zinc-100 items-center justify-center rotate-6 select-none" title="Gemini AI">
+                <svg class="w-6 h-6 text-[#6366F1]" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 2C12 7.5 16.5 12 22 12C16.5 12 12 16.5 12 22C12 16.5 7.5 12 2 12C7.5 12 12 7.5 12 2Z"/>
                 </svg>
             </div>
 
-            <!-- 3. Top-Center-Right: OpenAI / Neural Swirl (#18181B) -->
-            <div style="--tw-rotate: -5deg;" class="hidden md:flex animate-float-reverse absolute -top-4 right-[25%] lg:right-[28%] w-14 h-14 lg:w-16 lg:h-16 rounded-2xl bg-white shadow-[0_12px_30px_rgba(0,0,0,0.07)] border border-zinc-100 items-center justify-center -rotate-5 select-none">
-                <svg class="w-8 h-8 text-zinc-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                    <path d="M12 3a4.5 4.5 0 0 1 4.1 2.7A4.5 4.5 0 0 1 20 10a4.5 4.5 0 0 1-1.9 3.7A4.5 4.5 0 0 1 14 20a4.5 4.5 0 0 1-4.1-2.7A4.5 4.5 0 0 1 6 13.6a4.5 4.5 0 0 1 1.9-3.7A4.5 4.5 0 0 1 12 3Z"/>
-                    <circle cx="12" cy="11.5" r="2.5"/>
+            <!-- 3. Kling / Runway Neural -->
+            <div style="--tw-rotate: -5deg;" class="hidden md:flex animate-float-reverse absolute -top-3 right-[24%] lg:right-[26%] w-12 h-12 rounded-2xl bg-white shadow-[0_10px_24px_rgba(0,0,0,0.06)] border border-zinc-100 items-center justify-center -rotate-5 select-none" title="Kling & Runway Gen-3">
+                <svg class="w-6 h-6 text-zinc-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
+                    <circle cx="12" cy="12" r="8"/>
+                    <polygon points="10 8.5 16 12 10 15.5 10 8.5" fill="currentColor" stroke="none"/>
                 </svg>
             </div>
 
-            <!-- 4. Top-Right: Remotion / Frame Slide Icon (#18181B) -->
-            <div style="--tw-rotate: 8deg;" class="hidden sm:flex animate-float-slow absolute top-2 right-[4%] lg:right-[7%] w-14 h-14 lg:w-16 lg:h-16 rounded-2xl bg-white shadow-[0_12px_30px_rgba(0,0,0,0.07)] border border-zinc-100 items-center justify-center rotate-8 select-none">
-                <div class="w-8 h-9 rounded-md bg-zinc-900 flex flex-col justify-between p-1.5">
-                    <div class="w-full h-3.5 rounded-xs bg-white"></div>
-                    <div class="flex gap-1">
-                        <span class="w-1.5 h-1.5 rounded-full bg-zinc-500"></span>
-                        <span class="w-3 h-1.5 rounded-full bg-zinc-600"></span>
-                    </div>
+            <!-- 4. Remotion 2D Frame -->
+            <div style="--tw-rotate: 7deg;" class="hidden sm:flex animate-float-slow absolute top-1 right-[3%] lg:right-[5%] w-12 h-12 lg:w-[54px] lg:h-[54px] rounded-2xl bg-white shadow-[0_10px_24px_rgba(0,0,0,0.06)] border border-zinc-100 items-center justify-center rotate-7 select-none" title="Remotion 2D">
+                <div class="w-6 h-7 rounded bg-zinc-900 flex flex-col justify-between p-1">
+                    <div class="w-full h-3 rounded-xs bg-white"></div>
+                    <div class="w-3 h-1 rounded-full bg-zinc-500"></div>
                 </div>
             </div>
 
-            <!-- 5. Mid-Left: Node.js / JS Hexagonal Badge (#16A34A) -->
-            <div style="--tw-rotate: 6deg;" class="hidden lg:flex animate-float-delayed absolute top-[54%] left-[2%] w-16 h-16 rounded-2xl bg-white shadow-[0_12px_30px_rgba(0,0,0,0.07)] border border-zinc-100 items-center justify-center rotate-6 select-none">
-                <svg class="w-9 h-9 text-[#16A34A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polygon points="12 2 21 7 21 17 12 22 3 17 3 7 12 2"/>
-                    <text x="12" y="15" text-anchor="middle" font-size="7.5" font-weight="bold" fill="currentColor" stroke="none" font-family="monospace">JS</text>
+            <!-- 5. React / TSX -->
+            <div style="--tw-rotate: 6deg;" class="hidden lg:flex animate-float-delayed absolute bottom-4 left-[2%] w-12 h-12 rounded-2xl bg-white shadow-[0_10px_24px_rgba(0,0,0,0.06)] border border-zinc-100 items-center justify-center rotate-6 select-none" title="React TSX">
+                <svg class="w-6 h-6 text-sky-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <circle cx="12" cy="12" r="2.2" fill="currentColor"/>
+                    <ellipse cx="12" cy="12" rx="9.5" ry="3.8" transform="rotate(30 12 12)"/>
+                    <ellipse cx="12" cy="12" rx="9.5" ry="3.8" transform="rotate(-30 12 12)"/>
                 </svg>
             </div>
 
-            <!-- 6. Bottom-Right: Remotion 2D / Motion Ribbon Badge (#22C55E / #0EA5E9) -->
-            <div style="--tw-rotate: -6deg;" class="hidden lg:flex animate-float-reverse absolute top-[56%] right-[2%] w-16 h-16 rounded-2xl bg-white shadow-[0_12px_30px_rgba(0,0,0,0.07)] border border-zinc-100 items-center justify-center -rotate-6 select-none">
-                <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none">
-                    <path d="M5 5H19L12 12H19L5 19L12 12H5V5Z" fill="#22C55E"/>
-                    <path d="M12 12L19 5V12H12Z" fill="#0EA5E9"/>
-                </svg>
+            <!-- 6. JSON Config -->
+            <div style="--tw-rotate: -6deg;" class="hidden lg:flex animate-float-reverse absolute bottom-4 right-[2%] w-12 h-12 rounded-2xl bg-white shadow-[0_10px_24px_rgba(0,0,0,0.06)] border border-zinc-100 items-center justify-center -rotate-6 select-none" title="JSON Prompt">
+                <span class="font-mono font-bold text-xs text-emerald-600">{ }</span>
             </div>
 
-            <!-- ==========================================================
-                 4 FLOATING TILTED 9:16 2D MOTION VIDEO PREVIEW CARDS
-                 ========================================================== -->
-            
-            <!-- CARD 1 (TOP-LEFT, -rotate-6): Teko Putih Mengepul + Telur 2D ("an egg / telur 2D") -->
-            <div onclick="openSandboxPreset(0)" title="Klik untuk coba template ini di Sandbox 2D" style="--tw-rotate: -6deg;" class="hidden md:block animate-float-slow absolute top-16 left-[9%] lg:left-[12%] w-36 lg:w-44 aspect-[9/16] rounded-2xl shadow-2xl border-[3px] border-white overflow-hidden -rotate-6 cursor-pointer hover:scale-105 transition-transform z-10 bg-amber-100">
+            <!-- 4 TILTED 9:16 2D MOTION PREVIEW CARDS (COMPACT w-28 lg:w-[132px]) -->
+            <!-- Top-Left Card -->
+            <a href="#prompt-foto" style="--tw-rotate: -6deg;" class="hidden md:block animate-float-slow absolute top-11 left-[8%] lg:left-[10%] w-28 lg:w-[132px] aspect-[9/16] rounded-2xl shadow-xl border-[2.5px] border-white overflow-hidden -rotate-6 hover:scale-105 transition-transform z-10 bg-amber-100">
                 <canvas id="hero-card-1" class="w-full h-full block"></canvas>
-                <div class="absolute bottom-3 inset-x-2 text-center pointer-events-none">
-                    <span class="font-display font-extrabold text-[11px] lg:text-xs text-amber-300 caption-stroke tracking-tight">an egg / telur 2D</span>
+                <div class="absolute bottom-2 inset-x-1 text-center pointer-events-none">
+                    <span class="font-display font-extrabold text-[10px] text-amber-300 caption-stroke">Foto &rarr; 2D</span>
                 </div>
-            </div>
+            </a>
 
-            <!-- CARD 2 (BOTTOM-LEFT, rotate-6): Langit 2D & Pesawat/Kereta Horizon Loop -->
-            <div onclick="openSandboxPreset(1)" title="Klik untuk coba template ini di Sandbox 2D" style="--tw-rotate: 6deg;" class="hidden md:block animate-float-delayed absolute -bottom-14 left-[11%] lg:left-[14%] w-36 lg:w-44 aspect-[9/16] rounded-2xl shadow-2xl border-[3px] border-white overflow-hidden rotate-6 cursor-pointer hover:scale-105 transition-transform z-10 bg-sky-200">
+            <!-- Bottom-Left Card -->
+            <a href="#storyboard-video" style="--tw-rotate: 6deg;" class="hidden md:block animate-float-delayed absolute -bottom-6 left-[10%] lg:left-[12%] w-28 lg:w-[132px] aspect-[9/16] rounded-2xl shadow-xl border-[2.5px] border-white overflow-hidden rotate-6 hover:scale-105 transition-transform z-10 bg-sky-200">
                 <canvas id="hero-card-2" class="w-full h-full block"></canvas>
-                <div class="absolute bottom-3 inset-x-2 text-center pointer-events-none">
-                    <span class="font-display font-extrabold text-[11px] lg:text-xs text-white caption-stroke tracking-tight">travel loop 2D</span>
+                <div class="absolute bottom-2 inset-x-1 text-center pointer-events-none">
+                    <span class="font-display font-extrabold text-[10px] text-white caption-stroke">Scene 01-02</span>
                 </div>
-            </div>
+            </a>
 
-            <!-- CARD 3 (TOP-RIGHT, rotate-6): Karakter Flat-Vector di Latar Oranye + Hati Pink ("Then you get...") -->
-            <div onclick="openSandboxPreset(0)" title="Klik untuk coba template ini di Sandbox 2D" style="--tw-rotate: 6deg;" class="hidden md:block animate-float-reverse absolute top-14 right-[9%] lg:right-[12%] w-36 lg:w-44 aspect-[9/16] rounded-2xl shadow-2xl border-[3px] border-white overflow-hidden rotate-6 cursor-pointer hover:scale-105 transition-transform z-10 bg-orange-400">
+            <!-- Top-Right Card -->
+            <a href="#prompt-foto" style="--tw-rotate: 6deg;" class="hidden md:block animate-float-reverse absolute top-11 right-[8%] lg:right-[10%] w-28 lg:w-[132px] aspect-[9/16] rounded-2xl shadow-xl border-[2.5px] border-white overflow-hidden rotate-6 hover:scale-105 transition-transform z-10 bg-orange-400">
                 <canvas id="hero-card-3" class="w-full h-full block"></canvas>
-                <div class="absolute bottom-3 inset-x-2 text-center pointer-events-none">
-                    <span class="font-display font-extrabold text-[11px] lg:text-xs text-amber-300 caption-stroke tracking-tight">Then you get...</span>
+                <div class="absolute bottom-2 inset-x-1 text-center pointer-events-none">
+                    <span class="font-display font-extrabold text-[10px] text-amber-300 caption-stroke">Karakter 2D</span>
                 </div>
-            </div>
+            </a>
 
-            <!-- CARD 4 (BOTTOM-RIGHT, -rotate-6): Bola Putih & Panah Oranye Naik ke Langit Biru ("the air got") -->
-            <div onclick="openSandboxPreset(1)" title="Klik untuk coba template ini di Sandbox 2D" style="--tw-rotate: -6deg;" class="hidden md:block animate-float-slow absolute -bottom-14 right-[11%] lg:right-[14%] w-36 lg:w-44 aspect-[9/16] rounded-2xl shadow-2xl border-[3px] border-white overflow-hidden -rotate-6 cursor-pointer hover:scale-105 transition-transform z-10 bg-sky-300">
+            <!-- Bottom-Right Card -->
+            <a href="#storyboard-video" style="--tw-rotate: -6deg;" class="hidden md:block animate-float-slow absolute -bottom-6 right-[10%] lg:right-[12%] w-28 lg:w-[132px] aspect-[9/16] rounded-2xl shadow-xl border-[2.5px] border-white overflow-hidden -rotate-6 hover:scale-105 transition-transform z-10 bg-sky-300">
                 <canvas id="hero-card-4" class="w-full h-full block"></canvas>
-                <div class="absolute bottom-3 inset-x-2 text-center pointer-events-none">
-                    <span class="font-display font-extrabold text-[11px] lg:text-xs text-white caption-stroke tracking-tight">the air got</span>
+                <div class="absolute bottom-2 inset-x-1 text-center pointer-events-none">
+                    <span class="font-display font-extrabold text-[10px] text-white caption-stroke">Video AI 60fps</span>
                 </div>
-            </div>
+            </a>
 
-            <!-- ==========================================================
-                 CENTER TYPOGRAPHY & CTA (INTI HERO)
-                 ========================================================== -->
-            <div class="relative z-20 max-w-2xl mx-auto text-center pt-6 pb-4">
-                
-                <!-- Top Pill Badge -->
-                <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-white border border-zinc-200/90 shadow-xs mb-7">
-                    <span class="px-2 py-0.5 rounded-md bg-zinc-950 text-white font-mono text-[10px] font-bold tracking-wider">
-                        REMOTION 2D
-                    </span>
-                    <span class="text-xs font-medium text-zinc-600 pr-1">
-                        Template Siap Render &amp; Kode TSX • Update 2026 &rsaquo;
-                    </span>
+            <!-- CENTER HERO CONTENT (CLAMPED 2.6rem - 4.4rem) -->
+            <div class="relative z-20 max-w-xl mx-auto text-center pt-4 pb-2">
+                <!-- Status Pill -->
+                <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-white border border-zinc-200/90 shadow-2xs mb-5">
+                    <span class="px-2 py-0.5 rounded bg-zinc-950 text-white font-mono text-[10px] font-bold">MARKETPLACE AI</span>
+                    <span class="text-xs font-medium text-zinc-600 pr-1">Prompt Foto + Storyboard Video 2D</span>
                 </div>
 
-                <!-- Massive Centered Headline + Warm Gold Sparkle Accents -->
-                <h1 class="font-display font-extrabold tracking-tight text-zinc-950 text-4xl sm:text-6xl lg:text-[68px] leading-[1.03] select-none">
-                    <span class="block">Video motion 2D,</span>
-                    <span class="block">tanpa ribet</span>
-                    <span class="block relative inline-block">
-                        edit man<span class="relative inline-block">u<svg class="w-4 h-4 text-amber-400 absolute -top-1 -left-1 pointer-events-none" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L14.5 9.5L23 12L14.5 14.5L12 23L9.5 14.5L1 12L9.5 9.5L12 1Z"/></svg></span>al<span class="relative inline-block">.<svg class="w-5 h-5 text-amber-400 absolute -top-2 -right-2 pointer-events-none" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L14.5 9.5L23 12L14.5 14.5L12 23L9.5 14.5L1 12L9.5 9.5L12 1Z"/></svg></span>
-                    </span>
+                <!-- Clamped Headline -->
+                <h1 style="font-size: clamp(2.35rem, 4.6vw, 4.15rem);" class="font-display font-extrabold tracking-tight text-zinc-950 leading-[1.06] select-none">
+                    <span class="block">Katalog Prompt AI</span>
+                    <span class="block">&amp; Storyboard <span class="text-[#FF4D1C]">2D</span></span>
+                    <span class="block">siap pakai<span class="text-amber-400">.</span></span>
                 </h1>
 
-                <!-- Subtitle -->
-                <p class="mt-6 text-zinc-500 text-base sm:text-lg max-w-xl mx-auto leading-relaxed font-normal">
-                    Pilih template Remotion 2D favoritmu, ganti teks &amp; data lewat JSON/TSX, lalu render video 60fps otomatis untuk konten Reels, TikTok, dan YouTube.
+                <!-- Crisp Subtitle -->
+                <p class="mt-4 text-zinc-500 text-sm sm:text-base max-w-md mx-auto leading-relaxed">
+                    Lihat <strong>Foto Hasil</strong> &amp; pratinjau <strong>Storyboard &rarr; Video AI</strong> secara langsung. Beli sekali untuk membuka prompt siap salin &amp; kode Remotion 2D.
                 </p>
 
-                <!-- Primary & Secondary CTA Row -->
-                <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-                    <a href="#katalog" class="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-[#FF4D1C] hover:bg-[#E63E10] text-white font-semibold text-sm sm:text-base shadow-lg shadow-orange-500/25 flex items-center justify-center gap-2 transition active:scale-95">
-                        <i data-lucide="sparkles" class="w-4 h-4"></i>
-                        <span>Jelajahi Katalog 2D</span>
+                <!-- CTA Buttons -->
+                <div class="mt-6 flex flex-col sm:flex-row items-center justify-center gap-2.5">
+                    <a href="#prompt-foto" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-[#FF4D1C] hover:bg-[#E63E10] text-white font-semibold text-xs sm:text-sm shadow-md shadow-orange-500/20 flex items-center justify-center gap-2 transition active:scale-95">
+                        <i data-lucide="image" class="w-4 h-4"></i>
+                        <span>Lihat Prompt Foto</span>
                     </a>
-                    <a href="#cara-kerja" class="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-white hover:bg-zinc-50 text-zinc-900 font-semibold text-sm sm:text-base border border-zinc-200 shadow-xs flex items-center justify-center gap-2 transition">
-                        <span>Lihat Cara Kerja</span>
-                        <span>&darr;</span>
+                    <a href="#storyboard-video" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-white hover:bg-zinc-50 text-zinc-900 font-semibold text-xs sm:text-sm border border-zinc-200 shadow-2xs flex items-center justify-center gap-2 transition">
+                        <i data-lucide="film" class="w-4 h-4 text-[#FF4D1C]"></i>
+                        <span>Storyboard &rarr; Video AI</span>
                     </a>
                 </div>
 
-                <!-- Catatan singkat di bawah CTA (tanpa angka karangan) -->
-                <div class="mt-5 flex items-center justify-center gap-1.5 text-xs font-medium text-zinc-500">
-                    <span>Dibikin pakai React + Remotion, tinggal ganti teks &amp; render — bukan Premiere/After Effects.</span>
-                </div>
-
-                <!-- Mobile Preview Strip untuk 4 Kartu 2D (tampil hanya di layar HP < md) -->
-                <div class="mt-10 grid grid-cols-4 gap-2.5 md:hidden max-w-sm mx-auto">
-                    <div onclick="openSandboxPreset(0)" class="aspect-[9/16] rounded-xl border-2 border-white shadow-md overflow-hidden -rotate-3 bg-amber-100 relative">
+                <!-- Mobile Compact 4-Card Strip (< md) -->
+                <div class="mt-8 grid grid-cols-4 gap-2 md:hidden max-w-xs mx-auto">
+                    <a href="#prompt-foto" class="aspect-[9/16] rounded-xl border-2 border-white shadow-sm overflow-hidden -rotate-3 bg-amber-100">
                         <canvas id="mob-card-1" class="w-full h-full block"></canvas>
-                    </div>
-                    <div onclick="openSandboxPreset(1)" class="aspect-[9/16] rounded-xl border-2 border-white shadow-md overflow-hidden rotate-2 bg-sky-200 relative">
+                    </a>
+                    <a href="#storyboard-video" class="aspect-[9/16] rounded-xl border-2 border-white shadow-sm overflow-hidden rotate-2 bg-sky-200">
                         <canvas id="mob-card-2" class="w-full h-full block"></canvas>
-                    </div>
-                    <div onclick="openSandboxPreset(0)" class="aspect-[9/16] rounded-xl border-2 border-white shadow-md overflow-hidden -rotate-2 bg-orange-400 relative">
+                    </a>
+                    <a href="#prompt-foto" class="aspect-[9/16] rounded-xl border-2 border-white shadow-sm overflow-hidden -rotate-2 bg-orange-400">
                         <canvas id="mob-card-3" class="w-full h-full block"></canvas>
-                    </div>
-                    <div onclick="openSandboxPreset(1)" class="aspect-[9/16] rounded-xl border-2 border-white shadow-md overflow-hidden rotate-3 bg-sky-300 relative">
+                    </a>
+                    <a href="#storyboard-video" class="aspect-[9/16] rounded-xl border-2 border-white shadow-sm overflow-hidden rotate-3 bg-sky-300">
                         <canvas id="mob-card-4" class="w-full h-full block"></canvas>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================================================================
+         SECTION A: KATALOG PROMPT FOTO AI (FOTO HASIL — HARGA — PROMPT)
+         ================================================================= -->
+    <section id="prompt-foto" class="relative z-10 py-14 lg:py-20 border-t border-zinc-200/80 bg-white/88 backdrop-blur-md">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
+            <!-- Header + Search & Filter -->
+            <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-8">
+                <div>
+                    <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-orange-50 border border-orange-200/80 text-[#FF4D1C] font-mono text-[11px] font-bold mb-2">
+                        <span>FOTO HASIL</span>
+                        <span>&bull;</span>
+                        <span>HARGA</span>
+                        <span>&bull;</span>
+                        <span>PROMPT</span>
+                    </div>
+                    <h2 class="font-display text-2xl sm:text-3xl font-extrabold text-zinc-950">
+                        Katalog Prompt Foto AI Teruji
+                    </h2>
+                    <p class="text-xs sm:text-sm text-zinc-500 mt-1">
+                        Setiap kartu menampilkan <strong>Foto Hasil</strong> asli, <strong>Harga</strong> transparan, dan box <strong>Prompt</strong> yang dikirim admin lewat WhatsApp setelah pembelian dikonfirmasi.
+                    </p>
+                </div>
+
+                <!-- Search Input -->
+                <div class="relative w-full lg:w-64">
+                    <i data-lucide="search" class="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                    <input id="photo-search" type="text" placeholder="Cari prompt foto..." class="w-full pl-9 pr-3.5 py-2 rounded-xl border border-zinc-200 bg-zinc-50 focus:bg-white focus:border-zinc-950 focus:outline-none text-xs">
+                </div>
+            </div>
+
+            <!-- Filter Pills -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-4 mb-4" id="photo-filter-pills">
+                <button data-cat="all" class="p-pill px-3.5 py-1.5 rounded-full text-xs font-bold bg-zinc-950 text-white shrink-0 cursor-pointer">Semua</button>
+                <button data-cat="Produk & Iklan" class="p-pill px-3.5 py-1.5 rounded-full text-xs font-semibold bg-zinc-100 hover:bg-zinc-200 text-zinc-700 shrink-0 cursor-pointer">Produk &amp; Iklan</button>
+                <button data-cat="Karakter & Potret" class="p-pill px-3.5 py-1.5 rounded-full text-xs font-semibold bg-zinc-100 hover:bg-zinc-200 text-zinc-700 shrink-0 cursor-pointer">Karakter &amp; Potret</button>
+                <button data-cat="Arsitektur & Interior" class="p-pill px-3.5 py-1.5 rounded-full text-xs font-semibold bg-zinc-100 hover:bg-zinc-200 text-zinc-700 shrink-0 cursor-pointer">Arsitektur &amp; Interior</button>
+                <button data-cat="Ilustrasi 2D" class="p-pill px-3.5 py-1.5 rounded-full text-xs font-semibold bg-zinc-100 hover:bg-zinc-200 text-zinc-700 shrink-0 cursor-pointer">Ilustrasi 2D</button>
+            </div>
+
+            <!-- Grid 6 Kartu Prompt Foto (FOTO HASIL -> HARGA -> PROMPT) -->
+            <div id="photo-catalog-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Dirender oleh JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- =================================================================
+         SECTION B: STORYBOARD GAMBAR -> VIDEO AI (DUAL STAGE CARDS)
+         ================================================================= -->
+    <section id="storyboard-video" class="relative z-10 py-14 lg:py-20 border-t border-zinc-200/80 bg-[#FAFAFA]/92">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
+            <div class="max-w-2xl mb-8">
+                <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-zinc-950 text-white font-mono text-[11px] font-bold mb-2">
+                    <span>STORYBOARD GAMBAR</span>
+                    <span>&rarr;</span>
+                    <span>VIDEO AI</span>
+                    <span>&bull;</span>
+                    <span>HARGA &amp; PROMPT</span>
+                </div>
+                <h2 class="font-display text-2xl sm:text-3xl font-extrabold text-zinc-950">
+                    Paket Storyboard Gambar &rarr; Video AI &amp; Remotion 2D
+                </h2>
+                <p class="text-xs sm:text-sm text-zinc-500 mt-1">
+                    Alur produksi lengkap: <strong>Keyframe 01 &amp; 02 (Storyboard Gambar)</strong> di sisi kiri dan hasil animasi <strong>Video AI</strong> bergerak di sisi kanan, lengkap dengan dual-prompt.
+                </p>
+            </div>
+
+            <!-- Grid 4 Kartu Lebar Dual-Stage -->
+            <div id="storyboard-catalog-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Dirender oleh JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- =================================================================
+         CARA KERJA RINGKAS (3 LANGKAH)
+         ================================================================= -->
+    <section id="cara-kerja" class="relative z-10 py-12 border-t border-zinc-200/80 bg-white/90">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="p-5 rounded-2xl bg-zinc-50 border border-zinc-200/80 flex items-start gap-3.5">
+                    <span class="w-8 h-8 rounded-xl bg-zinc-950 text-white font-mono font-bold text-xs flex items-center justify-center shrink-0">01</span>
+                    <div>
+                        <h3 class="font-display font-bold text-sm text-zinc-950">Cek Foto Hasil &amp; Video AI</h3>
+                        <p class="text-xs text-zinc-500 mt-1 leading-relaxed">Bandingkan output visual &amp; animasi 2D sebelum membeli agar hasil sesuai kebutuhanmu.</p>
+                    </div>
+                </div>
+                <div class="p-5 rounded-2xl bg-zinc-50 border border-zinc-200/80 flex items-start gap-3.5">
+                    <span class="w-8 h-8 rounded-xl bg-[#FF4D1C] text-white font-mono font-bold text-xs flex items-center justify-center shrink-0">02</span>
+                    <div>
+                        <h3 class="font-display font-bold text-sm text-zinc-950">Pesan via WhatsApp</h3>
+                        <p class="text-xs text-zinc-500 mt-1 leading-relaxed">Masukkan ke keranjang, klik "Pesan via WhatsApp" — daftar pilihanmu otomatis kekirim ke admin buat atur pembayaran.</p>
+                    </div>
+                </div>
+                <div class="p-5 rounded-2xl bg-zinc-50 border border-zinc-200/80 flex items-start gap-3.5">
+                    <span class="w-8 h-8 rounded-xl bg-emerald-600 text-white font-mono font-bold text-xs flex items-center justify-center shrink-0">03</span>
+                    <div>
+                        <h3 class="font-display font-bold text-sm text-zinc-950">Prompt Dikirim Admin</h3>
+                        <p class="text-xs text-zinc-500 mt-1 leading-relaxed">Setelah pembayaran dikonfirmasi, admin kirim teks prompt lengkap langsung di chat WhatsApp — siap salin.</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 4. INTERACTIVE REMOTION 2D LIVE SANDBOX PREVIEWER -->
-    <section id="cara-kerja" class="relative z-10 py-16 lg:py-20 border-y border-zinc-200/80 bg-white/85 backdrop-blur-md">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-2xl mx-auto mb-10">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 border border-orange-200 text-[#FF4D1C] font-mono text-xs font-bold">
-                    <span class="w-2 h-2 rounded-full bg-[#FF4D1C] animate-ping"></span>
-                    LIVE SANDBOX REMOTION 2D
+    <!-- =================================================================
+         SECTION C: BUNDLING HEMAT (PAKET KREATOR & FULL ACCESS)
+         ================================================================= -->
+    <section id="bundling" class="relative z-10 py-14 lg:py-20 border-t border-zinc-200/80 bg-white">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6">
+            <div class="text-center max-w-xl mx-auto mb-10">
+                <span class="px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-[11px] font-bold">
+                    HEMAT HINGGA 65% • SEKALI BAYAR
                 </span>
-                <h2 class="font-display text-2xl sm:text-4xl font-extrabold text-zinc-950 mt-3">
-                    Uji Coba Template 2D Langsung di Browser
+                <h2 class="font-display text-2xl sm:text-3xl font-extrabold text-zinc-950 mt-2.5">
+                    Paket Bundling Prompt &amp; Remotion 2D
                 </h2>
-                <p class="text-sm sm:text-base text-zinc-500 mt-2">
-                    Ganti jenis template, ketik teks judulmu sendiri, pilih warna aksen, dan geser timeline frame 0–150 sebelum membeli.
+                <p class="text-xs sm:text-sm text-zinc-500 mt-1">
+                    Buka kunci banyak prompt sekaligus dengan harga lebih hemat untuk kreator &amp; agensi.
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch bg-zinc-50 p-4 sm:p-6 rounded-3xl border border-zinc-200/90 shadow-sm">
-                
-                <!-- Panel Kiri: Kontrol Props JSON / TSX -->
-                <div class="lg:col-span-5 bg-white rounded-2xl p-5 border border-zinc-200/80 flex flex-col justify-between space-y-5">
-                    <div class="space-y-4">
-                        <div class="flex items-center justify-between border-b border-zinc-100 pb-3">
-                            <span class="font-mono text-xs font-bold text-zinc-800">props.config.ts</span>
-                            <span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-mono text-[10px] font-bold">60FPS READY</span>
-                        </div>
-
-                        <!-- Pilih 3 Template -->
-                        <div>
-                            <label class="block text-xs font-bold text-zinc-700 mb-2">1. Pilih Komposisi Template 2D</label>
-                            <div class="grid grid-cols-1 gap-2" id="sandbox-template-tabs">
-                                <button onclick="selectSandboxTemplate(0)" data-idx="0" class="sb-tab text-left px-3.5 py-2.5 rounded-xl border-2 border-zinc-950 bg-zinc-950 text-white text-xs font-semibold flex items-center justify-between transition cursor-pointer">
-                                    <span>Storytelling Karakter 2D</span>
-                                    <span class="font-mono text-[10px] opacity-80">Rp 149.000</span>
-                                </button>
-                                <button onclick="selectSandboxTemplate(1)" data-idx="1" class="sb-tab text-left px-3.5 py-2.5 rounded-xl border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-800 text-xs font-semibold flex items-center justify-between transition cursor-pointer">
-                                    <span>Infografis Data &amp; Chart</span>
-                                    <span class="font-mono text-[10px] text-zinc-500">Rp 179.000</span>
-                                </button>
-                                <button onclick="selectSandboxTemplate(2)" data-idx="2" class="sb-tab text-left px-3.5 py-2.5 rounded-xl border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-800 text-xs font-semibold flex items-center justify-between transition cursor-pointer">
-                                    <span>Hook TikTok Kinetic Text</span>
-                                    <span class="font-mono text-[10px] text-zinc-500">Rp 99.000</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Input Teks Headline Live -->
-                        <div>
-                            <label for="sandbox-headline-input" class="block text-xs font-bold text-zinc-700 mb-1.5">2. Ubah Teks Judul Video</label>
-                            <input id="sandbox-headline-input" type="text" value="Bikin Konten Viral Otomatis!" maxlength="36"
-                                class="w-full px-3.5 py-2.5 rounded-xl border border-zinc-200 bg-zinc-50 focus:bg-white focus:border-[#FF4D1C] focus:outline-none text-xs sm:text-sm font-medium text-zinc-900 transition">
-                        </div>
-
-                        <!-- Pilih Warna Aksen -->
-                        <div>
-                            <label class="block text-xs font-bold text-zinc-700 mb-2">3. Pilih Warna Aksen Komposisi</label>
-                            <div class="flex items-center gap-2.5">
-                                <button onclick="setSandboxAccent('#FF4D1C')" class="sb-color w-7 h-7 rounded-full bg-[#FF4D1C] ring-2 ring-offset-2 ring-zinc-900 cursor-pointer" data-color="#FF4D1C" aria-label="Oranye"></button>
-                                <button onclick="setSandboxAccent('#6366F1')" class="sb-color w-7 h-7 rounded-full bg-[#6366F1] opacity-75 hover:opacity-100 cursor-pointer" data-color="#6366F1" aria-label="Indigo"></button>
-                                <button onclick="setSandboxAccent('#10B981')" class="sb-color w-7 h-7 rounded-full bg-[#10B981] opacity-75 hover:opacity-100 cursor-pointer" data-color="#10B981" aria-label="Hijau"></button>
-                                <button onclick="setSandboxAccent('#0EA5E9')" class="sb-color w-7 h-7 rounded-full bg-[#0EA5E9] opacity-75 hover:opacity-100 cursor-pointer" data-color="#0EA5E9" aria-label="Biru"></button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Tombol Tambah Template Ini ke Keranjang -->
-                    <button onclick="addActiveSandboxToCart()" class="w-full py-3.5 px-4 rounded-xl bg-[#FF4D1C] hover:bg-[#E63E10] text-white font-bold text-xs sm:text-sm shadow-md shadow-orange-500/20 flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer">
-                        <i data-lucide="shopping-cart" class="w-4 h-4"></i>
-                        <span>Tambah Template Ini ke Keranjang</span>
-                    </button>
-                </div>
-
-                <!-- Panel Kanan: Viewport Canvas Remotion 2D + Timeline Scrubber -->
-                <div class="lg:col-span-7 bg-white rounded-2xl border border-zinc-200/80 overflow-hidden flex flex-col justify-between shadow-xs">
-                    <!-- Top Window Bar -->
-                    <div class="px-4 py-2.5 bg-zinc-100/80 border-b border-zinc-200/80 flex items-center justify-between">
-                        <div class="flex items-center gap-1.5">
-                            <span class="w-2.5 h-2.5 rounded-full bg-rose-400"></span>
-                            <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
-                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
-                            <span id="sb-comp-filename" class="ml-2 font-mono text-[11px] font-semibold text-zinc-600">&lt;StorytellingKarakter2D /&gt;</span>
-                        </div>
-                        <span class="font-mono text-[11px] text-zinc-500">1080×1920 • 60FPS</span>
-                    </div>
-
-                    <!-- Canvas Stage -->
-                    <div class="p-4 sm:p-6 bg-zinc-50 flex-1 flex items-center justify-center min-h-[300px]">
-                        <canvas id="sandbox-stage-canvas" width="520" height="292" class="w-full max-w-lg rounded-xl border border-zinc-200 bg-white shadow-md"></canvas>
-                    </div>
-
-                    <!-- Timeline Scrubber 0 - 150 -->
-                    <div class="px-4 py-3 bg-white border-t border-zinc-200/80 flex items-center gap-3">
-                        <button onclick="toggleSandboxPlay()" aria-label="Putar atau Jeda" class="w-8 h-8 rounded-lg bg-zinc-950 hover:bg-zinc-800 text-white flex items-center justify-center shrink-0 cursor-pointer">
-                            <i id="sb-play-icon" data-lucide="pause" class="w-3.5 h-3.5 fill-white"></i>
-                        </button>
-                        <input id="sb-scrubber" type="range" min="0" max="150" value="0" class="remotion-scrubber flex-1">
-                        <span id="sb-frame-label" class="font-mono text-[11px] font-semibold text-zinc-600 w-24 text-right">Frame 0/150</span>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <!-- 5. KATALOG ASET & TEMPLATE REMOTION 2D -->
-    <section id="katalog" class="relative z-10 py-16 lg:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
-            <div>
-                <span class="text-xs font-mono font-bold uppercase tracking-wider text-[#FF4D1C]">Etalase Produk Digital</span>
-                <h2 class="font-display text-2xl sm:text-4xl font-extrabold text-zinc-950 mt-1">
-                    Katalog Template &amp; Komponen Remotion 2D
-                </h2>
-                <p class="text-sm text-zinc-500 mt-1">
-                    Kode React + TypeScript rapi, tanpa plugin tambahan, sekali bayar untuk lisensi komersial.
-                </p>
-            </div>
-
-            <!-- Filter Kategori -->
-            <div class="flex items-center gap-2 overflow-x-auto pb-1" id="catalog-filters">
-                <button data-cat="all" class="filter-pill px-4 py-2 rounded-full text-xs font-bold bg-zinc-950 text-white shrink-0 transition cursor-pointer">Semua</button>
-                <button data-cat="Karakter & Storytelling" class="filter-pill px-4 py-2 rounded-full text-xs font-semibold bg-white hover:bg-zinc-100 text-zinc-700 border border-zinc-200 shrink-0 transition cursor-pointer">Karakter &amp; Storytelling</button>
-                <button data-cat="Infografis & Edukasi" class="filter-pill px-4 py-2 rounded-full text-xs font-semibold bg-white hover:bg-zinc-100 text-zinc-700 border border-zinc-200 shrink-0 transition cursor-pointer">Infografis &amp; Edukasi</button>
-                <button data-cat="Hook & Kinetic Text" class="filter-pill px-4 py-2 rounded-full text-xs font-semibold bg-white hover:bg-zinc-100 text-zinc-700 border border-zinc-200 shrink-0 transition cursor-pointer">Hook &amp; Kinetic Text</button>
-                <button data-cat="Bundle Lengkap" class="filter-pill px-4 py-2 rounded-full text-xs font-semibold bg-white hover:bg-zinc-100 text-zinc-700 border border-zinc-200 shrink-0 transition cursor-pointer">Bundle Lengkap</button>
-            </div>
-        </div>
-
-        <!-- Grid 6 Kartu Produk -->
-        <div id="catalog-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Dirender via JS -->
-        </div>
-    </section>
-
-    <!-- 6. PAKET HARGA & LISENSI (PRICING CARDS) -->
-    <section id="paket-harga" class="relative z-10 py-16 lg:py-24 bg-white/90 backdrop-blur-md border-y border-zinc-200/80">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-2xl mx-auto mb-12">
-                <span class="px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-xs font-bold">
-                    SEKALI BAYAR • TANPA LANGGANAN BULANAN
-                </span>
-                <h2 class="font-display text-2xl sm:text-4xl font-extrabold text-zinc-950 mt-3">
-                    Paket Harga &amp; Lisensi Kreator
-                </h2>
-                <p class="text-sm sm:text-base text-zinc-500 mt-2">
-                    Hemat hingga 65% dengan mengambil paket bundling seluruh komponen Remotion 2D.
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
-                <!-- Tier 1: Starter Pack -->
-                <div class="rounded-3xl p-7 bg-zinc-50 border border-zinc-200/90 flex flex-col justify-between">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Bundle 1: Paket Kreator Pemula -->
+                <div class="rounded-3xl p-6 sm:p-7 bg-zinc-50 border border-zinc-200 flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between">
-                            <h3 class="font-display text-lg font-extrabold text-zinc-950">Starter Pack</h3>
-                            <span class="px-2.5 py-0.5 rounded-full bg-white border border-zinc-200 text-[11px] font-semibold text-zinc-600">Pemula</span>
+                            <h3 class="font-display font-extrabold text-lg text-zinc-950">Paket Kreator Pemula</h3>
+                            <span class="px-2.5 py-0.5 rounded-full bg-white border border-zinc-200 text-[11px] font-semibold text-zinc-600">6 Prompt Foto</span>
                         </div>
-                        <p class="text-xs text-zinc-500 mt-1.5">Ideal untuk mencoba produksi video pendek otomatis dengan Remotion 2D.</p>
-                        
-                        <div class="my-6 pb-6 border-b border-zinc-200">
-                            <span class="text-xs text-zinc-400 line-through">Rp 249.000</span>
+                        <p class="text-xs text-zinc-500 mt-1.5">Buka seluruh 6 Prompt Foto AI (Produk, Karakter, Arsitektur &amp; Ilustrasi 2D) sekaligus.</p>
+
+                        <div class="my-5 pb-5 border-b border-zinc-200">
+                            <span class="text-xs text-zinc-400 line-through">Rp 234.000</span>
                             <div class="flex items-baseline gap-1.5">
-                                <span class="font-display text-3xl font-extrabold text-zinc-950">Rp 149.000</span>
+                                <span class="font-display text-3xl font-extrabold text-zinc-950">Rp 129.000</span>
                                 <span class="text-xs text-zinc-500">sekali bayar</span>
                             </div>
                         </div>
 
-                        <ul class="space-y-3 text-xs sm:text-[13px] text-zinc-700">
-                            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-emerald-600 shrink-0"></i><span>8 Template Dasar Remotion 2D (.tsx)</span></li>
-                            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-emerald-600 shrink-0"></i><span>Format Vertikal 9:16 &amp; 16:9</span></li>
-                            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-emerald-600 shrink-0"></i><span>Panduan Setup Node.js Bahasa Indonesia</span></li>
-                            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-emerald-600 shrink-0"></i><span>Lisensi Personal &amp; Kanal Sendiri</span></li>
+                        <ul class="space-y-2.5 text-xs text-zinc-700">
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600 shrink-0"></i><span>Buka kunci semua <strong>6 Prompt Foto AI</strong></span></li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600 shrink-0"></i><span>Parameter rasio &amp; seed Flux.1 / Midjourney</span></li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600 shrink-0"></i><span>Lisensi komersial konten &amp; klien</span></li>
                         </ul>
                     </div>
 
-                    <button onclick="addBundleToCart('Starter Pack Remotion 2D', 149000)" class="mt-8 w-full py-3.5 rounded-xl bg-white hover:bg-zinc-100 border border-zinc-300 text-zinc-950 font-bold text-xs sm:text-sm transition cursor-pointer">
-                        Pilih Starter Pack
+                    <button onclick="addBundleToCart('bundle-photo', 'Paket Kreator Pemula (6 Prompt Foto)', 129000)" class="mt-7 w-full py-3 rounded-xl bg-white hover:bg-zinc-100 border border-zinc-300 text-zinc-950 font-bold text-xs sm:text-sm transition cursor-pointer">
+                        + Tambah Paket Kreator Pemula
                     </button>
                 </div>
 
-                <!-- Tier 2: Creator Pro Bundle — Terlaris -->
-                <div class="relative rounded-3xl p-7 bg-zinc-950 text-white shadow-2xl shadow-zinc-950/20 flex flex-col justify-between">
-                    <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3.5 py-1 rounded-full bg-[#FF4D1C] text-white font-bold text-[11px] tracking-wide uppercase shadow-md">
-                        TERLARIS • PALING HEMAT
+                <!-- Bundle 2: Paket Full Prompt + Remotion 2D -->
+                <div class="relative rounded-3xl p-6 sm:p-7 bg-zinc-950 text-white shadow-xl flex flex-col justify-between">
+                    <div class="absolute -top-3 right-6 px-3 py-0.5 rounded-full bg-[#FF4D1C] text-white font-bold text-[10px] tracking-wider uppercase">
+                        PALING LARIS • BUKA SEMUA
                     </div>
-
                     <div>
-                        <div class="flex items-center justify-between pt-1">
-                            <h3 class="font-display text-lg font-extrabold text-white">Creator Pro Bundle</h3>
-                            <span class="px-2.5 py-0.5 rounded-full bg-white/10 text-[11px] font-mono text-amber-300">25+ Template</span>
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-display font-extrabold text-lg text-white">Paket Full Prompt + Remotion 2D</h3>
+                            <span class="px-2.5 py-0.5 rounded-full bg-white/10 font-mono text-[11px] text-amber-300">All-Access</span>
                         </div>
-                        <p class="text-xs text-zinc-400 mt-1.5">Akses penuh seluruh 25+ template Remotion 2D + update selamanya.</p>
-                        
-                        <div class="my-6 pb-6 border-b border-zinc-800">
-                            <span class="text-xs text-zinc-500 line-through">Rp 899.000</span>
+                        <p class="text-xs text-zinc-400 mt-1.5">Buka otomatis seluruh 10 katalog (6 Prompt Foto + 4 Paket Storyboard &rarr; Video AI &amp; TSX).</p>
+
+                        <div class="my-5 pb-5 border-b border-zinc-800">
+                            <span class="text-xs text-zinc-500 line-through">Rp 532.000</span>
                             <div class="flex items-baseline gap-1.5">
-                                <span class="font-display text-3xl font-extrabold text-white">Rp 399.000</span>
+                                <span class="font-display text-3xl font-extrabold text-white">Rp 249.000</span>
                                 <span class="text-xs text-zinc-400">sekali bayar</span>
                             </div>
                         </div>
 
-                        <ul class="space-y-3 text-xs sm:text-[13px] text-zinc-200">
-                            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-[#FF4D1C] shrink-0"></i><span><strong>Akses 25+ Template Remotion 2D</strong></span></li>
-                            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-[#FF4D1C] shrink-0"></i><span>Karakter 2D, Infografis, &amp; Kinetic Text</span></li>
-                            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-[#FF4D1C] shrink-0"></i><span><strong>Gratis Update Template Selamanya</strong></span></li>
-                            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-[#FF4D1C] shrink-0"></i><span>Akses Private GitHub Repo + File ZIP</span></li>
-                            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-[#FF4D1C] shrink-0"></i><span>Lisensi Komersial YouTube &amp; TikTok</span></li>
+                        <ul class="space-y-2.5 text-xs text-zinc-200">
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-[#FF4D1C] shrink-0"></i><span>Buka kunci <strong>Semua 6 Prompt Foto AI</strong></span></li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-[#FF4D1C] shrink-0"></i><span>Buka kunci <strong>Semua 4 Paket Storyboard &rarr; Video AI</strong></span></li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-[#FF4D1C] shrink-0"></i><span>Bonus Template Komponen React Remotion 2D (.tsx)</span></li>
                         </ul>
                     </div>
 
-                    <button onclick="addBundleToCart('Creator Pro Bundle (25+ Template)', 399000)" class="mt-8 w-full py-3.5 rounded-xl bg-[#FF4D1C] hover:bg-[#E63E10] text-white font-bold text-xs sm:text-sm shadow-lg shadow-orange-500/30 transition active:scale-95 cursor-pointer">
-                        Beli Creator Pro Bundle
-                    </button>
-                </div>
-
-                <!-- Tier 3: Agency Unlimited -->
-                <div class="rounded-3xl p-7 bg-zinc-50 border border-zinc-200/90 flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between">
-                            <h3 class="font-display text-lg font-extrabold text-zinc-950">Agency Unlimited</h3>
-                            <span class="px-2.5 py-0.5 rounded-full bg-white border border-zinc-200 text-[11px] font-semibold text-zinc-600">Agensi &amp; Tim</span>
-                        </div>
-                        <p class="text-xs text-zinc-500 mt-1.5">Lisensi komersial klien tanpa batas untuk studio kreatif dan agensi digital.</p>
-                        
-                        <div class="my-6 pb-6 border-b border-zinc-200">
-                            <span class="text-xs text-zinc-400 line-through">Rp 1.590.000</span>
-                            <div class="flex items-baseline gap-1.5">
-                                <span class="font-display text-3xl font-extrabold text-zinc-950">Rp 799.000</span>
-                                <span class="text-xs text-zinc-500">sekali bayar</span>
-                            </div>
-                        </div>
-
-                        <ul class="space-y-3 text-xs sm:text-[13px] text-zinc-700">
-                            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-emerald-600 shrink-0"></i><span>Semua Isi Creator Pro Bundle</span></li>
-                            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-emerald-600 shrink-0"></i><span><strong>Lisensi Komersial Klien Tanpa Batas</strong></span></li>
-                            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-emerald-600 shrink-0"></i><span>Script Batch Render Otomatis Node.js</span></li>
-                            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-emerald-600 shrink-0"></i><span>Prioritas Support WhatsApp &amp; Request</span></li>
-                        </ul>
-                    </div>
-
-                    <button onclick="addBundleToCart('Agency Unlimited License', 799000)" class="mt-8 w-full py-3.5 rounded-xl bg-white hover:bg-zinc-100 border border-zinc-300 text-zinc-950 font-bold text-xs sm:text-sm transition cursor-pointer">
-                        Pilih Agency Unlimited
+                    <button onclick="addBundleToCart('bundle-all', 'Paket Full Prompt + Remotion 2D', 249000)" class="mt-7 w-full py-3 rounded-xl bg-[#FF4D1C] hover:bg-[#E63E10] text-white font-bold text-xs sm:text-sm shadow-lg shadow-orange-500/25 transition active:scale-95 cursor-pointer">
+                        Beli Paket Full Access Sekarang
                     </button>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 7. FAQ SINGKAT & FOOTER -->
-    <section id="faq" class="relative z-10 py-16 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-10">
-            <h2 class="font-display text-2xl sm:text-3xl font-extrabold text-zinc-950">Pertanyaan yang Sering Diajukan</h2>
-            <p class="text-sm text-zinc-500 mt-1">Semua yang perlu kamu tahu sebelum mulai merender video Remotion 2D.</p>
-        </div>
-
-        <div class="space-y-3">
-            <details open class="group bg-white rounded-2xl border border-zinc-200/90 p-5 shadow-2xs">
-                <summary class="font-display font-bold text-sm sm:text-base text-zinc-950 cursor-pointer list-none flex items-center justify-between">
-                    <span>Apakah wajib jago coding React untuk memakai template ini?</span>
-                    <i data-lucide="chevron-down" class="w-4 h-4 text-zinc-400 group-open:rotate-180 transition-transform"></i>
-                </summary>
-                <p class="text-xs sm:text-sm text-zinc-600 mt-3 leading-relaxed">
-                    Tidak wajib! Setiap template sudah dilengkapi file konfigurasi <code class="px-1.5 py-0.5 rounded bg-zinc-100 font-mono text-xs text-zinc-900">props.json</code> yang tinggal kamu ganti isi teks, warna, maupun angkanya. Cukup ketik <code class="px-1.5 py-0.5 rounded bg-zinc-100 font-mono text-xs text-zinc-900">npx remotion render</code> untuk mengekspor MP4 60fps.
-                </p>
-            </details>
-
-            <details class="group bg-white rounded-2xl border border-zinc-200/90 p-5 shadow-2xs">
-                <summary class="font-display font-bold text-sm sm:text-base text-zinc-950 cursor-pointer list-none flex items-center justify-between">
-                    <span>Apakah butuh Adobe After Effects atau Premiere Pro?</span>
-                    <i data-lucide="chevron-down" class="w-4 h-4 text-zinc-400 group-open:rotate-180 transition-transform"></i>
-                </summary>
-                <p class="text-xs sm:text-sm text-zinc-600 mt-3 leading-relaxed">
-                    Sama sekali tidak butuh. Semua animasi 2D dibangun murni di atas web &amp; React menggunakan Remotion, jadi bisa dirender langsung lewat terminal laptop (Windows/Mac/Linux) maupun server cloud.
-                </p>
-            </details>
-
-            <details class="group bg-white rounded-2xl border border-zinc-200/90 p-5 shadow-2xs">
-                <summary class="font-display font-bold text-sm sm:text-base text-zinc-950 cursor-pointer list-none flex items-center justify-between">
-                    <span>Bagaimana cara pemesanan dan pengiriman filenya?</span>
-                    <i data-lucide="chevron-down" class="w-4 h-4 text-zinc-400 group-open:rotate-180 transition-transform"></i>
-                </summary>
-                <p class="text-xs sm:text-sm text-zinc-600 mt-3 leading-relaxed">
-                    Masih manual: pilih template, klik "Pesan via WhatsApp", lalu admin kirim detail pembayaran dan memprosesnya langsung di chat. File <code class="px-1.5 py-0.5 rounded bg-zinc-100 font-mono text-xs text-zinc-900">.ZIP</code> atau undangan repositori GitHub dikirim admin lewat WhatsApp setelah pembayaran dikonfirmasi.
-                </p>
-            </details>
-        </div>
-    </section>
-
-    <footer class="relative z-10 border-t border-zinc-200/80 bg-white/90 py-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
-            <div class="flex items-center gap-2">
+    <!-- FOOTER -->
+    <footer class="relative z-10 border-t border-zinc-200/80 bg-[#FAFAFA] py-7">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-zinc-500">
+            <div>
                 <span class="font-display font-extrabold text-zinc-950">heyaipeople<span class="text-zinc-400 font-normal">.site</span></span>
-                <span>&copy; 2026 — Toko Aset &amp; Template Remotion 2D Indonesia.</span>
+                <span class="ml-1">&copy; 2026 — Marketplace Prompt Foto AI &amp; Storyboard Video 2D.</span>
             </div>
             <div>
                 <span>Pemesanan manual lewat WhatsApp admin — pembayaran diatur langsung saat chat.</span>
@@ -622,78 +475,53 @@
     </footer>
 
     <!-- =================================================================
-         MODAL PREVIEW KODE TSX & DETAIL PRODUK
+         MODAL "PROMPT SAYA" (DAFTAR PROMPT YANG SUDAH TERBUKA)
          ================================================================= -->
-    <div id="code-modal" class="hidden fixed inset-0 z-50 bg-zinc-950/50 backdrop-blur-xs flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-2xl rounded-3xl border border-zinc-200 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div id="unlocked-modal" class="hidden fixed inset-0 z-50 bg-zinc-950/50 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-2xl rounded-3xl border border-zinc-200 shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
             <div class="px-6 py-4 bg-zinc-50 border-b border-zinc-200 flex items-center justify-between">
-                <div class="flex items-center gap-2 min-w-0">
-                    <span class="px-2 py-0.5 rounded bg-zinc-950 text-white font-mono text-[10px] font-bold">TSX</span>
-                    <h3 id="cm-title" class="font-display font-extrabold text-sm sm:text-base text-zinc-950 truncate">Preview Kode Template</h3>
+                <div class="flex items-center gap-2">
+                    <i data-lucide="unlock" class="w-4 h-4 text-emerald-600"></i>
+                    <h3 class="font-display font-extrabold text-base text-zinc-950">Koleksi Prompt Terbuka Milikmu</h3>
                 </div>
-                <button onclick="closeCodeModal()" aria-label="Tutup Modal" class="p-1.5 rounded-full hover:bg-zinc-200 text-zinc-600 cursor-pointer">
+                <button onclick="closeUnlockedModal()" aria-label="Tutup" class="p-1.5 rounded-full hover:bg-zinc-200 text-zinc-600 cursor-pointer">
                     <i data-lucide="x" class="w-4 h-4"></i>
                 </button>
             </div>
-
-            <div class="p-6 overflow-y-auto space-y-4">
-                <p id="cm-desc" class="text-xs sm:text-sm text-zinc-600 leading-relaxed"></p>
-                
-                <div class="rounded-2xl bg-zinc-950 text-zinc-100 p-4 font-mono text-xs overflow-x-auto leading-relaxed">
-                    <div class="flex items-center justify-between text-zinc-400 text-[11px] pb-2 mb-2 border-b border-zinc-800">
-                        <span id="cm-filepath">src/compositions/Template2D.tsx</span>
-                        <span>React + Remotion v4</span>
-                    </div>
-                    <pre id="cm-code" class="text-emerald-300"></pre>
-                </div>
-            </div>
-
-            <div class="px-6 py-4 bg-zinc-50 border-t border-zinc-200 flex items-center justify-between">
-                <div>
-                    <span class="text-[11px] text-zinc-400 block">Harga Lisensi Komersial</span>
-                    <span id="cm-price" class="font-display text-lg font-extrabold text-zinc-950">Rp 149.000</span>
-                </div>
-                <button id="cm-add-btn" class="px-5 py-2.5 rounded-xl bg-[#FF4D1C] hover:bg-[#E63E10] text-white font-bold text-xs sm:text-sm flex items-center gap-2 shadow-md cursor-pointer">
-                    <i data-lucide="shopping-cart" class="w-4 h-4"></i>
-                    <span>+ Tambah ke Keranjang</span>
-                </button>
+            <div id="unlocked-modal-list" class="p-6 overflow-y-auto space-y-4">
+                <!-- Dirender oleh JS -->
             </div>
         </div>
     </div>
 
     <!-- =================================================================
-         SLIDE-OVER SHOPPING CART & INSTANT INDONESIAN CHECKOUT DRAWER
+         SLIDE-OVER SHOPPING CART & INSTANT CHECKOUT DRAWER
          ================================================================= -->
     <div id="cart-overlay" onclick="closeCartDrawer()" class="hidden fixed inset-0 z-50 bg-zinc-950/40 backdrop-blur-xs"></div>
     <aside id="cart-drawer" class="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-white border-l border-zinc-200 shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
-        <!-- Header Drawer -->
         <div class="px-6 py-4 border-b border-zinc-200 flex items-center justify-between">
             <div class="flex items-center gap-2">
-                <i data-lucide="shopping-bag" class="w-5 h-5 text-[#FF4D1C]"></i>
-                <h2 class="font-display font-extrabold text-base text-zinc-950">Keranjang Belanja</h2>
+                <i data-lucide="shopping-bag" class="w-4 h-4 text-[#FF4D1C]"></i>
+                <h2 class="font-display font-extrabold text-base text-zinc-950">Keranjang &amp; Buka Prompt</h2>
             </div>
             <button onclick="closeCartDrawer()" aria-label="Tutup Keranjang" class="p-1.5 rounded-full hover:bg-zinc-100 text-zinc-500 cursor-pointer">
                 <i data-lucide="x" class="w-4 h-4"></i>
             </button>
         </div>
 
-        <!-- Body Keranjang -->
         <div id="cart-drawer-body" class="flex-1 overflow-y-auto p-6 space-y-5">
-            <!-- List Item -->
-            <div id="cart-items-container" class="space-y-3"></div>
+            <div id="cart-items-container" class="space-y-2.5"></div>
 
-            <!-- Nama/panggilan buat admin (opsional) -->
-            <div class="space-y-2">
-                <label for="buyer-contact" class="block text-xs font-bold text-zinc-800">Nama kamu (opsional, biar admin gampang manggil)</label>
-                <input id="buyer-contact" type="text" placeholder="Nama kamu" class="w-full px-3.5 py-2.5 rounded-xl border border-zinc-200 bg-zinc-50 focus:bg-white focus:border-zinc-950 focus:outline-none text-xs">
+            <div>
+                <label for="buyer-name" class="block text-xs font-bold text-zinc-800 mb-1.5">Nama kamu (opsional, biar admin gampang manggil)</label>
+                <input id="buyer-name" type="text" placeholder="Nama kamu" class="w-full px-3 py-2 rounded-xl border border-zinc-200 bg-white text-xs focus:outline-none focus:border-zinc-950">
             </div>
 
             <div class="p-3.5 rounded-2xl bg-zinc-50 border border-zinc-200/80 text-[11px] text-zinc-500 leading-relaxed">
-                Belum ada pembayaran otomatis di sini. Klik "Pesan via WhatsApp" di bawah, daftar pilihanmu otomatis kekirim ke admin, lalu admin yang kirim detail pembayaran manual.
+                Belum ada pembayaran otomatis di sini. Klik "Pesan via WhatsApp" di bawah, daftar pilihanmu otomatis kekirim ke admin, lalu admin yang kirim detail pembayaran manual dan prompt lengkapnya setelah lunas.
             </div>
         </div>
 
-        <!-- Footer Total & Checkout -->
         <div id="cart-drawer-footer" class="p-6 bg-zinc-50 border-t border-zinc-200 space-y-3">
             <div class="space-y-1 text-xs">
                 <div class="flex justify-between text-sm font-extrabold text-zinc-950 pt-2 border-t border-zinc-200">
@@ -701,14 +529,14 @@
                     <span id="cart-tot" class="font-mono text-[#FF4D1C]">Rp 0</span>
                 </div>
             </div>
-            <a id="cart-wa-btn" href="#" target="_blank" rel="noopener" class="w-full py-3.5 rounded-xl bg-[#FF4D1C] hover:bg-[#E63E10] text-white font-bold text-sm shadow-lg shadow-orange-500/25 flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer">
+            <a id="cart-wa-btn" href="https://wa.me/6285722227544" target="_blank" rel="noopener" class="w-full py-3.5 rounded-xl bg-[#FF4D1C] hover:bg-[#E63E10] text-white font-bold text-sm shadow-lg shadow-orange-500/20 flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer">
                 <i data-lucide="message-circle" class="w-4 h-4"></i>
                 <span>Pesan via WhatsApp</span>
             </a>
         </div>
     </aside>
 
-    <!-- Toast Notification -->
+    <!-- Toast Container -->
     <div id="toast-box" class="fixed bottom-5 left-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
     <script>
@@ -718,8 +546,24 @@
             return 'Rp ' + Math.round(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
         }
 
+        function copyTextFallback(text, label = 'Prompt') {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            try {
+                document.execCommand('copy');
+                showToast(`${label} berhasil disalin ke clipboard!`, 'success');
+            } catch (e) {
+                showToast('Gagal menyalin teks.', 'warning');
+            }
+            document.body.removeChild(ta);
+        }
+
         // =========================================================================
-        // 1. BACKGROUND CANVAS: ASCII / HALFTONE MATRIX DENGAN RIPPLE MOUSE
+        // 1. ASCII / HALFTONE MATRIX CANVAS BACKGROUND
         // =========================================================================
         (function initAsciiMatrix() {
             const canvas = document.getElementById('ascii-matrix-canvas');
@@ -754,691 +598,652 @@
                 tick += 0.025;
                 ctx.clearRect(0, 0, width, height);
 
-                const spacingX = 18;
-                const spacingY = 18;
+                const spacing = 18;
                 ctx.font = '500 10px "JetBrains Mono", monospace';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
 
-                const cols = Math.ceil(width / spacingX) + 1;
-                const rows = Math.ceil(height / spacingY) + 1;
+                const cols = Math.ceil(width / spacing) + 1;
+                const rows = Math.ceil(height / spacing) + 1;
 
                 for (let r = 0; r < rows; r++) {
-                    const y = r * spacingY;
-                    // Buat pita horizontal padat karakter seperti di referensi Tayang Studio
+                    const y = r * spacing;
                     const isDenseBand = (r % 7 === 2 || r % 7 === 3);
-
                     for (let c = 0; c < cols; c++) {
-                        const x = c * spacingX;
+                        const x = c * spacing;
                         const dx = x - mouseX;
                         const dy = y - mouseY;
                         const dist = Math.hypot(dx, dy);
 
-                        // Gelombang halus + reaksi kursor
                         const wave = Math.sin(c * 0.14 + r * 0.18 + tick);
-                        let charIdx = Math.abs(Math.floor((c * 3 + r * 5 + wave * 2))) % chars.length;
-                        let alpha = isDenseBand ? 0.52 : 0.28;
-                        let offsetX = 0;
-                        let offsetY = 0;
+                        let charIdx = Math.abs(Math.floor(c * 3 + r * 5 + wave * 2)) % chars.length;
+                        let alpha = isDenseBand ? 0.5 : 0.25;
+                        let ox = 0, oy = 0;
 
-                        if (dist < 140) {
-                            const force = (1 - dist / 140);
-                            alpha = Math.min(0.95, alpha + force * 0.55);
-                            offsetX = (dx / (dist || 1)) * force * 4;
-                            offsetY = (dy / (dist || 1)) * force * 4;
-                            charIdx = Math.floor(force * (chars.length - 1));
+                        if (dist < 130) {
+                            const f = 1 - dist / 130;
+                            alpha = Math.min(0.9, alpha + f * 0.5);
+                            ox = (dx / (dist || 1)) * f * 3.5;
+                            oy = (dy / (dist || 1)) * f * 3.5;
+                            charIdx = Math.floor(f * (chars.length - 1));
                         }
 
-                        const symbol = isDenseBand ? chars[charIdx] : (wave > 0.2 ? '·' : ':');
-                        ctx.fillStyle = dist < 110 ? `rgba(113, 113, 122, ${alpha})` : `rgba(180, 180, 188, ${alpha})`;
-                        ctx.fillText(symbol, x + offsetX, y + offsetY);
+                        const sym = isDenseBand ? chars[charIdx] : (wave > 0.2 ? '·' : ':');
+                        ctx.fillStyle = dist < 100 ? `rgba(113, 113, 122, ${alpha})` : `rgba(182, 182, 190, ${alpha})`;
+                        ctx.fillText(sym, x + ox, y + oy);
                     }
                 }
-
                 requestAnimationFrame(draw);
             }
-
             requestAnimationFrame(draw);
         })();
 
         // =========================================================================
-        // 2. 4 FLOATING TILTED 9:16 2D MOTION VIDEO CARDS (HERO ANIMATIONS)
+        // 2. HERO FLOATING 9:16 2D ANIMATED PREVIEW CARDS
         // =========================================================================
         (function initHero2DCards() {
             let t = 0;
+            const getPairs = (id) => [document.getElementById('hero-' + id), document.getElementById('mob-' + id)].filter(Boolean);
+            const c1 = getPairs('card-1'), c2 = getPairs('card-2'), c3 = getPairs('card-3'), c4 = getPairs('card-4');
 
-            function setupCanvases(id) {
-                return [document.getElementById('hero-' + id), document.getElementById('mob-' + id)].filter(Boolean);
-            }
-
-            const c1List = setupCanvases('card-1');
-            const c2List = setupCanvases('card-2');
-            const c3List = setupCanvases('card-3');
-            const c4List = setupCanvases('card-4');
-
-            function renderCards() {
+            function render() {
                 t += 0.04;
-
-                // --- CARD 1: Cozy 2D Room + Steaming White Teapot & Bouncing Egg ---
-                c1List.forEach(c => {
+                // Card 1: Teapot & Egg 2D
+                c1.forEach(c => {
                     const ctx = c.getContext('2d');
-                    const w = c.width = 180, h = c.height = 320;
-                    // Dinding kamar hangat & jendela hijau
-                    ctx.fillStyle = '#FEF3C7';
-                    ctx.fillRect(0, 0, w, h);
-                    ctx.fillStyle = '#86EFAC';
-                    ctx.fillRect(105, 22, 55, 68);
-                    ctx.strokeStyle = '#18181B';
-                    ctx.lineWidth = 3;
-                    ctx.strokeRect(105, 22, 55, 68);
-                    // Meja kayu
-                    ctx.fillStyle = '#92400E';
-                    ctx.fillRect(0, 205, w, 115);
-                    ctx.fillStyle = '#B45309';
-                    ctx.fillRect(0, 205, w, 14);
-
-                    // Uap mengepul dari teko
-                    for (let i = 0; i < 3; i++) {
-                        const sy = 122 - ((t * 18 + i * 16) % 45);
-                        const sx = 86 + Math.sin(t * 2 + i) * 6;
-                        ctx.fillStyle = `rgba(255,255,255,${0.85 - ((122 - sy) / 50)})`;
-                        ctx.beginPath();
-                        ctx.arc(sx, sy, 5 + i, 0, Math.PI * 2);
-                        ctx.fill();
-                    }
-
-                    // Teko Putih 2D
-                    const bounce = Math.abs(Math.sin(t * 2.2)) * 6;
+                    const w = c.width = 140, h = c.height = 248;
+                    ctx.fillStyle = '#FEF3C7'; ctx.fillRect(0, 0, w, h);
+                    ctx.fillStyle = '#86EFAC'; ctx.fillRect(82, 18, 42, 52);
+                    ctx.strokeStyle = '#18181B'; ctx.lineWidth = 2.5; ctx.strokeRect(82, 18, 42, 52);
+                    ctx.fillStyle = '#92400E'; ctx.fillRect(0, 160, w, 88);
+                    const b = Math.abs(Math.sin(t * 2.2)) * 5;
                     ctx.fillStyle = '#FFFFFF';
-                    ctx.strokeStyle = '#18181B';
-                    ctx.lineWidth = 3;
-                    ctx.beginPath();
-                    ctx.ellipse(88, 178 - bounce, 34, 28, 0, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.stroke();
-                    // Tutup & Gagang Teko
-                    ctx.beginPath();
-                    ctx.arc(88, 148 - bounce, 7, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.stroke();
-                    ctx.beginPath();
-                    ctx.moveTo(55, 176 - bounce);
-                    ctx.lineTo(36, 160 - bounce);
-                    ctx.stroke();
+                    ctx.beginPath(); ctx.ellipse(68, 138 - b, 26, 21, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
                 });
-
-                // --- CARD 2: Minimalist 2D Sky & Stylized Airplane Horizon Loop ---
-                c2List.forEach(c => {
+                // Card 2: Sky & Plane 2D
+                c2.forEach(c => {
                     const ctx = c.getContext('2d');
-                    const w = c.width = 180, h = c.height = 320;
-                    const grad = ctx.createLinearGradient(0, 0, 0, h);
-                    grad.addColorStop(0, '#60A5FA');
-                    grad.addColorStop(0.7, '#BAE6FD');
-                    grad.addColorStop(0.71, '#FDE68A');
-                    grad.addColorStop(1, '#F59E0B');
-                    ctx.fillStyle = grad;
-                    ctx.fillRect(0, 0, w, h);
-
-                    // Awan Parallax
-                    ctx.fillStyle = 'rgba(255,255,255,0.9)';
-                    const cloudX = ((t * 22) % 240) - 50;
-                    ctx.beginPath();
-                    ctx.arc(cloudX, 75, 18, 0, Math.PI * 2);
-                    ctx.arc(cloudX + 18, 72, 22, 0, Math.PI * 2);
-                    ctx.arc(cloudX + 38, 76, 16, 0, Math.PI * 2);
-                    ctx.fill();
-
-                    // Pesawat / Kereta Horizon Stylized 2D
-                    const planeY = 195 + Math.sin(t * 2.5) * 8;
-                    ctx.fillStyle = '#E2E8F0';
-                    ctx.strokeStyle = '#18181B';
-                    ctx.lineWidth = 2.5;
-                    ctx.beginPath();
-                    ctx.roundRect(22, planeY, 118, 26, 13);
-                    ctx.fill();
-                    ctx.stroke();
-                    // Sayap & Jendela
-                    ctx.fillStyle = '#38BDF8';
-                    ctx.fillRect(46, planeY + 6, 12, 8);
-                    ctx.fillRect(66, planeY + 6, 12, 8);
-                    ctx.fillRect(86, planeY + 6, 12, 8);
+                    const w = c.width = 140, h = c.height = 248;
+                    ctx.fillStyle = '#7DD3FC'; ctx.fillRect(0, 0, w, 175);
+                    ctx.fillStyle = '#FDE68A'; ctx.fillRect(0, 175, w, 73);
+                    const py = 148 + Math.sin(t * 2.4) * 6;
+                    ctx.fillStyle = '#FFFFFF'; ctx.strokeStyle = '#18181B'; ctx.lineWidth = 2;
+                    ctx.beginPath(); ctx.roundRect(18, py, 92, 20, 10); ctx.fill(); ctx.stroke();
                 });
-
-                // --- CARD 3: Expressive 2D Character on Warm Orange + Floating Pixel Hearts ---
-                c3List.forEach(c => {
+                // Card 3: Character 2D + Hearts
+                c3.forEach(c => {
                     const ctx = c.getContext('2d');
-                    const w = c.width = 180, h = c.height = 320;
-                    const grad = ctx.createLinearGradient(0, 0, 0, h);
-                    grad.addColorStop(0, '#FBBF24');
-                    grad.addColorStop(0.65, '#F97316');
-                    grad.addColorStop(1, '#EA580C');
-                    ctx.fillStyle = grad;
-                    ctx.fillRect(0, 0, w, h);
-
-                    // Karakter 2D Lucu
-                    const bob = Math.sin(t * 3) * 4;
-                    // Badan biru-teal
-                    ctx.fillStyle = '#0EA5E9';
-                    ctx.strokeStyle = '#18181B';
-                    ctx.lineWidth = 3;
-                    ctx.beginPath();
-                    ctx.roundRect(62, 155 + bob, 56, 85, 26);
-                    ctx.fill();
-                    ctx.stroke();
-
-                    // Kepala & Rambut Cokelat
+                    const w = c.width = 140, h = c.height = 248;
+                    ctx.fillStyle = '#FB923C'; ctx.fillRect(0, 0, w, h);
+                    const bob = Math.sin(t * 3) * 3;
+                    ctx.fillStyle = '#0EA5E9'; ctx.strokeStyle = '#18181B'; ctx.lineWidth = 2.5;
+                    ctx.beginPath(); ctx.roundRect(48, 120 + bob, 44, 65, 20); ctx.fill(); ctx.stroke();
                     ctx.fillStyle = '#FDBA74';
-                    ctx.beginPath();
-                    ctx.arc(90, 118 + bob, 32, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.stroke();
-
-                    ctx.fillStyle = '#451A03';
-                    ctx.beginPath();
-                    ctx.arc(90, 110 + bob, 32, Math.PI, 0);
-                    ctx.fill();
-
-                    // Mata & Mulut Ekspresif
-                    ctx.fillStyle = '#18181B';
-                    ctx.beginPath();
-                    ctx.arc(79, 122 + bob, 3.2, 0, Math.PI * 2);
-                    ctx.arc(101, 122 + bob, 3.2, 0, Math.PI * 2);
-                    ctx.fill();
-
-                    // Floating Pink Hearts
-                    const hearts = [
-                        { x: 142, base: 145, speed: 1.2 },
-                        { x: 136, base: 105, speed: 1.5 },
-                        { x: 146, base: 185, speed: 1.0 }
-                    ];
-                    hearts.forEach((ht, idx) => {
-                        const hy = ht.base - ((t * 16 * ht.speed + idx * 20) % 60);
-                        ctx.fillStyle = '#F43F5E';
-                        ctx.font = 'bold 18px sans-serif';
-                        ctx.fillText('♥', ht.x, hy);
-                    });
+                    ctx.beginPath(); ctx.arc(70, 92 + bob, 24, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                    ctx.fillStyle = '#F43F5E'; ctx.font = 'bold 14px sans-serif';
+                    ctx.fillText('♥', 108, 110 - ((t * 14) % 45));
                 });
-
-                // --- CARD 4: White Spheres Rising with Upward Orange Arrows on Blue Sky ---
-                c4List.forEach(c => {
+                // Card 4: Rising Spheres + Orange Arrows
+                c4.forEach(c => {
                     const ctx = c.getContext('2d');
-                    const w = c.width = 180, h = c.height = 320;
-                    ctx.fillStyle = '#7DD3FC';
-                    ctx.fillRect(0, 0, w, h);
-
-                    // Kumpulan Bola Putih (Molekul Udara) Mengapung
-                    const lift = Math.sin(t * 2) * 8;
-                    const balls = [
-                        [75, 130], [102, 125], [65, 155], [92, 152],
-                        [118, 150], [78, 178], [105, 176], [90, 108]
-                    ];
-                    balls.forEach(([bx, by]) => {
-                        ctx.fillStyle = '#F8FAFC';
-                        ctx.strokeStyle = '#64748B';
-                        ctx.lineWidth = 2;
-                        ctx.beginPath();
-                        ctx.arc(bx, by + lift, 16, 0, Math.PI * 2);
-                        ctx.fill();
-                        ctx.stroke();
+                    const w = c.width = 140, h = c.height = 248;
+                    ctx.fillStyle = '#7DD3FC'; ctx.fillRect(0, 0, w, h);
+                    const lift = Math.sin(t * 2) * 6;
+                    [[58, 102], [82, 98], [52, 124], [74, 122], [92, 120]].forEach(([bx, by]) => {
+                        ctx.fillStyle = '#F8FAFC'; ctx.strokeStyle = '#64748B'; ctx.lineWidth = 1.8;
+                        ctx.beginPath(); ctx.arc(bx, by + lift, 12, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
                     });
-
-                    // Panah Oranye Naik ke Atas
-                    const arrowShift = (t * 20) % 24;
-                    [58, 90, 122].forEach(ax => {
-                        const ay = 242 - arrowShift;
-                        ctx.fillStyle = '#F97316';
-                        ctx.strokeStyle = '#18181B';
-                        ctx.lineWidth = 2;
-                        ctx.beginPath();
-                        ctx.moveTo(ax, ay - 16);
-                        ctx.lineTo(ax + 10, ay - 2);
-                        ctx.lineTo(ax + 4, ay - 2);
-                        ctx.lineTo(ax + 4, ay + 14);
-                        ctx.lineTo(ax - 4, ay + 14);
-                        ctx.lineTo(ax - 4, ay - 2);
-                        ctx.lineTo(ax - 10, ay - 2);
-                        ctx.closePath();
-                        ctx.fill();
-                        ctx.stroke();
-                    });
+                    const ay = 188 - ((t * 18) % 20);
+                    ctx.fillStyle = '#F97316';
+                    ctx.fillRect(66, ay, 8, 18);
                 });
-
-                requestAnimationFrame(renderCards);
+                requestAnimationFrame(render);
             }
-
-            requestAnimationFrame(renderCards);
+            requestAnimationFrame(render);
         })();
 
         // =========================================================================
-        // 3. INTERACTIVE REMOTION 2D LIVE SANDBOX PREVIEWER
+        // 3. DATA PRODUK & STATE UNLOCK (BISA LANGSUNG DICOBA BELI -> UNLOCK)
         // =========================================================================
-        const sandboxTemplates = [
+        const photoProducts = [
             {
-                id: 101,
-                name: 'Storytelling Karakter 2D',
-                filename: '<StorytellingKarakter2D />',
-                price: 149000,
-                type: 'character'
+                id: 'pf-1',
+                title: 'Kopi Susu Studio Commercial',
+                category: 'Produk & Iklan',
+                model: 'Flux.1 Dev',
+                ratio: '4:5',
+                price: 29000,
+                artType: 'coffee',
+                promptPrefix: 'Commercial studio photography of iced palm sugar latte in ribbed glass,',
+                promptSecret: ' condensation droplets, floating coffee beans splash, warm amber rim lighting, shot on Hasselblad H6D 100mm f/2.8, ultra-crisp 8k advertising aesthetic --ar 4:5'
             },
             {
-                id: 102,
-                name: 'Infografis Data & Chart',
-                filename: '<InfografisDataChart2D />',
-                price: 179000,
-                type: 'chart'
+                id: 'pf-2',
+                title: 'Karakter 2D Flat-Vector Cozy Room',
+                category: 'Ilustrasi 2D',
+                model: 'Midjourney v6',
+                ratio: '9:16',
+                price: 35000,
+                artType: 'cozy2d',
+                promptPrefix: '2D flat vector illustration of a cozy pastel workspace with steaming white ceramic teapot,',
+                promptSecret: ' bold clean dark ink outlines, warm morning sunlight beams through mint window, Studio Ghibli meets modern Remotion motion design palette --ar 9:16'
             },
             {
-                id: 103,
-                name: 'Hook TikTok Kinetic Text',
-                filename: '<HookTikTokKinetic2D />',
-                price: 99000,
-                type: 'kinetic'
+                id: 'pf-3',
+                title: 'Potret Cyberpunk Neon Jakarta',
+                category: 'Karakter & Potret',
+                model: 'Flux.1 Pro',
+                ratio: '9:16',
+                price: 39000,
+                artType: 'cyber',
+                promptPrefix: 'Cinematic medium portrait of Indonesian streetwear creator standing on rainy Jakarta overpass,',
+                promptSecret: ' cyan and magenta holographic reflections on wet asphalt, shallow depth of field, Kodak Portra 800 film grain, volumetric fog --ar 9:16'
+            },
+            {
+                id: 'pf-4',
+                title: 'Villa Tropis Minimalis Ubud',
+                category: 'Arsitektur & Interior',
+                model: 'Midjourney v6',
+                ratio: '16:9',
+                price: 45000,
+                artType: 'villa',
+                promptPrefix: 'Architectural digest photography of modern tropical minimalist villa in Ubud Bali,',
+                promptSecret: ' infinity pool reflecting golden hour sky, natural teak wood louvers, travertine stone, lush monstera garden, 24mm tilt-shift lens --ar 16:9'
+            },
+            {
+                id: 'pf-5',
+                title: 'Parfum Mewah Batu Marmer & Air',
+                category: 'Produk & Iklan',
+                model: 'Flux.1 Dev',
+                ratio: '1:1',
+                price: 35000,
+                artType: 'perfume',
+                promptPrefix: 'Luxury cosmetic product shot of minimalist frosted glass perfume bottle on raw travertine stone,',
+                promptSecret: ' crystal clear water ripple reflection, caustic sunlight shadows, botanical olive branch accent, hyper-detailed macro commercial render --ar 1:1'
+            },
+            {
+                id: 'pf-6',
+                title: 'Maskot Rubah 2D Esport & Tech',
+                category: 'Ilustrasi 2D',
+                model: 'Midjourney v6',
+                ratio: '1:1',
+                price: 39000,
+                artType: 'mascot2d',
+                promptPrefix: 'Clean 2D geometric vector mascot logo of a friendly orange cyber-fox wearing visor,',
+                promptSecret: ' crisp white background, bold cel-shaded highlights, vibrant vermilion #FF4D1C and obsidian palette, ready for SVG & Remotion animation --ar 1:1'
             }
         ];
 
-        const sbState = {
-            activeIdx: 0,
-            headline: 'Bikin Konten Viral Otomatis!',
-            accent: '#FF4D1C',
-            frame: 0,
-            playing: true
-        };
-
-        const sbCanvas = document.getElementById('sandbox-stage-canvas');
-        const sbCtx = sbCanvas.getContext('2d');
-        const sbScrubber = document.getElementById('sb-scrubber');
-        const sbFrameLabel = document.getElementById('sb-frame-label');
-
-        function springEase(f, delay = 0) {
-            const x = Math.max(0, Math.min(1, (f - delay) / 28));
-            if (x === 0 || x === 1) return x;
-            return Math.pow(2, -10 * x) * Math.sin((x * 10 - 0.75) * ((2 * Math.PI) / 3)) + 1;
-        }
-
-        function drawSandboxStage(frame) {
-            const w = sbCanvas.width;
-            const h = sbCanvas.height;
-            sbCtx.clearRect(0, 0, w, h);
-
-            // Grid Remotion tipis di background canvas sandbox
-            sbCtx.fillStyle = '#FFFFFF';
-            sbCtx.fillRect(0, 0, w, h);
-            sbCtx.strokeStyle = '#F4F4F5';
-            sbCtx.lineWidth = 1;
-            for (let gx = 0; gx < w; gx += 20) {
-                sbCtx.beginPath(); sbCtx.moveTo(gx, 0); sbCtx.lineTo(gx, h); sbCtx.stroke();
+        const storyboardProducts = [
+            {
+                id: 'sb-1',
+                title: 'Iklan Kopi Splash & Kinetic Title 2D',
+                category: 'Produk & Iklan',
+                engine: 'Kling 1.6 + Remotion 2D',
+                price: 69000,
+                animType: 'coffeeMotion',
+                kf1Label: 'KF 01: Gelas Diam & Es Batu',
+                kf2Label: 'KF 02: Splash + Teks Promo',
+                promptImage: '9:16 vertical studio frame of iced latte glass centered on warm cream pedestal, clean 2D vector UI price tag space on top, crisp lighting --ar 9:16',
+                promptVideo: 'Slow-motion 60fps camera push-in, ice cubes drop into iced coffee creating golden caramel splash, Remotion 2D spring typography slides in from bottom.'
+            },
+            {
+                id: 'sb-2',
+                title: 'Storytelling Karakter 2D & Hati Melayang',
+                category: 'Storytelling 2D',
+                engine: 'Remotion 2D TSX',
+                price: 59000,
+                animType: 'charMotion',
+                kf1Label: 'KF 01: Ekspresi Kaget',
+                kf2Label: 'KF 02: Senyum + Hati Naik',
+                promptImage: '2D flat cartoon character in teal sweater standing against warm orange vertical background, bold clean outlines, centered composition --ar 9:16',
+                promptVideo: 'Gentle idle head bobbing loop at 60fps, pixel-style pink hearts float upward on the right side, synchronized bottom karaoke captions.'
+            },
+            {
+                id: 'sb-3',
+                title: 'Edukasi Sains 2D: Tekanan Udara & Panah',
+                category: 'Edukasi 2D',
+                engine: 'Remotion 2D Physics',
+                price: 75000,
+                animType: 'airMotion',
+                kf1Label: 'KF 01: Molekul Udara Padat',
+                kf2Label: 'KF 02: Panah Oranye Angkat',
+                promptImage: '2D educational explainer diagram on bright sky blue background showing cluster of white air spheres and orange upward arrows --ar 9:16',
+                promptVideo: 'Upward buoyant drift motion, orange arrows pulse and rise smoothly from bottom to top, bold outlined white subtitle pops in center.'
+            },
+            {
+                id: 'sb-4',
+                title: 'Promo SaaS / Aplikasi & Kursor Klik 2D',
+                category: 'Tech & SaaS',
+                engine: 'Runway Gen-3 + Remotion',
+                price: 89000,
+                animType: 'saasMotion',
+                kf1Label: 'KF 01: Kartu Dashboard Masuk',
+                kf2Label: 'KF 02: Klik Tombol & Grafik Naik',
+                promptImage: 'Clean light-mode SaaS dashboard UI card floating over subtle dotted grid background, crisp #FF4D1C accent button, isometric 2D angle --ar 16:9',
+                promptVideo: 'Spring physics card entrance, 2D vector cursor glides to primary CTA button and clicks with ripple effect, bar chart animates upward.'
             }
-            for (let gy = 0; gy < h; gy += 20) {
-                sbCtx.beginPath(); sbCtx.moveTo(0, gy); sbCtx.lineTo(w, gy); sbCtx.stroke();
-            }
+        ];
 
-            const tpl = sandboxTemplates[sbState.activeIdx];
-            const p = springEase(frame, 4);
+        // Item 'pf-1' kita buka secara default agar user langsung bisa melihat contoh prompt terbuka + 5 terkunci
+        let unlockedIds = new Set(['pf-1']);
+        let activePhotoCat = 'all';
+        let photoSearchQuery = '';
+        let sbPlayingMap = { 'sb-1': true, 'sb-2': true, 'sb-3': true, 'sb-4': true };
 
-            // Pill tag atas
-            sbCtx.fillStyle = sbState.accent;
-            sbCtx.beginPath();
-            sbCtx.roundRect(24, 22, 130, 24, 12);
-            sbCtx.fill();
-            sbCtx.fillStyle = '#FFFFFF';
-            sbCtx.font = 'bold 10px "JetBrains Mono", monospace';
-            sbCtx.fillText('REMOTION 2D • 60FPS', 36, 37);
+        // Helper menggambar ilustrasi FOTO HASIL di Canvas agar tajam dan kaya warna
+        function paintPhotoArtwork(canvas, type) {
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width = 400;
+            const h = canvas.height = 250;
 
-            // Judul Kustom dari Input User
-            sbCtx.save();
-            sbCtx.translate(24, 78 + (1 - p) * 16);
-            sbCtx.globalAlpha = Math.min(1, frame / 10);
-            sbCtx.fillStyle = '#09090B';
-            sbCtx.font = '800 22px "Plus Jakarta Sans", sans-serif';
-            sbCtx.fillText(sbState.headline || 'Video Motion 2D', 0, 0);
-            sbCtx.restore();
-
-            if (tpl.type === 'character') {
-                // Karakter 2D & Kartu Cerita
-                const bounce = Math.sin(frame * 0.15) * 5;
-                sbCtx.fillStyle = sbState.accent;
-                sbCtx.strokeStyle = '#09090B';
-                sbCtx.lineWidth = 2.5;
-                sbCtx.beginPath();
-                sbCtx.roundRect(44, 135 + bounce, 74, 96, 30);
-                sbCtx.fill();
-                sbCtx.stroke();
-
-                sbCtx.fillStyle = '#FDBA74';
-                sbCtx.beginPath();
-                sbCtx.arc(81, 118 + bounce, 24, 0, Math.PI * 2);
-                sbCtx.fill();
-                sbCtx.stroke();
-
-                // Speech bubble
-                sbCtx.fillStyle = '#FAFAFA';
-                sbCtx.beginPath();
-                sbCtx.roundRect(145, 115, 330 * p, 115, 16);
-                sbCtx.fill();
-                sbCtx.stroke();
-
-                if (p > 0.4) {
-                    sbCtx.fillStyle = '#18181B';
-                    sbCtx.font = 'bold 14px "Inter", sans-serif';
-                    sbCtx.fillText('Scene 01: Hook Otomatis', 165, 148);
-                    sbCtx.fillStyle = '#52525B';
-                    sbCtx.font = '12px "Inter", sans-serif';
-                    sbCtx.fillText('Karakter bergerak otomatis mengikuti durasi', 165, 174);
-                    sbCtx.fillText('voiceover & subtitle tanpa keyframe manual.', 165, 194);
-                }
-            } else if (tpl.type === 'chart') {
-                // Grafik Batang 2D Animasi
-                const bars = [
-                    { label: 'Jan', val: 65 },
-                    { label: 'Feb', val: 95 },
-                    { label: 'Mar', val: 120 },
-                    { label: 'Apr', val: 155 }
-                ];
-                bars.forEach((b, i) => {
-                    const bp = springEase(frame, 10 + i * 7);
-                    const bh = b.val * bp;
-                    const bx = 55 + i * 105;
-                    const by = 245 - bh;
-
-                    sbCtx.fillStyle = i === 3 ? sbState.accent : '#E4E4E7';
-                    sbCtx.beginPath();
-                    sbCtx.roundRect(bx, by, 64, bh, [10, 10, 0, 0]);
-                    sbCtx.fill();
-
-                    sbCtx.fillStyle = '#09090B';
-                    sbCtx.font = 'bold 11px "JetBrains Mono", monospace';
-                    sbCtx.fillText(b.label, bx + 20, 265);
-                });
+            if (type === 'coffee') {
+                const g = ctx.createLinearGradient(0, 0, w, h);
+                g.addColorStop(0, '#FEF3C7'); g.addColorStop(1, '#F59E0B');
+                ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+                // Meja & Gelas Kopi Susu
+                ctx.fillStyle = '#78350F'; ctx.fillRect(0, 190, w, 60);
+                ctx.fillStyle = '#FFFBEB'; ctx.strokeStyle = '#18181B'; ctx.lineWidth = 3;
+                ctx.beginPath(); ctx.roundRect(155, 58, 90, 138, 12); ctx.fill(); ctx.stroke();
+                ctx.fillStyle = '#92400E'; ctx.fillRect(160, 102, 80, 90);
+                ctx.fillStyle = '#FDE68A'; ctx.fillRect(160, 82, 80, 22);
+                // Biji kopi melayang
+                ctx.fillStyle = '#451A03';
+                ctx.beginPath(); ctx.ellipse(115, 95, 10, 6, 0.5, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.ellipse(285, 80, 10, 6, -0.4, 0, Math.PI * 2); ctx.fill();
+            } else if (type === 'cozy2d') {
+                ctx.fillStyle = '#FEF9C3'; ctx.fillRect(0, 0, w, h);
+                ctx.fillStyle = '#86EFAC'; ctx.fillRect(245, 24, 110, 88);
+                ctx.strokeStyle = '#18181B'; ctx.lineWidth = 3; ctx.strokeRect(245, 24, 110, 88);
+                ctx.fillStyle = '#B45309'; ctx.fillRect(0, 175, w, 75);
+                ctx.fillStyle = '#FFFFFF';
+                ctx.beginPath(); ctx.ellipse(175, 150, 48, 36, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.arc(175, 110, 9, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            } else if (type === 'cyber') {
+                const g = ctx.createLinearGradient(0, 0, w, h);
+                g.addColorStop(0, '#1E1B4B'); g.addColorStop(0.6, '#312E81'); g.addColorStop(1, '#BE185D');
+                ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+                // Neon signs & siluet kreator
+                ctx.strokeStyle = '#22D3EE'; ctx.lineWidth = 3; ctx.strokeRect(36, 34, 84, 34);
+                ctx.fillStyle = '#22D3EE'; ctx.font = 'bold 12px monospace'; ctx.fillText('JKT-2099', 48, 55);
+                ctx.fillStyle = '#09090B';
+                ctx.beginPath(); ctx.arc(200, 108, 34, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.roundRect(148, 146, 104, 104, 28); ctx.fill();
+                ctx.strokeStyle = '#F472B6'; ctx.lineWidth = 2.5; ctx.stroke();
+            } else if (type === 'villa') {
+                ctx.fillStyle = '#BAE6FD'; ctx.fillRect(0, 0, w, 145);
+                ctx.fillStyle = '#0284C7'; ctx.fillRect(0, 165, w, 85);
+                // Bangunan kayu modern
+                ctx.fillStyle = '#FFFBEB'; ctx.fillRect(75, 55, 250, 110);
+                ctx.fillStyle = '#92400E'; ctx.fillRect(65, 45, 270, 16);
+                ctx.fillStyle = '#38BDF8'; ctx.fillRect(105, 80, 95, 70);
+                ctx.fillStyle = '#16A34A';
+                ctx.beginPath(); ctx.arc(48, 145, 32, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(355, 145, 35, 0, Math.PI * 2); ctx.fill();
+            } else if (type === 'perfume') {
+                const g = ctx.createLinearGradient(0, 0, 0, h);
+                g.addColorStop(0, '#F5F5F4'); g.addColorStop(1, '#D6D3D1');
+                ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+                ctx.fillStyle = '#A8A29E'; ctx.fillRect(110, 175, 180, 48);
+                ctx.fillStyle = 'rgba(255,255,255,0.9)'; ctx.strokeStyle = '#292524'; ctx.lineWidth = 2.5;
+                ctx.beginPath(); ctx.roundRect(160, 72, 80, 104, 10); ctx.fill(); ctx.stroke();
+                ctx.fillStyle = '#1C1917'; ctx.fillRect(184, 46, 32, 26);
             } else {
-                // Hook TikTok Kinetic Text
-                const words = (sbState.headline || 'HOOK VIRAL 2D').toUpperCase().split(' ');
-                words.forEach((word, idx) => {
-                    const wp = springEase(frame, idx * 8);
-                    sbCtx.save();
-                    sbCtx.translate(32 + (idx % 2) * 210, 155 + Math.floor(idx / 2) * 62);
-                    sbCtx.scale(0.8 + wp * 0.2, 0.8 + wp * 0.2);
-                    sbCtx.fillStyle = idx % 2 === 1 ? sbState.accent : '#09090B';
-                    sbCtx.font = '900 32px "Plus Jakarta Sans", sans-serif';
-                    sbCtx.fillText(word, 0, 0);
-                    sbCtx.restore();
-                });
+                // Mascot 2D Fox
+                ctx.fillStyle = '#FFF7ED'; ctx.fillRect(0, 0, w, h);
+                ctx.fillStyle = '#FF4D1C'; ctx.strokeStyle = '#18181B'; ctx.lineWidth = 3.5;
+                ctx.beginPath();
+                ctx.moveTo(130, 52); ctx.lineTo(170, 92); ctx.lineTo(230, 92); ctx.lineTo(270, 52);
+                ctx.lineTo(260, 152); ctx.lineTo(200, 205); ctx.lineTo(140, 152); ctx.closePath();
+                ctx.fill(); ctx.stroke();
+                ctx.fillStyle = '#18181B';
+                ctx.beginPath(); ctx.arc(178, 134, 7, 0, Math.PI * 2); ctx.arc(222, 134, 7, 0, Math.PI * 2); ctx.fill();
             }
         }
 
-        setInterval(() => {
-            if (sbState.playing) {
-                sbState.frame = (sbState.frame + 1) % 151;
-                sbScrubber.value = sbState.frame;
-                sbFrameLabel.textContent = `Frame ${sbState.frame}/150`;
-                drawSandboxStage(sbState.frame);
-            }
-        }, 1000 / 30);
-
-        sbScrubber.addEventListener('input', (e) => {
-            sbState.playing = false;
-            document.getElementById('sb-play-icon').setAttribute('data-lucide', 'play');
-            lucide.createIcons();
-            sbState.frame = parseInt(e.target.value, 10);
-            sbFrameLabel.textContent = `Frame ${sbState.frame}/150`;
-            drawSandboxStage(sbState.frame);
-        });
-
-        function toggleSandboxPlay() {
-            sbState.playing = !sbState.playing;
-            document.getElementById('sb-play-icon').setAttribute('data-lucide', sbState.playing ? 'pause' : 'play');
-            lucide.createIcons();
-        }
-
-        function selectSandboxTemplate(idx) {
-            sbState.activeIdx = idx;
-            sbState.frame = 0;
-            document.getElementById('sb-comp-filename').textContent = sandboxTemplates[idx].filename;
-            document.querySelectorAll('.sb-tab').forEach((btn, i) => {
-                if (i === idx) {
-                    btn.className = 'sb-tab text-left px-3.5 py-2.5 rounded-xl border-2 border-zinc-950 bg-zinc-950 text-white text-xs font-semibold flex items-center justify-between transition cursor-pointer';
-                } else {
-                    btn.className = 'sb-tab text-left px-3.5 py-2.5 rounded-xl border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-800 text-xs font-semibold flex items-center justify-between transition cursor-pointer';
-                }
+        // Render Section A: Katalog Prompt Foto (FOTO HASIL -> HARGA -> PROMPT)
+        function renderPhotoCatalog() {
+            const grid = document.getElementById('photo-catalog-grid');
+            const filtered = photoProducts.filter(p => {
+                const matchCat = activePhotoCat === 'all' || p.category === activePhotoCat;
+                const matchSearch = p.title.toLowerCase().includes(photoSearchQuery.toLowerCase()) ||
+                                    p.category.toLowerCase().includes(photoSearchQuery.toLowerCase());
+                return matchCat && matchSearch;
             });
-            drawSandboxStage(0);
-        }
 
-        function openSandboxPreset(idx) {
-            selectSandboxTemplate(idx);
-            document.getElementById('cara-kerja').scrollIntoView({ behavior: 'smooth' });
-        }
+            grid.innerHTML = filtered.map(p => {
+                const isUnlocked = unlockedIds.has(p.id);
+                return `
+                <article class="bg-white rounded-3xl border border-zinc-200/90 hover:border-zinc-400 shadow-2xs hover:shadow-lg transition-all flex flex-col justify-between overflow-hidden">
+                    <!-- 1. TOP: FOTO HASIL -->
+                    <div class="relative aspect-[16/10] bg-zinc-100 border-b border-zinc-100 overflow-hidden">
+                        <canvas id="art-${p.id}" class="w-full h-full object-cover block"></canvas>
+                        <div class="absolute top-3 left-3 flex items-center gap-1.5">
+                            <span class="px-2.5 py-0.5 rounded-full bg-zinc-950/85 text-white font-mono text-[10px] font-bold">FOTO HASIL</span>
+                            <span class="px-2 py-0.5 rounded-full bg-white/95 text-zinc-800 font-mono text-[10px] font-semibold border border-zinc-200">${p.model}</span>
+                        </div>
+                        <span class="absolute top-3 right-3 px-2 py-0.5 rounded-md bg-white/90 text-zinc-700 font-mono text-[10px] font-bold">${p.ratio}</span>
+                    </div>
 
-        document.getElementById('sandbox-headline-input').addEventListener('input', (e) => {
-            sbState.headline = e.target.value;
-            drawSandboxStage(sbState.frame);
-        });
-
-        function setSandboxAccent(hex) {
-            sbState.accent = hex;
-            document.querySelectorAll('.sb-color').forEach(btn => {
-                if (btn.dataset.color === hex) {
-                    btn.classList.add('ring-2', 'ring-offset-2', 'ring-zinc-900', 'opacity-100');
-                    btn.classList.remove('opacity-75');
-                } else {
-                    btn.classList.remove('ring-2', 'ring-offset-2', 'ring-zinc-900', 'opacity-100');
-                    btn.classList.add('opacity-75');
-                }
-            });
-            drawSandboxStage(sbState.frame);
-        }
-
-        function addActiveSandboxToCart() {
-            const tpl = sandboxTemplates[sbState.activeIdx];
-            addItemToCart({ id: tpl.id, title: tpl.name, price: tpl.price });
-        }
-
-        // =========================================================================
-        // 4. KATALOG PRODUK REMOTION 2D (6 PRODUK + PREVIEW KODE TSX)
-        // =========================================================================
-        const catalogProducts = [
-            {
-                id: 1,
-                title: 'Paket Karakter & Storytelling 2D',
-                category: 'Karakter & Storytelling',
-                specs: '1080×1920 • 60fps • React TSX',
-                price: 149000,
-                badge: 'Terlaris',
-                bgClass: 'bg-amber-50',
-                iconColor: '#FF4D1C',
-                desc: '12 adegan karakter flat-vector 2D lengkap dengan ekspresi wajah, gelembung dialog otomatis, dan transisi kamera halus ala video storytelling viral.',
-                filepath: 'src/compositions/Storytelling2D.tsx',
-                codeSnippet: `export const Storytelling2D: React.FC<StoryProps> = ({ title, characterMood }) => {\n  const frame = useCurrentFrame();\n  const pop = spring({ frame, fps: 60, config: { damping: 12 } });\n  return (\n    <AbsoluteFill className="bg-amber-100 items-center justify-center">\n      <Character2D mood={characterMood} scale={pop} />\n      <CaptionBubble text={title} />\n    </AbsoluteFill>\n  );\n};`
-            },
-            {
-                id: 2,
-                title: 'Infografis & Edukasi Sains 2D',
-                category: 'Infografis & Edukasi',
-                specs: '1080×1920 • 60fps • React TSX',
-                price: 179000,
-                badge: 'Baru 2026',
-                bgClass: 'bg-sky-50',
-                iconColor: '#0EA5E9',
-                desc: 'Komponen visualisasi fisika, panah pergerakan, grafik batang dinamis, dan diagram edukasi untuk kanal YouTube & TikTok edukatif.',
-                filepath: 'src/compositions/InfografisEdukasi2D.tsx',
-                codeSnippet: `export const InfografisEdukasi2D: React.FC<DataProps> = ({ items }) => {\n  const frame = useCurrentFrame();\n  return (\n    <AbsoluteFill className="bg-sky-200 p-12">\n      {items.map((item, i) => (\n        <AnimatedBar key={i} value={item.value} delay={i * 8} />\n      ))}\n    </AbsoluteFill>\n  );\n};`
-            },
-            {
-                id: 3,
-                title: 'Hook & Kinetic Typography Pack',
-                category: 'Hook & Kinetic Text',
-                specs: '1080×1920 • 60fps • React TSX',
-                price: 99000,
-                badge: 'Hemat',
-                bgClass: 'bg-orange-50',
-                iconColor: '#F97316',
-                desc: '20 variasi pembuka video (3 detik pertama) dengan tipografi kinetik memantul, sorotan kata otomatis, dan efek suara whoosh siap pakai.',
-                filepath: 'src/compositions/KineticHook2D.tsx',
-                codeSnippet: `export const KineticHook2D: React.FC<{ words: string[] }> = ({ words }) => {\n  const frame = useCurrentFrame();\n  return (\n    <AbsoluteFill className="bg-white flex-wrap gap-3 p-10">\n      {words.map((w, idx) => (\n        <SpringWord key={idx} word={w} startFrame={idx * 6} />\n      ))}\n    </AbsoluteFill>\n  );\n};`
-            },
-            {
-                id: 4,
-                title: 'SaaS Product Demo & UI Motion 2D',
-                category: 'Infografis & Edukasi',
-                specs: '1920×1080 • 60fps • React TSX',
-                price: 229000,
-                badge: 'Pro',
-                bgClass: 'bg-indigo-50',
-                iconColor: '#6366F1',
-                desc: 'Template peluncuran aplikasi & website dengan mockup browser 2D, gerakan kursor klik otomatis, dan kartu notifikasi memantul.',
-                filepath: 'src/compositions/SaasLaunch2D.tsx',
-                codeSnippet: `export const SaasLaunch2D: React.FC<LaunchProps> = ({ appName, metrics }) => {\n  const frame = useCurrentFrame();\n  const slideUp = interpolate(frame, [0, 25], [80, 0], { extrapolateRight: 'clamp' });\n  return <BrowserFrame2D title={appName} translateY={slideUp} metrics={metrics} />;\n};`
-            },
-            {
-                id: 5,
-                title: 'Subtitle Karaoke & Reels Retention Kit',
-                category: 'Hook & Kinetic Text',
-                specs: '1080×1920 • 60fps • React TSX',
-                price: 119000,
-                badge: 'Populer',
-                bgClass: 'bg-emerald-50',
-                iconColor: '#10B981',
-                desc: 'Sistem subtitle per kata otomatis dari file JSON Whisper/AI lengkap dengan progress bar atas dan stiker panah penunjuk 2D.',
-                filepath: 'src/compositions/KaraokeCaptions2D.tsx',
-                codeSnippet: `export const KaraokeCaptions2D: React.FC<{ captions: WordTiming[] }> = ({ captions }) => {\n  const frame = useCurrentFrame();\n  return <CaptionRenderer words={captions} currentFrame={frame} highlightColor="#FF4D1C" />;\n};`
-            },
-            {
-                id: 6,
-                title: 'Mega Bundle Remotion 2D (All-in-One)',
-                category: 'Bundle Lengkap',
-                specs: 'Semua Rasio • 60fps • 25+ Template',
-                price: 349000,
-                badge: 'Best Value',
-                bgClass: 'bg-zinc-100',
-                iconColor: '#18181B',
-                desc: 'Seluruh koleksi template Karakter 2D, Infografis, Kinetic Text, dan SaaS UI dalam satu repositori terpadu siap render massal.',
-                filepath: 'src/Root.tsx',
-                codeSnippet: `export const RemotionRoot: React.FC = () => (\n  <>\n    <Composition id="Storytelling2D" component={Storytelling2D} durationInFrames={300} fps={60} width={1080} height={1920} />\n    <Composition id="Infografis2D" component={InfografisEdukasi2D} durationInFrames={300} fps={60} width={1080} height={1920} />\n  </>\n);`
-            }
-        ];
-
-        let activeCatalogFilter = 'all';
-
-        function renderCatalog() {
-            const grid = document.getElementById('catalog-grid');
-            const list = activeCatalogFilter === 'all'
-                ? catalogProducts
-                : catalogProducts.filter(p => p.category === activeCatalogFilter);
-
-            grid.innerHTML = list.map(p => `
-                <article class="group bg-white rounded-3xl border border-zinc-200/90 hover:border-zinc-400 shadow-2xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden">
-                    <div>
-                        <!-- Thumbnail Visual Animasi SVG -->
-                        <div class="relative h-44 ${p.bgClass} border-b border-zinc-100 p-5 flex flex-col justify-between overflow-hidden">
-                            <div class="flex items-center justify-between z-10">
-                                <span class="px-2.5 py-1 rounded-full bg-white/95 border border-zinc-200/80 text-[11px] font-bold text-zinc-800 shadow-2xs">
-                                    ${p.badge}
-                                </span>
-                                <span class="font-mono text-[10px] font-semibold text-zinc-500 bg-white/80 px-2 py-0.5 rounded-md">
-                                    TSX • 60FPS
-                                </span>
+                    <!-- 2. MIDDLE: JUDUL + HARGA -->
+                    <div class="p-5 pb-3">
+                        <div class="flex items-start justify-between gap-2">
+                            <div>
+                                <span class="text-[11px] font-medium text-zinc-400">${p.category}</span>
+                                <h3 class="font-display font-extrabold text-base text-zinc-950 leading-snug mt-0.5">${p.title}</h3>
                             </div>
-
-                            <!-- Elemen Vektor 2D Bergerak saat Hover -->
-                            <div class="my-auto flex items-center justify-center gap-3 group-hover:scale-105 transition-transform duration-300">
-                                <div class="w-14 h-14 rounded-2xl bg-white shadow-md border border-zinc-100 flex items-center justify-center -rotate-6 group-hover:rotate-0 transition-transform">
-                                    <i data-lucide="play" class="w-6 h-6 fill-current" style="color: ${p.iconColor}"></i>
-                                </div>
-                                <div class="px-3.5 py-2 rounded-xl bg-white shadow-md border border-zinc-100 rotate-3 group-hover:rotate-0 transition-transform">
-                                    <div class="font-mono text-[11px] font-bold text-zinc-900">&lt;Motion2D /&gt;</div>
-                                    <div class="text-[10px] text-zinc-500">Siap Render MP4</div>
-                                </div>
+                            <div class="text-right shrink-0">
+                                <span class="text-[10px] font-mono uppercase text-zinc-400 block">HARGA</span>
+                                <span class="font-display font-extrabold text-base text-[#FF4D1C]">${formatRp(p.price)}</span>
                             </div>
                         </div>
 
-                        <!-- Info Produk -->
-                        <div class="p-6 space-y-2">
-                            <div class="text-[11px] font-mono font-semibold text-zinc-400">${p.specs}</div>
-                            <h3 class="font-display font-extrabold text-lg text-zinc-950 group-hover:text-[#FF4D1C] transition">
-                                ${p.title}
-                            </h3>
-                            <p class="text-xs text-zinc-500 leading-relaxed line-clamp-2">
-                                ${p.desc}
+                        <!-- Action Row -->
+                        <div class="mt-3.5 flex items-center gap-2">
+                            ${isUnlocked ? `
+                                <span class="w-full py-2 px-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold flex items-center justify-center gap-1.5">
+                                    <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
+                                    <span>Prompt Sudah Terbuka</span>
+                                </span>
+                            ` : `
+                                <button onclick="addProductToCart('${p.id}', '${p.title}', ${p.price}, false)" class="flex-1 py-2 px-3 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-zinc-900 text-xs font-bold transition cursor-pointer">
+                                    + Keranjang
+                                </button>
+                                <button onclick="addProductToCart('${p.id}', '${p.title}', ${p.price}, true)" class="flex-1 py-2 px-3 rounded-xl bg-zinc-950 hover:bg-[#FF4D1C] text-white text-xs font-bold transition cursor-pointer">
+                                    Beli Instan
+                                </button>
+                            `}
+                        </div>
+                    </div>
+
+                    <!-- 3. BOTTOM: PROMPT BOX (TERKUNCI / TERBUKA) -->
+                    <div class="px-5 pb-5 pt-2">
+                        <div class="p-3.5 rounded-2xl bg-zinc-50 border border-zinc-200/85 relative">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="font-mono text-[10px] font-bold uppercase tracking-wider text-zinc-500 flex items-center gap-1">
+                                    <i data-lucide="${isUnlocked ? 'unlock' : 'lock'}" class="w-3 h-3 ${isUnlocked ? 'text-emerald-600' : 'text-[#FF4D1C]'}"></i>
+                                    <span>PROMPT</span>
+                                </span>
+                                ${isUnlocked ? `
+                                    <button onclick="copyPromptById('${p.id}')" class="px-2 py-0.5 rounded bg-zinc-950 hover:bg-[#FF4D1C] text-white font-mono text-[10px] font-bold flex items-center gap-1 transition cursor-pointer">
+                                        <i data-lucide="copy" class="w-2.5 h-2.5"></i>
+                                        <span>Salin Prompt</span>
+                                    </button>
+                                ` : `
+                                    <button onclick="addProductToCart('${p.id}', '${p.title}', ${p.price}, true)" class="text-[11px] font-bold text-[#FF4D1C] hover:underline cursor-pointer">
+                                        Buka Prompt &rarr;
+                                    </button>
+                                `}
+                            </div>
+
+                            <p class="font-mono text-[11px] text-zinc-700 leading-relaxed">
+                                <span>${p.promptPrefix}</span>
+                                <span class="${isUnlocked ? '' : 'prompt-locked-blur'}">${p.promptSecret}</span>
                             </p>
                         </div>
                     </div>
-
-                    <!-- Harga & Tombol -->
-                    <div class="px-6 pb-6 pt-3 border-t border-zinc-100 flex items-center justify-between gap-2">
-                        <div>
-                            <span class="text-[10px] text-zinc-400 block">Sekali bayar</span>
-                            <span class="font-display font-extrabold text-base text-zinc-950">${formatRp(p.price)}</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <button onclick="openCodeModal(${p.id})" class="px-3 py-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-zinc-800 text-xs font-semibold transition cursor-pointer">
-                                Preview Kode
-                            </button>
-                            <button onclick="addCatalogToCart(${p.id})" class="px-3.5 py-2 rounded-xl bg-zinc-950 hover:bg-[#FF4D1C] text-white text-xs font-bold transition active:scale-95 cursor-pointer">
-                                + Keranjang
-                            </button>
-                        </div>
-                    </div>
                 </article>
-            `).join('');
+                `;
+            }).join('');
 
+            filtered.forEach(p => {
+                const c = document.getElementById('art-' + p.id);
+                if (c) paintPhotoArtwork(c, p.artType);
+            });
             lucide.createIcons();
         }
 
-        document.querySelectorAll('.filter-pill').forEach(btn => {
+        document.querySelectorAll('.p-pill').forEach(btn => {
             btn.addEventListener('click', () => {
-                activeCatalogFilter = btn.dataset.cat;
-                document.querySelectorAll('.filter-pill').forEach(b => {
-                    b.className = 'filter-pill px-4 py-2 rounded-full text-xs font-semibold bg-white hover:bg-zinc-100 text-zinc-700 border border-zinc-200 shrink-0 transition cursor-pointer';
+                activePhotoCat = btn.dataset.cat;
+                document.querySelectorAll('.p-pill').forEach(b => {
+                    b.className = 'p-pill px-3.5 py-1.5 rounded-full text-xs font-semibold bg-zinc-100 hover:bg-zinc-200 text-zinc-700 shrink-0 cursor-pointer';
                 });
-                btn.className = 'filter-pill px-4 py-2 rounded-full text-xs font-bold bg-zinc-950 text-white shrink-0 transition cursor-pointer';
-                renderCatalog();
+                btn.className = 'p-pill px-3.5 py-1.5 rounded-full text-xs font-bold bg-zinc-950 text-white shrink-0 cursor-pointer';
+                renderPhotoCatalog();
             });
         });
 
-        // Modal Preview Kode TSX
-        function openCodeModal(id) {
-            const p = catalogProducts.find(item => item.id === id);
-            if (!p) return;
-            document.getElementById('cm-title').textContent = p.title;
-            document.getElementById('cm-desc').textContent = p.desc;
-            document.getElementById('cm-filepath').textContent = p.filepath;
-            document.getElementById('cm-code').textContent = p.codeSnippet;
-            document.getElementById('cm-price').textContent = formatRp(p.price);
-            document.getElementById('cm-add-btn').onclick = () => {
-                addCatalogToCart(p.id);
-                closeCodeModal();
-            };
-            document.getElementById('code-modal').classList.remove('hidden');
+        document.getElementById('photo-search').addEventListener('input', (e) => {
+            photoSearchQuery = e.target.value;
+            renderPhotoCatalog();
+        });
+
+        function copyPromptById(id) {
+            const p = photoProducts.find(x => x.id === id);
+            if (p) copyTextFallback(p.promptPrefix + p.promptSecret, 'Prompt Foto');
+        }
+
+        // =========================================================================
+        // 4. SECTION B: STORYBOARD GAMBAR -> VIDEO AI (DUAL STAGE RENDER)
+        // =========================================================================
+        function renderStoryboardCatalog() {
+            const grid = document.getElementById('storyboard-catalog-grid');
+            grid.innerHTML = storyboardProducts.map(sb => {
+                const isUnlocked = unlockedIds.has(sb.id);
+                return `
+                <article class="bg-white rounded-3xl border border-zinc-200/90 hover:border-zinc-400 shadow-2xs hover:shadow-lg transition-all overflow-hidden flex flex-col justify-between">
+                    <!-- TOP SPLIT VIEW: STORYBOARD GAMBAR (LEFT) | VIDEO AI (RIGHT) -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 border-b border-zinc-200/80">
+                        <!-- LEFT: STORYBOARD GAMBAR (2 KEYFRAMES) -->
+                        <div class="p-4 bg-zinc-50 border-b sm:border-b-0 sm:border-r border-zinc-200/80 flex flex-col justify-between">
+                            <div class="flex items-center justify-between mb-2.5">
+                                <span class="px-2 py-0.5 rounded bg-zinc-950 text-white font-mono text-[10px] font-bold">STORYBOARD GAMBAR</span>
+                                <span class="font-mono text-[10px] text-zinc-400">2 Keyframes</span>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2 my-auto">
+                                <div class="rounded-xl bg-white border border-zinc-200 p-1.5 shadow-2xs">
+                                    <canvas id="kf1-${sb.id}" class="w-full aspect-square rounded-lg block bg-zinc-100"></canvas>
+                                    <span class="block text-[9px] font-mono font-semibold text-zinc-600 mt-1 truncate">${sb.kf1Label}</span>
+                                </div>
+                                <div class="rounded-xl bg-white border border-zinc-200 p-1.5 shadow-2xs">
+                                    <canvas id="kf2-${sb.id}" class="w-full aspect-square rounded-lg block bg-zinc-100"></canvas>
+                                    <span class="block text-[9px] font-mono font-semibold text-zinc-600 mt-1 truncate">${sb.kf2Label}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- RIGHT: VIDEO AI LIVE MOTION CANVAS -->
+                        <div class="p-4 bg-zinc-950 text-white flex flex-col justify-between relative">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="px-2 py-0.5 rounded bg-[#FF4D1C] text-white font-mono text-[10px] font-bold">VIDEO AI</span>
+                                <span id="sb-fps-${sb.id}" class="font-mono text-[10px] text-zinc-400">001/150 @ 60fps</span>
+                            </div>
+
+                            <div class="relative rounded-xl overflow-hidden border border-zinc-800 bg-zinc-900">
+                                <canvas id="vid-${sb.id}" class="w-full h-36 block"></canvas>
+                                <button onclick="toggleSbVideo('${sb.id}')" aria-label="Play atau Pause Video" class="absolute bottom-2 right-2 w-7 h-7 rounded-lg bg-black/70 hover:bg-[#FF4D1C] text-white flex items-center justify-center transition cursor-pointer">
+                                    <i id="sb-icon-${sb.id}" data-lucide="pause" class="w-3.5 h-3.5 fill-white"></i>
+                                </button>
+                                <span class="absolute bottom-2 left-2 px-1.5 py-0.5 rounded bg-black/65 font-mono text-[9px] text-zinc-200">${sb.engine}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BOTTOM: HARGA & DUAL PROMPT (GAMBAR + VIDEO AI) -->
+                    <div class="p-5 space-y-4">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <div>
+                                <span class="text-[11px] text-zinc-400 font-medium">${sb.category}</span>
+                                <h3 class="font-display font-extrabold text-base text-zinc-950">${sb.title}</h3>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="text-right">
+                                    <span class="text-[10px] font-mono text-zinc-400 block">HARGA</span>
+                                    <span class="font-display font-extrabold text-base text-[#FF4D1C]">${formatRp(sb.price)}</span>
+                                </div>
+                                ${isUnlocked ? `
+                                    <span class="px-3 py-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold">Terbuka</span>
+                                ` : `
+                                    <button onclick="addProductToCart('${sb.id}', '${sb.title}', ${sb.price}, true)" class="px-4 py-2 rounded-xl bg-zinc-950 hover:bg-[#FF4D1C] text-white text-xs font-bold transition cursor-pointer">
+                                        Beli &amp; Buka
+                                    </button>
+                                `}
+                            </div>
+                        </div>
+
+                        <!-- Dual Prompt Tabs/Blocks -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            <div class="p-3 rounded-xl bg-zinc-50 border border-zinc-200/80">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="font-mono text-[10px] font-bold text-zinc-600">PROMPT GAMBAR</span>
+                                    ${isUnlocked ? `<button onclick="copySbPrompt('${sb.id}', 'img')" class="text-[10px] font-mono font-bold text-[#FF4D1C] hover:underline cursor-pointer">Salin</button>` : `<i data-lucide="lock" class="w-3 h-3 text-zinc-400"></i>`}
+                                </div>
+                                <p class="font-mono text-[10.5px] text-zinc-700 leading-relaxed">
+                                    ${sb.promptImage.slice(0, 42)}<span class="${isUnlocked ? '' : 'prompt-locked-blur'}">${sb.promptImage.slice(42)}</span>
+                                </p>
+                            </div>
+
+                            <div class="p-3 rounded-xl bg-zinc-50 border border-zinc-200/80">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="font-mono text-[10px] font-bold text-zinc-600">PROMPT VIDEO AI</span>
+                                    ${isUnlocked ? `<button onclick="copySbPrompt('${sb.id}', 'vid')" class="text-[10px] font-mono font-bold text-[#FF4D1C] hover:underline cursor-pointer">Salin</button>` : `<i data-lucide="lock" class="w-3 h-3 text-zinc-400"></i>`}
+                                </div>
+                                <p class="font-mono text-[10.5px] text-zinc-700 leading-relaxed">
+                                    ${sb.promptVideo.slice(0, 42)}<span class="${isUnlocked ? '' : 'prompt-locked-blur'}">${sb.promptVideo.slice(42)}</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+                `;
+            }).join('');
+
+            drawStaticKeyframes();
             lucide.createIcons();
         }
 
-        function closeCodeModal() {
-            document.getElementById('code-modal').classList.add('hidden');
+        function drawStaticKeyframes() {
+            storyboardProducts.forEach(sb => {
+                const c1 = document.getElementById('kf1-' + sb.id);
+                const c2 = document.getElementById('kf2-' + sb.id);
+                if (!c1 || !c2) return;
+                const ctx1 = c1.getContext('2d'), ctx2 = c2.getContext('2d');
+                c1.width = c2.width = 120; c1.height = c2.height = 120;
+
+                if (sb.animType === 'coffeeMotion') {
+                    ctx1.fillStyle = '#FEF3C7'; ctx1.fillRect(0, 0, 120, 120);
+                    ctx1.fillStyle = '#92400E'; ctx1.fillRect(42, 42, 36, 56);
+                    ctx2.fillStyle = '#FDE68A'; ctx2.fillRect(0, 0, 120, 120);
+                    ctx2.fillStyle = '#92400E'; ctx2.fillRect(42, 42, 36, 56);
+                    ctx2.fillStyle = '#FF4D1C'; ctx2.fillRect(18, 16, 84, 16);
+                } else if (sb.animType === 'charMotion') {
+                    ctx1.fillStyle = '#FB923C'; ctx1.fillRect(0, 0, 120, 120);
+                    ctx1.fillStyle = '#0EA5E9'; ctx1.fillRect(42, 62, 36, 44);
+                    ctx1.fillStyle = '#FDBA74'; ctx1.beginPath(); ctx1.arc(60, 44, 16, 0, Math.PI * 2); ctx1.fill();
+                    ctx2.fillStyle = '#FB923C'; ctx2.fillRect(0, 0, 120, 120);
+                    ctx2.fillStyle = '#0EA5E9'; ctx2.fillRect(42, 58, 36, 44);
+                    ctx2.fillStyle = '#FDBA74'; ctx2.beginPath(); ctx2.arc(60, 40, 16, 0, Math.PI * 2); ctx2.fill();
+                    ctx2.fillStyle = '#F43F5E'; ctx2.font = 'bold 16px sans-serif'; ctx2.fillText('♥', 88, 36);
+                } else if (sb.animType === 'airMotion') {
+                    ctx1.fillStyle = '#7DD3FC'; ctx1.fillRect(0, 0, 120, 120);
+                    ctx1.fillStyle = '#FFFFFF'; ctx1.beginPath(); ctx1.arc(60, 66, 18, 0, Math.PI * 2); ctx1.fill();
+                    ctx2.fillStyle = '#7DD3FC'; ctx2.fillRect(0, 0, 120, 120);
+                    ctx2.fillStyle = '#FFFFFF'; ctx2.beginPath(); ctx2.arc(60, 46, 18, 0, Math.PI * 2); ctx2.fill();
+                    ctx2.fillStyle = '#F97316'; ctx2.fillRect(55, 78, 10, 24);
+                } else {
+                    ctx1.fillStyle = '#F4F4F5'; ctx1.fillRect(0, 0, 120, 120);
+                    ctx1.fillStyle = '#FFFFFF'; ctx1.fillRect(20, 34, 80, 56);
+                    ctx2.fillStyle = '#F4F4F5'; ctx2.fillRect(0, 0, 120, 120);
+                    ctx2.fillStyle = '#FFFFFF'; ctx2.fillRect(20, 28, 80, 56);
+                    ctx2.fillStyle = '#FF4D1C'; ctx2.fillRect(32, 62, 56, 14);
+                }
+            });
         }
 
-        // =========================================================================
-        // 5. SLIDE-OVER SHOPPING CART & CHECKOUT INDONESIA
-        // =========================================================================
-        const WA_NUMBER = '6285722227544';
-        let cartItems = [];
-
-        function addCatalogToCart(id) {
-            const p = catalogProducts.find(item => item.id === id);
-            if (p) addItemToCart({ id: p.id, title: p.title, price: p.price });
-        }
-
-        function addBundleToCart(title, price) {
-            addItemToCart({ id: 'bundle-' + price, title, price });
-        }
-
-        function addItemToCart(item) {
-            if (cartItems.some(x => x.id === item.id)) {
-                showToast(`"${item.title}" sudah ada di keranjang.`, 'info');
-                openCartDrawer();
-                return;
+        function toggleSbVideo(id) {
+            sbPlayingMap[id] = !sbPlayingMap[id];
+            const icon = document.getElementById('sb-icon-' + id);
+            if (icon) {
+                icon.setAttribute('data-lucide', sbPlayingMap[id] ? 'pause' : 'play');
+                lucide.createIcons();
             }
-            cartItems.push(item);
-            renderCart();
-            showToast(`Ditambahkan: ${item.title}`, 'success');
+        }
+
+        function copySbPrompt(id, kind) {
+            const sb = storyboardProducts.find(x => x.id === id);
+            if (!sb) return;
+            copyTextFallback(kind === 'img' ? sb.promptImage : sb.promptVideo, kind === 'img' ? 'Prompt Gambar' : 'Prompt Video AI');
+        }
+
+        // Loop animasi untuk 4 Video AI di Section B
+        (function animateStoryboardVideos() {
+            const frames = { 'sb-1': 1, 'sb-2': 1, 'sb-3': 1, 'sb-4': 1 };
+            setInterval(() => {
+                storyboardProducts.forEach(sb => {
+                    if (sbPlayingMap[sb.id]) {
+                        frames[sb.id] = (frames[sb.id] % 150) + 1;
+                    }
+                    const f = frames[sb.id];
+                    const lbl = document.getElementById('sb-fps-' + sb.id);
+                    if (lbl) lbl.textContent = `${String(f).padStart(3, '0')}/150 @ 60fps`;
+
+                    const c = document.getElementById('vid-' + sb.id);
+                    if (!c) return;
+                    const ctx = c.getContext('2d');
+                    const w = c.width = 240, h = c.height = 144;
+                    const t = f * 0.1;
+
+                    if (sb.animType === 'coffeeMotion') {
+                        ctx.fillStyle = '#FEF3C7'; ctx.fillRect(0, 0, w, h);
+                        const scale = 1 + Math.sin(t * 0.8) * 0.04;
+                        ctx.save(); ctx.translate(w / 2, h / 2); ctx.scale(scale, scale);
+                        ctx.fillStyle = '#92400E'; ctx.fillRect(-22, -26, 44, 62);
+                        ctx.fillStyle = '#FDE68A'; ctx.fillRect(-22, -34, 44, 12);
+                        ctx.restore();
+                        // Kinetic Badge
+                        const slide = Math.min(0, -30 + f * 2);
+                        ctx.fillStyle = '#FF4D1C'; ctx.beginPath(); ctx.roundRect(16, 16 + slide, 110, 22, 8); ctx.fill();
+                        ctx.fillStyle = '#FFFFFF'; ctx.font = 'bold 10px sans-serif'; ctx.fillText('DISKON 50% KOPI', 26, 30 + slide);
+                    } else if (sb.animType === 'charMotion') {
+                        ctx.fillStyle = '#F97316'; ctx.fillRect(0, 0, w, h);
+                        const bob = Math.sin(t * 1.5) * 4;
+                        ctx.fillStyle = '#0EA5E9'; ctx.beginPath(); ctx.roundRect(96, 74 + bob, 48, 56, 20); ctx.fill();
+                        ctx.fillStyle = '#FDBA74'; ctx.beginPath(); ctx.arc(120, 52 + bob, 20, 0, Math.PI * 2); ctx.fill();
+                        ctx.fillStyle = '#F43F5E'; ctx.font = 'bold 16px sans-serif';
+                        ctx.fillText('♥', 162, 68 - ((f * 1.2) % 45));
+                        ctx.fillText('♥', 176, 92 - ((f * 1.5) % 50));
+                    } else if (sb.animType === 'airMotion') {
+                        ctx.fillStyle = '#38BDF8'; ctx.fillRect(0, 0, w, h);
+                        const lift = Math.sin(t) * 6;
+                        [[105, 52], [132, 50], [118, 70]].forEach(([bx, by]) => {
+                            ctx.fillStyle = '#FFFFFF'; ctx.beginPath(); ctx.arc(bx, by + lift, 14, 0, Math.PI * 2); ctx.fill();
+                        });
+                        const ay = 112 - (f % 24);
+                        ctx.fillStyle = '#FF4D1C'; ctx.fillRect(114, ay, 12, 22);
+                    } else {
+                        ctx.fillStyle = '#F4F4F5'; ctx.fillRect(0, 0, w, h);
+                        ctx.fillStyle = '#FFFFFF'; ctx.beginPath(); ctx.roundRect(36, 22, 168, 96, 12); ctx.fill();
+                        const barW = 40 + (Math.sin(t) + 1) * 45;
+                        ctx.fillStyle = '#FF4D1C'; ctx.beginPath(); ctx.roundRect(52, 44, barW, 14, 6); ctx.fill();
+                        ctx.fillStyle = '#18181B'; ctx.beginPath(); ctx.roundRect(52, 72, 76, 22, 8); ctx.fill();
+                        ctx.fillStyle = '#FFFFFF'; ctx.font = 'bold 9px sans-serif'; ctx.fillText('Mulai Gratis', 63, 86);
+                    }
+                });
+            }, 1000 / 30);
+        })();
+
+        // =========================================================================
+        // 5. SHOPPING CART, PROMO & AUTO-UNLOCK FLOW
+        // =========================================================================
+        let cartItems = [];
+        const WA_NUMBER = '6285722227544';
+
+        function addProductToCart(id, title, price, openImmediately = false) {
+            if (!cartItems.some(x => x.id === id)) {
+                cartItems.push({ id, title, price });
+                renderCart();
+                showToast(`"${title}" masuk ke keranjang.`, 'success');
+            }
+            if (openImmediately) openCartDrawer();
+        }
+
+        function addBundleToCart(id, title, price) {
+            if (!cartItems.some(x => x.id === id)) {
+                cartItems.push({ id, title, price });
+                renderCart();
+            }
             openCartDrawer();
         }
 
@@ -1449,18 +1254,17 @@
 
         function renderCart() {
             document.getElementById('nav-cart-count').textContent = cartItems.length;
-            const container = document.getElementById('cart-items-container');
-
+            const box = document.getElementById('cart-items-container');
             if (cartItems.length === 0) {
-                container.innerHTML = `<div class="p-6 rounded-2xl border border-dashed border-zinc-300 text-center text-xs text-zinc-500">Daftar pilihan masih kosong. Pilih template Remotion 2D dari katalog!</div>`;
+                box.innerHTML = `<div class="p-5 rounded-2xl border border-dashed border-zinc-300 text-center text-xs text-zinc-500">Keranjang kosong. Pilih Prompt Foto atau Storyboard Video untuk dibuka!</div>`;
             } else {
-                container.innerHTML = cartItems.map(item => `
-                    <div class="p-3.5 rounded-2xl bg-zinc-50 border border-zinc-200/80 flex items-center justify-between gap-3">
+                box.innerHTML = cartItems.map(item => `
+                    <div class="p-3 rounded-2xl bg-zinc-50 border border-zinc-200/85 flex items-center justify-between gap-2">
                         <div class="min-w-0">
                             <div class="text-xs font-bold text-zinc-950 truncate">${item.title}</div>
-                            <div class="text-xs font-mono font-semibold text-[#FF4D1C] mt-0.5">${formatRp(item.price)}</div>
+                            <div class="text-xs font-mono font-semibold text-[#FF4D1C]">${formatRp(item.price)}</div>
                         </div>
-                        <button onclick="removeCartItem('${item.id}')" aria-label="Hapus" class="p-1.5 rounded-lg hover:bg-rose-50 text-zinc-400 hover:text-rose-600 transition cursor-pointer">
+                        <button onclick="removeCartItem('${item.id}')" aria-label="Hapus" class="p-1.5 rounded-lg hover:bg-rose-50 text-zinc-400 hover:text-rose-600 cursor-pointer">
                             <i data-lucide="trash-2" class="w-4 h-4"></i>
                         </button>
                     </div>
@@ -1475,7 +1279,8 @@
 
         function updateWaLink() {
             const btn = document.getElementById('cart-wa-btn');
-            const name = document.getElementById('buyer-contact').value.trim();
+            const nameEl = document.getElementById('buyer-name');
+            const name = nameEl ? nameEl.value.trim() : '';
             if (cartItems.length === 0) {
                 btn.href = `https://wa.me/${WA_NUMBER}`;
                 return;
@@ -1483,10 +1288,9 @@
             const lines = cartItems.map(item => `- ${item.title} (${formatRp(item.price)})`).join('\n');
             const tot = cartItems.reduce((acc, cur) => acc + cur.price, 0);
             const greeting = name ? `Halo, saya ${name}.` : 'Halo,';
-            const msg = `${greeting} Saya mau pesan template Remotion 2D dari heyaipeople.site:\n${lines}\n\nTotal: ${formatRp(tot)}`;
+            const msg = `${greeting} Saya mau pesan dari heyaipeople.site:\n${lines}\n\nTotal: ${formatRp(tot)}`;
             btn.href = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
         }
-        document.getElementById('buyer-contact').addEventListener('input', updateWaLink);
 
         function openCartDrawer() {
             document.getElementById('cart-overlay').classList.remove('hidden');
@@ -1498,24 +1302,74 @@
             document.getElementById('cart-drawer').classList.add('translate-x-full');
         }
 
+        function openUnlockedModal() {
+            const listEl = document.getElementById('unlocked-modal-list');
+            const unlockedPhotos = photoProducts.filter(p => unlockedIds.has(p.id));
+            const unlockedSbs = storyboardProducts.filter(s => unlockedIds.has(s.id));
+
+            let html = '';
+            unlockedPhotos.forEach(p => {
+                const full = p.promptPrefix + p.promptSecret;
+                html += `
+                    <div class="p-4 rounded-2xl bg-zinc-50 border border-zinc-200 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="font-display font-bold text-xs sm:text-sm text-zinc-950">${p.title}</span>
+                            <button onclick="copyPromptById('${p.id}')" class="px-2.5 py-1 rounded-lg bg-zinc-950 hover:bg-[#FF4D1C] text-white font-mono text-[10px] font-bold cursor-pointer">Salin Prompt</button>
+                        </div>
+                        <p class="font-mono text-[11px] text-zinc-700 bg-white p-3 rounded-xl border border-zinc-200/80 leading-relaxed">${full}</p>
+                    </div>
+                `;
+            });
+
+            unlockedSbs.forEach(s => {
+                html += `
+                    <div class="p-4 rounded-2xl bg-zinc-50 border border-zinc-200 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="font-display font-bold text-xs sm:text-sm text-zinc-950">${s.title}</span>
+                            <span class="font-mono text-[10px] px-2 py-0.5 rounded bg-orange-100 text-[#FF4D1C] font-bold">Storyboard + Video</span>
+                        </div>
+                        <div class="space-y-1.5 text-[11px] font-mono">
+                            <div class="p-2.5 rounded-xl bg-white border border-zinc-200/80 flex items-start justify-between gap-2">
+                                <span><strong>[Gambar]</strong> ${s.promptImage}</span>
+                                <button onclick="copySbPrompt('${s.id}', 'img')" class="text-[#FF4D1C] font-bold shrink-0 cursor-pointer">Salin</button>
+                            </div>
+                            <div class="p-2.5 rounded-xl bg-white border border-zinc-200/80 flex items-start justify-between gap-2">
+                                <span><strong>[Video]</strong> ${s.promptVideo}</span>
+                                <button onclick="copySbPrompt('${s.id}', 'vid')" class="text-[#FF4D1C] font-bold shrink-0 cursor-pointer">Salin</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            listEl.innerHTML = html || `<p class="text-xs text-zinc-500 text-center py-6">Belum ada prompt terbuka.</p>`;
+            document.getElementById('unlocked-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeUnlockedModal() {
+            document.getElementById('unlocked-modal').classList.add('hidden');
+        }
+
         function showToast(msg, type = 'info') {
             const box = document.getElementById('toast-box');
             const el = document.createElement('div');
-            const dotColor = type === 'success' ? 'bg-emerald-500' : type === 'warning' ? 'bg-amber-500' : 'bg-[#FF4D1C]';
+            const dot = type === 'success' ? 'bg-emerald-500' : type === 'warning' ? 'bg-amber-500' : 'bg-[#FF4D1C]';
             el.className = 'pointer-events-auto px-4 py-2.5 rounded-full bg-zinc-950 text-white shadow-xl text-xs font-medium flex items-center gap-2 transition-all duration-300 translate-y-2 opacity-0';
-            el.innerHTML = `<span class="w-2 h-2 rounded-full ${dotColor}"></span><span>${msg}</span>`;
+            el.innerHTML = `<span class="w-2 h-2 rounded-full ${dot}"></span><span>${msg}</span>`;
             box.appendChild(el);
             requestAnimationFrame(() => el.classList.remove('translate-y-2', 'opacity-0'));
             setTimeout(() => {
                 el.classList.add('opacity-0', 'translate-y-2');
                 setTimeout(() => el.remove(), 300);
-            }, 2600);
+            }, 2500);
         }
 
-        // Render Awal
-        drawSandboxStage(0);
-        renderCatalog();
+        // Inisialisasi Awal
+        renderPhotoCatalog();
+        renderStoryboardCatalog();
         renderCart();
+        document.getElementById('buyer-name').addEventListener('input', updateWaLink);
     </script>
 </body>
 </html>
