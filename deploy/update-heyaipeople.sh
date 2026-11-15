@@ -11,16 +11,17 @@ fail(){ echo "GAGAL di baris $1, rollback"; [ -d "$BAK" ] && { rm -rf "$ROOT"; m
 trap 'fail $LINENO' ERR
 set -e
 mkdir -p "$NEW"
-for f in index.html cara-pesan.html style.css script.js favicon.svg robots.txt sitemap.xml; do
+FILES="index.html cara-pesan.html katalog.html produk-contoh.html style.css script.js favicon.svg robots.txt sitemap.xml"
+for f in $FILES; do
   curl -fsSL "$RAW/$f" -o "$NEW/$f"
 done
 grep -q 'heyaipeople' "$NEW/index.html"
 [ -d "$ROOT" ] && cp -a "$ROOT" "$BAK" || true
 mkdir -p "$ROOT"
-rm -f "$ROOT"/index.html "$ROOT"/cara-pesan.html "$ROOT"/style.css "$ROOT"/script.js "$ROOT"/favicon.svg "$ROOT"/robots.txt "$ROOT"/sitemap.xml
-cp "$NEW"/index.html "$NEW"/cara-pesan.html "$NEW"/style.css "$NEW"/script.js "$NEW"/favicon.svg "$NEW"/robots.txt "$NEW"/sitemap.xml "$ROOT"/
+for f in $FILES; do rm -f "$ROOT/$f"; done
+cp $(for f in $FILES; do echo "$NEW/$f"; done) "$ROOT"/
 chown -R www-data:www-data "$ROOT"; chmod -R a+rX "$ROOT"
-for p in / /cara-pesan.html /style.css /script.js /favicon.svg /robots.txt /sitemap.xml; do
+for p in / /cara-pesan.html /katalog.html /produk-contoh.html /style.css /script.js /favicon.svg /robots.txt /sitemap.xml; do
   s=$(curl -sk -o /dev/null -w '%{http_code}' -H 'Host: heyaipeople.site' "https://127.0.0.1$p"); echo "$p $s"
   [ "$s" = 200 ] || fail $LINENO
 done
