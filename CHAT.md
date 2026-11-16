@@ -25,6 +25,6 @@ Tiap chat yang kerja untuk kantor dicatat di sini. Sesi baru menambah barisnya s
 | [Audit web sahabatanalisis](https://claude.ai/chat/8ce62a1b-44b7-4a58-ad4c-5b3d16201830) | akun-1 | – | proyek lama (aturan 9) | arsip |
 | [Pengaturan tampilan Lynk](https://claude.ai/chat/67f0c18e-c8f9-473e-99ca-c1247cfceecf) | akun-1 | – | proyek lama (aturan 9) | arsip |
 | [Tugas kompetensi dan ide (lomba video UT)](https://claude.ai/chat/9607549c-578e-4ffd-9951-7dceed44f3ee) | akun-1 | – | batas kirim 15 Nov sudah lewat | arsip |
-| [Sinkron papan GitHub dengan artefak](https://claude.ai/code/session_01HjNgUohW62C89YnXCWNhsP) | akun-2 | Claude | 09 Koordinasi | aktif |
+| [Sinkron papan GitHub dengan artefak](https://claude.ai/code/session_01HjNgUohW62C89YnXCWNhsP) | akun-2 | Claude | 09 Koordinasi · PROYEK/kantor-ai | aktif |
 
 Chat dari akun Claude kedua: baris pertama di atas. Sesi lain di akun itu menambah barisnya sendiri.
