@@ -1,0 +1,75 @@
+[
+  {
+    "id": "ai-commercial-video",
+    "title": "AI Commercial & Short-Form Video",
+    "category": "AI Video & Content",
+    "image": "v/jeans.jpg",
+    "summary": "Produksi visual produk fesyen dan iklan video pendek vertikal 9:16, dari brief, hook, dan naskah sampai video AI.",
+    "workflow": "Riset hook 3 detik pertama -> Visual dan video AI dengan Google Flow -> Motion graphic dan editing dengan Remotion dan CapCut -> Voice-over ElevenLabs.",
+    "metrics": "Alur lengkap dari riset hook sampai video vertikal 9:16 siap publikasi.",
+    "tags": [
+      "Google Flow",
+      "Remotion",
+      "CapCut",
+      "ElevenLabs"
+    ],
+    "storeUrl": "https://heyaipeople.site/?produk=denim-editorial-ai"
+  },
+  {
+    "id": "catatan-akademik-edtech",
+    "title": "CatatanAkademik.com — EdTech & SEO Platform",
+    "category": "Web & SEO",
+    "image": "v/car1.jpg",
+    "summary": "Platform edukasi untuk mahasiswa Universitas Terbuka: panduan mahasiswa baru, kelas tutorial, alat pemeriksaan dokumen, blog, login Google, dan panel admin.",
+    "workflow": "Struktur artikel dan internal linking -> Pengelolaan website di VPS -> Pemantauan indeksasi Google Search Console.",
+    "metrics": "Platform aktif dan terindeks Google Search Console.",
+    "tags": [
+      "SEO",
+      "Content Strategy",
+      "Web Management"
+    ],
+    "liveUrl": "https://catatanakademik.com"
+  },
+  {
+    "id": "whatsapp-ai-bot-vps",
+    "title": "Bot WhatsApp di VPS",
+    "category": "AI Automation",
+    "image": "v/bot.jpg",
+    "summary": "Dua bot WhatsApp berjalan di VPS: satu mengelola grup (anti-spam, pengingat, catatan), satu menangani admin dan notifikasi pesanan.",
+    "workflow": "Node.js dan PM2 di VPS -> Pesan grup dan pesanan diproses otomatis -> Notifikasi diteruskan ke admin.",
+    "metrics": "Dua bot aktif di VPS.",
+    "tags": [
+      "Node.js",
+      "VPS / PM2",
+      "WhatsApp Automation"
+    ]
+  },
+  {
+    "id": "multi-model-routing",
+    "title": "Koordinasi Workflow AI (Hermes & 9Router)",
+    "category": "AI Automation",
+    "image": "v/hero_robot.webp",
+    "summary": "Pengaturan GPT, Gemini, Claude, dan Google Flow dalam satu alur kerja untuk konten dan proyek web; pekerjaan rutin diarahkan lewat agen Hermes dan router 9Router agar hemat kuota.",
+    "workflow": "Tentukan kebutuhan -> Bagi peran antarmodel AI -> Pekerjaan rutin lewat Hermes dan 9Router -> Deploy ke VPS.",
+    "metrics": "Dipakai harian untuk produksi konten dan pengembangan proyek.",
+    "tags": [
+      "Hermes",
+      "9Router",
+      "Prompt Engineering"
+    ]
+  },
+  {
+    "id": "automated-seo-markdown",
+    "title": "Blog Otomatis: Artikel AI ke Markdown",
+    "category": "Web & SEO",
+    "image": "assets/k-admin.webp",
+    "summary": "Artikel SEO ditulis AI dalam format markdown, diunggah lewat menu blog, lalu dicek manual sebelum terbit.",
+    "workflow": "Draf markdown -> Unggah lewat menu blog -> Cek manual -> Terbit.",
+    "metrics": "Setiap artikel dicek manual sebelum terbit.",
+    "tags": [
+      "Markdown",
+      "SEO",
+      "Blog"
+    ]
+  }
+]
