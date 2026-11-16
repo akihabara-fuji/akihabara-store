@@ -11,16 +11,17 @@ Branch `kantor` ini dipakai bersama oleh semua Claude (dan AI lain) yang kerja u
 | `BAGAN.md` | Bagan 00–15 dan status tiap langkah | Setiap sesi, sesudah kerja |
 | `CHAT.md` | Daftar chat Claude dan meja/bagan yang dikerjakannya | Setiap sesi baru mencatat dirinya |
 | `LAPORAN/` | Satu file laporan per sesi kerja | Setiap sesi, di akhir kerja |
+| `PROYEK/<nama>/` | HANDOFF.md dan LOG.md tiap proyek (lihat PROYEK/README.md) | Sesi yang mengerjakan proyek itu |
 | `MULAI.md` | Prompt pembuka untuk chat Claude baru | Hanya atas perintah Dika |
 
 ## Alur kerja tiap sesi (wajib)
 
 1. **Tarik dulu:** `git pull origin kantor`. Jangan kerja dari salinan lama.
-2. **Baca** `ATURAN.md`, `KUNCI.md`, dan baris bagan yang mau dikerjakan di `BAGAN.md`.
+2. **Baca** `ATURAN.md`, `KUNCI.md`, baris bagan yang mau dikerjakan di `BAGAN.md`, dan `PROYEK/<nama>/HANDOFF.md` proyeknya.
 3. **Ambil kunci:** kalau aset yang mau diubah berstatus `bebas`, ganti jadi `DIPEGANG <nama sesi>`, isi tugas dan waktunya, lalu commit dan push **sebelum** mulai kerja. Kalau push ditolak karena ada perubahan baru, tarik lagi dan cek ulang kuncinya. Aset yang dipegang sesi lain tidak disentuh.
 4. **Catat diri** di `CHAT.md` kalau belum ada (link chat, meja, bagan).
 5. **Kerjakan.**
-6. **Tutup:** tulis `LAPORAN/<YYYY-MM-DD>-<HHMM>-<meja>.md` pakai format di bawah, perbarui status langkah di `BAGAN.md`, lepas kunci di `KUNCI.md` (isi kolom "terakhir"), commit, push.
+6. **Tutup:** tulis `LAPORAN/<YYYY-MM-DD>-<HHMM>-<meja>.md` pakai format di bawah, perbarui status langkah di `BAGAN.md`, perbarui `PROYEK/<nama>/HANDOFF.md` dan tambah baris di `LOG.md`, lepas kunci di `KUNCI.md` (isi kolom "terakhir"), commit, push. Lakukan ini juga kalau token hampir habis, sebelum chat berhenti.
 
 Nama sesi: `<AI> <akun> · <meja>`, contoh `Claude akun-2 · Web`.
 
