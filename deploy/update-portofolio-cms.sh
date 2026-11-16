@@ -23,7 +23,7 @@ NGXBAK=""
 PM2_WAS=0
 
 fail(){
-  echo "GAGAL di baris $1, rollback"
+  echo "GAGAL di baris $1 (perintah: ${BASH_COMMAND:-?}), rollback"
   [ -d "$BAK" ] && { rm -rf "$ROOT"; mv "$BAK" "$ROOT"; }
   [ -n "$NGXBAK" ] && [ -f "$NGXBAK" ] && { cp -a "$NGXBAK" "$NGX"; nginx -t >/dev/null 2>&1 && systemctl reload nginx; }
   if [ -d "$APIBAK" ]; then rm -rf "$API"; mv "$APIBAK" "$API"; fi
@@ -39,7 +39,10 @@ NODEV=$(node -p 'process.versions.node.split(".")[0]')
 [ "$NODEV" -ge 18 ] || { echo "Node $NODEV terlalu lama, perlu >= 18"; false; }
 command -v pm2 >/dev/null || npm install -g pm2
 pm2 describe porto-api >/dev/null 2>&1 && PM2_WAS=1 || PM2_WAS=0
-if [ "$PM2_WAS" = 0 ] && ss -ltn | grep -q ":$PORT "; then echo "Port $PORT dipakai proses lain"; false; fi
+if [ "$PM2_WAS" = 0 ]; then
+  LISTEN=$( (ss -ltn 2>/dev/null || netstat -ltn 2>/dev/null) || true )
+  case "$LISTEN" in *":$PORT "*) echo "Port $PORT dipakai proses lain"; false ;; esac
+fi
 
 # 1. Unduh file dari commit
 mkdir -p "$NEW/api"
@@ -61,7 +64,7 @@ chown -R www-data:www-data "$ROOT"; chmod -R a+rX "$ROOT"
 [ -d "$API" ] && cp -a "$API" "$APIBAK"
 mkdir -p "$API"
 cp "$NEW/api/server.js" "$NEW/api/package.json" "$NEW/api/package-lock.json" "$API/"
-(cd "$API" && npm ci --omit=dev --no-audit --no-fund >/dev/null)
+(cd "$API" && { npm ci --omit=dev --no-audit --no-fund >/dev/null 2>&1 || npm install --omit=dev --no-audit --no-fund >/dev/null; })
 if [ ! -s "$ENVF" ]; then
   PW=$(openssl rand -base64 24 | tr -dc 'A-Za-z0-9' | head -c 14)
   echo "ADMIN_PASSWORD=$PW" > "$ENVF"; chmod 600 "$ENVF"
@@ -125,7 +128,8 @@ for p in / /admin.html /works.json /api/works /v/bot_full.mp4 /v/about-photo.web
   s=$(H "$p"); echo "$p $s"
   [ "$s" = 200 ] || fail $LINENO
 done
-curl -sk --resolve "$DOMAIN:443:127.0.0.1" "https://$DOMAIN/" | grep -q 'works.json' || fail $LINENO
+PAGE=$(curl -sk --resolve "$DOMAIN:443:127.0.0.1" "https://$DOMAIN/")
+case "$PAGE" in *works.json*) ;; *) echo "index.html live tidak memuat works.json"; fail $LINENO ;; esac
 rm -rf "$NEW"
 echo "Karya di works.json: $(python3 -c "import json;print(len(json.load(open('$ROOT/works.json'))))")"
 echo "ADMIN: https://$DOMAIN/admin.html  PASSWORD: $PW"
