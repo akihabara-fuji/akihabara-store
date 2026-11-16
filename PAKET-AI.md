@@ -1,6 +1,6 @@
 # PAKET PAPAN KANTOR AI PEOPLE
 
-Salinan otomatis branch kantor (2026-11-17 06:44 WIB). Jangan diedit di sini: sumbernya GitHub akihabara-fuji/akihabara-store branch kantor.
+Salinan otomatis branch kantor (2026-11-17 06:56 WIB). Jangan diedit di sini: sumbernya GitHub akihabara-fuji/akihabara-store branch kantor.
 Isi: STATUS.md, AI/BACA-DULU.md, AI/PERAN.md, ATURAN.md, KUNCI.md, BAGAN.md, SETORAN/README.md, PROYEK/README.md, lalu HANDOFF tiap proyek.
 
 
@@ -8,7 +8,7 @@ Isi: STATUS.md, AI/BACA-DULU.md, AI/PERAN.md, ATURAN.md, KUNCI.md, BAGAN.md, SET
 
 # STATUS papan kantor
 
-Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-17 06:44 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
+Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-17 06:56 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
 Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 
 ## Rahasia bocor (harus segera dihapus)
@@ -18,7 +18,7 @@ Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 - tidak ada
 
 ## Menunggu cek silang
-- tidak ada
+- `LAPORAN/2026-11-17-0700-claude.md`: MENUNGGU Gemini
 
 ## Gagal cek silang (perlu diperbaiki pembuatnya)
 - tidak ada
@@ -30,11 +30,11 @@ Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 - semua bebas
 
 ## Laporan terbaru
+- `LAPORAN/2026-11-17-0700-claude.md`
 - `LAPORAN/2026-11-17-0555-claude.md`
 - `LAPORAN/2026-11-16-2252-remotion.md`
 - `LAPORAN/2026-11-16-1938-kantor-ai.md`
 - `LAPORAN/2026-11-16-1928-claude.md`
-- `LAPORAN/2026-11-16-1840-claude.md`
 
 ## Setoran terbaru
 - tidak ada
@@ -327,7 +327,7 @@ Aturan:
 
 # HANDOFF kantor-ai: artefak Kantor Ai People dan papan kerja GitHub
 
-Terakhir diperbarui: 17 Nov 2026 05.55, Claude akun-1. Baca ini dulu, jangan tanya ulang ke Dika.
+Terakhir diperbarui: 17 Nov 2026 07.00, Claude akun-1. Baca ini dulu, jangan tanya ulang ke Dika.
 
 ## Tujuan
 Semua pekerjaan Dika (3 situs, sosmed, video, bot, akademik UT) terpantau di dua tempat yang selaras:
@@ -347,7 +347,8 @@ Tujuan akhir semua kerja: pengikut naik, pengunjung ke heyaipeople.site, pesanan
 - Claude = eksekutor dan juru catat; GPT = riset dan struktur; Gemini = QC dan visual. Rincian di AI/PERAN.md.
 - GPT dan Gemini masuk lewat AI/BACA-DULU.md (link raw, repo publik), tidak pegang kunci aset, menutup kerja dengan blok SETORAN.
 - Dika menempel SETORAN ke Claude mana pun dengan kata "catat setoran"; Claude ikuti langkah di SETORAN/README.md.
-- Setup sekali di ChatGPT (Project) dan Gemini (Gem): AI/SETUP.md. Belum dicek apakah keduanya bisa membuka link raw GitHub di akun Dika.
+- Setup ChatGPT (Project) dan Gemini (Gem) di akun dikha.priyadhi SUDAH dan sudah dites (rincian dan link di AI/SETUP.md bagian Status setup). Gem tidak bisa buka link: diberi Google Doc yang disalin dari PAKET-AI.md tiap jam oleh Apps Script.
+- Cek silang dan pemeriksa otomatis jalan: alat/cek_papan.py lewat GitHub Actions menulis STATUS.md dan PAKET-AI.md tiap push.
 - Tahap 2 (belum dibangun): kurir n8n Telegram ke GitHub. Draf lama workflow order klien (4 jalur, ACC Dika) ada di PROYEK/kantor-ai/n8n/ dan DITUNDA: Dika bilang belum masuk ke klien.
 
 ## Keputusan TERKUNCI (dari Dika)
@@ -377,7 +378,7 @@ Tujuan akhir semua kerja: pengikut naik, pengunjung ke heyaipeople.site, pesanan
 4. Kalau push ditolak, `git pull --rebase origin kantor`, cek kunci lagi, push ulang.
 
 ## Langkah berikutnya
-- Dika setup Project ChatGPT dan Gem Gemini pakai AI/SETUP.md, lalu tes baca link raw. Kalau gagal, ganti cara masuk (misal Dika unggah file).
+- Gem di akun akihabara.fuzi@gmail.com: Dika login dulu di browser bawaan Claude, lalu Claude buat Gem yang sama dan bagikan Doc papan (lihat) ke akun itu.
 - Setelah setoran manual jalan beberapa kali, bangun kurir n8n Telegram ke GitHub (tahap 2).
 - Buka halaman artefak di browser dan lihat langsung bahwa aturan 10 muncul di tombol prompt mulai (belum dicek, baru database yang dicek).
 - Selaraskan data aset artefak dengan HANDOFF proyek lain begitu folder proyeknya terisi (catatanakademik, heyaipeople, konten-sosmed, video-remotion, bot-wa, akademik-ut, hermes-9router belum punya HANDOFF per 16 Nov 19.37).
