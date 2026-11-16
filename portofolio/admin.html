@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Admin Galeri Karya — Dika Priyadi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #04060f;
+      --panel: rgba(12, 18, 38, .72);
+      --panel-2: #0a1024;
+      --ink: #f3f6ff;
+      --muted: #9aa6c4;
+      --muted-2: #6b7796;
+      --line: rgba(150, 175, 230, .14);
+      --line-strong: rgba(150, 175, 230, .26);
+      --accent: #5df0a8;
+      --accent-2: #2fd38a;
+      --accent-ink: #032018;
+      --danger: #ff6b7a;
+      --radius: 16px;
+      --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background: radial-gradient(90% 60% at 50% -10%, rgba(93, 240, 168, .08), transparent 60%), var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; }
+    button, input, select, textarea { font-family: inherit; font-size: 14px; }
+    .hidden { display: none !important; }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 11px 18px; border-radius: 999px; border: 1px solid transparent;
+      font-weight: 600; cursor: pointer; text-decoration: none; white-space: nowrap;
+      transition: transform .15s ease, background .2s ease, border-color .2s ease;
+    }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+    .btn-primary { background: linear-gradient(180deg, var(--accent), var(--accent-2)); color: var(--accent-ink); }
+    .btn-primary:not(:disabled):hover { transform: translateY(-1px); }
+    .btn-outline { background: rgba(255, 255, 255, .04); border-color: var(--line-strong); color: var(--ink); }
+    .btn-outline:hover { border-color: rgba(93, 240, 168, .45); }
+    .btn-danger { background: rgba(255, 107, 122, .12); border-color: rgba(255, 107, 122, .4); color: var(--danger); }
+    .btn-sm { padding: 7px 12px; font-size: 12.5px; }
+    .icon-btn {
+      width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--line-strong);
+      background: rgba(255, 255, 255, .04); color: var(--ink); cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; font-size: 15px;
+    }
+    .icon-btn:disabled { opacity: .3; cursor: not-allowed; }
+
+    /* Login */
+    .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .login-card {
+      width: 100%; max-width: 380px; padding: 32px 28px; border-radius: 22px;
+      background: var(--panel); border: 1px solid var(--line-strong); backdrop-filter: blur(16px);
+    }
+    .brand { font-weight: 800; letter-spacing: .14em; font-size: 15px; }
+    .brand span { color: var(--accent); }
+    .login-card h1 { font-size: 22px; margin: 18px 0 6px; }
+    .login-card p { color: var(--muted); font-size: 14px; margin-bottom: 20px; }
+
+    /* Layout */
+    .topbar {
+      position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; padding: 14px 20px; background: rgba(4, 6, 15, .85); backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--line); flex-wrap: wrap;
+    }
+    .topbar-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 24px 20px 60px; display: grid; grid-template-columns: 1.05fr .95fr; gap: 24px; align-items: start; }
+    .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 22px; backdrop-filter: blur(14px); }
+    .panel h2 { font-size: 18px; margin-bottom: 4px; }
+    .panel-sub { color: var(--muted); font-size: 13px; margin-bottom: 18px; }
+    .form-panel { position: sticky; top: 80px; }
+
+    label { display: block; font-size: 12.5px; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+    .field { margin-bottom: 14px; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    input[type=text], input[type=url], input[type=password], select, textarea {
+      width: 100%; padding: 11px 13px; border-radius: 12px; border: 1px solid var(--line-strong);
+      background: rgba(4, 6, 15, .6); color: var(--ink); outline: none;
+    }
+    input:focus, select:focus, textarea:focus { border-color: rgba(93, 240, 168, .55); box-shadow: 0 0 0 3px rgba(93, 240, 168, .12); }
+    textarea { resize: vertical; min-height: 84px; line-height: 1.55; }
+    select option { background: var(--panel-2); }
+    .hint { font-size: 11.5px; color: var(--muted-2); margin-top: 5px; }
+
+    /* Dropzone */
+    .dropzone {
+      position: relative; border: 1.5px dashed var(--line-strong); border-radius: 16px; padding: 22px 16px;
+      text-align: center; cursor: pointer; background: rgba(4, 6, 15, .45); transition: border-color .2s ease, background .2s ease;
+    }
+    .dropzone.drag { border-color: var(--accent); background: rgba(93, 240, 168, .06); }
+    .dropzone strong { display: block; font-size: 14px; margin-bottom: 4px; }
+    .dropzone span { font-size: 12.5px; color: var(--muted); }
+    .dropzone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .preview { margin-top: 12px; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); background: #000; aspect-ratio: 16 / 9; display: flex; align-items: center; justify-content: center; }
+    .preview img, .preview video { width: 100%; height: 100%; object-fit: contain; display: block; }
+    .preview-meta { display: flex; justify-content: space-between; gap: 8px; margin-top: 8px; font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
+
+    .seg { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 999px; padding: 3px; margin-bottom: 12px; }
+    .seg button { border: 0; background: transparent; color: var(--muted); padding: 7px 14px; border-radius: 999px; cursor: pointer; font-weight: 600; font-size: 12.5px; }
+    .seg button.active { background: rgba(93, 240, 168, .16); color: var(--accent); }
+
+    /* Tag input */
+    .tags-box { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px; border-radius: 12px; border: 1px solid var(--line-strong); background: rgba(4, 6, 15, .6); }
+    .tags-box input { flex: 1; min-width: 120px; border: 0 !important; background: transparent !important; box-shadow: none !important; padding: 5px 6px !important; }
+    .tag { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 12px; padding: 5px 9px; border-radius: 8px; background: rgba(93, 240, 168, .1); border: 1px solid rgba(93, 240, 168, .25); color: var(--accent); }
+    .tag button { border: 0; background: transparent; color: inherit; cursor: pointer; font-size: 14px; line-height: 1; }
+
+    /* Progress */
+    .progress { height: 8px; border-radius: 999px; background: rgba(255, 255, 255, .07); overflow: hidden; margin: 6px 0 4px; }
+    .progress div { height: 100%; width: 0; background: linear-gradient(90deg, var(--accent-2), var(--accent)); transition: width .15s ease; }
+    .progress-text { font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
+    .form-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+    .msg { margin-top: 12px; font-size: 13px; padding: 10px 12px; border-radius: 10px; }
+    .msg.ok { background: rgba(93, 240, 168, .1); color: var(--accent); border: 1px solid rgba(93, 240, 168, .3); }
+    .msg.err { background: rgba(255, 107, 122, .1); color: var(--danger); border: 1px solid rgba(255, 107, 122, .35); }
+
+    /* List */
+    .list { display: flex; flex-direction: column; gap: 10px; }
+    .item { display: grid; grid-template-columns: 30px 92px 1fr auto; gap: 12px; align-items: center; padding: 10px; border-radius: 14px; background: rgba(4, 6, 15, .5); border: 1px solid var(--line); }
+    .item.dragging { opacity: .45; }
+    .item.over { border-color: var(--accent); }
+    .item.editing { border-color: rgba(93, 240, 168, .6); box-shadow: 0 0 0 3px rgba(93, 240, 168, .1); }
+    .handle { cursor: grab; color: var(--muted-2); font-size: 18px; text-align: center; user-select: none; }
+    .thumb { width: 92px; aspect-ratio: 16 / 10; border-radius: 10px; overflow: hidden; background: linear-gradient(135deg, #0b132b, #062820); position: relative; }
+    .thumb img, .thumb video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .thumb .type { position: absolute; bottom: 4px; left: 4px; font-family: var(--mono); font-size: 9.5px; padding: 2px 6px; border-radius: 6px; background: rgba(4, 6, 15, .8); color: var(--accent); }
+    .item-title { font-weight: 700; font-size: 14px; line-height: 1.3; }
+    .item-meta { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 4px; }
+    .item-actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+    .empty { text-align: center; padding: 30px; color: var(--muted); border: 1px dashed var(--line-strong); border-radius: 14px; }
+    .order-note { font-size: 12px; color: var(--muted-2); margin-bottom: 12px; }
+
+    @media (max-width: 960px) {
+      .wrap { grid-template-columns: 1fr; }
+      .form-panel { position: static; }
+    }
+    @media (max-width: 520px) {
+      .row2 { grid-template-columns: 1fr; }
+      .item { grid-template-columns: 72px 1fr; }
+      .handle { display: none; }
+      .thumb { width: 72px; }
+      .item-actions { grid-column: 1 / -1; justify-content: flex-start; }
+      .panel { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LOGIN -->
+  <div class="login-wrap" id="login-view">
+    <form class="login-card" id="login-form" autocomplete="on">
+      <div class="brand"><span>▲</span> DIKA PRIYADI</div>
+      <h1>Admin Galeri Karya</h1>
+      <p>Masukkan password admin untuk mengelola karya di portofolio.</p>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" autocomplete="current-password" required />
+      </div>
+      <button type="submit" class="btn btn-primary" style="width: 100%;" id="login-btn">Masuk</button>
+      <div class="msg err hidden" id="login-msg"></div>
+    </form>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="app-view" class="hidden">
+    <header class="topbar">
+      <div class="brand"><span>▲</span> ADMIN GALERI KARYA</div>
+      <div class="topbar-actions">
+        <a class="btn btn-outline btn-sm" href="index.html#karya" target="_blank" rel="noopener">Lihat Live Website ↗</a>
+        <button type="button" class="btn btn-outline btn-sm" id="logout-btn">Keluar</button>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <!-- FORM -->
+      <section class="panel form-panel">
+        <h2 id="form-title">Tambah Karya Baru</h2>
+        <p class="panel-sub" id="form-sub">Karya baru otomatis tampil paling atas di Galeri Karya.</p>
+
+        <form id="work-form" novalidate>
+          <div class="seg" role="tablist" aria-label="Sumber media">
+            <button type="button" class="active" data-src="file">Upload File</button>
+            <button type="button" data-src="embed">Link Embed</button>
+          </div>
+
+          <div id="src-file">
+            <div class="dropzone" id="dropzone">
+              <input type="file" id="media-input" accept="image/*,video/mp4,video/webm" />
+              <strong>Tarik file ke sini atau ketuk untuk memilih</strong>
+              <span>Gambar .jpg .png .webp atau video .mp4 .webm · maks 50MB</span>
+            </div>
+            <div id="preview-wrap" class="hidden">
+              <div class="preview" id="preview"></div>
+              <div class="preview-meta"><span id="preview-name"></span><span id="preview-size"></span></div>
+            </div>
+            <div class="field hidden" id="poster-field" style="margin-top: 12px;">
+              <label for="poster-input">Thumbnail video (opsional)</label>
+              <input type="file" id="poster-input" accept="image/jpeg,image/png,image/webp" />
+              <div class="hint">Kalau kosong, kartu memakai frame awal video.</div>
+            </div>
+          </div>
+
+          <div id="src-embed" class="hidden">
+            <div class="field">
+              <label for="embed-url">Link YouTube / TikTok / Instagram</label>
+              <input type="url" id="embed-url" placeholder="https://www.youtube.com/watch?v=..." />
+              <div class="hint">Video diputar langsung dari platform di dalam modal.</div>
+            </div>
+            <div class="field">
+              <label for="embed-poster">Thumbnail (opsional)</label>
+              <input type="file" id="embed-poster" accept="image/jpeg,image/png,image/webp" />
+            </div>
+          </div>
+
+          <div class="field" style="margin-top: 14px;">
+            <label for="title">Judul Karya *</label>
+            <input type="text" id="title" maxlength="200" required placeholder="Contoh: Video Iklan Produk Skincare Full AI" />
+          </div>
+
+          <div class="row2">
+            <div class="field">
+              <label for="category">Kategori</label>
+              <select id="category">
+                <option value="AI Video & Content">Video &amp; Konten AI</option>
+                <option value="Web & SEO">Web &amp; SEO</option>
+                <option value="AI Automation">Otomasi AI</option>
+                <option value="Social Media Strategy">Strategi Media Sosial</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="badge">Status Badge</label>
+              <select id="badge">
+                <option value="Showcase">Showcase</option>
+                <option value="Live">Live</option>
+                <option value="Viral">Viral</option>
+                <option value="Internal Use">Internal Use</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="summary">Ringkasan / Cerita Karya</label>
+            <textarea id="summary" maxlength="3000" placeholder="Apa yang dikerjakan, untuk siapa, dan hasilnya."></textarea>
+          </div>
+
+          <div class="field">
+            <label for="metrics">Hasil / Metrik</label>
+            <input type="text" id="metrics" maxlength="300" placeholder="Contoh: 120rb views · Full AI Pipeline" />
+            <div class="hint">Tulis angka yang benar-benar terjadi saja.</div>
+          </div>
+
+          <div class="field">
+            <label for="workflow">Catatan Prompt / Alur Kerja</label>
+            <textarea id="workflow" maxlength="8000" placeholder="Konsep, prompt utama, atau langkah produksi."></textarea>
+          </div>
+
+          <div class="field">
+            <label for="tool-input">Tools (tekan Enter atau koma)</label>
+            <div class="tags-box" id="tags-box">
+              <input type="text" id="tool-input" placeholder="GPT, CapCut, ElevenLabs..." />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="external">Link Eksternal (IG / TikTok / YouTube / Live Site)</label>
+            <input type="url" id="external" placeholder="https://..." />
+          </div>
+
+          <div id="progress-wrap" class="hidden">
+            <div class="progress"><div id="progress-bar"></div></div>
+            <div class="progress-text" id="progress-text">0%</div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="submit-btn">Simpan &amp; Terbitkan</button>
+            <button type="button" class="btn btn-outline hidden" id="cancel-edit">Batal Edit</button>
+          </div>
+          <div class="msg hidden" id="form-msg"></div>
+        </form>
+      </section>
+
+      <!-- LIST -->
+      <section class="panel">
+        <h2>Karya Aktif <span id="count" style="color: var(--muted); font-weight: 500;"></span></h2>
+        <p class="order-note">Urutan di sini = urutan di website. Geser lewat ⠿ (desktop) atau tombol ↑ ↓.</p>
+        <div class="list" id="list"></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      const API = '/api';
+      const TOKEN_KEY = 'porto_admin_token';
+      const $ = (id) => document.getElementById(id);
+      const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+      const CAT_LABEL = { 'AI Video & Content': 'Video & Konten AI', 'Web & SEO': 'Web & SEO', 'AI Automation': 'Otomasi AI', 'Social Media Strategy': 'Strategi Media Sosial' };
+      const MAX = 50 * 1024 * 1024;
+
+      let token = sessionStorage.getItem(TOKEN_KEY) || '';
+      let works = [];
+      let tools = [];
+      let editingId = null;
+      let srcMode = 'file';
+      let mediaFile = null;
+      let objectUrl = null;
+
+      // ---------- Helpers ----------
+      function showMsg(el, text, type) {
+        el.textContent = text;
+        el.className = 'msg ' + (type || 'ok');
+        el.classList.remove('hidden');
+      }
+      function hideMsg(el) { el.classList.add('hidden'); }
+      function fmtSize(b) { return b > 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.round(b / 1024) + ' KB'; }
+
+      async function api(path, opts = {}) {
+        const res = await fetch(API + path, {
+          ...opts,
+          headers: { ...(opts.headers || {}), ...(token ? { Authorization: 'Bearer ' + token } : {}) }
+        });
+        let data = null;
+        try { data = await res.json(); } catch (e) { /* kosong */ }
+        if (res.status === 401 && path !== '/login') { logout('Sesi habis, silakan login ulang.'); throw new Error('unauthorized'); }
+        if (!res.ok) throw new Error((data && data.error) || ('Gagal (' + res.status + ')'));
+        return data;
+      }
+
+      // ---------- Login ----------
+      $('login-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        hideMsg($('login-msg'));
+        $('login-btn').disabled = true;
+        try {
+          const data = await api('/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password: $('password').value })
+          });
+          token = data.token;
+          sessionStorage.setItem(TOKEN_KEY, token);
+          $('password').value = '';
+          enterApp();
+        } catch (err) {
+          showMsg($('login-msg'), err.message === 'Failed to fetch' ? 'Server API tidak bisa dihubungi. Pastikan server.js berjalan.' : err.message, 'err');
+        } finally {
+          $('login-btn').disabled = false;
+        }
+      });
+
+      function logout(reason) {
+        token = '';
+        sessionStorage.removeItem(TOKEN_KEY);
+        $('app-view').classList.add('hidden');
+        $('login-view').classList.remove('hidden');
+        if (reason) showMsg($('login-msg'), reason, 'err');
+      }
+      $('logout-btn').addEventListener('click', () => logout());
+
+      async function enterApp() {
+        $('login-view').classList.add('hidden');
+        $('app-view').classList.remove('hidden');
+        await loadWorks();
+      }
+
+      // ---------- Daftar karya ----------
+      async function loadWorks() {
+        try {
+          works = await api('/works?t=' + Date.now());
+          renderList();
+        } catch (err) {
+          if (err.message !== 'unauthorized') $('list').innerHTML = '<div class="empty">' + esc(err.message) + '</div>';
+        }
+      }
+
+      function thumbHtml(w) {
+        const type = w.mediaType || 'image';
+        let inner = '';
+        if (w.posterUrl) inner = '<img src="' + esc(w.posterUrl) + '" alt="" loading="lazy" />';
+        else if (type === 'video') inner = '<video src="' + esc(w.mediaUrl) + '#t=0.5" muted preload="metadata"></video>';
+        else if (type === 'image') inner = '<img src="' + esc(w.mediaUrl) + '" alt="" loading="lazy" />';
+        return inner + '<span class="type">' + esc(type.toUpperCase()) + '</span>';
+      }
+
+      function renderList() {
+        $('count').textContent = '(' + works.length + ')';
+        if (!works.length) { $('list').innerHTML = '<div class="empty">Belum ada karya. Tambahkan lewat form di samping.</div>'; return; }
+        $('list').innerHTML = works.map((w, i) => (
+          '<div class="item' + (w.id === editingId ? ' editing' : '') + '" draggable="true" data-id="' + esc(w.id) + '">' +
+            '<div class="handle" title="Geser untuk mengurutkan">⠿</div>' +
+            '<div class="thumb">' + thumbHtml(w) + '</div>' +
+            '<div><div class="item-title">' + esc(w.title) + '</div>' +
+            '<div class="item-meta">' + esc(CAT_LABEL[w.category] || w.category) + ' · ' + esc(w.badge || '-') + '</div></div>' +
+            '<div class="item-actions">' +
+              '<button type="button" class="icon-btn" data-act="up" title="Naik"' + (i === 0 ? ' disabled' : '') + '>↑</button>' +
+              '<button type="button" class="icon-btn" data-act="down" title="Turun"' + (i === works.length - 1 ? ' disabled' : '') + '>↓</button>' +
+              '<button type="button" class="btn btn-outline btn-sm" data-act="edit">Edit</button>' +
+              '<button type="button" class="btn btn-danger btn-sm" data-act="delete">Hapus</button>' +
+            '</div>' +
+          '</div>'
+        )).join('');
+      }
+
+      $('list').addEventListener('click', async (e) => {
+        const btn = e.target.closest('button[data-act]');
+        if (!btn) return;
+        const id = btn.closest('.item').dataset.id;
+        const idx = works.findIndex((w) => w.id === id);
+        const act = btn.dataset.act;
+        if (act === 'edit') return startEdit(works[idx]);
+        if (act === 'delete') {
+          if (!confirm('Hapus karya "' + works[idx].title + '"? File upload-nya juga ikut terhapus.')) return;
+          try {
+            await api('/works/' + encodeURIComponent(id), { method: 'DELETE' });
+            if (editingId === id) resetForm();
+            await loadWorks();
+          } catch (err) { if (err.message !== 'unauthorized') alert(err.message); }
+          return;
+        }
+        if (act === 'up' && idx > 0) [works[idx - 1], works[idx]] = [works[idx], works[idx - 1]];
+        if (act === 'down' && idx < works.length - 1) [works[idx + 1], works[idx]] = [works[idx], works[idx + 1]];
+        renderList();
+        saveOrder();
+      });
+
+      // Drag & drop urutan (desktop)
+      let dragId = null;
+      $('list').addEventListener('dragstart', (e) => {
+        const item = e.target.closest('.item'); if (!item) return;
+        dragId = item.dataset.id; item.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      $('list').addEventListener('dragend', (e) => {
+        const item = e.target.closest('.item'); if (item) item.classList.remove('dragging');
+        document.querySelectorAll('.item.over').forEach((el) => el.classList.remove('over'));
+      });
+      $('list').addEventListener('dragover', (e) => {
+        const item = e.target.closest('.item'); if (!item || !dragId) return;
+        e.preventDefault();
+        document.querySelectorAll('.item.over').forEach((el) => el.classList.remove('over'));
+        item.classList.add('over');
+      });
+      $('list').addEventListener('drop', (e) => {
+        const item = e.target.closest('.item'); if (!item || !dragId) return;
+        e.preventDefault();
+        const from = works.findIndex((w) => w.id === dragId);
+        const to = works.findIndex((w) => w.id === item.dataset.id);
+        dragId = null;
+        if (from < 0 || to < 0 || from === to) return renderList();
+        const [moved] = works.splice(from, 1);
+        works.splice(to, 0, moved);
+        renderList();
+        saveOrder();
+      });
+
+      async function saveOrder() {
+        try {
+          await api('/works/reorder', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ids: works.map((w) => w.id) })
+          });
+        } catch (err) { if (err.message !== 'unauthorized') { alert('Urutan gagal disimpan: ' + err.message); loadWorks(); } }
+      }
+
+      // ---------- Sumber media ----------
+      document.querySelectorAll('.seg button').forEach((b) => b.addEventListener('click', () => setSrc(b.dataset.src)));
+      function setSrc(mode) {
+        srcMode = mode;
+        document.querySelectorAll('.seg button').forEach((b) => b.classList.toggle('active', b.dataset.src === mode));
+        $('src-file').classList.toggle('hidden', mode !== 'file');
+        $('src-embed').classList.toggle('hidden', mode !== 'embed');
+      }
+
+      const dz = $('dropzone');
+      ['dragenter', 'dragover'].forEach((ev) => dz.addEventListener(ev, (e) => { e.preventDefault(); dz.classList.add('drag'); }));
+      ['dragleave', 'drop'].forEach((ev) => dz.addEventListener(ev, (e) => { e.preventDefault(); dz.classList.remove('drag'); }));
+      dz.addEventListener('drop', (e) => { const f = e.dataTransfer.files && e.dataTransfer.files[0]; if (f) pickFile(f); });
+      $('media-input').addEventListener('change', (e) => { const f = e.target.files[0]; if (f) pickFile(f); });
+
+      function pickFile(file) {
+        hideMsg($('form-msg'));
+        const ok = /^image\/(jpeg|png|webp)$/.test(file.type) || /^video\/(mp4|webm)$/.test(file.type);
+        if (!ok) { showMsg($('form-msg'), 'Format tidak didukung. Gunakan .jpg, .png, .webp, .mp4, atau .webm.', 'err'); return; }
+        if (file.size > MAX) { showMsg($('form-msg'), 'Ukuran file ' + fmtSize(file.size) + ' melebihi batas 50MB.', 'err'); return; }
+        mediaFile = file;
+        showPreview(URL.createObjectURL(file), file.type.startsWith('video/') ? 'video' : 'image', file.name, fmtSize(file.size), true);
+      }
+
+      function showPreview(url, type, name, size, isObjectUrl) {
+        if (objectUrl) URL.revokeObjectURL(objectUrl);
+        objectUrl = isObjectUrl ? url : null;
+        $('preview').innerHTML = type === 'video'
+          ? '<video src="' + esc(url) + '" controls muted playsinline></video>'
+          : '<img src="' + esc(url) + '" alt="Preview" />';
+        $('preview-name').textContent = name || '';
+        $('preview-size').textContent = size || '';
+        $('preview-wrap').classList.remove('hidden');
+        $('poster-field').classList.toggle('hidden', type !== 'video');
+      }
+
+      // ---------- Tag input ----------
+      function renderTags() {
+        const box = $('tags-box');
+        box.querySelectorAll('.tag').forEach((t) => t.remove());
+        tools.forEach((t, i) => {
+          const el = document.createElement('span');
+          el.className = 'tag';
+          el.innerHTML = esc(t) + '<button type="button" aria-label="Hapus ' + esc(t) + '" data-i="' + i + '">×</button>';
+          box.insertBefore(el, $('tool-input'));
+        });
+      }
+      function addTool(raw) {
+        raw.split(',').map((s) => s.trim()).filter(Boolean).forEach((t) => {
+          if (!tools.some((x) => x.toLowerCase() === t.toLowerCase()) && tools.length < 20) tools.push(t);
+        });
+        renderTags();
+      }
+      $('tool-input').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); addTool(e.target.value); e.target.value = ''; }
+        else if (e.key === 'Backspace' && !e.target.value && tools.length) { tools.pop(); renderTags(); }
+      });
+      $('tool-input').addEventListener('blur', (e) => { if (e.target.value.trim()) { addTool(e.target.value); e.target.value = ''; } });
+      $('tags-box').addEventListener('click', (e) => {
+        const b = e.target.closest('button[data-i]');
+        if (b) { tools.splice(Number(b.dataset.i), 1); renderTags(); }
+        else $('tool-input').focus();
+      });
+
+      // ---------- Edit / reset ----------
+      function startEdit(w) {
+        editingId = w.id;
+        mediaFile = null;
+        $('media-input').value = ''; $('poster-input').value = ''; $('embed-poster').value = '';
+        $('form-title').textContent = 'Edit Karya';
+        $('form-sub').textContent = 'Kosongkan file kalau tidak ingin mengganti media.';
+        $('submit-btn').textContent = 'Simpan Perubahan';
+        $('cancel-edit').classList.remove('hidden');
+        $('title').value = w.title || '';
+        $('category').value = w.category || 'AI Video & Content';
+        $('badge').value = w.badge || 'Showcase';
+        $('summary').value = w.summary || '';
+        $('metrics').value = w.metrics || '';
+        $('workflow').value = w.promptOrWorkflow || '';
+        $('external').value = w.externalLink || '';
+        tools = Array.isArray(w.tools) ? w.tools.slice() : [];
+        renderTags();
+        if (w.mediaType === 'embed') {
+          setSrc('embed');
+          $('embed-url').value = w.mediaUrl || '';
+          $('preview-wrap').classList.add('hidden');
+        } else {
+          setSrc('file');
+          $('embed-url').value = '';
+          showPreview(w.mediaUrl, w.mediaType, w.mediaUrl, 'file saat ini', false);
+        }
+        hideMsg($('form-msg'));
+        renderList();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function resetForm() {
+        editingId = null;
+        mediaFile = null;
+        tools = [];
+        $('work-form').reset();
+        renderTags();
+        setSrc('file');
+        if (objectUrl) URL.revokeObjectURL(objectUrl);
+        objectUrl = null;
+        $('preview').innerHTML = '';
+        $('preview-wrap').classList.add('hidden');
+        $('poster-field').classList.add('hidden');
+        $('form-title').textContent = 'Tambah Karya Baru';
+        $('form-sub').textContent = 'Karya baru otomatis tampil paling atas di Galeri Karya.';
+        $('submit-btn').textContent = 'Simpan & Terbitkan';
+        $('cancel-edit').classList.add('hidden');
+        $('progress-wrap').classList.add('hidden');
+        renderList();
+      }
+      $('cancel-edit').addEventListener('click', resetForm);
+
+      // ---------- Submit (XHR untuk progress upload) ----------
+      $('work-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        hideMsg($('form-msg'));
+        const title = $('title').value.trim();
+        if (!title) { showMsg($('form-msg'), 'Judul karya wajib diisi.', 'err'); $('title').focus(); return; }
+
+        const fd = new FormData();
+        fd.append('title', title);
+        fd.append('category', $('category').value);
+        fd.append('badge', $('badge').value);
+        fd.append('summary', $('summary').value);
+        fd.append('metrics', $('metrics').value);
+        fd.append('promptOrWorkflow', $('workflow').value);
+        fd.append('externalLink', $('external').value.trim());
+        if ($('tool-input').value.trim()) { addTool($('tool-input').value); $('tool-input').value = ''; }
+        fd.append('tools', JSON.stringify(tools));
+
+        if (srcMode === 'embed') {
+          const url = $('embed-url').value.trim();
+          if (!/^https?:\/\//i.test(url)) { showMsg($('form-msg'), 'Isi link embed yang valid (diawali https://).', 'err'); return; }
+          fd.append('mediaType', 'embed');
+          fd.append('mediaUrl', url);
+          const p = $('embed-poster').files[0];
+          if (p) fd.append('poster', p);
+        } else {
+          if (mediaFile) fd.append('media', mediaFile);
+          else if (!editingId) { showMsg($('form-msg'), 'Pilih file gambar atau video dulu.', 'err'); return; }
+          else {
+            const cur = works.find((w) => w.id === editingId);
+            if (cur && cur.mediaType === 'embed') { showMsg($('form-msg'), 'Pilih file baru untuk mengganti embed.', 'err'); return; }
+          }
+          const p = $('poster-input').files[0];
+          if (p) fd.append('poster', p);
+        }
+
+        const xhr = new XMLHttpRequest();
+        xhr.open(editingId ? 'PUT' : 'POST', API + '/works' + (editingId ? '/' + encodeURIComponent(editingId) : ''));
+        xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+        $('progress-wrap').classList.remove('hidden');
+        $('progress-bar').style.width = '0%';
+        $('progress-text').textContent = '0%';
+        $('submit-btn').disabled = true;
+
+        xhr.upload.onprogress = (ev) => {
+          if (!ev.lengthComputable) return;
+          const pct = Math.round((ev.loaded / ev.total) * 100);
+          $('progress-bar').style.width = pct + '%';
+          $('progress-text').textContent = pct + '% · ' + fmtSize(ev.loaded) + ' / ' + fmtSize(ev.total);
+        };
+        xhr.onload = async () => {
+          $('submit-btn').disabled = false;
+          let data = null;
+          try { data = JSON.parse(xhr.responseText); } catch (err) { /* kosong */ }
+          if (xhr.status === 401) { logout('Sesi habis, silakan login ulang.'); return; }
+          if (xhr.status >= 200 && xhr.status < 300) {
+            const wasEdit = !!editingId;
+            resetForm();
+            showMsg($('form-msg'), wasEdit ? 'Perubahan tersimpan dan sudah tampil di website.' : 'Karya terbit dan sudah tampil paling atas di website.', 'ok');
+            await loadWorks();
+          } else {
+            $('progress-wrap').classList.add('hidden');
+            showMsg($('form-msg'), (data && data.error) || ('Gagal menyimpan (' + xhr.status + ').'), 'err');
+          }
+        };
+        xhr.onerror = () => {
+          $('submit-btn').disabled = false;
+          $('progress-wrap').classList.add('hidden');
+          showMsg($('form-msg'), 'Koneksi ke server terputus. Coba lagi.', 'err');
+        };
+        xhr.send(fd);
+      });
+
+      // ---------- Mulai ----------
+      if (token) {
+        api('/session').then(enterApp).catch(() => {});
+      }
+    })();
+  </script>
+</body>
+</html>

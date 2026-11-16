@@ -1,0 +1,18 @@
+{
+  "name": "dikapriyadi-portfolio-cms",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Micro-backend portofolio Dika Priyadi: upload karya ke v/uploads dan update works.json",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "multer": "^2.0.2"
+  }
+}

@@ -1,5 +1,15 @@
 # HANDOFF portofolio Dika Priyadi (baca ini dulu, jangan tanya ulang)
 
+## SISTEM BARU (2026-11-16): CMS planet 3D + works.json  ← ini yang live
+- portofolio/index.html = halaman tunggal (Three.js planet 3D, Lenis, glassmorphism). Edit langsung file ini, BUKAN lewat render.js.
+- Galeri Karya dibaca dari works.json (di server). Isi awal: 5 proyek + 13 karya galeri lama (karya.json). Dika menambah/mengedit lewat https://dikapriyadi.catatanakademik.com/admin.html
+- API: portofolio-api/server.js (Express+Multer) di VPS /opt/porto-api, PM2 "porto-api", port 3088, SITE_ROOT=/var/www/dikapriyadi. Password admin di /root/.porto-admin.env. Upload ke v/uploads/.
+- Deploy: `bash update-portofolio-cms.sh <commit>` (deploy/update-portofolio-cms.sh). works.json di server TIDAK ditimpa kalau sudah ada. Nginx: blok porto-cms-begin/end di server block situs ini (cadangan /root/nginx-*.bak-*).
+- update-portofolio.sh lama (render.js/style.css/script.js/karya.json) JANGAN dipakai lagi; akan menimpa index.html baru dengan versi commit lama.
+- Video di kartu tidak autoplay; diputar saat kartu diklik (aturan Dika).
+
+## SISTEM LAMA (arsip, sebelum 2026-11-16)
+
 Web: https://dikapriyadi.catatanakademik.com | Posisi: AI Automation | Teks formal Indonesia. Dika memakai gw/lo; balas santai, ringkas, tanpa rekap.
 
 ## Kode (semua ada di repo akihabara-fuji/akihabara-store, branch portofolio-dika)
