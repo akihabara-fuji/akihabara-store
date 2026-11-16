@@ -9,4 +9,4 @@ Ambil kunci = commit + push sebelum kerja. Lepas kunci = isi 'terakhir', status 
 - Blog heyaipeople.site | masih kosong, cara terbit belum dicatat | bebas
 - Portofolio dikapriyadi.catatanakademik.com | branch portofolio-dika | deploy/update-portofolio.sh <commit>, naikkan versi tiap deploy | tercatat DIPEGANG "Claude (sesi 15 Nov sore)" untuk tautan sosmed di kontak; kemungkinan kunci lama, tanyakan Dika sebelum mengambil alih
 - Akun sosmed | posting hanya setelah persetujuan Dika | tersambung: IG priyadi_dika dan catatanakademikut, TikTok Akihabara Fuji, FB Catatan Akademik, YouTube Catatan Akademik | belum tersambung: IG heyaipeople, 2 akun TikTok, 1 halaman Facebook | belum ada: kanal YouTube HeyAIPeople
-- Kantor Ai People (artefak) | perubahan halaman langsung terbit | data prompt, bagan, jadwal, aset ada di database artefak
+- Kantor Ai People (artefak) | perubahan halaman langsung terbit | data prompt, bagan, jadwal, aset ada di database artefak | DIPEGANG Claude akun-2 · Claude · sinkron BAGAN/KUNCI ke data artefak, lepas kunci portofolio (izin Dika), tambah aturan GitHub di prompt Serah terima · sejak 16 Nov 2026 18.38
