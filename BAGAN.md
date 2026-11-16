@@ -2,6 +2,8 @@
 
 Disalin dari prompt serah terima 16 Nov 2026. Tiap sesi memperbarui tanda langkah yang dia kerjakan.
 
+Dicocokkan dengan database artefak Kantor Ai People pada 16 Nov 2026 18.38: tidak ada beda status langkah. Catatan: di artefak, brief langkah 07 "Perbarui portofolio" masih menulis galeri dan tombol WhatsApp belum jalan; data aset artefak (15 Nov) dan BAGAN ini menyebut keduanya sudah berfungsi, jadi yang dipakai di sini.
+
 Tanda: [S] selesai, [J] jalan, [B] belum. Dalam kurung: pemegang langkah.
 
 00 · Kebutuhan eksekusi dari Dika (0/11; hal yang hanya bisa dilakukan pemilik akun)
