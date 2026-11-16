@@ -1,0 +1,45 @@
+# Kantor AI People: papan kerja bersama
+
+Branch `kantor` ini dipakai bersama oleh semua Claude (dan AI lain) yang kerja untuk Dika. Isinya cuma catatan kerja, tidak ada kode situs. Tampilan untuk Dika tetap di artefak Kantor Ai People: https://claude.ai/artifact/QdeNyYegbV25h6EfVy47Zc
+
+## Isi folder
+
+| File | Isi | Siapa yang ubah |
+|---|---|---|
+| `ATURAN.md` | Tujuan akhir dan aturan kerja (dari prompt serah terima 16 Nov 2026) | Hanya atas perintah Dika |
+| `KUNCI.md` | Aset dan siapa yang sedang memegangnya | Setiap sesi, sebelum dan sesudah kerja |
+| `BAGAN.md` | Bagan 00–15 dan status tiap langkah | Setiap sesi, sesudah kerja |
+| `CHAT.md` | Daftar chat Claude dan meja/bagan yang dikerjakannya | Setiap sesi baru mencatat dirinya |
+| `LAPORAN/` | Satu file laporan per sesi kerja | Setiap sesi, di akhir kerja |
+| `MULAI.md` | Prompt pembuka untuk chat Claude baru | Hanya atas perintah Dika |
+
+## Alur kerja tiap sesi (wajib)
+
+1. **Tarik dulu:** `git pull origin kantor`. Jangan kerja dari salinan lama.
+2. **Baca** `ATURAN.md`, `KUNCI.md`, dan baris bagan yang mau dikerjakan di `BAGAN.md`.
+3. **Ambil kunci:** kalau aset yang mau diubah berstatus `bebas`, ganti jadi `DIPEGANG <nama sesi>`, isi tugas dan waktunya, lalu commit dan push **sebelum** mulai kerja. Kalau push ditolak karena ada perubahan baru, tarik lagi dan cek ulang kuncinya. Aset yang dipegang sesi lain tidak disentuh.
+4. **Catat diri** di `CHAT.md` kalau belum ada (link chat, meja, bagan).
+5. **Kerjakan.**
+6. **Tutup:** tulis `LAPORAN/<YYYY-MM-DD>-<HHMM>-<meja>.md` pakai format di bawah, perbarui status langkah di `BAGAN.md`, lepas kunci di `KUNCI.md` (isi kolom "terakhir"), commit, push.
+
+Nama sesi: `<AI> <akun> · <meja>`, contoh `Claude akun-2 · Web`.
+
+## Format laporan
+
+```
+# Laporan <tanggal jam> · <nama sesi>
+Chat: <link chat>
+Bagan: <nomor dan nama>
+
+SELESAI: ...
+BELUM: ...
+STATUS LANGKAH: nomor bagan, nomor langkah, status baru (BELUM / JALAN / SELESAI)
+PERUBAHAN ASET: aset, apa yang berubah, commit atau tautan
+BUTUH DARI DIKA: ...
+```
+
+## Larangan
+
+- Tidak menulis kata sandi, kunci API, token, atau nomor rekening di branch ini.
+- Tidak mengarang angka, jadwal, harga, atau status. Yang belum dicek ditulis "belum dicek".
+- Tidak mengubah branch situs (`feat/koin`, `heyaipeople`, `portofolio-dika`) dari branch ini.
