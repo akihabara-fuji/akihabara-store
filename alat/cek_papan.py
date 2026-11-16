@@ -32,7 +32,7 @@ def main():
     masalah, bocor, menunggu, gagal, lulus = [], [], [], [], []
 
     for p in sorted(ROOT.rglob("*.md")) + sorted(ROOT.rglob("*.json")):
-        if ".git" in p.parts or p.name == "STATUS.md":
+        if ".git" in p.parts or p.name in ("STATUS.md", "PAKET-AI.md"):
             continue
         teks = baca(p)
         for nama, pola in RAHASIA.items():

@@ -14,12 +14,14 @@ jobs:
         id: cek
         run: python3 alat/cek_papan.py
         continue-on-error: true
-      - name: Simpan STATUS.md
+      - name: Susun PAKET-AI.md
+        run: python3 alat/paket_ai.py
+      - name: Simpan STATUS.md dan PAKET-AI.md
         run: |
-          if ! git diff --quiet -- STATUS.md; then
+          if ! git diff --quiet -- STATUS.md PAKET-AI.md || [ -n "$(git ls-files --others --exclude-standard PAKET-AI.md)" ]; then
             git config user.name "cek-papan"
             git config user.email "cek-papan@users.noreply.github.com"
-            git add STATUS.md
+            git add STATUS.md PAKET-AI.md
             git commit -m "status: diperbarui otomatis"
             git push
           fi
