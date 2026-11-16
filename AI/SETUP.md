@@ -32,5 +32,14 @@ Bahasa: Indonesia santai (gw/lo), pendek, inti dulu.
 2. Kalau GPT atau Gemini selesai, salin blok SETORAN-nya.
 3. Tempel ke chat Claude mana pun, bilang "catat setoran". Claude yang menyimpan ke GitHub dan memperbarui bagan.
 
-## Tes pertama (belum dicek)
-Belum dicek apakah ChatGPT dan Gemini di akun Dika bisa membuka link raw GitHub. Tes pertama: minta masing-masing "ringkas isi BACA-DULU.md dalam 3 poin". Kalau gagal, laporkan ke Claude supaya caranya diganti.
+## Status setup (17 Nov 2026, dicek Claude di browser Dika)
+- ChatGPT, akun dikha.priyadhi@gmail.com (paket Go): Project "Kantor Ai People" sudah dibuat dan instruksi terpasang. Tes: bisa membuka link raw GitHub, membaca STATUS.md, dan menulis blok CEK yang benar. Link: https://chatgpt.com/g/g-p-6afb94910be48191896bf1a01bc797f3/project
+- Gemini, akun dikha.priyadhi@gmail.com (Plus): Gem "Kantor Ai People" sudah dibuat. Gem TIDAK bisa membuka link, jadi papan diberikan lewat Google Doc terlampir (lihat di bawah). Tes: Gem membaca doc dan menulis blok SETORAN yang benar. Link: https://gemini.google.com/gem/6e1f33643558
+- Gemini, akun akihabara.fuzi@gmail.com: belum (akun belum login di browser bawaan Claude).
+
+## Jembatan untuk Gemini (Gem tidak bisa buka link)
+1. GitHub Actions menyusun `PAKET-AI.md` (gabungan STATUS, BACA-DULU, PERAN, ATURAN, KUNCI, BAGAN, SETORAN/README, PROYEK/README, semua HANDOFF) tiap push ke branch kantor.
+2. Apps Script milik dikha.priyadhi ("Project tak berjudul", fungsi `sinkron`, pemicu tiap 1 jam) menyalin PAKET-AI.md ke Google Doc "Kantor Ai People - Papan (otomatis dari GitHub)", id `1EDxEklPH0EE2D_oMqJ975jiG97boVBC9va8Rle2VNzA`.
+3. Doc itu terlampir sebagai pengetahuan Gem. Jadi Gem tertinggal paling lama sekitar 1 jam dari GitHub.
+4. Kalau Gem bilang isinya lama, cek jam salinan di baris atas doc. Untuk memaksa segar: buka script.google.com, project itu, jalankan `sinkron`.
+5. Instruksi Gem = teks di atas ditambah: "PENTING: kamu tidak bisa membuka link, jadi isi semua file papan ada di dokumen terlampir "Kantor Ai People - Papan (otomatis dari GitHub)" yang diperbarui tiap jam. Baca dokumen itu sebagai pengganti link, mulai dari bagian STATUS.md."
