@@ -1,0 +1,28 @@
+name: cek-papan
+on:
+  push:
+    branches: [kantor]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  cek:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Periksa papan dan tulis STATUS.md
+        id: cek
+        run: python3 alat/cek_papan.py
+        continue-on-error: true
+      - name: Simpan STATUS.md
+        run: |
+          if ! git diff --quiet -- STATUS.md; then
+            git config user.name "cek-papan"
+            git config user.email "cek-papan@users.noreply.github.com"
+            git add STATUS.md
+            git commit -m "status: diperbarui otomatis"
+            git push
+          fi
+      - name: Gagalkan kalau ada rahasia bocor atau format rusak
+        if: steps.cek.outcome == 'failure'
+        run: exit 1

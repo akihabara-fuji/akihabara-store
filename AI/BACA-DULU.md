@@ -3,6 +3,8 @@
 Kamu bekerja untuk Dika Priyadi di "Kantor AI People". Semua catatan kerja ada di repo publik GitHub akihabara-fuji/akihabara-store, branch `kantor`. Jangan minta Dika menjelaskan ulang: semuanya ada di file berikut.
 
 ## 1. Baca file ini dulu (urut)
+0. Status papan (yang menunggu dicek, kunci, rahasia bocor): https://raw.githubusercontent.com/akihabara-fuji/akihabara-store/kantor/STATUS.md
+   Kalau ada yang "Menunggu cek silang" atas namamu, kerjakan cek itu dulu (cara di AI/PERAN.md).
 1. Aturan: https://raw.githubusercontent.com/akihabara-fuji/akihabara-store/kantor/ATURAN.md
 2. Peran tiap AI: https://raw.githubusercontent.com/akihabara-fuji/akihabara-store/kantor/AI/PERAN.md
 3. Bagan dan status langkah: https://raw.githubusercontent.com/akihabara-fuji/akihabara-store/kantor/BAGAN.md

@@ -15,6 +15,33 @@ Kerjaan mereka berupa bahan (riset, naskah, catatan QC), bukan perubahan aset. Y
 - Langkah di BAGAN.md yang ditandai `(GPT)` atau `(Gemini)` adalah jatah AI itu. Langkah tanpa tanda boleh diambil Claude.
 - Kalau Dika menyuruh satu AI mengerjakan hal di luar perannya, ikuti Dika, lalu tulis di SETORAN bahwa itu di luar peran.
 
+## Cek silang (wajib, berlaku mulai 17 Nov 2026)
+Tidak ada AI yang mengecek hasilnya sendiri. Tiap SETORAN dan LAPORAN punya baris `Cek silang:` berisi `MENUNGGU <AI pengecek>`, `LULUS <AI> <tanggal>`, atau `GAGAL <AI> <alasan>`.
+
+| Pembuat | Pengecek |
+|---|---|
+| GPT | Gemini |
+| Gemini | GPT |
+| Claude, kerjaan tampilan/web/visual | Gemini |
+| Claude, kerjaan fakta/teks/riset | GPT |
+| Kode dan teknis dari GPT/Gemini | Claude |
+
+Cara mengecek: buka STATUS.md, bagian "Menunggu cek silang", ambil yang menunggu kamu, lalu periksa fakta dan sumbernya, ikut ATURAN.md atau tidak, sama brief atau tidak. Tutup dengan blok:
+
+```
+CEK · <AI> · <YYYY-MM-DD HH:MM>
+File: <SETORAN/... atau LAPORAN/...>
+Hasil: LULUS / GAGAL
+Catatan: <yang salah dan harus diperbaiki, atau "-">
+```
+
+Claude menulis hasilnya langsung ke baris `Cek silang:` file itu. GPT/Gemini menyerahkan blok CEK ke Dika, lalu Dika menempelnya ke Claude dengan kata "catat cek".
+
+Yang LULUS boleh lanjut ke langkah berikutnya tanpa ditanyakan ke Dika. ACC Dika hanya untuk tiga hal: posting ke media sosial, uang atau harga, dan tindakan yang tidak bisa dibatalkan.
+
+## Pemeriksa otomatis
+Tiap push ke branch kantor, GitHub menjalankan `alat/cek_papan.py`. Skrip itu mengecek format SETORAN/LAPORAN, baris cek silang, kunci aset, dan rahasia yang bocor (token, kata sandi), lalu menulis hasilnya ke `STATUS.md`. Semua AI membaca STATUS.md sebelum mulai kerja.
+
 ## Cara masuk papan
 - Claude: prompt di `MULAI.md` (bisa git langsung).
 - GPT dan Gemini: baca `AI/BACA-DULU.md` lewat link raw, tutup kerja dengan blok SETORAN (format di `SETORAN/README.md`).

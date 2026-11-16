@@ -14,6 +14,7 @@ Branch `kantor` ini dipakai bersama oleh semua Claude (dan AI lain) yang kerja u
 | `PROYEK/<nama>/` | HANDOFF.md dan LOG.md tiap proyek (lihat PROYEK/README.md) | Sesi yang mengerjakan proyek itu |
 | `MULAI.md` | Prompt pembuka untuk chat Claude baru | Hanya atas perintah Dika |
 | `AI/` | Peran tiga AI (PERAN.md), pintu masuk GPT/Gemini (BACA-DULU.md), setup sekali per AI (SETUP.md) | PERAN.md hanya atas perintah Dika |
+| `STATUS.md` | Status papan buatan otomatis: yang menunggu cek silang, kunci, rahasia bocor | Otomatis (alat/cek_papan.py), jangan diedit manual |
 | `SETORAN/` | Hasil kerja GPT/Gemini yang dicatat Claude (format di SETORAN/README.md) | Claude, saat Dika bilang "catat setoran" |
 
 ## Alur kerja tiap sesi (wajib)
@@ -39,7 +40,10 @@ BELUM: ...
 STATUS LANGKAH: nomor bagan, nomor langkah, status baru (BELUM / JALAN / SELESAI)
 PERUBAHAN ASET: aset, apa yang berubah, commit atau tautan
 BUTUH DARI DIKA: ...
+Cek silang: MENUNGGU <AI pengecek, lihat AI/PERAN.md>
 ```
+
+Mulai 17 Nov 2026 tiap laporan wajib punya baris Cek silang. Sebelum kerja, baca `STATUS.md` (dibuat otomatis tiap push) dan kerjakan dulu cek silang yang menunggu kamu.
 
 ## Larangan
 
