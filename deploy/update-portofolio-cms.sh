@@ -23,7 +23,7 @@ NGXBAK=""
 PM2_WAS=0
 
 fail(){
-  echo "GAGAL di baris $1 (perintah: ${BASH_COMMAND:-?}), rollback"
+  echo "GAGAL di baris $1, rollback"
   [ -d "$BAK" ] && { rm -rf "$ROOT"; mv "$BAK" "$ROOT"; }
   [ -n "$NGXBAK" ] && [ -f "$NGXBAK" ] && { cp -a "$NGXBAK" "$NGX"; nginx -t >/dev/null 2>&1 && systemctl reload nginx; }
   if [ -d "$APIBAK" ]; then rm -rf "$API"; mv "$APIBAK" "$API"; fi
@@ -98,7 +98,7 @@ block = "\n    # porto-cms-begin\n"
 if not has_body:
     block += "    client_max_body_size 60M;\n"
 block += (
-    "    location /api/ {\n"
+    "    location ^~ /api/ {\n"
     f"        proxy_pass http://127.0.0.1:{port};\n"
     "        proxy_http_version 1.1;\n"
     "        proxy_set_header Host $host;\n"
@@ -126,7 +126,17 @@ fi
 H() { curl -sk -o /dev/null -w '%{http_code}' --resolve "$DOMAIN:443:127.0.0.1" "https://$DOMAIN$1"; }
 for p in / /admin.html /works.json /api/works /v/bot_full.mp4 /v/about-photo.webp /assets/CV_Dika_Priyadi.pdf /assets/k-admin.webp; do
   s=$(H "$p"); echo "$p $s"
-  [ "$s" = 200 ] || fail $LINENO
+  if [ "$s" != 200 ]; then
+    echo "--- DIAGNOSA $p (status $s) ---"
+    curl -sk -i --resolve "$DOMAIN:443:127.0.0.1" "https://$DOMAIN$p" | head -12 || true
+    echo "--- langsung ke node ---"
+    curl -s -i "http://127.0.0.1:$PORT$p" | head -6 || true
+    echo "--- config nginx ($NGX) ---"
+    grep -nE 'server_name|listen|location|proxy_pass|include|return|root ' "$NGX" | head -70 || true
+    echo "--- error.log ---"
+    tail -4 /var/log/nginx/error.log 2>/dev/null || true
+    fail $LINENO
+  fi
 done
 PAGE=$(curl -sk --resolve "$DOMAIN:443:127.0.0.1" "https://$DOMAIN/")
 case "$PAGE" in *works.json*) ;; *) echo "index.html live tidak memuat works.json"; fail $LINENO ;; esac
