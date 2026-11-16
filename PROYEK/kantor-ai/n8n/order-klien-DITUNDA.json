@@ -1,0 +1,1474 @@
+{
+  "name": "Kantor Ai People - Order Intake, Routing & ACC Dika",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "kantor-ai-people-inbound",
+        "options": {}
+      },
+      "id": "e519ff1a-4e53-478f-8050-24199218993b",
+      "name": "Terima Pesan Masuk",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        400
+      ],
+      "webhookId": "118be81e-8773-44ec-8e04-01afdd1969e9"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8905fbe7-42d8-4eb6-8183-a800c4fb5b7c",
+              "name": "order_id",
+              "value": "={{ 'AIP-' + $now.toFormat('yyyyMMdd') + '-' + String(Math.floor(1000 + Math.random() * 9000)) }}",
+              "type": "string"
+            },
+            {
+              "id": "c5b32cce-b51b-414a-bb6c-3d0633a8f2ef",
+              "name": "sender_name",
+              "value": "={{ $json.body.sender_name || $json.body.name || $json.body.pushname || 'Tanpa Nama' }}",
+              "type": "string"
+            },
+            {
+              "id": "a7b2d1e6-064f-422a-8e77-0a57ca94e3a9",
+              "name": "sender_phone",
+              "value": "={{ String($json.body.sender_phone || $json.body.sender || $json.body.phone || '') }}",
+              "type": "string"
+            },
+            {
+              "id": "d62a8906-ada2-4000-9b84-99d9b4a2cc66",
+              "name": "message_text",
+              "value": "={{ $json.body.message_text || $json.body.message || $json.body.text || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "7d14aefb-00f1-4706-a7be-8f4811a8cf44",
+              "name": "source_channel",
+              "value": "={{ $json.body.source_channel || 'WA' }}",
+              "type": "string"
+            },
+            {
+              "id": "de04665a-f439-4988-a44e-f698ea843158",
+              "name": "timestamp",
+              "value": "={{ $json.body.timestamp || $now.toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "92cf63b9-e0e1-453d-b15b-e6c43a99c1e7",
+      "name": "Normalisasi Input",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        280,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Tanggal hari ini: {{ $now.toFormat('yyyy-MM-dd') }}\nOrder ID (pakai apa adanya): {{ $json.order_id }}\nNama pengirim: {{ $json.sender_name }}\nChannel: {{ $json.source_channel }}\n\nPesan klien:\n\"\"\"\n{{ $json.message_text }}\n\"\"\"\n\nKlasifikasikan dan susun brief sesuai format output.",
+        "options": {
+          "systemMessage": "Kamu adalah AI Classifier & Brief Generator untuk agensi digital \"Kantor Ai People\" milik Dika Priyadi (website: heyaipeople.site dan dikapriyadi.catatanakademik.com).\n\nKlasifikasikan pesan klien ke TEPAT SATU jalur:\n- JALUR_1_UMUM: konsultasi atau permintaan custom di luar paket standar.\n- JALUR_2_PAKET_PROMPT: pembelian atau request paket prompt AI.\n- JALUR_3_WEBSITE_LP: pembuatan website, landing page, atau update situs (heyaipeople.site / dikapriyadi.catatanakademik.com).\n- JALUR_4_KARIER_PROSPEK: riset lowongan kerja, penyesuaian CV, atau outreach prospek klien UMKM.\n\nassigned_ai_role pilih salah satu: \"Claude - Copy & Web\" (copywriting, website, paket prompt), \"GPT - Riset & Struktur\" (konsultasi, riset, CV, prospek), \"Gemini - QC & Visual\" (QC, visual, desain).\n\nAturan:\n- order_id WAJIB sama persis dengan yang diberikan di input.\n- ringkasan_brief berupa daftar poin kebutuhan klien yang jelas dan spesifik.\n- estimasi_harga_waktu: estimasi AWAL (range waktu pengerjaan; harga berupa range dan tandai \"estimasi, final dikonfirmasi Dika\"). Jangan mengarang harga paket yang pasti.\n- draft_balasan_klien: bahasa Indonesia, sopan, profesional, hangat, singkat; konfirmasi kebutuhan dan sampaikan bahwa tim sedang menyiapkan. Jangan menjanjikan harga final.\n- Jika pesan tidak jelas, pilih JALUR_1_UMUM dan sertakan pertanyaan klarifikasi di draft balasan."
+        },
+        "hasOutputParser": true
+      },
+      "id": "ed269fff-43f6-47e1-b7cf-b113416bedce",
+      "name": "AI Classifier & Brief",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        560,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {
+          "temperature": 0.4
+        }
+      },
+      "id": "a505acca-1d50-403c-8af3-786b92718bf2",
+      "name": "Model Classifier",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        500,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"order_id\": {\n      \"type\": \"string\"\n    },\n    \"jalur\": {\n      \"type\": \"string\",\n      \"enum\": [\n        \"JALUR_1_UMUM\",\n        \"JALUR_2_PAKET_PROMPT\",\n        \"JALUR_3_WEBSITE_LP\",\n        \"JALUR_4_KARIER_PROSPEK\"\n      ]\n    },\n    \"ringkasan_brief\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    },\n    \"estimasi_harga_waktu\": {\n      \"type\": \"string\"\n    },\n    \"assigned_ai_role\": {\n      \"type\": \"string\"\n    },\n    \"draft_balasan_klien\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\": [\n    \"order_id\",\n    \"jalur\",\n    \"ringkasan_brief\",\n    \"estimasi_harga_waktu\",\n    \"assigned_ai_role\",\n    \"draft_balasan_klien\"\n  ]\n}"
+      },
+      "id": "b833e0a0-d580-4fd6-aa84-bad06bc09c80",
+      "name": "Parser Output Terstruktur",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        700,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "daeddd73-a380-4a3a-a6a0-8cd1c418c01b",
+              "name": "order_id",
+              "value": "={{ $('Normalisasi Input').first().json.order_id }}",
+              "type": "string"
+            },
+            {
+              "id": "2cf41954-4c4a-4758-ac6c-018193efc338",
+              "name": "tanggal",
+              "value": "={{ $now.toFormat('yyyy-MM-dd HH:mm') }}",
+              "type": "string"
+            },
+            {
+              "id": "e6d302f5-3b89-49e3-a610-54be1cf33560",
+              "name": "nama_klien",
+              "value": "={{ $('Normalisasi Input').first().json.sender_name }}",
+              "type": "string"
+            },
+            {
+              "id": "cc69aeb8-481c-4865-843a-5d0e58c1fc9a",
+              "name": "kontak",
+              "value": "={{ $('Normalisasi Input').first().json.sender_phone }}",
+              "type": "string"
+            },
+            {
+              "id": "aefac4a9-df87-47a7-8462-05b61df1a0a7",
+              "name": "channel",
+              "value": "={{ $('Normalisasi Input').first().json.source_channel }}",
+              "type": "string"
+            },
+            {
+              "id": "c07b7187-e798-45b4-8138-a69cd80c282d",
+              "name": "message_text",
+              "value": "={{ $('Normalisasi Input').first().json.message_text }}",
+              "type": "string"
+            },
+            {
+              "id": "c3f86516-97af-446b-83e6-3133d560b0b9",
+              "name": "jalur",
+              "value": "={{ $json.output.jalur }}",
+              "type": "string"
+            },
+            {
+              "id": "a4c4b0b0-c088-44b4-a783-b34f9f15dae2",
+              "name": "ringkasan_brief",
+              "value": "={{ Array.isArray($json.output.ringkasan_brief) ? $json.output.ringkasan_brief.map(p => '- ' + p).join('\\n') : String($json.output.ringkasan_brief) }}",
+              "type": "string"
+            },
+            {
+              "id": "29706c2e-d26b-4559-bdf5-aaf763acd953",
+              "name": "estimasi_harga_waktu",
+              "value": "={{ $json.output.estimasi_harga_waktu }}",
+              "type": "string"
+            },
+            {
+              "id": "400042c3-8827-446b-a3fc-60179264bb28",
+              "name": "assigned_ai_role",
+              "value": "={{ $json.output.assigned_ai_role }}",
+              "type": "string"
+            },
+            {
+              "id": "1a315bd2-f47e-425a-b14e-de3166d9db14",
+              "name": "draft_balasan_klien",
+              "value": "={{ $json.output.draft_balasan_klien }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8071f749-fb68-420c-97b0-2401485df3fb",
+      "name": "Rakit Data Order",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        840,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "GANTI_DENGAN_SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Orders",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Order_ID": "={{ $json.order_id }}",
+            "Tanggal": "={{ $json.tanggal }}",
+            "Nama_Klien": "={{ $json.nama_klien }}",
+            "Kontak": "={{ $json.kontak }}",
+            "Channel": "={{ $json.channel }}",
+            "Jalur": "={{ $json.jalur }}",
+            "Ringkasan_Brief": "={{ $json.ringkasan_brief + '\\n\\nEstimasi: ' + $json.estimasi_harga_waktu }}",
+            "PIC_AI": "={{ $json.assigned_ai_role }}",
+            "Status_Lock": "UNLOCKED",
+            "Status_Order": "MENUNGGU_ACC_DIKA",
+            "Catatan_QC": ""
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Order_ID",
+              "displayName": "Order_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Tanggal",
+              "displayName": "Tanggal",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Nama_Klien",
+              "displayName": "Nama_Klien",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Kontak",
+              "displayName": "Kontak",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Channel",
+              "displayName": "Channel",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Jalur",
+              "displayName": "Jalur",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Ringkasan_Brief",
+              "displayName": "Ringkasan_Brief",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "PIC_AI",
+              "displayName": "PIC_AI",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status_Lock",
+              "displayName": "Status_Lock",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status_Order",
+              "displayName": "Status_Order",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Catatan_QC",
+              "displayName": "Catatan_QC",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {
+          "cellFormat": "RAW"
+        }
+      },
+      "id": "cf602a63-2260-4644-8941-e81ea21f04aa",
+      "name": "Catat ke Database (Sheets)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1120,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "9f65633b-08b3-4697-9e75-2959c3c8c7d1",
+                    "leftValue": "={{ $('Rakit Data Order').first().json.jalur }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "JALUR_1_UMUM"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "JALUR_1_UMUM"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b329530b-2e9c-4808-af36-451ee95aa82d",
+                    "leftValue": "={{ $('Rakit Data Order').first().json.jalur }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "JALUR_2_PAKET_PROMPT"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "JALUR_2_PAKET_PROMPT"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "1ab7b6fb-4697-42d9-b4a5-acf1dbf53cd0",
+                    "leftValue": "={{ $('Rakit Data Order').first().json.jalur }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "JALUR_3_WEBSITE_LP"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "JALUR_3_WEBSITE_LP"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "aa890520-34a4-4422-8b54-a94300709fe9",
+                    "leftValue": "={{ $('Rakit Data Order').first().json.jalur }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "JALUR_4_KARIER_PROSPEK"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "JALUR_4_KARIER_PROSPEK"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fd822e9d-536b-4c70-ae8f-1986207f2a35",
+      "name": "Routing Jalur",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1400,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Order ID: {{ $('Rakit Data Order').first().json.order_id }}\nKlien: {{ $('Rakit Data Order').first().json.nama_klien }}\nPesan asli:\n\"\"\"\n{{ $('Rakit Data Order').first().json.message_text }}\n\"\"\"\n\nRingkasan brief:\n{{ $('Rakit Data Order').first().json.ringkasan_brief }}\n\nEstimasi awal: {{ $('Rakit Data Order').first().json.estimasi_harga_waktu }}\n\nSusun proposal singkat: ruang lingkup, tahapan kerja, estimasi waktu, estimasi harga (range), dan pertanyaan klarifikasi untuk klien.",
+        "options": {
+          "systemMessage": "Kamu bekerja untuk agensi digital Kantor Ai People milik Dika Priyadi. Tulis dalam bahasa Indonesia, rapi, siap direview Dika. Jangan mengarang data, harga final, atau klaim yang tidak bisa diverifikasi; tandai yang perlu dikonfirmasi dengan [PERLU KONFIRMASI]. Peranmu: konsultan yang menyusun proposal dan estimasi detail."
+        }
+      },
+      "id": "394bfe81-f95e-467d-a10c-3727754a18da",
+      "name": "AI Proposal & Estimasi",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        1680,
+        -300
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {
+          "temperature": 0.4
+        }
+      },
+      "id": "00e74117-e2f9-456b-887d-56641de02621",
+      "name": "Model Proposal",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1680,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Order ID: {{ $('Rakit Data Order').first().json.order_id }}\nKlien: {{ $('Rakit Data Order').first().json.nama_klien }}\nPesan asli:\n\"\"\"\n{{ $('Rakit Data Order').first().json.message_text }}\n\"\"\"\n\nRingkasan brief:\n{{ $('Rakit Data Order').first().json.ringkasan_brief }}\n\nEstimasi awal: {{ $('Rakit Data Order').first().json.estimasi_harga_waktu }}\n\nRacik paket prompt: daftar prompt siap pakai dengan variabel dalam format [NAMA_VARIABEL], penjelasan tiap variabel, contoh pengisian, dan panduan pemakaian langkah demi langkah.",
+        "options": {
+          "systemMessage": "Kamu bekerja untuk agensi digital Kantor Ai People milik Dika Priyadi. Tulis dalam bahasa Indonesia, rapi, siap direview Dika. Jangan mengarang data, harga final, atau klaim yang tidak bisa diverifikasi; tandai yang perlu dikonfirmasi dengan [PERLU KONFIRMASI]. Peranmu: AI Prompt Engineer."
+        }
+      },
+      "id": "1a3e2c92-93a5-4eaa-b5e4-27153223a7cf",
+      "name": "AI Prompt Engineer",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        1680,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {
+          "temperature": 0.4
+        }
+      },
+      "id": "1bc6be1f-d2d8-458f-866b-1cc976feb4f4",
+      "name": "Model Prompt Engineer",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "value": "GANTI_DENGAN_SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Orders",
+          "mode": "name"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Jalur",
+              "lookupValue": "JALUR_3_WEBSITE_LP"
+            },
+            {
+              "lookupColumn": "Status_Lock",
+              "lookupValue": "LOCKED"
+            }
+          ]
+        },
+        "options": {
+          "combineFilters": "AND"
+        }
+      },
+      "id": "1a6c0aac-0bee-4d2f-97f6-c85b394653e0",
+      "name": "Cek Status_Lock Web",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1680,
+        500
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const order = $('Rakit Data Order').first().json;\nconst rows = $input.all()\n  .map(i => i.json)\n  .filter(r => r && r.Order_ID && r.Order_ID !== order.order_id);\nreturn [{\n  json: {\n    order_id: order.order_id,\n    web_locked: rows.length > 0,\n    dikunci_oleh: rows.map(r => r.Order_ID).join(', ')\n  }\n}];"
+      },
+      "id": "213a97cd-f5e6-44ff-84d0-49c885b0c909",
+      "name": "Evaluasi Lock",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1960,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e2301168-e4ba-4909-b3d9-eab71b589be6",
+              "leftValue": "={{ $json.web_locked }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              },
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "ac1e4f26-8b47-46a3-88b5-42bccdd2babd",
+      "name": "Aset Web Terkunci?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2240,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3991bb58-0a94-47e3-8ad7-d46218e391ad",
+              "name": "hasil_ai",
+              "value": "=⚠️ Aset web sedang DIKUNCI oleh order: {{ $json.dikunci_oleh }}. Order ini masuk antrean, eksekusi wireframe/copy ditunda sampai lock dilepas.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "307f55d5-a8d6-4b63-bd20-9a675e263001",
+      "name": "Antrikan Order Web",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2520,
+        360
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "GANTI_DENGAN_SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Orders",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Order_ID": "={{ $('Rakit Data Order').first().json.order_id }}",
+            "Status_Lock": "LOCKED",
+            "Status_Order": "PROSES_WEB"
+          },
+          "matchingColumns": [
+            "Order_ID"
+          ],
+          "schema": [
+            {
+              "id": "Order_ID",
+              "displayName": "Order_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status_Lock",
+              "displayName": "Status_Lock",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status_Order",
+              "displayName": "Status_Order",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3665ebf2-57af-4033-b573-691973ab6909",
+      "name": "Kunci Aset Web",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2520,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Order ID: {{ $('Rakit Data Order').first().json.order_id }}\nKlien: {{ $('Rakit Data Order').first().json.nama_klien }}\nPesan asli:\n\"\"\"\n{{ $('Rakit Data Order').first().json.message_text }}\n\"\"\"\n\nRingkasan brief:\n{{ $('Rakit Data Order').first().json.ringkasan_brief }}\n\nEstimasi awal: {{ $('Rakit Data Order').first().json.estimasi_harga_waktu }}\n\nSusun struktur wireframe per section (urutan, isi, CTA) dan copywriting lengkap tiap section untuk situs yang diminta (heyaipeople.site atau dikapriyadi.catatanakademik.com). Untuk update situs, hanya ubah bagian yang diminta dan pertahankan yang sudah ada.",
+        "options": {
+          "systemMessage": "Kamu bekerja untuk agensi digital Kantor Ai People milik Dika Priyadi. Tulis dalam bahasa Indonesia, rapi, siap direview Dika. Jangan mengarang data, harga final, atau klaim yang tidak bisa diverifikasi; tandai yang perlu dikonfirmasi dengan [PERLU KONFIRMASI]. Peranmu: Claude - Copy & Web, spesialis wireframe dan copywriting website/landing page."
+        }
+      },
+      "id": "704a69fe-51ed-493a-879c-af4b1d6e1071",
+      "name": "AI Wireframe & Copy Web",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        2800,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {
+          "temperature": 0.4
+        }
+      },
+      "id": "5323150e-336d-4c70-8cb5-85b4812521f8",
+      "name": "Model Web",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2800,
+        840
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Order ID: {{ $('Rakit Data Order').first().json.order_id }}\nKlien: {{ $('Rakit Data Order').first().json.nama_klien }}\nPesan asli:\n\"\"\"\n{{ $('Rakit Data Order').first().json.message_text }}\n\"\"\"\n\nRingkasan brief:\n{{ $('Rakit Data Order').first().json.ringkasan_brief }}\n\nEstimasi awal: {{ $('Rakit Data Order').first().json.estimasi_harga_waktu }}\n\nJika kebutuhannya karier: susun draft CV/ringkasan profil dan poin penyesuaian ke lowongan. Jika prospek UMKM: susun surat/pesan penawaran B2B yang dipersonalisasi (masalah calon klien, solusi, bukti, CTA).",
+        "options": {
+          "systemMessage": "Kamu bekerja untuk agensi digital Kantor Ai People milik Dika Priyadi. Tulis dalam bahasa Indonesia, rapi, siap direview Dika. Jangan mengarang data, harga final, atau klaim yang tidak bisa diverifikasi; tandai yang perlu dikonfirmasi dengan [PERLU KONFIRMASI]. Peranmu: GPT - Riset & Struktur untuk karier dan outreach prospek."
+        }
+      },
+      "id": "f3f0a92c-dad2-4f83-9260-078d9170baef",
+      "name": "AI CV & Penawaran B2B",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        1680,
+        1000
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {
+          "temperature": 0.4
+        }
+      },
+      "id": "ebaf0e65-105f-47ff-82d8-412951857ea4",
+      "name": "Model CV & B2B",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1680,
+        1200
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8436c52f-524a-48df-a31e-e933f9fb1a96",
+              "name": "order_id",
+              "value": "={{ $('Rakit Data Order').first().json.order_id }}",
+              "type": "string"
+            },
+            {
+              "id": "7c54f9f6-f112-438e-96b1-1c85ded5ca43",
+              "name": "nama_klien",
+              "value": "={{ $('Rakit Data Order').first().json.nama_klien }}",
+              "type": "string"
+            },
+            {
+              "id": "dcb83e53-c62b-4f9f-a506-c21126ee8b39",
+              "name": "kontak",
+              "value": "={{ $('Rakit Data Order').first().json.kontak }}",
+              "type": "string"
+            },
+            {
+              "id": "81557353-9937-4a9e-8208-fef1f47225ec",
+              "name": "channel",
+              "value": "={{ $('Rakit Data Order').first().json.channel }}",
+              "type": "string"
+            },
+            {
+              "id": "8c6fa291-0f35-4a6a-b565-5bdfca5df334",
+              "name": "jalur",
+              "value": "={{ $('Rakit Data Order').first().json.jalur }}",
+              "type": "string"
+            },
+            {
+              "id": "6ff1b3f8-5370-42f9-815e-739d23d207fd",
+              "name": "assigned_ai_role",
+              "value": "={{ $('Rakit Data Order').first().json.assigned_ai_role }}",
+              "type": "string"
+            },
+            {
+              "id": "30b60d59-8881-4bad-b13b-b9d390a75be5",
+              "name": "ringkasan_brief",
+              "value": "={{ $('Rakit Data Order').first().json.ringkasan_brief }}",
+              "type": "string"
+            },
+            {
+              "id": "17054d55-aee5-48fc-89dd-398f39390f31",
+              "name": "hasil_ai",
+              "value": "={{ String($json.output || $json.hasil_ai || '(tidak ada output AI)') }}",
+              "type": "string"
+            },
+            {
+              "id": "3f9b3eb1-64eb-4016-ac50-aadf67913ebb",
+              "name": "pesan_final",
+              "value": "={{ $('Rakit Data Order').first().json.draft_balasan_klien + '\\n\\nTerima kasih sudah mempercayakan kebutuhan Anda kepada Kantor Ai People 🙏 Jika berkenan, kami akan sangat terbantu dengan testimoni singkat tentang pengalaman Anda bersama kami.' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "07434a0c-bae7-4188-9ce7-de56315a1585",
+      "name": "Siapkan Notifikasi",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3080,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "GANTI_DENGAN_CHAT_ID_TELEGRAM_DIKA",
+        "text": "=🔔 ORDER BARU: {{ $json.order_id }}\nKlien: {{ $json.nama_klien }} ({{ $json.kontak }}, {{ $json.channel }})\nJalur: {{ $json.jalur }}\nPIC AI: {{ $json.assigned_ai_role }}\n\n📋 Brief:\n{{ $json.ringkasan_brief.slice(0, 800) }}\n\n🤖 Hasil racikan AI:\n{{ $json.hasil_ai.slice(0, 1800) }}\n\n💬 Draft balasan ke klien:\n{{ $json.pesan_final.slice(0, 1000) }}\n\n✅ ACC & kirim ke klien:\n{{ $execution.resumeUrl }}?keputusan=ACC\n\n✏️ Minta revisi:\n{{ $execution.resumeUrl }}?keputusan=REVISI",
+        "additionalFields": {
+          "appendAttribution": false,
+          "disable_web_page_preview": true
+        }
+      },
+      "id": "a13f0e5b-d53a-424e-afe7-71cf9b038ee4",
+      "name": "Kirim ke Dika (Telegram)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3360,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "resume": "webhook",
+        "httpMethod": "GET",
+        "limitWaitTime": true,
+        "limitType": "afterTimeInterval",
+        "resumeAmount": 48,
+        "resumeUnit": "hours",
+        "options": {}
+      },
+      "id": "22932ec4-d4ed-4530-9394-fb12c6512155",
+      "name": "Tunggu ACC Dika",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3640,
+        400
+      ],
+      "webhookId": "2fd195d9-34a1-43a2-80a4-5dd04cb55c70"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "75bff2e9-d4fd-4ca9-b351-3bf61444886e",
+              "leftValue": "={{ $json.query?.keputusan }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "ACC"
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "4c940f69-b7e5-45de-b63c-e16f1c2fe1db",
+      "name": "Dika ACC?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3920,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.fonnte.com/send",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "target",
+              "value": "={{ $('Siapkan Notifikasi').first().json.kontak }}"
+            },
+            {
+              "name": "message",
+              "value": "={{ $('Siapkan Notifikasi').first().json.pesan_final }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "19d6b8dd-f47f-4384-b5fd-0e75bb970def",
+      "name": "Kirim Pesan Final ke Klien (WA)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4200,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "GANTI_DENGAN_SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Orders",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Order_ID": "={{ $('Siapkan Notifikasi').first().json.order_id }}",
+            "Status_Order": "SELESAI_TERKIRIM",
+            "Status_Lock": "UNLOCKED",
+            "Catatan_QC": "=ACC Dika {{ $now.toFormat('yyyy-MM-dd HH:mm') }}"
+          },
+          "matchingColumns": [
+            "Order_ID"
+          ],
+          "schema": [
+            {
+              "id": "Order_ID",
+              "displayName": "Order_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status_Order",
+              "displayName": "Status_Order",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status_Lock",
+              "displayName": "Status_Lock",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Catatan_QC",
+              "displayName": "Catatan_QC",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "274a821f-810e-4d0c-a0a4-0b75026df05f",
+      "name": "Update Status SELESAI",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        4480,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "GANTI_DENGAN_SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Orders",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Order_ID": "={{ $('Siapkan Notifikasi').first().json.order_id }}",
+            "Status_Order": "={{ $('Tunggu ACC Dika').first().json.query?.keputusan === 'REVISI' ? 'REVISI_DIMINTA_DIKA' : 'TIMEOUT_BELUM_ACC' }}",
+            "Status_Lock": "UNLOCKED",
+            "Catatan_QC": "=Tidak di-ACC {{ $now.toFormat('yyyy-MM-dd HH:mm') }}"
+          },
+          "matchingColumns": [
+            "Order_ID"
+          ],
+          "schema": [
+            {
+              "id": "Order_ID",
+              "displayName": "Order_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status_Order",
+              "displayName": "Status_Order",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status_Lock",
+              "displayName": "Status_Lock",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Catatan_QC",
+              "displayName": "Catatan_QC",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "09a1fbde-7640-42f8-8105-bf00584f0efe",
+      "name": "Update Status REVISI",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        4200,
+        540
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "GANTI_DENGAN_CHAT_ID_TELEGRAM_DIKA",
+        "text": "=📝 Order {{ $('Siapkan Notifikasi').first().json.order_id }} TIDAK dikirim ke klien. Status di Sheets: {{ $json.Status_Order }}. Silakan revisi manual lalu kirim ulang.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "c462ae0c-142f-44fe-b503-9454ed4ad8de",
+      "name": "Info Revisi ke Dika",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        4480,
+        540
+      ]
+    }
+  ],
+  "connections": {
+    "Terima Pesan Masuk": {
+      "main": [
+        [
+          {
+            "node": "Normalisasi Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalisasi Input": {
+      "main": [
+        [
+          {
+            "node": "AI Classifier & Brief",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Model Classifier": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Classifier & Brief",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser Output Terstruktur": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Classifier & Brief",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Classifier & Brief": {
+      "main": [
+        [
+          {
+            "node": "Rakit Data Order",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rakit Data Order": {
+      "main": [
+        [
+          {
+            "node": "Catat ke Database (Sheets)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Catat ke Database (Sheets)": {
+      "main": [
+        [
+          {
+            "node": "Routing Jalur",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Routing Jalur": {
+      "main": [
+        [
+          {
+            "node": "AI Proposal & Estimasi",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Prompt Engineer",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Cek Status_Lock Web",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI CV & Penawaran B2B",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Model Proposal": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Proposal & Estimasi",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Model Prompt Engineer": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Prompt Engineer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Model Web": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Wireframe & Copy Web",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Model CV & B2B": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI CV & Penawaran B2B",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cek Status_Lock Web": {
+      "main": [
+        [
+          {
+            "node": "Evaluasi Lock",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluasi Lock": {
+      "main": [
+        [
+          {
+            "node": "Aset Web Terkunci?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aset Web Terkunci?": {
+      "main": [
+        [
+          {
+            "node": "Antrikan Order Web",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Kunci Aset Web",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Kunci Aset Web": {
+      "main": [
+        [
+          {
+            "node": "AI Wireframe & Copy Web",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Proposal & Estimasi": {
+      "main": [
+        [
+          {
+            "node": "Siapkan Notifikasi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Prompt Engineer": {
+      "main": [
+        [
+          {
+            "node": "Siapkan Notifikasi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Antrikan Order Web": {
+      "main": [
+        [
+          {
+            "node": "Siapkan Notifikasi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Wireframe & Copy Web": {
+      "main": [
+        [
+          {
+            "node": "Siapkan Notifikasi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI CV & Penawaran B2B": {
+      "main": [
+        [
+          {
+            "node": "Siapkan Notifikasi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Siapkan Notifikasi": {
+      "main": [
+        [
+          {
+            "node": "Kirim ke Dika (Telegram)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Kirim ke Dika (Telegram)": {
+      "main": [
+        [
+          {
+            "node": "Tunggu ACC Dika",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tunggu ACC Dika": {
+      "main": [
+        [
+          {
+            "node": "Dika ACC?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dika ACC?": {
+      "main": [
+        [
+          {
+            "node": "Kirim Pesan Final ke Klien (WA)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Status REVISI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Kirim Pesan Final ke Klien (WA)": {
+      "main": [
+        [
+          {
+            "node": "Update Status SELESAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Status REVISI": {
+      "main": [
+        [
+          {
+            "node": "Info Revisi ke Dika",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  }
+}

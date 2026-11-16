@@ -1,6 +1,6 @@
 # HANDOFF kantor-ai: artefak Kantor Ai People dan papan kerja GitHub
 
-Terakhir diperbarui: 16 Nov 2026 22.52, Claude akun-2. Baca ini dulu, jangan tanya ulang ke Dika.
+Terakhir diperbarui: 17 Nov 2026 05.55, Claude akun-1. Baca ini dulu, jangan tanya ulang ke Dika.
 
 ## Tujuan
 Semua pekerjaan Dika (3 situs, sosmed, video, bot, akademik UT) terpantau di dua tempat yang selaras:
@@ -16,7 +16,15 @@ Tujuan akhir semua kerja: pengikut naik, pengunjung ke heyaipeople.site, pesanan
 - Kunci portofolio "Claude (sesi 15 Nov sore)" dilepas atas izin Dika 16 Nov, di KUNCI.md dan di data artefak.
 - Konektor Windsor dan Supermetrics di artefak belum disetujui Dika (bagan 00 langkah 1), jadi kolom "Sekarang" di halaman kosong.
 
+## Tiga AI satu papan (17 Nov 2026)
+- Claude = eksekutor dan juru catat; GPT = riset dan struktur; Gemini = QC dan visual. Rincian di AI/PERAN.md.
+- GPT dan Gemini masuk lewat AI/BACA-DULU.md (link raw, repo publik), tidak pegang kunci aset, menutup kerja dengan blok SETORAN.
+- Dika menempel SETORAN ke Claude mana pun dengan kata "catat setoran"; Claude ikuti langkah di SETORAN/README.md.
+- Setup sekali di ChatGPT (Project) dan Gemini (Gem): AI/SETUP.md. Belum dicek apakah keduanya bisa membuka link raw GitHub di akun Dika.
+- Tahap 2 (belum dibangun): kurir n8n Telegram ke GitHub. Draf lama workflow order klien (4 jalur, ACC Dika) ada di PROYEK/kantor-ai/n8n/ dan DITUNDA: Dika bilang belum masuk ke klien.
+
 ## Keputusan TERKUNCI (dari Dika)
+- TERKUNCI (17 Nov): ketiga AI bekerja di branch `kantor` yang sama dengan peran di AI/PERAN.md; aturan berubah cukup di GitHub, tidak setel ulang tiap AI.
 - TERKUNCI: sumber tunggal catatan serah terima = PROYEK/<folder>/HANDOFF.md di branch kantor. Tidak ada folder, branch, atau file serah terima di tempat lain.
 - TERKUNCI: tiap sesi ikut alur README.md (tarik dulu, ambil kunci dan push sebelum ubah aset, lepas kunci dan push laporan sesudahnya).
 - TERKUNCI: laporan ke Dika berformat SELESAI / BELUM / STATUS LANGKAH / PERUBAHAN ASET / BUTUH DARI DIKA, dan file yang sama di-push ke LAPORAN/.
@@ -42,6 +50,8 @@ Tujuan akhir semua kerja: pengikut naik, pengunjung ke heyaipeople.site, pesanan
 4. Kalau push ditolak, `git pull --rebase origin kantor`, cek kunci lagi, push ulang.
 
 ## Langkah berikutnya
+- Dika setup Project ChatGPT dan Gem Gemini pakai AI/SETUP.md, lalu tes baca link raw. Kalau gagal, ganti cara masuk (misal Dika unggah file).
+- Setelah setoran manual jalan beberapa kali, bangun kurir n8n Telegram ke GitHub (tahap 2).
 - Buka halaman artefak di browser dan lihat langsung bahwa aturan 10 muncul di tombol prompt mulai (belum dicek, baru database yang dicek).
 - Selaraskan data aset artefak dengan HANDOFF proyek lain begitu folder proyeknya terisi (catatanakademik, heyaipeople, konten-sosmed, video-remotion, bot-wa, akademik-ut, hermes-9router belum punya HANDOFF per 16 Nov 19.37).
 - Cek ke server commit live yang sebenarnya untuk heyaipeople dan catatanakademik (ATURAN.md: heyaipeople f91310f; data aset artefak: eb002ef). Untuk portofolio, ikuti PROYEK/portofolio/HANDOFF.md.

@@ -13,6 +13,8 @@ Branch `kantor` ini dipakai bersama oleh semua Claude (dan AI lain) yang kerja u
 | `LAPORAN/` | Satu file laporan per sesi kerja | Setiap sesi, di akhir kerja |
 | `PROYEK/<nama>/` | HANDOFF.md dan LOG.md tiap proyek (lihat PROYEK/README.md) | Sesi yang mengerjakan proyek itu |
 | `MULAI.md` | Prompt pembuka untuk chat Claude baru | Hanya atas perintah Dika |
+| `AI/` | Peran tiga AI (PERAN.md), pintu masuk GPT/Gemini (BACA-DULU.md), setup sekali per AI (SETUP.md) | PERAN.md hanya atas perintah Dika |
+| `SETORAN/` | Hasil kerja GPT/Gemini yang dicatat Claude (format di SETORAN/README.md) | Claude, saat Dika bilang "catat setoran" |
 
 ## Alur kerja tiap sesi (wajib)
 
