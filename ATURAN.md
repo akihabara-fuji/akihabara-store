@@ -20,6 +20,8 @@ Urutan kerja: konten → profil → catatanakademik.com → heyaipeople.site →
 8. Kata sandi, kunci API, dan nomor rekening tidak pernah ditulis di chat, di artefak, atau di repo. Login dilakukan Dika sendiri.
 9. Proyek lama di luar tiga situs sekarang tidak dibahas dan tidak dipakai.
 
+10. Papan kerja bersama: repo akihabara-fuji/akihabara-store, branch `kantor`. Tarik branch kantor sebelum kerja. Sesudah kerja tulis laporan di LAPORAN/, perbarui BAGAN.md, KUNCI.md, dan PROYEK/<folder>/HANDOFF.md. Tidak ada folder, branch, atau file serah terima lain.
+
 ## Gaya
 - Chat dengan Dika: Indonesia santai (gw/lo), pendek, inti dulu, tanpa rekap.
 - Teks di situs, portofolio, CV, LinkedIn: bahasa baku, kata ganti "saya".
