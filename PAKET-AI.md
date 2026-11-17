@@ -1,6 +1,6 @@
 # PAKET PAPAN KANTOR AI PEOPLE
 
-Salinan otomatis branch kantor (2026-11-18 00:06 WIB). Jangan diedit di sini: sumbernya GitHub akihabara-fuji/akihabara-store branch kantor.
+Salinan otomatis branch kantor (2026-11-18 01:24 WIB). Jangan diedit di sini: sumbernya GitHub akihabara-fuji/akihabara-store branch kantor.
 Isi: STATUS.md, AI/BACA-DULU.md, AI/PERAN.md, ATURAN.md, KUNCI.md, BAGAN.md, SETORAN/README.md, ESTAFET/README.md, ARTEFAK/RINGKAS.md, PROYEK/heyaipeople/MASTER_BRAND_GUIDELINES.md, PROYEK/heyaipeople/CONTENT_REGISTRY.md, PROYEK/heyaipeople/DESIGN_REGISTRY.md, PROYEK/README.md, lalu HANDOFF tiap proyek.
 
 
@@ -8,7 +8,7 @@ Isi: STATUS.md, AI/BACA-DULU.md, AI/PERAN.md, ATURAN.md, KUNCI.md, BAGAN.md, SET
 
 # STATUS papan kantor
 
-Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-18 00:06 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
+Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-18 01:24 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
 Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 
 ## Rahasia bocor (harus segera dihapus)
@@ -893,6 +893,15 @@ Tujuan akhir semua kerja: pengikut naik, pengunjung ke heyaipeople.site, pesanan
 
 <!-- Dipindah dari branch portofolio-dika: portofolio-src/HANDOFF.md (versi f0c8db0, 16 Nov 2026 19.30). Mulai sekarang hanya file ini yang diperbarui. -->
 # HANDOFF portofolio Dika Priyadi (baca ini dulu, jangan tanya ulang)
+
+## RUANG ADMIN PORTOFOLIO (live 2026-11-18)  ← baca dulu
+- URL: https://dikapriyadi.catatanakademik.com/admin . Kode di branch portofolio-admin: portofolio-admin/server.js + admin.html, skrip pasang deploy/update-portofolio-admin.sh <commit> (curl dari GitHub, jalankan sebagai root; aman diulang, ada rollback).
+- Service systemd dp-admin (Node 22, node:sqlite, port 3108, user www-data). Data/DB di /var/lib/dp-admin, cadangan harian di /var/backups/dp-admin (14 hari). Nginx: snippet /etc/nginx/snippets/dp-admin.conf di-include di server block situs.
+- Admin mengelola works.json, karya.json, remotion.json dan teks index.html (judul, deskripsi, kalimat pembuka hero, nomor WA, foto Tentang) lewat penanda <!--SLOT:heroSub-->. Upload ke v/uploads/YYYY-MM/.
+- PENTING: JANGAN jalankan update-portofolio.sh lama. Ia menimpa works/karya/remotion.json dan index.html dengan isi repo (isi dari admin hilang). Perubahan lewat repo harus dibuat dari file live, lalu deploy manual per file.
+- Kata sandi awal sementara (wajib ganti saat login pertama) diberikan ke Dika di chat; hash saja yang tersimpan.
+- Basis situs live = branch portofolio-mock-galeri commit cf67d9e (sha index.html cocok).
+
 
 ## SISTEM BARU (2026-11-16): CMS planet 3D + works.json  ← ini yang live
 - portofolio/index.html = halaman tunggal (Three.js planet 3D, Lenis, glassmorphism). Edit langsung file ini, BUKAN lewat render.js.
