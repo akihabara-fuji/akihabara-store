@@ -60,6 +60,17 @@ def main():
     kunci = [l.strip("- ").split("|")[0].strip() + " · " + re.search(r"DIPEGANG[^|]*", l).group(0).strip()
              for l in baca(ROOT / "KUNCI.md").splitlines() if "DIPEGANG" in l and l.startswith("-")]
 
+    PEGANG = {"LOCK_GEMINI": "Gemini", "LOCK_GPT": "GPT", "LOCK_FLOW": "Dika (Google Flow)",
+              "LOCK_CLAUDE_REMOTION": "Claude", "READY_FOR_AUDIT": "Claude", "MENUNGGU_ACC_DIKA": "Dika (ACC)",
+              "ACC_DIKA": "Claude (deploy/kirim)"}
+    estafet = []
+    for p in sorted((ROOT / "ESTAFET").glob("*/PROYEK.md")):
+        m = re.search(r"^Status:\s*(\S+)", baca(p), re.M)
+        st = m.group(1) if m else "?"
+        if st != "COMPLETED":
+            estafet.append(f"{PEGANG.get(st, '?')}: `{p.parent.name}` ({st})")
+    estafet.sort()
+
     laporan = sorted((ROOT / "LAPORAN").glob("20*.md"))[-5:][::-1]
     setoran = sorted((ROOT / "SETORAN").glob("20*.md"))[-5:][::-1]
 
@@ -86,6 +97,9 @@ Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 
 ## Lulus cek silang (terbaru)
 {daftar(lulus[-5:])}
+
+## Estafet: giliran siapa
+{daftar(estafet, "tidak ada estafet berjalan")}
 
 ## Kunci aset yang sedang dipegang
 {daftar(kunci, "semua bebas")}

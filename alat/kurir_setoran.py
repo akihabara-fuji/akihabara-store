@@ -63,10 +63,12 @@ def simpan_setoran(teks):
     while p.exists():
         p = p.with_name(f"{jam:%Y-%m-%d-%H%M}-{nama_aman(ai)}-{i}.md"); i += 1
     p.write_text(teks.strip() + "\n", encoding="utf-8")
+    est = re.search(r"^Estafet:\s*([a-z0-9-]+)\s*->\s*([A-Z_]+)", teks, re.M | re.I)
+    info_est = " " + pindah_estafet(est.group(1), est.group(2).upper(), ai, f"SETORAN/{p.name}") if est else ""
     kurang = [w for w in ["Proyek:", "Bagan/langkah:", "Tugas:", "Hasil:", "Status langkah:"] if w not in teks]
     catatan = f" Kurang kolom: {', '.join(kurang)}." if kurang else ""
     cs = re.search(r"^Cek silang:\s*(.+)$", teks, re.M).group(1)
-    return f"Tercatat: SETORAN/{p.name}. Cek silang: {cs}.{catatan}"
+    return f"Tercatat: SETORAN/{p.name}. Cek silang: {cs}.{catatan}{info_est}"
 
 
 def catat_cek(teks):
@@ -88,10 +90,57 @@ def catat_cek(teks):
     return f"Cek dicatat di {target.relative_to(ROOT)}: {baris[12:]}"
 
 
+URUT = ["LOCK_GEMINI", "LOCK_GPT", "LOCK_FLOW", "LOCK_CLAUDE_REMOTION", "READY_FOR_AUDIT",
+        "MENUNGGU_ACC_DIKA", "ACC_DIKA", "COMPLETED"]
+
+
+def pindah_estafet(id_, ke, siapa, ref=""):
+    id_ = nama_aman(id_)
+    p = ROOT / "ESTAFET" / id_ / "PROYEK.md"
+    if not p.exists():
+        return f"Estafet {id_} tidak ada. Buat dulu dengan /baru {id_} <judul>."
+    if ke not in URUT:
+        return f"Status {ke} tidak dikenal. Pilihan: {', '.join(URUT)}."
+    isi = p.read_text(encoding="utf-8")
+    dari = re.search(r"^Status:\s*(\S+)", isi, re.M).group(1)
+    if dari == "COMPLETED":
+        return f"Estafet {id_} sudah COMPLETED, tidak dipindah."
+    if URUT.index(ke) > URUT.index(dari) + 1:
+        return f"Estafet {id_} tidak boleh lompat dari {dari} ke {ke}."
+    jam = datetime.datetime.now(WIB).strftime("%Y-%m-%d %H:%M")
+    isi = re.sub(r"^Status:.*$", f"Status: {ke}", isi, count=1, flags=re.M)
+    isi = isi.rstrip() + f"\n- {jam} · {siapa} · {dari} -> {ke}" + (f" · {ref}" if ref else "") + "\n"
+    p.write_text(isi, encoding="utf-8")
+    return f"Estafet {id_}: {dari} -> {ke}."
+
+
+def estafet_baru(id_, judul):
+    id_ = nama_aman(id_)
+    d = ROOT / "ESTAFET" / id_
+    if d.exists():
+        return f"Estafet {id_} sudah ada."
+    d.mkdir(parents=True)
+    jam = datetime.datetime.now(WIB).strftime("%Y-%m-%d %H:%M")
+    (d / "PROYEK.md").write_text(f"""# ESTAFET {id_}: {judul or '(tanpa judul)'}
+
+Status: LOCK_GEMINI
+Dibuat: {jam} oleh Dika (bot kurir)
+Folder Drive klip Flow: (belum ada)
+
+Alur dan aturan: ESTAFET/README.md. Hanya pemegang status yang boleh mengerjakan proyek ini.
+
+## Riwayat
+- {jam} · Dika · dibuat -> LOCK_GEMINI
+""", encoding="utf-8")
+    return f"Estafet {id_} dibuat, giliran Gemini (LOCK_GEMINI)."
+
+
 def ringkas_status():
     s = (ROOT / "STATUS.md").read_text(encoding="utf-8")
     m = re.search(r"## Menunggu cek silang\n(.*?)\n## ", s, re.S)
-    return "Menunggu cek silang:\n" + (m.group(1).strip() if m else "-")
+    e = re.search(r"## Estafet: giliran siapa\n(.*?)\n## ", s, re.S)
+    return ("Menunggu cek silang:\n" + (m.group(1).strip() if m else "-")
+            + "\n\nEstafet:\n" + (e.group(1).strip() if e else "-"))
 
 
 def main():
@@ -129,8 +178,22 @@ def main():
             hasil = catat_cek(t)
         elif t.startswith("/status"):
             hasil = ringkas_status()
+        elif t.startswith("/baru"):
+            b = t.split(maxsplit=2)
+            hasil = estafet_baru(b[1], b[2] if len(b) > 2 else "") if len(b) > 1 else "Pakai: /baru <id> <judul>"
+        elif t.startswith("/flow"):
+            b = t.split()
+            hasil = pindah_estafet(b[1], "LOCK_CLAUDE_REMOTION", "Dika (Flow)") if len(b) > 1 else "Pakai: /flow <id>"
+        elif t.startswith("/acc"):
+            b = t.split()
+            if len(b) < 2:
+                hasil = "Pakai: /acc <id>"
+            else:
+                ps = ROOT / "ESTAFET" / nama_aman(b[1]) / "PROYEK.md"
+                ok = ps.exists() and re.search(r"^Status:\s*MENUNGGU_ACC_DIKA", ps.read_text(encoding="utf-8"), re.M)
+                hasil = pindah_estafet(b[1], "ACC_DIKA", "Dika") if ok else f"Estafet {b[1]} belum menunggu ACC (atau tidak ada)."
         else:
-            hasil = "Pesan diabaikan. Kirim blok yang diawali SETORAN atau CEK, atau /status."
+            hasil = "Pesan diabaikan. Kirim blok SETORAN atau CEK, atau perintah /status, /baru, /flow, /acc."
         print(hasil)
         balas(p["chat"], hasil)
     OFFSET_F.write_text(str(offset) + "\n")
