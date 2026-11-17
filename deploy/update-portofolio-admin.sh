@@ -29,7 +29,7 @@ curl -fsSL "$RAW/admin.html" -o /tmp/dp-new/admin.html
 grep -q 'Ruang Admin' /tmp/dp-new/admin.html
 cp /tmp/dp-new/server.js /tmp/dp-new/admin.html "$APP"/
 if [ ! -f "$DATA/dp.db" ]; then
-  NEWPW=$(tr -dc 'abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789' </dev/urandom | head -c 12)
+  NEWPW=$(python3 -c "import secrets;a='abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';print(''.join(secrets.choice(a) for _ in range(12)))")
   printf '%s' "$NEWPW" > "$DATA/initial_pw.txt"
 fi
 chown -R www-data:www-data "$DATA" "$BKP"; chown -R root:root "$APP"; chmod 755 "$APP"; chmod 644 "$APP"/server.js "$APP"/admin.html
