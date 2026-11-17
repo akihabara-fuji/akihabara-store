@@ -1,0 +1,44 @@
+# Kurir setoran Kantor Ai People. Ada di branch main karena jadwal GitHub hanya jalan dari branch utama.
+# Kerjanya di branch kantor: ambil pesan bot Telegram, catat SETORAN/CEK, perbarui STATUS.md dan PAKET-AI.md.
+# Butuh secret repo TELEGRAM_BOT_TOKEN. Tidak menyentuh kode situs di main.
+name: kurir-setoran
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: kurir-setoran
+  cancel-in-progress: false
+jobs:
+  kurir:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Lewati kalau token bot belum dipasang
+        id: cek
+        env:
+          TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        run: if [ -z "$TOKEN" ]; then echo "ada=0" >> "$GITHUB_OUTPUT"; else echo "ada=1" >> "$GITHUB_OUTPUT"; fi
+      - uses: actions/checkout@v4
+        if: steps.cek.outputs.ada == '1'
+        with:
+          ref: kantor
+      - name: Ambil dan catat setoran
+        if: steps.cek.outputs.ada == '1'
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        run: |
+          python3 alat/kurir_setoran.py
+          python3 alat/cek_papan.py || true
+          python3 alat/paket_ai.py
+      - name: Simpan ke branch kantor
+        if: steps.cek.outputs.ada == '1'
+        run: |
+          git add -A
+          if ! git diff --cached --quiet; then
+            git config user.name "kurir-setoran"
+            git config user.email "kurir-setoran@users.noreply.github.com"
+            git commit -m "kurir: setoran dari Telegram"
+            git push origin HEAD:kantor
+          fi
