@@ -1,6 +1,6 @@
 # PAKET PAPAN KANTOR AI PEOPLE
 
-Salinan otomatis branch kantor (2026-11-17 08:13 WIB). Jangan diedit di sini: sumbernya GitHub akihabara-fuji/akihabara-store branch kantor.
+Salinan otomatis branch kantor (2026-11-17 08:15 WIB). Jangan diedit di sini: sumbernya GitHub akihabara-fuji/akihabara-store branch kantor.
 Isi: STATUS.md, AI/BACA-DULU.md, AI/PERAN.md, ATURAN.md, KUNCI.md, BAGAN.md, SETORAN/README.md, ESTAFET/README.md, PROYEK/README.md, lalu HANDOFF tiap proyek.
 
 
@@ -8,7 +8,7 @@ Isi: STATUS.md, AI/BACA-DULU.md, AI/PERAN.md, ATURAN.md, KUNCI.md, BAGAN.md, SET
 
 # STATUS papan kantor
 
-Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-17 08:13 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
+Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-17 08:15 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
 Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 
 ## Rahasia bocor (harus segera dihapus)
