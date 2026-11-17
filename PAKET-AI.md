@@ -1,6 +1,6 @@
 # PAKET PAPAN KANTOR AI PEOPLE
 
-Salinan otomatis branch kantor (2026-11-17 07:27 WIB). Jangan diedit di sini: sumbernya GitHub akihabara-fuji/akihabara-store branch kantor.
+Salinan otomatis branch kantor (2026-11-17 07:28 WIB). Jangan diedit di sini: sumbernya GitHub akihabara-fuji/akihabara-store branch kantor.
 Isi: STATUS.md, AI/BACA-DULU.md, AI/PERAN.md, ATURAN.md, KUNCI.md, BAGAN.md, SETORAN/README.md, PROYEK/README.md, lalu HANDOFF tiap proyek.
 
 
@@ -8,7 +8,7 @@ Isi: STATUS.md, AI/BACA-DULU.md, AI/PERAN.md, ATURAN.md, KUNCI.md, BAGAN.md, SET
 
 # STATUS papan kantor
 
-Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-17 07:27 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
+Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-17 07:28 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
 Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 
 ## Rahasia bocor (harus segera dihapus)
@@ -354,7 +354,8 @@ Tujuan akhir semua kerja: pengikut naik, pengunjung ke heyaipeople.site, pesanan
 - Dika menempel SETORAN ke Claude mana pun dengan kata "catat setoran"; Claude ikuti langkah di SETORAN/README.md.
 - Setup ChatGPT (Project) dan Gemini (Gem) di akun dikha.priyadhi SUDAH dan sudah dites (rincian dan link di AI/SETUP.md bagian Status setup). Gem tidak bisa buka link: diberi Google Doc yang disalin dari PAKET-AI.md tiap jam oleh Apps Script.
 - Cek silang dan pemeriksa otomatis jalan: alat/cek_papan.py lewat GitHub Actions menulis STATUS.md dan PAKET-AI.md tiap push.
-- Tahap 2 (belum dibangun): kurir n8n Telegram ke GitHub. Draf lama workflow order klien (4 jalur, ACC Dika) ada di PROYEK/kantor-ai/n8n/ dan DITUNDA: Dika bilang belum masuk ke klien.
+- Kurir setoran JALAN (17 Nov 07.27): bot Telegram @kantoraipeople_kurir_bot, workflow `kurir-setoran` di branch main (tiap 10 menit, bisa Run workflow manual), skrip alat/kurir_setoran.py, secret TELEGRAM_BOT_TOKEN, chat Dika terdaftar di alat/kurir_chat.txt. Rincian di SETORAN/README.md.
+- Rencana lama kurir n8n tidak dipakai. Draf lama workflow order klien (4 jalur, ACC Dika) ada di PROYEK/kantor-ai/n8n/ dan DITUNDA: Dika bilang belum masuk ke klien.
 
 ## Keputusan TERKUNCI (dari Dika)
 - TERKUNCI (17 Nov): ketiga AI bekerja di branch `kantor` yang sama dengan peran di AI/PERAN.md; aturan berubah cukup di GitHub, tidak setel ulang tiap AI.
@@ -384,7 +385,6 @@ Tujuan akhir semua kerja: pengikut naik, pengunjung ke heyaipeople.site, pesanan
 
 ## Langkah berikutnya
 - Gem di akun akihabara.fuzi@gmail.com: Dika login dulu di browser bawaan Claude, lalu Claude buat Gem yang sama dan bagikan Doc papan (lihat) ke akun itu.
-- Setelah setoran manual jalan beberapa kali, bangun kurir n8n Telegram ke GitHub (tahap 2).
 - Buka halaman artefak di browser dan lihat langsung bahwa aturan 10 muncul di tombol prompt mulai (belum dicek, baru database yang dicek).
 - Selaraskan data aset artefak dengan HANDOFF proyek lain begitu folder proyeknya terisi (catatanakademik, heyaipeople, konten-sosmed, video-remotion, bot-wa, akademik-ut, hermes-9router belum punya HANDOFF per 16 Nov 19.37).
 - Cek ke server commit live yang sebenarnya untuk heyaipeople dan catatanakademik (ATURAN.md: heyaipeople f91310f; data aset artefak: eb002ef). Untuk portofolio, ikuti PROYEK/portofolio/HANDOFF.md.
