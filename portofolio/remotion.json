@@ -5,9 +5,11 @@
   "items": [
    {
     "judul": "Video edukasi UAOP",
-    "poster": "v/uaop.jpg",
+    "poster": "v/remotion/uaop.jpg",
     "video": "v/uaop_full.mp4",
-    "keterangan": "Video info UT, dirender dengan Remotion."
+    "keterangan": "Video info UT, dirender dengan Remotion.",
+    "lebar": 480,
+    "tinggi": 854
    }
   ]
  },
@@ -19,7 +21,9 @@
     "judul": "Alur Cover Dulu, Isi Belakangan",
     "poster": "v/remotion/bukti-cover-first.jpg",
     "video": "v/remotion/bukti-cover-first.mp4",
-    "keterangan": "Video 10 detik, monochrome, dirender dengan Remotion."
+    "keterangan": "Video 10 detik, monochrome, dirender dengan Remotion.",
+    "lebar": 1080,
+    "tinggi": 1920
    }
   ]
  }

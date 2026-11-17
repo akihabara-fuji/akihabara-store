@@ -836,7 +836,10 @@
     .rm-tema{margin:0 0 34px}
     .rm-tema h3{font-size:1.05rem;font-weight:800;margin:0 0 4px}
     .rm-tema p{margin:0 0 14px;font-size:.86rem;color:var(--text-muted)}
-    .rm-tema .galeri-grid{grid-template-columns:repeat(auto-fill,minmax(180px,200px))}
+    .rm-tema .galeri-grid{grid-template-columns:repeat(auto-fill,minmax(180px,200px));align-items:start}
+    .rm-tema .galeri-item.rm-wide{grid-column:span 2}
+    .rm-tema .galeri-item img{aspect-ratio:var(--rm-r,9/16);object-fit:contain}
+    .galeri-modal-panel.rm-wide{max-width:min(960px,96vw)}
 
     /* Reveal utility */
     .live-dot::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #34d399; box-shadow: 0 0 8px #34d399; margin-right: 8px; }
@@ -1492,6 +1495,7 @@
       const x=(src||galeriData)[i]; if(!x) return;
       const media=x.video?`<video src="${esc(x.video)}" poster="${esc(x.poster)}" controls playsinline autoplay></video>`:`<img src="${esc(x.poster)}" alt="${esc(x.judul)}">`;
       document.getElementById('galeriModalBody').innerHTML=`<div class="galeri-modal-top"><span>${esc(x.judul)}</span><button class="btn btn-outline btn-sm" onclick="tutupGaleri()">Tutup &times;</button></div>${media}`;
+      document.getElementById('galeriModalBody').classList.toggle('rm-wide',!!(x.lebar&&x.lebar>x.tinggi));
       document.getElementById('galeriModal').classList.add('open');
     }
     function tutupGaleri(){
@@ -1509,7 +1513,7 @@
     let remotionData = [];
     function renderRemotion(){
       let n=0;
-      document.getElementById('remotionTema').innerHTML=remotionData.map(t=>`<div class="rm-tema"><h3>${esc(t.tema)}</h3><p>${esc(t.deskripsi)}</p><div class="galeri-grid">${(t.items||[]).map(x=>{const i=n++;return `<button class="galeri-item" data-r="${i}" aria-label="Putar ${esc(x.judul)}"><img src="${esc(x.poster)}" alt="${esc(x.judul)}" loading="lazy" onerror="this.style.visibility='hidden'"><span class="gi-play">&#9654;</span><span class="gi-cap">${esc(x.judul)}<small>${esc(t.tema.toUpperCase())}</small></span></button>`}).join('')}</div></div>`).join('');
+      document.getElementById('remotionTema').innerHTML=remotionData.map(t=>`<div class="rm-tema"><h3>${esc(t.tema)}</h3><p>${esc(t.deskripsi)}</p><div class="galeri-grid">${(t.items||[]).map(x=>{const i=n++;return `<button class="galeri-item${x.lebar>x.tinggi?' rm-wide':''}" data-r="${i}" style="--rm-r:${x.lebar||9}/${x.tinggi||16}" aria-label="Putar ${esc(x.judul)}"><img src="${esc(x.poster)}" alt="${esc(x.judul)}" loading="lazy" onerror="this.style.visibility='hidden'"><span class="gi-play">&#9654;</span><span class="gi-cap">${esc(x.judul)}<small>${esc(t.tema.toUpperCase())}</small></span></button>`}).join('')}</div></div>`).join('');
       remotionData=remotionData.flatMap(t=>t.items||[]);
     }
     fetch('remotion.json?t='+Date.now()).then(r=>r.ok?r.json():[]).then(d=>{if(Array.isArray(d)&&d.length){remotionData=d;renderRemotion();}else{document.getElementById('remotion').style.display='none';}}).catch(()=>{document.getElementById('remotion').style.display='none';});
