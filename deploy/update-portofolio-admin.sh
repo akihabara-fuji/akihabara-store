@@ -65,7 +65,7 @@ location ^~ /api/ {
 }
 location ^~ /v/uploads/ { try_files $uri =404; add_header X-Content-Type-Options "nosniff" always; add_header Cache-Control "public, max-age=2592000, immutable"; }
 N
-NGX=$(grep -l 'server_name[^;]*dikapriyadi.catatanakademik.com' /etc/nginx/sites-enabled/* /etc/nginx/conf.d/* 2>/dev/null | head -1)
+NGX=$(grep -l 'server_name[^;]*dikapriyadi.catatanakademik.com' /etc/nginx/sites-enabled/* 2>/dev/null | head -1 || true)
 [ -n "$NGX" ] || { echo "Konfigurasi nginx situs portofolio tidak ditemukan"; false; }
 NGX=$(readlink -f "$NGX")
 if ! grep -q 'snippets/dp-admin.conf' "$NGX"; then
@@ -85,11 +85,12 @@ systemctl restart dp-admin
 for i in 1 2 3 4 5 6 7 8 9 10; do [ "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3108/admin)" = 200 ] && break; sleep 1; done
 [ "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3108/admin)" = 200 ]
 systemctl reload nginx
-H='Host: dikapriyadi.catatanakademik.com'
+D=dikapriyadi.catatanakademik.com
+L(){ curl -sk --resolve $D:443:127.0.0.1 "$@"; }
 for p in / /works.json /karya.json /remotion.json /style.css /script.js /admin; do
-  s=$(curl -s -o /dev/null -w '%{http_code}' -H "$H" "http://127.0.0.1$p"); echo "$p $s"; [ "$s" = 200 ] || fail $LINENO
+  s=$(L -o /dev/null -w '%{http_code}' "https://$D$p"); echo "$p $s"; [ "$s" = 200 ] || fail $LINENO
 done
-echo "/api/me: $(curl -s -H "$H" http://127.0.0.1/api/me)"
+echo "/api/me: $(L https://$D/api/me)"
 grep -c 'SLOT:heroSub' "$ROOT/index.html" | sed 's/^/penanda index: /'
 sha256sum "$ROOT"/works.json "$ROOT"/karya.json "$ROOT"/remotion.json | cut -c1-12,65-
 echo "OK, admin commit $C aktif. Cadangan situs: $PRE"
