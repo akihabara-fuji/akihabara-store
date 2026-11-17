@@ -97,7 +97,9 @@ def ringkas_status():
 def main():
     offset = int(OFFSET_F.read_text().strip()) if OFFSET_F.exists() else 0
     terdaftar = CHAT_F.read_text().strip() if CHAT_F.exists() else ""
+    print("bot:", api("getMe")["result"].get("username"))
     upd = api("getUpdates", offset=offset, timeout=0)["result"]
+    print("update baru:", len(upd))
     pesan = []
     for u in upd:
         offset = u["update_id"] + 1
