@@ -792,7 +792,7 @@ Terakhir diperbarui: 17 Nov 2026 09.30, Claude akun-1 (koordinator). Perintah in
 
 - ATURAN VISUAL SERI 01 (TERKUNCI, Dika 17 Nov 2026 09.22): (1) Tema premium monochrome editorial: hitam, putih, grayscale saja; tanpa aksen kuning, biru, atau ungu di tiga cover. (2) Tiga cover membentuk satu panorama puzzle di grid profil IG, dibaca kiri ke kanan: P03 | P02 | P01 (P03 sisi kiri, P02 tengah, P01 sisi kanan). Karena IG menaruh posting terbaru di kiri, urutan posting wajib P01, lalu P02, lalu P03 (dan tiap posting butuh ACC Dika). (3) Judul tiap cover tetap terbaca dan isi carousel berdiri sendiri. (4) Revisi di desain yang sama, ID tetap: P01 DAHbITwgs6A, P02 DAHbIa2D3fU, P03 DAHbIXrWNCE. Aturan ini menang atas aksen warna di MASTER_BRAND_GUIDELINES untuk seri 01.
 
-- SOP PUZZLE 3 COVER DULU (TERKUNCI, Dika 17 Nov 10.09): konsep cover, satu panorama utuh dibagi tiga, ACC Dika, baru isi 7 slide. Ringkasan tujuan dan perbaikan untuk GPT: BRIEF-GPT.md (baca sebelum tiap tugas).
+- SOP COVER DULU, BERLAKU UNTUK SEMUA KONTEN (TERKUNCI, Dika 17 Nov 10.09 dan 10.11): konsep cover, satu panorama utuh dibagi tiga, ACC Dika, baru isi 7 slide. Ringkasan tujuan dan perbaikan untuk GPT: BRIEF-GPT.md (baca sebelum tiap tugas).
 
 ## Alur kerja
 - GPT mendesain di Canva lewat plugin Canva di ChatGPT (akun "Dikha's Canva account" sudah tersambung; dites 17 Nov 09.01: GPT membuka DAHbITwgs6A, judul dan 7 halaman benar). Work/Cowork tidak diperlukan. Kerja desain dilakukan di chat dalam Project ChatGPT "Kantor Ai People", bukan chat di luar Project.

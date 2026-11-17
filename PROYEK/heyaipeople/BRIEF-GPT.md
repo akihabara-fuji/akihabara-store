@@ -4,8 +4,10 @@ Baca ini SEBELUM tiap tugas. Ringkas, urut dari tujuan sampai larangan. Sumber l
 ## 1. Tujuan Dika
 Akun Instagram HeyAIPeople tampil premium dan konsisten: grid profil terbaca sebagai satu panorama puzzle, tiap carousel 7 slide berisi dan jujur, tanpa auto-publish. Hasil harus sesuai keinginan Dika, bukan sekadar "terkirim".
 
-## 2. SOP Puzzle 3 (COVER DULU, ISI BELAKANGAN, TERKUNCI Dika 17 Nov 10.09)
-1. Dika beri topik/tema/jumlah puzzle ("Puzzle 3").
+## 2. SOP COVER DULU, ISI BELAKANGAN (berlaku untuk SEMUA konten, TERKUNCI Dika 17 Nov 10.09 dan 10.11)
+COVER DULU berlaku untuk SEMUA konten (carousel tunggal, seri, puzzle, apa pun), bukan hanya Puzzle (Dika 17 Nov 2026 10.11, TERKUNCI): konsep cover, presentasi ke Dika, ACC cover, baru isi. Puzzle hanya tambahan: cover berupa satu panorama utuh dibagi N panel.
+Urutan di bawah memakai contoh Puzzle 3; untuk konten non-puzzle, langkah 3 cukup satu cover tunggal.
+1. Dika beri topik/tema (dan jumlah puzzle kalau puzzle).
 2. GPT buat konsep visual cover (foto/ilustrasi, komposisi, warna, tipografi, hubungan ketiga cover).
 3. GPT buat SATU panorama utuh yang dibagi tiga panel (bukan tiga foto terpisah). Seri 01: monochrome, grid P03 | P02 | P01.
 4. GPT presentasikan cover ke Dika. Dika ACC atau revisi. Isi carousel JANGAN disentuh sebelum ACC.

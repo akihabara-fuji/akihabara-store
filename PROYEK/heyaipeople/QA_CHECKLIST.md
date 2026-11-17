@@ -26,3 +26,7 @@
 ## Sebelum terbit
 - [ ] Status naskah SCRIPT APPROVED, desain QA APPROVED
 - [ ] ACC Dika tercatat (READY TO PUBLISH), tidak ada auto-publish
+
+## Gerbang cover (semua konten)
+- [ ] Cover sudah di-ACC Dika sebelum isi carousel dibuat
+- [ ] Cover relevan dengan isi konten

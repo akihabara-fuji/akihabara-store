@@ -492,5 +492,6 @@ Berikan rekomendasi berdasarkan kondisi aktual, bukan asumsi.
 
 **Mulai dengan audit dan sinkronisasi. Jangan membuat desain atau konten baru sebelum kondisi pekerjaan sebelumnya diketahui.**
 
-## ADDENDUM SOP Puzzle 3: COVER DULU (Dika 17 Nov 2026 10.09, TERKUNCI)
+## ADDENDUM SOP COVER DULU (Dika 17 Nov 2026 10.09 dan 10.11, TERKUNCI)
+COVER DULU berlaku untuk SEMUA konten (carousel tunggal, seri, puzzle, apa pun), bukan hanya Puzzle (Dika 17 Nov 2026 10.11, TERKUNCI): konsep cover, presentasi ke Dika, ACC cover, baru isi. Puzzle hanya tambahan: cover berupa satu panorama utuh dibagi N panel.
 Urutan: brief Dika, konsep visual cover, satu panorama utuh dibagi tiga panel, presentasi ke Dika, ACC cover, baru isi 7 slide, desain Canva (ID tetap), Design QA Claude, ACC publikasi. Isi tidak disentuh sebelum cover ACC. Cover harus relevan dengan isi. Seri 01: monochrome, grid P03 | P02 | P01. Detail: BRIEF-GPT.md.
