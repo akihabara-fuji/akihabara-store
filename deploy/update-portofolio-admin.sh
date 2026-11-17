@@ -85,6 +85,7 @@ systemctl restart dp-admin
 for i in 1 2 3 4 5 6 7 8 9 10; do [ "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3108/admin)" = 200 ] && break; sleep 1; done
 [ "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3108/admin)" = 200 ]
 systemctl reload nginx
+sleep 3
 D=dikapriyadi.catatanakademik.com
 L(){ curl -sk --resolve $D:443:127.0.0.1 "$@"; }
 for p in / /works.json /karya.json /remotion.json /style.css /script.js /admin; do
