@@ -1,0 +1,26 @@
+[
+ {
+  "tema": "Edukasi UT",
+  "deskripsi": "Video info akademik bergaya motion dengan maskot, naskah dan subtitle sinkron.",
+  "items": [
+   {
+    "judul": "Video edukasi UAOP",
+    "poster": "v/uaop.jpg",
+    "video": "v/uaop_full.mp4",
+    "keterangan": "Video info UT, dirender dengan Remotion."
+   }
+  ]
+ },
+ {
+  "tema": "Bukti Sistem",
+  "deskripsi": "Video penjelas cara kerja produksi: dari konsep cover sampai ACC.",
+  "items": [
+   {
+    "judul": "Alur Cover Dulu, Isi Belakangan",
+    "poster": "v/remotion/bukti-cover-first.jpg",
+    "video": "v/remotion/bukti-cover-first.mp4",
+    "keterangan": "Video 10 detik, monochrome, dirender dengan Remotion."
+   }
+  ]
+ }
+]

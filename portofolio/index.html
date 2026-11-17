@@ -833,6 +833,11 @@
     .galeri-modal-panel video,.galeri-modal-panel img{display:block;width:100%;max-height:78vh;object-fit:contain;border-radius:var(--radius-md);background:#000}
     .galeri-modal-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px;font-weight:700;font-size:.9rem}
 
+    .rm-tema{margin:0 0 34px}
+    .rm-tema h3{font-size:1.05rem;font-weight:800;margin:0 0 4px}
+    .rm-tema p{margin:0 0 14px;font-size:.86rem;color:var(--text-muted)}
+    .rm-tema .galeri-grid{grid-template-columns:repeat(auto-fill,minmax(180px,200px))}
+
     /* Reveal utility */
     .live-dot::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #34d399; box-shadow: 0 0 8px #34d399; margin-right: 8px; }
     .proof-strip { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: -12px 0 30px; }
@@ -881,7 +886,7 @@
         <ul class="nav-links">
           <li><a href="#what-i-do">Yang Saya Kerjakan</a></li>
           <li><a href="#approach">Pendekatan</a></li>
-          <li><a href="#works">Karya</a></li><li><a href="#galeri">Galeri</a></li>
+          <li><a href="#works">Karya</a></li><li><a href="#galeri">Galeri</a></li><li><a href="#remotion">Remotion</a></li>
           <li><a href="#about">Tentang</a></li>
           <li><a href="#collaborate">Kolaborasi</a></li>
         </ul>
@@ -1105,6 +1110,18 @@
         </div>
         <div class="filter-pills galeri-tabs" id="galeriTabs"></div>
         <div class="galeri-grid" id="galeriGrid"></div>
+      </div>
+    </section>
+
+    <!-- REMOTION: dikelompokkan per tema, data dari remotion.json -->
+    <section class="section-block" id="remotion">
+      <div class="container">
+        <div class="section-head reveal-up">
+          <span class="section-num">Remotion</span>
+          <h2 class="section-title">Video Motion Buatan Kode</h2>
+          <p class="section-desc">Video yang dirender dengan Remotion, dikelompokkan sesuai tema pembawaannya. Klik untuk memutar.</p>
+        </div>
+        <div id="remotionTema"></div>
       </div>
     </section>
 
@@ -1471,8 +1488,8 @@
       const list=galeriData.map((x,i)=>[x,i]).filter(([x])=>galeriFilter==='Semua'||(x.kategori||'Karya')===galeriFilter);
       document.getElementById('galeriGrid').innerHTML=list.map(([x,i])=>`<button class="galeri-item" data-i="${i}" aria-label="Putar ${esc(x.judul)}"><img src="${esc(x.poster)}" alt="${esc(x.judul)}" loading="lazy" onerror="this.style.visibility='hidden'"><span class="gi-play">${x.video?'&#9654;':'&#10064;'}</span><span class="gi-cap">${esc(x.judul)}<small>${esc((x.kategori||'Karya').toUpperCase())}</small></span></button>`).join('');
     }
-    function bukaGaleri(i){
-      const x=galeriData[i]; if(!x) return;
+    function bukaGaleri(i,src){
+      const x=(src||galeriData)[i]; if(!x) return;
       const media=x.video?`<video src="${esc(x.video)}" poster="${esc(x.poster)}" controls playsinline autoplay></video>`:`<img src="${esc(x.poster)}" alt="${esc(x.judul)}">`;
       document.getElementById('galeriModalBody').innerHTML=`<div class="galeri-modal-top"><span>${esc(x.judul)}</span><button class="btn btn-outline btn-sm" onclick="tutupGaleri()">Tutup &times;</button></div>${media}`;
       document.getElementById('galeriModal').classList.add('open');
@@ -1485,9 +1502,17 @@
     document.addEventListener('keydown',e=>{if(e.key==='Escape') tutupGaleri();});
     document.addEventListener('click',e=>{
       const t=e.target.closest('#galeriTabs .filter-btn'); if(t){galeriFilter=t.dataset.k;renderGaleri();return;}
-      const g=e.target.closest('.galeri-item'); if(g) bukaGaleri(+g.dataset.i);
+      const g=e.target.closest('.galeri-item'); if(g){ if(g.dataset.r!==undefined) bukaGaleri(+g.dataset.r,remotionData); else bukaGaleri(+g.dataset.i); }
     });
     fetch('karya.json?t='+Date.now()).then(r=>r.ok?r.json():[]).then(d=>{if(Array.isArray(d)){galeriData=d;renderGaleri();}}).catch(()=>{});
+
+    let remotionData = [];
+    function renderRemotion(){
+      let n=0;
+      document.getElementById('remotionTema').innerHTML=remotionData.map(t=>`<div class="rm-tema"><h3>${esc(t.tema)}</h3><p>${esc(t.deskripsi)}</p><div class="galeri-grid">${(t.items||[]).map(x=>{const i=n++;return `<button class="galeri-item" data-r="${i}" aria-label="Putar ${esc(x.judul)}"><img src="${esc(x.poster)}" alt="${esc(x.judul)}" loading="lazy" onerror="this.style.visibility='hidden'"><span class="gi-play">&#9654;</span><span class="gi-cap">${esc(x.judul)}<small>${esc(t.tema.toUpperCase())}</small></span></button>`}).join('')}</div></div>`).join('');
+      remotionData=remotionData.flatMap(t=>t.items||[]);
+    }
+    fetch('remotion.json?t='+Date.now()).then(r=>r.ok?r.json():[]).then(d=>{if(Array.isArray(d)&&d.length){remotionData=d;renderRemotion();}else{document.getElementById('remotion').style.display='none';}}).catch(()=>{document.getElementById('remotion').style.display='none';});
 
     // IntersectionObserver for smooth reveal animations
     const revealObserver = new IntersectionObserver((entries) => {
