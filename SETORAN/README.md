@@ -26,5 +26,10 @@ Cek silang: MENUNGGU <AI pengecek, lihat AI/PERAN.md>
 5. Pastikan baris `Cek silang:` terisi pengecek yang benar (AI/PERAN.md). Kalau Dika menempel blok CEK dengan kata "catat cek", ubah baris itu jadi LULUS/GAGAL sesuai blok.
 6. Commit `setoran: <ai> <proyek> <langkah>`, push, lalu laporkan ke Dika dalam satu-dua kalimat.
 
-## Tahap berikutnya (belum jalan)
-Kurir otomatis lewat n8n: Dika meneruskan blok SETORAN ke bot Telegram, n8n yang menulis filenya ke branch ini. Rencana ada di PROYEK/kantor-ai/HANDOFF.md. Selama belum dibangun, pakai cara manual di atas.
+## Kurir Telegram (otomatis)
+Dika meneruskan blok SETORAN atau CEK ke bot Telegram Kantor Ai People. Tiap 10 menit GitHub Actions (workflow `kurir-setoran` di branch main, skrip `alat/kurir_setoran.py`) mengambil pesannya, menyimpan SETORAN ke folder ini atau mengubah baris Cek silang file yang disebut di blok CEK, memperbarui STATUS.md dan PAKET-AI.md, lalu bot membalas apa yang tercatat.
+- Pesan yang ada token atau kata sandinya ditolak.
+- `/status` ke bot: daftar yang menunggu cek silang.
+- Setoran panjang yang terpotong Telegram tetap digabung kalau terkirim berurutan; atau kirim sebagai file .txt/.md.
+- Kurir tidak memperbarui BAGAN.md dan HANDOFF. Itu dikerjakan sesi Claude berikutnya yang membaca SETORAN baru.
+- Butuh secret repo `TELEGRAM_BOT_TOKEN`. Chat pertama yang mengirim /start ke bot jadi satu-satunya pengirim yang diterima (tersimpan di alat/kurir_chat.txt).

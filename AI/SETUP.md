@@ -30,7 +30,7 @@ Bahasa: Indonesia santai (gw/lo), pendek, inti dulu.
 ## Cara pakai harian
 1. Kasih tugas ke AI yang perannya cocok (lihat AI/PERAN.md).
 2. Kalau GPT atau Gemini selesai, salin blok SETORAN-nya.
-3. Tempel ke chat Claude mana pun, bilang "catat setoran". Claude yang menyimpan ke GitHub dan memperbarui bagan.
+3. Teruskan ke bot Telegram Kantor Ai People (otomatis tercatat dalam 10 menit), atau tempel ke chat Claude mana pun dengan kata "catat setoran" / "catat cek".
 
 ## Status setup (17 Nov 2026, dicek Claude di browser Dika)
 - ChatGPT, akun dikha.priyadhi@gmail.com (paket Go): Project "Kantor Ai People" sudah dibuat dan instruksi terpasang. Tes: bisa membuka link raw GitHub, membaca STATUS.md, dan menulis blok CEK yang benar. Link: https://chatgpt.com/g/g-p-6afb94910be48191896bf1a01bc797f3/project
