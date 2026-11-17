@@ -8,6 +8,9 @@ Disetujui Dika 17 Nov 2026 ("atur sesuai rekomendasi lu"). Semua AI kerja di pap
 | ChatGPT (GPT) | Riset dan struktur | Riset, cek fakta, kerangka konten, naskah, CV, proposal, penawaran | Mengubah aset (situs, sosmed, bot) langsung; memegang kunci aset |
 | Gemini | QC dan visual | Cek mutu hasil kerja, cek tampilan situs dan desain, ide visual, cek ulang fakta | Mengubah aset langsung; memegang kunci aset |
 
+## Peran dalam ESTAFET produksi (17 Nov 2026)
+Untuk proyek konten/klien yang lewat estafet (ESTAFET/README.md), urutannya: Gemini riset dan brief (`LOCK_GEMINI`), GPT naskah, panduan carousel Canva, dan tabel SCENE berisi prompt Google Flow (`LOCK_GPT`), Dika menjalankan Google Flow jadi klip scene_XX.mp4 (`LOCK_FLOW`), Claude merakit di Remotion, audit, lalu deploy/kirim setelah ACC Dika (`LOCK_CLAUDE_REMOTION` sampai `COMPLETED`). Peran QC/cek silang di tabel atas tetap berlaku untuk tiap setoran estafet.
+
 ## Kenapa GPT dan Gemini tidak pegang kunci
 Kerjaan mereka berupa bahan (riset, naskah, catatan QC), bukan perubahan aset. Yang mengubah aset hanya Claude, jadi tidak ada dua AI yang mengedit hal yang sama di waktu yang sama.
 

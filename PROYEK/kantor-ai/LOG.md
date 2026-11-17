@@ -1,5 +1,6 @@
 # Log kantor-ai
 
+- 2026-11-17 08.40 · Claude akun-1 · ESTAFET 4 tahap di papan + kurir (/baru /flow /acc, baris Estafet:), komposisi Remotion EstafetVideo + buat_manifest.py dites render. Tugas ekspor artefak ditulis di ARTEFAK/README.md untuk akun-2.
 - 2026-11-17 07.27 · Claude akun-1 · Kurir setoran Telegram jalan: bot @kantoraipeople_kurir_bot dibuat lewat BotFather resmi, token disimpan Dika sendiri di secret GitHub, chat Dika terdaftar (run kurir-setoran sukses, 1 update). Insiden: Claude salah klik dan mengirim '/start' ke chat lain milik Dika ('To late me love april', bot promo); sudah dilaporkan ke Dika.
 - 2026-11-17 07.00 · Claude akun-1 · Cek silang + pemeriksa otomatis (STATUS.md, PAKET-AI.md) jalan di GitHub Actions. ChatGPT Project dan Gemini Gem dibuat di akun dikha.priyadhi lewat browser bawaan, dua-duanya lulus tes baca papan. Jembatan Gemini: Google Doc + Apps Script tiap jam. Laporan: LAPORAN/2026-11-17-0700-claude.md.
 - 2026-11-17 05.55 · Claude akun-1 · Atas perintah Dika ("atur sesuai rekomendasi lu"): GPT dan Gemini masuk papan yang sama. Baru: AI/PERAN.md, AI/BACA-DULU.md, AI/SETUP.md, SETORAN/README.md. Rancangan n8n kurir setoran disimpan di PROYEK/kantor-ai/n8n/ (belum dipakai). Laporan: LAPORAN/2026-11-17-0555-claude.md.
