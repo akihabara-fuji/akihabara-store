@@ -1,6 +1,6 @@
 # STATUS papan kantor
 
-Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-17 09:24 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
+Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-17 09:35 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
 Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 
 ## Rahasia bocor (harus segera dihapus)
@@ -17,8 +17,8 @@ Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 - tidak ada
 
 ## Lulus cek silang (terbaru)
-- `SETORAN/2026-11-17-0908-gpt.md`: LULUS Claude 2026-11-17 09.15 (draft dibaca lewat transaksi: P01/P02/P03 masing-masing 7 halaman, judul desain jadi "HeyAIPeople — ...", P02 dicek penuh: brand tertulis HeyAIPeople di semua slide. Catatan: aksen kuning masih ada di P02, belum monochrome; urutan halaman P01 belum dibenahi; naskah teks lengkap belum disetor)
 - `SETORAN/2026-11-17-0922-gpt.md`: LULUS Claude 2026-11-17 09.30 (isi sama dengan keputusan Dika di chat; eksekusi visual belum ada, dicek di Design QA)
+- `SETORAN/2026-11-17-0933-gpt.md`: LULUS Claude 2026-11-17 09.40 (laporan jujur: tidak ada perubahan tersimpan, cocok dengan thumbnail tersimpan yang dibaca Claude; hambatan preview diatasi dengan inspeksi tertulis)
 - `LAPORAN/2026-11-17-0555-claude.md`: LULUS GPT 2026-11-17 06:41 (dicek di Project ChatGPT "Kantor Ai People"; catatan: kurir n8n belum dibangun)
 - `LAPORAN/2026-11-17-0829-artefak.md`: LULUS GPT 2026-11-17 09.22 (laporan ekspor artefak konsisten dengan ringkasan status papan)
 - `LAPORAN/2026-11-17-0855-heyaipeople-audit.md`: LULUS GPT 2026-11-17 09.22 (audit sesuai kondisi saat laporan; status halaman dan pembagian tugas sudah diperbarui di dokumen berikutnya)
@@ -44,6 +44,7 @@ Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 - `LAPORAN/2026-11-16-2252-remotion.md`
 
 ## Setoran terbaru
+- `SETORAN/2026-11-17-0933-gpt.md`
 - `SETORAN/2026-11-17-0922-gpt.md`
 - `SETORAN/2026-11-17-0908-gpt.md`
 - `SETORAN/2026-11-17-0856-gpt.md`
