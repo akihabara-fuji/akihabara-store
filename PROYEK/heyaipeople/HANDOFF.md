@@ -1,6 +1,6 @@
 # HANDOFF heyaipeople: Multi-AI Creative Operations v4.0
 
-Terakhir diperbarui: 17 Nov 2026 08.55, Claude akun-1 (koordinator). Perintah induk: MASTER_COMMAND_v4.md (dari Dika 17 Nov 2026, TERKUNCI, jangan diubah tanpa perintah Dika).
+Terakhir diperbarui: 17 Nov 2026 09.30, Claude akun-1 (koordinator). Perintah induk: MASTER_COMMAND_v4.md (dari Dika 17 Nov 2026, TERKUNCI, jangan diubah tanpa perintah Dika).
 
 ## Peta dokumentasi v4 (tanpa duplikat)
 | Dokumen v4 | Lokasi di papan |
@@ -18,6 +18,8 @@ Terakhir diperbarui: 17 Nov 2026 08.55, Claude akun-1 (koordinator). Perintah in
 
 ## Keputusan TERKUNCI
 - SATU DESAIN SATU KONTEN (TERKUNCI, Dika 17 Nov 2026): kalau carousel gagal QA atau perlu revisi, edit langsung di desain Canva yang sama (Canva Design ID tetap). Dilarang membuat salinan/desain baru untuk revisi. Dari desain lama yang sudah terlanjur ganda, hanya hasil final yang dipakai; sisanya ARCHIVED.
+
+- ATURAN VISUAL SERI 01 (TERKUNCI, Dika 17 Nov 2026 09.22): (1) Tema premium monochrome editorial: hitam, putih, grayscale saja; tanpa aksen kuning, biru, atau ungu di tiga cover. (2) Tiga cover membentuk satu panorama puzzle di grid profil IG, dibaca kiri ke kanan: P03 | P02 | P01 (P03 sisi kiri, P02 tengah, P01 sisi kanan). Karena IG menaruh posting terbaru di kiri, urutan posting wajib P01, lalu P02, lalu P03 (dan tiap posting butuh ACC Dika). (3) Judul tiap cover tetap terbaca dan isi carousel berdiri sendiri. (4) Revisi di desain yang sama, ID tetap: P01 DAHbITwgs6A, P02 DAHbIa2D3fU, P03 DAHbIXrWNCE. Aturan ini menang atas aksen warna di MASTER_BRAND_GUIDELINES untuk seri 01.
 
 ## Alur kerja
 - GPT mendesain di Canva lewat plugin Canva di ChatGPT (akun "Dikha's Canva account" sudah tersambung; dites 17 Nov 09.01: GPT membuka DAHbITwgs6A, judul dan 7 halaman benar). Work/Cowork tidak diperlukan. Kerja desain dilakukan di chat dalam Project ChatGPT "Kantor Ai People", bukan chat di luar Project.

@@ -6,6 +6,8 @@ Penulisan nama brand: **HeyAIPeople** (A dan I kapital, satu kata). Salah: "HeyA
 
 Identitas visual: premium monochrome editorial; dominan hitam, putih, grayscale; aksen warna adaptif (biru = teknologi/AI, kuning = tools/highlight, ungu = kreativitas/workflow) hanya pendukung; foto manusia boleh warna natural selektif; minimalis, bersih, tegas, profesional; hindari dekorasi berlebihan.
 
+Pengecualian seri 01 (TERKUNCI, Dika 17 Nov 2026 09.22): tiga cover seri 01 (Social Media Audit, Audience Intelligence, Content Strategy) murni monochrome tanpa aksen warna, tersusun panorama P03 | P02 | P01. Lihat HANDOFF.md.
+
 Tipografi: headline Sora atau Montserrat; body Inter atau Poppins.
 
 Format Instagram: 1080 × 1350 px (4:5), tepat 7 slide: 1 Cover, 2 Hook, 3 Problem/Konteks, 4 Pembahasan, 5 Contoh praktis, 6 Insight, 7 CTA. Tiap slide: nomor, headline, naskah final, arahan visual, penekanan teks, hubungan dengan slide sebelum/sesudah.

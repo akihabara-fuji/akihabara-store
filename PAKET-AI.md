@@ -1,6 +1,6 @@
 # PAKET PAPAN KANTOR AI PEOPLE
 
-Salinan otomatis branch kantor (2026-11-17 09:15 WIB). Jangan diedit di sini: sumbernya GitHub akihabara-fuji/akihabara-store branch kantor.
+Salinan otomatis branch kantor (2026-11-17 09:24 WIB). Jangan diedit di sini: sumbernya GitHub akihabara-fuji/akihabara-store branch kantor.
 Isi: STATUS.md, AI/BACA-DULU.md, AI/PERAN.md, ATURAN.md, KUNCI.md, BAGAN.md, SETORAN/README.md, ESTAFET/README.md, ARTEFAK/RINGKAS.md, PROYEK/heyaipeople/MASTER_BRAND_GUIDELINES.md, PROYEK/heyaipeople/CONTENT_REGISTRY.md, PROYEK/heyaipeople/DESIGN_REGISTRY.md, PROYEK/README.md, lalu HANDOFF tiap proyek.
 
 
@@ -8,7 +8,7 @@ Isi: STATUS.md, AI/BACA-DULU.md, AI/PERAN.md, ATURAN.md, KUNCI.md, BAGAN.md, SET
 
 # STATUS papan kantor
 
-Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-17 09:15 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
+Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-17 09:24 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
 Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 
 ## Rahasia bocor (harus segera dihapus)
@@ -20,15 +20,16 @@ Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 ## Menunggu cek silang
 - `SETORAN/2026-11-17-0856-gpt.md`: MENUNGGU Gemini
 - `LAPORAN/2026-11-17-0700-claude.md`: MENUNGGU Gemini
-- `LAPORAN/2026-11-17-0829-artefak.md`: MENUNGGU GPT
-- `LAPORAN/2026-11-17-0855-heyaipeople-audit.md`: MENUNGGU GPT
 
 ## Gagal cek silang (perlu diperbaiki pembuatnya)
 - tidak ada
 
 ## Lulus cek silang (terbaru)
 - `SETORAN/2026-11-17-0908-gpt.md`: LULUS Claude 2026-11-17 09.15 (draft dibaca lewat transaksi: P01/P02/P03 masing-masing 7 halaman, judul desain jadi "HeyAIPeople — ...", P02 dicek penuh: brand tertulis HeyAIPeople di semua slide. Catatan: aksen kuning masih ada di P02, belum monochrome; urutan halaman P01 belum dibenahi; naskah teks lengkap belum disetor)
+- `SETORAN/2026-11-17-0922-gpt.md`: LULUS Claude 2026-11-17 09.30 (isi sama dengan keputusan Dika di chat; eksekusi visual belum ada, dicek di Design QA)
 - `LAPORAN/2026-11-17-0555-claude.md`: LULUS GPT 2026-11-17 06:41 (dicek di Project ChatGPT "Kantor Ai People"; catatan: kurir n8n belum dibangun)
+- `LAPORAN/2026-11-17-0829-artefak.md`: LULUS GPT 2026-11-17 09.22 (laporan ekspor artefak konsisten dengan ringkasan status papan)
+- `LAPORAN/2026-11-17-0855-heyaipeople-audit.md`: LULUS GPT 2026-11-17 09.22 (audit sesuai kondisi saat laporan; status halaman dan pembagian tugas sudah diperbarui di dokumen berikutnya)
 
 ## Estafet: giliran siapa
 - Dika (ACC): `bwai-part-05` (MENUNGGU_ACC_DIKA)
@@ -51,6 +52,7 @@ Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 - `LAPORAN/2026-11-16-2252-remotion.md`
 
 ## Setoran terbaru
+- `SETORAN/2026-11-17-0922-gpt.md`
 - `SETORAN/2026-11-17-0908-gpt.md`
 - `SETORAN/2026-11-17-0856-gpt.md`
 
@@ -104,6 +106,8 @@ Pembagian resmi mengikuti MASTER COMMAND HeyAIPeople v4.0 (PROYEK/heyaipeople/MA
 Cara GPT ke Canva: GPT mendesain di Canva lewat plugin Canva di ChatGPT (akun "Dikha's Canva account" sudah tersambung; dites 17 Nov 09.01: GPT membuka DAHbITwgs6A, judul dan 7 halaman benar). Work/Cowork tidak diperlukan. Kerja desain dilakukan di chat dalam Project ChatGPT "Kantor Ai People", bukan chat di luar Project.
 
 Aturan Canva: SATU DESAIN SATU KONTEN (TERKUNCI, Dika 17 Nov 2026): kalau carousel gagal QA atau perlu revisi, edit langsung di desain Canva yang sama (Canva Design ID tetap). Dilarang membuat salinan/desain baru untuk revisi. Dari desain lama yang sudah terlanjur ganda, hanya hasil final yang dipakai; sisanya ARCHIVED.
+
+ATURAN VISUAL SERI 01 (TERKUNCI, Dika 17 Nov 2026 09.22): (1) Tema premium monochrome editorial: hitam, putih, grayscale saja; tanpa aksen kuning, biru, atau ungu di tiga cover. (2) Tiga cover membentuk satu panorama puzzle di grid profil IG, dibaca kiri ke kanan: P03 | P02 | P01 (P03 sisi kiri, P02 tengah, P01 sisi kanan). Karena IG menaruh posting terbaru di kiri, urutan posting wajib P01, lalu P02, lalu P03 (dan tiap posting butuh ACC Dika). (3) Judul tiap cover tetap terbaca dan isi carousel berdiri sendiri. (4) Revisi di desain yang sama, ID tetap: P01 DAHbITwgs6A, P02 DAHbIa2D3fU, P03 DAHbIXrWNCE. Aturan ini menang atas aksen warna di MASTER_BRAND_GUIDELINES untuk seri 01.
 
 GPT dan Gemini tidak pegang kunci aset; Claude yang mengubah aset (situs, bot, repo).
 
@@ -527,6 +531,8 @@ Penulisan nama brand: **HeyAIPeople** (A dan I kapital, satu kata). Salah: "HeyA
 
 Identitas visual: premium monochrome editorial; dominan hitam, putih, grayscale; aksen warna adaptif (biru = teknologi/AI, kuning = tools/highlight, ungu = kreativitas/workflow) hanya pendukung; foto manusia boleh warna natural selektif; minimalis, bersih, tegas, profesional; hindari dekorasi berlebihan.
 
+Pengecualian seri 01 (TERKUNCI, Dika 17 Nov 2026 09.22): tiga cover seri 01 (Social Media Audit, Audience Intelligence, Content Strategy) murni monochrome tanpa aksen warna, tersusun panorama P03 | P02 | P01. Lihat HANDOFF.md.
+
 Tipografi: headline Sora atau Montserrat; body Inter atau Poppins.
 
 Format Instagram: 1080 × 1350 px (4:5), tepat 7 slide: 1 Cover, 2 Hook, 3 Problem/Konteks, 4 Pembahasan, 5 Contoh praktis, 6 Insight, 7 CTA. Tiap slide: nomor, headline, naskah final, arahan visual, penekanan teks, hubungan dengan slide sebelum/sesudah.
@@ -559,9 +565,11 @@ Sumber: pencarian Canva akun Dika 17 Nov 2026 08.50 WIB (search-designs + read-d
 ## Aktif
 | Design ID | Content ID | Judul desain | Canva Design ID | Halaman | Format | Aksen | Template | Status desain | Pemeriksaan | Catatan revisi |
 |---|---|---|---|---|---|---|---|---|---|---|
-| HAP-D-S01-P01 | HAP-S01-P01 | HeyAIPeople — Social Media Audit (judul baru, draft GPT 17 Nov 09.08) | DAHbITwgs6A | 7 | 4:5 (thumbnail 400×500) | belum dicek | belum dicek | REVISION REQUIRED | draft GPT belum disimpan | urutan halaman perlu dibenahi (GPT). Sebelumnya: ejaan brand "HeyAlPeople" dan "Heya I People"; beberapa kata menempel di ekstrak teks (cek visual: "bisapunya", "orangpaham", "Audit dulu.Baru") |
-| HAP-D-S01-P02 | HAP-S01-P02 | HeyAIPeople — Audience Intelligence | DAHbIa2D3fU | 7 (draft) | 4:5 | belum dicek | belum dicek | DESIGN REVIEW | draft dicek Claude 09.15: 7 hal., brand benar | aksen kuning masih ada (boleh per brand guideline sbg highlight); belum disimpan. Sebelumnya: 8 halaman padahal nomor slide /07; ejaan brand; kata menempel ("yangbenar-benar", "kontenyang", "merekadalam") |
-| HAP-D-S01-P03 | HAP-S01-P03 | HeyAIPeople — Content Strategy | DAHbIXrWNCE | 7 (draft) | 4:5 | belum dicek | belum dicek | DESIGN REVIEW | draft dicek Claude 09.15: 7 hal. | belum disimpan; teks belum dicek ulang. Sebelumnya: 8 halaman; ejaan brand "HeyAlPeople"; judul desain tidak menyebut Content Strategy; kata menempel ("Strategibukan", "keputusanyang", "angka.Cari") |
+| HAP-D-S01-P01 | HAP-S01-P01 | HeyAIPeople — Social Media Audit (judul baru, draft GPT 17 Nov 09.08) | DAHbITwgs6A | 7 | 4:5 (thumbnail 400×500) | target: monochrome (tanpa aksen) | belum dicek | REVISION REQUIRED | draft GPT belum disimpan | cover = sisi kanan panorama; urutan halaman perlu dibenahi (GPT). Sebelumnya: ejaan brand "HeyAlPeople" dan "Heya I People"; beberapa kata menempel di ekstrak teks (cek visual: "bisapunya", "orangpaham", "Audit dulu.Baru") |
+| HAP-D-S01-P02 | HAP-S01-P02 | HeyAIPeople — Audience Intelligence | DAHbIa2D3fU | 7 (draft) | 4:5 | target: monochrome (tanpa aksen) | belum dicek | DESIGN REVIEW | draft dicek Claude 09.15: 7 hal., brand benar | aksen kuning WAJIB dihapus (aturan monochrome seri 01, 09.22); cover = bagian tengah panorama; belum disimpan. Sebelumnya: 8 halaman padahal nomor slide /07; ejaan brand; kata menempel ("yangbenar-benar", "kontenyang", "merekadalam") |
+| HAP-D-S01-P03 | HAP-S01-P03 | HeyAIPeople — Content Strategy | DAHbIXrWNCE | 7 (draft) | 4:5 | target: monochrome (tanpa aksen) | belum dicek | DESIGN REVIEW | draft dicek Claude 09.15: 7 hal. | cover = sisi kiri panorama; belum disimpan; teks belum dicek ulang. Sebelumnya: 8 halaman; ejaan brand "HeyAlPeople"; judul desain tidak menyebut Content Strategy; kata menempel ("Strategibukan", "keputusanyang", "angka.Cari") |
+
+Aturan visual seri 01 (TERKUNCI 09.22): monochrome tanpa aksen; panorama grid P03 | P02 | P01; urutan posting P01, P02, P03.
 
 ## Lama (aturan satu desain satu konten: hanya final yang dipakai, sisanya ARCHIVED)
 "Kandidat final" = desain yang terakhir diubah di kelompoknya (dari data Canva). Isinya belum dicek; arsip/hapus di Canva menunggu keputusan Dika, tidak ada yang dihapus.
@@ -758,7 +766,7 @@ Brief: belum ada di artefak (dicek ide.json dan prompts.json). Gemini mengerjaka
 
 # HANDOFF heyaipeople: Multi-AI Creative Operations v4.0
 
-Terakhir diperbarui: 17 Nov 2026 08.55, Claude akun-1 (koordinator). Perintah induk: MASTER_COMMAND_v4.md (dari Dika 17 Nov 2026, TERKUNCI, jangan diubah tanpa perintah Dika).
+Terakhir diperbarui: 17 Nov 2026 09.30, Claude akun-1 (koordinator). Perintah induk: MASTER_COMMAND_v4.md (dari Dika 17 Nov 2026, TERKUNCI, jangan diubah tanpa perintah Dika).
 
 ## Peta dokumentasi v4 (tanpa duplikat)
 | Dokumen v4 | Lokasi di papan |
@@ -776,6 +784,8 @@ Terakhir diperbarui: 17 Nov 2026 08.55, Claude akun-1 (koordinator). Perintah in
 
 ## Keputusan TERKUNCI
 - SATU DESAIN SATU KONTEN (TERKUNCI, Dika 17 Nov 2026): kalau carousel gagal QA atau perlu revisi, edit langsung di desain Canva yang sama (Canva Design ID tetap). Dilarang membuat salinan/desain baru untuk revisi. Dari desain lama yang sudah terlanjur ganda, hanya hasil final yang dipakai; sisanya ARCHIVED.
+
+- ATURAN VISUAL SERI 01 (TERKUNCI, Dika 17 Nov 2026 09.22): (1) Tema premium monochrome editorial: hitam, putih, grayscale saja; tanpa aksen kuning, biru, atau ungu di tiga cover. (2) Tiga cover membentuk satu panorama puzzle di grid profil IG, dibaca kiri ke kanan: P03 | P02 | P01 (P03 sisi kiri, P02 tengah, P01 sisi kanan). Karena IG menaruh posting terbaru di kiri, urutan posting wajib P01, lalu P02, lalu P03 (dan tiap posting butuh ACC Dika). (3) Judul tiap cover tetap terbaca dan isi carousel berdiri sendiri. (4) Revisi di desain yang sama, ID tetap: P01 DAHbITwgs6A, P02 DAHbIa2D3fU, P03 DAHbIXrWNCE. Aturan ini menang atas aksen warna di MASTER_BRAND_GUIDELINES untuk seri 01.
 
 ## Alur kerja
 - GPT mendesain di Canva lewat plugin Canva di ChatGPT (akun "Dikha's Canva account" sudah tersambung; dites 17 Nov 09.01: GPT membuka DAHbITwgs6A, judul dan 7 halaman benar). Work/Cowork tidak diperlukan. Kerja desain dilakukan di chat dalam Project ChatGPT "Kantor Ai People", bukan chat di luar Project.

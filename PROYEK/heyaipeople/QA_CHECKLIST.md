@@ -17,7 +17,9 @@
 - [ ] Nama brand tertulis "HeyAIPeople" di semua slide
 - [ ] Ejaan dan spasi (cek kata yang menempel)
 - [ ] Keterbacaan, hierarki tipografi (Sora/Montserrat + Inter/Poppins), komposisi
-- [ ] Warna: hitam-putih dominan, aksen sesuai tema
+- [ ] Warna: hitam-putih dominan, aksen sesuai tema (seri 01: murni hitam/putih/grayscale, nol aksen kuning/biru/ungu)
+- [ ] Cover seri 01: panorama P03 | P02 | P01 menyambung, judul tiap cover terbaca, isi carousel berdiri sendiri
+- [ ] Urutan posting seri 01: P01, P02, P03 (hasil di grid IG terbaca P03 | P02 | P01)
 - [ ] Konsisten antar-slide, nomor slide benar (01/07 … 07/07)
 - [ ] Canva Design ID tercatat di DESIGN_REGISTRY
 
