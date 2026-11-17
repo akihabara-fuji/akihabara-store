@@ -794,6 +794,8 @@ Terakhir diperbarui: 17 Nov 2026 09.30, Claude akun-1 (koordinator). Perintah in
 
 - SOP COVER DULU, BERLAKU UNTUK SEMUA KONTEN (TERKUNCI, Dika 17 Nov 10.09 dan 10.11): konsep cover, satu panorama utuh dibagi tiga, ACC Dika, baru isi 7 slide. Ringkasan tujuan dan perbaikan untuk GPT: BRIEF-GPT.md (baca sebelum tiap tugas).
 
+- Format cover yang didukung (Dika 17 Nov 2026 10.11): Puzzle 3 (3 panel, 1 baris), 6 FEED (6 panel, 2 baris x 3), dan gaya 3x3 MAJALAH (9 panel, 3 baris x 3, tata letak ala sampul majalah). Cover-first tetap berlaku untuk semuanya: satu visual utuh dibagi N panel, ACC Dika dulu, baru isi tiap konten. Catatan Claude: detail tata letak 3x3 majalah dan 6 feed (kolom, urutan posting, soal garis panorama) belum dijelaskan Dika; tanyakan ke Dika saat brief pertama format itu.
+
 ## Alur kerja
 - GPT mendesain di Canva lewat plugin Canva di ChatGPT (akun "Dikha's Canva account" sudah tersambung; dites 17 Nov 09.01: GPT membuka DAHbITwgs6A, judul dan 7 halaman benar). Work/Cowork tidak diperlukan. Kerja desain dilakukan di chat dalam Project ChatGPT "Kantor Ai People", bukan chat di luar Project.
 - Carousel Instagram HeyAIPeople: tahap 1–7 di MASTER_COMMAND_v4.md bagian 4, status per CONTENT_REGISTRY (BACKLOG … PUBLISHED). Tidak lewat Google Flow.

@@ -15,6 +15,8 @@ Urutan di bawah memakai contoh Puzzle 3; untuk konten non-puzzle, langkah 3 cuku
 6. Desain di Canva (desain yang sama, ID tetap) lalu Design QA Claude, lalu ACC publikasi Dika.
 Cover harus mencerminkan isi konten; visual keren tapi tidak relevan = gagal.
 
+Format cover: Format cover yang didukung (Dika 17 Nov 2026 10.11): Puzzle 3 (3 panel, 1 baris), 6 FEED (6 panel, 2 baris x 3), dan gaya 3x3 MAJALAH (9 panel, 3 baris x 3, tata letak ala sampul majalah). Cover-first tetap berlaku untuk semuanya: satu visual utuh dibagi N panel, ACC Dika dulu, baru isi tiap konten. Catatan Claude: detail tata letak 3x3 majalah dan 6 feed (kolom, urutan posting, soal garis panorama) belum dijelaskan Dika; tanyakan ke Dika saat brief pertama format itu.
+
 ## 3. Pembagian peran
 GPT: arah editorial, naskah, desain Canva (plugin Canva, bukan Claude). Gemini: riset dan cek fakta/sumber. Claude: koordinasi, Design QA, dokumentasi. Dika: ACC.
 
