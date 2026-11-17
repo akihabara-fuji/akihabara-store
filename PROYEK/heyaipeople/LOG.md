@@ -4,3 +4,4 @@
 - 2026-11-17 09.00 · Claude akun-1 · Aturan TERKUNCI dari Dika: revisi carousel diedit di desain yang sama, tidak bikin salinan; dari desain lama ganda hanya final yang dipakai. Registry Lama dikelompokkan: kandidat final + ARCHIVED (tidak ada yang dihapus).
 - 2026-11-17 09.00 · Claude akun-1 · Setoran GPT 08.56 dicatat (SETORAN/2026-11-17-0856-gpt.md): kategori P01 DEMONSTRATE, P02 DISCOVER, P03 DEMONSTRATE. Teks naskah tidak ikut disetor; Cowork GPT ditolak sehingga desain belum direvisi.
 - 2026-11-17 09.05 · Claude akun-1 · Cowork GPT ditolak, diganti plugin Canva di ChatGPT (sudah tersambung). Instruksi Project ditambah aturan CANVA. Tes baca DAHbITwgs6A lewat GPT berhasil.
+- 2026-11-17 09.15 · Claude akun-1 · Setoran GPT 09.08 dicatat. Draft revisi (belum disimpan) dicek lewat transaksi Canva: tiga desain jadi 7 halaman, ID tetap. Sisa: urutan halaman P01, simpan draft, setor teks naskah.
