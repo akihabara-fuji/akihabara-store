@@ -1,6 +1,6 @@
 # PAKET PAPAN KANTOR AI PEOPLE
 
-Salinan otomatis branch kantor (2026-11-17 08:15 WIB). Jangan diedit di sini: sumbernya GitHub akihabara-fuji/akihabara-store branch kantor.
+Salinan otomatis branch kantor (2026-11-17 08:19 WIB). Jangan diedit di sini: sumbernya GitHub akihabara-fuji/akihabara-store branch kantor.
 Isi: STATUS.md, AI/BACA-DULU.md, AI/PERAN.md, ATURAN.md, KUNCI.md, BAGAN.md, SETORAN/README.md, ESTAFET/README.md, PROYEK/README.md, lalu HANDOFF tiap proyek.
 
 
@@ -8,7 +8,7 @@ Isi: STATUS.md, AI/BACA-DULU.md, AI/PERAN.md, ATURAN.md, KUNCI.md, BAGAN.md, SET
 
 # STATUS papan kantor
 
-Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-17 08:15 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
+Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-17 08:19 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
 Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 
 ## Rahasia bocor (harus segera dihapus)
@@ -83,6 +83,9 @@ Disetujui Dika 17 Nov 2026 ("atur sesuai rekomendasi lu"). Semua AI kerja di pap
 | Claude | Eksekutor dan juru catat | Kode, deploy, commit dan push ke branch ini, pegang kunci aset di KUNCI.md, mencatat SETORAN dari AI lain | Mengubah ATURAN.md tanpa perintah Dika |
 | ChatGPT (GPT) | Riset dan struktur | Riset, cek fakta, kerangka konten, naskah, CV, proposal, penawaran | Mengubah aset (situs, sosmed, bot) langsung; memegang kunci aset |
 | Gemini | QC dan visual | Cek mutu hasil kerja, cek tampilan situs dan desain, ide visual, cek ulang fakta | Mengubah aset langsung; memegang kunci aset |
+
+## Peran dalam ESTAFET produksi (17 Nov 2026)
+Untuk proyek konten/klien yang lewat estafet (ESTAFET/README.md), urutannya: Gemini riset dan brief (`LOCK_GEMINI`), GPT naskah, panduan carousel Canva, dan tabel SCENE berisi prompt Google Flow (`LOCK_GPT`), Dika menjalankan Google Flow jadi klip scene_XX.mp4 (`LOCK_FLOW`), Claude merakit di Remotion, audit, lalu deploy/kirim setelah ACC Dika (`LOCK_CLAUDE_REMOTION` sampai `COMPLETED`). Peran QC/cek silang di tabel atas tetap berlaku untuk tiap setoran estafet.
 
 ## Kenapa GPT dan Gemini tidak pegang kunci
 Kerjaan mereka berupa bahan (riset, naskah, catatan QC), bukan perubahan aset. Yang mengubah aset hanya Claude, jadi tidak ada dua AI yang mengedit hal yang sama di waktu yang sama.
@@ -409,7 +412,14 @@ Tujuan akhir semua kerja: pengikut naik, pengunjung ke heyaipeople.site, pesanan
 - Kurir setoran JALAN (17 Nov 07.27): bot Telegram @kantoraipeople_kurir_bot, workflow `kurir-setoran` di branch main (tiap 10 menit, bisa Run workflow manual), skrip alat/kurir_setoran.py, secret TELEGRAM_BOT_TOKEN, chat Dika terdaftar di alat/kurir_chat.txt. Rincian di SETORAN/README.md.
 - Rencana lama kurir n8n tidak dipakai. Draf lama workflow order klien (4 jalur, ACC Dika) ada di PROYEK/kantor-ai/n8n/ dan DITUNDA: Dika bilang belum masuk ke klien.
 
+## Estafet dan Remotion (17 Nov 2026)
+- Dika pilih: alur 4 AI (Gemini, GPT, Google Flow, Claude) dipasang di papan GitHub, BUKAN Google Sheets Master (spek Sheets + Apps Script + n8n dari Dika 17 Nov ditolak demi satu papan).
+- ESTAFET/README.md: status LOCK_GEMINI, LOCK_GPT, LOCK_FLOW, LOCK_CLAUDE_REMOTION, READY_FOR_AUDIT, MENUNGGU_ACC_DIKA, ACC_DIKA, COMPLETED. Kurir: baris `Estafet: <id> -> <STATUS>` di setoran, perintah /baru, /flow, /acc. STATUS.md bagian "Estafet: giliran siapa". Dites lokal: alur penuh sampai LOCK_CLAUDE_REMOTION, lompat status ditolak.
+- Remotion: komposisi alat/remotion-estafet/EstafetVideo.tsx (klip Flow + teks overlay + subtitle per kata + transisi fade + watermark heyaipeople.site, baca public/estafet/<id>/project_manifest.json). alat/buat_manifest.py menyusun manifest dari tabel SCENE. Dites render di sandbox (Remotion 4.0.539, 3 klip contoh, 1080x1920 30fps 8,2 detik): contoh-render.png. BELUM dipasang ke repo kang-catat-plus (source ada di D: laptop Dika); pemasangan dikerjakan sesi Remotion saat estafet pertama sampai LOCK_CLAUDE_REMOTION.
+- Isi artefak belum ada di papan: tugas ekspor untuk Claude akun-2 di ARTEFAK/README.md.
+
 ## Keputusan TERKUNCI (dari Dika)
+- TERKUNCI (17 Nov): estafet 4 AI di GitHub, bukan Google Sheets.
 - TERKUNCI (17 Nov): ketiga AI bekerja di branch `kantor` yang sama dengan peran di AI/PERAN.md; aturan berubah cukup di GitHub, tidak setel ulang tiap AI.
 - TERKUNCI: sumber tunggal catatan serah terima = PROYEK/<folder>/HANDOFF.md di branch kantor. Tidak ada folder, branch, atau file serah terima di tempat lain.
 - TERKUNCI: tiap sesi ikut alur README.md (tarik dulu, ambil kunci dan push sebelum ubah aset, lepas kunci dan push laporan sesudahnya).
