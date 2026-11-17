@@ -1,6 +1,6 @@
 # STATUS papan kantor
 
-Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-17 08:19 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
+Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-17 08:22 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
 Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 
 ## Rahasia bocor (harus segera dihapus)
@@ -22,7 +22,7 @@ Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 - tidak ada estafet berjalan
 
 ## Kunci aset yang sedang dipegang
-- semua bebas
+- Kantor Ai People (artefak) · DIPEGANG Claude akun-2 · Remotion · ekspor DB artefak ke ARTEFAK/ · sejak 17 Nov 2026 08.40
 
 ## Laporan terbaru
 - `LAPORAN/2026-11-17-0700-claude.md`

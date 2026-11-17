@@ -1,6 +1,6 @@
 # PAKET PAPAN KANTOR AI PEOPLE
 
-Salinan otomatis branch kantor (2026-11-17 08:19 WIB). Jangan diedit di sini: sumbernya GitHub akihabara-fuji/akihabara-store branch kantor.
+Salinan otomatis branch kantor (2026-11-17 08:22 WIB). Jangan diedit di sini: sumbernya GitHub akihabara-fuji/akihabara-store branch kantor.
 Isi: STATUS.md, AI/BACA-DULU.md, AI/PERAN.md, ATURAN.md, KUNCI.md, BAGAN.md, SETORAN/README.md, ESTAFET/README.md, PROYEK/README.md, lalu HANDOFF tiap proyek.
 
 
@@ -8,7 +8,7 @@ Isi: STATUS.md, AI/BACA-DULU.md, AI/PERAN.md, ATURAN.md, KUNCI.md, BAGAN.md, SET
 
 # STATUS papan kantor
 
-Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-17 08:19 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
+Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-17 08:22 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
 Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 
 ## Rahasia bocor (harus segera dihapus)
@@ -30,7 +30,7 @@ Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 - tidak ada estafet berjalan
 
 ## Kunci aset yang sedang dipegang
-- semua bebas
+- Kantor Ai People (artefak) · DIPEGANG Claude akun-2 · Remotion · ekspor DB artefak ke ARTEFAK/ · sejak 17 Nov 2026 08.40
 
 ## Laporan terbaru
 - `LAPORAN/2026-11-17-0700-claude.md`
@@ -196,7 +196,7 @@ Ambil kunci = commit + push sebelum kerja. Lepas kunci = isi 'terakhir', status 
 - Blog heyaipeople.site | masih kosong, cara terbit belum dicatat | bebas
 - Portofolio dikapriyadi.catatanakademik.com | branch portofolio-dika | sistem baru 16 Nov (CMS planet 3D): deploy/update-portofolio-cms.sh <commit>, update-portofolio.sh lama jangan dipakai; rincian di PROYEK/portofolio/HANDOFF.md | bebas | terakhir: 14 Nov 2026, commit c83dab1 (menurut data artefak; prompt Serah terima menyebut live 6f84501, belum dicek mana yang benar) | kunci lama "Claude (sesi 15 Nov sore)" untuk tugas tautan sosmed di kontak dilepas 16 Nov 18.38 atas izin Dika; tugas itu belum dicek selesai atau belum, cek situs hidup dulu. Di data artefak kunci ini juga sudah dilepas (16 Nov 19.28)
 - Akun sosmed | posting hanya setelah persetujuan Dika | tersambung: IG priyadi_dika dan catatanakademikut, TikTok Akihabara Fuji, FB Catatan Akademik, YouTube Catatan Akademik | belum tersambung: IG heyaipeople, 2 akun TikTok, 1 halaman Facebook | belum ada: kanal YouTube HeyAIPeople
-- Kantor Ai People (artefak) | perubahan halaman langsung terbit | data prompt, bagan, jadwal, aset ada di database artefak. Dicocokkan 16 Nov 18.38: BAGAN.md dan KUNCI.md sama dengan data artefak. Artefak sempat publik (database tidak bisa ditulis AI); per 16 Nov 19.28 berstatus privat, jadi database bisa ditulis sesi AI | bebas | terakhir: 16 Nov 2026 19.38, Claude akun-2 · Claude, data aset artefak diselaraskan dengan repo, aturan 10 prompt Serah terima memuat HANDOFF/PROYEK, folder PROYEK/kantor-ai ditulis (aturan 10) dan Serah terima ringkas (aturan 9), kunci portofolio dilepas di data artefak (artefak sendiri terakhir 15 Nov 2026: nama akun SOP diperbaiki, SOP Carousel jadi Prompt 00–12, prompt serah terima ringkas)
+- Kantor Ai People (artefak) | perubahan halaman langsung terbit | data prompt, bagan, jadwal, aset ada di database artefak. Dicocokkan 16 Nov 18.38: BAGAN.md dan KUNCI.md sama dengan data artefak. Artefak sempat publik (database tidak bisa ditulis AI); per 16 Nov 19.28 berstatus privat, jadi database bisa ditulis sesi AI | DIPEGANG Claude akun-2 · Remotion · ekspor DB artefak ke ARTEFAK/ · sejak 17 Nov 2026 08.40 | terakhir (sebelumnya): 16 Nov 2026 19.38, Claude akun-2 · Claude, data aset artefak diselaraskan dengan repo, aturan 10 prompt Serah terima memuat HANDOFF/PROYEK, folder PROYEK/kantor-ai ditulis (aturan 10) dan Serah terima ringkas (aturan 9), kunci portofolio dilepas di data artefak (artefak sendiri terakhir 15 Nov 2026: nama akun SOP diperbaiki, SOP Carousel jadi Prompt 00–12, prompt serah terima ringkas)
 - Remotion (repo kang-catat-plus, seri BUILD WITH AI) | sumber: zip backup di D:\FOLDER VIDEO KONTEN\BUILD-WITH-AI\SERAH-TERIMA (tidak ada di GitHub); sandbox sementara | render lokal/sandbox, hasil ke D:\...\Part-XX | bebas | terakhir: 16 Nov 2026 22.52, Claude akun-2 · Remotion, Part 5 dan 6 selesai menunggu ACC | rincian di PROYEK/video-remotion/HANDOFF.md
 
 
