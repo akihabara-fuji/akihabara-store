@@ -16,6 +16,9 @@ Terakhir diperbarui: 17 Nov 2026 08.55, Claude akun-1 (koordinator). Perintah in
 | AI_TEAM_RESPONSIBILITIES.md | AI/PERAN.md (sudah ada, diperbarui ke v4) |
 | CHANGELOG.md | PROYEK/heyaipeople/LOG.md |
 
+## Keputusan TERKUNCI
+- SATU DESAIN SATU KONTEN (TERKUNCI, Dika 17 Nov 2026): kalau carousel gagal QA atau perlu revisi, edit langsung di desain Canva yang sama (Canva Design ID tetap). Dilarang membuat salinan/desain baru untuk revisi. Dari desain lama yang sudah terlanjur ganda, hanya hasil final yang dipakai; sisanya ARCHIVED.
+
 ## Alur kerja
 - Carousel Instagram HeyAIPeople: tahap 1–7 di MASTER_COMMAND_v4.md bagian 4, status per CONTENT_REGISTRY (BACKLOG … PUBLISHED). Tidak lewat Google Flow.
 - Video (BUILD WITH AI, YouTube): ESTAFET/ (Gemini, GPT, Flow, Claude/Remotion).

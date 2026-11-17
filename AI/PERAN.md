@@ -13,6 +13,8 @@ Pembagian resmi mengikuti MASTER COMMAND HeyAIPeople v4.0 (PROYEK/heyaipeople/MA
 | ElevenLabs | Suara | Voice-over dan narasi. Suara Rafiq dipakai sampai Part 10 BUILD WITH AI (keputusan Dika 17 Nov) | - |
 | CapCut | Editing video | Editing, subtitle, motion, transisi, sinkron audio | - |
 
+Aturan Canva: SATU DESAIN SATU KONTEN (TERKUNCI, Dika 17 Nov 2026): kalau carousel gagal QA atau perlu revisi, edit langsung di desain Canva yang sama (Canva Design ID tetap). Dilarang membuat salinan/desain baru untuk revisi. Dari desain lama yang sudah terlanjur ganda, hanya hasil final yang dipakai; sisanya ARCHIVED.
+
 GPT dan Gemini tidak pegang kunci aset; Claude yang mengubah aset (situs, bot, repo).
 
 ## Kenapa GPT dan Gemini tidak pegang kunci

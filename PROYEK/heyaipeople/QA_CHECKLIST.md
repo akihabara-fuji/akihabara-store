@@ -7,6 +7,10 @@
 - [ ] Data dan klaim punya sumber; tidak ada data/testimoni/klien/hasil karangan; simulasi diberi label
 - [ ] Tidak mengulang topik/hook/angle yang sudah ada di CONTENT_REGISTRY
 
+## Aturan revisi
+- [ ] SATU DESAIN SATU KONTEN (TERKUNCI, Dika 17 Nov 2026): kalau carousel gagal QA atau perlu revisi, edit langsung di desain Canva yang sama (Canva Design ID tetap). Dilarang membuat salinan/desain baru untuk revisi. Dari desain lama yang sudah terlanjur ganda, hanya hasil final yang dipakai; sisanya ARCHIVED.
+- [ ] Canva Design ID setelah revisi sama dengan sebelum revisi (cek di DESIGN_REGISTRY)
+
 ## Desain (Design QA, Claude; dikerjakan GPT lewat Cowork)
 - [ ] 1080 × 1350 px, tepat 7 halaman (tidak ada halaman ke-8)
 - [ ] Teks persis sama dengan naskah final
