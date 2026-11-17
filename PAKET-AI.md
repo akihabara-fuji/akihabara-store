@@ -1,6 +1,6 @@
 # PAKET PAPAN KANTOR AI PEOPLE
 
-Salinan otomatis branch kantor (2026-11-17 09:36 WIB). Jangan diedit di sini: sumbernya GitHub akihabara-fuji/akihabara-store branch kantor.
+Salinan otomatis branch kantor (2026-11-17 10:10 WIB). Jangan diedit di sini: sumbernya GitHub akihabara-fuji/akihabara-store branch kantor.
 Isi: STATUS.md, AI/BACA-DULU.md, AI/PERAN.md, ATURAN.md, KUNCI.md, BAGAN.md, SETORAN/README.md, ESTAFET/README.md, ARTEFAK/RINGKAS.md, PROYEK/heyaipeople/MASTER_BRAND_GUIDELINES.md, PROYEK/heyaipeople/CONTENT_REGISTRY.md, PROYEK/heyaipeople/DESIGN_REGISTRY.md, PROYEK/README.md, lalu HANDOFF tiap proyek.
 
 
@@ -8,7 +8,7 @@ Isi: STATUS.md, AI/BACA-DULU.md, AI/PERAN.md, ATURAN.md, KUNCI.md, BAGAN.md, SET
 
 # STATUS papan kantor
 
-Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-17 09:36 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
+Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-17 10:10 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
 Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 
 ## Rahasia bocor (harus segera dihapus)
@@ -19,6 +19,7 @@ Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 
 ## Menunggu cek silang
 - `SETORAN/2026-11-17-0856-gpt.md`: MENUNGGU Gemini
+- `SETORAN/2026-11-17-1009-gpt.md`: MENUNGGU Gemini
 - `LAPORAN/2026-11-17-0700-claude.md`: MENUNGGU Gemini
 
 ## Gagal cek silang (perlu diperbaiki pembuatnya)
@@ -52,6 +53,7 @@ Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 - `LAPORAN/2026-11-16-2252-remotion.md`
 
 ## Setoran terbaru
+- `SETORAN/2026-11-17-1009-gpt.md`
 - `SETORAN/2026-11-17-0933-gpt.md`
 - `SETORAN/2026-11-17-0922-gpt.md`
 - `SETORAN/2026-11-17-0908-gpt.md`
@@ -149,6 +151,8 @@ Tiap push ke branch kantor, GitHub menjalankan `alat/cek_papan.py`. Skrip itu me
 - Claude: prompt di `MULAI.md` (bisa git langsung).
 - GPT dan Gemini: baca `AI/BACA-DULU.md` lewat link raw, tutup kerja dengan blok SETORAN (format di `SETORAN/README.md`).
 - Setup sekali per AI ada di `AI/SETUP.md`.
+
+GPT: sebelum tiap tugas heyaipeople baca PROYEK/heyaipeople/BRIEF-GPT.md (tujuan, SOP Puzzle 3 cover dulu, larangan). Urutan prioritas aturan: perintah terbaru Dika, BRIEF-GPT.md, HANDOFF.md, MASTER_BRAND_GUIDELINES.md.
 
 
 ========== FILE: ATURAN.md ==========
@@ -787,6 +791,8 @@ Terakhir diperbarui: 17 Nov 2026 09.30, Claude akun-1 (koordinator). Perintah in
 - SATU DESAIN SATU KONTEN (TERKUNCI, Dika 17 Nov 2026): kalau carousel gagal QA atau perlu revisi, edit langsung di desain Canva yang sama (Canva Design ID tetap). Dilarang membuat salinan/desain baru untuk revisi. Dari desain lama yang sudah terlanjur ganda, hanya hasil final yang dipakai; sisanya ARCHIVED.
 
 - ATURAN VISUAL SERI 01 (TERKUNCI, Dika 17 Nov 2026 09.22): (1) Tema premium monochrome editorial: hitam, putih, grayscale saja; tanpa aksen kuning, biru, atau ungu di tiga cover. (2) Tiga cover membentuk satu panorama puzzle di grid profil IG, dibaca kiri ke kanan: P03 | P02 | P01 (P03 sisi kiri, P02 tengah, P01 sisi kanan). Karena IG menaruh posting terbaru di kiri, urutan posting wajib P01, lalu P02, lalu P03 (dan tiap posting butuh ACC Dika). (3) Judul tiap cover tetap terbaca dan isi carousel berdiri sendiri. (4) Revisi di desain yang sama, ID tetap: P01 DAHbITwgs6A, P02 DAHbIa2D3fU, P03 DAHbIXrWNCE. Aturan ini menang atas aksen warna di MASTER_BRAND_GUIDELINES untuk seri 01.
+
+- SOP PUZZLE 3 COVER DULU (TERKUNCI, Dika 17 Nov 10.09): konsep cover, satu panorama utuh dibagi tiga, ACC Dika, baru isi 7 slide. Ringkasan tujuan dan perbaikan untuk GPT: BRIEF-GPT.md (baca sebelum tiap tugas).
 
 ## Alur kerja
 - GPT mendesain di Canva lewat plugin Canva di ChatGPT (akun "Dikha's Canva account" sudah tersambung; dites 17 Nov 09.01: GPT membuka DAHbITwgs6A, judul dan 7 halaman benar). Work/Cowork tidak diperlukan. Kerja desain dilakukan di chat dalam Project ChatGPT "Kantor Ai People", bukan chat di luar Project.

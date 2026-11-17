@@ -58,3 +58,5 @@ Tiap push ke branch kantor, GitHub menjalankan `alat/cek_papan.py`. Skrip itu me
 - Claude: prompt di `MULAI.md` (bisa git langsung).
 - GPT dan Gemini: baca `AI/BACA-DULU.md` lewat link raw, tutup kerja dengan blok SETORAN (format di `SETORAN/README.md`).
 - Setup sekali per AI ada di `AI/SETUP.md`.
+
+GPT: sebelum tiap tugas heyaipeople baca PROYEK/heyaipeople/BRIEF-GPT.md (tujuan, SOP Puzzle 3 cover dulu, larangan). Urutan prioritas aturan: perintah terbaru Dika, BRIEF-GPT.md, HANDOFF.md, MASTER_BRAND_GUIDELINES.md.

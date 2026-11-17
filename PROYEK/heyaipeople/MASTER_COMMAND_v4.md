@@ -491,3 +491,6 @@ Berikan rekomendasi berdasarkan kondisi aktual, bukan asumsi.
 12. Semua AI harus mengikuti keputusan brand yang telah dikunci.
 
 **Mulai dengan audit dan sinkronisasi. Jangan membuat desain atau konten baru sebelum kondisi pekerjaan sebelumnya diketahui.**
+
+## ADDENDUM SOP Puzzle 3: COVER DULU (Dika 17 Nov 2026 10.09, TERKUNCI)
+Urutan: brief Dika, konsep visual cover, satu panorama utuh dibagi tiga panel, presentasi ke Dika, ACC cover, baru isi 7 slide, desain Canva (ID tetap), Design QA Claude, ACC publikasi. Isi tidak disentuh sebelum cover ACC. Cover harus relevan dengan isi. Seri 01: monochrome, grid P03 | P02 | P01. Detail: BRIEF-GPT.md.
