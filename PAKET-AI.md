@@ -1,6 +1,6 @@
 # PAKET PAPAN KANTOR AI PEOPLE
 
-Salinan otomatis branch kantor (2026-11-17 09:02 WIB). Jangan diedit di sini: sumbernya GitHub akihabara-fuji/akihabara-store branch kantor.
+Salinan otomatis branch kantor (2026-11-17 09:15 WIB). Jangan diedit di sini: sumbernya GitHub akihabara-fuji/akihabara-store branch kantor.
 Isi: STATUS.md, AI/BACA-DULU.md, AI/PERAN.md, ATURAN.md, KUNCI.md, BAGAN.md, SETORAN/README.md, ESTAFET/README.md, ARTEFAK/RINGKAS.md, PROYEK/heyaipeople/MASTER_BRAND_GUIDELINES.md, PROYEK/heyaipeople/CONTENT_REGISTRY.md, PROYEK/heyaipeople/DESIGN_REGISTRY.md, PROYEK/README.md, lalu HANDOFF tiap proyek.
 
 
@@ -8,7 +8,7 @@ Isi: STATUS.md, AI/BACA-DULU.md, AI/PERAN.md, ATURAN.md, KUNCI.md, BAGAN.md, SET
 
 # STATUS papan kantor
 
-Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-17 09:02 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
+Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-17 09:15 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
 Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 
 ## Rahasia bocor (harus segera dihapus)
@@ -27,6 +27,7 @@ Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 - tidak ada
 
 ## Lulus cek silang (terbaru)
+- `SETORAN/2026-11-17-0908-gpt.md`: LULUS Claude 2026-11-17 09.15 (draft dibaca lewat transaksi: P01/P02/P03 masing-masing 7 halaman, judul desain jadi "HeyAIPeople — ...", P02 dicek penuh: brand tertulis HeyAIPeople di semua slide. Catatan: aksen kuning masih ada di P02, belum monochrome; urutan halaman P01 belum dibenahi; naskah teks lengkap belum disetor)
 - `LAPORAN/2026-11-17-0555-claude.md`: LULUS GPT 2026-11-17 06:41 (dicek di Project ChatGPT "Kantor Ai People"; catatan: kurir n8n belum dibangun)
 
 ## Estafet: giliran siapa
@@ -50,6 +51,7 @@ Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 - `LAPORAN/2026-11-16-2252-remotion.md`
 
 ## Setoran terbaru
+- `SETORAN/2026-11-17-0908-gpt.md`
 - `SETORAN/2026-11-17-0856-gpt.md`
 
 
@@ -557,9 +559,9 @@ Sumber: pencarian Canva akun Dika 17 Nov 2026 08.50 WIB (search-designs + read-d
 ## Aktif
 | Design ID | Content ID | Judul desain | Canva Design ID | Halaman | Format | Aksen | Template | Status desain | Pemeriksaan | Catatan revisi |
 |---|---|---|---|---|---|---|---|---|---|---|
-| HAP-D-S01-P01 | HAP-S01-P01 | Carousel audit media sosial HeyAIPeople | DAHbITwgs6A | 7 | 4:5 (thumbnail 400×500) | belum dicek | belum dicek | DESIGN REVIEW | teks dibaca Claude 17 Nov | Ejaan brand "HeyAlPeople" dan "Heya I People"; beberapa kata menempel di ekstrak teks (cek visual: "bisapunya", "orangpaham", "Audit dulu.Baru") |
-| HAP-D-S01-P02 | HAP-S01-P02 | Carousel Instagram Audience Intelligence | DAHbIa2D3fU | 8 | 4:5 | belum dicek | belum dicek | REVISION REQUIRED | teks dibaca Claude 17 Nov | 8 halaman padahal nomor slide /07; ejaan brand; kata menempel ("yangbenar-benar", "kontenyang", "merekadalam") |
-| HAP-D-S01-P03 | HAP-S01-P03 | Carousel Instagram HeyAIPeople Series 01 Post 03 | DAHbIXrWNCE | 8 | 4:5 | belum dicek | belum dicek | REVISION REQUIRED | teks dibaca Claude 17 Nov | 8 halaman; ejaan brand "HeyAlPeople"; judul desain tidak menyebut Content Strategy; kata menempel ("Strategibukan", "keputusanyang", "angka.Cari") |
+| HAP-D-S01-P01 | HAP-S01-P01 | HeyAIPeople — Social Media Audit (judul baru, draft GPT 17 Nov 09.08) | DAHbITwgs6A | 7 | 4:5 (thumbnail 400×500) | belum dicek | belum dicek | REVISION REQUIRED | draft GPT belum disimpan | urutan halaman perlu dibenahi (GPT). Sebelumnya: ejaan brand "HeyAlPeople" dan "Heya I People"; beberapa kata menempel di ekstrak teks (cek visual: "bisapunya", "orangpaham", "Audit dulu.Baru") |
+| HAP-D-S01-P02 | HAP-S01-P02 | HeyAIPeople — Audience Intelligence | DAHbIa2D3fU | 7 (draft) | 4:5 | belum dicek | belum dicek | DESIGN REVIEW | draft dicek Claude 09.15: 7 hal., brand benar | aksen kuning masih ada (boleh per brand guideline sbg highlight); belum disimpan. Sebelumnya: 8 halaman padahal nomor slide /07; ejaan brand; kata menempel ("yangbenar-benar", "kontenyang", "merekadalam") |
+| HAP-D-S01-P03 | HAP-S01-P03 | HeyAIPeople — Content Strategy | DAHbIXrWNCE | 7 (draft) | 4:5 | belum dicek | belum dicek | DESIGN REVIEW | draft dicek Claude 09.15: 7 hal. | belum disimpan; teks belum dicek ulang. Sebelumnya: 8 halaman; ejaan brand "HeyAlPeople"; judul desain tidak menyebut Content Strategy; kata menempel ("Strategibukan", "keputusanyang", "angka.Cari") |
 
 ## Lama (aturan satu desain satu konten: hanya final yang dipakai, sisanya ARCHIVED)
 "Kandidat final" = desain yang terakhir diubah di kelompoknya (dari data Canva). Isinya belum dicek; arsip/hapus di Canva menunggu keputusan Dika, tidak ada yang dihapus.
