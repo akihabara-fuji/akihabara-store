@@ -1,0 +1,1766 @@
+[
+ {
+  "id": "i-carousel-heyai",
+  "data": {
+   "createdAt": 1794679900000,
+   "note": "Akun heyaipeople · carousel Puzzle 1–2–3, lalu diturunkan jadi video Remotion",
+   "steps": [
+    {
+     "alur": "",
+     "brief": "Jalankan SOP, mulai dari riset, jangan langsung desain.",
+     "dest": "prompt",
+     "id": "s-riset",
+     "isi": "",
+     "label": "Riset (Deep Research)",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "p-carousel-master",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "",
+     "dest": "none",
+     "id": "s-konfirm",
+     "isi": "",
+     "label": "Konfirmasi riset",
+     "owner": "Dika",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Periksa klaim di hasil riset: VERIFIED / NEEDS REVIEW / UNSUPPORTED.",
+     "dest": "chat",
+     "id": "s-fakta",
+     "isi": "",
+     "label": "Cek fakta",
+     "owner": "GPT",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "",
+     "dest": "none",
+     "id": "s-carousel",
+     "isi": "",
+     "label": "Carousel di Canva (3 posting + panorama)",
+     "owner": "Claude",
+     "plat": "Instagram",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Turunan dari carousel yang sudah jadi.",
+     "dest": "remotion",
+     "id": "s-remotion",
+     "isi": "",
+     "label": "Versi video Remotion",
+     "owner": "Remotion",
+     "plat": "TikTok",
+     "promptId": "",
+     "status": "belum"
+    }
+   ],
+   "title": "Konten berjalan · 7 cara menggunakan AI untuk membuat konten profesional",
+   "updatedAt": 1794679900000
+  },
+  "updatedAt": "2026-11-15T08:57:54.701828Z"
+ },
+ {
+  "id": "sys-00-kebutuhan",
+  "data": {
+   "createdAt": 1794737500000,
+   "note": "Hal yang hanya bisa dilakukan pemilik akun. Sisanya dikerjakan Claude. Per 15 Nov 2026: hPanel sudah login di browser Claude; nama IG dipastikan priyadi_dika; harga heyaipeople.site menyusul. Tiga langkah itu tinggal ditandai.",
+   "steps": [
+    {
+     "alur": "",
+     "brief": "Dialog \"Artefak ini menggunakan konektor\": setujui Windsor dan Supermetrics. Tanpa ini kolom Sekarang kosong.",
+     "dest": "none",
+     "id": "q1",
+     "isi": "",
+     "label": "Izinkan konektor di halaman ini",
+     "owner": "Dika",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Sekali login Hostinger di browser bawaan aplikasi Claude. Kata sandi diketik Dika sendiri. Dibutuhkan untuk semua deploy web.",
+     "dest": "none",
+     "id": "q2",
+     "isi": "",
+     "label": "Login hPanel di browser Claude",
+     "owner": "Dika",
+     "plat": "Web / Portofolio",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Deploy, browser, dan render Remotion berjalan lewat laptop. Untuk Remotion: sambungkan folder proyeknya lewat tombol Add folder.",
+     "dest": "none",
+     "id": "q3",
+     "isi": "",
+     "label": "Laptop nyala, aplikasi Claude terbuka",
+     "owner": "Dika",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Daftar yang dijual, harga, dan cara pesan. Tanpa ini CTA mengarah ke halaman tanpa barang.",
+     "dest": "none",
+     "id": "q4",
+     "isi": "",
+     "label": "Tentukan produk dan harga heyaipeople.site",
+     "owner": "Dika",
+     "plat": "Web / Portofolio",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Data Instagram keluar atas nama priyadi_dika, catatan lama deikaru.dz. Tulis nama akun yang benar untuk IG, TikTok, YouTube supaya tautan di situs tidak salah.",
+     "dest": "none",
+     "id": "q5",
+     "isi": "",
+     "label": "Pastikan nama akun",
+     "owner": "Dika",
+     "plat": "Instagram",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "IG heyaipeople, 2 akun TikTok, 1 halaman Facebook ke Windsor. Kanal YouTube HeyAIPeople ke Supermetrics setelah dibuat.",
+     "dest": "none",
+     "id": "q6",
+     "isi": "",
+     "label": "Sambungkan akun yang belum",
+     "owner": "Dika",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Login Google di browser Claude, lalu Claude bisa mengisi nama, deskripsi, dan tautan. Lihat bagan 14.",
+     "dest": "none",
+     "id": "q7",
+     "isi": "",
+     "label": "Buat kanal YouTube HeyAIPeople",
+     "owner": "Dika",
+     "plat": "YouTube",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Pilih: setujui tiap posting, setujui satu paket mingguan, atau bebas seperti deploy. SOP carousel sekarang menulis wajib persetujuan manual.",
+     "dest": "none",
+     "id": "q8",
+     "isi": "",
+     "label": "Aturan persetujuan posting",
+     "owner": "Dika",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Karya untuk galeri (berkas atau tautan) dan foto. Galeri sekarang kosong.",
+     "dest": "none",
+     "id": "q9",
+     "isi": "",
+     "label": "Bahan portofolio",
+     "owner": "Dika",
+     "plat": "Web / Portofolio",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Rekam sendiri tiap naskah, atau izinkan pemakaian kredit ElevenLabs.",
+     "dest": "none",
+     "id": "q10",
+     "isi": "",
+     "label": "Suara untuk video",
+     "owner": "Dika",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Empat kartu perbaikan skill, lalu hapus lima skill yang dobel.",
+     "dest": "none",
+     "id": "q11",
+     "isi": "",
+     "label": "Simpan kartu skill dan hapus skill usang",
+     "owner": "Dika",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    }
+   ],
+   "title": "00 · Kebutuhan eksekusi dari Dika",
+   "updatedAt": 1794737500000
+  },
+  "updatedAt": "2026-11-15T10:20:25.721432Z"
+ },
+ {
+  "id": "sys-01-analisa",
+  "data": {
+   "createdAt": 1794733100000,
+   "note": "Keahlian 01 · Analisis Media Sosial. Putaran mingguan tiap Senin. Angka awal 15 Nov 2026 (Windsor): IG priyadi_dika 2.138, IG catatanakademikut 209, TikTok Akihabara Fuji 435, FB Catatan Akademik 1 pengikut.",
+   "steps": [
+    {
+     "alur": "",
+     "brief": "Tujuan: pengikut naik dan kunjungan ke heyaipeople.site. Periode baca: 7 dan 30 hari.",
+     "dest": "none",
+     "id": "a1",
+     "isi": "",
+     "label": "Tentukan tujuan dan akun",
+     "owner": "Dika",
+     "plat": "",
+     "promptId": "",
+     "status": "selesai"
+    },
+    {
+     "alur": "",
+     "brief": "Windsor: instagram, tiktok_organic, facebook_organic. Supermetrics: YouTube. Ditarik langsung, tanpa input manual.",
+     "dest": "none",
+     "id": "a2",
+     "isi": "",
+     "label": "Tarik data",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "",
+     "status": "selesai"
+    },
+    {
+     "alur": "",
+     "brief": "Tersambung per 15 Nov 2026: 2 dari 3 akun Instagram, 1 dari 3 akun TikTok, 1 dari 2 halaman Facebook. Akun yang belum tersambung ditandai kosong, tidak diisi angka karangan.",
+     "dest": "none",
+     "id": "a3",
+     "isi": "",
+     "label": "Cek kualitas data",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "",
+     "status": "jalan"
+    },
+    {
+     "alur": "",
+     "brief": "Pengikut, jangkauan, penayangan, interaksi, kunjungan profil. Bandingkan dengan angka awal.",
+     "dest": "none",
+     "id": "a4",
+     "isi": "",
+     "label": "Hitung metrik per akun",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Konten terbaik dan terburuk minggu itu. Tanpa benchmark umum.",
+     "dest": "none",
+     "id": "a5",
+     "isi": "",
+     "label": "Bandingkan konten sendiri",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Tiga temuan bernomor, tiap temuan menyebut angkanya.",
+     "dest": "prompt",
+     "id": "a6",
+     "isi": "",
+     "label": "Tulis laporan mingguan",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "p-analis-sosmed",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Satu variabel saja: hook, format, jam tayang, atau CTA. Tetapkan metrik keberhasilan sebelum tayang.",
+     "dest": "none",
+     "id": "a7",
+     "isi": "",
+     "label": "Pilih satu eksperimen",
+     "owner": "Dika",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Isi Jadwal posting 7 hari ke depan.",
+     "dest": "none",
+     "id": "a8",
+     "isi": "",
+     "label": "Masukkan ke jadwal",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Ukur lagi, catat pelajarannya, kembali ke langkah pertama.",
+     "dest": "prompt",
+     "id": "a9",
+     "isi": "",
+     "label": "Evaluasi 7 hari",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "p-analis-sosmed",
+     "status": "belum"
+    }
+   ],
+   "title": "01 · Analisa sosial media",
+   "updatedAt": 1794733100000
+  },
+  "updatedAt": "2026-11-15T10:04:16.294752Z"
+ },
+ {
+  "id": "sys-02-carousel",
+  "data": {
+   "createdAt": 1794733100001,
+   "note": "Keahlian 02 · Produksi Konten AI. Mengikuti SOP AI Carousel Content Studio. Riset dulu, desain belakangan.",
+   "steps": [
+    {
+     "alur": "",
+     "brief": "Jalankan SOP mulai dari riset.",
+     "dest": "prompt",
+     "id": "b1",
+     "isi": "",
+     "label": "Riset masalah audiens",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "p-carousel-master",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Periksa tiap klaim: VERIFIED / NEEDS REVIEW / UNSUPPORTED.",
+     "dest": "chat",
+     "id": "b2",
+     "isi": "",
+     "label": "Cek fakta",
+     "owner": "GPT",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Minimal lima hook, pilih satu. Satu slide satu pesan.",
+     "dest": "none",
+     "id": "b3",
+     "isi": "",
+     "label": "Hook dan naskah slide",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "1080 × 1350, bisa diedit, master template tidak diubah.",
+     "dest": "none",
+     "id": "b4",
+     "isi": "",
+     "label": "Desain di Canva",
+     "owner": "Canva",
+     "plat": "Instagram",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Ejaan, teks terpotong, margin, sambungan puzzle, CTA.",
+     "dest": "none",
+     "id": "b5",
+     "isi": "",
+     "label": "Cek mutu",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "CTA ke heyaipeople.site.",
+     "dest": "prompt",
+     "id": "b6",
+     "isi": "",
+     "label": "Caption dan CTA",
+     "owner": "Claude",
+     "plat": "Instagram",
+     "promptId": "p-caption-cta",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Cek materi, visual, caption, akun tujuan, urutan unggah.",
+     "dest": "none",
+     "id": "b7",
+     "isi": "",
+     "label": "Persetujuan",
+     "owner": "Dika",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Simpan tanggal dan URL posting untuk evaluasi.",
+     "dest": "none",
+     "id": "b8",
+     "isi": "",
+     "label": "Terbit dan catat tautan",
+     "owner": "Claude",
+     "plat": "Instagram",
+     "promptId": "",
+     "status": "belum"
+    }
+   ],
+   "title": "02 · Produksi carousel Instagram",
+   "updatedAt": 1794733100001
+  },
+  "updatedAt": "2026-11-15T10:04:16.300237Z"
+ },
+ {
+  "id": "sys-03-blog",
+  "data": {
+   "createdAt": 1794733100002,
+   "note": "Keahlian 02 · Produksi Konten AI. Satu artikel tiap 2 hari, terbit 09.00 WIB. Semua masuk draf dulu.",
+   "steps": [
+    {
+     "alur": "",
+     "brief": "Dari pertanyaan mahasiswa dan artikel yang paling banyak dibaca.",
+     "dest": "none",
+     "id": "c1",
+     "isi": "",
+     "label": "Daftar judul per minggu",
+     "owner": "Claude",
+     "plat": "Web / Portofolio",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Fakta UT hanya dari sumber resmi, dengan tanggal akses.",
+     "dest": "prompt",
+     "id": "c2",
+     "isi": "",
+     "label": "Tulis file .md",
+     "owner": "Hermes",
+     "plat": "Web / Portofolio",
+     "promptId": "p-artikel-blog",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Lewat menu blog, otomatis masuk draf.",
+     "dest": "none",
+     "id": "c3",
+     "isi": "",
+     "label": "Unggah ke draf blog",
+     "owner": "Dika",
+     "plat": "Web / Portofolio",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Isi, sumber, tautan biru ke heyaipeople.site.",
+     "dest": "none",
+     "id": "c4",
+     "isi": "",
+     "label": "Cek satu per satu",
+     "owner": "Dika",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Sampul harus bisa dipakai jadi cover carousel.",
+     "dest": "none",
+     "id": "c5",
+     "isi": "",
+     "label": "Sampul estetik faceless",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "",
+     "dest": "none",
+     "id": "c6",
+     "isi": "",
+     "label": "Terbit 09.00 WIB",
+     "owner": "Claude",
+     "plat": "Web / Portofolio",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Masuk ke sistem 02.",
+     "dest": "none",
+     "id": "c7",
+     "isi": "",
+     "label": "Turunkan jadi carousel",
+     "owner": "Canva",
+     "plat": "Instagram",
+     "promptId": "",
+     "status": "belum"
+    }
+   ],
+   "title": "03 · Artikel blog Catatan Akademik",
+   "updatedAt": 1794733100002
+  },
+  "updatedAt": "2026-11-15T10:04:16.305797Z"
+ },
+ {
+  "id": "sys-04-video",
+  "data": {
+   "createdAt": 1794733100003,
+   "note": "Keahlian 02 · Produksi Konten AI. Turunan dari artikel atau carousel yang sudah jadi. Suara direkam Dika atau dibuat di sistem 11.",
+   "steps": [
+    {
+     "alur": "",
+     "brief": "Ambil dari artikel atau carousel yang sudah lolos cek fakta.",
+     "dest": "none",
+     "id": "d1",
+     "isi": "",
+     "label": "Pilih topik",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Hook di 3 detik pertama.",
+     "dest": "prompt",
+     "id": "d2",
+     "isi": "",
+     "label": "Skrip 30–45 detik",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "p-skrip-video",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "",
+     "dest": "none",
+     "id": "d3",
+     "isi": "",
+     "label": "Rekam suara",
+     "owner": "Dika",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "1. Impor rekaman suara.\n2. Pecah skrip jadi adegan sesuai kolom detik.\n3. Pasang teks di layar dan visual tiap adegan.\n4. Render 1080 × 1920.\n5. Tonton ulang penuh sebelum diunggah.",
+     "brief": "Vertikal 9:16, teks di layar maksimal 6 kata.",
+     "dest": "remotion",
+     "id": "d4",
+     "isi": "",
+     "label": "Susun dan render",
+     "owner": "Remotion",
+     "plat": "TikTok",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Suara pas, teks tidak terpotong, CTA terbaca.",
+     "dest": "none",
+     "id": "d5",
+     "isi": "",
+     "label": "Cek hasil",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "TikTok, Reels, dan Shorts. Caption disesuaikan tiap platform.",
+     "dest": "none",
+     "id": "d6",
+     "isi": "",
+     "label": "Terbit",
+     "owner": "Dika",
+     "plat": "TikTok",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Masuk ke sistem 01.",
+     "dest": "none",
+     "id": "d7",
+     "isi": "",
+     "label": "Catat penayangan 7 hari",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    }
+   ],
+   "title": "04 · Video pendek (Remotion)",
+   "updatedAt": 1794733100003
+  },
+  "updatedAt": "2026-11-15T10:04:16.312338Z"
+ },
+ {
+  "id": "sys-05-jalur",
+  "data": {
+   "createdAt": 1794733100004,
+   "note": "Keahlian 05 · Situs Web dengan AI. Keputusan 15 Nov 2026: catatanakademik.com tetap edukasi, semua CTA layanan diarahkan ke heyaipeople.site.",
+   "steps": [
+    {
+     "alur": "",
+     "brief": "Tiap konten punya satu ajakan.",
+     "dest": "none",
+     "id": "e1",
+     "isi": "",
+     "label": "Konten sosmed",
+     "owner": "Claude",
+     "plat": "Instagram",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Bio semua akun menaut ke heyaipeople.site.",
+     "dest": "none",
+     "id": "e2",
+     "isi": "",
+     "label": "Profil dan tautan bio",
+     "owner": "Dika",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Edukasi dan alat UT. Tombol layanan menuju heyaipeople.site. Tautan sosmed belum ada di situs.",
+     "dest": "none",
+     "id": "e3",
+     "isi": "",
+     "label": "catatanakademik.com",
+     "owner": "Claude",
+     "plat": "Web / Portofolio",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Per 15 Nov 2026 katalog masih \"Segera Hadir\" dan blog kosong. Perlu daftar produk, harga, dan cara pesan.",
+     "dest": "none",
+     "id": "e4",
+     "isi": "",
+     "label": "heyaipeople.site",
+     "owner": "Claude",
+     "plat": "Web / Portofolio",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Sudah tertaut dari heyaipeople.site.",
+     "dest": "none",
+     "id": "e5",
+     "isi": "",
+     "label": "WhatsApp admin",
+     "owner": "Admin",
+     "plat": "",
+     "promptId": "",
+     "status": "jalan"
+    },
+    {
+     "alur": "",
+     "brief": "",
+     "dest": "none",
+     "id": "e6",
+     "isi": "",
+     "label": "Pembayaran QRIS",
+     "owner": "Admin",
+     "plat": "",
+     "promptId": "",
+     "status": "jalan"
+    },
+    {
+     "alur": "",
+     "brief": "",
+     "dest": "none",
+     "id": "e7",
+     "isi": "",
+     "label": "Kirim hasil",
+     "owner": "Admin",
+     "plat": "",
+     "promptId": "",
+     "status": "jalan"
+    },
+    {
+     "alur": "",
+     "brief": "Foto testimoni dibagikan admin, tanpa data pribadi pelanggan.",
+     "dest": "none",
+     "id": "e8",
+     "isi": "",
+     "label": "Testimoni jadi konten",
+     "owner": "Admin",
+     "plat": "Instagram",
+     "promptId": "",
+     "status": "belum"
+    }
+   ],
+   "title": "05 · Jalur pembeli ke heyaipeople.site",
+   "updatedAt": 1794733100004
+  },
+  "updatedAt": "2026-11-15T10:04:16.319575Z"
+ },
+ {
+  "id": "sys-06-web",
+  "data": {
+   "createdAt": 1794733100005,
+   "note": "Keahlian 05 · Situs Web dengan AI. Berlaku untuk catatanakademik.com, heyaipeople.site, dan portofolio. Ambil kunci aset di Ringkasan sebelum mulai.",
+   "steps": [
+    {
+     "alur": "",
+     "brief": "Audit baca 15 Nov 2026: tiga situs dibuka dan dicatat yang rusak atau kosong.",
+     "dest": "none",
+     "id": "f1",
+     "isi": "",
+     "label": "Catat kondisi awal",
+     "owner": "Claude",
+     "plat": "Web / Portofolio",
+     "promptId": "",
+     "status": "selesai"
+    },
+    {
+     "alur": "",
+     "brief": "CTA layanan ke heyaipeople.site, tautan sosmed, isi katalog, perbaikan portofolio.",
+     "dest": "none",
+     "id": "f2",
+     "isi": "",
+     "label": "Rencana perubahan",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "",
+     "status": "jalan"
+    },
+    {
+     "alur": "",
+     "brief": "",
+     "dest": "none",
+     "id": "f3",
+     "isi": "",
+     "label": "Bangun",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Ponsel dan desktop, ukuran gambar, semua tombol.",
+     "dest": "none",
+     "id": "f4",
+     "isi": "",
+     "label": "Cek tampilan sendiri",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Cadangkan dulu. Bot di VPS tidak disentuh.",
+     "dest": "none",
+     "id": "f5",
+     "isi": "",
+     "label": "Deploy",
+     "owner": "Claude",
+     "plat": "Web / Portofolio",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "",
+     "dest": "none",
+     "id": "f6",
+     "isi": "",
+     "label": "Cek situs hidup",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "",
+     "dest": "none",
+     "id": "f7",
+     "isi": "",
+     "label": "Catat perubahan",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    }
+   ],
+   "title": "06 · Web dan deploy",
+   "updatedAt": 1794733100005
+  },
+  "updatedAt": "2026-11-15T10:04:16.330915Z"
+ },
+ {
+  "id": "sys-07-porto",
+  "data": {
+   "createdAt": 1794733100006,
+   "note": "Keahlian 05 · Situs Web dengan AI. dikapriyadi.catatanakademik.com. Bahasa baku, kata ganti \"saya\". Tiap keahlian di portofolio harus punya bagan di sini.",
+   "steps": [
+    {
+     "alur": "",
+     "brief": "Carousel, video, artikel, dan sistem di halaman ini.",
+     "dest": "none",
+     "id": "g1",
+     "isi": "",
+     "label": "Kumpulkan karya minggu ini",
+     "owner": "Dika",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Hanya angka yang ada buktinya.",
+     "dest": "prompt",
+     "id": "g2",
+     "isi": "",
+     "label": "Tulis studi kasus",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "p-studi-kasus",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Per 15 Nov 2026: galeri belum menampilkan karya, tombol WhatsApp melayang belum bertaut, tautan sosmed belum ada.",
+     "dest": "none",
+     "id": "g3",
+     "isi": "",
+     "label": "Perbarui portofolio",
+     "owner": "Claude",
+     "plat": "Web / Portofolio",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "",
+     "dest": "none",
+     "id": "g4",
+     "isi": "",
+     "label": "Posting LinkedIn dan Instagram",
+     "owner": "Dika",
+     "plat": "Instagram",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "",
+     "dest": "none",
+     "id": "g5",
+     "isi": "",
+     "label": "Selaraskan CV",
+     "owner": "Dika",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    }
+   ],
+   "title": "07 · Portofolio dan personal branding",
+   "updatedAt": 1794733100006
+  },
+  "updatedAt": "2026-11-15T10:04:16.343095Z"
+ },
+ {
+  "id": "sys-08-bot",
+  "data": {
+   "createdAt": 1794737100000,
+   "note": "Keahlian 03 · Sistem Otomasi AI. Dua bot di VPS: bot 1 untuk grup dan pelanggan, bot 2 untuk admin dan notifikasi pesanan. Bot yang sudah jalan tidak disentuh tanpa cadangan.",
+   "steps": [
+    {
+     "alur": "",
+     "brief": "Siapa yang chat, minta apa, bot harus jawab apa. Satu kebutuhan satu baris.",
+     "dest": "none",
+     "id": "h1",
+     "isi": "",
+     "label": "Catat kebutuhan",
+     "owner": "Dika",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Pesan masuk → kenali maksud → jawab atau teruskan ke admin. Bahasa natural, tanpa perintah berawalan tanda seru.",
+     "dest": "none",
+     "id": "h2",
+     "isi": "",
+     "label": "Rancang alur percakapan",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Peran, batasan, gaya bahasa, kapan menyerahkan ke admin.",
+     "dest": "prompt",
+     "id": "h3",
+     "isi": "",
+     "label": "Tulis prompt bot",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "p-buat-prompt",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Wajib sebelum mengubah apa pun di VPS.",
+     "dest": "none",
+     "id": "h4",
+     "isi": "",
+     "label": "Cadangkan bot yang jalan",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Model lewat 9Router. Kunci API tidak ditulis di halaman ini.",
+     "dest": "none",
+     "id": "h5",
+     "isi": "",
+     "label": "Pasang lewat 9Router",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Termasuk pesan aneh, bahasa daerah, dan permintaan di luar tugas bot.",
+     "dest": "none",
+     "id": "h6",
+     "isi": "",
+     "label": "Uji 10 percakapan",
+     "owner": "Dika",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Jawaban salah dicatat, prompt diperbaiki, versi dinaikkan.",
+     "dest": "none",
+     "id": "h7",
+     "isi": "",
+     "label": "Pantau dan catat",
+     "owner": "Admin",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    }
+   ],
+   "title": "08 · Otomasi AI: bot WhatsApp",
+   "updatedAt": 1794737100000
+  },
+  "updatedAt": "2026-11-15T10:04:16.352205Z"
+ },
+ {
+  "id": "sys-09-koordinasi",
+  "data": {
+   "createdAt": 1794737100001,
+   "note": "Keahlian 04 · Koordinasi Alur Kerja. Claude memimpin dan memeriksa, Hermes mengerjakan pekerjaan rutin lewat 9Router, Dika memutuskan.",
+   "steps": [
+    {
+     "alur": "",
+     "brief": "Satu kalimat: apa yang diminta dan untuk aset mana.",
+     "dest": "none",
+     "id": "k1",
+     "isi": "",
+     "label": "Tugas masuk",
+     "owner": "Dika",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Baca Ringkasan. Aset yang dipegang sesi lain tidak disentuh. Ambil kunci aset yang dikerjakan.",
+     "dest": "none",
+     "id": "k2",
+     "isi": "",
+     "label": "Cek Gudang dan kunci",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Pakai bagan yang sudah ada. Tugas tanpa bagan dibuatkan bagannya dulu.",
+     "dest": "none",
+     "id": "k3",
+     "isi": "",
+     "label": "Pecah jadi langkah",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Hanya pekerjaan rutin yang jelas ukurannya.",
+     "dest": "prompt",
+     "id": "k4",
+     "isi": "",
+     "label": "Brief ke Hermes",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "p-brief-hermes",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Lewat 9Router, combo model gratis.",
+     "dest": "none",
+     "id": "k5",
+     "isi": "",
+     "label": "Hermes mengerjakan",
+     "owner": "Hermes",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Cocokkan dengan brief satu per satu. Gagal dikembalikan dengan alasan.",
+     "dest": "none",
+     "id": "k6",
+     "isi": "",
+     "label": "Periksa hasil",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Tulis perubahan terakhir di aset, ubah status langkah, lepas kunci.",
+     "dest": "none",
+     "id": "k7",
+     "isi": "",
+     "label": "Serahkan dan lepas kunci",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    }
+   ],
+   "title": "09 · Koordinasi alur kerja AI",
+   "updatedAt": 1794737100001
+  },
+  "updatedAt": "2026-11-15T10:04:16.361393Z"
+ },
+ {
+  "id": "sys-10-dokumen",
+  "data": {
+   "createdAt": 1794737100002,
+   "note": "Keahlian 06 · Alat Analisis Dokumen. Bedah Laporan dan Cek & Parafrase di catatanakademik.com. Tidak ada persen hitungan mesin sendiri.",
+   "steps": [
+    {
+     "alur": "",
+     "brief": "Semua layanan wajib login.",
+     "dest": "none",
+     "id": "m1",
+     "isi": "",
+     "label": "Mahasiswa masuk akun",
+     "owner": "Admin",
+     "plat": "Web / Portofolio",
+     "promptId": "",
+     "status": "jalan"
+    },
+    {
+     "alur": "",
+     "brief": "File asli (Word atau PDF), laporan AI, laporan Similarity. Tersimpan otomatis saat unggah.",
+     "dest": "none",
+     "id": "m2",
+     "isi": "",
+     "label": "Unggah 3 file",
+     "owner": "Admin",
+     "plat": "Web / Portofolio",
+     "promptId": "",
+     "status": "jalan"
+    },
+    {
+     "alur": "",
+     "brief": "Nama dan NIM dibaca dari file. Kalimat yang ditandai laporan diberi warna dan penjelasan.",
+     "dest": "none",
+     "id": "m3",
+     "isi": "",
+     "label": "Baca dan tandai kalimat",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "",
+     "status": "jalan"
+    },
+    {
+     "alur": "",
+     "brief": "Sebagian terbuka, sisanya diburamkan.",
+     "dest": "none",
+     "id": "m4",
+     "isi": "",
+     "label": "Pratinjau gratis",
+     "owner": "Admin",
+     "plat": "Web / Portofolio",
+     "promptId": "",
+     "status": "jalan"
+    },
+    {
+     "alur": "",
+     "brief": "Bukti foto, verifikasi admin.",
+     "dest": "none",
+     "id": "m5",
+     "isi": "",
+     "label": "Bayar QRIS",
+     "owner": "Admin",
+     "plat": "",
+     "promptId": "",
+     "status": "jalan"
+    },
+    {
+     "alur": "",
+     "brief": "Hanya kalimat yang ditandai. Makna, data, dan sitasi tidak diubah.",
+     "dest": "none",
+     "id": "m6",
+     "isi": "",
+     "label": "Pengerjaan di Studio admin",
+     "owner": "Admin",
+     "plat": "",
+     "promptId": "",
+     "status": "jalan"
+    },
+    {
+     "alur": "",
+     "brief": "Status diubah manual setelah terkirim.",
+     "dest": "none",
+     "id": "m7",
+     "isi": "",
+     "label": "Kirim file Word",
+     "owner": "Admin",
+     "plat": "",
+     "promptId": "",
+     "status": "jalan"
+    },
+    {
+     "alur": "",
+     "brief": "Satu berkas per mahasiswa di Dokumen Saya, tanpa dobel.",
+     "dest": "none",
+     "id": "m8",
+     "isi": "",
+     "label": "Arsip 30 hari",
+     "owner": "Admin",
+     "plat": "",
+     "promptId": "",
+     "status": "jalan"
+    }
+   ],
+   "title": "10 · Alat analisis dokumen",
+   "updatedAt": 1794737100002
+  },
+  "updatedAt": "2026-11-15T10:04:16.379621Z"
+ },
+ {
+  "id": "sys-11-gambar-suara",
+  "data": {
+   "createdAt": 1794737100003,
+   "note": "Keahlian 02 · Produksi Konten AI. Alat: Gemini, Google Flow, ElevenLabs, CapCut, Canva. Hasilnya dipakai sistem 02 dan 04.",
+   "steps": [
+    {
+     "alur": "",
+     "brief": "Untuk konten apa, ukuran, gaya, dan teks yang harus terbaca.",
+     "dest": "none",
+     "id": "n1",
+     "isi": "",
+     "label": "Brief visual atau suara",
+     "owner": "Dika",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Subjek, komposisi, cahaya, gaya, rasio. Untuk suara: naskah terkunci dan tanda ekspresi.",
+     "dest": "prompt",
+     "id": "n2",
+     "isi": "",
+     "label": "Tulis prompt",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "p-buat-prompt",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Gambar di Gemini atau Flow, suara di ElevenLabs. Suara dibuat satu kali dalam satu blok supaya hemat kredit.",
+     "dest": "none",
+     "id": "n3",
+     "isi": "",
+     "label": "Buat sekali",
+     "owner": "Dika",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Teks di gambar benar, tidak ada wajah atau merek orang lain, suara tidak terpotong.",
+     "dest": "none",
+     "id": "n4",
+     "isi": "",
+     "label": "Pilih dan periksa",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Potong, ganti ukuran, pasang ke template. Video dirapikan di CapCut.",
+     "dest": "none",
+     "id": "n5",
+     "isi": "",
+     "label": "Rapikan",
+     "owner": "Canva",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "AKUN_KAMPANYE_POST-SLIDE_VERSI. Versi yang sudah disetujui tidak ditimpa.",
+     "dest": "none",
+     "id": "n6",
+     "isi": "",
+     "label": "Simpan dengan nama baku",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    }
+   ],
+   "title": "11 · Gambar dan suara AI",
+   "updatedAt": 1794737100003
+  },
+  "updatedAt": "2026-11-15T10:04:16.396038Z"
+ },
+ {
+  "id": "sys-12-prompt",
+  "data": {
+   "createdAt": 1794737100004,
+   "note": "Berlaku untuk semua keahlian. Prompt yang dipakai lebih dari sekali wajib masuk menu Prompt.",
+   "steps": [
+    {
+     "alur": "",
+     "brief": "Hasil yang diinginkan, untuk siapa, dipakai di alat apa.",
+     "dest": "none",
+     "id": "p1",
+     "isi": "",
+     "label": "Tulis kebutuhan",
+     "owner": "Dika",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Kalau sudah ada yang mirip, perbaiki yang itu. Jangan bikin dobel.",
+     "dest": "none",
+     "id": "p2",
+     "isi": "",
+     "label": "Cari di Gudang dulu",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Peran, bahan, langkah, bentuk keluaran, larangan, variabel dalam kurung siku huruf besar.",
+     "dest": "prompt",
+     "id": "p3",
+     "isi": "",
+     "label": "Susun prompt",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "p-buat-prompt",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Tiga masukan berbeda. Catat di mana hasilnya meleset.",
+     "dest": "none",
+     "id": "p4",
+     "isi": "",
+     "label": "Uji 3 kali",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Ubah satu hal tiap putaran supaya tahu apa yang berpengaruh.",
+     "dest": "none",
+     "id": "p5",
+     "isi": "",
+     "label": "Perbaiki",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Judul, kategori, perintah singkat, prompt lengkap. Naikkan versi di judul bila berubah.",
+     "dest": "none",
+     "id": "p6",
+     "isi": "",
+     "label": "Simpan di menu Prompt",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Langkah yang memakai prompt ini diberi tujuan Prompt di Gudang.",
+     "dest": "none",
+     "id": "p7",
+     "isi": "",
+     "label": "Tautkan ke bagan",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    }
+   ],
+   "title": "12 · Pabrik prompt",
+   "updatedAt": 1794737100004
+  },
+  "updatedAt": "2026-11-15T10:04:16.409763Z"
+ },
+ {
+  "id": "sys-13-youtube",
+  "data": {
+   "createdAt": 1794737200000,
+   "note": "Keahlian 02 · Produksi Konten AI. Kanal sudah ada: 14 subscriber per 15 Nov 2026 (Supermetrics), belum ada penayangan 30 hari terakhir. Isi: info dan panduan kuliah UT, sebagai media independen. Tiap minggu 1 video panjang 3–6 menit (Sabtu) + 2 Shorts (Senin, Rabu), dirender di Remotion dari satu naskah. Kanal AI ada di bagan 14; topik tidak boleh tertukar.",
+   "steps": [
+    {
+     "alur": "",
+     "brief": "Ambil dari artikel blog yang paling banyak dibaca dan pertanyaan mahasiswa. Satu video satu pertanyaan.",
+     "dest": "none",
+     "id": "y1",
+     "isi": "",
+     "label": "Pilih topik mingguan",
+     "owner": "Claude",
+     "plat": "YouTube",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Video panjang: hook 10 detik, 3 bagian, penutup + CTA. Tiap bagian harus bisa dipotong jadi Shorts yang berdiri sendiri. Naskah dikunci sebelum suara dibuat.",
+     "dest": "prompt",
+     "id": "y2",
+     "isi": "",
+     "label": "Naskah dan papan cerita",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "p-skrip-video",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Rekam sendiri atau buat sekali di ElevenLabs (sistem 11). Potong per adegan.",
+     "dest": "none",
+     "id": "y3",
+     "isi": "",
+     "label": "Suara",
+     "owner": "Dika",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "1. Isi data JSON: adegan, teks layar, berkas suara per adegan.\n2. Durasi adegan mengikuti durasi suara.\n3. Komposisi panjang 1920 × 1080, 30 fps.\n4. Komposisi Shorts 1080 × 1920 dari adegan terpilih, maksimal 60 detik.\n5. Render 2–3 gambar diam dulu untuk cek, baru render penuh sekali (concurrency 2, crf 23).",
+     "brief": "Satu data JSON, dua komposisi: 1920 × 1080 dan 1080 × 1920.",
+     "dest": "remotion",
+     "id": "y4",
+     "isi": "",
+     "label": "Susun di Remotion",
+     "owner": "Remotion",
+     "plat": "YouTube",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "1280 × 720, maksimal 4 kata, terbaca di layar ponsel.",
+     "dest": "none",
+     "id": "y5",
+     "isi": "",
+     "label": "Thumbnail",
+     "owner": "Canva",
+     "plat": "YouTube",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Judul berupa pertanyaan yang diketik orang. Deskripsi: 2 kalimat inti, bab berwaktu, tautan heyaipeople.site dan artikel sumber.",
+     "dest": "prompt",
+     "id": "y6",
+     "isi": "",
+     "label": "Judul, deskripsi, bab",
+     "owner": "Claude",
+     "plat": "YouTube",
+     "promptId": "p-caption-cta",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Video panjang hari Sabtu, Shorts Senin dan Rabu.",
+     "dest": "none",
+     "id": "y7",
+     "isi": "",
+     "label": "Persetujuan dan unggah terjadwal",
+     "owner": "Dika",
+     "plat": "YouTube",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Shorts yang sama ke TikTok dan Reels dengan caption disesuaikan. Video panjang ditanam di artikel blog sumbernya.",
+     "dest": "none",
+     "id": "y8",
+     "isi": "",
+     "label": "Sebar ulang",
+     "owner": "Claude",
+     "plat": "TikTok",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Penayangan, jam tonton, subscriber baru dari Supermetrics. Bandingkan antar video sendiri.",
+     "dest": "prompt",
+     "id": "y9",
+     "isi": "",
+     "label": "Evaluasi 7 hari",
+     "owner": "Claude",
+     "plat": "YouTube",
+     "promptId": "p-analis-sosmed",
+     "status": "belum"
+    }
+   ],
+   "title": "13 · YouTube Catatan Akademik (Remotion)",
+   "updatedAt": 1794737200000
+  },
+  "updatedAt": "2026-11-15T10:08:08.610929Z"
+ },
+ {
+  "id": "sys-14-youtube-heyai",
+  "data": {
+   "createdAt": 1794737400000,
+   "note": "Keahlian 02 · Produksi Konten AI. Kanal belum ada per 15 Nov 2026, jadi belum punya angka awal. Isi: tutorial dan alat AI untuk kerja dan konten. Tiap minggu 1 video panjang 3–6 menit (Rabu) + 2 Shorts (Selasa, Jumat). Semua CTA ke heyaipeople.site. Topik UT masuk bagan 13, bukan di sini.",
+   "steps": [
+    {
+     "alur": "",
+     "brief": "Nama HeyAIPeople, handle, foto profil, banner, deskripsi 2 kalimat, tautan heyaipeople.site. Setelah jadi, sambungkan ke Supermetrics dan catat angka awal di Ringkasan.",
+     "dest": "none",
+     "id": "z1",
+     "isi": "",
+     "label": "Buat kanal",
+     "owner": "Dika",
+     "plat": "YouTube",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Satu video satu masalah yang bisa diselesaikan dengan AI. Ambil dari carousel dan produk di heyaipeople.site.",
+     "dest": "none",
+     "id": "z2",
+     "isi": "",
+     "label": "Pilih topik mingguan",
+     "owner": "Claude",
+     "plat": "YouTube",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Hook 10 detik, 3 bagian, penutup + CTA. Tiap bagian bisa dipotong jadi Shorts. Fakta alat AI dicek ke sumber resminya.",
+     "dest": "prompt",
+     "id": "z3",
+     "isi": "",
+     "label": "Naskah dan papan cerita",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "p-skrip-video",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Rekam sendiri atau buat sekali di ElevenLabs (sistem 11).",
+     "dest": "none",
+     "id": "z4",
+     "isi": "",
+     "label": "Suara",
+     "owner": "Dika",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "1. Isi data JSON: adegan, teks layar, berkas suara per adegan.\n2. Durasi adegan mengikuti durasi suara.\n3. Komposisi panjang 1920 × 1080, 30 fps.\n4. Komposisi Shorts 1080 × 1920, maksimal 60 detik.\n5. Render 2–3 gambar diam dulu, baru render penuh sekali (concurrency 2, crf 23).",
+     "brief": "Satu data JSON, dua komposisi. Tema warna berbeda dari kanal Catatan Akademik.",
+     "dest": "remotion",
+     "id": "z5",
+     "isi": "",
+     "label": "Susun di Remotion",
+     "owner": "Remotion",
+     "plat": "YouTube",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "1280 × 720, maksimal 4 kata, terbaca di ponsel.",
+     "dest": "none",
+     "id": "z6",
+     "isi": "",
+     "label": "Thumbnail",
+     "owner": "Canva",
+     "plat": "YouTube",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Judul berupa pertanyaan yang diketik orang. Deskripsi: inti 2 kalimat, bab berwaktu, tautan heyaipeople.site.",
+     "dest": "prompt",
+     "id": "z7",
+     "isi": "",
+     "label": "Judul, deskripsi, bab",
+     "owner": "Claude",
+     "plat": "YouTube",
+     "promptId": "p-caption-cta",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Video panjang Rabu, Shorts Selasa dan Jumat.",
+     "dest": "none",
+     "id": "z8",
+     "isi": "",
+     "label": "Persetujuan dan unggah terjadwal",
+     "owner": "Dika",
+     "plat": "YouTube",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Shorts yang sama ke TikTok dan Reels akun AI, caption disesuaikan.",
+     "dest": "none",
+     "id": "z9",
+     "isi": "",
+     "label": "Sebar ulang",
+     "owner": "Claude",
+     "plat": "TikTok",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Penayangan, jam tonton, subscriber baru. Bandingkan antar video sendiri.",
+     "dest": "prompt",
+     "id": "z10",
+     "isi": "",
+     "label": "Evaluasi 7 hari",
+     "owner": "Claude",
+     "plat": "YouTube",
+     "promptId": "p-analis-sosmed",
+     "status": "belum"
+    }
+   ],
+   "title": "14 · YouTube HeyAIPeople (Remotion)",
+   "updatedAt": 1794737400000
+  },
+  "updatedAt": "2026-11-15T10:08:08.618346Z"
+ },
+ {
+  "id": "sys-15-blog-heyai",
+  "data": {
+   "createdAt": 1794738700000,
+   "note": "Keahlian 02 · Produksi Konten AI. Blog heyaipeople.site masih kosong per 15 Nov 2026 (\"Segera Hadir\"). Isi: cara pakai AI untuk kerja dan konten. Topik UT masuk bagan 03, bukan di sini.",
+   "steps": [
+    {
+     "alur": "",
+     "brief": "Baca branch heyaipeople: artikel disimpan sebagai apa dan lewat mana terbitnya. Belum dicatat, jangan ditebak.",
+     "dest": "none",
+     "id": "r1",
+     "isi": "",
+     "label": "Cek cara terbit di situs",
+     "owner": "Claude",
+     "plat": "Web / Portofolio",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Satu artikel satu masalah yang diselesaikan dengan AI. Selaraskan dengan carousel dan video kanal AI.",
+     "dest": "none",
+     "id": "r2",
+     "isi": "",
+     "label": "Daftar judul per minggu",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Fitur, harga, dan batas alat AI dicek ke halaman resminya, dengan tanggal akses.",
+     "dest": "none",
+     "id": "r3",
+     "isi": "",
+     "label": "Riset ke sumber resmi alat",
+     "owner": "Claude",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Pakai susunan prompt artikel, ganti konteks UT dengan AI. Tautan penutup ke produk di heyaipeople.site.",
+     "dest": "prompt",
+     "id": "r4",
+     "isi": "",
+     "label": "Tulis artikel",
+     "owner": "Hermes",
+     "plat": "Web / Portofolio",
+     "promptId": "p-artikel-blog",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "VERIFIED / NEEDS REVIEW / UNSUPPORTED per klaim.",
+     "dest": "chat",
+     "id": "r5",
+     "isi": "",
+     "label": "Cek fakta",
+     "owner": "GPT",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "",
+     "dest": "none",
+     "id": "r6",
+     "isi": "",
+     "label": "Cek satu per satu",
+     "owner": "Dika",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Gaya akun AI, beda dari navy dan emas Catatan Akademik.",
+     "dest": "none",
+     "id": "r7",
+     "isi": "",
+     "label": "Sampul",
+     "owner": "Canva",
+     "plat": "",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Jadwal: selang-seling dengan blog Catatan Akademik supaya tiap hari ada satu artikel baru di salah satu blog.",
+     "dest": "none",
+     "id": "r8",
+     "isi": "",
+     "label": "Terbit",
+     "owner": "Claude",
+     "plat": "Web / Portofolio",
+     "promptId": "",
+     "status": "belum"
+    },
+    {
+     "alur": "",
+     "brief": "Masuk ke bagan 02 dan 14.",
+     "dest": "none",
+     "id": "r9",
+     "isi": "",
+     "label": "Turunkan jadi carousel dan Shorts",
+     "owner": "Canva",
+     "plat": "Instagram",
+     "promptId": "",
+     "status": "belum"
+    }
+   ],
+   "title": "15 · Artikel blog HeyAIPeople",
+   "updatedAt": 1794738700000
+  },
+  "updatedAt": "2026-11-15T10:30:52.741552Z"
+ }
+]

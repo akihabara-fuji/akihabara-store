@@ -1,0 +1,121 @@
+[
+ {
+  "id": "a1-catatanakademik",
+  "data": {
+   "branch": "akihabara-store · feat/koin (menurut catatan kerja; belum dicocokkan dengan server)",
+   "deploy": "deploy/update-koin.sh lewat Web console hPanel. Skrip punya cek otomatis dan rollback.",
+   "holder": "",
+   "last": "12 Nov 2026, commit fcba462",
+   "name": "catatanakademik.com",
+   "note": "Memegang pembayaran dan koin. Menu atas tidak diubah. Bot WhatsApp di VPS tidak disentuh.",
+   "order": 1,
+   "since": "",
+   "task": "",
+   "updatedAt": 1794736800000,
+   "url": "https://catatanakademik.com"
+  },
+  "updatedAt": "2026-11-15T10:00:04.052548Z"
+ },
+ {
+  "id": "a2-blog",
+  "data": {
+   "branch": "Bagian dari catatanakademik.com (branch yang sama)",
+   "deploy": "Tanpa deploy: unggah file .md lewat menu blog, otomatis masuk draf.",
+   "holder": "",
+   "last": "",
+   "name": "Blog catatanakademik.com",
+   "note": "Terbit 09.00 WIB tiap 2 hari setelah dicek satu per satu. Alurnya di Bagan 03.",
+   "order": 2,
+   "since": "",
+   "task": "",
+   "updatedAt": 1794736800000,
+   "url": "https://catatanakademik.com/blog"
+  },
+  "updatedAt": "2026-11-15T10:00:04.060159Z"
+ },
+ {
+  "id": "a3-heyaipeople",
+  "data": {
+   "branch": "akihabara-store · heyaipeople",
+   "deploy": "deploy/update-heyaipeople.sh",
+   "holder": "",
+   "last": "15 Nov 2026 15.47, commit eb002ef: homepage jadi marketplace prompt foto AI + storyboard video",
+   "name": "heyaipeople.site",
+   "note": "Tujuan semua CTA layanan. 15 Nov 2026: Dika menyerahkan semua aset ke Claude. Sebelum mengubah, cek dulu commit terbaru di branch; sesi lain sempat mengubah homepage pukul 15.47.",
+   "order": 3,
+   "since": "",
+   "task": "",
+   "updatedAt": 1794736800000,
+   "url": "https://heyaipeople.site"
+  },
+  "updatedAt": "2026-11-15T10:05:05.040528Z"
+ },
+ {
+  "id": "a3b-blog-heyai",
+  "data": {
+   "branch": "Bagian dari heyaipeople.site (branch heyaipeople)",
+   "deploy": "Cara terbit artikel belum dicatat. Langkah pertama bagan 15.",
+   "holder": "",
+   "last": "",
+   "name": "Blog heyaipeople.site",
+   "note": "Masih kosong per 15 Nov 2026. Alurnya di Bagan 15.",
+   "order": 3.5,
+   "since": "",
+   "task": "",
+   "updatedAt": 1794738700000,
+   "url": "https://heyaipeople.site (bagian blog)"
+  },
+  "updatedAt": "2026-11-15T10:30:52.751829Z"
+ },
+ {
+  "id": "a4-portofolio",
+  "data": {
+   "branch": "akihabara-store · portofolio-dika (kode). Catatan serah terima: branch kantor, PROYEK/portofolio/HANDOFF.md",
+   "deploy": "Sistem baru 16 Nov 2026 (CMS planet 3D + works.json): deploy/update-portofolio-cms.sh <commit> lewat Web console hPanel. update-portofolio.sh lama jangan dipakai. Rincian di PROYEK/portofolio/HANDOFF.md",
+   "holder": "",
+   "last": "14 Nov 2026, commit c83dab1. Kunci 15 Nov sore dilepas 16 Nov 2026 atas izin Dika; tugas tautan sosmed belum dicek selesai atau belum",
+   "name": "Portofolio",
+   "note": "Rincian sistem dan status ada di PROYEK/portofolio/HANDOFF.md (branch kantor). Tautan sosmed di kontak dan commit live belum dicek.",
+   "order": 4,
+   "since": "",
+   "task": "",
+   "updatedAt": 1794736800000,
+   "url": "https://dikapriyadi.catatanakademik.com"
+  },
+  "updatedAt": "2026-11-16T12:37:44.463849Z"
+ },
+ {
+  "id": "a5-sosmed",
+  "data": {
+   "branch": "",
+   "deploy": "Posting hanya setelah persetujuan Dika. Desain di Canva, data dari Windsor dan Supermetrics.",
+   "holder": "",
+   "last": "",
+   "name": "Akun sosmed",
+   "note": "Tersambung: IG priyadi_dika (dulu deikaru.dz, sudah ganti nama) dan catatanakademikut, TikTok Akihabara Fuji, FB Catatan Akademik, YouTube Catatan Akademik. Belum tersambung: IG heyaipeople, 2 akun TikTok, 1 halaman Facebook. Belum ada: kanal YouTube HeyAIPeople.",
+   "order": 5,
+   "since": "",
+   "task": "",
+   "updatedAt": 1794736800000,
+   "url": "Instagram, TikTok, Facebook, YouTube"
+  },
+  "updatedAt": "2026-11-15T10:20:25.712049Z"
+ },
+ {
+  "id": "a6-gudang",
+  "data": {
+   "branch": "akihabara-store · kantor (catatan bersama, tanpa kode situs)",
+   "deploy": "Perubahan halaman langsung terbit. Data (prompt, bagan, jadwal, aset) tersimpan di database artefak.",
+   "holder": "",
+   "last": "16 Nov 2026: aturan GitHub masuk prompt Serah terima. Sebelumnya 15 Nov 2026: nama akun SOP diperbaiki (priyadi_dika), SOP Carousel dipecah jadi Prompt 00–12, 3 prompt baru (riset topik, brief Remotion, balas komentar), prompt serah terima ringkas, tombol Kanvas per tab (default: Bagan dan Remotion nyala, Prompt mati)",
+   "name": "Kantor Ai People",
+   "note": "Tampilan untuk Dika. Catatan bersama dan serah terima ada di GitHub: akihabara-fuji/akihabara-store, branch kantor (alur di README.md, HANDOFF tiap proyek di PROYEK/<folder>/HANDOFF.md). Ambil kunci dulu, kerja, tulis last, lalu lepas kunci.",
+   "order": 6,
+   "since": "",
+   "task": "",
+   "updatedAt": 1794754800000,
+   "url": "Artefak ini"
+  },
+  "updatedAt": "2026-11-16T12:37:44.473168Z"
+ }
+]

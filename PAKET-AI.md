@@ -1,14 +1,14 @@
 # PAKET PAPAN KANTOR AI PEOPLE
 
-Salinan otomatis branch kantor (2026-11-17 08:22 WIB). Jangan diedit di sini: sumbernya GitHub akihabara-fuji/akihabara-store branch kantor.
-Isi: STATUS.md, AI/BACA-DULU.md, AI/PERAN.md, ATURAN.md, KUNCI.md, BAGAN.md, SETORAN/README.md, ESTAFET/README.md, PROYEK/README.md, lalu HANDOFF tiap proyek.
+Salinan otomatis branch kantor (2026-11-17 08:30 WIB). Jangan diedit di sini: sumbernya GitHub akihabara-fuji/akihabara-store branch kantor.
+Isi: STATUS.md, AI/BACA-DULU.md, AI/PERAN.md, ATURAN.md, KUNCI.md, BAGAN.md, SETORAN/README.md, ESTAFET/README.md, ARTEFAK/RINGKAS.md, PROYEK/README.md, lalu HANDOFF tiap proyek.
 
 
 ========== FILE: STATUS.md ==========
 
 # STATUS papan kantor
 
-Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-17 08:22 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
+Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-17 08:30 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
 Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 
 ## Rahasia bocor (harus segera dihapus)
@@ -19,6 +19,7 @@ Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 
 ## Menunggu cek silang
 - `LAPORAN/2026-11-17-0700-claude.md`: MENUNGGU Gemini
+- `LAPORAN/2026-11-17-0829-artefak.md`: MENUNGGU GPT
 
 ## Gagal cek silang (perlu diperbaiki pembuatnya)
 - tidak ada
@@ -27,17 +28,24 @@ Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 - `LAPORAN/2026-11-17-0555-claude.md`: LULUS GPT 2026-11-17 06:41 (dicek di Project ChatGPT "Kantor Ai People"; catatan: kurir n8n belum dibangun)
 
 ## Estafet: giliran siapa
-- tidak ada estafet berjalan
+- Dika (ACC): `bwai-part-05` (MENUNGGU_ACC_DIKA)
+- Dika (ACC): `bwai-part-06` (MENUNGGU_ACC_DIKA)
+- Gemini: `artikel-blog-1118` (LOCK_GEMINI)
+- Gemini: `artikel-blog-1120` (LOCK_GEMINI)
+- Gemini: `artikel-blog-1122` (LOCK_GEMINI)
+- Gemini: `carousel-7-cara-ai-1117` (LOCK_GEMINI)
+- Gemini: `carousel-ut-1120` (LOCK_GEMINI)
+- Gemini: `youtube-panjang-1121` (LOCK_GEMINI)
 
 ## Kunci aset yang sedang dipegang
-- Kantor Ai People (artefak) · DIPEGANG Claude akun-2 · Remotion · ekspor DB artefak ke ARTEFAK/ · sejak 17 Nov 2026 08.40
+- semua bebas
 
 ## Laporan terbaru
+- `LAPORAN/2026-11-17-0829-artefak.md`
 - `LAPORAN/2026-11-17-0700-claude.md`
 - `LAPORAN/2026-11-17-0555-claude.md`
 - `LAPORAN/2026-11-16-2252-remotion.md`
 - `LAPORAN/2026-11-16-1938-kantor-ai.md`
-- `LAPORAN/2026-11-16-1928-claude.md`
 
 ## Setoran terbaru
 - tidak ada
@@ -196,7 +204,7 @@ Ambil kunci = commit + push sebelum kerja. Lepas kunci = isi 'terakhir', status 
 - Blog heyaipeople.site | masih kosong, cara terbit belum dicatat | bebas
 - Portofolio dikapriyadi.catatanakademik.com | branch portofolio-dika | sistem baru 16 Nov (CMS planet 3D): deploy/update-portofolio-cms.sh <commit>, update-portofolio.sh lama jangan dipakai; rincian di PROYEK/portofolio/HANDOFF.md | bebas | terakhir: 14 Nov 2026, commit c83dab1 (menurut data artefak; prompt Serah terima menyebut live 6f84501, belum dicek mana yang benar) | kunci lama "Claude (sesi 15 Nov sore)" untuk tugas tautan sosmed di kontak dilepas 16 Nov 18.38 atas izin Dika; tugas itu belum dicek selesai atau belum, cek situs hidup dulu. Di data artefak kunci ini juga sudah dilepas (16 Nov 19.28)
 - Akun sosmed | posting hanya setelah persetujuan Dika | tersambung: IG priyadi_dika dan catatanakademikut, TikTok Akihabara Fuji, FB Catatan Akademik, YouTube Catatan Akademik | belum tersambung: IG heyaipeople, 2 akun TikTok, 1 halaman Facebook | belum ada: kanal YouTube HeyAIPeople
-- Kantor Ai People (artefak) | perubahan halaman langsung terbit | data prompt, bagan, jadwal, aset ada di database artefak. Dicocokkan 16 Nov 18.38: BAGAN.md dan KUNCI.md sama dengan data artefak. Artefak sempat publik (database tidak bisa ditulis AI); per 16 Nov 19.28 berstatus privat, jadi database bisa ditulis sesi AI | DIPEGANG Claude akun-2 · Remotion · ekspor DB artefak ke ARTEFAK/ · sejak 17 Nov 2026 08.40 | terakhir (sebelumnya): 16 Nov 2026 19.38, Claude akun-2 · Claude, data aset artefak diselaraskan dengan repo, aturan 10 prompt Serah terima memuat HANDOFF/PROYEK, folder PROYEK/kantor-ai ditulis (aturan 10) dan Serah terima ringkas (aturan 9), kunci portofolio dilepas di data artefak (artefak sendiri terakhir 15 Nov 2026: nama akun SOP diperbaiki, SOP Carousel jadi Prompt 00–12, prompt serah terima ringkas)
+- Kantor Ai People (artefak) | perubahan halaman langsung terbit | data prompt, bagan, jadwal, aset ada di database artefak. Dicocokkan 16 Nov 18.38: BAGAN.md dan KUNCI.md sama dengan data artefak. Artefak sempat publik (database tidak bisa ditulis AI); per 16 Nov 19.28 berstatus privat, jadi database bisa ditulis sesi AI | bebas | terakhir: 17 Nov 2026 08.29, Claude akun-2 · Remotion, DB artefak diekspor ke ARTEFAK/ (aset, ide, jadwal, prompts .json + RINGKAS.md), 8 estafet dibuat | sebelumnya: 16 Nov 2026 19.38, Claude akun-2 · Claude, data aset artefak diselaraskan dengan repo, aturan 10 prompt Serah terima memuat HANDOFF/PROYEK, folder PROYEK/kantor-ai ditulis (aturan 10) dan Serah terima ringkas (aturan 9), kunci portofolio dilepas di data artefak (artefak sendiri terakhir 15 Nov 2026: nama akun SOP diperbaiki, SOP Carousel jadi Prompt 00–12, prompt serah terima ringkas)
 - Remotion (repo kang-catat-plus, seri BUILD WITH AI) | sumber: zip backup di D:\FOLDER VIDEO KONTEN\BUILD-WITH-AI\SERAH-TERIMA (tidak ada di GitHub); sandbox sementara | render lokal/sandbox, hasil ke D:\...\Part-XX | bebas | terakhir: 16 Nov 2026 22.52, Claude akun-2 · Remotion, Part 5 dan 6 selesai menunggu ACC | rincian di PROYEK/video-remotion/HANDOFF.md
 
 
@@ -350,6 +358,154 @@ Tulis di bagian Hasil setoran GPT, persis dengan judul kolom ini:
 - Suara narasi (Rafiq, ElevenLabs) mengikuti alur di PROYEK/video-remotion/HANDOFF.md bila dipakai.
 
 
+========== FILE: ARTEFAK/RINGKAS.md ==========
+
+# RINGKAS: isi artefak Kantor Ai People
+
+Dibuat 2026-11-17 08:29 WIB oleh Claude akun-2 dari ekspor DB artefak (ARTEFAK/*.json, sumber asli: slug bf60001d-9bea-47c8-b8dc-5a1d139580b3). Jangan diedit di sini; perbarui lewat ekspor ulang.
+
+## Jadwal posting (jadwal.json)
+
+| Tanggal | Judul | Kanal | Bagan | Status | Catatan |
+|---|---|---|---|---|---|
+| Min 2026-11-15 | Rombak Gudang Prompt + catat angka awal | Web / Portofolio | - | selesai | 7 sistem disusun, angka pengikut awal dicatat dari Windsor. |
+| Sen 2026-11-16 | Laporan mingguan pertama | Instagram, TikTok, Facebook | 01 | belum tayang | Sistem 01: hitung metrik 7 hari, pilih satu eksperimen. |
+| Sel 2026-11-17 | Carousel: 7 cara AI untuk konten | Instagram | 02 | belum tayang | Sistem 02. Tayang setelah persetujuan. |
+| Rab 2026-11-18 | Artikel blog 09.00 + buat kanal YouTube HeyAIPeople | Web / Portofolio, YouTube | 03, 14 | belum tayang | Sistem 03 dan 14. Video panjang pertama kanal AI menyusul setelah kanal jadi. |
+| Kam 2026-11-19 | Portofolio: galeri dan tautan sosmed | Web / Portofolio | 07 | belum tayang | Sistem 07. |
+| Jum 2026-11-20 | Artikel blog 09.00 + carousel UT | Web / Portofolio, Instagram | - | belum tayang | Akun catatanakademikut. |
+| Sab 2026-11-21 | YouTube: video panjang pertama + Shorts | TikTok, YouTube, Instagram | 13, 04 | belum tayang | Sistem 13 dan 04. Satu naskah, dua ukuran, lalu ke TikTok dan Reels. |
+| Min 2026-11-22 | Artikel blog 09.00 + evaluasi 7 hari | Web / Portofolio | 01 | belum tayang | Sistem 01 langkah terakhir. |
+
+Catatan: kolom Bagan = nomor sistem di ide.json (sys-NN). Status dari field `done`.
+
+## Prompt per kategori (prompts.json)
+
+### Analisa sosmed (2)
+- `p-analis-sosmed` · Analis Sosial Media: laporan mingguan
+- `p-riset-topik` · Riset topik mingguan
+
+### Blog (1)
+- `p-artikel-blog` · Artikel blog UT (.md siap masuk draf)
+
+### Caption (1)
+- `p-caption-cta` · Caption + CTA ke heyaipeople.site
+
+### Instagram carousel (1)
+- `p-carousel-master` · AI Carousel Content Studio: SOP & Master Prompt Library v1.2
+
+### Kampanye BUILD WITH AI (7)
+- `p-bwai-aturan` · BUILD WITH AI · aturan kampanye, CTA, caption, checklist
+- `p-bwai-ep01-05` · BUILD WITH AI · naskah Episode 001–005 (identitas dan sudut pandang)
+- `p-bwai-ep01-status` · Episode 001 · status produksi dan paket posting
+- `p-bwai-ep06-12` · BUILD WITH AI · naskah Episode 006–012 (tools dan workflow)
+- `p-bwai-ep13-18` · BUILD WITH AI · naskah Episode 013–018 (produk dan proyek)
+- `p-bwai-ep19-24` · BUILD WITH AI · naskah Episode 019–024 (cara kerja dan kredibilitas)
+- `p-bwai-ep25-30` · BUILD WITH AI · naskah Episode 025–030 (eksperimen dan perjalanan)
+
+### Koordinasi (1)
+- `p-brief-hermes` · Brief kerja untuk Hermes
+
+### Portofolio (1)
+- `p-studi-kasus` · Studi kasus portofolio
+
+### Prompt (1)
+- `p-buat-prompt` · Pabrik prompt: bikin prompt baru
+
+### SOP Carousel (13)
+- `p-sop-00` · SOP 00 · Master Content Director
+- `p-sop-01` · SOP 01 · Research Engine
+- `p-sop-02` · SOP 02 · Fact Checker
+- `p-sop-03` · SOP 03 · Content Strategist
+- `p-sop-04` · SOP 04 · Hook Generator
+- `p-sop-05` · SOP 05 · Carousel Copywriter
+- `p-sop-06` · SOP 06 · Creative Director
+- `p-sop-07` · SOP 07 · Puzzle Planner 1–2–3
+- `p-sop-08` · SOP 08 · Grid Planner 3×3
+- `p-sop-09` · SOP 09 · Canva Design Builder
+- `p-sop-10` · SOP 10 · Quality Control
+- `p-sop-11` · SOP 11 · Publishing Pack
+- `p-sop-12` · SOP 12 · Performance Analyst
+
+### Serah terima (2)
+- `p-serah-terima` · Serah terima: aturan kerja, tujuan, memori, skill
+- `p-serah-terima-ringkas` · Serah terima ringkas (tanpa detail server)
+
+### Sosmed (1)
+- `p-balas-komentar` · Balas komentar dan DM
+
+### Video (2)
+- `p-brief-remotion` · Brief video Remotion
+- `p-skrip-video` · Skrip video pendek 25–45 detik
+
+## 30 naskah resmi BUILD WITH AI (Part = Episode)
+
+Sumber: prompt `p-bwai-ep01-05`, `p-bwai-ep06-12`, `p-bwai-ep13-18`, `p-bwai-ep19-24`, `p-bwai-ep25-30`; aturan di `p-bwai-aturan`. Status produksi dari PROYEK/video-remotion/HANDOFF.md.
+
+| Part | Judul | Hook | Status produksi |
+|---|---|---|---|
+| 1 | Satu orang, banyak AI | Satu orang. Banyak AI. Bisa bikin apa? | selesai lama (versi sopan; keputusan versi menunggu Dika) |
+| 2 | AI bukan tombol ajaib | AI nggak bisa menyelamatkan brief yang berantakan. | selesai lama |
+| 3 | Satu tim AI, tugasnya beda-beda | Jangan suruh semua AI mengerjakan hal yang sama. | selesai (v3) |
+| 4 | Claude Code bukan sekadar tempat bertanya | AI coding paling berguna saat dia bekerja di dalam proyek. | selesai (v3) |
+| 5 | Prompt panjang belum tentu prompt bagus | Prompt 1.000 kata belum tentu lebih pintar. | v1 selesai, menunggu ACC Dika |
+| 6 | ChatGPT: jangan cuma minta jawaban | Jangan cuma tanya ChatGPT. Minta dia menguji idemu. | v1 selesai, menunggu ACC Dika |
+| 7 | Gemini dalam workflow | Satu tugas, coba uji di dua model. | belum dikerjakan |
+| 8 | Dari ide ke video dengan Flow | Ide bagus belum jadi video sebelum punya visual. | belum dikerjakan |
+| 9 | ElevenLabs untuk narasi | Suara AI bagus pun bisa bikin video gagal. | belum dikerjakan |
+| 10 | Kenapa pakai Remotion? | Video berulang jangan diedit dari nol terus. | belum dikerjakan |
+| 11 | Foto jadi karakter berbicara | Satu foto bisa punya banyak ekspresi. | belum dikerjakan |
+| 12 | Otomatisasi dimulai dari masalah | Jangan otomatisasi proses yang belum lo pahami. | belum dikerjakan |
+| 13 | Chatbot vs AI agent | Chatbot dan AI agent itu bukan hal yang sama. | belum dikerjakan |
+| 14 | Social Analyzer | Followers banyak belum tentu kontennya efektif. | belum dikerjakan |
+| 15 | Audit akun jangan asal menebak | Views rendah bukan otomatis salah algoritma. | belum dikerjakan |
+| 16 | Website bukan cuma pajangan | Website portfolio harus membuktikan sesuatu. | belum dikerjakan |
+| 17 | Katalog prompt dan storyboard | Prompt foto bagus perlu arahan visual yang jelas. | belum dikerjakan |
+| 18 | Website dan sistem bukan hal yang sama | Tampilan website bagus belum tentu sistemnya siap. | belum dikerjakan |
+| 19 | Error adalah bagian dari development | Bagian paling sering dari coding? Bukan ngetik. Debugging. | belum dikerjakan |
+| 20 | Kenapa proyek perlu QA? | Bisa jalan sekali bukan berarti sudah siap. | belum dikerjakan |
+| 21 | AI untuk pekerjaan operasional | AI paling berguna saat menyelesaikan masalah kerja nyata. | belum dikerjakan |
+| 22 | Data berantakan, laporan ikut berantakan | Laporan lambat kadang masalahnya ada di input. | belum dikerjakan |
+| 23 | Satu ide jadi banyak format | Satu ide bisa jadi empat konten berbeda. | belum dikerjakan |
+| 24 | Kenapa subtitle harus sinkron? | Subtitle muncul terlalu cepat bisa merusak video. | belum dikerjakan |
+| 25 | Jangan percaya semua jawaban AI | AI bisa terdengar yakin, tapi tetap salah. | belum dikerjakan |
+| 26 | Uji model dengan cara yang adil | Mau tahu AI mana yang cocok? Jangan cuma lihat benchmark. | belum dikerjakan |
+| 27 | Laptop terbatas, workflow harus realistis | Nggak semua workflow AI butuh PC mahal. | belum dikerjakan |
+| 28 | Build in public bukan pamer hasil | Build in public bukan berarti semua harus terlihat sukses. | belum dikerjakan |
+| 29 | Dari ide ke sistem | Ide aplikasi itu murah. Sistem yang jalan itu tantangannya. | belum dikerjakan |
+| 30 | 30 hari membangun dengan AI | 30 hari pakai AI belum tentu bikin lo jago. | belum dikerjakan |
+
+## Aset (aset.json)
+
+- `a1-catatanakademik` · catatanakademik.com · https://catatanakademik.com
+- `a2-blog` · Blog catatanakademik.com · https://catatanakademik.com/blog
+- `a3-heyaipeople` · heyaipeople.site · https://heyaipeople.site
+- `a3b-blog-heyai` · Blog heyaipeople.site · https://heyaipeople.site (bagian blog)
+- `a4-portofolio` · Portofolio · https://dikapriyadi.catatanakademik.com
+- `a5-sosmed` · Akun sosmed · Instagram, TikTok, Facebook, YouTube
+- `a6-gudang` · Kantor Ai People · Artefak ini
+
+## Bagan (ide.json)
+
+- `i-carousel-heyai` · Konten berjalan · 7 cara menggunakan AI untuk membuat konten profesional (5 langkah, 0 selesai)
+- `sys-00-kebutuhan` · 00 · Kebutuhan eksekusi dari Dika (11 langkah, 0 selesai)
+- `sys-01-analisa` · 01 · Analisa sosial media (9 langkah, 2 selesai)
+- `sys-02-carousel` · 02 · Produksi carousel Instagram (8 langkah, 0 selesai)
+- `sys-03-blog` · 03 · Artikel blog Catatan Akademik (7 langkah, 0 selesai)
+- `sys-04-video` · 04 · Video pendek (Remotion) (7 langkah, 0 selesai)
+- `sys-05-jalur` · 05 · Jalur pembeli ke heyaipeople.site (8 langkah, 0 selesai)
+- `sys-06-web` · 06 · Web dan deploy (7 langkah, 1 selesai)
+- `sys-07-porto` · 07 · Portofolio dan personal branding (5 langkah, 0 selesai)
+- `sys-08-bot` · 08 · Otomasi AI: bot WhatsApp (7 langkah, 0 selesai)
+- `sys-09-koordinasi` · 09 · Koordinasi alur kerja AI (7 langkah, 0 selesai)
+- `sys-10-dokumen` · 10 · Alat analisis dokumen (8 langkah, 0 selesai)
+- `sys-11-gambar-suara` · 11 · Gambar dan suara AI (6 langkah, 0 selesai)
+- `sys-12-prompt` · 12 · Pabrik prompt (7 langkah, 0 selesai)
+- `sys-13-youtube` · 13 · YouTube Catatan Akademik (Remotion) (9 langkah, 0 selesai)
+- `sys-14-youtube-heyai` · 14 · YouTube HeyAIPeople (Remotion) (10 langkah, 0 selesai)
+- `sys-15-blog-heyai` · 15 · Artikel blog HeyAIPeople (9 langkah, 0 selesai)
+
+
 ========== FILE: PROYEK/README.md ==========
 
 # Proyek
@@ -381,6 +537,150 @@ Aturan:
 - HANDOFF.md selalu diperbarui di akhir sesi, bukan ditambah terus. Yang sudah basi dihapus.
 - File besar (video, gambar, Word) tidak masuk sini. Tulis lokasinya saja (folder laptop D:, Drive, artefak).
 - Tidak ada kata sandi, token, kunci API, atau nomor rekening.
+
+
+========== FILE: ESTAFET/artikel-blog-1118/PROYEK.md ==========
+
+# ESTAFET artikel-blog-1118: Artikel blog Catatan Akademik 09.00 (Rabu 18 Nov)
+
+Status: LOCK_GEMINI
+Dibuat: 2026-11-17 08:29 oleh Claude akun-2 (dari ekspor artefak ke ARTEFAK/)
+Folder Drive klip Flow: (belum ada)
+
+Alur dan aturan: ESTAFET/README.md. Hanya pemegang status yang boleh mengerjakan proyek ini.
+
+Sumber jadwal: ARTEFAK/jadwal.json `j-2026-11-18` (Artikel blog 09.00 + buat kanal YouTube HeyAIPeople; kanal Web / Portofolio, YouTube). Catatan jadwal: Sistem 03 dan 14. Video panjang pertama kanal AI menyusul setelah kanal jadi.
+Bagan: sistem 03 (`sys-03-blog`). Prompt penulisan: `p-artikel-blog` (artikel masuk draf blog dulu, tidak terbit otomatis). Bagian kanal YouTube HeyAIPeople di jadwal yang sama adalah tugas Dika (`z1`), bukan estafet konten.
+Brief: belum ada di artefak (dicek ide.json dan prompts.json). Gemini mengerjakan riset dan brief: tujuan, audiens, pesan utama, bukti, CTA ke heyaipeople.site. Posting menunggu ACC Dika.
+
+## Riwayat
+- 2026-11-17 08:29 · Claude akun-2 · dibuat -> LOCK_GEMINI
+
+
+========== FILE: ESTAFET/artikel-blog-1120/PROYEK.md ==========
+
+# ESTAFET artikel-blog-1120: Artikel blog Catatan Akademik 09.00 (Jumat 20 Nov)
+
+Status: LOCK_GEMINI
+Dibuat: 2026-11-17 08:29 oleh Claude akun-2 (dari ekspor artefak ke ARTEFAK/)
+Folder Drive klip Flow: (belum ada)
+
+Alur dan aturan: ESTAFET/README.md. Hanya pemegang status yang boleh mengerjakan proyek ini.
+
+Sumber jadwal: ARTEFAK/jadwal.json `j-2026-11-20` (Artikel blog 09.00 + carousel UT; kanal Web / Portofolio, Instagram). Catatan jadwal: Akun catatanakademikut.
+Bagan: sistem 03 (`sys-03-blog`). Prompt: `p-artikel-blog`.
+Brief: belum ada di artefak (dicek ide.json dan prompts.json). Gemini mengerjakan riset dan brief: tujuan, audiens, pesan utama, bukti, CTA ke heyaipeople.site. Posting menunggu ACC Dika.
+
+## Riwayat
+- 2026-11-17 08:29 · Claude akun-2 · dibuat -> LOCK_GEMINI
+
+
+========== FILE: ESTAFET/artikel-blog-1122/PROYEK.md ==========
+
+# ESTAFET artikel-blog-1122: Artikel blog Catatan Akademik 09.00 (Minggu 22 Nov)
+
+Status: LOCK_GEMINI
+Dibuat: 2026-11-17 08:29 oleh Claude akun-2 (dari ekspor artefak ke ARTEFAK/)
+Folder Drive klip Flow: (belum ada)
+
+Alur dan aturan: ESTAFET/README.md. Hanya pemegang status yang boleh mengerjakan proyek ini.
+
+Sumber jadwal: ARTEFAK/jadwal.json `j-2026-11-22` (Artikel blog 09.00 + evaluasi 7 hari; kanal Web / Portofolio). Catatan jadwal: Sistem 01 langkah terakhir.
+Bagan: sistem 03 (`sys-03-blog`). Prompt: `p-artikel-blog`. Bagian evaluasi 7 hari di jadwal yang sama masuk sistem 01, bukan estafet konten.
+Brief: belum ada di artefak (dicek ide.json dan prompts.json). Gemini mengerjakan riset dan brief: tujuan, audiens, pesan utama, bukti, CTA ke heyaipeople.site. Posting menunggu ACC Dika.
+
+## Riwayat
+- 2026-11-17 08:29 · Claude akun-2 · dibuat -> LOCK_GEMINI
+
+
+========== FILE: ESTAFET/bwai-part-05/PROYEK.md ==========
+
+# ESTAFET bwai-part-05: BUILD WITH AI Part 5: Prompt jelas bukan panjang
+
+Status: MENUNGGU_ACC_DIKA
+Dibuat: 2026-11-17 08:29 oleh Claude akun-2 (dari ekspor artefak ke ARTEFAK/)
+Folder Drive klip Flow: (belum ada)
+
+Alur dan aturan: ESTAFET/README.md. Hanya pemegang status yang boleh mengerjakan proyek ini.
+
+Naskah resmi: prompt `p-bwai-ep01-05` (EP 005). Hook: "Prompt 1.000 kata belum tentu lebih pintar." Teks layar: JELAS LEBIH PENTING DARI PANJANG. CTA: Follow dan cek bio buat kumpulan prompt dan contoh penerapannya.
+Hasil: video v1 + thumbnail A/B + caption sudah jadi, validator episode:check LOLOS. Lokasi: D:\FOLDER VIDEO KONTEN\BUILD-WITH-AI\Part-05\ (tidak lewat Flow; dirender langsung di Remotion dengan suara Rafiq). Rincian: PROYEK/video-remotion/HANDOFF.md.
+Menunggu: ACC Dika (revisi mungkin: volume SFX, gerakan). Posting hanya setelah ACC.
+
+## Riwayat
+- 2026-11-17 08:29 · Claude akun-2 · dibuat -> MENUNGGU_ACC_DIKA
+
+
+========== FILE: ESTAFET/bwai-part-06/PROYEK.md ==========
+
+# ESTAFET bwai-part-06: BUILD WITH AI Part 6: AI partner berpikir
+
+Status: MENUNGGU_ACC_DIKA
+Dibuat: 2026-11-17 08:29 oleh Claude akun-2 (dari ekspor artefak ke ARTEFAK/)
+Folder Drive klip Flow: (belum ada)
+
+Alur dan aturan: ESTAFET/README.md. Hanya pemegang status yang boleh mengerjakan proyek ini.
+
+Naskah resmi: prompt `p-bwai-ep06-12` (EP 006). Hook: "Jangan cuma tanya ChatGPT. Minta dia menguji idemu." Teks layar: JADIKAN AI PARTNER BERPIKIR. CTA: Follow dan cek bio buat prompt yang bisa langsung lo praktikkan.
+Hasil: video v1 + thumbnail A/B + caption sudah jadi, validator episode:check LOLOS. Lokasi: D:\FOLDER VIDEO KONTEN\BUILD-WITH-AI\Part-06\ (tidak lewat Flow; dirender langsung di Remotion dengan suara Rafiq). Rincian: PROYEK/video-remotion/HANDOFF.md.
+Menunggu: ACC Dika (revisi mungkin: volume SFX, gerakan). Posting hanya setelah ACC.
+
+## Riwayat
+- 2026-11-17 08:29 · Claude akun-2 · dibuat -> MENUNGGU_ACC_DIKA
+
+
+========== FILE: ESTAFET/carousel-7-cara-ai-1117/PROYEK.md ==========
+
+# ESTAFET carousel-7-cara-ai-1117: Carousel IG: 7 cara AI untuk konten
+
+Status: LOCK_GEMINI
+Dibuat: 2026-11-17 08:29 oleh Claude akun-2 (dari ekspor artefak ke ARTEFAK/)
+Folder Drive klip Flow: (belum ada)
+
+Alur dan aturan: ESTAFET/README.md. Hanya pemegang status yang boleh mengerjakan proyek ini.
+
+Sumber jadwal: ARTEFAK/jadwal.json `j-2026-11-17` (Carousel: 7 cara AI untuk konten; kanal Instagram). Catatan jadwal: Sistem 02. Tayang setelah persetujuan.
+Bagan: sistem 02 (ide.json `sys-02-carousel`) dan `i-carousel-heyai`. Aturan produksi: prompt `p-carousel-master` dan SOP 00–12. Akun: heyaipeople.
+Brief: belum ada di artefak (dicek ide.json dan prompts.json). Gemini mengerjakan riset dan brief: tujuan, audiens, pesan utama, bukti, CTA ke heyaipeople.site. Posting menunggu ACC Dika.
+
+## Riwayat
+- 2026-11-17 08:29 · Claude akun-2 · dibuat -> LOCK_GEMINI
+
+
+========== FILE: ESTAFET/carousel-ut-1120/PROYEK.md ==========
+
+# ESTAFET carousel-ut-1120: Carousel IG catatanakademikut (Jumat 20 Nov)
+
+Status: LOCK_GEMINI
+Dibuat: 2026-11-17 08:29 oleh Claude akun-2 (dari ekspor artefak ke ARTEFAK/)
+Folder Drive klip Flow: (belum ada)
+
+Alur dan aturan: ESTAFET/README.md. Hanya pemegang status yang boleh mengerjakan proyek ini.
+
+Sumber jadwal: ARTEFAK/jadwal.json `j-2026-11-20` (Artikel blog 09.00 + carousel UT; kanal Web / Portofolio, Instagram). Catatan jadwal: Akun catatanakademikut.
+Bagan: sistem 02 (`sys-02-carousel`) dan 03 (turunan artikel). Akun: catatanakademikut, topik UT, media independen. Prompt: `p-carousel-master`.
+Brief: belum ada di artefak (dicek ide.json dan prompts.json). Gemini mengerjakan riset dan brief: tujuan, audiens, pesan utama, bukti, CTA ke heyaipeople.site. Posting menunggu ACC Dika.
+
+## Riwayat
+- 2026-11-17 08:29 · Claude akun-2 · dibuat -> LOCK_GEMINI
+
+
+========== FILE: ESTAFET/youtube-panjang-1121/PROYEK.md ==========
+
+# ESTAFET youtube-panjang-1121: YouTube video panjang + Shorts (Sabtu 21 Nov)
+
+Status: LOCK_GEMINI
+Dibuat: 2026-11-17 08:29 oleh Claude akun-2 (dari ekspor artefak ke ARTEFAK/)
+Folder Drive klip Flow: (belum ada)
+
+Alur dan aturan: ESTAFET/README.md. Hanya pemegang status yang boleh mengerjakan proyek ini.
+
+Sumber jadwal: ARTEFAK/jadwal.json `j-2026-11-21` (YouTube: video panjang pertama + Shorts; kanal TikTok, YouTube, Instagram). Catatan jadwal: Sistem 13 dan 04. Satu naskah, dua ukuran, lalu ke TikTok dan Reels.
+Bagan: sistem 13 (`sys-13-youtube`) dan 04. Satu naskah, dua ukuran (1920x1080 dan 1080x1920). Prompt: `p-skrip-video`, `p-brief-remotion`. Topik dipilih dari artikel blog paling banyak dibaca.
+Brief: belum ada di artefak (dicek ide.json dan prompts.json). Gemini mengerjakan riset dan brief: tujuan, audiens, pesan utama, bukti, CTA ke heyaipeople.site. Posting menunggu ACC Dika.
+
+## Riwayat
+- 2026-11-17 08:29 · Claude akun-2 · dibuat -> LOCK_GEMINI
 
 
 ========== FILE: PROYEK/kantor-ai/HANDOFF.md ==========
