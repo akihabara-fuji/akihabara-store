@@ -1,14 +1,14 @@
 # PAKET PAPAN KANTOR AI PEOPLE
 
-Salinan otomatis branch kantor (2026-11-17 08:32 WIB). Jangan diedit di sini: sumbernya GitHub akihabara-fuji/akihabara-store branch kantor.
-Isi: STATUS.md, AI/BACA-DULU.md, AI/PERAN.md, ATURAN.md, KUNCI.md, BAGAN.md, SETORAN/README.md, ESTAFET/README.md, ARTEFAK/RINGKAS.md, PROYEK/README.md, lalu HANDOFF tiap proyek.
+Salinan otomatis branch kantor (2026-11-17 08:50 WIB). Jangan diedit di sini: sumbernya GitHub akihabara-fuji/akihabara-store branch kantor.
+Isi: STATUS.md, AI/BACA-DULU.md, AI/PERAN.md, ATURAN.md, KUNCI.md, BAGAN.md, SETORAN/README.md, ESTAFET/README.md, ARTEFAK/RINGKAS.md, PROYEK/heyaipeople/MASTER_BRAND_GUIDELINES.md, PROYEK/heyaipeople/CONTENT_REGISTRY.md, PROYEK/heyaipeople/DESIGN_REGISTRY.md, PROYEK/README.md, lalu HANDOFF tiap proyek.
 
 
 ========== FILE: STATUS.md ==========
 
 # STATUS papan kantor
 
-Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-17 08:32 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
+Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-17 08:50 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
 Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 
 ## Rahasia bocor (harus segera dihapus)
@@ -20,6 +20,7 @@ Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 ## Menunggu cek silang
 - `LAPORAN/2026-11-17-0700-claude.md`: MENUNGGU Gemini
 - `LAPORAN/2026-11-17-0829-artefak.md`: MENUNGGU GPT
+- `LAPORAN/2026-11-17-0855-heyaipeople-audit.md`: MENUNGGU GPT
 
 ## Gagal cek silang (perlu diperbaiki pembuatnya)
 - tidak ada
@@ -41,11 +42,11 @@ Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 - semua bebas
 
 ## Laporan terbaru
+- `LAPORAN/2026-11-17-0855-heyaipeople-audit.md`
 - `LAPORAN/2026-11-17-0829-artefak.md`
 - `LAPORAN/2026-11-17-0700-claude.md`
 - `LAPORAN/2026-11-17-0555-claude.md`
 - `LAPORAN/2026-11-16-2252-remotion.md`
-- `LAPORAN/2026-11-16-1938-kantor-ai.md`
 
 ## Setoran terbaru
 - tidak ada
@@ -86,14 +87,18 @@ Setiap selesai satu pekerjaan, atau kalau kuota hampir habis, tulis satu blok SE
 
 Disetujui Dika 17 Nov 2026 ("atur sesuai rekomendasi lu"). Semua AI kerja di papan yang sama: repo akihabara-fuji/akihabara-store, branch `kantor`. Tidak ada spreadsheet atau tempat lain.
 
-| AI | Peran | Boleh | Tidak boleh |
-|---|---|---|---|
-| Claude | Eksekutor dan juru catat | Kode, deploy, commit dan push ke branch ini, pegang kunci aset di KUNCI.md, mencatat SETORAN dari AI lain | Mengubah ATURAN.md tanpa perintah Dika |
-| ChatGPT (GPT) | Riset dan struktur | Riset, cek fakta, kerangka konten, naskah, CV, proposal, penawaran | Mengubah aset (situs, sosmed, bot) langsung; memegang kunci aset |
-| Gemini | QC dan visual | Cek mutu hasil kerja, cek tampilan situs dan desain, ide visual, cek ulang fakta | Mengubah aset langsung; memegang kunci aset |
+Pembagian resmi mengikuti MASTER COMMAND HeyAIPeople v4.0 (PROYEK/heyaipeople/MASTER_COMMAND_v4.md, dari Dika 17 Nov 2026).
 
-## Peran dalam ESTAFET produksi (17 Nov 2026)
-Untuk proyek konten/klien yang lewat estafet (ESTAFET/README.md), urutannya: Gemini riset dan brief (`LOCK_GEMINI`), GPT naskah, panduan carousel Canva, dan tabel SCENE berisi prompt Google Flow (`LOCK_GPT`), Dika menjalankan Google Flow jadi klip scene_XX.mp4 (`LOCK_FLOW`), Claude merakit di Remotion, audit, lalu deploy/kirim setelah ACC Dika (`LOCK_CLAUDE_REMOTION` sampai `COMPLETED`). Peran QC/cek silang di tabel atas tetap berlaku untuk tiap setoran estafet.
+| AI | Peran v4 | Boleh | Tidak boleh |
+|---|---|---|---|
+| GPT | Editorial Director & Lead Scriptwriter; lewat Cowork juga operator desain Canva | Strategi editorial, ide/angle/hook, naskah final 7 slide, caption/CTA/hashtag, arahan visual, editorial QC, eksekusi desain Canva lewat Cowork dan catat Canva Design ID | Mengarang data/hasil/testimoni/klien; klaim desain FINAL sebelum dicek |
+| Gemini | Research & Information Intelligence | Riset tren, berita, tools AI, data dan referensi (topik, ringkasan, sumber asli, URL, tanggal terbit, tanggal cek, klaim terverifikasi, yang belum pasti) | Menetapkan naskah final; membuat desain Canva |
+| Claude | Project Manager & AI Operations Coordinator; juga eksekutor teknis (kode, deploy, Remotion) | Dokumentasi papan, registry, pembagian tugas, status, Design QA, laporan progres, kunci aset, commit/push | Mengambil alih desain Canva GPT; mengubah naskah final GPT sepihak (revisi substansi dikoordinasikan ke GPT); mengubah ATURAN.md tanpa perintah Dika |
+| Image/Video AI (Google Flow dll.) | Produksi aset | Ilustrasi, aset gambar, video generatif sesuai arahan | Mengubah identitas visual tanpa persetujuan |
+| ElevenLabs | Suara | Voice-over dan narasi. Suara Rafiq dipakai sampai Part 10 BUILD WITH AI (keputusan Dika 17 Nov) | - |
+| CapCut | Editing video | Editing, subtitle, motion, transisi, sinkron audio | - |
+
+GPT dan Gemini tidak pegang kunci aset; Claude yang mengubah aset (situs, bot, repo).
 
 ## Kenapa GPT dan Gemini tidak pegang kunci
 Kerjaan mereka berupa bahan (riset, naskah, catatan QC), bukan perubahan aset. Yang mengubah aset hanya Claude, jadi tidak ada dua AI yang mengedit hal yang sama di waktu yang sama.
@@ -107,11 +112,10 @@ Tidak ada AI yang mengecek hasilnya sendiri. Tiap SETORAN dan LAPORAN punya bari
 
 | Pembuat | Pengecek |
 |---|---|
-| GPT | Gemini |
-| Gemini | GPT |
-| Claude, kerjaan tampilan/web/visual | Gemini |
-| Claude, kerjaan fakta/teks/riset | GPT |
-| Kode dan teknis dari GPT/Gemini | Claude |
+| GPT, naskah | Gemini (fakta dan sumber) |
+| GPT lewat Cowork, desain Canva | Claude (Design QA pakai PROYEK/heyaipeople/QA_CHECKLIST.md) |
+| Gemini, riset | GPT (relevansi editorial) |
+| Claude, laporan/dokumentasi/kode | GPT (atau Gemini bila menyangkut fakta) |
 
 Cara mengecek: buka STATUS.md, bagian "Menunggu cek silang", ambil yang menunggu kamu, lalu periksa fakta dan sumbernya, ikut ATURAN.md atau tidak, sama brief atau tidak. Tutup dengan blok:
 
@@ -506,6 +510,69 @@ Sumber: prompt `p-bwai-ep01-05`, `p-bwai-ep06-12`, `p-bwai-ep13-18`, `p-bwai-ep1
 - `sys-15-blog-heyai` · 15 · Artikel blog HeyAIPeople (9 langkah, 0 selesai)
 
 
+========== FILE: PROYEK/heyaipeople/MASTER_BRAND_GUIDELINES.md ==========
+
+# MASTER BRAND GUIDELINES HeyAIPeople (TERKUNCI, sumber: MASTER_COMMAND_v4.md bagian 2)
+
+Positioning: HEYAIPEOPLE — REAL WORK. REAL PROCESS. REAL PROOF. Media edukasi, laboratorium eksperimen, dokumentasi proses kerja, dan portofolio profesional Dika Priyadi. Bukan sekadar akun berita AI.
+
+Penulisan nama brand: **HeyAIPeople** (A dan I kapital, satu kata). Salah: "HeyAlPeople" (huruf L), "Heya I People", "Hey AI People".
+
+Identitas visual: premium monochrome editorial; dominan hitam, putih, grayscale; aksen warna adaptif (biru = teknologi/AI, kuning = tools/highlight, ungu = kreativitas/workflow) hanya pendukung; foto manusia boleh warna natural selektif; minimalis, bersih, tegas, profesional; hindari dekorasi berlebihan.
+
+Tipografi: headline Sora atau Montserrat; body Inter atau Poppins.
+
+Format Instagram: 1080 × 1350 px (4:5), tepat 7 slide: 1 Cover, 2 Hook, 3 Problem/Konteks, 4 Pembahasan, 5 Contoh praktis, 6 Insight, 7 CTA. Tiap slide: nomor, headline, naskah final, arahan visual, penekanan teks, hubungan dengan slide sebelum/sesudah.
+
+Puzzle cover: hanya menyambung cover di grid profil, tidak mengganggu keterbacaan judul, isi tiap carousel berdiri sendiri. Jumlah 3, 6, atau 9 sesuai instruksi; seri pertama = tiga cover horizontal tersambung.
+
+Jujur: tidak mengarang data, eksperimen, pengalaman, testimoni, klien, pencapaian. Simulasi diberi label simulasi dan tidak disamakan dengan proyek klien nyata.
+
+
+========== FILE: PROYEK/heyaipeople/CONTENT_REGISTRY.md ==========
+
+# CONTENT REGISTRY HeyAIPeople
+
+Status: BACKLOG, RESEARCHING, SCRIPT DRAFT, SCRIPT APPROVED, DESIGN IN PROGRESS, DESIGN REVIEW, REVISION REQUIRED, QA APPROVED, READY TO PUBLISH, PUBLISHED, ARCHIVED. Status naskah, desain, dan publikasi dicatat terpisah. "tidak tercatat" = tidak ada bukti di papan, bukan berarti belum dikerjakan.
+
+| Content ID | Series | Judul | Pilar | Kategori | Angle | Hook | Ringkasan | Dibuat | Riset | Naskah | Desain | QA | Publikasi | Referensi |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| HAP-S01-P01 | S01 | Social Media Audit | Social Media Intelligence | belum dikunci | Audit dulu sebelum ubah strategi | Kenapa akunmu tidak berkembang? | 5 kemungkinan penyebab, 4 area audit (profil, audiens, konten, distribusi), contoh audit simulasi, urutan amati-pola-hipotesis-uji-evaluasi | 17 Nov 2026 (Canva) | tidak tercatat | tidak tercatat di papan (teks hanya di Canva) | DESIGN REVIEW | belum | belum | DESIGN_REGISTRY HAP-D-S01-P01 |
+| HAP-S01-P02 | S01 | Audience Intelligence | Social Media Intelligence | belum dikunci | Kebutuhan audiens bukan preferensi kreator | Siapa sebenarnya audiensmu? | Followers bukan pemahaman audiens, 4 pertanyaan riset audiens, contoh persona (simulasi), sinyal audiens dibaca dalam konteks | 17 Nov 2026 (Canva) | tidak tercatat | tidak tercatat di papan | REVISION REQUIRED (8 halaman) | belum | belum | DESIGN_REGISTRY HAP-D-S01-P02 |
+| HAP-S01-P03 | S01 | Content Strategy | Social Media Intelligence | belum dikunci | Dari angka menuju keputusan | Ubah data jadi strategi konten | Data tanpa arah hanya laporan, 4 langkah strategi, contoh kalender 7 hari (ilustratif), data-insight-hipotesis-uji-evaluasi | 17 Nov 2026 (Canva) | tidak tercatat | tidak tercatat di papan | REVISION REQUIRED (8 halaman) | belum | belum | DESIGN_REGISTRY HAP-D-S01-P03 |
+| HAP-C-7CARA | - | 7 cara menggunakan AI untuk membuat konten profesional | AI Content Lab | belum dikunci | - | - | Jadwal artefak 17 Nov, tayang setelah persetujuan | 15 Nov (artefak) | BACKLOG (ESTAFET carousel-7-cara-ai-1117, LOCK_GEMINI) | BACKLOG | BACKLOG | belum | belum | ARTEFAK/ide.json i-carousel-heyai |
+
+
+========== FILE: PROYEK/heyaipeople/DESIGN_REGISTRY.md ==========
+
+# DESIGN REGISTRY HeyAIPeople
+
+Sumber: pencarian Canva akun Dika 17 Nov 2026 08.50 WIB (search-designs + read-design). Jumlah halaman dari Canva, bukan perkiraan.
+
+## Aktif
+| Design ID | Content ID | Judul desain | Canva Design ID | Halaman | Format | Aksen | Template | Status desain | Pemeriksaan | Catatan revisi |
+|---|---|---|---|---|---|---|---|---|---|---|
+| HAP-D-S01-P01 | HAP-S01-P01 | Carousel audit media sosial HeyAIPeople | DAHbITwgs6A | 7 | 4:5 (thumbnail 400×500) | belum dicek | belum dicek | DESIGN REVIEW | teks dibaca Claude 17 Nov | Ejaan brand "HeyAlPeople" dan "Heya I People"; beberapa kata menempel di ekstrak teks (cek visual: "bisapunya", "orangpaham", "Audit dulu.Baru") |
+| HAP-D-S01-P02 | HAP-S01-P02 | Carousel Instagram Audience Intelligence | DAHbIa2D3fU | 8 | 4:5 | belum dicek | belum dicek | REVISION REQUIRED | teks dibaca Claude 17 Nov | 8 halaman padahal nomor slide /07; ejaan brand; kata menempel ("yangbenar-benar", "kontenyang", "merekadalam") |
+| HAP-D-S01-P03 | HAP-S01-P03 | Carousel Instagram HeyAIPeople Series 01 Post 03 | DAHbIXrWNCE | 8 | 4:5 | belum dicek | belum dicek | REVISION REQUIRED | teks dibaca Claude 17 Nov | 8 halaman; ejaan brand "HeyAlPeople"; judul desain tidak menyebut Content Strategy; kata menempel ("Strategibukan", "keputusanyang", "angka.Cari") |
+
+## Lama (risiko duplikasi, belum diputuskan Dika: arsip atau hapus)
+| Canva Design ID | Judul | Halaman | Catatan |
+|---|---|---|---|
+| DAHa6jY3AAE | Audit akun media sosial | 6 | tumpang tindih dengan S01-P01 |
+| DAHa71W-SFY, DAHa7wQm9t4, DAHa6hnY5Fw, DAHa8kNCxno, DAHa75mt3Ds | Carousel Instagram Post 02 Audit Konten (5 salinan) | 6 | duplikat satu sama lain; tumpang tindih S01-P01 |
+| DAHa6eGQTl8 | Instagram carousel content audit post 02 | 6 | sama |
+| DAHa6ryxv4c | Instagram carousel audit konten dan eksperimen | 6 | sama |
+| DAHa7yCAh8M, DAHa7xVRnWc | Instagram Carousel: Ubah Data Jadi Strategi (2 salinan) | 6 | tumpang tindih S01-P03 |
+| DAHa75F8YZ0 | Carousel Instagram Akun Ramai, Hasil Sepi? | 6 | angle mirip S01-P01 |
+| DAHa_7M_qYc, DAHa_5YmZTc, DAHa_5nBSs8, DAHa_4qzCY8, DAHa_2Qu-UU, DAHa_0hruUg | Brief AI carousel (6 salinan) | 6 | duplikat satu sama lain |
+| DAHa8H_o9BM, DAHa9HFnzbI, DAHa6XVOp2w | AI Carousel Content Studio — Puzzle Cover Master (3) | 1 | master puzzle cover, pilih satu |
+| DAHbILtiheI | Monochrome Instagram Puzzle Cover - Panel Layout | 1 | kandidat cover seri 01 (belum dicek) |
+| DAHa6SMp6zc | AI Carousel Content Studio — White Editorial Explainer Master | 6 | master template |
+| DAHbHz-bRP4 | Konten Instagram - 3 KESALAHAN FATAL | 1 | draf 1 halaman |
+| DAHbIOI1KzU | Minimalist Instagram Carousel on AI Prompt Mistakes | 1 | draf 1 halaman |
+
+
 ========== FILE: PROYEK/README.md ==========
 
 # Proyek
@@ -683,6 +750,43 @@ Brief: belum ada di artefak (dicek ide.json dan prompts.json). Gemini mengerjaka
 - 2026-11-17 08:29 · Claude akun-2 · dibuat -> LOCK_GEMINI
 
 
+========== FILE: PROYEK/heyaipeople/HANDOFF.md ==========
+
+# HANDOFF heyaipeople: Multi-AI Creative Operations v4.0
+
+Terakhir diperbarui: 17 Nov 2026 08.55, Claude akun-1 (koordinator). Perintah induk: MASTER_COMMAND_v4.md (dari Dika 17 Nov 2026, TERKUNCI, jangan diubah tanpa perintah Dika).
+
+## Peta dokumentasi v4 (tanpa duplikat)
+| Dokumen v4 | Lokasi di papan |
+|---|---|
+| MASTER_BRAND_GUIDELINES.md | PROYEK/heyaipeople/MASTER_BRAND_GUIDELINES.md |
+| MASTER_AI_INSTRUCTIONS.md | AI/BACA-DULU.md + MASTER_COMMAND_v4.md (sudah ada, tidak digandakan) |
+| CONTENT_REGISTRY.md | PROYEK/heyaipeople/CONTENT_REGISTRY.md |
+| DESIGN_REGISTRY.md | PROYEK/heyaipeople/DESIGN_REGISTRY.md |
+| CONTENT_IDEAS_BACKLOG.md | PROYEK/heyaipeople/CONTENT_IDEAS_BACKLOG.md |
+| PORTFOLIO_CAPABILITY_MAP.md | PROYEK/heyaipeople/PORTFOLIO_CAPABILITY_MAP.md |
+| PRODUCTION_STATUS.md | Kolom status di CONTENT_REGISTRY/DESIGN_REGISTRY + STATUS.md (otomatis) |
+| QA_CHECKLIST.md | PROYEK/heyaipeople/QA_CHECKLIST.md |
+| AI_TEAM_RESPONSIBILITIES.md | AI/PERAN.md (sudah ada, diperbarui ke v4) |
+| CHANGELOG.md | PROYEK/heyaipeople/LOG.md |
+
+## Alur kerja
+- Carousel Instagram HeyAIPeople: tahap 1–7 di MASTER_COMMAND_v4.md bagian 4, status per CONTENT_REGISTRY (BACKLOG … PUBLISHED). Tidak lewat Google Flow.
+- Video (BUILD WITH AI, YouTube): ESTAFET/ (Gemini, GPT, Flow, Claude/Remotion).
+- Serah terima antar-AI pakai format HANDOFF PROTOCOL (bagian 7 MASTER_COMMAND) di dalam blok SETORAN, lewat bot kurir.
+- Tidak ada publikasi tanpa ACC Dika.
+
+## Status sekarang (audit 17 Nov 2026 08.50, lihat LAPORAN/2026-11-17-0855-heyaipeople-audit.md)
+- Seri 01 (Social Media Audit, Audience Intelligence, Content Strategy): tiga desain Canva ada, status DESIGN REVIEW, BELUM FINAL. Post 02 dan 03 berisi 8 halaman (standar 7). Ejaan brand tidak konsisten ("HeyAlPeople", "Heya I People").
+- Naskah final seri 01 tidak tercatat di papan (teks hanya ada di Canva).
+- Banyak desain lama ganda di Canva (lihat DESIGN_REGISTRY bagian Lama).
+
+## Langkah berikutnya
+1. GPT: tulis naskah final 7 slide seri 01 post 01–03 ke SETORAN (ambil dari teks Canva yang ada, perbaiki ejaan brand), lalu lewat Cowork rapikan desain jadi tepat 7 halaman.
+2. Claude: Design QA ketiga desain pakai QA_CHECKLIST.md setelah GPT setor, catat di DESIGN_REGISTRY.
+3. Dika: putuskan desain lama ganda diarsipkan (ARCHIVED) atau dihapus di Canva.
+
+
 ========== FILE: PROYEK/kantor-ai/HANDOFF.md ==========
 
 # HANDOFF kantor-ai: artefak Kantor Ai People dan papan kerja GitHub
@@ -833,6 +937,8 @@ Terakhir diperbarui: 16 Nov 2026 22.52 WIB · Claude akun-2 · Remotion. Satu-sa
 - Terkunci (ACC Dika): naskah resmi per Part dipakai persis; layout SplitScene (panel atas, kotak kiri-bawah SidePanel, foto Dika kanan-bawah, subtitle menonjol); tanpa animasi mulut, tanpa emote tertawa; "Part" bukan "Episode"; tanpa musik tambahan; hasil selalu juga ditaruh di folder D: Dika.
 - Nunggu Dika: ACC Part 5 dan 6; perintah mengerjakan Part 7; apakah caption Part 3/4 dibuat.
 - Belum dicek: apakah akses folder D: masih terhubung di sesi baru (minta lagi dengan device_request_folder_access); isi artefak "Kantor Ai People" 30 naskah (baca langsung dari DB artefak).
+
+- TERKUNCI (Dika 17 Nov 2026): suara Rafiq (ElevenLabs) dipakai sampai Part 10 saja. Suara untuk Part 11+ belum ditentukan; tanya Dika sebelum produksi Part 11.
 
 ## Duplikat kerja (17 Nov 2026, Claude akun-1, atas perintah Dika)
 - Source kode kang-catat-plus (src, tools, episodes, scripts, package*.json, HANDOFF/MASTER_PROMPT asli) sekarang ada di GitHub: repo akihabara-fuji/akihabara-store, branch `remotion-kang-catat` (commit 440c7b6). Clone: `git clone --depth 1 -b remotion-kang-catat https://github.com/akihabara-fuji/akihabara-store kang-catat-plus`.
