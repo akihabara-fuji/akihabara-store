@@ -34,6 +34,7 @@ Bahasa: Indonesia santai (gw/lo), pendek, inti dulu.
 
 ## Status setup (17 Nov 2026, dicek Claude di browser Dika)
 - ChatGPT, akun dikha.priyadhi@gmail.com (paket Go): Project "Kantor Ai People" sudah dibuat dan instruksi terpasang. Tes: bisa membuka link raw GitHub, membaca STATUS.md, dan menulis blok CEK yang benar. Link: https://chatgpt.com/g/g-p-6afb94910be48191896bf1a01bc797f3/project
+- ChatGPT plugin Canva: tersambung ke "Dikha's Canva account" (dicek 17 Nov); instruksi Project ditambah aturan CANVA (pakai plugin, revisi di desain yang sama, setor teks naskah lengkap).
 - Gemini, akun dikha.priyadhi@gmail.com (Plus): Gem "Kantor Ai People" sudah dibuat. Gem TIDAK bisa membuka link, jadi papan diberikan lewat Google Doc terlampir (lihat di bawah). Tes: Gem membaca doc dan menulis blok SETORAN yang benar. Link: https://gemini.google.com/gem/6e1f33643558
 - Gemini, akun akihabara.fuzi@gmail.com: belum (akun belum login di browser bawaan Claude).
 
