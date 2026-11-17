@@ -1,6 +1,6 @@
 # STATUS papan kantor
 
-Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-17 08:52 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
+Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-17 08:59 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
 Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 
 ## Rahasia bocor (harus segera dihapus)
@@ -10,6 +10,7 @@ Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 - tidak ada
 
 ## Menunggu cek silang
+- `SETORAN/2026-11-17-0856-gpt.md`: MENUNGGU Gemini
 - `LAPORAN/2026-11-17-0700-claude.md`: MENUNGGU Gemini
 - `LAPORAN/2026-11-17-0829-artefak.md`: MENUNGGU GPT
 - `LAPORAN/2026-11-17-0855-heyaipeople-audit.md`: MENUNGGU GPT
@@ -41,4 +42,4 @@ Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 - `LAPORAN/2026-11-16-2252-remotion.md`
 
 ## Setoran terbaru
-- tidak ada
+- `SETORAN/2026-11-17-0856-gpt.md`

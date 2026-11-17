@@ -1,6 +1,6 @@
 # PAKET PAPAN KANTOR AI PEOPLE
 
-Salinan otomatis branch kantor (2026-11-17 08:52 WIB). Jangan diedit di sini: sumbernya GitHub akihabara-fuji/akihabara-store branch kantor.
+Salinan otomatis branch kantor (2026-11-17 08:59 WIB). Jangan diedit di sini: sumbernya GitHub akihabara-fuji/akihabara-store branch kantor.
 Isi: STATUS.md, AI/BACA-DULU.md, AI/PERAN.md, ATURAN.md, KUNCI.md, BAGAN.md, SETORAN/README.md, ESTAFET/README.md, ARTEFAK/RINGKAS.md, PROYEK/heyaipeople/MASTER_BRAND_GUIDELINES.md, PROYEK/heyaipeople/CONTENT_REGISTRY.md, PROYEK/heyaipeople/DESIGN_REGISTRY.md, PROYEK/README.md, lalu HANDOFF tiap proyek.
 
 
@@ -8,7 +8,7 @@ Isi: STATUS.md, AI/BACA-DULU.md, AI/PERAN.md, ATURAN.md, KUNCI.md, BAGAN.md, SET
 
 # STATUS papan kantor
 
-Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-17 08:52 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
+Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-17 08:59 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
 Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 
 ## Rahasia bocor (harus segera dihapus)
@@ -18,6 +18,7 @@ Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 - tidak ada
 
 ## Menunggu cek silang
+- `SETORAN/2026-11-17-0856-gpt.md`: MENUNGGU Gemini
 - `LAPORAN/2026-11-17-0700-claude.md`: MENUNGGU Gemini
 - `LAPORAN/2026-11-17-0829-artefak.md`: MENUNGGU GPT
 - `LAPORAN/2026-11-17-0855-heyaipeople-audit.md`: MENUNGGU GPT
@@ -49,7 +50,7 @@ Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 - `LAPORAN/2026-11-16-2252-remotion.md`
 
 ## Setoran terbaru
-- tidak ada
+- `SETORAN/2026-11-17-0856-gpt.md`
 
 
 ========== FILE: AI/BACA-DULU.md ==========
@@ -539,9 +540,9 @@ Status: BACKLOG, RESEARCHING, SCRIPT DRAFT, SCRIPT APPROVED, DESIGN IN PROGRESS,
 
 | Content ID | Series | Judul | Pilar | Kategori | Angle | Hook | Ringkasan | Dibuat | Riset | Naskah | Desain | QA | Publikasi | Referensi |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| HAP-S01-P01 | S01 | Social Media Audit | Social Media Intelligence | belum dikunci | Audit dulu sebelum ubah strategi | Kenapa akunmu tidak berkembang? | 5 kemungkinan penyebab, 4 area audit (profil, audiens, konten, distribusi), contoh audit simulasi, urutan amati-pola-hipotesis-uji-evaluasi | 17 Nov 2026 (Canva) | tidak tercatat | tidak tercatat di papan (teks hanya di Canva) | DESIGN REVIEW | belum | belum | DESIGN_REGISTRY HAP-D-S01-P01 |
-| HAP-S01-P02 | S01 | Audience Intelligence | Social Media Intelligence | belum dikunci | Kebutuhan audiens bukan preferensi kreator | Siapa sebenarnya audiensmu? | Followers bukan pemahaman audiens, 4 pertanyaan riset audiens, contoh persona (simulasi), sinyal audiens dibaca dalam konteks | 17 Nov 2026 (Canva) | tidak tercatat | tidak tercatat di papan | REVISION REQUIRED (8 halaman) | belum | belum | DESIGN_REGISTRY HAP-D-S01-P02 |
-| HAP-S01-P03 | S01 | Content Strategy | Social Media Intelligence | belum dikunci | Dari angka menuju keputusan | Ubah data jadi strategi konten | Data tanpa arah hanya laporan, 4 langkah strategi, contoh kalender 7 hari (ilustratif), data-insight-hipotesis-uji-evaluasi | 17 Nov 2026 (Canva) | tidak tercatat | tidak tercatat di papan | REVISION REQUIRED (8 halaman) | belum | belum | DESIGN_REGISTRY HAP-D-S01-P03 |
+| HAP-S01-P01 | S01 | Social Media Audit | Social Media Intelligence | DEMONSTRATE (GPT 17 Nov) | Audit dulu sebelum ubah strategi | Kenapa akunmu tidak berkembang? | 5 kemungkinan penyebab, 4 area audit (profil, audiens, konten, distribusi), contoh audit simulasi, urutan amati-pola-hipotesis-uji-evaluasi | 17 Nov 2026 (Canva) | tidak tercatat | SCRIPT DRAFT (GPT 17 Nov; teks belum disetor ke papan) | DESIGN REVIEW | belum | belum | DESIGN_REGISTRY HAP-D-S01-P01 |
+| HAP-S01-P02 | S01 | Audience Intelligence | Social Media Intelligence | DISCOVER (GPT 17 Nov) | Kebutuhan audiens bukan preferensi kreator | Siapa sebenarnya audiensmu? | Followers bukan pemahaman audiens, 4 pertanyaan riset audiens, contoh persona (simulasi), sinyal audiens dibaca dalam konteks | 17 Nov 2026 (Canva) | tidak tercatat | SCRIPT DRAFT (GPT 17 Nov; teks belum disetor ke papan) | REVISION REQUIRED (8 halaman) | belum | belum | DESIGN_REGISTRY HAP-D-S01-P02 |
+| HAP-S01-P03 | S01 | Content Strategy | Social Media Intelligence | DEMONSTRATE (GPT 17 Nov) | Dari angka menuju keputusan | Ubah data jadi strategi konten | Data tanpa arah hanya laporan, 4 langkah strategi, contoh kalender 7 hari (ilustratif), data-insight-hipotesis-uji-evaluasi | 17 Nov 2026 (Canva) | tidak tercatat | SCRIPT DRAFT (GPT 17 Nov; teks belum disetor ke papan) | REVISION REQUIRED (8 halaman) | belum | belum | DESIGN_REGISTRY HAP-D-S01-P03 |
 | HAP-C-7CARA | - | 7 cara menggunakan AI untuk membuat konten profesional | AI Content Lab | belum dikunci | - | - | Jadwal artefak 17 Nov, tayang setelah persetujuan | 15 Nov (artefak) | BACKLOG (ESTAFET carousel-7-cara-ai-1117, LOCK_GEMINI) | BACKLOG | BACKLOG | belum | belum | ARTEFAK/ide.json i-carousel-heyai |
 
 
