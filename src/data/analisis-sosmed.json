@@ -1,0 +1,120 @@
+{
+ "brand": {
+  "name": "NextAja",
+  "handle": ""
+ },
+ "gear": "none",
+ "scenes": [
+  {
+   "type": "judul",
+   "sec": 3.5,
+   "title": "Analisis Media Sosial",
+   "titleColor": "#C8F135",
+   "sub": "AI baca akun, susun perbaikannya",
+   "mascot": {
+    "name": "dika-anime",
+    "emotion": "halo"
+   },
+   "caption": "AI membaca akun lalu menyusun langkah perbaikannya",
+   "sfx": [
+    0
+   ]
+  },
+  {
+   "type": "kartu",
+   "sec": 6,
+   "title": "Yang Dikerjakan",
+   "titleColor": "#CFE3FF",
+   "mascot": {
+    "name": "dika-anime",
+    "emotion": "tunjuk-kiri"
+   },
+   "caption": "Audit akun, riset audiens, strategi dan pilar konten",
+   "items": [
+    {
+     "title": "Audit akun",
+     "sub": "Profil, konten, performa jadi skor",
+     "bg": "#CFE3FF"
+    },
+    {
+     "title": "Riset audiens",
+     "sub": "Siapa yang menonton akunmu",
+     "bg": "#FFD3E6"
+    },
+    {
+     "title": "Strategi dan pilar konten",
+     "sub": "Arah isi yang konsisten",
+     "bg": "#FFE45E"
+    }
+   ],
+   "sfx": [
+    0
+   ]
+  },
+  {
+   "type": "daycounter",
+   "sec": 4.5,
+   "title": "Kalender konten siap pakai",
+   "mascot": {
+    "name": "dika-anime",
+    "emotion": "checklist"
+   },
+   "day": {
+    "n": 7,
+    "of": 7,
+    "big": "7 HARI"
+   },
+   "caption": "Kalender konten 7 hari untuk dijalankan",
+   "sfx": [
+    0
+   ]
+  },
+  {
+   "type": "paket",
+   "sec": 5,
+   "title": "Keluaran",
+   "titleColor": "#C9F5E1",
+   "mascot": {
+    "name": "dika-anime",
+    "emotion": "grafik"
+   },
+   "cta": "Lihat di link bio",
+   "caption": "Carousel, kalender konten, dan rekomendasi optimasi akun",
+   "items": [
+    {
+     "title": "Carousel",
+     "sub": "Siap diunggah",
+     "bg": "#C9F5E1"
+    },
+    {
+     "title": "Kalender konten 7 hari",
+     "sub": "Jadwal isi harian",
+     "bg": "#FFE45E"
+    },
+    {
+     "title": "Rekomendasi optimasi akun",
+     "sub": "Daftar hal yang dibenahi",
+     "bg": "#DCD0FF"
+    }
+   ],
+   "sfx": [
+    0
+   ]
+  },
+  {
+   "type": "judul",
+   "sec": 4,
+   "title": "Mulai dari Audit Akun",
+   "titleColor": "#FFD3E6",
+   "sub": "AI · Instagram · TikTok",
+   "mascot": {
+    "name": "dika-anime",
+    "emotion": "makasih"
+   },
+   "caption": "Alat: AI, Instagram, dan TikTok",
+   "sfx": [
+    0
+   ]
+  }
+ ]
+}

@@ -1,0 +1,37 @@
+{
+  "name": "kang-catat-plus",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "remotion studio src/index.ts",
+    "still": "remotion still src/index.ts",
+    "render": "remotion render src/index.ts --concurrency=2 --crf=23",
+    "tts": "node tools/tts.mjs",
+    "tts:estimate": "node tools/tts.mjs --estimate",
+    "setup": "node tools/setup.mjs",
+    "episodes": "node tools/gen-episodes.mjs",
+    "episode:check": "node tools/validate-episode.mjs"
+  },
+  "dependencies": {
+    "@remotion/animation-utils": "4.0.539",
+    "@remotion/cli": "4.0.539",
+    "@remotion/elevenlabs": "4.0.539",
+    "@remotion/fonts": "4.0.539",
+    "@remotion/layout-utils": "4.0.539",
+    "@remotion/media-utils": "4.0.539",
+    "@remotion/motion-blur": "4.0.539",
+    "@remotion/noise": "4.0.539",
+    "@remotion/paths": "4.0.539",
+    "@remotion/rough-notation": "4.0.539",
+    "@remotion/shapes": "4.0.539",
+    "@remotion/starburst": "4.0.539",
+    "@remotion/transitions": "4.0.539",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "remotion": "4.0.539"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.12",
+    "typescript": "5.6.3"
+  }
+}

@@ -1,0 +1,451 @@
+{
+ "brand": {
+  "name": "Dika Priyadi",
+  "handle": "AI Content & Workflow Specialist"
+ },
+ "gear": "none",
+ "scenes": [
+  {
+   "sfx": [
+    0
+   ],
+   "type": "split",
+   "sec": 3.4,
+   "title": "Satu Orang, Satu Tim AI",
+   "titleColor": "#C8F135",
+   "tag": "ILUSTRASI",
+   "caption": "Saya bekerja sendirian. Tetapi tim saya tidak pernah tidur.",
+   "fase": [
+    {
+     "at": 0,
+     "mode": "malam",
+     "label": "",
+     "dika": "x",
+     "bots": []
+    }
+   ],
+   "tim": [
+    {
+     "name": "claude-kotak",
+     "emotion": "kerja",
+     "label": "Claude",
+     "text": "Riset selesai, lanjut analisa.",
+     "at": 8
+    },
+    {
+     "name": "flow",
+     "emotion": "kerja",
+     "label": "Flow",
+     "text": "Video malam ini saya render.",
+     "at": 30
+    },
+    {
+     "name": "chatgpt",
+     "emotion": "kerja",
+     "label": "ChatGPT",
+     "text": "Naskah malam ini sudah saya tulis.",
+     "at": 42
+    },
+    {
+     "name": "gemini",
+     "emotion": "kerja",
+     "label": "Gemini",
+     "text": "Data akun sudah masuk.",
+     "at": 55
+    }
+   ],
+   "dikaSeq": [
+    {
+     "at": 0,
+     "emotion": "kaget"
+    },
+    {
+     "at": 60,
+     "emotion": "tawa"
+    }
+   ]
+  },
+  {
+   "sfx": [
+    0
+   ],
+   "type": "split",
+   "sec": 4,
+   "title": "Halo, saya Dika Priyadi",
+   "titleColor": "#DCD0FF",
+   "shot": {
+    "src": "shots-hrd/porto-hero.jpg",
+    "w": 774,
+    "h": 924,
+    "focus": [
+     {
+      "x": 290,
+      "y": 540,
+      "w": 200,
+      "h": 70,
+      "label": ""
+     }
+    ]
+   },
+   "caption": "Halo, saya Dika Priyadi. Saya membuat konten dan video dengan bantuan AI.",
+   "tim": [
+    {
+     "name": "claude-kotak",
+     "emotion": "hore",
+     "label": "Claude",
+     "text": "Selamat datang di portofolio Pak Dika.",
+     "at": 10
+    },
+    {
+     "name": "gemini",
+     "emotion": "hore",
+     "label": "Gemini",
+     "text": "Silakan lihat karyanya.",
+     "at": 50
+    },
+    {
+     "name": "chatgpt",
+     "emotion": "hore",
+     "label": "ChatGPT",
+     "text": "Saya siap membantu juga.",
+     "at": 85
+    }
+   ],
+   "dikaSeq": [
+    {
+     "at": 0,
+     "emotion": "salam"
+    },
+    {
+     "at": 60,
+     "emotion": "silakan"
+    }
+   ]
+  },
+  {
+   "sfx": [
+    0
+   ],
+   "type": "split",
+   "sec": 9,
+   "title": "Sehari Kerja Tim AI",
+   "titleColor": "#FFE45E",
+   "tag": "ILUSTRASI",
+   "caption": "Siang riset, malam tim AI tetap bekerja.",
+   "fase": [
+    {
+     "at": 0,
+     "mode": "siang",
+     "label": "",
+     "dika": "x"
+    },
+    {
+     "at": 90,
+     "mode": "malam",
+     "label": "",
+     "dika": "x"
+    },
+    {
+     "at": 180,
+     "mode": "pagi",
+     "label": "",
+     "dika": "x"
+    }
+   ],
+   "tim": [
+    {
+     "name": "claude-kotak",
+     "emotion": "kerja",
+     "label": "Claude",
+     "text": "Siang: riset semua media sosial.",
+     "at": 6
+    },
+    {
+     "name": "gemini",
+     "emotion": "kerja",
+     "label": "Gemini",
+     "text": "Saya kumpulkan datanya.",
+     "at": 40
+    },
+    {
+     "name": "chatgpt",
+     "emotion": "kerja",
+     "label": "ChatGPT",
+     "text": "Saya tulis naskah dan caption.",
+     "at": 70
+    },
+    {
+     "name": "flow",
+     "emotion": "kerja",
+     "label": "Flow",
+     "text": "Malam: video saya produksi.",
+     "at": 95
+    },
+    {
+     "name": "claude-kotak",
+     "emotion": "kerja",
+     "label": "Claude",
+     "text": "Analisa jalan terus, Pak.",
+     "at": 130
+    },
+    {
+     "name": "claude-kotak",
+     "emotion": "hore",
+     "label": "Claude",
+     "text": "Pagi: laporan sudah siap.",
+     "at": 185
+    },
+    {
+     "name": "chatgpt",
+     "emotion": "hore",
+     "label": "ChatGPT",
+     "text": "Naskah final sudah masuk.",
+     "at": 205
+    },
+    {
+     "name": "flow",
+     "emotion": "hore",
+     "label": "Flow",
+     "text": "Video final siap diunggah.",
+     "at": 225
+    }
+   ],
+   "dikaSeq": [
+    {
+     "at": 0,
+     "emotion": "mikir"
+    },
+    {
+     "at": 90,
+     "emotion": "tulus"
+    },
+    {
+     "at": 180,
+     "emotion": "tawa"
+    }
+   ]
+  },
+  {
+   "sfx": [
+    0
+   ],
+   "type": "split",
+   "sec": 6,
+   "title": "Gudang Skill",
+   "titleColor": "#C9F5E1",
+   "shot": {
+    "src": "shots-hrd/gudang.png",
+    "w": 1562,
+    "h": 915,
+    "focus": [
+     {
+      "x": 20,
+      "y": 30,
+      "w": 1530,
+      "h": 50,
+      "label": ""
+     },
+     {
+      "x": 20,
+      "y": 440,
+      "w": 1530,
+      "h": 170,
+      "label": ""
+     }
+    ]
+   },
+   "caption": "Semua alur kerja saya rapikan di satu tempat.",
+   "tim": [
+    {
+     "name": "claude-kotak",
+     "emotion": "kerja",
+     "label": "Claude",
+     "text": "Jadwal dan angka awal sudah dicatat.",
+     "at": 10
+    },
+    {
+     "name": "chatgpt",
+     "emotion": "kerja",
+     "label": "ChatGPT",
+     "text": "Tujuh sistem sudah tersusun.",
+     "at": 55
+    },
+    {
+     "name": "gemini",
+     "emotion": "hore",
+     "label": "Gemini",
+     "text": "Data dari Windsor sudah masuk.",
+     "at": 100
+    }
+   ],
+   "dikaSeq": [
+    {
+     "at": 0,
+     "emotion": "jelas"
+    },
+    {
+     "at": 100,
+     "emotion": "jempol"
+    }
+   ]
+  },
+  {
+   "sfx": [
+    0
+   ],
+   "type": "split",
+   "sec": 5,
+   "title": "Portofolio Karya",
+   "titleColor": "#DCD0FF",
+   "shot": {
+    "src": "shots-hrd/porto-galeri.jpg",
+    "w": 774,
+    "h": 924,
+    "focus": [
+     {
+      "x": 0,
+      "y": 110,
+      "w": 774,
+      "h": 260,
+      "label": ""
+     },
+     {
+      "x": 270,
+      "y": 610,
+      "w": 504,
+      "h": 300,
+      "label": ""
+     }
+    ]
+   },
+   "caption": "Karya saya ada di portofolio.",
+   "tim": [
+    {
+     "name": "claude-kotak",
+     "emotion": "kerja",
+     "label": "Claude",
+     "text": "Galeri karya sudah tertata.",
+     "at": 10
+    },
+    {
+     "name": "flow",
+     "emotion": "hore",
+     "label": "Flow",
+     "text": "Video penjelasan ada di sini.",
+     "at": 60
+    },
+    {
+     "name": "chatgpt",
+     "emotion": "kerja",
+     "label": "ChatGPT",
+     "text": "Naskah tiap karya saya rapikan.",
+     "at": 95
+    }
+   ],
+   "dikaSeq": [
+    {
+     "at": 0,
+     "emotion": "jelas"
+    }
+   ]
+  },
+  {
+   "sfx": [
+    0
+   ],
+   "type": "split",
+   "sec": 5,
+   "title": "heyaipeople.site",
+   "titleColor": "#C9F5E1",
+   "shot": {
+    "src": "shots-hrd/heyai-home.jpg",
+    "w": 766,
+    "h": 924,
+    "focus": [
+     {
+      "x": 150,
+      "y": 230,
+      "w": 500,
+      "h": 280,
+      "label": ""
+     }
+    ]
+   },
+   "caption": "Katalog skill dan storyboard AI siap pakai.",
+   "tim": [
+    {
+     "name": "gemini",
+     "emotion": "kerja",
+     "label": "Gemini",
+     "text": "Katalog skill foto AI.",
+     "at": 10
+    },
+    {
+     "name": "chatgpt",
+     "emotion": "kerja",
+     "label": "ChatGPT",
+     "text": "Storyboard video 2D siap pakai.",
+     "at": 60
+    }
+   ],
+   "dikaSeq": [
+    {
+     "at": 0,
+     "emotion": "silakan"
+    }
+   ]
+  },
+  {
+   "sfx": [
+    0
+   ],
+   "type": "split",
+   "sec": 6,
+   "title": "Mari Terhubung",
+   "titleColor": "#C9F5E1",
+   "shot": {
+    "src": "shots-hrd/porto-hero.jpg",
+    "w": 774,
+    "h": 924,
+    "focus": []
+   },
+   "caption": "Portofolio lengkap ada di tautan. Mari terhubung di LinkedIn.",
+   "tim": [
+    {
+     "name": "claude-kotak",
+     "emotion": "hore",
+     "label": "Claude",
+     "text": "LinkedIn: Dika Priyadi",
+     "at": 10
+    },
+    {
+     "name": "flow",
+     "emotion": "hore",
+     "label": "Flow",
+     "text": "dikapriyadi.catatanakademik.com",
+     "at": 40
+    },
+    {
+     "name": "gemini",
+     "emotion": "hore",
+     "label": "Gemini",
+     "text": "TikTok akihabara.fuzi, IG @priyadi_dika",
+     "at": 75
+    },
+    {
+     "name": "chatgpt",
+     "emotion": "hore",
+     "label": "ChatGPT",
+     "text": "Terima kasih sudah menonton.",
+     "at": 110
+    }
+   ],
+   "dikaSeq": [
+    {
+     "at": 0,
+     "emotion": "jempol"
+    }
+   ]
+  }
+ ]
+}

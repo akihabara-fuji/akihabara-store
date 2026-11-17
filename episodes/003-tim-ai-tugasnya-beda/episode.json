@@ -1,0 +1,1020 @@
+{
+  "episode": "003",
+  "slug": "tim-ai-tugasnya-beda",
+  "title": "SATU TIM AI, TUGASNYA BEDA",
+  "status": "draf",
+  "hideBrand": true,
+  "editorial": {
+    "message": "Jangan suruh semua AI mengerjakan hal yang sama; bagi tugas per tahap, lalu rangkai dan periksa, karena tools tidak otomatis saling terhubung.",
+    "hook": {
+      "text": "Jangan suruh semua AI mengerjakan hal yang sama.",
+      "type": "pernyataan",
+      "appearBySec": 0,
+      "sceneIndex": 0
+    },
+    "cta": {
+      "text": "Follow dan cek bio buat lihat workflow AI yang sedang gue kembangkan.",
+      "action": "follow",
+      "sceneIndex": 6
+    }
+  },
+  "brand": {
+    "name": "Dika Priyadi",
+    "handle": ""
+  },
+  "gear": "none",
+  "voiceDir": "voice-ep003",
+  "scenes": [
+    {
+      "sfx": [
+        0
+      ],
+      "type": "split",
+      "sec": 3.5,
+      "title": "BAGI TUGASNYA, BUKAN CUMA BAGI PROMPT",
+      "caption": "Jangan suruh semua AI mengerjakan hal yang sama.",
+      "panelNote": "",
+      "tim": [
+        {
+          "name": "claude-kotak",
+          "emotion": "kerja",
+          "label": "Claude",
+          "text": "Tugas saya apa?",
+          "at": 10
+        },
+        {
+          "name": "chatgpt",
+          "emotion": "kerja",
+          "label": "ChatGPT",
+          "text": "Beda tugas.",
+          "at": 30
+        }
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "serius",
+          "size": 600,
+          "x": 500
+        }
+      ],
+      "stage": {
+        "stick": {
+          "x": 110,
+          "y": 330,
+          "s": 0.5,
+          "flip": false,
+          "keys": [
+            {
+              "f": 0,
+              "pose": "stress",
+              "blend": 8
+            },
+            {
+              "f": 46,
+              "pose": "point",
+              "blend": 8
+            }
+          ]
+        },
+        "nodes": [
+          {
+            "id": "t",
+            "x": 560,
+            "y": 300,
+            "at": 4,
+            "size": 170,
+            "icon": "doc",
+            "color": "#FFE45E"
+          },
+          {
+            "id": "a",
+            "x": 330,
+            "y": 110,
+            "at": 8,
+            "size": 140,
+            "mascot": {
+              "name": "claude-kotak",
+              "emotion": "kerja"
+            }
+          },
+          {
+            "id": "b",
+            "x": 330,
+            "y": 490,
+            "at": 14,
+            "size": 140,
+            "mascot": {
+              "name": "chatgpt",
+              "emotion": "kerja"
+            }
+          },
+          {
+            "id": "c",
+            "x": 790,
+            "y": 110,
+            "at": 20,
+            "size": 140,
+            "mascot": {
+              "name": "gemini",
+              "emotion": "kerja"
+            }
+          },
+          {
+            "id": "d",
+            "x": 790,
+            "y": 490,
+            "at": 26,
+            "size": 140,
+            "mascot": {
+              "name": "flow",
+              "emotion": "kerja"
+            }
+          }
+        ],
+        "edges": [
+          {
+            "from": "a",
+            "to": "t",
+            "at": 18,
+            "dashed": false
+          },
+          {
+            "from": "b",
+            "to": "t",
+            "at": 22,
+            "dashed": false
+          },
+          {
+            "from": "c",
+            "to": "t",
+            "at": 26,
+            "dashed": false
+          },
+          {
+            "from": "d",
+            "to": "t",
+            "at": 30,
+            "dashed": false
+          }
+        ],
+        "badges": [
+          {
+            "x": 660,
+            "y": 205,
+            "kind": "cross",
+            "at": 50,
+            "size": 72
+          }
+        ]
+      },
+      "titleSize": 38,
+      "emph": [
+        "semua",
+        "sama"
+      ],
+      "tag": "BUILD WITH AI #003"
+    },
+    {
+      "sfx": [
+        0
+      ],
+      "type": "split",
+      "sec": 6,
+      "title": "Satu Proyek Konten",
+      "caption": "Bayangin satu proyek konten. Satu model bantu riset dan menyusun struktur.",
+      "panelNote": "",
+      "tim": [
+        {
+          "name": "gemini",
+          "emotion": "kerja",
+          "label": "Gemini",
+          "text": "Riset dulu.",
+          "at": 10
+        },
+        {
+          "name": "claude-kotak",
+          "emotion": "kerja",
+          "label": "Claude",
+          "text": "Susun struktur.",
+          "at": 90
+        }
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "jelas",
+          "size": 560,
+          "x": 520
+        },
+        {
+          "at": 100,
+          "emotion": "mikir",
+          "size": 520,
+          "x": 540,
+          "flip": true
+        }
+      ],
+      "stage": {
+        "stick": {
+          "x": 110,
+          "y": 330,
+          "s": 0.5,
+          "flip": false,
+          "keys": [
+            {
+              "f": 0,
+              "pose": "present",
+              "blend": 8
+            }
+          ]
+        },
+        "nodes": [
+          {
+            "id": "f",
+            "x": 340,
+            "y": 300,
+            "at": 4,
+            "size": 160,
+            "icon": "folder",
+            "color": "#FFE45E"
+          },
+          {
+            "id": "c",
+            "x": 590,
+            "y": 300,
+            "at": 16,
+            "size": 150,
+            "mascot": {
+              "name": "claude-kotak",
+              "emotion": "kerja"
+            }
+          },
+          {
+            "id": "s",
+            "x": 830,
+            "y": 140,
+            "at": 34,
+            "size": 130,
+            "icon": "search",
+            "color": "#CFE3FF"
+          },
+          {
+            "id": "l",
+            "x": 830,
+            "y": 460,
+            "at": 56,
+            "size": 130,
+            "icon": "list",
+            "color": "#FFD3E6"
+          }
+        ],
+        "edges": [
+          {
+            "from": "f",
+            "to": "c",
+            "at": 12,
+            "dashed": false
+          },
+          {
+            "from": "c",
+            "to": "s",
+            "at": 30,
+            "dashed": false
+          },
+          {
+            "from": "c",
+            "to": "l",
+            "at": 52,
+            "dashed": false
+          }
+        ]
+      },
+      "titleColor": "#FFD3E6",
+      "emph": [
+        "proyek",
+        "riset",
+        "struktur"
+      ],
+      "tag": "BUILD WITH AI #003"
+    },
+    {
+      "sfx": [
+        0
+      ],
+      "type": "split",
+      "sec": 7,
+      "title": "Tugas Tiap AI",
+      "caption": "Model lain bantu menulis naskah. Coding assistant mengerjakan komponen.",
+      "panelNote": "",
+      "tim": [
+        {
+          "name": "chatgpt",
+          "emotion": "kerja",
+          "label": "ChatGPT",
+          "text": "Saya tulis naskah.",
+          "at": 10
+        },
+        {
+          "name": "claude-kotak",
+          "emotion": "kerja",
+          "label": "Claude",
+          "text": "Saya buat komponen.",
+          "at": 100
+        }
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "jelas",
+          "size": 540,
+          "x": 520
+        },
+        {
+          "at": 110,
+          "emotion": "serius",
+          "size": 540,
+          "x": 520,
+          "flip": true
+        }
+      ],
+      "stage": {
+        "stick": {
+          "x": 100,
+          "y": 330,
+          "s": 0.5,
+          "flip": false,
+          "keys": [
+            {
+              "f": 0,
+              "pose": "point",
+              "blend": 8
+            }
+          ]
+        },
+        "nodes": [
+          {
+            "id": "a",
+            "x": 340,
+            "y": 150,
+            "at": 4,
+            "size": 140,
+            "mascot": {
+              "name": "chatgpt",
+              "emotion": "kerja"
+            }
+          },
+          {
+            "id": "d",
+            "x": 640,
+            "y": 150,
+            "at": 22,
+            "size": 130,
+            "icon": "doc",
+            "color": "#C9F5E1"
+          },
+          {
+            "id": "b",
+            "x": 340,
+            "y": 450,
+            "at": 50,
+            "size": 140,
+            "mascot": {
+              "name": "claude-kotak",
+              "emotion": "kerja"
+            }
+          },
+          {
+            "id": "k",
+            "x": 640,
+            "y": 450,
+            "at": 70,
+            "size": 130,
+            "icon": "code",
+            "color": "#DCD0FF"
+          }
+        ],
+        "edges": [
+          {
+            "from": "a",
+            "to": "d",
+            "at": 18,
+            "dashed": false
+          },
+          {
+            "from": "b",
+            "to": "k",
+            "at": 66,
+            "dashed": false
+          }
+        ],
+        "badges": [
+          {
+            "x": 720,
+            "y": 95,
+            "kind": "check",
+            "at": 44,
+            "size": 64
+          },
+          {
+            "x": 720,
+            "y": 395,
+            "kind": "check",
+            "at": 92,
+            "size": 64
+          }
+        ]
+      },
+      "titleColor": "#C9F5E1",
+      "emph": [
+        "naskah",
+        "komponen"
+      ],
+      "tag": "BUILD WITH AI #003"
+    },
+    {
+      "sfx": [
+        0
+      ],
+      "type": "split",
+      "sec": 6,
+      "title": "Visual dan Suara",
+      "caption": "Tool visual membuat footage. Voice tool menghasilkan narasi.",
+      "panelNote": "",
+      "tim": [
+        {
+          "name": "flow",
+          "emotion": "kerja",
+          "label": "Flow",
+          "text": "Saya buat footage.",
+          "at": 10
+        },
+        {
+          "name": "chatgpt",
+          "emotion": "kerja",
+          "label": "ChatGPT",
+          "text": "Narasi dari voice tool.",
+          "at": 100
+        }
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "jelas",
+          "size": 540,
+          "x": 520
+        },
+        {
+          "at": 110,
+          "emotion": "serius",
+          "size": 540,
+          "x": 520,
+          "flip": true
+        }
+      ],
+      "stage": {
+        "stick": {
+          "x": 100,
+          "y": 330,
+          "s": 0.5,
+          "flip": false,
+          "keys": [
+            {
+              "f": 0,
+              "pose": "point",
+              "blend": 8
+            }
+          ]
+        },
+        "nodes": [
+          {
+            "id": "a",
+            "x": 340,
+            "y": 150,
+            "at": 4,
+            "size": 140,
+            "mascot": {
+              "name": "flow",
+              "emotion": "kerja"
+            }
+          },
+          {
+            "id": "f",
+            "x": 640,
+            "y": 150,
+            "at": 22,
+            "size": 130,
+            "icon": "film",
+            "color": "#FFD3E6"
+          },
+          {
+            "id": "m",
+            "x": 340,
+            "y": 450,
+            "at": 50,
+            "size": 130,
+            "icon": "mic",
+            "color": "#DCD0FF"
+          },
+          {
+            "id": "w",
+            "x": 640,
+            "y": 450,
+            "at": 70,
+            "size": 130,
+            "icon": "wave",
+            "color": "#CFE3FF"
+          }
+        ],
+        "edges": [
+          {
+            "from": "a",
+            "to": "f",
+            "at": 18,
+            "dashed": false
+          },
+          {
+            "from": "m",
+            "to": "w",
+            "at": 66,
+            "dashed": false
+          }
+        ],
+        "badges": [
+          {
+            "x": 720,
+            "y": 95,
+            "kind": "check",
+            "at": 44,
+            "size": 64
+          },
+          {
+            "x": 720,
+            "y": 395,
+            "kind": "check",
+            "at": 90,
+            "size": 64
+          }
+        ]
+      },
+      "titleColor": "#C9F5E1",
+      "emph": [
+        "footage",
+        "narasi"
+      ],
+      "tag": "BUILD WITH AI #003"
+    },
+    {
+      "sfx": [
+        0
+      ],
+      "type": "split",
+      "sec": 4,
+      "title": "Dirangkai dan Dicek",
+      "caption": "Lalu semuanya dirangkai dan dicek.",
+      "panelNote": "",
+      "tim": [
+        {
+          "name": "claude-kotak",
+          "emotion": "kerja",
+          "label": "Claude",
+          "text": "Dirangkai.",
+          "at": 10
+        },
+        {
+          "name": "flow",
+          "emotion": "kerja",
+          "label": "Flow",
+          "text": "Lalu dicek.",
+          "at": 60
+        }
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "baca",
+          "size": 540,
+          "x": 520,
+          "flip": true
+        }
+      ],
+      "stage": {
+        "stick": {
+          "x": 460,
+          "y": 340,
+          "s": 0.45,
+          "flip": false,
+          "keys": [
+            {
+              "f": 0,
+              "pose": "point",
+              "blend": 8
+            },
+            {
+              "f": 70,
+              "pose": "thumbs",
+              "blend": 8
+            }
+          ]
+        },
+        "nodes": [
+          {
+            "id": "n1",
+            "x": 110,
+            "y": 170,
+            "at": 4,
+            "size": 115,
+            "icon": "list",
+            "color": "#FFD3E6"
+          },
+          {
+            "id": "n2",
+            "x": 290,
+            "y": 170,
+            "at": 10,
+            "size": 115,
+            "icon": "doc",
+            "color": "#C9F5E1"
+          },
+          {
+            "id": "n3",
+            "x": 470,
+            "y": 170,
+            "at": 16,
+            "size": 115,
+            "icon": "code",
+            "color": "#DCD0FF"
+          },
+          {
+            "id": "n4",
+            "x": 650,
+            "y": 170,
+            "at": 22,
+            "size": 115,
+            "icon": "film",
+            "color": "#FFD3E6"
+          },
+          {
+            "id": "n5",
+            "x": 830,
+            "y": 170,
+            "at": 28,
+            "size": 115,
+            "icon": "wave",
+            "color": "#CFE3FF"
+          }
+        ],
+        "edges": [
+          {
+            "from": "n1",
+            "to": "n2",
+            "at": 14,
+            "dashed": false
+          },
+          {
+            "from": "n2",
+            "to": "n3",
+            "at": 20,
+            "dashed": false
+          },
+          {
+            "from": "n3",
+            "to": "n4",
+            "at": 26,
+            "dashed": false
+          },
+          {
+            "from": "n4",
+            "to": "n5",
+            "at": 32,
+            "dashed": false
+          }
+        ],
+        "badges": [
+          {
+            "x": 110,
+            "y": 95,
+            "kind": "check",
+            "at": 44,
+            "size": 52
+          },
+          {
+            "x": 290,
+            "y": 95,
+            "kind": "check",
+            "at": 54,
+            "size": 52
+          },
+          {
+            "x": 470,
+            "y": 95,
+            "kind": "check",
+            "at": 64,
+            "size": 52
+          },
+          {
+            "x": 650,
+            "y": 95,
+            "kind": "check",
+            "at": 74,
+            "size": 52
+          },
+          {
+            "x": 830,
+            "y": 95,
+            "kind": "check",
+            "at": 84,
+            "size": 52
+          }
+        ]
+      },
+      "titleColor": "#C9F5E1",
+      "emph": [
+        "dirangkai",
+        "dicek"
+      ],
+      "tag": "BUILD WITH AI #003"
+    },
+    {
+      "sfx": [
+        0
+      ],
+      "type": "split",
+      "sec": 8,
+      "title": "Belum Otomatis",
+      "caption": "Ini bukan berarti semua tools otomatis saling terhubung. Kita tetap perlu alur kerja, format file, dan pemeriksaan di setiap tahap.",
+      "panelNote": "",
+      "tim": [
+        {
+          "name": "chatgpt",
+          "emotion": "kerja",
+          "label": "ChatGPT",
+          "text": "Belum otomatis nyambung.",
+          "at": 10
+        },
+        {
+          "name": "claude-kotak",
+          "emotion": "kerja",
+          "label": "Claude",
+          "text": "Perlu alur kerja.",
+          "at": 110
+        }
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "serius",
+          "size": 540,
+          "x": 520
+        },
+        {
+          "at": 120,
+          "emotion": "jelas",
+          "size": 560,
+          "x": 520
+        }
+      ],
+      "stage": {
+        "stick": {
+          "x": 460,
+          "y": 340,
+          "s": 0.45,
+          "flip": false,
+          "keys": [
+            {
+              "f": 0,
+              "pose": "think",
+              "blend": 8
+            },
+            {
+              "f": 100,
+              "pose": "point",
+              "blend": 8
+            }
+          ]
+        },
+        "nodes": [
+          {
+            "id": "a",
+            "x": 200,
+            "y": 170,
+            "at": 4,
+            "size": 130,
+            "icon": "doc",
+            "color": "#C9F5E1"
+          },
+          {
+            "id": "b",
+            "x": 460,
+            "y": 170,
+            "at": 10,
+            "size": 130,
+            "icon": "code",
+            "color": "#DCD0FF"
+          },
+          {
+            "id": "c",
+            "x": 720,
+            "y": 170,
+            "at": 16,
+            "size": 130,
+            "icon": "film",
+            "color": "#FFD3E6"
+          },
+          {
+            "id": "g",
+            "x": 330,
+            "y": 420,
+            "at": 50,
+            "size": 100,
+            "icon": "gear",
+            "color": "#FFE45E"
+          },
+          {
+            "id": "h",
+            "x": 590,
+            "y": 420,
+            "at": 70,
+            "size": 100,
+            "icon": "file",
+            "color": "#CFE3FF"
+          }
+        ],
+        "edges": [
+          {
+            "from": "a",
+            "to": "b",
+            "at": 20,
+            "dashed": true
+          },
+          {
+            "from": "b",
+            "to": "c",
+            "at": 26,
+            "dashed": true
+          }
+        ],
+        "badges": [
+          {
+            "x": 330,
+            "y": 170,
+            "kind": "warn",
+            "at": 30,
+            "size": 64
+          },
+          {
+            "x": 590,
+            "y": 170,
+            "kind": "warn",
+            "at": 36,
+            "size": 64
+          },
+          {
+            "x": 200,
+            "y": 95,
+            "kind": "check",
+            "at": 96,
+            "size": 52
+          },
+          {
+            "x": 460,
+            "y": 95,
+            "kind": "check",
+            "at": 106,
+            "size": 52
+          },
+          {
+            "x": 720,
+            "y": 95,
+            "kind": "check",
+            "at": 116,
+            "size": 52
+          }
+        ]
+      },
+      "titleColor": "#FFD3E6",
+      "emph": [
+        "otomatis",
+        "alur",
+        "pemeriksaan"
+      ],
+      "tag": "BUILD WITH AI #003"
+    },
+    {
+      "sfx": [
+        0
+      ],
+      "type": "split",
+      "sec": 6.5,
+      "title": "",
+      "caption": "Follow dan cek bio buat lihat workflow AI yang sedang gue kembangkan.",
+      "panelNote": "",
+      "tim": [
+        {
+          "name": "claude-kotak",
+          "emotion": "kerja",
+          "label": "Claude",
+          "text": "Cek bio ya.",
+          "at": 10
+        },
+        {
+          "name": "chatgpt",
+          "emotion": "kerja",
+          "label": "ChatGPT",
+          "text": "Follow dulu.",
+          "at": 80
+        }
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "silakan",
+          "size": 560,
+          "x": 520
+        }
+      ],
+      "stage": {
+        "stick": {
+          "x": 170,
+          "y": 330,
+          "s": 0.5,
+          "flip": false,
+          "keys": [
+            {
+              "f": 0,
+              "pose": "present",
+              "blend": 8
+            }
+          ]
+        },
+        "nodes": [
+          {
+            "id": "p",
+            "x": 520,
+            "y": 190,
+            "at": 6,
+            "size": 150,
+            "icon": "plus",
+            "color": "#C8F135"
+          },
+          {
+            "id": "l",
+            "x": 780,
+            "y": 190,
+            "at": 18,
+            "size": 150,
+            "icon": "link",
+            "color": "#FFE45E"
+          },
+          {
+            "id": "a",
+            "x": 520,
+            "y": 470,
+            "at": 30,
+            "size": 110,
+            "mascot": {
+              "name": "claude-kotak",
+              "emotion": "kerja"
+            }
+          },
+          {
+            "id": "b",
+            "x": 650,
+            "y": 470,
+            "at": 36,
+            "size": 110,
+            "mascot": {
+              "name": "chatgpt",
+              "emotion": "kerja"
+            }
+          },
+          {
+            "id": "c",
+            "x": 780,
+            "y": 470,
+            "at": 42,
+            "size": 110,
+            "mascot": {
+              "name": "flow",
+              "emotion": "kerja"
+            }
+          }
+        ],
+        "edges": [
+          {
+            "from": "p",
+            "to": "l",
+            "at": 14,
+            "dashed": false
+          }
+        ]
+      },
+      "emph": [
+        "Follow",
+        "bio"
+      ],
+      "tag": "BUILD WITH AI #003"
+    }
+  ],
+  "captionStyle": "mix"
+}

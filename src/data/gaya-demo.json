@@ -1,0 +1,191 @@
+{
+ "brand": {
+  "name": "NextAja",
+  "handle": ""
+ },
+ "gear": "none",
+ "scenes": [
+  {
+   "type": "statchart",
+   "sec": 4,
+   "title": "Reach Naik",
+   "titleColor": "#C8F135",
+   "mascot": {
+    "name": "dika-anime",
+    "emotion": "grafik"
+   },
+   "caption": "Reach naik setelah hook diganti",
+   "stat": {
+    "value": 128,
+    "suffix": "K",
+    "label": "Reach 30 hari",
+    "note": "Contoh ilustrasi, bukan data akun"
+   },
+   "bars": [
+    {
+     "label": "",
+     "value": 20
+    },
+    {
+     "label": "",
+     "value": 28
+    },
+    {
+     "label": "",
+     "value": 24
+    },
+    {
+     "label": "",
+     "value": 45
+    },
+    {
+     "label": "",
+     "value": 70
+    }
+   ],
+   "sfx": [
+    0
+   ]
+  },
+  {
+   "type": "ranking",
+   "sec": 4,
+   "title": "Format Terbaik",
+   "titleColor": "#FFD3E6",
+   "mascot": {
+    "name": "dika-anime",
+    "emotion": "hore"
+   },
+   "unit": "%",
+   "bars": [
+    {
+     "label": "Tutorial",
+     "value": 62
+    },
+    {
+     "label": "Story time",
+     "value": 48
+    },
+    {
+     "label": "Meme",
+     "value": 35
+    },
+    {
+     "label": "Review",
+     "value": 28
+    }
+   ],
+   "caption": "Format tutorial paling banyak disimpan",
+   "sfx": [
+    0
+   ]
+  },
+  {
+   "type": "versus",
+   "sec": 4.5,
+   "title": "Basic vs Advanced",
+   "titleColor": "#CFE3FF",
+   "mascot": {
+    "name": "dika-anime",
+    "emotion": "tunjuk"
+   },
+   "versus": {
+    "left": {
+     "title": "Basic",
+     "lines": [
+      "Profil dan bio",
+      "Konten",
+      "Engagement"
+     ]
+    },
+    "right": {
+     "title": "Advanced",
+     "lines": [
+      "Semua Basic",
+      "Kompetitor",
+      "Audiens",
+      "Strategi"
+     ]
+    }
+   },
+   "caption": "Pilih paket sesuai kebutuhan akun",
+   "sfx": [
+    0
+   ]
+  },
+  {
+   "type": "notif",
+   "sec": 4.5,
+   "title": "Bot Jalan Sendiri",
+   "titleColor": "#C9F5E1",
+   "mascot": {
+    "name": "dika-anime",
+    "emotion": "wow"
+   },
+   "notifs": [
+    {
+     "app": "WhatsApp",
+     "text": "Pesanan baru masuk"
+    },
+    {
+     "app": "WhatsApp",
+     "text": "Pembayaran terverifikasi"
+    },
+    {
+     "app": "n8n",
+     "text": "Data tersimpan ke sheet",
+     "color": "#EA4B71"
+    }
+   ],
+   "total": "3 tugas otomatis",
+   "caption": "Tiga tugas selesai tanpa disentuh",
+   "sfx": [
+    0
+   ]
+  },
+  {
+   "type": "chat",
+   "sec": 5,
+   "title": "Tanya ke AI",
+   "titleColor": "#DCD0FF",
+   "mascot": {
+    "name": "dika-anime",
+    "emotion": "baca"
+   },
+   "chatTitle": "WhatsApp Bot",
+   "chat": [
+    {
+     "who": "user",
+     "text": "Jadwal posting hari ini?",
+     "at": 12
+    },
+    {
+     "who": "ai",
+     "text": "Jam 12.00 dan 19.00, reach tertinggi.",
+     "at": 50
+    }
+   ],
+   "caption": "Bot jawab dari data, bukan asumsi",
+   "sfx": [
+    0
+   ]
+  },
+  {
+   "type": "daycounter",
+   "sec": 4,
+   "title": "Bangun Sistem Konten",
+   "mascot": {
+    "name": "dika-anime",
+    "emotion": "gas"
+   },
+   "day": {
+    "n": 12,
+    "of": 30
+   },
+   "caption": "Hari ke-12 dari 30 hari",
+   "sfx": [
+    0
+   ]
+  }
+ ]
+}

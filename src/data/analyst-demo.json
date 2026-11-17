@@ -1,0 +1,106 @@
+{
+ "brand": {
+  "name": "NextAja",
+  "handle": ""
+ },
+ "gear": "none",
+ "scenes": [
+  {
+   "type": "judul",
+   "sec": 3.5,
+   "title": "Akun lo stuck?",
+   "sub": "Followers segitu-gitu aja",
+   "mascot": {
+    "name": "dika-anime",
+    "emotion": "pusing"
+   },
+   "caption": "Akun lo stuck? Followers segitu-gitu aja",
+   "sfx": [
+    0
+   ]
+  },
+  {
+   "type": "kartu",
+   "sec": 5,
+   "title": "Baca Data",
+   "titleColor": "#C8F135",
+   "mascot": {
+    "name": "dika-anime",
+    "emotion": "tunjuk-kiri"
+   },
+   "caption": "Mulai dari reach, watch time, dan engagement",
+   "items": [
+    {
+     "title": "Reach",
+     "sub": "Siapa yang lihat?",
+     "bg": "#CFE3FF"
+    },
+    {
+     "title": "Watch Time",
+     "sub": "Di detik berapa kabur?",
+     "bg": "#FFD3E6"
+    },
+    {
+     "title": "Engagement",
+     "sub": "Like, share, save",
+     "bg": "#FFE45E"
+    }
+   ],
+   "sfx": [
+    0
+   ]
+  },
+  {
+   "type": "angka",
+   "sec": 4,
+   "title": "Temukan Masalah",
+   "titleColor": "#FFD3E6",
+   "mascot": {
+    "name": "dika-anime",
+    "emotion": "grafik"
+   },
+   "caption": "Engagement rendah, itu sinyal masalahnya",
+   "stat": {
+    "value": 2.1,
+    "decimals": 1,
+    "suffix": "%",
+    "label": "Engagement Rate",
+    "note": "Contoh ilustrasi, bukan data akun"
+   },
+   "sfx": [
+    0
+   ]
+  },
+  {
+   "type": "paket",
+   "sec": 4.5,
+   "title": "Susun Strategi",
+   "titleColor": "#CFE3FF",
+   "mascot": {
+    "name": "dika-anime",
+    "emotion": "checklist"
+   },
+   "caption": "Pilih paket audit yang pas buat akun lo",
+   "items": [
+    {
+     "title": "Basic Audit",
+     "sub": "Profil, bio, konten, engagement",
+     "bg": "#C9F5E1"
+    },
+    {
+     "title": "Advanced Analysis",
+     "sub": "Plus kompetitor dan audiens",
+     "bg": "#FFE45E"
+    },
+    {
+     "title": "360° Social Media Audit",
+     "sub": "Plus strategi, kalender, dashboard",
+     "bg": "#DCD0FF"
+    }
+   ],
+   "sfx": [
+    0
+   ]
+  }
+ ]
+}

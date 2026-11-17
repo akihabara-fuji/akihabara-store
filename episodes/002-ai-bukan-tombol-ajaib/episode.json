@@ -1,0 +1,378 @@
+{
+  "episode": "002",
+  "slug": "ai-bukan-tombol-ajaib",
+  "title": "AI BUKAN TOMBOL AJAIB",
+  "status": "draf",
+  "hideBrand": true,
+  "editorial": {
+    "message": "AI tidak bisa menyelamatkan brief yang berantakan; tujuan, konteks, dan format output harus jelas dulu.",
+    "hook": {
+      "text": "INPUT BERANTAKAN = OUTPUT BERANTAKAN",
+      "type": "pernyataan",
+      "appearBySec": 0,
+      "sceneIndex": 0
+    },
+    "cta": {
+      "text": "Follow dan cek bio buat lihat contoh prompt dan workflow yang gue bangun.",
+      "action": "follow",
+      "sceneIndex": 6
+    }
+  },
+  "brand": {
+    "name": "Dika Priyadi",
+    "handle": ""
+  },
+  "gear": "none",
+  "voiceDir": "voice-ep002",
+  "scenes": [
+    {
+      "sfx": [
+        0
+      ],
+      "type": "split",
+      "sec": 3.5,
+      "title": "",
+      "besar": [
+        "INPUT BERANTAKAN",
+        "=",
+        "OUTPUT BERANTAKAN"
+      ],
+      "panelNote": "Tim AI menunggu arahan (ilustrasi)",
+      "tim": [
+        {
+          "name": "claude-kotak",
+          "emotion": "kerja",
+          "label": "Claude",
+          "text": "Arahannya apa?",
+          "at": 10
+        },
+        {
+          "name": "chatgpt",
+          "emotion": "kerja",
+          "label": "ChatGPT",
+          "text": "Belum jelas.",
+          "at": 30
+        }
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "serius",
+          "size": 600,
+          "x": 500
+        }
+      ],
+      "caption": "AI nggak bisa menyelamatkan brief yang berantakan.",
+      "emph": [
+        "berantakan"
+      ]
+    },
+    {
+      "sfx": [
+        0
+      ],
+      "type": "split",
+      "sec": 6,
+      "title": "",
+      "titleColor": "#FFD3E6",
+      "caption": "Kadang orang bilang AI kasih jawaban jelek. Tapi coba cek dulu instruksinya.",
+      "panelNote": "Cek instruksi dulu (ilustrasi)",
+      "tim": [
+        {
+          "name": "gemini",
+          "emotion": "kerja",
+          "label": "Gemini",
+          "text": "Hasilnya kurang pas.",
+          "at": 10
+        },
+        {
+          "name": "claude-kotak",
+          "emotion": "kerja",
+          "label": "Claude",
+          "text": "Coba cek instruksinya.",
+          "at": 70
+        }
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "serius",
+          "size": 560,
+          "x": 520
+        },
+        {
+          "at": 80,
+          "emotion": "mikir",
+          "size": 500,
+          "x": 560,
+          "flip": true
+        }
+      ],
+      "besar": [
+        "JAWABAN JELEK?",
+        "CEK INSTRUKSI",
+        "DULU."
+      ],
+      "emph": [
+        "jelek",
+        "instruksinya"
+      ]
+    },
+    {
+      "sfx": [
+        0
+      ],
+      "type": "split",
+      "sec": 6,
+      "title": "Instruksi yang Bermasalah",
+      "titleColor": "#FFD3E6",
+      "caption": "Tujuannya belum jelas, konteksnya kurang, format hasilnya nggak ditentukan.",
+      "panelNote": "Tiga masalah umum (ilustrasi)",
+      "tim": [
+        {
+          "name": "chatgpt",
+          "emotion": "kerja",
+          "label": "ChatGPT",
+          "text": "Tujuannya apa?",
+          "at": 10
+        },
+        {
+          "name": "claude-kotak",
+          "emotion": "kerja",
+          "label": "Claude",
+          "text": "Konteksnya mana?",
+          "at": 60
+        },
+        {
+          "name": "gemini",
+          "emotion": "kerja",
+          "label": "Gemini",
+          "text": "Formatnya apa?",
+          "at": 110
+        }
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "mikir",
+          "size": 540,
+          "x": 520
+        },
+        {
+          "at": 90,
+          "emotion": "serius",
+          "size": 520,
+          "x": 540,
+          "flip": true
+        }
+      ],
+      "gagal": [
+        "Tujuan belum jelas",
+        "Konteks kurang",
+        "Format tidak ditentukan"
+      ],
+      "emph": [
+        "jelas",
+        "kurang",
+        "ditentukan"
+      ]
+    },
+    {
+      "sfx": [
+        0
+      ],
+      "type": "split",
+      "sec": 4,
+      "title": "Rapikan Dulu",
+      "titleColor": "#C9F5E1",
+      "caption": "Sebelum menyalahkan model, rapikan tiga hal.",
+      "panelNote": "Rapikan dulu (ilustrasi)",
+      "tim": [
+        {
+          "name": "claude-kotak",
+          "emotion": "kerja",
+          "label": "Claude",
+          "text": "Siap dirapikan.",
+          "at": 10
+        }
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "jelas",
+          "size": 560,
+          "x": 520
+        }
+      ],
+      "besar": [
+        "RAPIKAN",
+        "3 HAL",
+        "DULU."
+      ],
+      "emph": [
+        "tiga",
+        "hal"
+      ]
+    },
+    {
+      "sfx": [
+        0
+      ],
+      "type": "split",
+      "sec": 8,
+      "title": "Tiga Hal yang Dirapikan",
+      "titleColor": "#C9F5E1",
+      "caption": "Masalah yang mau diselesaikan, informasi yang boleh dipakai, dan bentuk output yang dibutuhkan.",
+      "panelNote": "Brief yang rapi (ilustrasi)",
+      "tim": [
+        {
+          "name": "chatgpt",
+          "emotion": "kerja",
+          "label": "ChatGPT",
+          "text": "Masalah jelas.",
+          "at": 10
+        },
+        {
+          "name": "claude-kotak",
+          "emotion": "kerja",
+          "label": "Claude",
+          "text": "Informasi cukup.",
+          "at": 80
+        },
+        {
+          "name": "flow",
+          "emotion": "kerja",
+          "label": "Flow",
+          "text": "Format ditentukan.",
+          "at": 150
+        }
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "baca",
+          "size": 540,
+          "x": 520,
+          "flip": true
+        },
+        {
+          "at": 120,
+          "emotion": "jelas",
+          "size": 560,
+          "x": 520
+        }
+      ],
+      "gagal": [
+        "MASALAH yang diselesaikan",
+        "INFORMASI yang boleh dipakai",
+        "OUTPUT yang dibutuhkan"
+      ],
+      "gagalFix": "Brief rapi, hasil lebih terarah",
+      "emph": [
+        "masalah",
+        "informasi",
+        "output"
+      ],
+      "gagalOk": true
+    },
+    {
+      "sfx": [
+        0
+      ],
+      "type": "split",
+      "sec": 6,
+      "title": "AI Mempercepat Kerja",
+      "titleColor": "#C8F135",
+      "tag": "ILUSTRASI",
+      "caption": "AI bisa membantu mempercepat kerja, tapi arah kerja tetap harus jelas.",
+      "panelNote": "Arah tetap dari kita (ilustrasi)",
+      "tim": [
+        {
+          "name": "chatgpt",
+          "emotion": "kerja",
+          "label": "ChatGPT",
+          "text": "Saya percepat.",
+          "at": 10
+        },
+        {
+          "name": "flow",
+          "emotion": "kerja",
+          "label": "Flow",
+          "text": "Arah dari kamu.",
+          "at": 80
+        }
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "jelas",
+          "size": 540,
+          "x": 540
+        }
+      ],
+      "emph": [
+        "mempercepat",
+        "jelas"
+      ],
+      "fase": [
+        {
+          "at": 0,
+          "mode": "siang",
+          "label": "",
+          "dika": "x"
+        }
+      ]
+    },
+    {
+      "sfx": [
+        0
+      ],
+      "type": "split",
+      "sec": 7,
+      "title": "",
+      "besar": [
+        "FOLLOW.",
+        "CEK BIO.",
+        "LIHAT CONTOHNYA."
+      ],
+      "caption": "Follow dan cek bio buat lihat contoh prompt dan workflow yang gue bangun.",
+      "panelNote": "Contoh prompt & workflow (ilustrasi)",
+      "tim": [
+        {
+          "name": "claude-kotak",
+          "emotion": "kerja",
+          "label": "Claude",
+          "text": "Cek bio ya.",
+          "at": 10
+        },
+        {
+          "name": "chatgpt",
+          "emotion": "kerja",
+          "label": "ChatGPT",
+          "text": "Ada contoh prompt.",
+          "at": 70
+        },
+        {
+          "name": "flow",
+          "emotion": "kerja",
+          "label": "Flow",
+          "text": "Dan workflow.",
+          "at": 130
+        }
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "silakan",
+          "size": 560,
+          "x": 520
+        }
+      ],
+      "emph": [
+        "Follow",
+        "bio"
+      ]
+    }
+  ],
+  "captionStyle": "mix"
+}

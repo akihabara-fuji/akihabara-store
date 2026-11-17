@@ -1,0 +1,434 @@
+{
+ "brand": {
+  "name": "Dika Priyadi",
+  "handle": ""
+ },
+ "gear": "none",
+ "scenes": [
+  {
+   "sfx": [
+    0
+   ],
+   "type": "judul",
+   "sec": 4.5,
+   "title": "Konten Video AI, dari Data sampai Jadi",
+   "titleColor": "#C8F135",
+   "sub": "Studi kasus: audit akun TikTok",
+   "mascot": {
+    "name": "dika-anime",
+    "emotion": "cool"
+   },
+   "caption": "Konten video AI, dari data sampai jadi. Berikut prosesnya."
+  },
+  {
+   "sfx": [
+    0
+   ],
+   "type": "layar",
+   "sec": 6,
+   "title": "Riset: Akun",
+   "titleColor": "#CFE3FF",
+   "tag": "DATA ASLI",
+   "mascot": {
+    "name": "tiktok",
+    "emotion": "kaca"
+   },
+   "caption": "Akun TikTok @akihabara.fuzi dipilih sebagai studi kasus",
+   "shot": {
+    "src": "shots/tiktok-profil.jpg",
+    "w": 772,
+    "h": 924,
+    "focus": [
+     {
+      "x": 215,
+      "y": 272,
+      "w": 425,
+      "h": 34,
+      "label": "434 follower · 2.764 likes"
+     },
+     {
+      "x": 258,
+      "y": 392,
+      "w": 340,
+      "h": 52,
+      "label": "Bio: Automate your sync"
+     }
+    ]
+   }
+  },
+  {
+   "sfx": [
+    0
+   ],
+   "type": "kartu",
+   "sec": 5.5,
+   "title": "Riset: 29 Hari",
+   "titleColor": "#FFD3E6",
+   "tag": "DATA ASLI",
+   "mascot": {
+    "name": "n8n",
+    "emotion": "grafik"
+   },
+   "caption": "Data ditarik otomatis dari akun, periode 15 Oktober sampai 12 November",
+   "items": [
+    {
+     "title": "Tayangan: 344",
+     "sub": "Total 29 hari",
+     "bg": "#CFE3FF"
+    },
+    {
+     "title": "Profil dilihat: 162",
+     "sub": "Kunjungan ke profil",
+     "bg": "#FFE45E"
+    },
+    {
+     "title": "Interaksi: 8",
+     "sub": "6 like, 2 share, 0 komentar",
+     "bg": "#FFD3E6"
+    }
+   ]
+  },
+  {
+   "sfx": [
+    0
+   ],
+   "type": "statchart",
+   "sec": 6,
+   "title": "Tayangan Harian",
+   "titleColor": "#C8F135",
+   "tag": "DATA ASLI",
+   "mascot": {
+    "name": "tiktok",
+    "emotion": "grafik"
+   },
+   "caption": "Puncak 57 tayangan pada 8 November, saat video UAOP naik",
+   "stat": {
+    "value": 57,
+    "label": "Tayangan harian tertinggi",
+    "note": "Follower bersih 29 hari: +6"
+   },
+   "bars": [
+    {
+     "label": "",
+     "value": 16
+    },
+    {
+     "label": "",
+     "value": 1
+    },
+    {
+     "label": "",
+     "value": 3
+    },
+    {
+     "label": "",
+     "value": 1
+    },
+    {
+     "label": "",
+     "value": 16
+    },
+    {
+     "label": "",
+     "value": 2
+    },
+    {
+     "label": "",
+     "value": 2
+    },
+    {
+     "label": "",
+     "value": 9
+    },
+    {
+     "label": "",
+     "value": 8
+    },
+    {
+     "label": "",
+     "value": 3
+    },
+    {
+     "label": "",
+     "value": 18
+    },
+    {
+     "label": "",
+     "value": 12
+    },
+    {
+     "label": "",
+     "value": 6
+    },
+    {
+     "label": "",
+     "value": 11
+    },
+    {
+     "label": "",
+     "value": 44
+    },
+    {
+     "label": "",
+     "value": 17
+    },
+    {
+     "label": "",
+     "value": 2
+    },
+    {
+     "label": "",
+     "value": 1
+    },
+    {
+     "label": "",
+     "value": 1
+    },
+    {
+     "label": "",
+     "value": 9
+    },
+    {
+     "label": "",
+     "value": 8
+    },
+    {
+     "label": "",
+     "value": 8
+    },
+    {
+     "label": "",
+     "value": 5
+    },
+    {
+     "label": "",
+     "value": 12
+    },
+    {
+     "label": "",
+     "value": 57
+    },
+    {
+     "label": "",
+     "value": 50
+    },
+    {
+     "label": "",
+     "value": 19
+    },
+    {
+     "label": "",
+     "value": 3
+    },
+    {
+     "label": "",
+     "value": 0
+    }
+   ]
+  },
+  {
+   "sfx": [
+    0
+   ],
+   "type": "kartu",
+   "sec": 6,
+   "title": "Audit: Video",
+   "titleColor": "#FFD3E6",
+   "tag": "DATA ASLI",
+   "mascot": {
+    "name": "n8n",
+    "emotion": "kaca"
+   },
+   "caption": "Jangkauan 85 akun, tetapi rata-rata tonton hanya 3 detik",
+   "items": [
+    {
+     "title": "Jangkauan: 85",
+     "sub": "87 tayangan",
+     "bg": "#CFE3FF"
+    },
+    {
+     "title": "Tonton rata-rata: 3 detik",
+     "sub": "Dari durasi 32 detik",
+     "bg": "#FFE45E"
+    },
+    {
+     "title": "Interaksi: 2",
+     "sub": "2 like, 0 komentar, 0 share",
+     "bg": "#FFD3E6"
+    }
+   ]
+  },
+  {
+   "sfx": [
+    0
+   ],
+   "type": "kartu",
+   "sec": 6.5,
+   "title": "Strategi dan Target",
+   "titleColor": "#C9F5E1",
+   "tag": "REKOMENDASI",
+   "tagColor": "#FFE45E",
+   "mascot": {
+    "name": "dika-anime",
+    "emotion": "ide"
+   },
+   "caption": "Target usulan untuk 30 hari ke depan, bukan data asli",
+   "items": [
+    {
+     "title": "Hook 3 detik pertama",
+     "sub": "Tonton rata-rata 3 detik naik ke 8 detik",
+     "bg": "#CFE3FF"
+    },
+    {
+     "title": "Satu pesan per video",
+     "sub": "Tayangan harian 10 naik ke 40",
+     "bg": "#C9F5E1"
+    },
+    {
+     "title": "Ajakan komen spesifik",
+     "sub": "Follower baru 6 naik ke 15 per bulan",
+     "bg": "#FFE45E"
+    }
+   ]
+  },
+  {
+   "sfx": [
+    0
+   ],
+   "type": "minggu",
+   "sec": 6.5,
+   "title": "Kalender 7 Hari",
+   "titleColor": "#C9F5E1",
+   "tag": "REKOMENDASI",
+   "tagColor": "#FFE45E",
+   "mascot": {
+    "name": "dika-anime",
+    "emotion": "checklist"
+   },
+   "caption": "Satu fokus per hari, satu hari untuk evaluasi",
+   "week": [
+    {
+     "day": "SEN",
+     "text": "Info UT dengan hook kuat"
+    },
+    {
+     "day": "SEL",
+     "text": "Demo otomasi singkat"
+    },
+    {
+     "day": "RAB",
+     "text": "Tips kuliah"
+    },
+    {
+     "day": "KAM",
+     "text": "Video AI 15 detik"
+    },
+    {
+     "day": "JUM",
+     "text": "Tanya jawab"
+    },
+    {
+     "day": "SAB",
+     "text": "Rekap angka minggu ini"
+    },
+    {
+     "day": "MIN",
+     "text": "Evaluasi dan rencana"
+    }
+   ]
+  },
+  {
+   "sfx": [
+    0
+   ],
+   "type": "kartu",
+   "sec": 6,
+   "title": "Produksi Video AI",
+   "titleColor": "#DCD0FF",
+   "mascot": {
+    "name": "flow",
+    "emotion": "video"
+   },
+   "caption": "Dari data sampai video jadi, satu alur dengan bantuan AI",
+   "items": [
+    {
+     "title": "Naskah dari data",
+     "sub": "Temuan audit jadi cerita",
+     "bg": "#CFE3FF"
+    },
+    {
+     "title": "Suara dan animasi AI",
+     "sub": "Maskot, caption, dan efek",
+     "bg": "#C9F5E1"
+    },
+    {
+     "title": "Render otomatis",
+     "sub": "Format vertikal siap unggah",
+     "bg": "#FFE45E"
+    }
+   ]
+  },
+  {
+   "sfx": [
+    0
+   ],
+   "type": "layar",
+   "sec": 6,
+   "title": "Hasil di Akun IG",
+   "titleColor": "#C8F135",
+   "tag": "HASIL",
+   "tagColor": "#FFE45E",
+   "mascot": {
+    "name": "instagram",
+    "emotion": "thumbs"
+   },
+   "caption": "Rekomendasi positioning diterapkan langsung ke profil Instagram",
+   "shot": {
+    "src": "shots/ig-profil.jpg",
+    "w": 772,
+    "h": 924,
+    "focus": [
+     {
+      "x": 18,
+      "y": 308,
+      "w": 305,
+      "h": 92,
+      "label": "Bio baru: fokus video AI"
+     }
+    ]
+   }
+  },
+  {
+   "sfx": [
+    0
+   ],
+   "type": "paket",
+   "sec": 6,
+   "title": "Mari Berdiskusi",
+   "titleColor": "#C9F5E1",
+   "cta": "dikapriyadi.catatanakademik.com",
+   "mascot": {
+    "name": "dika-anime",
+    "emotion": "thumbs"
+   },
+   "caption": "Punya proyek lanjutan? Mari berdiskusi. Portofolio dan kontak ada di sini.",
+   "items": [
+    {
+     "title": "Portofolio",
+     "sub": "dikapriyadi.catatanakademik.com",
+     "bg": "#C9F5E1"
+    },
+    {
+     "title": "DM LinkedIn",
+     "sub": "Diskusi proyek lanjutan",
+     "bg": "#CFE3FF"
+    },
+    {
+     "title": "Punya proyek lanjutan?",
+     "sub": "Menyesuaikan kebutuhan Anda",
+     "bg": "#FFE45E"
+    }
+   ]
+  }
+ ]
+}

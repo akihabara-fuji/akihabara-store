@@ -1,0 +1,2500 @@
+{
+  "episode": "005",
+  "slug": "prompt-jelas-bukan-panjang",
+  "title": "PROMPT JELAS, BUKAN PANJANG",
+  "status": "draf",
+  "hideBrand": true,
+  "editorial": {
+    "message": "Prompt yang efektif ditentukan oleh kejelasan peran, konteks, batasan, dan hasil yang bisa diperiksa, bukan oleh panjangnya.",
+    "hook": {
+      "text": "Prompt 1.000 kata belum tentu lebih pintar.",
+      "type": "pernyataan",
+      "appearBySec": 0,
+      "sceneIndex": 0
+    },
+    "cta": {
+      "text": "Follow dan cek bio buat kumpulan prompt dan contoh penerapannya.",
+      "action": "follow",
+      "sceneIndex": 6
+    }
+  },
+  "brand": {
+    "name": "Dika Priyadi",
+    "handle": ""
+  },
+  "gear": "none",
+  "voiceDir": "voice-ep005",
+  "scenes": [
+    {
+      "sfx": [],
+      "type": "split",
+      "sec": 3.8,
+      "title": "JELAS LEBIH PENTING DARI PANJANG",
+      "titleSize": 38,
+      "caption": "Prompt 1.000 kata belum tentu lebih pintar.",
+      "panelNote": "",
+      "tag": "BUILD WITH AI #005",
+      "wt": [
+        3,
+        9,
+        33,
+        43,
+        53,
+        63,
+        74
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "serius",
+          "size": 560,
+          "x": 520
+        },
+        {
+          "at": 43,
+          "emotion": "bingung",
+          "size": 560,
+          "x": 520
+        },
+        {
+          "at": 74,
+          "emotion": "jelas",
+          "size": 560,
+          "x": 520
+        }
+      ],
+      "stage2": {
+        "nodes": [
+          {
+            "id": "scr",
+            "x": 610,
+            "y": 310,
+            "at": 3,
+            "size": 340,
+            "icon": "scroll",
+            "bare": true,
+            "enter": "drop",
+            "idle": "wobble",
+            "z": -1
+          },
+          {
+            "id": "n",
+            "x": 610,
+            "y": 310,
+            "at": 9,
+            "size": 190,
+            "big": "1.000",
+            "color": "#FFE45E",
+            "enter": "stamp",
+            "hit": [
+              43
+            ]
+          },
+          {
+            "id": "bulb",
+            "x": 790,
+            "y": 130,
+            "at": 74,
+            "size": 120,
+            "icon": "bulb",
+            "enter": "spin",
+            "idle": "bob"
+          },
+          {
+            "id": "ai",
+            "x": 790,
+            "y": 450,
+            "at": 63,
+            "size": 170,
+            "mascot": {
+              "name": "claude-kotak",
+              "emotion": "kerja"
+            },
+            "emo": [
+              {
+                "at": 43,
+                "e": "panik"
+              },
+              {
+                "at": 74,
+                "e": "tanya"
+              }
+            ]
+          }
+        ],
+        "badges": [
+          {
+            "kind": "cross",
+            "x": 700,
+            "y": 190,
+            "at": 43,
+            "size": 92
+          },
+          {
+            "kind": "q",
+            "x": 860,
+            "y": 70,
+            "at": 74,
+            "size": 70
+          }
+        ],
+        "fx": [
+          {
+            "k": "ring",
+            "x": 610,
+            "y": 310,
+            "at": 9,
+            "size": 200,
+            "color": "#111"
+          },
+          {
+            "k": "burst",
+            "x": 610,
+            "y": 310,
+            "at": 43,
+            "size": 170
+          },
+          {
+            "k": "sparks",
+            "x": 790,
+            "y": 130,
+            "at": 74,
+            "size": 130
+          }
+        ],
+        "shake": [
+          {
+            "at": 43,
+            "amp": 12,
+            "dur": 14
+          }
+        ],
+        "flash": [
+          {
+            "at": 43,
+            "color": "#FF7B72"
+          }
+        ],
+        "cam": [
+          {
+            "at": 9,
+            "z": 1.1,
+            "x": 610,
+            "y": 300,
+            "dur": 10
+          },
+          {
+            "at": 57,
+            "z": 1,
+            "dur": 16
+          }
+        ],
+        "stick": {
+          "x": 160,
+          "y": 350,
+          "s": 0.5,
+          "flip": false,
+          "keys": [
+            {
+              "f": 0,
+              "pose": "idle",
+              "blend": 8
+            },
+            {
+              "f": 3,
+              "pose": "lift",
+              "blend": 8
+            },
+            {
+              "f": 43,
+              "pose": "slump",
+              "blend": 8
+            },
+            {
+              "f": 74,
+              "pose": "shrug",
+              "blend": 8
+            }
+          ]
+        }
+      },
+      "side": {
+        "head": {
+          "text": "PANJANG VS PINTAR",
+          "at": 3
+        },
+        "big": [
+          {
+            "at": 9,
+            "text": "1.000",
+            "strike": 43,
+            "y": 110,
+            "size": 140
+          }
+        ],
+        "meterTop": 370,
+        "meter": {
+          "at": 3,
+          "label": "PANJANG",
+          "keys": [
+            {
+              "f": 3,
+              "v": 0
+            },
+            {
+              "f": 33,
+              "v": 100
+            },
+            {
+              "f": 42,
+              "v": 100
+            },
+            {
+              "f": 57,
+              "v": 18
+            }
+          ],
+          "flipLabel": [
+            {
+              "at": 43,
+              "label": "PINTAR"
+            }
+          ],
+          "shake": [
+            43
+          ]
+        },
+        "cast": [
+          {
+            "name": "claude-kotak",
+            "emotion": "kerja",
+            "at": 7,
+            "x": 125,
+            "size": 240,
+            "y": 0,
+            "emo": [
+              {
+                "at": 43,
+                "e": "capek"
+              }
+            ],
+            "hop": [
+              9
+            ]
+          },
+          {
+            "name": "chatgpt",
+            "emotion": "kerja",
+            "at": 11,
+            "x": 365,
+            "size": 240,
+            "y": 0,
+            "say": [
+              {
+                "at": 74,
+                "t": "?"
+              }
+            ],
+            "emo": [
+              {
+                "at": 43,
+                "e": "pusing"
+              },
+              {
+                "at": 74,
+                "e": "tanya"
+              }
+            ],
+            "hop": [
+              43
+            ]
+          }
+        ],
+        "castTop": 500,
+        "pulse": [
+          43
+        ]
+      },
+      "emph": [
+        "1.000",
+        "belum",
+        "pintar"
+      ]
+    },
+    {
+      "sfx": [],
+      "type": "split",
+      "sec": 4.0,
+      "title": "PANJANG BUKAN UKURAN",
+      "titleSize": 44,
+      "caption": "Prompt yang efektif bukan soal seberapa panjang.",
+      "panelNote": "",
+      "tag": "BUILD WITH AI #005",
+      "wt": [
+        10,
+        17,
+        22,
+        39,
+        50,
+        56,
+        78
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "jelas",
+          "size": 560,
+          "x": 520
+        },
+        {
+          "at": 38,
+          "emotion": "tunjuk",
+          "size": 560,
+          "x": 520
+        },
+        {
+          "at": 94,
+          "emotion": "detail",
+          "size": 560,
+          "x": 520
+        }
+      ],
+      "stage2": {
+        "nodes": [
+          {
+            "id": "d",
+            "x": 410,
+            "y": 310,
+            "at": 26,
+            "size": 170,
+            "icon": "doc",
+            "enter": "pop",
+            "idle": "bob"
+          },
+          {
+            "id": "t",
+            "x": 720,
+            "y": 310,
+            "at": 38,
+            "size": 200,
+            "icon": "target",
+            "bare": true,
+            "enter": "spin",
+            "idle": "pulse"
+          },
+          {
+            "id": "r",
+            "x": 410,
+            "y": 130,
+            "at": 55,
+            "size": 230,
+            "icon": "ruler",
+            "bare": true,
+            "enter": "left",
+            "idle": "wobble",
+            "grow": {
+              "at": 94,
+              "to": 1.35,
+              "dur": 12
+            }
+          },
+          {
+            "id": "x",
+            "x": 410,
+            "y": 130,
+            "at": 94,
+            "size": 220,
+            "icon": "x",
+            "bare": true,
+            "enter": "stamp"
+          }
+        ],
+        "edges": [
+          {
+            "from": "d",
+            "to": "t",
+            "at": 42,
+            "bend": 60,
+            "flow": true
+          }
+        ],
+        "badges": [
+          {
+            "kind": "check",
+            "x": 720,
+            "y": 185,
+            "at": 54,
+            "size": 84
+          },
+          {
+            "kind": "cross",
+            "x": 560,
+            "y": 130,
+            "at": 72,
+            "size": 84
+          }
+        ],
+        "fx": [
+          {
+            "k": "ring",
+            "x": 720,
+            "y": 310,
+            "at": 38,
+            "size": 200,
+            "color": "#111"
+          },
+          {
+            "k": "sparks",
+            "x": 720,
+            "y": 310,
+            "at": 48,
+            "size": 170,
+            "color": "#1B9E4B"
+          },
+          {
+            "k": "burst",
+            "x": 410,
+            "y": 130,
+            "at": 94,
+            "size": 150,
+            "color": "#FF7B72"
+          }
+        ],
+        "shake": [
+          {
+            "at": 94,
+            "amp": 10,
+            "dur": 12
+          }
+        ],
+        "cam": [
+          {
+            "at": 38,
+            "z": 1.1,
+            "x": 620,
+            "y": 300,
+            "dur": 12
+          },
+          {
+            "at": 90,
+            "z": 1.1,
+            "x": 430,
+            "y": 160,
+            "dur": 12
+          },
+          {
+            "at": 110,
+            "z": 1,
+            "dur": 14
+          }
+        ],
+        "stick": {
+          "x": 130,
+          "y": 350,
+          "s": 0.5,
+          "flip": false,
+          "keys": [
+            {
+              "f": 0,
+              "pose": "idle",
+              "blend": 8
+            },
+            {
+              "f": 26,
+              "pose": "present",
+              "blend": 8
+            },
+            {
+              "f": 38,
+              "pose": "point",
+              "blend": 8
+            },
+            {
+              "f": 55,
+              "pose": "stop",
+              "blend": 8
+            },
+            {
+              "f": 94,
+              "pose": "shrug",
+              "blend": 8
+            }
+          ]
+        }
+      },
+      "side": {
+        "head": {
+          "text": "PROMPT",
+          "at": 0,
+          "swap": [
+            {
+              "at": 38,
+              "text": "TEPAT SASARAN"
+            },
+            {
+              "at": 94,
+              "text": "BUKAN PANJANG",
+              "color": "#FF7B72"
+            }
+          ]
+        },
+        "rows": [
+          {
+            "at": 38,
+            "label": "JELAS",
+            "icon": "check",
+            "ok": 48,
+            "hit": [
+              48
+            ]
+          },
+          {
+            "at": 55,
+            "label": "PANJANG",
+            "icon": "doc",
+            "bad": 94,
+            "hit": [
+              94
+            ]
+          }
+        ],
+        "cast": [
+          {
+            "name": "claude-kotak",
+            "emotion": "kerja",
+            "at": 30,
+            "x": 125,
+            "size": 250,
+            "y": 0,
+            "say": [
+              {
+                "at": 46,
+                "t": "OK"
+              }
+            ],
+            "emo": [
+              {
+                "at": 38,
+                "e": "cool"
+              },
+              {
+                "at": 94,
+                "e": "capek"
+              }
+            ],
+            "hop": [
+              46
+            ]
+          },
+          {
+            "name": "chatgpt",
+            "emotion": "kerja",
+            "at": 34,
+            "x": 365,
+            "size": 250,
+            "y": 0,
+            "say": [
+              {
+                "at": 94,
+                "t": "X"
+              }
+            ],
+            "emo": [
+              {
+                "at": 38,
+                "e": "checklist"
+              },
+              {
+                "at": 94,
+                "e": "kaget"
+              }
+            ],
+            "hop": [
+              94
+            ]
+          }
+        ],
+        "castTop": 420,
+        "pulse": [
+          38,
+          94
+        ]
+      },
+      "emph": [
+        "efektif",
+        "panjang"
+      ]
+    },
+    {
+      "sfx": [],
+      "type": "split",
+      "sec": 10.5,
+      "title": "EMPAT HAL YANG PENTING",
+      "titleSize": 44,
+      "caption": "Yang penting: peran atau tugasnya jelas, konteksnya cukup, batasannya disebutkan, dan hasil yang diminta bisa diperiksa.",
+      "panelNote": "",
+      "tag": "BUILD WITH AI #005",
+      "wt": [
+        8,
+        13,
+        30,
+        40,
+        50,
+        66,
+        82,
+        98,
+        114,
+        135,
+        162,
+        167,
+        178,
+        183,
+        199,
+        209
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "jelas",
+          "size": 560,
+          "x": 520
+        },
+        {
+          "at": 46,
+          "emotion": "satu",
+          "size": 560,
+          "x": 520
+        },
+        {
+          "at": 98,
+          "emotion": "detail",
+          "size": 560,
+          "x": 520
+        },
+        {
+          "at": 130,
+          "emotion": "tunjuk",
+          "size": 560,
+          "x": 520
+        },
+        {
+          "at": 225,
+          "emotion": "jempol",
+          "size": 560,
+          "x": 520
+        }
+      ],
+      "stage2": {
+        "nodes": [
+          {
+            "id": "r",
+            "x": 140,
+            "y": 150,
+            "at": 46,
+            "size": 125,
+            "icon": "role",
+            "enter": "drop",
+            "idle": "bob",
+            "hit": [
+              82
+            ]
+          },
+          {
+            "id": "k",
+            "x": 340,
+            "y": 150,
+            "at": 98,
+            "size": 125,
+            "icon": "book",
+            "enter": "drop",
+            "idle": "bob",
+            "hit": [
+              114
+            ]
+          },
+          {
+            "id": "b",
+            "x": 560,
+            "y": 150,
+            "at": 130,
+            "size": 125,
+            "icon": "stop",
+            "enter": "drop",
+            "idle": "bob",
+            "hit": [
+              151
+            ]
+          },
+          {
+            "id": "h",
+            "x": 780,
+            "y": 150,
+            "at": 183,
+            "size": 125,
+            "icon": "target",
+            "enter": "drop",
+            "idle": "bob",
+            "hit": [
+              225
+            ]
+          }
+        ],
+        "badges": [
+          {
+            "kind": "check",
+            "x": 190,
+            "y": 80,
+            "at": 82,
+            "size": 66
+          },
+          {
+            "kind": "check",
+            "x": 390,
+            "y": 80,
+            "at": 114,
+            "size": 66
+          },
+          {
+            "kind": "check",
+            "x": 610,
+            "y": 80,
+            "at": 151,
+            "size": 66
+          },
+          {
+            "kind": "check",
+            "x": 830,
+            "y": 80,
+            "at": 225,
+            "size": 66
+          }
+        ],
+        "fx": [
+          {
+            "k": "sparks",
+            "x": 140,
+            "y": 150,
+            "at": 82,
+            "size": 120,
+            "color": "#1B9E4B"
+          },
+          {
+            "k": "sparks",
+            "x": 340,
+            "y": 150,
+            "at": 114,
+            "size": 120,
+            "color": "#1B9E4B"
+          },
+          {
+            "k": "sparks",
+            "x": 560,
+            "y": 150,
+            "at": 151,
+            "size": 120,
+            "color": "#1B9E4B"
+          },
+          {
+            "k": "sparks",
+            "x": 780,
+            "y": 150,
+            "at": 225,
+            "size": 120,
+            "color": "#1B9E4B"
+          },
+          {
+            "k": "confetti",
+            "x": 780,
+            "y": 200,
+            "at": 229,
+            "size": 150
+          }
+        ],
+        "cam": [
+          {
+            "at": 46,
+            "z": 1.12,
+            "x": 200,
+            "y": 210,
+            "dur": 12
+          },
+          {
+            "at": 98,
+            "z": 1.12,
+            "x": 380,
+            "y": 210,
+            "dur": 14
+          },
+          {
+            "at": 130,
+            "z": 1.12,
+            "x": 600,
+            "y": 210,
+            "dur": 14
+          },
+          {
+            "at": 183,
+            "z": 1.12,
+            "x": 740,
+            "y": 210,
+            "dur": 14
+          },
+          {
+            "at": 245,
+            "z": 1,
+            "dur": 16
+          }
+        ],
+        "stick": {
+          "x": 460,
+          "y": 345,
+          "s": 0.5,
+          "flip": false,
+          "keys": [
+            {
+              "f": 0,
+              "pose": "idle",
+              "blend": 8
+            },
+            {
+              "f": 24,
+              "pose": "present",
+              "blend": 8
+            },
+            {
+              "f": 46,
+              "pose": "pointUp",
+              "blend": 8
+            },
+            {
+              "f": 66,
+              "pose": "idle",
+              "blend": 8
+            },
+            {
+              "f": 82,
+              "pose": "thumbs",
+              "blend": 8
+            },
+            {
+              "f": 98,
+              "pose": "pointUp",
+              "blend": 8
+            },
+            {
+              "f": 114,
+              "pose": "thumbs",
+              "blend": 8
+            },
+            {
+              "f": 130,
+              "pose": "pointUp",
+              "blend": 8
+            },
+            {
+              "f": 151,
+              "pose": "thumbs",
+              "blend": 8
+            },
+            {
+              "f": 183,
+              "pose": "pointUp",
+              "blend": 8
+            },
+            {
+              "f": 225,
+              "pose": "happy",
+              "blend": 8
+            }
+          ],
+          "moves": [
+            {
+              "at": 28,
+              "dur": 16,
+              "x": 140,
+              "gait": "walk"
+            },
+            {
+              "at": 80,
+              "dur": 16,
+              "x": 340,
+              "gait": "walk"
+            },
+            {
+              "at": 112,
+              "dur": 16,
+              "x": 560,
+              "gait": "walk"
+            },
+            {
+              "at": 165,
+              "dur": 16,
+              "x": 780,
+              "gait": "walk"
+            }
+          ]
+        }
+      },
+      "side": {
+        "head": {
+          "text": "EMPAT HAL PENTING",
+          "at": 24
+        },
+        "rows": [
+          {
+            "at": 46,
+            "label": "PERAN",
+            "icon": "role",
+            "ok": 82,
+            "hit": [
+              82
+            ]
+          },
+          {
+            "at": 98,
+            "label": "KONTEKS",
+            "icon": "ctx",
+            "ok": 114,
+            "hit": [
+              114
+            ]
+          },
+          {
+            "at": 130,
+            "label": "BATAS",
+            "icon": "limit",
+            "ok": 151,
+            "hit": [
+              151
+            ]
+          },
+          {
+            "at": 183,
+            "label": "HASIL",
+            "icon": "check",
+            "ok": 225,
+            "hit": [
+              225
+            ]
+          }
+        ],
+        "meter": {
+          "at": 46,
+          "label": "KUALITAS",
+          "fmt": "pct",
+          "keys": [
+            {
+              "f": 46,
+              "v": 0
+            },
+            {
+              "f": 82,
+              "v": 25
+            },
+            {
+              "f": 114,
+              "v": 50
+            },
+            {
+              "f": 151,
+              "v": 75
+            },
+            {
+              "f": 225,
+              "v": 100
+            }
+          ]
+        },
+        "cast": [
+          {
+            "name": "claude-kotak",
+            "emotion": "kerja",
+            "at": 28,
+            "x": 125,
+            "size": 185,
+            "y": 0,
+            "emo": [
+              {
+                "at": 225,
+                "e": "hore"
+              }
+            ],
+            "hop": [
+              82,
+              151
+            ]
+          },
+          {
+            "name": "chatgpt",
+            "emotion": "kerja",
+            "at": 32,
+            "x": 365,
+            "size": 185,
+            "y": 0,
+            "say": [
+              {
+                "at": 225,
+                "t": "OK"
+              }
+            ],
+            "emo": [
+              {
+                "at": 225,
+                "e": "hore"
+              }
+            ],
+            "hop": [
+              114,
+              225
+            ]
+          }
+        ],
+        "castTop": 602,
+        "pulse": [
+          225
+        ]
+      },
+      "emph": [
+        "peran",
+        "konteksnya",
+        "batasannya",
+        "diperiksa"
+      ]
+    },
+    {
+      "sfx": [],
+      "type": "split",
+      "sec": 4.6,
+      "title": "PECAH JADI TAHAP",
+      "titleSize": 44,
+      "caption": "Kalau tugasnya kompleks, pecah menjadi beberapa tahap.",
+      "panelNote": "",
+      "tag": "BUILD WITH AI #005",
+      "wt": [
+        9,
+        20,
+        36,
+        51,
+        59,
+        71,
+        86
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "serius",
+          "size": 560,
+          "x": 520
+        },
+        {
+          "at": 52,
+          "emotion": "pusing",
+          "size": 560,
+          "x": 520
+        },
+        {
+          "at": 67,
+          "emotion": "tunjuk",
+          "size": 560,
+          "x": 520
+        },
+        {
+          "at": 102,
+          "emotion": "jelas",
+          "size": 560,
+          "x": 520
+        }
+      ],
+      "stage2": {
+        "nodes": [
+          {
+            "id": "tg",
+            "x": 460,
+            "y": 300,
+            "at": 36,
+            "size": 270,
+            "icon": "tangle",
+            "bare": true,
+            "enter": "pop",
+            "idle": "shake",
+            "grow": {
+              "at": 52,
+              "to": 1.25,
+              "dur": 12
+            },
+            "out": 67
+          },
+          {
+            "id": "s1",
+            "x": 460,
+            "y": 300,
+            "at": 67,
+            "size": 110,
+            "big": "1",
+            "color": "#FFE45E",
+            "to": {
+              "x": 240,
+              "y": 500,
+              "at": 69,
+              "dur": 16,
+              "arc": 90
+            },
+            "enter": "pop"
+          },
+          {
+            "id": "s2",
+            "x": 460,
+            "y": 300,
+            "at": 67,
+            "size": 110,
+            "big": "2",
+            "color": "#C9F5E1",
+            "to": {
+              "x": 440,
+              "y": 430,
+              "at": 75,
+              "dur": 16,
+              "arc": 110
+            },
+            "enter": "pop"
+          },
+          {
+            "id": "s3",
+            "x": 460,
+            "y": 300,
+            "at": 67,
+            "size": 110,
+            "big": "3",
+            "color": "#FFD3E6",
+            "to": {
+              "x": 640,
+              "y": 360,
+              "at": 81,
+              "dur": 16,
+              "arc": 130
+            },
+            "enter": "pop"
+          },
+          {
+            "id": "fl",
+            "x": 810,
+            "y": 250,
+            "at": 102,
+            "size": 150,
+            "icon": "target",
+            "bare": true,
+            "enter": "spin",
+            "idle": "pulse"
+          }
+        ],
+        "edges": [
+          {
+            "from": "s1",
+            "to": "s2",
+            "at": 91,
+            "flow": true
+          },
+          {
+            "from": "s2",
+            "to": "s3",
+            "at": 102,
+            "flow": true
+          },
+          {
+            "from": "s3",
+            "to": "fl",
+            "at": 108,
+            "flow": true
+          }
+        ],
+        "badges": [
+          {
+            "kind": "warn",
+            "x": 560,
+            "y": 150,
+            "at": 52,
+            "size": 80
+          },
+          {
+            "kind": "check",
+            "x": 810,
+            "y": 150,
+            "at": 138,
+            "size": 80
+          }
+        ],
+        "fx": [
+          {
+            "k": "dizzy",
+            "x": 460,
+            "y": 160,
+            "at": 52,
+            "size": 100
+          },
+          {
+            "k": "burst",
+            "x": 460,
+            "y": 300,
+            "at": 67,
+            "size": 190
+          },
+          {
+            "k": "sparks",
+            "x": 460,
+            "y": 300,
+            "at": 71,
+            "size": 260
+          },
+          {
+            "k": "confetti",
+            "x": 810,
+            "y": 250,
+            "at": 136,
+            "size": 150
+          }
+        ],
+        "shake": [
+          {
+            "at": 67,
+            "amp": 14,
+            "dur": 14
+          }
+        ],
+        "flash": [
+          {
+            "at": 67,
+            "color": "#fff"
+          }
+        ],
+        "cam": [
+          {
+            "at": 52,
+            "z": 1.12,
+            "x": 460,
+            "y": 300,
+            "dur": 12
+          },
+          {
+            "at": 83,
+            "z": 1,
+            "dur": 16
+          }
+        ],
+        "stick": {
+          "x": 110,
+          "y": 350,
+          "s": 0.5,
+          "flip": false,
+          "keys": [
+            {
+              "f": 0,
+              "pose": "idle",
+              "blend": 8
+            },
+            {
+              "f": 36,
+              "pose": "idle",
+              "blend": 8
+            },
+            {
+              "f": 52,
+              "pose": "stress",
+              "blend": 8
+            },
+            {
+              "f": 67,
+              "pose": "throw",
+              "blend": 8
+            },
+            {
+              "f": 136,
+              "pose": "thumbs",
+              "blend": 8
+            }
+          ],
+          "moves": [
+            {
+              "at": 87,
+              "dur": 14,
+              "x": 240,
+              "y": 242,
+              "gait": "walk"
+            },
+            {
+              "at": 100,
+              "dur": 14,
+              "x": 440,
+              "y": 172,
+              "gait": "hop"
+            },
+            {
+              "at": 116,
+              "dur": 14,
+              "x": 640,
+              "y": 102,
+              "gait": "hop"
+            }
+          ]
+        }
+      },
+      "side": {
+        "head": {
+          "text": "PECAH JADI TAHAP",
+          "at": 25
+        },
+        "rows": [
+          {
+            "at": 77,
+            "label": "TAHAP 1",
+            "icon": "steps",
+            "ok": 103,
+            "hit": [
+              77
+            ]
+          },
+          {
+            "at": 83,
+            "label": "TAHAP 2",
+            "icon": "steps",
+            "ok": 112,
+            "hit": [
+              83
+            ]
+          },
+          {
+            "at": 89,
+            "label": "TAHAP 3",
+            "icon": "steps",
+            "ok": 130,
+            "hit": [
+              89
+            ]
+          }
+        ],
+        "rowsTop": 74,
+        "meter": {
+          "at": 36,
+          "label": "BEBAN",
+          "fmt": "pct",
+          "color": "#FF7B72",
+          "keys": [
+            {
+              "f": 36,
+              "v": 0
+            },
+            {
+              "f": 52,
+              "v": 100
+            },
+            {
+              "f": 67,
+              "v": 100
+            },
+            {
+              "f": 85,
+              "v": 28
+            }
+          ],
+          "shake": [
+            52
+          ]
+        },
+        "cast": [
+          {
+            "name": "chatgpt",
+            "emotion": "kerja",
+            "at": 29,
+            "x": 125,
+            "size": 185,
+            "y": 0,
+            "emo": [
+              {
+                "at": 52,
+                "e": "pusing"
+              },
+              {
+                "at": 67,
+                "e": "ide"
+              }
+            ],
+            "hop": [
+              67
+            ]
+          },
+          {
+            "name": "claude-kotak",
+            "emotion": "kerja",
+            "at": 33,
+            "x": 365,
+            "size": 185,
+            "y": 0,
+            "say": [
+              {
+                "at": 67,
+                "t": "!"
+              }
+            ],
+            "emo": [
+              {
+                "at": 52,
+                "e": "panik"
+              },
+              {
+                "at": 67,
+                "e": "cool"
+              }
+            ]
+          }
+        ],
+        "castTop": 602,
+        "pulse": [
+          67
+        ]
+      },
+      "emph": [
+        "kompleks",
+        "pecah",
+        "tahap"
+      ]
+    },
+    {
+      "sfx": [],
+      "type": "split",
+      "sec": 4.6,
+      "title": "MINTA ASUMSI, LALU CEK",
+      "titleSize": 44,
+      "caption": "Minta AI menjelaskan asumsi, lalu cek hasilnya.",
+      "panelNote": "",
+      "tag": "BUILD WITH AI #005",
+      "wt": [
+        7,
+        18,
+        24,
+        46,
+        67,
+        77,
+        82
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "jelas",
+          "size": 560,
+          "x": 520
+        },
+        {
+          "at": 62,
+          "emotion": "detail",
+          "size": 560,
+          "x": 520
+        },
+        {
+          "at": 93,
+          "emotion": "baca",
+          "size": 560,
+          "x": 520
+        },
+        {
+          "at": 98,
+          "emotion": "jempol",
+          "size": 560,
+          "x": 520
+        }
+      ],
+      "stage2": {
+        "nodes": [
+          {
+            "id": "ai",
+            "x": 760,
+            "y": 330,
+            "at": 0,
+            "size": 200,
+            "mascot": {
+              "name": "claude-kotak",
+              "emotion": "kerja"
+            },
+            "emo": [
+              {
+                "at": 40,
+                "e": "ide"
+              },
+              {
+                "at": 98,
+                "e": "selesai"
+              }
+            ],
+            "enter": "pop",
+            "idle": "bob"
+          },
+          {
+            "id": "q",
+            "x": 300,
+            "y": 240,
+            "at": 23,
+            "size": 120,
+            "icon": "bubbleQ",
+            "bare": true,
+            "enter": "pop",
+            "to": {
+              "x": 680,
+              "y": 240,
+              "at": 34,
+              "dur": 14,
+              "arc": 70
+            },
+            "out": 42
+          },
+          {
+            "id": "a1",
+            "x": 470,
+            "y": 150,
+            "at": 62,
+            "size": 100,
+            "icon": "note",
+            "bare": true,
+            "enter": "up",
+            "idle": "bob"
+          },
+          {
+            "id": "a2",
+            "x": 570,
+            "y": 120,
+            "at": 67,
+            "size": 100,
+            "icon": "note",
+            "bare": true,
+            "enter": "up",
+            "idle": "bob"
+          },
+          {
+            "id": "a3",
+            "x": 670,
+            "y": 150,
+            "at": 72,
+            "size": 100,
+            "icon": "note",
+            "bare": true,
+            "enter": "up",
+            "idle": "bob"
+          },
+          {
+            "id": "lp",
+            "x": 200,
+            "y": 470,
+            "at": 93,
+            "size": 170,
+            "icon": "search",
+            "bare": true,
+            "enter": "left",
+            "idle": "wobble",
+            "to": {
+              "x": 570,
+              "y": 190,
+              "at": 101,
+              "dur": 18,
+              "arc": -60
+            }
+          }
+        ],
+        "edges": [
+          {
+            "from": "ai",
+            "to": "a1",
+            "at": 64,
+            "bend": -30,
+            "dashed": true
+          },
+          {
+            "from": "ai",
+            "to": "a3",
+            "at": 74,
+            "bend": 30,
+            "dashed": true
+          }
+        ],
+        "badges": [
+          {
+            "kind": "check",
+            "x": 470,
+            "y": 80,
+            "at": 98,
+            "size": 66
+          },
+          {
+            "kind": "check",
+            "x": 570,
+            "y": 50,
+            "at": 102,
+            "size": 66
+          },
+          {
+            "kind": "check",
+            "x": 670,
+            "y": 80,
+            "at": 106,
+            "size": 66
+          }
+        ],
+        "fx": [
+          {
+            "k": "ring",
+            "x": 760,
+            "y": 330,
+            "at": 34,
+            "size": 210,
+            "color": "#111"
+          },
+          {
+            "k": "sparks",
+            "x": 570,
+            "y": 130,
+            "at": 68,
+            "size": 200
+          },
+          {
+            "k": "burst",
+            "x": 570,
+            "y": 190,
+            "at": 96,
+            "size": 80,
+            "color": "#1B9E4B"
+          }
+        ],
+        "cam": [
+          {
+            "at": 34,
+            "z": 1.1,
+            "x": 700,
+            "y": 260,
+            "dur": 12
+          },
+          {
+            "at": 107,
+            "z": 1.12,
+            "x": 560,
+            "y": 190,
+            "dur": 12
+          },
+          {
+            "at": 112,
+            "z": 1,
+            "dur": 16
+          }
+        ],
+        "stick": {
+          "x": 170,
+          "y": 350,
+          "s": 0.5,
+          "flip": false,
+          "keys": [
+            {
+              "f": 0,
+              "pose": "idle",
+              "blend": 8
+            },
+            {
+              "f": 23,
+              "pose": "point",
+              "blend": 8
+            },
+            {
+              "f": 62,
+              "pose": "idle",
+              "blend": 8
+            },
+            {
+              "f": 93,
+              "pose": "press",
+              "blend": 8
+            },
+            {
+              "f": 98,
+              "pose": "thumbs",
+              "blend": 8
+            }
+          ]
+        }
+      },
+      "side": {
+        "head": {
+          "text": "TANYA, LALU CEK",
+          "at": 23
+        },
+        "rows": [
+          {
+            "at": 62,
+            "label": "ASUMSI",
+            "icon": "ask",
+            "ok": 92,
+            "hit": [
+              62
+            ]
+          },
+          {
+            "at": 93,
+            "label": "CEK",
+            "icon": "check",
+            "ok": 98,
+            "hit": [
+              93
+            ]
+          }
+        ],
+        "meterTop": 290,
+        "meter": {
+          "at": 62,
+          "label": "YAKIN",
+          "fmt": "pct",
+          "keys": [
+            {
+              "f": 62,
+              "v": 30
+            },
+            {
+              "f": 93,
+              "v": 38
+            },
+            {
+              "f": 98,
+              "v": 90
+            }
+          ]
+        },
+        "cast": [
+          {
+            "name": "claude-kotak",
+            "emotion": "kerja",
+            "at": 27,
+            "x": 125,
+            "size": 250,
+            "y": 0,
+            "emo": [
+              {
+                "at": 40,
+                "e": "ide"
+              },
+              {
+                "at": 98,
+                "e": "hore"
+              }
+            ],
+            "hop": [
+              62
+            ]
+          },
+          {
+            "name": "gemini",
+            "emotion": "kerja",
+            "at": 31,
+            "x": 365,
+            "size": 250,
+            "y": 0,
+            "say": [
+              {
+                "at": 93,
+                "t": "?"
+              },
+              {
+                "at": 98,
+                "t": "OK"
+              }
+            ],
+            "emo": [
+              {
+                "at": 93,
+                "e": "checklist"
+              },
+              {
+                "at": 98,
+                "e": "hore"
+              }
+            ],
+            "hop": [
+              98
+            ]
+          }
+        ],
+        "castTop": 440,
+        "pulse": [
+          98
+        ]
+      },
+      "emph": [
+        "asumsi",
+        "cek"
+      ]
+    },
+    {
+      "sfx": [],
+      "type": "split",
+      "sec": 4.6,
+      "title": "JANGAN SALING BERTENTANGAN",
+      "titleSize": 38,
+      "caption": "Jangan menumpuk instruksi yang saling bertentangan.",
+      "panelNote": "",
+      "tag": "BUILD WITH AI #005",
+      "wt": [
+        7,
+        18,
+        33,
+        49,
+        54,
+        64
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "serius",
+          "size": 560,
+          "x": 520
+        },
+        {
+          "at": 70,
+          "emotion": "kaget",
+          "size": 560,
+          "x": 520
+        },
+        {
+          "at": 80,
+          "emotion": "pusing",
+          "size": 560,
+          "x": 520
+        }
+      ],
+      "stage2": {
+        "nodes": [
+          {
+            "id": "b1",
+            "x": 660,
+            "y": 500,
+            "at": 34,
+            "size": 100,
+            "big": "A",
+            "color": "#FFE45E",
+            "enter": "drop",
+            "idle": "wobble",
+            "to": {
+              "x": 820,
+              "y": 520,
+              "at": 80,
+              "dur": 18,
+              "arc": -40
+            }
+          },
+          {
+            "id": "b2",
+            "x": 660,
+            "y": 410,
+            "at": 49,
+            "size": 100,
+            "big": "B",
+            "color": "#C9F5E1",
+            "enter": "drop",
+            "idle": "wobble",
+            "to": {
+              "x": 560,
+              "y": 530,
+              "at": 84,
+              "dur": 18,
+              "arc": -70
+            },
+            "rot": 0
+          },
+          {
+            "id": "b3",
+            "x": 660,
+            "y": 320,
+            "at": 65,
+            "size": 100,
+            "big": "C",
+            "color": "#FFD3E6",
+            "enter": "drop",
+            "idle": "wobble",
+            "to": {
+              "x": 740,
+              "y": 500,
+              "at": 88,
+              "dur": 20,
+              "arc": -120
+            }
+          },
+          {
+            "id": "up",
+            "x": 520,
+            "y": 230,
+            "at": 70,
+            "size": 110,
+            "icon": "arrowUp",
+            "bare": true,
+            "enter": "spin"
+          },
+          {
+            "id": "dn",
+            "x": 800,
+            "y": 230,
+            "at": 70,
+            "size": 110,
+            "icon": "arrowDown",
+            "bare": true,
+            "enter": "spin"
+          },
+          {
+            "id": "ai",
+            "x": 420,
+            "y": 420,
+            "at": 70,
+            "size": 160,
+            "mascot": {
+              "name": "chatgpt",
+              "emotion": "kerja"
+            },
+            "emo": [
+              {
+                "at": 80,
+                "e": "pusing"
+              }
+            ],
+            "enter": "pop"
+          }
+        ],
+        "badges": [
+          {
+            "kind": "cross",
+            "x": 660,
+            "y": 170,
+            "at": 80,
+            "size": 96
+          }
+        ],
+        "fx": [
+          {
+            "k": "sparks",
+            "x": 660,
+            "y": 230,
+            "at": 76,
+            "size": 230
+          },
+          {
+            "k": "burst",
+            "x": 660,
+            "y": 400,
+            "at": 80,
+            "size": 230
+          },
+          {
+            "k": "dizzy",
+            "x": 420,
+            "y": 330,
+            "at": 84,
+            "size": 110
+          }
+        ],
+        "shake": [
+          {
+            "at": 80,
+            "amp": 16,
+            "dur": 16
+          }
+        ],
+        "flash": [
+          {
+            "at": 80,
+            "color": "#FF7B72"
+          }
+        ],
+        "cam": [
+          {
+            "at": 70,
+            "z": 1.12,
+            "x": 660,
+            "y": 300,
+            "dur": 12
+          },
+          {
+            "at": 98,
+            "z": 1,
+            "dur": 16
+          }
+        ],
+        "stick": {
+          "x": 170,
+          "y": 350,
+          "s": 0.5,
+          "flip": false,
+          "keys": [
+            {
+              "f": 0,
+              "pose": "idle",
+              "blend": 8
+            },
+            {
+              "f": 34,
+              "pose": "lift",
+              "blend": 8
+            },
+            {
+              "f": 49,
+              "pose": "press",
+              "blend": 8
+            },
+            {
+              "f": 65,
+              "pose": "lift",
+              "blend": 8
+            },
+            {
+              "f": 70,
+              "pose": "stop",
+              "blend": 8
+            },
+            {
+              "f": 80,
+              "pose": "scared",
+              "blend": 8
+            }
+          ]
+        }
+      },
+      "side": {
+        "head": {
+          "text": "INSTRUKSI BERTUMPUK",
+          "at": 23
+        },
+        "rows": [
+          {
+            "at": 34,
+            "label": "ATURAN A",
+            "icon": "doc",
+            "bad": 80,
+            "hit": [
+              34
+            ]
+          },
+          {
+            "at": 49,
+            "label": "ATURAN B",
+            "icon": "doc",
+            "bad": 83,
+            "hit": [
+              49
+            ]
+          },
+          {
+            "at": 65,
+            "label": "ATURAN C",
+            "icon": "doc",
+            "bad": 86,
+            "hit": [
+              65
+            ]
+          }
+        ],
+        "meter": {
+          "at": 34,
+          "label": "KACAU",
+          "fmt": "pct",
+          "color": "#FF7B72",
+          "keys": [
+            {
+              "f": 34,
+              "v": 5
+            },
+            {
+              "f": 65,
+              "v": 30
+            },
+            {
+              "f": 70,
+              "v": 55
+            },
+            {
+              "f": 80,
+              "v": 100
+            }
+          ],
+          "shake": [
+            80
+          ]
+        },
+        "cast": [
+          {
+            "name": "chatgpt",
+            "emotion": "kerja",
+            "at": 27,
+            "x": 125,
+            "size": 185,
+            "y": 0,
+            "say": [
+              {
+                "at": 80,
+                "t": "!?"
+              }
+            ],
+            "emo": [
+              {
+                "at": 70,
+                "e": "kaget"
+              },
+              {
+                "at": 80,
+                "e": "pusing"
+              }
+            ],
+            "hop": [
+              80
+            ]
+          },
+          {
+            "name": "claude-kotak",
+            "emotion": "kerja",
+            "at": 31,
+            "x": 365,
+            "size": 185,
+            "y": 0,
+            "emo": [
+              {
+                "at": 80,
+                "e": "panik"
+              }
+            ],
+            "hop": [
+              70
+            ]
+          }
+        ],
+        "castTop": 602,
+        "pulse": [
+          80
+        ]
+      },
+      "emph": [
+        "menumpuk",
+        "bertentangan"
+      ]
+    },
+    {
+      "sfx": [],
+      "type": "split",
+      "sec": 6.0,
+      "title": "CEK BIO",
+      "titleSize": 44,
+      "caption": "Follow dan cek bio buat kumpulan prompt dan contoh penerapannya.",
+      "panelNote": "",
+      "tag": "BUILD WITH AI #005",
+      "wt": [
+        7,
+        19,
+        25,
+        31,
+        37,
+        43,
+        60,
+        67,
+        73,
+        85
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "silakan",
+          "size": 560,
+          "x": 520
+        },
+        {
+          "at": 47,
+          "emotion": "tunjuk",
+          "size": 560,
+          "x": 520
+        },
+        {
+          "at": 101,
+          "emotion": "jempol",
+          "size": 560,
+          "x": 520
+        }
+      ],
+      "stage2": {
+        "nodes": [
+          {
+            "id": "pl",
+            "x": 250,
+            "y": 170,
+            "at": 23,
+            "size": 170,
+            "icon": "plus",
+            "enter": "stamp",
+            "idle": "pulse"
+          },
+          {
+            "id": "pf",
+            "x": 250,
+            "y": 170,
+            "at": 23,
+            "size": 170,
+            "icon": "person",
+            "bare": true,
+            "enter": "none",
+            "opacity": 0.0
+          },
+          {
+            "id": "ln",
+            "x": 520,
+            "y": 170,
+            "at": 47,
+            "size": 150,
+            "icon": "link",
+            "color": "#FFE45E",
+            "enter": "spin",
+            "idle": "bob"
+          },
+          {
+            "id": "c1",
+            "x": 330,
+            "y": 430,
+            "at": 59,
+            "size": 115,
+            "icon": "doc",
+            "color": "#fff",
+            "enter": "up",
+            "idle": "bob"
+          },
+          {
+            "id": "c2",
+            "x": 470,
+            "y": 430,
+            "at": 76,
+            "size": 115,
+            "icon": "doc",
+            "color": "#C9F5E1",
+            "enter": "up",
+            "idle": "bob"
+          },
+          {
+            "id": "c3",
+            "x": 610,
+            "y": 430,
+            "at": 89,
+            "size": 115,
+            "icon": "code",
+            "color": "#DCD0FF",
+            "enter": "up",
+            "idle": "bob"
+          },
+          {
+            "id": "c4",
+            "x": 750,
+            "y": 430,
+            "at": 101,
+            "size": 115,
+            "icon": "check",
+            "color": "#CFE3FF",
+            "enter": "up",
+            "idle": "bob"
+          },
+          {
+            "id": "m1",
+            "x": 790,
+            "y": 160,
+            "at": 101,
+            "size": 130,
+            "mascot": {
+              "name": "flow",
+              "emotion": "hore"
+            }
+          },
+          {
+            "id": "m2",
+            "x": 650,
+            "y": 170,
+            "at": 105,
+            "size": 120,
+            "mascot": {
+              "name": "chatgpt",
+              "emotion": "hore"
+            }
+          }
+        ],
+        "edges": [
+          {
+            "from": "pl",
+            "to": "ln",
+            "at": 47,
+            "bend": 40,
+            "flow": true
+          }
+        ],
+        "badges": [
+          {
+            "kind": "star",
+            "x": 250,
+            "y": 80,
+            "at": 33,
+            "size": 70
+          },
+          {
+            "kind": "check",
+            "x": 520,
+            "y": 90,
+            "at": 55,
+            "size": 70
+          }
+        ],
+        "fx": [
+          {
+            "k": "burst",
+            "x": 250,
+            "y": 170,
+            "at": 23,
+            "size": 200
+          },
+          {
+            "k": "ring",
+            "x": 520,
+            "y": 170,
+            "at": 47,
+            "size": 190,
+            "color": "#111"
+          },
+          {
+            "k": "confetti",
+            "x": 540,
+            "y": 300,
+            "at": 101,
+            "size": 170
+          }
+        ],
+        "stick": {
+          "x": 130,
+          "y": 350,
+          "s": 0.5,
+          "flip": false,
+          "keys": [
+            {
+              "f": 0,
+              "pose": "idle",
+              "blend": 8
+            },
+            {
+              "f": 23,
+              "pose": "present",
+              "blend": 8
+            },
+            {
+              "f": 41,
+              "pose": "point",
+              "blend": 8
+            },
+            {
+              "f": 59,
+              "pose": "present",
+              "blend": 8
+            },
+            {
+              "f": 101,
+              "pose": "cheer",
+              "blend": 8
+            }
+          ]
+        }
+      },
+      "side": {
+        "head": {
+          "text": "FOLLOW + CEK BIO",
+          "at": 23
+        },
+        "rows": [
+          {
+            "at": 23,
+            "label": "FOLLOW",
+            "icon": "hand",
+            "ok": 35,
+            "hit": [
+              23
+            ]
+          },
+          {
+            "at": 41,
+            "label": "CEK BIO",
+            "icon": "doc",
+            "ok": 53,
+            "hit": [
+              47
+            ]
+          },
+          {
+            "at": 76,
+            "label": "PROMPT",
+            "icon": "bulb",
+            "ok": 86,
+            "hit": [
+              76
+            ]
+          },
+          {
+            "at": 89,
+            "label": "CONTOH",
+            "icon": "check",
+            "ok": 101,
+            "hit": [
+              89
+            ]
+          }
+        ],
+        "cast": [
+          {
+            "name": "claude-kotak",
+            "emotion": "kerja",
+            "at": 27,
+            "x": 125,
+            "size": 190,
+            "y": 0,
+            "emo": [
+              {
+                "at": 101,
+                "e": "hore"
+              }
+            ],
+            "hop": [
+              23,
+              101
+            ]
+          },
+          {
+            "name": "chatgpt",
+            "emotion": "kerja",
+            "at": 31,
+            "x": 365,
+            "size": 190,
+            "y": 0,
+            "say": [
+              {
+                "at": 101,
+                "t": "!"
+              }
+            ],
+            "emo": [
+              {
+                "at": 101,
+                "e": "hore"
+              }
+            ],
+            "hop": [
+              47,
+              101
+            ]
+          }
+        ],
+        "castTop": 602,
+        "pulse": [
+          23,
+          101
+        ]
+      },
+      "emph": [
+        "Follow",
+        "bio"
+      ]
+    }
+  ],
+  "captionStyle": "mix"
+}

@@ -1,0 +1,50 @@
+{
+  "brand": {"name": "Kang Catat", "handle": "@catatanakademik"},
+  "gear": "togaglasses",
+  "scenes": [
+    {"type": "hook", "warn": "AWAS!", "voice": "Jangan sampai ujian UAS kamu gagal gara-gara ini!",
+     "words": [{"t":"Jangan"},{"t":"sampai"},{"t":"ujian"},{"t":"UAS","hl":"blue"},{"t":"kamu"},{"t":"gagal","hl":"red"},{"t":"gara-gara"},{"t":"ini!","hl":"red"}]},
+    {"type": "list", "pill": "Persiapan • jauh hari", "pillColor": "blue", "title": "Siapkan *dulu*", "accent": "blue",
+     "voice": "Siapkan dulu: SEB, foto live, perangkat, dan password KTPUO.",
+     "rows": [
+       {"t": "Pasang SEB", "sub": "Tes sebelum UAS, jangan H-0"},
+       {"t": "Foto live", "sub": "3 hari sebelum ujian (Berkas AOP)"},
+       {"t": "Perangkat", "sub": "Laptop, webcam, mic, tripod, HP"},
+       {"t": "Password KTPUO", "sub": "Sesuai matkul dan sesi"}]},
+    {"type": "list", "pill": "Langkah 1 • Login", "pillColor": "green", "title": "Masuk *akun*", "accent": "green",
+     "voice": "Masuk akun pakai NIM dan password KTPUO.",
+     "rows": [
+       {"t": "Username", "sub": "Isi NIM", "mark": "1"},
+       {"t": "Password", "sub": "Dari KTPUO", "mark": "2"}]},
+    {"type": "list", "pill": "Langkah 2 • Kamera kedua", "pillColor": "orange", "title": "HP jadi *saksi*", "accent": "orange",
+     "voice": "HP jadi saksi: landscape, meja dan monitor terlihat, baterai terisi.",
+     "rows": [
+       {"t": "Landscape, kanan/kiri", "sub": "Meja + monitor harus terlihat", "mark": "↔"},
+       {"t": "Baterai terisi", "sub": "Scan QR, izinkan kamera + mic", "mark": "⚡"}]},
+    {"type": "list", "pill": "Langkah 3 • Validasi", "pillColor": "blue", "title": "Cek *identitas*", "accent": "blue",
+     "voice": "Cek identitas: NIM, matkul, dan sesi ujian.",
+     "rows": [
+       {"t": "NIM & nama", "mark": "✓"},
+       {"t": "Kode matkul", "mark": "✓"},
+       {"t": "Sesi ujian", "mark": "✓"},
+       {"t": "Baca tata tertib", "mark": "✓"}]},
+    {"type": "list", "pill": "Kalau validasi gagal", "pillColor": "red", "title": "Jangan *panik*", "accent": "red",
+     "voice": "Jangan panik. Tekan Ulangi, atau lapor ke UT-Daerah.",
+     "rows": [
+       {"t": "Berkas AOP → Ulangi"},
+       {"t": "Tunggu lingkaran hijau", "sub": "Lalu tekan Ambil Foto"},
+       {"t": "Lapor UT-Daerah / UT-LLN", "sub": "Minta validasi ulang"},
+       {"t": "Refresh, login lagi"}]},
+    {"type": "list", "pill": "Langkah 4 • Selesai", "pillColor": "green", "title": "Tutup *rapi*", "accent": "green",
+     "voice": "Tutup rapi: cek soal terisi, lihat skor, tutup SEB.",
+     "rows": [
+       {"t": "Cek semua soal terisi", "sub": "Jumlah harus sesuai", "mark": "☑"},
+       {"t": "Lihat skor di layar", "sub": "Benar / jumlah soal", "mark": "★"},
+       {"t": "Tutup SEB", "sub": "Lewat tombol close", "mark": "✕"}]},
+    {"type": "outro", "pill": "Penting", "title": "Cek *KTPU* terbaru", "accent": "red", "sticker": "Sukses UAS!",
+     "voice": "Cek KTPU terbaru. Sukses UAS!",
+     "rows": [
+       {"t": "Jam & durasi ujian", "sub": "Lihat KTPU dan pengumuman UT", "mark": "i"},
+       {"t": "Info resmi: ut.ac.id", "sub": "Atau tanya UT-Daerah", "mark": "✓"}]}
+  ]
+}

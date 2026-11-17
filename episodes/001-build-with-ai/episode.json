@@ -1,0 +1,401 @@
+{
+  "episode": "001",
+  "slug": "satu-orang-banyak-ai",
+  "title": "SATU ORANG, BANYAK AI",
+  "status": "draf",
+  "hideBrand": true,
+  "editorial": {
+    "message": "AI bukan cuma buat menjawab pertanyaan, tapi alat untuk membangun sesuatu.",
+    "hook": {
+      "text": "SATU ORANG. BANYAK AI. BISA BIKIN APA?",
+      "type": "pertanyaan",
+      "appearBySec": 0,
+      "sceneIndex": 0
+    },
+    "cta": {
+      "text": "Mau lihat prosesnya, bukan cuma hasilnya? Follow. Kita bangun satu tim AI dari nol.",
+      "action": "follow",
+      "sceneIndex": 6
+    }
+  },
+  "brand": {
+    "name": "Dika Priyadi",
+    "handle": ""
+  },
+  "gear": "none",
+  "scenes": [
+    {
+      "sfx": [
+        0
+      ],
+      "type": "split",
+      "sec": 3.0,
+      "title": "",
+      "besar": [
+        "SATU ORANG.",
+        "BANYAK AI.",
+        "BISA BIKIN APA?"
+      ],
+      "panelNote": "Tim AI siap (ilustrasi)",
+      "tim": [
+        {
+          "name": "claude-kotak",
+          "emotion": "kerja",
+          "label": "Claude",
+          "text": "Siap.",
+          "at": 8
+        },
+        {
+          "name": "chatgpt",
+          "emotion": "kerja",
+          "label": "ChatGPT",
+          "text": "Siap.",
+          "at": 16
+        },
+        {
+          "name": "flow",
+          "emotion": "kerja",
+          "label": "Flow",
+          "text": "Siap.",
+          "at": 24
+        }
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "kaget",
+          "size": 600,
+          "x": 500
+        }
+      ]
+    },
+    {
+      "sfx": [
+        0
+      ],
+      "type": "split",
+      "sec": 6,
+      "title": "Banyak yang Bisa Dibangun",
+      "titleColor": "#DCD0FF",
+      "tag": "ILUSTRASI",
+      "fase": [
+        {
+          "at": 0,
+          "mode": "siang",
+          "label": "",
+          "dika": "x"
+        },
+        {
+          "at": 100,
+          "mode": "malam",
+          "label": "",
+          "dika": "x"
+        }
+      ],
+      "caption": "Chatbot, website, alur kerja, dan video. Semuanya bisa dibangun bersama AI.",
+      "tim": [
+        {
+          "name": "claude-kotak",
+          "emotion": "kerja",
+          "label": "Claude",
+          "text": "Website dan alur kerja",
+          "at": 8
+        },
+        {
+          "name": "chatgpt",
+          "emotion": "kerja",
+          "label": "ChatGPT",
+          "text": "Naskah dan chatbot",
+          "at": 60
+        },
+        {
+          "name": "flow",
+          "emotion": "kerja",
+          "label": "Flow",
+          "text": "Visual dan video",
+          "at": 110
+        }
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "mikir",
+          "size": 500,
+          "x": 560
+        },
+        {
+          "at": 100,
+          "emotion": "tawa",
+          "size": 560,
+          "x": 520,
+          "flip": true
+        }
+      ]
+    },
+    {
+      "sfx": [
+        0
+      ],
+      "type": "split",
+      "sec": 5,
+      "title": "Website Portofolio",
+      "titleColor": "#DCD0FF",
+      "shot": {
+        "src": "shots-hrd/porto-galeri.jpg",
+        "w": 774,
+        "h": 924,
+        "focus": [
+          {
+            "x": 0,
+            "y": 110,
+            "w": 774,
+            "h": 260,
+            "label": ""
+          }
+        ]
+      },
+      "caption": "Ini website portofolio yang saya bangun sendiri.",
+      "tim": [
+        {
+          "name": "claude-kotak",
+          "emotion": "hore",
+          "label": "Claude",
+          "text": "Menyusun halaman website",
+          "at": 10
+        }
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "baca",
+          "size": 520,
+          "x": 540,
+          "flip": true
+        },
+        {
+          "at": 80,
+          "emotion": "jempol",
+          "size": 580,
+          "x": 500
+        }
+      ]
+    },
+    {
+      "sfx": [
+        0
+      ],
+      "type": "split",
+      "sec": 8,
+      "title": "Tim AI Berkoordinasi",
+      "titleColor": "#C9F5E1",
+      "tag": "ILUSTRASI",
+      "shot": {
+        "src": "shots-hrd/gudang.png",
+        "w": 1562,
+        "h": 915,
+        "focus": [
+          {
+            "x": 20,
+            "y": 440,
+            "w": 1530,
+            "h": 170,
+            "label": ""
+          }
+        ]
+      },
+      "panelNote": "SIMULASI (ILUSTRASI)",
+      "caption": "Begini gambaran tim AI saya berkoordinasi. Ini ilustrasi alur kerjanya.",
+      "tim": [
+        {
+          "name": "claude-kotak",
+          "emotion": "kerja",
+          "label": "Claude · menyusun website dan alur kerja",
+          "text": "Halaman dan alur sudah tersusun.",
+          "at": 10
+        },
+        {
+          "name": "chatgpt",
+          "emotion": "kerja",
+          "label": "ChatGPT · menyiapkan naskah dan chatbot",
+          "text": "Naskah dan chatbot siap dicek.",
+          "at": 70
+        },
+        {
+          "name": "flow",
+          "emotion": "kerja",
+          "label": "Flow · mengubah ide menjadi visual dan video",
+          "text": "Ide diubah jadi visual.",
+          "at": 130
+        }
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "serius",
+          "size": 540,
+          "x": 540
+        },
+        {
+          "at": 120,
+          "emotion": "jelas",
+          "size": 600,
+          "x": 500
+        }
+      ]
+    },
+    {
+      "sfx": [
+        0
+      ],
+      "type": "split",
+      "sec": 5,
+      "title": "Tidak Selalu Berhasil",
+      "titleColor": "#FFD3E6",
+      "caption": "Tidak semuanya berhasil. Beberapa eksperimen gagal, lalu saya perbaiki.",
+      "tim": [
+        {
+          "name": "gemini",
+          "emotion": "kerja",
+          "label": "Gemini",
+          "text": "Hasilnya belum sesuai.",
+          "at": 10
+        },
+        {
+          "name": "claude-kotak",
+          "emotion": "kerja",
+          "label": "Claude",
+          "text": "Kita coba lagi.",
+          "at": 60
+        }
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "pusing",
+          "size": 560,
+          "x": 520
+        },
+        {
+          "at": 70,
+          "emotion": "mikir",
+          "size": 500,
+          "x": 560,
+          "flip": true
+        }
+      ],
+      "gagal": [
+        "Hasil belum sesuai",
+        "Ada error muncul",
+        "Revisi lagi"
+      ],
+      "gagalFix": "Diperbaiki, jalan lagi"
+    },
+    {
+      "sfx": [
+        0
+      ],
+      "type": "split",
+      "sec": 6,
+      "title": "AI Itu Alat Membangun",
+      "titleColor": "#C8F135",
+      "shot": {
+        "src": "shots-hrd/heyai-home.jpg",
+        "w": 766,
+        "h": 924,
+        "focus": [
+          {
+            "x": 150,
+            "y": 230,
+            "w": 500,
+            "h": 280,
+            "label": ""
+          }
+        ]
+      },
+      "caption": "AI bukan cuma buat menjawab pertanyaan. AI bisa jadi alat untuk membangun sesuatu.",
+      "tim": [
+        {
+          "name": "chatgpt",
+          "emotion": "hore",
+          "label": "ChatGPT",
+          "text": "Dari jawaban jadi karya.",
+          "at": 10
+        },
+        {
+          "name": "flow",
+          "emotion": "hore",
+          "label": "Flow",
+          "text": "Dari ide jadi video.",
+          "at": 80
+        }
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "tawa",
+          "size": 540,
+          "x": 540
+        },
+        {
+          "at": 90,
+          "emotion": "jempol",
+          "size": 600,
+          "x": 490
+        }
+      ]
+    },
+    {
+      "sfx": [
+        0
+      ],
+      "type": "split",
+      "sec": 7,
+      "title": "",
+      "besar": [
+        "FOLLOW.",
+        "BANGUN TIM AI",
+        "DARI NOL."
+      ],
+      "caption": "Mau lihat prosesnya, bukan cuma hasilnya? Follow. Kita bangun satu tim AI dari nol.",
+      "panelNote": "Tim AI menunggu (ilustrasi)",
+      "tim": [
+        {
+          "name": "claude-kotak",
+          "emotion": "hore",
+          "label": "Claude",
+          "text": "Ikuti prosesnya.",
+          "at": 10
+        },
+        {
+          "name": "chatgpt",
+          "emotion": "hore",
+          "label": "ChatGPT",
+          "text": "Kita mulai dari nol.",
+          "at": 70
+        },
+        {
+          "name": "flow",
+          "emotion": "hore",
+          "label": "Flow",
+          "text": "Sampai episode berikutnya.",
+          "at": 130
+        }
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "silakan",
+          "size": 560,
+          "x": 520
+        },
+        {
+          "at": 120,
+          "emotion": "salam",
+          "size": 520,
+          "x": 560
+        }
+      ]
+    }
+  ],
+  "voiceDir": "voice-ep001"
+}

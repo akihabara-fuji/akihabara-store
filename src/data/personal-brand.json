@@ -1,0 +1,481 @@
+{
+  "brand": {
+    "name": "Dika Priyadi",
+    "handle": "AI Content & Workflow Specialist"
+  },
+  "gear": "none",
+  "scenes": [
+    {
+      "sfx": [
+        0
+      ],
+      "type": "trailer",
+      "sec": 4,
+      "title": "Cara saya produksi konten AI lebih cepat, tanpa asal‑asalan",
+      "titleColor": "#C8F135",
+      "mascot": {
+        "name": "dika",
+        "emotion": "fokus"
+      },
+      "caption": "Cara saya produksi konten AI lebih cepat, tanpa asal-asalan.",
+      "team": [
+        {
+          "name": "claude-kotak",
+          "emotion": "thumbs",
+          "label": "Claude"
+        },
+        {
+          "name": "chatgpt",
+          "emotion": "thumbs",
+          "label": "ChatGPT"
+        },
+        {
+          "name": "gemini",
+          "emotion": "thumbs",
+          "label": "Gemini"
+        },
+        {
+          "name": "flow",
+          "emotion": "thumbs",
+          "label": "Flow"
+        },
+        {
+          "initial": "C",
+          "color": "#4FC3F7",
+          "label": "Canva"
+        },
+        {
+          "initial": "Cc",
+          "color": "#E8E8E8",
+          "label": "CapCut"
+        }
+      ]
+    },
+    {
+      "sfx": [
+        0
+      ],
+      "type": "layar",
+      "sec": 5,
+      "title": "Audit Claude",
+      "titleColor": "#DCD0FF",
+      "tag": "ILUSTRASI",
+      "tagColor": "#FFE45E",
+      "mascot": {
+        "name": "claude-kotak",
+        "emotion": "kerja"
+      },
+      "caption": "Video dari Flow diaudit Claude. Hook dan harga dicek dulu.",
+      "shot": {
+        "src": "shots/audit-video.png",
+        "video": "shots/audit-video.mp4",
+        "from": 0,
+        "w": 1280,
+        "h": 720,
+        "focus": [
+          {
+            "x": 30,
+            "y": 30,
+            "w": 430,
+            "h": 300,
+            "label": "Cek hook dan harga"
+          },
+          {
+            "x": 520,
+            "y": 190,
+            "w": 700,
+            "h": 470,
+            "label": "Isi 5 sesuai naskah"
+          }
+        ],
+        "fh": 405
+      }
+    },
+    {
+      "sfx": [
+        0
+      ],
+      "type": "grup",
+      "sec": 8.4,
+      "title": "Laporan Audit",
+      "titleColor": "#FFD3E6",
+      "tag": "ILUSTRASI",
+      "grup": {
+        "title": "Tim Konten AI",
+        "msgs": [
+          {
+            "name": "Claude",
+            "mascot": "claude-kotak",
+            "emotion": "kerja",
+            "text": "Audit selesai, Pak. Ada temuan dari Flow.",
+            "at": 10,
+            "file": {
+              "name": "Ceklis-Audit",
+              "ext": "PDF",
+              "open": 290
+            }
+          },
+          {
+            "name": "ChatGPT",
+            "mascot": "chatgpt",
+            "emotion": "kerja",
+            "text": "Naskah aman ya.",
+            "at": 86
+          },
+          {
+            "name": "Gemini",
+            "mascot": "gemini",
+            "emotion": "kerja",
+            "text": "Riset aman ya.",
+            "at": 153
+          },
+          {
+            "name": "Flow",
+            "mascot": "flow",
+            "emotion": "nangis",
+            "text": "Maaf, Pak.",
+            "at": 220
+          },
+          {
+            "name": "Pak Dika",
+            "mascot": "dika",
+            "emotion": "siap",
+            "me": true,
+            "text": "Saya buka filenya.",
+            "at": 269
+          }
+        ]
+      },
+      "caption": "Claude lapor, ada temuan dari Flow. ChatGPT bilang naskah aman. Gemini bilang riset aman. Flow minta maaf. Saya buka filenya."
+    },
+    {
+      "sfx": [
+        0
+      ],
+      "type": "ceklis",
+      "sec": 5.5,
+      "title": "Ceklis Audit",
+      "titleColor": "#C8F135",
+      "tag": "ILUSTRASI",
+      "mascot": {
+        "name": "claude-kotak",
+        "emotion": "kerja"
+      },
+      "ceklis": [
+        {
+          "status": "ok",
+          "text": "Riset sesuai pasar"
+        },
+        {
+          "status": "ok",
+          "text": "Hook dan ajakan sesuai"
+        },
+        {
+          "status": "bad",
+          "text": "Temuan: video Flow berbeda dari naskah terakhir",
+          "sub": "Ada bagian yang berubah"
+        },
+        {
+          "status": "mid",
+          "text": "Revisi menunggu dari Flow"
+        }
+      ],
+      "caption": "Riset dan hook sudah sesuai. Satu temuan merah: video Flow berbeda dari naskah terakhir."
+    },
+    {
+      "sfx": [
+        0
+      ],
+      "type": "grup",
+      "sec": 4.8,
+      "title": "Tim Kelelahan",
+      "titleColor": "#FFE45E",
+      "tag": "ILUSTRASI",
+      "grup": {
+        "title": "Tim Konten AI",
+        "msgs": [
+          {
+            "name": "CapCut",
+            "mascot": null,
+            "emotion": null,
+            "text": "Capek banget, belum ngopi.",
+            "at": 8,
+            "initial": "Cc",
+            "color": "#E8E8E8"
+          },
+          {
+            "name": "ElevenLabs",
+            "mascot": null,
+            "emotion": null,
+            "text": "Sama, disuruh kerja terus.",
+            "at": 50,
+            "initial": "E",
+            "color": "#FFE45E"
+          },
+          {
+            "name": "Canva",
+            "mascot": null,
+            "emotion": null,
+            "text": "Aku juga, belum ngopi.",
+            "at": 95,
+            "initial": "C",
+            "color": "#4FC3F7"
+          }
+        ]
+      },
+      "caption": "Sementara itu, CapCut, ElevenLabs, dan Canva capek. Belum ngopi, disuruh kerja terus."
+    },
+    {
+      "sfx": [
+        0
+      ],
+      "type": "grup",
+      "sec": 7,
+      "title": "Revisi Selesai",
+      "titleColor": "#FFE45E",
+      "tag": "ILUSTRASI",
+      "grup": {
+        "title": "Tim Konten AI",
+        "msgs": [
+          {
+            "name": "Flow",
+            "mascot": "flow",
+            "emotion": "hore",
+            "text": "Revisi beres, Pak! Video final saya kirim.",
+            "at": 7,
+            "file": {
+              "name": "Video-Final",
+              "ext": "MP4",
+              "open": 72
+            }
+          },
+          {
+            "name": "Pak Dika",
+            "mascot": "dika",
+            "emotion": "siap",
+            "me": true,
+            "text": "Saya buka videonya.",
+            "at": 80
+          },
+          {
+            "name": "Pak Dika",
+            "mascot": "dika",
+            "emotion": "siap",
+            "me": true,
+            "text": "Claude, posting ke Windsor.",
+            "at": 112
+          },
+          {
+            "name": "Claude",
+            "mascot": "claude-kotak",
+            "emotion": "kerja",
+            "text": "Siap, Pak. Saya posting dan laporkan hasilnya.",
+            "at": 140
+          }
+        ]
+      },
+      "caption": "Flow kirim revisi, video final sudah beres. Saya buka videonya, lalu minta Claude posting lewat Windsor."
+    },
+    {
+      "sfx": [
+        0
+      ],
+      "type": "notif",
+      "sec": 3.6,
+      "title": "Laporan Posting",
+      "titleColor": "#C8F135",
+      "tag": "ILUSTRASI",
+      "mascot": {
+        "name": "claude-kotak",
+        "emotion": "selesai"
+      },
+      "notifs": [
+        {
+          "app": "Windsor",
+          "text": "Video dijadwalkan dan diposting",
+          "color": "#2A6BD8"
+        },
+        {
+          "app": "Claude",
+          "text": "Laporan: video terunggah di TikTok dan Instagram",
+          "color": "#E8742B"
+        }
+      ],
+      "total": "Terunggah",
+      "caption": "Claude melaporkan hasil lewat notifikasi."
+    },
+    {
+      "sfx": [
+        0
+      ],
+      "type": "ceklis",
+      "sec": 4.5,
+      "title": "Video Final",
+      "titleColor": "#C8F135",
+      "tag": "ILUSTRASI",
+      "fileName": "Video-Final.mp4",
+      "mascot": {
+        "name": "flow",
+        "emotion": "selesai"
+      },
+      "ceklis": [
+        {
+          "status": "ok",
+          "text": "Diunggah ke TikTok"
+        },
+        {
+          "status": "ok",
+          "text": "Diunggah ke Instagram"
+        }
+      ],
+      "caption": "Video sudah terunggah di TikTok dan Instagram."
+    },
+    {
+      "sfx": [
+        0
+      ],
+      "type": "alur",
+      "sec": 5,
+      "title": "Gambar ke Video",
+      "titleColor": "#DCD0FF",
+      "alur": [
+        {
+          "title": "Bahan gambar",
+          "sub": "Stiker maskot dan tangkapan layar",
+          "bg": "#CFE3FF",
+          "imgs": [
+            {
+              "name": "dika-anime",
+              "emotion": "thumbs"
+            },
+            {
+              "name": "claude-kotak",
+              "emotion": "kerja"
+            },
+            {
+              "name": "chatgpt",
+              "emotion": "kerja"
+            }
+          ]
+        },
+        {
+          "title": "Gambar jadi video",
+          "sub": "Digerakkan per adegan dan caption",
+          "bg": "#C9F5E1",
+          "imgs": [
+            {
+              "name": "gemini",
+              "emotion": "kerja"
+            },
+            {
+              "name": "gemini",
+              "emotion": "hore"
+            },
+            {
+              "name": "gemini",
+              "emotion": "selesai"
+            }
+          ]
+        },
+        {
+          "title": "Finishing",
+          "sub": "Flow dan CapCut",
+          "bg": "#FFE45E",
+          "imgs": [
+            {
+              "name": "flow",
+              "emotion": "video"
+            },
+            {
+              "name": "flow",
+              "emotion": "selesai"
+            }
+          ]
+        },
+        {
+          "title": "Ajakan (CTA)",
+          "sub": "Mengarah ke portofolio dan DM",
+          "bg": "#FFD3E6",
+          "imgs": [
+            {
+              "name": "dika-anime",
+              "emotion": "thumbs"
+            }
+          ]
+        }
+      ],
+      "caption": "Alurnya: bahan gambar jadi video, difinishing, lalu ditutup dengan ajakan."
+    },
+    {
+      "sfx": [
+        0
+      ],
+      "type": "penutup",
+      "sec": 6,
+      "title": "Tidak Sembarangan Bikin Video",
+      "titleColor": "#C9F5E1",
+      "cta": "dikapriyadi.catatanakademik.com",
+      "mascot": {
+        "name": "dika-anime",
+        "emotion": "halo"
+      },
+      "caption": "Tidak sembarangan bikin video. Ada riset, analisis, dan audit. Ada proyek? Kita kembangkan.",
+      "items": [
+        {
+          "title": "Riset",
+          "sub": "Sesuai pasar",
+          "bg": "#CFE3FF"
+        },
+        {
+          "title": "Analisis",
+          "sub": "Data akun dan audiens",
+          "bg": "#C9F5E1"
+        },
+        {
+          "title": "Audit",
+          "sub": "Cek sebelum tayang",
+          "bg": "#FFD3E6"
+        },
+        {
+          "title": "Dan lainnya",
+          "sub": "Strategi hingga produksi",
+          "bg": "#FFE45E"
+        }
+      ],
+      "sub": "Ada proyek? Kita kembangkan.",
+      "team": [
+        {
+          "name": "claude-kotak",
+          "emotion": "hore",
+          "label": "claude-kotak"
+        },
+        {
+          "name": "chatgpt",
+          "emotion": "hore",
+          "label": "chatgpt"
+        },
+        {
+          "name": "gemini",
+          "emotion": "hore",
+          "label": "gemini"
+        },
+        {
+          "name": "flow",
+          "emotion": "hore",
+          "label": "flow"
+        },
+        {
+          "name": "tiktok",
+          "emotion": "hore",
+          "label": "tiktok"
+        },
+        {
+          "name": "instagram",
+          "emotion": "hore",
+          "label": "instagram"
+        }
+      ]
+    }
+  ],
+  "voiceDir": "voice-brand"
+}

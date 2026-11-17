@@ -1,0 +1,73 @@
+{
+  "brand": {
+    "name": "Dika Priyadi",
+    "handle": "AI Content & Workflow Specialist"
+  },
+  "gear": "none",
+  "scenes": [
+    {
+      "type": "siangmalam",
+      "sec": 9,
+      "title": "Sehari Kerja Tim AI",
+      "tag": "ILUSTRASI",
+      "tagColor": "lime",
+      "caption": "Siang riset, malam tim AI tetap kerja.",
+      "fase": [
+        {
+          "at": 0,
+          "mode": "siang",
+          "label": "Siang: briefing dan riset",
+          "dika": "fokus",
+          "bots": [
+            {
+              "name": "claude-kotak",
+              "emotion": "kerja",
+              "label": "Claude: riset"
+            },
+            {
+              "name": "gemini",
+              "emotion": "kerja",
+              "label": "Gemini: data"
+            }
+          ]
+        },
+        {
+          "at": 90,
+          "mode": "malam",
+          "label": "Malam: tim jalan sendiri",
+          "dika": "tidur",
+          "bots": [
+            {
+              "name": "flow",
+              "emotion": "kerja",
+              "label": "Flow: bikin video"
+            },
+            {
+              "name": "claude-kotak",
+              "emotion": "kerja",
+              "label": "Claude: analisa"
+            }
+          ]
+        },
+        {
+          "at": 180,
+          "mode": "pagi",
+          "label": "Pagi: laporan masuk",
+          "dika": "kopi",
+          "bots": [
+            {
+              "name": "claude-kotak",
+              "emotion": "hore",
+              "label": "Claude: laporan"
+            },
+            {
+              "name": "flow",
+              "emotion": "hore",
+              "label": "Flow: video siap"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{"brand":{"name":"Kang Catat","handle":"@catatanakademik"},"gear":"glasses","scenes":[
+{"type":"intro","sec":5,"voice":"Halo, aku Kang Catat."},
+{"type":"stats","pill":"Fakta","title":"Angka *penting*","accent":"red","sec":5,"voice":"Tiga angka ini wajib kamu tahu.","stats":[{"value":70,"label":"Lulus %"},{"value":30,"label":"Menit"},{"value":3,"label":"Hari"}]},
+{"type":"vs","pill":"Bandingkan","sec":5,"voice":"Benar atau salah, ini bedanya.","left":{"title":"Salah","lines":["Telat login","Baterai habis"]},"right":{"title":"Benar","lines":["Login lebih awal","Baterai penuh"]}},
+{"type":"outro","pill":"Penutup","title":"Sampai *jumpa*","sticker":"Sukses!","sec":4,"voice":"Sampai jumpa.","rows":[{"t":"Follow","sub":"@catatanakademik"}]}]}

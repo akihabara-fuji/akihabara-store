@@ -1,0 +1,815 @@
+{
+  "episode": "004",
+  "slug": "claude-code-bukan-sekadar-tanya",
+  "title": "CLAUDE CODE BUKAN SEKADAR TANYA",
+  "status": "draf",
+  "hideBrand": true,
+  "editorial": {
+    "message": "AI coding paling berguna saat bekerja di dalam proyek dengan konteks repository, tetapi hasilnya tetap harus dibuktikan lewat diff dan aplikasi yang dijalankan.",
+    "hook": {
+      "text": "AI coding paling berguna saat dia bekerja di dalam proyek.",
+      "type": "pernyataan",
+      "appearBySec": 0,
+      "sceneIndex": 0
+    },
+    "cta": {
+      "text": "Follow dan cek bio buat lihat proses development dan proyek yang gue kerjakan.",
+      "action": "follow",
+      "sceneIndex": 6
+    }
+  },
+  "brand": {
+    "name": "Dika Priyadi",
+    "handle": ""
+  },
+  "gear": "none",
+  "voiceDir": "voice-ep004",
+  "scenes": [
+    {
+      "sfx": [
+        0
+      ],
+      "type": "split",
+      "sec": 3.5,
+      "title": "BUKAN CUMA TANYA KODE",
+      "caption": "AI coding paling berguna saat dia bekerja di dalam proyek.",
+      "panelNote": "",
+      "tim": [
+        {
+          "name": "claude-kotak",
+          "emotion": "kerja",
+          "label": "Claude",
+          "text": "Saya di dalam proyek.",
+          "at": 10
+        }
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "serius",
+          "size": 600,
+          "x": 500
+        }
+      ],
+      "stage": {
+        "stick": {
+          "x": 120,
+          "y": 330,
+          "s": 0.5,
+          "flip": false,
+          "keys": [
+            {
+              "f": 0,
+              "pose": "typeA",
+              "blend": 8
+            },
+            {
+              "f": 8,
+              "pose": "typeB",
+              "blend": 8
+            },
+            {
+              "f": 16,
+              "pose": "typeA",
+              "blend": 8
+            },
+            {
+              "f": 24,
+              "pose": "typeB",
+              "blend": 8
+            }
+          ]
+        },
+        "nodes": [
+          {
+            "id": "f",
+            "x": 470,
+            "y": 300,
+            "at": 4,
+            "size": 200,
+            "icon": "folder",
+            "color": "#FFE45E"
+          },
+          {
+            "id": "c",
+            "x": 740,
+            "y": 300,
+            "at": 18,
+            "size": 160,
+            "mascot": {
+              "name": "claude-kotak",
+              "emotion": "kerja"
+            }
+          }
+        ],
+        "edges": [
+          {
+            "from": "c",
+            "to": "f",
+            "at": 26,
+            "dashed": false
+          }
+        ]
+      },
+      "emph": [
+        "proyek"
+      ],
+      "tag": "BUILD WITH AI #004"
+    },
+    {
+      "sfx": [
+        0
+      ],
+      "type": "split",
+      "sec": 4.5,
+      "title": "Konteks Repository",
+      "caption": "Di workflow coding, konteks repository itu penting.",
+      "panelNote": "",
+      "tim": [
+        {
+          "name": "claude-kotak",
+          "emotion": "kerja",
+          "label": "Claude",
+          "text": "Konteksnya mana?",
+          "at": 10
+        },
+        {
+          "name": "chatgpt",
+          "emotion": "kerja",
+          "label": "ChatGPT",
+          "text": "Repository dulu.",
+          "at": 60
+        }
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "jelas",
+          "size": 560,
+          "x": 520
+        }
+      ],
+      "stage": {
+        "nodes": [
+          {
+            "id": "c",
+            "x": 120,
+            "y": 300,
+            "at": 4,
+            "size": 170,
+            "mascot": {
+              "name": "claude-kotak",
+              "emotion": "kerja"
+            }
+          }
+        ],
+        "term": {
+          "x": 290,
+          "y": 60,
+          "w": 590,
+          "h": 480,
+          "title": "repository",
+          "rows": [
+            {
+              "k": "cmd",
+              "t": "ls"
+            },
+            {
+              "k": "dir",
+              "t": "src/"
+            },
+            {
+              "k": "file",
+              "t": "  App.tsx"
+            },
+            {
+              "k": "file",
+              "t": "  index.ts"
+            },
+            {
+              "k": "dir",
+              "t": "public/"
+            },
+            {
+              "k": "file",
+              "t": "package.json"
+            }
+          ],
+          "at": 6
+        }
+      },
+      "titleColor": "#FFD3E6",
+      "emph": [
+        "konteks",
+        "repository"
+      ],
+      "tag": "BUILD WITH AI #004"
+    },
+    {
+      "sfx": [
+        0
+      ],
+      "type": "split",
+      "sec": 7.5,
+      "title": "Yang Perlu Dipahami",
+      "caption": "Assistant perlu memahami struktur folder, file yang sudah ada, dependensi, dan cara proyek dijalankan.",
+      "panelNote": "",
+      "tim": [
+        {
+          "name": "claude-kotak",
+          "emotion": "kerja",
+          "label": "Claude",
+          "text": "Saya baca strukturnya.",
+          "at": 10
+        },
+        {
+          "name": "chatgpt",
+          "emotion": "kerja",
+          "label": "ChatGPT",
+          "text": "Dependensi juga.",
+          "at": 120
+        }
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "baca",
+          "size": 540,
+          "x": 520,
+          "flip": true
+        },
+        {
+          "at": 120,
+          "emotion": "jelas",
+          "size": 560,
+          "x": 520
+        }
+      ],
+      "stage": {
+        "stick": {
+          "x": 110,
+          "y": 330,
+          "s": 0.5,
+          "flip": false,
+          "keys": [
+            {
+              "f": 0,
+              "pose": "think",
+              "blend": 8
+            }
+          ]
+        },
+        "nodes": [
+          {
+            "id": "a",
+            "x": 420,
+            "y": 170,
+            "at": 4,
+            "size": 130,
+            "icon": "folder",
+            "color": "#FFE45E"
+          },
+          {
+            "id": "b",
+            "x": 700,
+            "y": 170,
+            "at": 12,
+            "size": 130,
+            "icon": "file",
+            "color": "#CFE3FF"
+          },
+          {
+            "id": "c",
+            "x": 420,
+            "y": 440,
+            "at": 20,
+            "size": 130,
+            "icon": "box",
+            "color": "#FFD3E6"
+          },
+          {
+            "id": "d",
+            "x": 700,
+            "y": 440,
+            "at": 28,
+            "size": 130,
+            "icon": "play",
+            "color": "#C9F5E1"
+          }
+        ],
+        "badges": [
+          {
+            "x": 490,
+            "y": 110,
+            "kind": "check",
+            "at": 40,
+            "size": 64
+          },
+          {
+            "x": 770,
+            "y": 110,
+            "kind": "check",
+            "at": 70,
+            "size": 64
+          },
+          {
+            "x": 490,
+            "y": 380,
+            "kind": "check",
+            "at": 100,
+            "size": 64
+          },
+          {
+            "x": 770,
+            "y": 380,
+            "kind": "check",
+            "at": 130,
+            "size": 64
+          }
+        ]
+      },
+      "titleColor": "#C9F5E1",
+      "emph": [
+        "struktur",
+        "dependensi",
+        "dijalankan"
+      ],
+      "tag": "BUILD WITH AI #004"
+    },
+    {
+      "sfx": [
+        0
+      ],
+      "type": "split",
+      "sec": 6,
+      "title": "Ubah, Test, Perbaiki",
+      "caption": "Baru setelah itu dia bisa membantu mengubah kode, menjalankan test, dan memperbaiki error.",
+      "panelNote": "",
+      "tim": [
+        {
+          "name": "claude-kotak",
+          "emotion": "kerja",
+          "label": "Claude",
+          "text": "Ubah kode.",
+          "at": 10
+        },
+        {
+          "name": "flow",
+          "emotion": "kerja",
+          "label": "Flow",
+          "text": "Jalankan test.",
+          "at": 80
+        },
+        {
+          "name": "chatgpt",
+          "emotion": "kerja",
+          "label": "ChatGPT",
+          "text": "Perbaiki error.",
+          "at": 140
+        }
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "jelas",
+          "size": 560,
+          "x": 520
+        }
+      ],
+      "stage": {
+        "term": {
+          "x": 40,
+          "y": 70,
+          "w": 840,
+          "h": 470,
+          "title": "terminal",
+          "rows": [
+            {
+              "k": "cmd",
+              "t": "ubah App.tsx",
+              "at": 8
+            },
+            {
+              "k": "cmd",
+              "t": "npm test",
+              "at": 40
+            },
+            {
+              "k": "bad",
+              "t": "1 test gagal",
+              "at": 62
+            },
+            {
+              "k": "cmd",
+              "t": "perbaiki error",
+              "at": 100
+            },
+            {
+              "k": "ok",
+              "t": "semua test lulus",
+              "at": 140
+            }
+          ],
+          "at": 2
+        }
+      },
+      "titleColor": "#C9F5E1",
+      "emph": [
+        "kode",
+        "test",
+        "error"
+      ],
+      "tag": "BUILD WITH AI #004"
+    },
+    {
+      "sfx": [
+        0
+      ],
+      "type": "split",
+      "sec": 4,
+      "title": "Jawaban Ngebut, Tapi Salah?",
+      "caption": "Tapi jangan langsung percaya tulisan 'berhasil'.",
+      "panelNote": "",
+      "tim": [
+        {
+          "name": "chatgpt",
+          "emotion": "kerja",
+          "label": "ChatGPT",
+          "text": "Katanya berhasil.",
+          "at": 10
+        },
+        {
+          "name": "claude-kotak",
+          "emotion": "kerja",
+          "label": "Claude",
+          "text": "Buktikan dulu.",
+          "at": 60
+        }
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "serius",
+          "size": 560,
+          "x": 520
+        }
+      ],
+      "stage": {
+        "stick": {
+          "x": 170,
+          "y": 330,
+          "s": 0.5,
+          "keys": [
+            {
+              "f": 0,
+              "pose": "think"
+            },
+            {
+              "f": 22,
+              "pose": "runA",
+              "blend": 2
+            },
+            {
+              "f": 26,
+              "pose": "runB",
+              "blend": 2
+            },
+            {
+              "f": 30,
+              "pose": "runA",
+              "blend": 2
+            },
+            {
+              "f": 34,
+              "pose": "runB",
+              "blend": 2
+            },
+            {
+              "f": 38,
+              "pose": "runA",
+              "blend": 2
+            },
+            {
+              "f": 42,
+              "pose": "runB",
+              "blend": 2
+            },
+            {
+              "f": 46,
+              "pose": "think",
+              "blend": 6
+            }
+          ],
+          "move": {
+            "x0": 800,
+            "x1": 300,
+            "at": 22,
+            "dur": 24
+          }
+        },
+        "nodes": [
+          {
+            "id": "c",
+            "x": 800,
+            "y": 250,
+            "at": 2,
+            "size": 150,
+            "mascot": {
+              "name": "claude-kotak",
+              "emotion": "kerja"
+            }
+          },
+          {
+            "id": "ck",
+            "x": 560,
+            "y": 150,
+            "at": 50,
+            "size": 130,
+            "icon": "check",
+            "color": "#C9F5E1"
+          },
+          {
+            "id": "s",
+            "x": 560,
+            "y": 440,
+            "at": 86,
+            "size": 110,
+            "icon": "search",
+            "color": "#CFE3FF"
+          }
+        ],
+        "edges": [
+          {
+            "from": "ck",
+            "to": "s",
+            "at": 80,
+            "dashed": false
+          }
+        ],
+        "badges": [
+          {
+            "x": 640,
+            "y": 90,
+            "kind": "q",
+            "at": 70,
+            "size": 64
+          },
+          {
+            "x": 640,
+            "y": 90,
+            "kind": "cross",
+            "at": 96,
+            "size": 72
+          }
+        ]
+      },
+      "titleColor": "#FFD3E6",
+      "emph": [
+        "jangan",
+        "berhasil"
+      ],
+      "tag": "BUILD WITH AI #004"
+    },
+    {
+      "sfx": [
+        0
+      ],
+      "type": "split",
+      "sec": 6.5,
+      "title": "Buktikan Dulu",
+      "caption": "Cek diff, jalankan aplikasi, dan buktikan fiturnya bekerja.",
+      "panelNote": "",
+      "tim": [
+        {
+          "name": "claude-kotak",
+          "emotion": "kerja",
+          "label": "Claude",
+          "text": "Diff dicek.",
+          "at": 10
+        },
+        {
+          "name": "chatgpt",
+          "emotion": "kerja",
+          "label": "ChatGPT",
+          "text": "Aplikasi dijalankan.",
+          "at": 80
+        },
+        {
+          "name": "flow",
+          "emotion": "kerja",
+          "label": "Flow",
+          "text": "Fitur terbukti.",
+          "at": 140
+        }
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "baca",
+          "size": 540,
+          "x": 520,
+          "flip": true
+        },
+        {
+          "at": 120,
+          "emotion": "jelas",
+          "size": 560,
+          "x": 520
+        }
+      ],
+      "stage": {
+        "stick": {
+          "x": 740,
+          "y": 370,
+          "s": 0.38,
+          "flip": false,
+          "keys": [
+            {
+              "f": 0,
+              "pose": "point",
+              "blend": 8
+            },
+            {
+              "f": 100,
+              "pose": "thumbs",
+              "blend": 8
+            }
+          ]
+        },
+        "term": {
+          "x": 30,
+          "y": 60,
+          "w": 540,
+          "h": 330,
+          "title": "diff",
+          "rows": [
+            {
+              "k": "del",
+              "t": "total = 0",
+              "at": 8
+            },
+            {
+              "k": "add",
+              "t": "total = sum(items)",
+              "at": 24
+            },
+            {
+              "k": "cmd",
+              "t": "npm test",
+              "at": 50
+            },
+            {
+              "k": "ok",
+              "t": "lulus",
+              "at": 70
+            }
+          ],
+          "at": 2
+        },
+        "nodes": [
+          {
+            "id": "p",
+            "x": 740,
+            "y": 170,
+            "at": 50,
+            "size": 140,
+            "icon": "play",
+            "color": "#C9F5E1"
+          }
+        ],
+        "badges": [
+          {
+            "x": 810,
+            "y": 110,
+            "kind": "check",
+            "at": 100,
+            "size": 64
+          }
+        ]
+      },
+      "titleColor": "#C9F5E1",
+      "emph": [
+        "diff",
+        "aplikasi",
+        "buktikan"
+      ],
+      "tag": "BUILD WITH AI #004"
+    },
+    {
+      "sfx": [
+        0
+      ],
+      "type": "split",
+      "sec": 6.5,
+      "title": "",
+      "caption": "Follow dan cek bio buat lihat proses development dan proyek yang gue kerjakan.",
+      "panelNote": "",
+      "tim": [
+        {
+          "name": "claude-kotak",
+          "emotion": "kerja",
+          "label": "Claude",
+          "text": "Cek bio ya.",
+          "at": 10
+        },
+        {
+          "name": "chatgpt",
+          "emotion": "kerja",
+          "label": "ChatGPT",
+          "text": "Follow dulu.",
+          "at": 80
+        }
+      ],
+      "dikaSeq": [
+        {
+          "at": 0,
+          "emotion": "silakan",
+          "size": 560,
+          "x": 520
+        }
+      ],
+      "stage": {
+        "stick": {
+          "x": 170,
+          "y": 330,
+          "s": 0.5,
+          "flip": false,
+          "keys": [
+            {
+              "f": 0,
+              "pose": "present",
+              "blend": 8
+            }
+          ]
+        },
+        "nodes": [
+          {
+            "id": "p",
+            "x": 520,
+            "y": 190,
+            "at": 6,
+            "size": 150,
+            "icon": "plus",
+            "color": "#C8F135"
+          },
+          {
+            "id": "l",
+            "x": 780,
+            "y": 190,
+            "at": 18,
+            "size": 150,
+            "icon": "link",
+            "color": "#FFE45E"
+          },
+          {
+            "id": "a",
+            "x": 520,
+            "y": 470,
+            "at": 30,
+            "size": 110,
+            "mascot": {
+              "name": "claude-kotak",
+              "emotion": "kerja"
+            }
+          },
+          {
+            "id": "b",
+            "x": 650,
+            "y": 470,
+            "at": 36,
+            "size": 110,
+            "mascot": {
+              "name": "chatgpt",
+              "emotion": "kerja"
+            }
+          },
+          {
+            "id": "c",
+            "x": 780,
+            "y": 470,
+            "at": 42,
+            "size": 110,
+            "mascot": {
+              "name": "flow",
+              "emotion": "kerja"
+            }
+          }
+        ],
+        "edges": [
+          {
+            "from": "p",
+            "to": "l",
+            "at": 14,
+            "dashed": false
+          }
+        ]
+      },
+      "emph": [
+        "Follow",
+        "bio"
+      ],
+      "tag": "BUILD WITH AI #004"
+    }
+  ],
+  "captionStyle": "mix"
+}

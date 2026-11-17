@@ -1,0 +1,423 @@
+{
+ "brand": {
+  "name": "NextAja",
+  "handle": ""
+ },
+ "gear": "none",
+ "scenes": [
+  {
+   "type": "judul",
+   "sec": 4,
+   "title": "Akun baru 210 follower",
+   "titleColor": "#C8F135",
+   "sub": "Mulai perbaikannya dari mana?",
+   "mascot": {
+    "name": "dika-anime",
+    "emotion": "tanya"
+   },
+   "caption": "Akun baru, 210 follower. Mulai dari mana?",
+   "sfx": [
+    0
+   ]
+  },
+  {
+   "type": "kartu",
+   "sec": 5.5,
+   "title": "Audit Profil",
+   "titleColor": "#CFE3FF",
+   "tag": "DATA ASLI",
+   "mascot": {
+    "name": "instagram",
+    "emotion": "kaca"
+   },
+   "caption": "Profil @catatanakademikut dicek dulu",
+   "items": [
+    {
+     "title": "Bio jelas",
+     "sub": "Siapa, isi, manfaat, tautan",
+     "bg": "#CFE3FF"
+    },
+    {
+     "title": "Tautan aktif",
+     "sub": "catatanakademik.com",
+     "bg": "#C9F5E1"
+    },
+    {
+     "title": "Baru 1 post",
+     "sub": "Carousel 8 November",
+     "bg": "#FFE45E"
+    }
+   ],
+   "sfx": [
+    0
+   ]
+  },
+  {
+   "type": "kartu",
+   "sec": 5.5,
+   "title": "Audit Performa",
+   "titleColor": "#FFD3E6",
+   "tag": "DATA ASLI",
+   "mascot": {
+    "name": "instagram",
+    "emotion": "grafik"
+   },
+   "caption": "Post terakhir: reach 11, views 29, interaksi 0",
+   "items": [
+    {
+     "title": "Reach: 11",
+     "sub": "Akun unik yang melihat post",
+     "bg": "#CFE3FF"
+    },
+    {
+     "title": "Views: 29",
+     "sub": "Total tayangan post",
+     "bg": "#FFE45E"
+    },
+    {
+     "title": "Interaksi: 0",
+     "sub": "Like, komentar, save, share",
+     "bg": "#FFD3E6"
+    }
+   ],
+   "sfx": [
+    0
+   ]
+  },
+  {
+   "type": "statchart",
+   "sec": 6,
+   "title": "Jangkauan 30 Hari",
+   "titleColor": "#C8F135",
+   "tag": "DATA ASLI",
+   "mascot": {
+    "name": "instagram",
+    "emotion": "grafik"
+   },
+   "caption": "Puncak reach harian 34 pada 29 Oktober",
+   "stat": {
+    "value": 34,
+    "label": "Reach harian tertinggi",
+    "note": "Follower baru 30 hari: 2. Data masih sedikit."
+   },
+   "bars": [
+    {
+     "label": "",
+     "value": 0
+    },
+    {
+     "label": "",
+     "value": 0
+    },
+    {
+     "label": "",
+     "value": 0
+    },
+    {
+     "label": "",
+     "value": 0
+    },
+    {
+     "label": "",
+     "value": 0
+    },
+    {
+     "label": "",
+     "value": 0
+    },
+    {
+     "label": "",
+     "value": 0
+    },
+    {
+     "label": "",
+     "value": 0
+    },
+    {
+     "label": "",
+     "value": 0
+    },
+    {
+     "label": "",
+     "value": 0
+    },
+    {
+     "label": "",
+     "value": 0
+    },
+    {
+     "label": "",
+     "value": 0
+    },
+    {
+     "label": "",
+     "value": 0
+    },
+    {
+     "label": "",
+     "value": 0
+    },
+    {
+     "label": "",
+     "value": 5
+    },
+    {
+     "label": "",
+     "value": 34
+    },
+    {
+     "label": "",
+     "value": 0
+    },
+    {
+     "label": "",
+     "value": 0
+    },
+    {
+     "label": "",
+     "value": 0
+    },
+    {
+     "label": "",
+     "value": 0
+    },
+    {
+     "label": "",
+     "value": 0
+    },
+    {
+     "label": "",
+     "value": 0
+    },
+    {
+     "label": "",
+     "value": 0
+    },
+    {
+     "label": "",
+     "value": 0
+    },
+    {
+     "label": "",
+     "value": 0
+    },
+    {
+     "label": "",
+     "value": 13
+    },
+    {
+     "label": "",
+     "value": 3
+    },
+    {
+     "label": "",
+     "value": 0
+    },
+    {
+     "label": "",
+     "value": 0
+    },
+    {
+     "label": "",
+     "value": 0
+    }
+   ],
+   "sfx": [
+    0
+   ]
+  },
+  {
+   "type": "ranking",
+   "sec": 5,
+   "title": "Audiens: Usia",
+   "titleColor": "#DCD0FF",
+   "tag": "DATA ASLI",
+   "mascot": {
+    "name": "claude-cewek",
+    "emotion": "kerja"
+   },
+   "unit": "%",
+   "caption": "Mayoritas audiens berusia 18 sampai 34 tahun",
+   "bars": [
+    {
+     "label": "25-34 tahun",
+     "value": 50
+    },
+    {
+     "label": "18-24 tahun",
+     "value": 41
+    },
+    {
+     "label": "35-44 tahun",
+     "value": 7
+    }
+   ],
+   "sfx": [
+    0
+   ]
+  },
+  {
+   "type": "ranking",
+   "sec": 5,
+   "title": "Audiens: Kota",
+   "titleColor": "#DCD0FF",
+   "tag": "DATA ASLI",
+   "mascot": {
+    "name": "claude-cewek",
+    "emotion": "tanya"
+   },
+   "caption": "Jakarta terbanyak. 61% audiens perempuan",
+   "bars": [
+    {
+     "label": "Jakarta",
+     "value": 34
+    },
+    {
+     "label": "Depok",
+     "value": 7
+    },
+    {
+     "label": "Tangerang",
+     "value": 6
+    },
+    {
+     "label": "Medan",
+     "value": 6
+    },
+    {
+     "label": "Semarang",
+     "value": 5
+    }
+   ],
+   "sfx": [
+    0
+   ]
+  },
+  {
+   "type": "kartu",
+   "sec": 6,
+   "title": "Pilar Konten",
+   "titleColor": "#FFE45E",
+   "tag": "REKOMENDASI",
+   "tagColor": "#FFE45E",
+   "mascot": {
+    "name": "claude-cewek",
+    "emotion": "ide"
+   },
+   "caption": "Tiga pilar dari bio, plus ajakan komentar di tiap post",
+   "items": [
+    {
+     "title": "Info resmi UT",
+     "sub": "Jadwal dan aturan ujian",
+     "bg": "#CFE3FF"
+    },
+    {
+     "title": "Tutorial langkah",
+     "sub": "TAPS dan tugas",
+     "bg": "#C9F5E1"
+    },
+    {
+     "title": "Tips kuliah dan proposal",
+     "sub": "Panduan belajar terarah",
+     "bg": "#DCD0FF"
+    }
+   ],
+   "sfx": [
+    0
+   ]
+  },
+  {
+   "type": "minggu",
+   "sec": 7,
+   "title": "Kalender 7 Hari",
+   "titleColor": "#C9F5E1",
+   "tag": "REKOMENDASI",
+   "tagColor": "#FFE45E",
+   "mascot": {
+    "name": "dika-anime",
+    "emotion": "checklist"
+   },
+   "caption": "Satu pilar per hari, satu hari untuk evaluasi",
+   "week": [
+    {
+     "day": "SEN",
+     "text": "Info resmi UT"
+    },
+    {
+     "day": "SEL",
+     "text": "Tutorial TAPS"
+    },
+    {
+     "day": "RAB",
+     "text": "Carousel tips kuliah"
+    },
+    {
+     "day": "KAM",
+     "text": "Reels singkat"
+    },
+    {
+     "day": "JUM",
+     "text": "Tanya jawab"
+    },
+    {
+     "day": "SAB",
+     "text": "Rekap minggu ini"
+    },
+    {
+     "day": "MIN",
+     "text": "Cek data dan rencana"
+    }
+   ],
+   "sfx": [
+    0
+   ]
+  },
+  {
+   "type": "paket",
+   "sec": 5,
+   "title": "Keluaran",
+   "titleColor": "#C9F5E1",
+   "cta": "Lihat di link bio",
+   "mascot": {
+    "name": "dika-anime",
+    "emotion": "thumbs"
+   },
+   "caption": "Carousel, kalender, dan rekomendasi optimasi akun",
+   "items": [
+    {
+     "title": "Carousel",
+     "sub": "Siap diunggah",
+     "bg": "#C9F5E1"
+    },
+    {
+     "title": "Kalender 7 hari",
+     "sub": "Jadwal isi harian",
+     "bg": "#FFE45E"
+    },
+    {
+     "title": "Rekomendasi optimasi akun",
+     "sub": "Daftar hal yang dibenahi",
+     "bg": "#DCD0FF"
+    }
+   ],
+   "sfx": [
+    0
+   ]
+  },
+  {
+   "type": "judul",
+   "sec": 4,
+   "title": "Audit dulu, baru strategi",
+   "titleColor": "#FFD3E6",
+   "sub": "@catatanakademikut",
+   "mascot": {
+    "name": "dika-anime",
+    "emotion": "makasih"
+   },
+   "caption": "Mulai dari data akun sendiri",
+   "sfx": [
+    0
+   ]
+  }
+ ]
+}
