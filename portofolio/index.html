@@ -819,6 +819,20 @@
       box-shadow: 0 28px 64px rgba(0, 0, 0, 0.7);
     }
 
+
+    /* Galeri Karya: video hanya diputar saat diklik */
+    .galeri-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 22px}
+    .galeri-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px}
+    .galeri-item{position:relative;display:block;padding:0;border:1px solid var(--line);border-radius:var(--radius-md);overflow:hidden;background:var(--glass-2);cursor:pointer;text-align:left;color:inherit;font:inherit;transition:transform .25s ease,border-color .25s ease}
+    .galeri-item:hover,.galeri-item:focus-visible{transform:translateY(-4px);border-color:var(--line-strong);outline:none}
+    .galeri-item img{display:block;width:100%;aspect-ratio:9/16;object-fit:cover;background:#0b0d14}
+    .galeri-item .gi-play{position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;background:rgba(7,8,13,.72);border:1px solid var(--line-strong);display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:.8rem;backdrop-filter:blur(6px)}
+    .galeri-item .gi-cap{position:absolute;left:0;right:0;bottom:0;padding:34px 12px 12px;background:linear-gradient(transparent,rgba(7,8,13,.92));font-size:.82rem;font-weight:700;line-height:1.3}
+    .galeri-item .gi-cap small{display:block;margin-top:3px;font-family:var(--font-mono);font-weight:400;font-size:.66rem;letter-spacing:.06em;color:var(--accent)}
+    .galeri-modal-panel{width:100%;max-width:420px;max-height:92vh;background:#0d0f17;border:1px solid var(--line-strong);border-radius:var(--radius-lg);padding:14px;box-shadow:0 28px 64px rgba(0,0,0,.7)}
+    .galeri-modal-panel video,.galeri-modal-panel img{display:block;width:100%;max-height:78vh;object-fit:contain;border-radius:var(--radius-md);background:#000}
+    .galeri-modal-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px;font-weight:700;font-size:.9rem}
+
     /* Reveal utility */
     .live-dot::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #34d399; box-shadow: 0 0 8px #34d399; margin-right: 8px; }
     .proof-strip { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: -12px 0 30px; }
@@ -865,16 +879,16 @@
         </a>
 
         <ul class="nav-links">
-          <li><a href="#what-i-do">What I Do</a></li>
-          <li><a href="#approach">Approach</a></li>
-          <li><a href="#works">Works</a></li>
-          <li><a href="#about">About</a></li>
-          <li><a href="#collaborate">Collaborate</a></li>
+          <li><a href="#what-i-do">Yang Saya Kerjakan</a></li>
+          <li><a href="#approach">Pendekatan</a></li>
+          <li><a href="#works">Karya</a></li><li><a href="#galeri">Galeri</a></li>
+          <li><a href="#about">Tentang</a></li>
+          <li><a href="#collaborate">Kolaborasi</a></li>
         </ul>
 
         <div class="nav-actions">
-          <a href="https://heyaipeople.site/" target="_blank" rel="noopener" class="btn btn-outline btn-sm">Store &nearr;</a>
-          <a href="assets/CV_Dika_Priyadi.pdf" target="_blank" rel="noopener" class="btn btn-primary btn-sm">Download CV</a>
+          <a href="https://heyaipeople.site/" target="_blank" rel="noopener" class="btn btn-outline btn-sm">Toko &nearr;</a>
+          <a href="assets/CV_Dika_Priyadi.pdf" target="_blank" rel="noopener" class="btn btn-primary btn-sm">Unduh CV</a>
         </div>
       </div>
     </header>
@@ -893,8 +907,8 @@
         </p>
 
         <div class="hero-cta-group">
-          <a href="#works" class="btn btn-primary">Explore My Work &rarr;</a>
-          <a href="#collaborate" class="btn btn-outline">Let&rsquo;s Collaborate</a>
+          <a href="#works" class="btn btn-primary">Lihat Karya Saya &rarr;</a>
+          <a href="#collaborate" class="btn btn-outline">Mari Berkolaborasi</a>
         </div>
 
         <div class="proof-strip">
@@ -917,8 +931,8 @@
     <section class="section-block" id="what-i-do">
       <div class="container">
         <div class="section-head reveal-up">
-          <span class="section-num">01 // Core Capabilities</span>
-          <h2 class="section-title">What I Do</h2>
+          <span class="section-num">01 // Kemampuan Inti</span>
+          <h2 class="section-title">Yang Saya Kerjakan</h2>
           <p class="section-desc">
             Menggabungkan ketajaman editorial, orkestrasi multi-model AI, dan disiplin analitik untuk menciptakan aset digital yang konsisten dan berdampak.
           </p>
@@ -943,7 +957,7 @@
             <div class="cap-icon">03</div>
             <h3 class="cap-title">Short-Form Video Production</h3>
             <p class="cap-text">Produksi video pendek berbasis storyboard AI (image-to-video) dan animasi terprogram Remotion untuk Reels, TikTok, dan iklan digital.</p>
-            <a class="cap-proof" href="#works"><span>BUKTI</span>Iklan video vertikal 9:16 di bagian Works &nearr;</a>
+            <a class="cap-proof" href="#works"><span>BUKTI</span>Iklan video vertikal 9:16 di bagian Karya &nearr;</a>
           </article>
 
           <article class="glass-card reveal-up">
@@ -975,7 +989,7 @@
       <div class="container">
         <div class="section-head reveal-up">
           <span class="section-num">02 // Bedah Kasus</span>
-          <h2 class="section-title">Research. Plan. Create. Publish. Analyze. Improve.</h2>
+          <h2 class="section-title">Riset. Rencana. Buat. Terbit. Analisis. Perbaiki.</h2>
           <p class="section-desc">
             Bedah satu alur kerja nyata: produksi iklan video vertikal 9:16, dari brief sampai evaluasi.
           </p>
@@ -990,37 +1004,37 @@
 
         <div class="phase-grid">
           <div class="phase-card active reveal-up" onclick="selectPhase(this)">
-            <span class="phase-tag">PHASE 01 // RESEARCH</span>
+            <span class="phase-tag">FASE 01 // RISET</span>
             <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 6px;">Riset Audiens &amp; Tren</h3>
             <p style="font-size: 0.86rem; color: var(--text-muted);">Menentukan target audiens dan hook 3 detik pertama dari brief produk.</p>
           </div>
 
           <div class="phase-card reveal-up" onclick="selectPhase(this)">
-            <span class="phase-tag">PHASE 02 // PLAN</span>
+            <span class="phase-tag">FASE 02 // RENCANA</span>
             <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 6px;">Naskah &amp; Storyboard</h3>
             <p style="font-size: 0.86rem; color: var(--text-muted);">Menulis naskah (hook, voice-over, CTA) dan storyboard per adegan.</p>
           </div>
 
           <div class="phase-card reveal-up" onclick="selectPhase(this)">
-            <span class="phase-tag">PHASE 03 // CREATE</span>
+            <span class="phase-tag">FASE 03 // BUAT</span>
             <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 6px;">Visual, Suara &amp; Motion</h3>
             <p style="font-size: 0.86rem; color: var(--text-muted);">Visual dan video AI di Google Flow, voice-over ElevenLabs, motion graphic dan editing di Remotion dan CapCut.</p>
           </div>
 
           <div class="phase-card reveal-up" onclick="selectPhase(this)">
-            <span class="phase-tag">PHASE 04 // PUBLISH</span>
+            <span class="phase-tag">FASE 04 // TERBIT</span>
             <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 6px;">Siap Publikasi</h3>
             <p style="font-size: 0.86rem; color: var(--text-muted);">Format 9:16 untuk Instagram dan TikTok, lengkap dengan caption dan CTA ke katalog.</p>
           </div>
 
           <div class="phase-card reveal-up" onclick="selectPhase(this)">
-            <span class="phase-tag">PHASE 05 // ANALYZE</span>
+            <span class="phase-tag">FASE 05 // ANALISIS</span>
             <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 6px;">Metrik yang Dibaca</h3>
             <p style="font-size: 0.86rem; color: var(--text-muted);">Views, jangkauan, watch time, completion rate, share, dan simpan.</p>
           </div>
 
           <div class="phase-card reveal-up" onclick="selectPhase(this)">
-            <span class="phase-tag">PHASE 06 // IMPROVE</span>
+            <span class="phase-tag">FASE 06 // PERBAIKI</span>
             <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 6px;">Template &amp; SOP Prompt</h3>
             <p style="font-size: 0.86rem; color: var(--text-muted);">Parameter prompt yang berhasil disimpan sebagai template agar hasil berikutnya konsisten.</p>
           </div>
@@ -1032,8 +1046,8 @@
     <section class="section-block" id="works">
       <div class="container">
         <div class="section-head reveal-up">
-          <span class="section-num">03 // Portfolio &amp; Live Systems</span>
-          <h2 class="section-title">Selected Works &amp; Live System Showcase</h2>
+          <span class="section-num">03 // Portofolio &amp; Sistem Berjalan</span>
+          <h2 class="section-title">Karya Pilihan &amp; Sistem yang Berjalan</h2>
           <p class="section-desc">
             Studi kasus produksi konten AI, platform edukasi berbasis SEO, dan infrastruktur otomasi yang berjalan aktif di server produksi.
           </p>
@@ -1050,7 +1064,7 @@
               Setiap eksperimen visual diuji pada proyek nyata sebelum dipublikasikan sebagai studi kasus maupun template prompt di <strong>heyaipeople.site</strong>.
             </p>
             <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-              <a href="https://heyaipeople.site/" target="_blank" rel="noopener" class="btn btn-primary btn-sm">Kunjungi HeyAIPeople Store &nearr;</a>
+              <a href="https://heyaipeople.site/" target="_blank" rel="noopener" class="btn btn-primary btn-sm">Kunjungi Toko HeyAIPeople &nearr;</a>
               <a href="https://catatanakademik.com" target="_blank" rel="noopener" class="btn btn-outline btn-sm">CatatanAkademik.com &nearr;</a>
             </div>
           </div>
@@ -1066,7 +1080,7 @@
         <!-- Category Filters -->
         <div class="filter-bar reveal-up">
           <div class="filter-pills" id="workFilters">
-            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn active" data-filter="all">Semua</button>
             <button class="filter-btn" data-filter="AI Video & Content">AI Video &amp; Content</button>
             <button class="filter-btn" data-filter="Web & SEO">Web &amp; SEO</button>
             <button class="filter-btn" data-filter="AI Automation">AI Automation</button>
@@ -1078,6 +1092,19 @@
 
         <!-- Dynamic Works Grid -->
         <div class="grid-3" id="worksGrid"><article class="work-card reveal-up is-visible"><div class="work-media"><img src="v/jeans.jpg" alt="AI Commercial & Short-Form Video" loading="lazy" onerror="this.onerror=null; this.src='https://placehold.co/640x400/0d0f17/e2b86b?text='+encodeURIComponent(this.alt);" /><span class="work-cat-badge">AI Video & Content</span></div><div class="work-body"><h3 class="work-title">AI Commercial & Short-Form Video</h3><p class="work-summary">Produksi visual produk fesyen dan iklan video pendek vertikal 9:16, dari brief, hook, dan naskah sampai video AI.</p><div class="work-tags"><span class="work-tag">Google Flow</span><span class="work-tag">Remotion</span><span class="work-tag">CapCut</span><span class="work-tag">ElevenLabs</span></div><div class="work-actions"><button class="btn btn-outline btn-sm" style="flex: 1;" onclick="openWorkModal('ai-commercial-video')">Lihat Studi Kasus</button><a href="https://heyaipeople.site/?produk=denim-editorial-ai" target="_blank" rel="noopener" class="btn btn-primary btn-sm">Prompt &nearr;</a></div></div></article><article class="work-card reveal-up is-visible"><div class="work-media"><img src="v/car1.jpg" alt="CatatanAkademik.com — EdTech & SEO Platform" loading="lazy" onerror="this.onerror=null; this.src='https://placehold.co/640x400/0d0f17/e2b86b?text='+encodeURIComponent(this.alt);" /><span class="work-cat-badge">Web & SEO</span></div><div class="work-body"><h3 class="work-title">CatatanAkademik.com — EdTech & SEO Platform</h3><p class="work-summary">Platform edukasi untuk mahasiswa Universitas Terbuka: panduan mahasiswa baru, kelas tutorial, alat pemeriksaan dokumen, blog, login Google, dan panel admin.</p><div class="work-tags"><span class="work-tag">SEO</span><span class="work-tag">Content Strategy</span><span class="work-tag">Web Management</span></div><div class="work-actions"><button class="btn btn-outline btn-sm" style="flex: 1;" onclick="openWorkModal('catatan-akademik-edtech')">Lihat Studi Kasus</button></div></div></article><article class="work-card reveal-up is-visible"><div class="work-media"><img src="v/bot.jpg" alt="Bot WhatsApp di VPS" loading="lazy" onerror="this.onerror=null; this.src='https://placehold.co/640x400/0d0f17/e2b86b?text='+encodeURIComponent(this.alt);" /><span class="work-cat-badge">AI Automation</span></div><div class="work-body"><h3 class="work-title">Bot WhatsApp di VPS</h3><p class="work-summary">Dua bot WhatsApp berjalan di VPS: satu mengelola grup (anti-spam, pengingat, catatan), satu menangani admin dan notifikasi pesanan.</p><div class="work-tags"><span class="work-tag">Node.js</span><span class="work-tag">VPS / PM2</span><span class="work-tag">WhatsApp Automation</span></div><div class="work-actions"><button class="btn btn-outline btn-sm" style="flex: 1;" onclick="openWorkModal('whatsapp-ai-bot-vps')">Lihat Studi Kasus</button></div></div></article><article class="work-card reveal-up is-visible"><div class="work-media"><img src="v/hero_robot.webp" alt="Koordinasi Workflow AI (Hermes & 9Router)" loading="lazy" onerror="this.onerror=null; this.src='https://placehold.co/640x400/0d0f17/e2b86b?text='+encodeURIComponent(this.alt);" /><span class="work-cat-badge">AI Automation</span></div><div class="work-body"><h3 class="work-title">Koordinasi Workflow AI (Hermes & 9Router)</h3><p class="work-summary">Pengaturan GPT, Gemini, Claude, dan Google Flow dalam satu alur kerja untuk konten dan proyek web; pekerjaan rutin diarahkan lewat agen Hermes dan router 9Router agar hemat kuota.</p><div class="work-tags"><span class="work-tag">Hermes</span><span class="work-tag">9Router</span><span class="work-tag">Prompt Engineering</span></div><div class="work-actions"><button class="btn btn-outline btn-sm" style="flex: 1;" onclick="openWorkModal('multi-model-routing')">Lihat Studi Kasus</button></div></div></article><article class="work-card reveal-up is-visible"><div class="work-media"><img src="assets/k-admin.webp" alt="Blog Otomatis: Artikel AI ke Markdown" loading="lazy" onerror="this.onerror=null; this.src='https://placehold.co/640x400/0d0f17/e2b86b?text='+encodeURIComponent(this.alt);" /><span class="work-cat-badge">Web & SEO</span></div><div class="work-body"><h3 class="work-title">Blog Otomatis: Artikel AI ke Markdown</h3><p class="work-summary">Artikel SEO ditulis AI dalam format markdown, diunggah lewat menu blog, lalu dicek manual sebelum terbit.</p><div class="work-tags"><span class="work-tag">Markdown</span><span class="work-tag">SEO</span><span class="work-tag">Blog</span></div><div class="work-actions"><button class="btn btn-outline btn-sm" style="flex: 1;" onclick="openWorkModal('automated-seo-markdown')">Lihat Studi Kasus</button></div></div></article></div>
+      </div>
+    </section>
+
+    <!-- GALERI KARYA: data dari karya.json, video hanya jalan saat diklik -->
+    <section class="section-block" id="galeri">
+      <div class="container">
+        <div class="section-head reveal-up">
+          <span class="section-num">Galeri Karya</span>
+          <h2 class="section-title">Hasil Jadi yang Bisa Diputar</h2>
+          <p class="section-desc">Video iklan, motion, dan carousel yang sudah selesai dikerjakan. Klik untuk memutar.</p>
+        </div>
+        <div class="filter-pills galeri-tabs" id="galeriTabs"></div>
+        <div class="galeri-grid" id="galeriGrid"></div>
       </div>
     </section>
 
@@ -1093,7 +1120,7 @@
         </div>
 
         <div class="reveal-up">
-          <span class="section-num">04 // Background &amp; Operational Discipline</span>
+          <span class="section-num">04 // Latar Belakang &amp; Disiplin Operasional</span>
           <h2 class="section-title">12+ Tahun Kepemimpinan Operasional Bertemu Teknologi AI Kreatif.</h2>
           <p style="color: var(--text-muted); font-size: 0.96rem; margin-bottom: 14px;">
             Berbekal pengalaman lebih dari 12 tahun memimpin tim operasional skala 24 hingga 93 staf di lingkungan perusahaan berstandar tinggi (<strong>PT Horizon Internusa Persada</strong>, <strong>PT Angkasa Pura Support</strong>, <strong>Mercu Buana Center</strong>, dan <strong>ISS Indonesia</strong>) serta latar pendidikan <strong>S1 Manajemen Universitas Terbuka</strong>, saya membawa ketelitian SOP, manajemen target, dan akuntabilitas hasil ke dalam dunia produksi konten AI.
@@ -1134,8 +1161,8 @@
     <section class="section-block" id="collaborate">
       <div class="container">
         <div class="section-head reveal-up">
-          <span class="section-num">05 // Direct Routing</span>
-          <h2 class="section-title">Let&rsquo;s Collaborate</h2>
+          <span class="section-num">05 // Jalur Langsung</span>
+          <h2 class="section-title">Mari Berkolaborasi</h2>
           <p class="section-desc">
             Pilih jalur diskusi yang paling sesuai dengan kebutuhan proyek atau rekrutmen tim Anda untuk terhubung langsung via WhatsApp.
           </p>
@@ -1224,6 +1251,9 @@
   </div><!-- /.page -->
 
   <!-- PROJECT DETAIL MODAL -->
+  <div class="modal-backdrop" id="galeriModal" onclick="if(event.target===this) tutupGaleri()">
+    <div class="galeri-modal-panel" id="galeriModalBody"></div>
+  </div>
   <div class="modal-backdrop" id="workModal" onclick="if(event.target===this) closeWorkModal()">
     <div class="modal-panel" id="workModalBody"></div>
   </div>
@@ -1430,6 +1460,34 @@
       }
       renderWorksGrid();
     }
+
+
+    // Galeri Karya (karya.json)
+    let galeriData = [], galeriFilter = 'Semua';
+    function esc(t){return String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+    function renderGaleri(){
+      const kat=['Semua',...new Set(galeriData.map(x=>x.kategori||'Karya'))];
+      document.getElementById('galeriTabs').innerHTML=kat.map(k=>`<button class="filter-btn${k===galeriFilter?' active':''}" data-k="${esc(k)}">${esc(k)}</button>`).join('');
+      const list=galeriData.map((x,i)=>[x,i]).filter(([x])=>galeriFilter==='Semua'||(x.kategori||'Karya')===galeriFilter);
+      document.getElementById('galeriGrid').innerHTML=list.map(([x,i])=>`<button class="galeri-item" data-i="${i}" aria-label="Putar ${esc(x.judul)}"><img src="${esc(x.poster)}" alt="${esc(x.judul)}" loading="lazy" onerror="this.style.visibility='hidden'"><span class="gi-play">${x.video?'&#9654;':'&#10064;'}</span><span class="gi-cap">${esc(x.judul)}<small>${esc((x.kategori||'Karya').toUpperCase())}</small></span></button>`).join('');
+    }
+    function bukaGaleri(i){
+      const x=galeriData[i]; if(!x) return;
+      const media=x.video?`<video src="${esc(x.video)}" poster="${esc(x.poster)}" controls playsinline autoplay></video>`:`<img src="${esc(x.poster)}" alt="${esc(x.judul)}">`;
+      document.getElementById('galeriModalBody').innerHTML=`<div class="galeri-modal-top"><span>${esc(x.judul)}</span><button class="btn btn-outline btn-sm" onclick="tutupGaleri()">Tutup &times;</button></div>${media}`;
+      document.getElementById('galeriModal').classList.add('open');
+    }
+    function tutupGaleri(){
+      const m=document.getElementById('galeriModal'); m.classList.remove('open');
+      const v=m.querySelector('video'); if(v){v.pause();v.removeAttribute('src');v.load();}
+      document.getElementById('galeriModalBody').innerHTML='';
+    }
+    document.addEventListener('keydown',e=>{if(e.key==='Escape') tutupGaleri();});
+    document.addEventListener('click',e=>{
+      const t=e.target.closest('#galeriTabs .filter-btn'); if(t){galeriFilter=t.dataset.k;renderGaleri();return;}
+      const g=e.target.closest('.galeri-item'); if(g) bukaGaleri(+g.dataset.i);
+    });
+    fetch('karya.json?t='+Date.now()).then(r=>r.ok?r.json():[]).then(d=>{if(Array.isArray(d)){galeriData=d;renderGaleri();}}).catch(()=>{});
 
     // IntersectionObserver for smooth reveal animations
     const revealObserver = new IntersectionObserver((entries) => {
