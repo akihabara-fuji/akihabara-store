@@ -1,6 +1,6 @@
 # PAKET PAPAN KANTOR AI PEOPLE
 
-Salinan otomatis branch kantor (2026-11-17 08:59 WIB). Jangan diedit di sini: sumbernya GitHub akihabara-fuji/akihabara-store branch kantor.
+Salinan otomatis branch kantor (2026-11-17 09:02 WIB). Jangan diedit di sini: sumbernya GitHub akihabara-fuji/akihabara-store branch kantor.
 Isi: STATUS.md, AI/BACA-DULU.md, AI/PERAN.md, ATURAN.md, KUNCI.md, BAGAN.md, SETORAN/README.md, ESTAFET/README.md, ARTEFAK/RINGKAS.md, PROYEK/heyaipeople/MASTER_BRAND_GUIDELINES.md, PROYEK/heyaipeople/CONTENT_REGISTRY.md, PROYEK/heyaipeople/DESIGN_REGISTRY.md, PROYEK/README.md, lalu HANDOFF tiap proyek.
 
 
@@ -8,7 +8,7 @@ Isi: STATUS.md, AI/BACA-DULU.md, AI/PERAN.md, ATURAN.md, KUNCI.md, BAGAN.md, SET
 
 # STATUS papan kantor
 
-Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-17 08:59 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
+Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-17 09:02 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
 Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 
 ## Rahasia bocor (harus segera dihapus)
@@ -98,6 +98,8 @@ Pembagian resmi mengikuti MASTER COMMAND HeyAIPeople v4.0 (PROYEK/heyaipeople/MA
 | Image/Video AI (Google Flow dll.) | Produksi aset | Ilustrasi, aset gambar, video generatif sesuai arahan | Mengubah identitas visual tanpa persetujuan |
 | ElevenLabs | Suara | Voice-over dan narasi. Suara Rafiq dipakai sampai Part 10 BUILD WITH AI (keputusan Dika 17 Nov) | - |
 | CapCut | Editing video | Editing, subtitle, motion, transisi, sinkron audio | - |
+
+Cara GPT ke Canva: GPT mendesain di Canva lewat plugin Canva di ChatGPT (akun "Dikha's Canva account" sudah tersambung; dites 17 Nov 09.01: GPT membuka DAHbITwgs6A, judul dan 7 halaman benar). Work/Cowork tidak diperlukan. Kerja desain dilakukan di chat dalam Project ChatGPT "Kantor Ai People", bukan chat di luar Project.
 
 Aturan Canva: SATU DESAIN SATU KONTEN (TERKUNCI, Dika 17 Nov 2026): kalau carousel gagal QA atau perlu revisi, edit langsung di desain Canva yang sama (Canva Design ID tetap). Dilarang membuat salinan/desain baru untuk revisi. Dari desain lama yang sudah terlanjur ganda, hanya hasil final yang dipakai; sisanya ARCHIVED.
 
@@ -774,6 +776,7 @@ Terakhir diperbarui: 17 Nov 2026 08.55, Claude akun-1 (koordinator). Perintah in
 - SATU DESAIN SATU KONTEN (TERKUNCI, Dika 17 Nov 2026): kalau carousel gagal QA atau perlu revisi, edit langsung di desain Canva yang sama (Canva Design ID tetap). Dilarang membuat salinan/desain baru untuk revisi. Dari desain lama yang sudah terlanjur ganda, hanya hasil final yang dipakai; sisanya ARCHIVED.
 
 ## Alur kerja
+- GPT mendesain di Canva lewat plugin Canva di ChatGPT (akun "Dikha's Canva account" sudah tersambung; dites 17 Nov 09.01: GPT membuka DAHbITwgs6A, judul dan 7 halaman benar). Work/Cowork tidak diperlukan. Kerja desain dilakukan di chat dalam Project ChatGPT "Kantor Ai People", bukan chat di luar Project.
 - Carousel Instagram HeyAIPeople: tahap 1–7 di MASTER_COMMAND_v4.md bagian 4, status per CONTENT_REGISTRY (BACKLOG … PUBLISHED). Tidak lewat Google Flow.
 - Video (BUILD WITH AI, YouTube): ESTAFET/ (Gemini, GPT, Flow, Claude/Remotion).
 - Serah terima antar-AI pakai format HANDOFF PROTOCOL (bagian 7 MASTER_COMMAND) di dalam blok SETORAN, lewat bot kurir.
@@ -785,7 +788,7 @@ Terakhir diperbarui: 17 Nov 2026 08.55, Claude akun-1 (koordinator). Perintah in
 - Banyak desain lama ganda di Canva (lihat DESIGN_REGISTRY bagian Lama).
 
 ## Langkah berikutnya
-1. GPT: tulis naskah final 7 slide seri 01 post 01–03 ke SETORAN (ambil dari teks Canva yang ada, perbaiki ejaan brand), lalu lewat Cowork rapikan desain jadi tepat 7 halaman.
+1. GPT (Project Kantor Ai People, plugin Canva): setor teks naskah lengkap P01–P03, lalu revisi 3 desain yang sama (ejaan HeyAIPeople, P02/P03 jadi 7 halaman).
 2. Claude: Design QA ketiga desain pakai QA_CHECKLIST.md setelah GPT setor, catat di DESIGN_REGISTRY.
 3. Dika: putuskan desain lama ganda diarsipkan (ARCHIVED) atau dihapus di Canva.
 
