@@ -478,7 +478,7 @@
       padding: 20px;
       backdrop-filter: blur(16px);
       cursor: pointer;
-      transition: all 0.22s ease;
+      transition: transform 0.22s ease, border-color 0.22s ease, background-color 0.22s ease, box-shadow 0.22s ease;
     }
     .phase-card:hover,
     .phase-card.active {
@@ -571,7 +571,7 @@
       color: var(--text-muted);
       cursor: pointer;
       backdrop-filter: blur(12px);
-      transition: all 0.2s ease;
+      transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
     }
     .filter-btn:hover {
       color: var(--text);
@@ -782,7 +782,7 @@
       border-radius: var(--radius-pill);
       border: 1px solid var(--line);
       background: var(--glass);
-      transition: all 0.2s ease;
+      transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
     }
     .social-link:hover {
       color: var(--accent);
@@ -840,6 +840,13 @@
     .rm-tema .galeri-item.rm-wide{grid-column:span 2}
     .rm-tema .galeri-item img{aspect-ratio:var(--rm-r,9/16);object-fit:contain}
     .galeri-modal-panel.rm-wide{max-width:min(960px,96vw)}
+
+    /* Kehalusan: blur latar dilepas dari kartu yang ikut ter-scroll (mahal di atas canvas 3D), tampilan tetap kaca gelap */
+    .btn-outline,.eyebrow,.tech-pill,.glass-card,.quote-banner,.phase-card,.showcase-split,.filter-btn,.work-card,.work-cat-badge,.stat-box,.footer,.galeri-item .gi-play{-webkit-backdrop-filter:none;backdrop-filter:none}
+    .galeri-item,.work-card,.glass-card{contain:layout paint}
+    #galeri,#remotion{content-visibility:auto;contain-intrinsic-size:auto 900px}
+    .galeri-item img{transform:translateZ(0)}
+    @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 
     /* Reveal utility */
     .live-dot::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #34d399; box-shadow: 0 0 8px #34d399; margin-right: 8px; }
@@ -1489,7 +1496,7 @@
       const kat=['Semua',...new Set(galeriData.map(x=>x.kategori||'Karya'))];
       document.getElementById('galeriTabs').innerHTML=kat.map(k=>`<button class="filter-btn${k===galeriFilter?' active':''}" data-k="${esc(k)}">${esc(k)}</button>`).join('');
       const list=galeriData.map((x,i)=>[x,i]).filter(([x])=>galeriFilter==='Semua'||(x.kategori||'Karya')===galeriFilter);
-      document.getElementById('galeriGrid').innerHTML=list.map(([x,i])=>`<button class="galeri-item" data-i="${i}" aria-label="Putar ${esc(x.judul)}"><img src="${esc(x.poster)}" alt="${esc(x.judul)}" loading="lazy" onerror="this.style.visibility='hidden'"><span class="gi-play">${x.video?'&#9654;':'&#10064;'}</span><span class="gi-cap">${esc(x.judul)}<small>${esc((x.kategori||'Karya').toUpperCase())}</small></span></button>`).join('');
+      document.getElementById('galeriGrid').innerHTML=list.map(([x,i])=>`<button class="galeri-item" data-i="${i}" aria-label="Putar ${esc(x.judul)}"><img src="${esc(x.poster)}" alt="${esc(x.judul)}" loading="lazy" decoding="async" onerror="this.style.visibility='hidden'"><span class="gi-play">${x.video?'&#9654;':'&#10064;'}</span><span class="gi-cap">${esc(x.judul)}<small>${esc((x.kategori||'Karya').toUpperCase())}</small></span></button>`).join('');
     }
     function bukaGaleri(i,src){
       const x=(src||galeriData)[i]; if(!x) return;
@@ -1513,7 +1520,7 @@
     let remotionData = [];
     function renderRemotion(){
       let n=0;
-      document.getElementById('remotionTema').innerHTML=remotionData.map(t=>`<div class="rm-tema"><h3>${esc(t.tema)}</h3><p>${esc(t.deskripsi)}</p><div class="galeri-grid">${(t.items||[]).map(x=>{const i=n++;return `<button class="galeri-item${x.lebar>x.tinggi?' rm-wide':''}" data-r="${i}" style="--rm-r:${x.lebar||9}/${x.tinggi||16}" aria-label="Putar ${esc(x.judul)}"><img src="${esc(x.poster)}" alt="${esc(x.judul)}" loading="lazy" onerror="this.style.visibility='hidden'"><span class="gi-play">&#9654;</span><span class="gi-cap">${esc(x.judul)}<small>${esc(t.tema.toUpperCase())}</small></span></button>`}).join('')}</div></div>`).join('');
+      document.getElementById('remotionTema').innerHTML=remotionData.map(t=>`<div class="rm-tema"><h3>${esc(t.tema)}</h3><p>${esc(t.deskripsi)}</p><div class="galeri-grid">${(t.items||[]).map(x=>{const i=n++;return `<button class="galeri-item${x.lebar>x.tinggi?' rm-wide':''}" data-r="${i}" style="--rm-r:${x.lebar||9}/${x.tinggi||16}" aria-label="Putar ${esc(x.judul)}"><img src="${esc(x.poster)}" alt="${esc(x.judul)}" loading="lazy" decoding="async" onerror="this.style.visibility='hidden'"><span class="gi-play">&#9654;</span><span class="gi-cap">${esc(x.judul)}<small>${esc(t.tema.toUpperCase())}</small></span></button>`}).join('')}</div></div>`).join('');
       remotionData=remotionData.flatMap(t=>t.items||[]);
     }
     fetch('remotion.json?t='+Date.now()).then(r=>r.ok?r.json():[]).then(d=>{if(Array.isArray(d)&&d.length){remotionData=d;renderRemotion();}else{document.getElementById('remotion').style.display='none';}}).catch(()=>{document.getElementById('remotion').style.display='none';});
@@ -1609,7 +1616,7 @@
       antialias: true,
       powerPreference: 'high-performance'
     });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.outputEncoding = THREE.sRGBEncoding;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
