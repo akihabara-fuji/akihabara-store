@@ -10,6 +10,8 @@ Terakhir diperbarui: 16 Nov 2026 22.52 WIB · Claude akun-2 · Remotion. Satu-sa
 - Nunggu Dika: ACC Part 5 dan 6; perintah mengerjakan Part 7; apakah caption Part 3/4 dibuat.
 - Belum dicek: apakah akses folder D: masih terhubung di sesi baru (minta lagi dengan device_request_folder_access); isi artefak "Kantor Ai People" 30 naskah (baca langsung dari DB artefak).
 
+- TERKUNCI (Dika 17 Nov 2026): suara Rafiq (ElevenLabs) dipakai sampai Part 10 saja. Suara untuk Part 11+ belum ditentukan; tanya Dika sebelum produksi Part 11.
+
 ## Duplikat kerja (17 Nov 2026, Claude akun-1, atas perintah Dika)
 - Source kode kang-catat-plus (src, tools, episodes, scripts, package*.json, HANDOFF/MASTER_PROMPT asli) sekarang ada di GitHub: repo akihabara-fuji/akihabara-store, branch `remotion-kang-catat` (commit 440c7b6). Clone: `git clone --depth 1 -b remotion-kang-catat https://github.com/akihabara-fuji/akihabara-store kang-catat-plus`.
 - Folder `public/` (suara Rafiq per episode, foto Dika, maskot, SFX, shots; 58 MB) TIDAK di GitHub karena repo publik. Ambil dari zip di laptop Dika `D:\FOLDER VIDEO KONTEN\BUILD-WITH-AI\SERAH-TERIMA\kang-catat-plus-source.zip` (device_request_folder_access), atau Google Drive folder "Kantor Ai People - Remotion" kalau Dika sudah mengunggah zip ke sana (belum dicek). Lihat ASET-PUBLIC.md di branch itu.

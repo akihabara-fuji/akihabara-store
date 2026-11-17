@@ -1,0 +1,10 @@
+# CONTENT REGISTRY HeyAIPeople
+
+Status: BACKLOG, RESEARCHING, SCRIPT DRAFT, SCRIPT APPROVED, DESIGN IN PROGRESS, DESIGN REVIEW, REVISION REQUIRED, QA APPROVED, READY TO PUBLISH, PUBLISHED, ARCHIVED. Status naskah, desain, dan publikasi dicatat terpisah. "tidak tercatat" = tidak ada bukti di papan, bukan berarti belum dikerjakan.
+
+| Content ID | Series | Judul | Pilar | Kategori | Angle | Hook | Ringkasan | Dibuat | Riset | Naskah | Desain | QA | Publikasi | Referensi |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| HAP-S01-P01 | S01 | Social Media Audit | Social Media Intelligence | belum dikunci | Audit dulu sebelum ubah strategi | Kenapa akunmu tidak berkembang? | 5 kemungkinan penyebab, 4 area audit (profil, audiens, konten, distribusi), contoh audit simulasi, urutan amati-pola-hipotesis-uji-evaluasi | 17 Nov 2026 (Canva) | tidak tercatat | tidak tercatat di papan (teks hanya di Canva) | DESIGN REVIEW | belum | belum | DESIGN_REGISTRY HAP-D-S01-P01 |
+| HAP-S01-P02 | S01 | Audience Intelligence | Social Media Intelligence | belum dikunci | Kebutuhan audiens bukan preferensi kreator | Siapa sebenarnya audiensmu? | Followers bukan pemahaman audiens, 4 pertanyaan riset audiens, contoh persona (simulasi), sinyal audiens dibaca dalam konteks | 17 Nov 2026 (Canva) | tidak tercatat | tidak tercatat di papan | REVISION REQUIRED (8 halaman) | belum | belum | DESIGN_REGISTRY HAP-D-S01-P02 |
+| HAP-S01-P03 | S01 | Content Strategy | Social Media Intelligence | belum dikunci | Dari angka menuju keputusan | Ubah data jadi strategi konten | Data tanpa arah hanya laporan, 4 langkah strategi, contoh kalender 7 hari (ilustratif), data-insight-hipotesis-uji-evaluasi | 17 Nov 2026 (Canva) | tidak tercatat | tidak tercatat di papan | REVISION REQUIRED (8 halaman) | belum | belum | DESIGN_REGISTRY HAP-D-S01-P03 |
+| HAP-C-7CARA | - | 7 cara menggunakan AI untuk membuat konten profesional | AI Content Lab | belum dikunci | - | - | Jadwal artefak 17 Nov, tayang setelah persetujuan | 15 Nov (artefak) | BACKLOG (ESTAFET carousel-7-cara-ai-1117, LOCK_GEMINI) | BACKLOG | BACKLOG | belum | belum | ARTEFAK/ide.json i-carousel-heyai |

@@ -2,14 +2,18 @@
 
 Disetujui Dika 17 Nov 2026 ("atur sesuai rekomendasi lu"). Semua AI kerja di papan yang sama: repo akihabara-fuji/akihabara-store, branch `kantor`. Tidak ada spreadsheet atau tempat lain.
 
-| AI | Peran | Boleh | Tidak boleh |
-|---|---|---|---|
-| Claude | Eksekutor dan juru catat | Kode, deploy, commit dan push ke branch ini, pegang kunci aset di KUNCI.md, mencatat SETORAN dari AI lain | Mengubah ATURAN.md tanpa perintah Dika |
-| ChatGPT (GPT) | Riset dan struktur | Riset, cek fakta, kerangka konten, naskah, CV, proposal, penawaran | Mengubah aset (situs, sosmed, bot) langsung; memegang kunci aset |
-| Gemini | QC dan visual | Cek mutu hasil kerja, cek tampilan situs dan desain, ide visual, cek ulang fakta | Mengubah aset langsung; memegang kunci aset |
+Pembagian resmi mengikuti MASTER COMMAND HeyAIPeople v4.0 (PROYEK/heyaipeople/MASTER_COMMAND_v4.md, dari Dika 17 Nov 2026).
 
-## Peran dalam ESTAFET produksi (17 Nov 2026)
-Untuk proyek konten/klien yang lewat estafet (ESTAFET/README.md), urutannya: Gemini riset dan brief (`LOCK_GEMINI`), GPT naskah, panduan carousel Canva, dan tabel SCENE berisi prompt Google Flow (`LOCK_GPT`), Dika menjalankan Google Flow jadi klip scene_XX.mp4 (`LOCK_FLOW`), Claude merakit di Remotion, audit, lalu deploy/kirim setelah ACC Dika (`LOCK_CLAUDE_REMOTION` sampai `COMPLETED`). Peran QC/cek silang di tabel atas tetap berlaku untuk tiap setoran estafet.
+| AI | Peran v4 | Boleh | Tidak boleh |
+|---|---|---|---|
+| GPT | Editorial Director & Lead Scriptwriter; lewat Cowork juga operator desain Canva | Strategi editorial, ide/angle/hook, naskah final 7 slide, caption/CTA/hashtag, arahan visual, editorial QC, eksekusi desain Canva lewat Cowork dan catat Canva Design ID | Mengarang data/hasil/testimoni/klien; klaim desain FINAL sebelum dicek |
+| Gemini | Research & Information Intelligence | Riset tren, berita, tools AI, data dan referensi (topik, ringkasan, sumber asli, URL, tanggal terbit, tanggal cek, klaim terverifikasi, yang belum pasti) | Menetapkan naskah final; membuat desain Canva |
+| Claude | Project Manager & AI Operations Coordinator; juga eksekutor teknis (kode, deploy, Remotion) | Dokumentasi papan, registry, pembagian tugas, status, Design QA, laporan progres, kunci aset, commit/push | Mengambil alih desain Canva GPT; mengubah naskah final GPT sepihak (revisi substansi dikoordinasikan ke GPT); mengubah ATURAN.md tanpa perintah Dika |
+| Image/Video AI (Google Flow dll.) | Produksi aset | Ilustrasi, aset gambar, video generatif sesuai arahan | Mengubah identitas visual tanpa persetujuan |
+| ElevenLabs | Suara | Voice-over dan narasi. Suara Rafiq dipakai sampai Part 10 BUILD WITH AI (keputusan Dika 17 Nov) | - |
+| CapCut | Editing video | Editing, subtitle, motion, transisi, sinkron audio | - |
+
+GPT dan Gemini tidak pegang kunci aset; Claude yang mengubah aset (situs, bot, repo).
 
 ## Kenapa GPT dan Gemini tidak pegang kunci
 Kerjaan mereka berupa bahan (riset, naskah, catatan QC), bukan perubahan aset. Yang mengubah aset hanya Claude, jadi tidak ada dua AI yang mengedit hal yang sama di waktu yang sama.
@@ -23,11 +27,10 @@ Tidak ada AI yang mengecek hasilnya sendiri. Tiap SETORAN dan LAPORAN punya bari
 
 | Pembuat | Pengecek |
 |---|---|
-| GPT | Gemini |
-| Gemini | GPT |
-| Claude, kerjaan tampilan/web/visual | Gemini |
-| Claude, kerjaan fakta/teks/riset | GPT |
-| Kode dan teknis dari GPT/Gemini | Claude |
+| GPT, naskah | Gemini (fakta dan sumber) |
+| GPT lewat Cowork, desain Canva | Claude (Design QA pakai PROYEK/heyaipeople/QA_CHECKLIST.md) |
+| Gemini, riset | GPT (relevansi editorial) |
+| Claude, laporan/dokumentasi/kode | GPT (atau Gemini bila menyangkut fakta) |
 
 Cara mengecek: buka STATUS.md, bagian "Menunggu cek silang", ambil yang menunggu kamu, lalu periksa fakta dan sumbernya, ikut ATURAN.md atau tidak, sama brief atau tidak. Tutup dengan blok:
 

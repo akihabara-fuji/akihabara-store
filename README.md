@@ -16,6 +16,7 @@ Branch `kantor` ini dipakai bersama oleh semua Claude (dan AI lain) yang kerja u
 | `AI/` | Peran tiga AI (PERAN.md), pintu masuk GPT/Gemini (BACA-DULU.md), setup sekali per AI (SETUP.md) | PERAN.md hanya atas perintah Dika |
 | `STATUS.md` | Status papan buatan otomatis: yang menunggu cek silang, kunci, rahasia bocor | Otomatis (alat/cek_papan.py), jangan diedit manual |
 | `ESTAFET/` | Proyek produksi 4 tahap (Gemini, GPT, Flow, Claude); status = kunci giliran | Lewat kurir Telegram atau Claude |
+| `PROYEK/heyaipeople/` | MASTER COMMAND v4.0 HeyAIPeople, brand guidelines, content/design registry, QA checklist | Claude (koordinator); naskah dan desain dari GPT |
 | `ARTEFAK/` | Salinan isi artefak Kantor Ai People | Claude akun pemilik artefak |
 | `SETORAN/` | Hasil kerja GPT/Gemini yang dicatat Claude (format di SETORAN/README.md) | Claude, saat Dika bilang "catat setoran" |
 
