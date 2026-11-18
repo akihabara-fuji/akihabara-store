@@ -1,38 +1,66 @@
 ---
-title: Cara Menulis Prompt Foto AI yang Hasilnya Konsisten
+title: Cara Menulis Prompt Foto AI yang Konsisten dan Mudah Diulang
 slug: cara-menulis-prompt-foto-ai-yang-konsisten
+meta_title: Cara Menulis Prompt Foto AI yang Konsisten
+keyword: cara menulis prompt foto ai
 category: Prompt Foto
-description: Rumus empat bagian untuk prompt foto AI: subjek, gaya, cahaya, dan kamera, supaya hasil tidak acak.
-tags: prompt foto, ai, tutorial
+description: Cara menulis prompt foto AI dengan urutan tetap: subjek, aksi, latar, cahaya, gaya. Ada contoh sebelum-sesudah dan kebiasaan agar hasilnya bisa diulang.
+tags: prompt foto, tutorial prompt, foto ai
 cta_text: Lihat Prompt Foto
 cta_url: /#prompt-foto
 ---
 
-Hasil foto AI yang berubah-ubah biasanya bukan salah alatnya, tetapi susunan prompt yang belum rapi. Prompt yang ditulis sekenanya memberi AI terlalu banyak ruang untuk menebak. Artikel ini memberi satu rumus yang bisa dipakai ulang untuk hampir semua jenis foto.
+Kalau hasil foto AI kamu terasa acak, masalahnya sering bukan di alatnya, melainkan di cara menulis prompt foto AI yang berubah-ubah setiap kali dicoba. Prompt yang baik bukan yang paling panjang. Prompt yang baik punya urutan jelas, sehingga kamu bisa mengulangnya dan tahu bagian mana yang harus diubah saat hasilnya meleset. Artikel ini membahas kerangka sederhana, contoh sebelum dan sesudah, serta kebiasaan kecil yang membuat hasil lebih stabil dari satu percobaan ke percobaan berikutnya.
 
-## Rumus empat bagian
+## Mulai dari tiga unsur dasar
 
-Tulis prompt dengan urutan tetap supaya mudah dibaca ulang dan diperbaiki:
+Dokumentasi Diffusers dari Hugging Face menyebut tiga unsur inti prompt yang efektif. Pertama subjek, yaitu apa yang ingin dihasilkan, dan sebaiknya ditaruh di awal prompt. Kedua gaya, yaitu medium atau estetika yang diinginkan. Ketiga konteks, yang mencakup aksi, latar, dan suasana seperti pencahayaan. Dokumentasi itu ditulis untuk pustaka Diffusers, tetapi kerangkanya masuk akal dipakai di alat lain karena hampir semua generator gambar membaca teks dengan cara yang mirip.
 
-1. **Subjek**: siapa atau apa yang difoto, termasuk detail penting seperti pakaian, benda, atau ekspresi.
-2. **Gaya**: arah visualnya, misalnya foto realistis, sinematik, atau ilustrasi.
-3. **Cahaya**: sumber dan suasana cahaya, misalnya cahaya jendela yang lembut.
-4. **Kamera**: sudut dan jarak, misalnya close-up atau tampak dari atas.
+Panduan dasar Midjourney juga menjelaskan bahwa prompt bisa sesingkat satu kata atau sepanjang frasa lengkap. Artinya tidak ada panjang wajib. Untuk pemula, titik awal yang aman adalah satu kalimat pendek yang memuat ketiga unsur tadi, lalu ditambah detail sedikit demi sedikit.
 
-Contoh sederhana: "secangkir kopi susu di meja kayu, foto realistis untuk menu kafe, cahaya jendela pagi yang lembut, tampak dari atas".
+## Susun prompt dalam urutan tetap
 
-## Ubah satu bagian setiap percobaan
+Supaya mudah diulang, pakai urutan yang sama setiap kali: subjek, aksi atau pose, latar, cahaya, lalu gaya foto. Urutan tetap membantu dua hal. Kamu tidak lupa unsur penting, dan saat hasilnya kurang pas kamu langsung tahu bagian mana yang diganti.
 
-Kesalahan yang paling sering terjadi adalah mengganti banyak hal sekaligus. Kalau hasilnya membaik, Anda tidak tahu bagian mana yang berpengaruh. Ubah satu bagian saja, simpan versi yang bagus, lalu lanjutkan.
+Bandingkan dua prompt berikut.
 
-## Tulis yang spesifik, bukan yang panjang
+- Prompt lemah: "cewek cantik di kafe".
+- Prompt lebih jelas: "perempuan muda tersenyum sambil memegang cangkir kopi, duduk di dekat jendela kafe kecil, cahaya jendela lembut pagi hari, foto gaya majalah gaya hidup, warna hangat".
 
-Prompt panjang tidak otomatis lebih baik. "Meja kayu gelap dengan serat terlihat" lebih berguna daripada lima kata sifat yang artinya mirip. Hindari kata yang saling bertentangan, misalnya "minimalis" bersama "penuh dekorasi".
+Prompt pertama menyerahkan hampir semua keputusan ke alat, sehingga hasilnya berbeda-beda setiap kali. Prompt kedua sudah menentukan subjek, aksi, latar, cahaya, dan gaya, jadi variasinya jauh lebih kecil.
 
-## Simpan prompt yang berhasil
+## Tulis yang terlihat, bukan yang dirasakan
 
-Prompt yang menghasilkan foto bagus layak disimpan sebagai pola. Dengan begitu, foto berikutnya cukup mengganti subjek dan konsistensi gaya tetap terjaga. Inilah alasan prompt siap pakai menghemat waktu: polanya sudah teruji, tinggal Anda sesuaikan.
+Kata seperti "estetik", "keren", atau "mewah" terdengar jelas bagi manusia, tetapi tidak memberi alat informasi yang bisa digambar. Ganti dengan hal yang benar-benar terlihat: warna, bahan, ekspresi, dan benda di sekitar subjek. "Mewah" bisa diganti menjadi "meja marmer putih, lampu gantung kuningan, taplak linen krem". "Sedih" bisa diganti menjadi "mata menunduk, hujan di jendela, cahaya kebiruan yang redup".
 
-## Ringkasan
+Kebiasaan ini juga memudahkan kamu menjelaskan hasil ke orang lain. Kalau prompt berisi hal yang bisa ditunjuk di gambar, memperbaikinya jadi lebih mudah karena kamu tahu persis elemen yang kurang.
 
-Pakai rumus subjek, gaya, cahaya, dan kamera, ubah satu hal per percobaan, dan simpan pola yang berhasil. Dengan kebiasaan ini hasil foto AI jauh lebih mudah ditebak.
+## Ubah satu hal setiap percobaan
+
+Saat hasil belum sesuai, godaan terbesar adalah mengganti banyak hal sekaligus. Akibatnya kamu tidak tahu perubahan mana yang membantu. Panduan prompt dari Runway, yang ditulis untuk pembuatan video, menyarankan memulai dengan prompt sederhana, menambah detail secara bertahap, memakai bahasa positif, dan menganggap pengulangan sebagai bagian dari proses kreatif. Prinsip itu sama berlakunya untuk foto.
+
+Caranya praktis: tetapkan satu prompt dasar, ubah hanya satu unsur seperti cahaya atau sudut, lalu bandingkan hasilnya. Setelah tiga atau empat percobaan, kamu akan punya gambaran unsur mana yang paling berpengaruh pada gaya yang kamu cari.
+
+## Simpan prompt yang berhasil sebagai template
+
+Begitu ada prompt yang hasilnya bagus, jangan hanya menyimpan gambarnya. Simpan juga prompt-nya dan pisahkan jadi dua bagian. Bagian tetap berisi gaya dan cahaya yang menjadi ciri akunmu atau mereknya. Bagian berubah berisi subjek dan latar yang diganti sesuai kebutuhan konten.
+
+Contohnya, bagian tetap bisa berbunyi "cahaya jendela lembut, warna hangat, foto gaya majalah gaya hidup", sedangkan bagian berubah diisi "secangkir teh di meja kayu" atau "roti panggang di piring keramik". Dengan cara ini, banyak gambar dari satu akun tetap terasa seperti satu keluarga visual. Untuk pembahasan cahaya lebih rinci, baca [pencahayaan dalam prompt foto AI](/blog/pencahayaan-dalam-prompt-foto-ai), dan untuk menyingkirkan elemen yang tidak diinginkan, baca [negative prompt dan cara memakainya](/blog/negative-prompt-fungsi-dan-cara-pakai).
+
+## Kesalahan yang paling sering terjadi
+
+- Mencampur beberapa gaya yang saling bertabrakan, misalnya "lukisan cat minyak" dan "foto dokumenter" dalam satu prompt.
+- Menaruh subjek di akhir, padahal subjek sebaiknya disebut lebih dulu.
+- Memakai kata abstrak tanpa deskripsi visual.
+- Mengganti banyak unsur sekaligus lalu bingung mana yang berpengaruh.
+- Tidak mencatat prompt yang berhasil, sehingga harus mengulang dari nol.
+
+Kalau kamu ingin melihat contoh prompt yang sudah tersusun rapi dengan pola seperti di atas, koleksinya ada di bagian [prompt foto](/#prompt-foto).
+
+## Sumber
+
+- https://huggingface.co/docs/diffusers/main/using-diffusers/weighted_prompts
+- https://docs.midjourney.com/docs/prompts
+- https://academy.runway.com/prompt-guide
+
+Panduan ini berisi saran praktis dari heyaipeople, yang tidak berafiliasi dengan penyedia alat atau situs yang dirujuk di bagian Sumber. Fitur dan kebijakan alat bisa berubah, jadi cek dokumen terbarunya sebelum dipakai.

@@ -4,6 +4,7 @@ const fs = require('fs'), path = require('path'), crypto = require('crypto');
 module.exports = function (ctx) {
   const { db, WEB, getState } = ctx;
   db.exec('CREATE TABLE IF NOT EXISTS posts(slug TEXT PRIMARY KEY,title TEXT,cat TEXT,descr TEXT,tags TEXT,cover TEXT,body TEXT,cta_t TEXT,cta_u TEXT,status TEXT DEFAULT \'draft\',pub_at TEXT,created TEXT,updated TEXT)');
+  for (const c of ['mtitle', 'keyword']) { try { db.exec('ALTER TABLE posts ADD COLUMN ' + c + ' TEXT DEFAULT \'\''); } catch (e) {} }
   const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   const str = (v, n) => String(v == null ? '' : v).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '').slice(0, n);
   const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -17,7 +18,7 @@ module.exports = function (ctx) {
   // ---------- parser .md ----------
   function parseMd(text) {
     text = String(text || '').replace(/^﻿/, '').replace(/\r\n?/g, '\n');
-    const o = { title: '', slug: '', cat: '', descr: '', tags: '', cover: '', cta_t: '', cta_u: '', body: text };
+    const o = { title: '', slug: '', mtitle: '', keyword: '', cat: '', descr: '', tags: '', cover: '', cta_t: '', cta_u: '', body: text };
     const m = /^---\n([\s\S]*?)\n---\n?/.exec(text);
     if (m) {
       o.body = text.slice(m[0].length);
@@ -26,6 +27,8 @@ module.exports = function (ctx) {
         let v = k[2].trim().replace(/^["']|["']$/g, '');
         const key = k[1].toLowerCase();
         if (key === 'title') o.title = v; else if (key === 'slug') o.slug = v;
+        else if (key === 'meta_title' || key === 'metatitle') o.mtitle = v; else if (key === 'keyword' || key === 'kata_kunci') o.keyword = v;
+        else if (key === 'topic') { if (!o.cat) o.cat = v; }
         else if (key === 'category' || key === 'kategori') o.cat = v;
         else if (key === 'description' || key === 'meta' || key === 'deskripsi') o.descr = v;
         else if (key === 'tags' || key === 'tag') o.tags = v.replace(/^\[|\]$/g, '').split(',').map(x => x.trim().replace(/^["']|["']$/g, '')).filter(Boolean).join(', ');
@@ -41,7 +44,7 @@ module.exports = function (ctx) {
     let slug = str(i.slug, 80).trim().toLowerCase(); if (!slug) slug = slugify(title);
     if (!SLUG.test(slug)) throw new Error('Alamat (slug) hanya huruf kecil, angka, dan tanda minus');
     const body = str(i.body, 60000).trim(); if (body.length < 50) throw new Error('Isi artikel terlalu pendek');
-    return { slug, title, cat: str(i.cat, 40).trim() || 'Umum', descr: str(i.descr, 300).trim() || body.replace(/[#*>\-`\[\]()]/g, '').replace(/\s+/g, ' ').slice(0, 155),
+    return { slug, title, mtitle: str(i.mtitle, 120).trim(), keyword: str(i.keyword, 80).trim(), cat: str(i.cat, 40).trim() || 'Umum', descr: str(i.descr, 300).trim() || body.replace(/[#*>\-`\[\]()]/g, '').replace(/\s+/g, ' ').slice(0, 155),
       tags: str(i.tags, 200), cover: COVER.test(i.cover || '') ? i.cover : '', body, cta_t: str(i.cta_t, 60).trim(), cta_u: safeUrl(i.cta_u) };
   }
 
@@ -127,7 +130,7 @@ module.exports = function (ctx) {
         + '<div class="cta"><div><h3 class="disp">Mau yang sudah jadi?</h3><p>Ada pertanyaan? Tanya di sini lewat WhatsApp admin.</p></div><div class="bt"><a class="btn btn-o" href="' + esc(ctaU) + '">' + esc(ctaT) + '</a><a class="btn btn-w" href="https://wa.me/' + s.wa + '" target="_blank" rel="noopener">Tanya di sini</a></div></div>'
         + (rel.length ? '<h3 class="disp" style="margin:26px 0 12px;font-size:18px">Baca juga</h3><div class="rel">' + rel.map(x => '<a class="card" href="/blog/' + x.slug + '/"><div class="cb"><span class="tag">' + esc(x.cat) + '</span><h3 class="disp">' + esc(x.title) + '</h3></div></a>').join('') + '</div>' : '') + '</article>';
       const ld = '<script type="application/ld+json">' + JSON.stringify({ '@context': 'https://schema.org', '@type': 'Article', headline: r.title, description: r.descr, datePublished: r.pub_at, dateModified: r.updated || r.pub_at, inLanguage: 'id', mainEntityOfPage: SITE + '/blog/' + r.slug + '/', author: { '@type': 'Organization', name: 'heyaipeople' }, publisher: { '@type': 'Organization', name: 'heyaipeople', logo: { '@type': 'ImageObject', url: SITE + '/favicon.svg' } } }).replace(/</g, '\\u003c') + '</script><meta property="og:type" content="article"><meta property="article:published_time" content="' + esc(r.pub_at) + '">' + (r.cover ? '<meta property="og:image" content="' + SITE + esc(r.cover) + '">' : '');
-      atomic(path.join(WEB, 'blog', r.slug, 'index.html'), shell(st, r.title + ' | heyaipeople', r.descr, SITE + '/blog/' + r.slug + '/', body, ld, true));
+      atomic(path.join(WEB, 'blog', r.slug, 'index.html'), shell(st, (r.mtitle || r.title) + ' | heyaipeople', r.descr, SITE + '/blog/' + r.slug + '/', body, ld, true));
     }
     // hapus halaman yang tidak tayang lagi
     const keep = new Set(rows.map(r => r.slug));
@@ -141,7 +144,12 @@ module.exports = function (ctx) {
   }
   function tick() {
     const now = new Date().toISOString();
-    const r = db.prepare("UPDATE posts SET status='tayang' WHERE status='jadwal' AND pub_at<=?").run(now);
+    let n = 0;
+    for (const x of db.prepare("SELECT slug FROM posts WHERE status='jadwal' AND pub_at<=?").all(now)) {
+      if (gate(x.slug).ok) { db.prepare("UPDATE posts SET status='tayang' WHERE slug=?").run(x.slug); n++; }
+      else { db.prepare("UPDATE posts SET status='draft' WHERE slug=?").run(x.slug); n++; }
+    }
+    const r = { changes: n };
     if (r.changes) { try { build(); } catch (e) { console.error('blog gagal', e.message); } }
     return r.changes;
   }
@@ -149,10 +157,84 @@ module.exports = function (ctx) {
   // ---------- API admin ----------
   const toWib = iso => iso ? new Date(new Date(iso).getTime() + 7 * 3600e3).toISOString().slice(0, 16) : '';
   const fromWib = v => { if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(v || '')) throw new Error('Tanggal/jam tidak valid'); const d = new Date(v + ':00+07:00'); if (isNaN(d)) throw new Error('Tanggal/jam tidak valid'); return d.toISOString(); };
-  const list = () => db.prepare('SELECT * FROM posts ORDER BY CASE status WHEN \'jadwal\' THEN 0 WHEN \'draft\' THEN 1 ELSE 2 END, pub_at DESC, created DESC').all().map(r => Object.assign({}, r, { pub_wib: toWib(r.pub_at) }));
+
+  // ---------- audit SEO (standar catatanakademik, disesuaikan untuk heyaipeople) ----------
+  const TITLE_SUFFIX = ' | heyaipeople';
+  const FORBID = [/garansi/i, /dijamin/i, /jaminan/i, /pasti (?:laku|viral|cuan|untung)/i, /100\s?%/, /tanpa risiko/i, /stok terbatas/i, /hanya hari ini/i, /sisa \d+ (?:slot|kuota)/i, /situs resmi|website resmi|official partner/i, /lolos (?:moderasi|review) (?:pasti|dijamin)/i];
+  const INTERNAL_OK = ['/', '/blog/', '/cara-pesan.html'];
+  const wc = t => (String(t).match(/[A-Za-zÀ-ÿ0-9][A-Za-zÀ-ÿ0-9'’\-]*/g) || []).length;
+  const norm = t => String(t || '').toLowerCase().replace(/\s+/g, ' ').trim();
+  function audit(r, all) {
+    const C = [], add = (id, level, ok, msg) => C.push({ id, level, ok: !!ok, msg });
+    const body = String(r.body || ''), title = r.title || '', mt = r.mtitle || '', kw = norm(r.keyword), descr = r.descr || '';
+    const cut = body.search(/^##\s+Sumber\s*$/mi), main = cut >= 0 ? body.slice(0, cut) : body;
+    const words = wc(main.replace(/^#{1,6}\s+/gm, '').replace(/\[([^\]]*)\]\([^)]*\)/g, '$1'));
+    add('keyword', 'err', kw.length >= 3, kw ? 'Kata kunci utama terisi: "' + r.keyword + '"' : 'Isi keyword di frontmatter (kata kunci utama artikel)');
+    add('kw-title', 'err', !kw || norm(title).includes(kw), 'Kata kunci harus persis ada di judul (title)');
+    const tt = (mt || title) + TITLE_SUFFIX;
+    add('mtitle-ada', 'err', !!mt, mt ? 'meta_title terisi' : 'Isi meta_title (judul untuk Google)');
+    add('kw-mtitle', 'err', !kw || !mt || norm(mt).includes(kw), 'Kata kunci harus persis ada di meta_title');
+    add('mtitle-len', 'err', tt.length <= 60, 'Title tag ' + tt.length + ' karakter (maks 60 termasuk "' + TITLE_SUFFIX + '", jadi meta_title maks ' + (60 - TITLE_SUFFIX.length) + ')');
+    add('descr-len', 'err', descr.length >= 120 && descr.length <= 155, 'meta_description ' + descr.length + ' karakter (harus 120–155)');
+    add('kw-descr', 'warn', !kw || norm(descr).includes(kw), 'Kata kunci sebaiknya ada di meta_description');
+    const first100 = norm(main.replace(/^#{1,6}\s+.*$/gm, '').replace(/\[([^\]]*)\]\([^)]*\)/g, '$1').replace(/[*_`>]/g, '').split(/\s+/).slice(0, 100).join(' '));
+    add('kw-100', 'err', !kw || first100.includes(kw), 'Kata kunci harus ada di 100 kata pertama isi artikel');
+    add('words', 'err', words >= 600, 'Isi artikel ' + words + ' kata (minimal 600, tidak termasuk daftar Sumber)');
+    const h2 = (body.match(/^##\s+(?!Sumber\s*$).+$/gmi) || []).length, h1 = /^#\s+\S/m.test(body);
+    add('h2', 'err', h2 >= 4 && h2 <= 8, h2 + ' subjudul H2 (harus 4–8, di luar "Sumber")');
+    add('no-h1', 'err', !h1, 'Isi artikel tidak boleh memuat H1 (judul sudah dibuat otomatis)');
+    add('no-rule', 'err', !/^\s*---\s*$/m.test(body) && !/^```/m.test(body), 'Tanpa pemisah --- dan tanpa blok kode di isi artikel');
+    add('no-meta-line', 'err', !/^\s*(slug|judul seo|meta ?title|meta ?description|deskripsi|tags?)\s*:/im.test(body), 'Jangan ada baris metadata di isi artikel');
+    const bad = FORBID.filter(re => re.test(title + ' ' + descr + ' ' + body)).map(re => (re.exec(title + ' ' + descr + ' ' + body) || [''])[0]);
+    add('forbid', 'err', !bad.length, bad.length ? 'Kata/klaim terlarang: ' + bad.join(', ') : 'Tidak ada klaim terlarang (garansi, pasti laku, dll.)');
+    // tautan
+    const links = []; body.split('\n').forEach((ln, i) => { const re = /\[([^\]]*)\]\(([^)\s]*)\)/g; let m; const seen = {}; while ((m = re.exec(ln))) { links.push({ t: m[1], u: m[2], line: i }); seen[m[2]] = (seen[m[2]] || 0) + 1; } for (const k in seen) if (seen[k] > 1) links.push({ dup: k }); });
+    const badLinks = [], slugs = new Set((all || []).map(x => x.slug)), live = new Set((all || []).filter(x => x.status === 'tayang').map(x => x.slug));
+    let internal = 0, notLive = [];
+    for (const l of links) {
+      if (l.dup) { badLinks.push('tautan ganda ke ' + l.dup + ' dalam satu baris'); continue; }
+      if (!l.t.trim()) badLinks.push('teks tautan kosong');
+      else if (/^(klik|di sini|disini|link|tautan|baca)$/i.test(l.t.trim())) badLinks.push('teks tautan terlalu umum: "' + l.t + '"');
+      if (/^https?:\/\//i.test(l.u)) { if (!/^https:\/\//i.test(l.u)) badLinks.push('tautan harus https: ' + l.u); continue; }
+      if (l.u[0] === '/') {
+        internal++; const p = l.u.split('#')[0].split('?')[0] || '/', m = /^\/blog\/([a-z0-9-]+)\/?$/.exec(p);
+        if (m) { if (!slugs.has(m[1])) badLinks.push('artikel tujuan tidak ada: ' + p); else if (!live.has(m[1])) notLive.push(m[1]); }
+        else if (!INTERNAL_OK.includes(p)) badLinks.push('alamat internal tidak dikenal: ' + l.u);
+      } else badLinks.push('alamat tautan tidak valid: ' + l.u);
+    }
+    add('links', 'err', !badLinks.length, badLinks.length ? 'Tautan bermasalah: ' + badLinks.slice(0, 3).join('; ') : 'Semua tautan valid');
+    add('links-live', 'warn', !notLive.length, notLive.length ? 'Tautan ke artikel yang belum tayang: ' + notLive.join(', ') + ' (tayangkan bersamaan)' : 'Tautan antarartikel tayang');
+    add('internal', 'warn', internal >= 1, 'Sertakan minimal 1 tautan internal (ke prompt/storyboard atau artikel lain)');
+    add('wa-body', 'err', !/wa\.me|whatsapp\.com|api\.whatsapp/i.test(body), 'Jangan taruh tautan WhatsApp di isi artikel: tombol "Tanya di sini" sudah otomatis dari template');
+    add('cta', 'err', !!(r.cta_t && r.cta_u), 'Isi tombol ajakan (cta_text + cta_url) satu saja per artikel');
+    add('cta-len', 'warn', !r.cta_t || r.cta_t.length <= 32, 'Teks tombol ajakan ringkas (maks 32 karakter)');
+    // sumber & penafian
+    const src = cut >= 0 ? body.slice(cut) : '', urls = (src.match(/https:\/\/[^\s)>\]]+/g) || []);
+    add('sumber', 'err', cut >= 0 && urls.length >= 1, cut >= 0 ? urls.length + ' tautan sumber' : 'Tambahkan bagian "## Sumber" berisi alamat dokumen asli');
+    add('sumber-spesifik', 'err', !urls.some(u => /^https:\/\/[^\/]+\/?$/.test(u)), 'Sumber harus halaman dokumen spesifik, bukan beranda situs');
+    const tail = src.split('\n').filter(x => x.trim() && !/^##\s+Sumber/i.test(x) && !/^\s*(?:[-*]|\d+\.)\s/.test(x)).join(' ');
+    add('disclaimer', 'err', /bukan (?:situs )?resmi|tidak berafiliasi|tidak terafiliasi/i.test(tail) && !/^\s*(?:[-*>]|\d+\.)\s.*(bukan|tidak berafiliasi)/im.test(src), 'Penafian harus ada setelah daftar Sumber sebagai paragraf biasa (bukan bullet/kutipan)');
+    // tag, slug, kanibal
+    const tags = String(r.tags || '').split(',').map(x => x.trim()).filter(Boolean), hay = norm(title + ' ' + r.keyword + ' ' + main);
+    add('tags-n', 'warn', tags.length >= 2 && tags.length <= 6, tags.length + ' tag (ideal 2–6)');
+    const off = tags.filter(t => !t.toLowerCase().split(/\s+/).some(w => w.length > 2 && hay.includes(w)));
+    add('tags-fit', 'warn', !off.length, off.length ? 'Tag tidak nyambung dengan isi: ' + off.join(', ') : 'Semua tag sesuai topik');
+    add('slug-len', 'warn', String(r.slug).length <= 70, 'Slug maks 70 karakter');
+    const dup = kw ? (all || []).filter(x => x.slug !== r.slug && norm(x.keyword) === kw).map(x => x.slug) : [];
+    add('kanibal', 'err', !dup.length, dup.length ? 'Kata kunci sama dengan artikel lain (' + dup.join(', ') + '). Satu topik = satu artikel' : 'Tidak kanibal dengan artikel lain');
+    add('cover', 'warn', !!r.cover, r.cover ? 'Gambar sampul terpasang' : 'Belum ada gambar sampul (halaman tetap tayang tanpa gambar)');
+    const errs = C.filter(c => !c.ok && c.level === 'err'), warns = C.filter(c => !c.ok && c.level === 'warn');
+    const score = Math.max(0, Math.round(100 - errs.length * 100 / C.filter(c => c.level === 'err').length * 0.8 - warns.length * 3));
+    return { ok: errs.length === 0, score, words, errs: errs.length, warns: warns.length, checks: C };
+  }
+  const allRows = () => db.prepare('SELECT slug,title,mtitle,keyword,descr,tags,cover,body,cta_t,cta_u,status FROM posts').all();
+  function gate(slug) { const all = allRows(), r = all.find(x => x.slug === slug); if (!r) throw new Error('Artikel tidak ada'); const a = audit(r, all); return a; }
+
+  const list = () => { const all = allRows(); return db.prepare('SELECT * FROM posts ORDER BY CASE status WHEN \'jadwal\' THEN 0 WHEN \'draft\' THEN 1 ELSE 2 END, pub_at DESC, created DESC').all().map(r => Object.assign({}, r, { pub_wib: toWib(r.pub_at), audit: audit(r, all) })); };
   function setStatus(slug, status, pubIso) {
     const cur = db.prepare('SELECT status,pub_at FROM posts WHERE slug=?').get(slug); if (!cur) throw new Error('Artikel tidak ada');
     const now = new Date().toISOString();
+    if (status === 'tayang' || status === 'jadwal') { const a = gate(slug); if (!a.ok) { const e = new Error('Belum lolos audit SEO (' + a.errs + ' masalah): ' + a.checks.filter(c => !c.ok && c.level === 'err').map(c => c.msg).slice(0, 3).join(' | ')); e.audit = true; throw e; } }
     if (status === 'tayang') db.prepare("UPDATE posts SET status='tayang',pub_at=?,updated=? WHERE slug=?").run(cur.status === 'tayang' && cur.pub_at ? cur.pub_at : now, now, slug);
     else if (status === 'jadwal') { if (!pubIso) throw new Error('Isi tanggal dan jam tayang'); db.prepare("UPDATE posts SET status=?,pub_at=?,updated=? WHERE slug=?").run(pubIso <= now ? 'tayang' : 'jadwal', pubIso, now, slug); }
     else db.prepare("UPDATE posts SET status='draft',updated=? WHERE slug=?").run(now, slug);
@@ -167,8 +249,8 @@ module.exports = function (ctx) {
         try {
           const c = clean(parseMd(f.text)), ex = db.prepare('SELECT status FROM posts WHERE slug=?').get(c.slug);
           if (ex && ex.status === 'tayang') { res.push({ name, ok: false, msg: 'Slug sudah tayang: ' + c.slug + ' (ubah lewat editor)' }); continue; }
-          if (ex) db.prepare('UPDATE posts SET title=?,cat=?,descr=?,tags=?,body=?,cta_t=?,cta_u=?,updated=? WHERE slug=?').run(c.title, c.cat, c.descr, c.tags, c.body, c.cta_t, c.cta_u, now, c.slug);
-          else db.prepare("INSERT INTO posts(slug,title,cat,descr,tags,cover,body,cta_t,cta_u,status,pub_at,created,updated) VALUES(?,?,?,?,?,?,?,?,?,'draft','',?,?)").run(c.slug, c.title, c.cat, c.descr, c.tags, c.cover, c.body, c.cta_t, c.cta_u, now, now);
+          if (ex) db.prepare('UPDATE posts SET title=?,mtitle=?,keyword=?,cat=?,descr=?,tags=?,body=?,cta_t=?,cta_u=?,updated=? WHERE slug=?').run(c.title, c.mtitle, c.keyword, c.cat, c.descr, c.tags, c.body, c.cta_t, c.cta_u, now, c.slug);
+          else db.prepare("INSERT INTO posts(slug,title,mtitle,keyword,cat,descr,tags,cover,body,cta_t,cta_u,status,pub_at,created,updated) VALUES(?,?,?,?,?,?,?,?,?,?,?,'draft','',?,?)").run(c.slug, c.title, c.mtitle, c.keyword, c.cat, c.descr, c.tags, c.cover, c.body, c.cta_t, c.cta_u, now, now);
           res.push({ name, ok: true, slug: c.slug, msg: ex ? 'Draf diperbarui' : 'Masuk sebagai draf' });
         } catch (e) { res.push({ name, ok: false, msg: e.message }); }
       }
@@ -178,23 +260,26 @@ module.exports = function (ctx) {
       const c = clean(b), old = str(b.old, 80), action = b.action;
       if (old && old !== c.slug) { if (db.prepare('SELECT 1 FROM posts WHERE slug=?').get(c.slug)) throw new Error('Slug sudah dipakai artikel lain'); db.prepare('UPDATE posts SET slug=? WHERE slug=?').run(c.slug, old); }
       const ex = db.prepare('SELECT status FROM posts WHERE slug=?').get(c.slug);
-      if (ex) db.prepare('UPDATE posts SET title=?,cat=?,descr=?,tags=?,cover=?,body=?,cta_t=?,cta_u=?,updated=? WHERE slug=?').run(c.title, c.cat, c.descr, c.tags, c.cover, c.body, c.cta_t, c.cta_u, now, c.slug);
-      else db.prepare("INSERT INTO posts(slug,title,cat,descr,tags,cover,body,cta_t,cta_u,status,pub_at,created,updated) VALUES(?,?,?,?,?,?,?,?,?,'draft','',?,?)").run(c.slug, c.title, c.cat, c.descr, c.tags, c.cover, c.body, c.cta_t, c.cta_u, now, now);
+      if (ex) db.prepare('UPDATE posts SET title=?,mtitle=?,keyword=?,cat=?,descr=?,tags=?,cover=?,body=?,cta_t=?,cta_u=?,updated=? WHERE slug=?').run(c.title, c.mtitle, c.keyword, c.cat, c.descr, c.tags, c.cover, c.body, c.cta_t, c.cta_u, now, c.slug);
+      else db.prepare("INSERT INTO posts(slug,title,mtitle,keyword,cat,descr,tags,cover,body,cta_t,cta_u,status,pub_at,created,updated) VALUES(?,?,?,?,?,?,?,?,?,?,?,'draft','',?,?)").run(c.slug, c.title, c.mtitle, c.keyword, c.cat, c.descr, c.tags, c.cover, c.body, c.cta_t, c.cta_u, now, now);
+      let note = '';
       if (['tayang', 'jadwal', 'draft'].includes(action)) setStatus(c.slug, action, action === 'jadwal' ? fromWib(b.pub_wib) : '');
-      build(); return { body: { ok: true, slug: c.slug, list: list() } };
+      else { const cur = db.prepare('SELECT status FROM posts WHERE slug=?').get(c.slug); if (cur && cur.status !== 'draft' && !gate(c.slug).ok) { db.prepare("UPDATE posts SET status='draft' WHERE slug=?").run(c.slug); note = 'Perubahan tersimpan tapi artikel belum lolos audit SEO, jadi dikembalikan ke draf.'; } }
+      build(); return { body: { ok: true, slug: c.slug, note, list: list() } };
     }
     if (p === '/api/admin/posts/bulk') {
       const slugs = (Array.isArray(b.slugs) ? b.slugs : []).map(x => str(x, 80)).filter(x => SLUG.test(x)).slice(0, 200);
       if (!slugs.length) throw new Error('Belum ada artikel dipilih');
+      const skipped = [];
       if (b.action === 'hapus') for (const s of slugs) db.prepare('DELETE FROM posts WHERE slug=?').run(s);
-      else if (b.action === 'tayang' || b.action === 'draft') for (const s of slugs) setStatus(s, b.action, '');
+      else if (b.action === 'tayang' || b.action === 'draft') for (const s of slugs) { try { setStatus(s, b.action, ''); } catch (e) { skipped.push({ slug: s, msg: e.message }); } }
       else if (b.action === 'jadwal') {
-        const gap = Math.max(0, Math.min(60, +b.everyDays || 0)), start = new Date(fromWib(b.start)).getTime();
-        slugs.forEach((s, i) => setStatus(s, 'jadwal', new Date(start + i * gap * 86400e3).toISOString()));
+        const gap = Math.max(0, Math.min(60, +b.everyDays || 0)), start = new Date(fromWib(b.start)).getTime(); let i = 0;
+        for (const s of slugs) { try { setStatus(s, 'jadwal', new Date(start + i * gap * 86400e3).toISOString()); i++; } catch (e) { skipped.push({ slug: s, msg: e.message }); } }
       } else throw new Error('Aksi tidak dikenal');
-      build(); return { body: { ok: true, list: list() } };
+      build(); return { body: { ok: true, list: list(), skipped } };
     }
     return { code: 404, body: { error: 'Tidak ditemukan' } };
   }
-  return { api, build, tick, list, parseMd, clean, md2html };
+  return { api, build, tick, list, parseMd, clean, md2html, audit };
 };
