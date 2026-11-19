@@ -5,7 +5,7 @@
  ],
  "kode_baru": "MKWN4108",
  "nama_mk": "Bahasa Indonesia",
- "fakultas": "Mata Kuliah Wajib Umum (semua program studi)",
+ "fakultas": "Fakultas Ekonomi dan Bisnis",
  "status": "draf AI (Gemini), sampel dicek; no. 5 menunggu verifikasi",
  "harga": 20000,
  "moduls": [
@@ -438,5 +438,8 @@
   6,
   7
  ],
- "pdf_ready": true
+ "pdf_ready": true,
+ "prodi": "S1 Manajemen",
+ "semester": 1,
+ "sks": 2
 }

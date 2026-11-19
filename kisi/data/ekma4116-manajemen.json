@@ -5,7 +5,7 @@
  ],
  "kode_baru": "EMBS4101",
  "nama_mk": "Manajemen",
- "fakultas": "S1 Manajemen, semester 2",
+ "fakultas": "Fakultas Ekonomi dan Bisnis",
  "status": "judul modul dan kegiatan belajar dari daftar isi resmi BMP EKMA4116 Edisi 3 (12 modul); poin hafalan masih draf AI",
  "harga": 20000,
  "moduls": [
@@ -118,5 +118,8 @@
   "Team Management (9,9) pada Managerial Grid: perhatian tinggi pada hasil produksi sekaligus hubungan karyawan.",
   "Feedforward Control dilakukan sebelum proses berjalan untuk mencegah penyimpangan input."
  ],
- "pdf_ready": false
+ "pdf_ready": false,
+ "prodi": "S1 Manajemen",
+ "semester": 1,
+ "sks": 4
 }

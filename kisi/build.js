@@ -53,13 +53,13 @@ function coursePage(d) {
   const title = `Kisi-Kisi & Ringkasan ${kodeShort(d)} ${d.nama_mk} per Modul`;
   const desc = `Ringkasan fokus belajar ${d.nama_mk} (${kodeText(d)}) per modul 1-${d.moduls.length} berdasarkan BMP${hasSoal(d) ? ', lengkap contoh soal latihan mandiri' : ''}. Versi lengkap ${rp(d.harga)}.`;
   const url = `${ORIGIN}${BASE}/${d.slug}/`;
-  const free = hasSoal(d) ? d.soal.filter(q => d.gratis_soal.includes(q.no)) : [];
+  const free = hasSoal(d) ? d.soal.filter(q => (d.gratis_soal || []).includes(q.no) && q.verifikasi !== 'menunggu') : [];
   const ld = {
     '@context': 'https://schema.org',
     '@graph': [
       { '@type': 'WebPage', name: title, description: desc, url, inLanguage: 'id' },
       { '@type': 'BreadcrumbList', itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Bank Soal', item: `${ORIGIN}${BASE}/` },
+        { '@type': 'ListItem', position: 1, name: 'Kisi-Kisi UT', item: `${ORIGIN}${BASE}/` },
         { '@type': 'ListItem', position: 2, name: d.nama_mk, item: url } ] }
     ]
   };
@@ -70,7 +70,7 @@ function coursePage(d) {
 <script type="application/ld+json">${JSON.stringify(ld)}</script><style>${CSS}</style></head><body>
 <header class="nav"><a class="brand" href="/">${BRAND}</a><nav><a href="${BASE}/">Bank Soal</a></nav></header>
 <main>
-<p class="crumb"><a href="${BASE}/">Bank Soal</a> › ${esc(d.fakultas)} › ${esc(d.kode_lama[0])}</p>
+<p class="crumb"><a href="${BASE}/">Kisi-Kisi UT</a>${d.prodi ? ` › <a href="${BASE}/${slugify(d.prodi)}/">${esc(d.prodi)}</a>` : ''} › ${esc(d.kode_lama[0])}</p>
 <h1>Kisi-Kisi & Ringkasan Fokus Belajar ${esc(kodeShort(d))} ${esc(d.nama_mk)}</h1>
 <p class="kodes">Kode: <b>${esc(kodeText(d))}</b></p>
 <p class="note">Ringkasan ini disusun dari Buku Materi Pokok (BMP) dan bukan kisi-kisi resmi dari UT. Isi adalah ringkasan belajar mandiri, bukan soal ujian asli.</p>
@@ -97,15 +97,30 @@ ${hafalan(d)}${hasSoal(d) ? `<h2>Soal latihan, kunci, dan alasan</h2>${d.soal.ma
 </main></body></html>`;
 }
 
-function indexPage(list) {
-  const title = 'Bank Soal & Kisi-Kisi Mata Kuliah UT';
-  const desc = 'Ringkasan fokus belajar per modul dan latihan soal mandiri untuk mata kuliah Universitas Terbuka.';
-  return `<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${title} | ${BRAND}</title><meta name="description" content="${desc}"><link rel="canonical" href="${ORIGIN}${BASE}/"><meta property="og:locale" content="id_ID"><style>${CSS}</style></head><body>
-<header class="nav"><a class="brand" href="/">${BRAND}</a></header><main><h1>${title}</h1>
-<p class="note">Ringkasan per modul gratis, versi lengkap berbayar. Bukan kisi-kisi resmi UT.</p>
-<div class="grid">${list.map(d => `<a class="card mk" href="${BASE}/${d.slug}/"><b>${esc(d.kode_lama[0])}</b><span>${esc(d.nama_mk)}</span><em>${rp(d.harga)}</em></a>`).join('')}</div></main>
-<footer>Tidak berafiliasi dengan Universitas Terbuka.</footer></body></html>`;
+const slugify = t => t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const shell = (title, desc, canon, body) => `<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${esc(title)} | ${BRAND}</title><meta name="description" content="${esc(desc)}"><link rel="canonical" href="${canon}"><meta property="og:locale" content="id_ID"><meta property="og:title" content="${esc(title)}"><style>${CSS}.chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 14px}.chip{font:inherit;font-size:13px;min-height:44px;padding:0 14px;border-radius:99px;border:1px solid var(--bd);background:var(--s1);color:var(--mu);cursor:pointer}.chip[aria-pressed=true]{background:var(--ac);color:#111;border-color:var(--ac)}.srch{width:100%;min-height:44px;padding:0 14px;border-radius:10px;border:1px solid var(--bd);background:var(--s1);color:var(--tx);font:inherit;margin-top:8px}</style></head><body>
+<header class="nav"><a class="brand" href="/">${BRAND}</a><nav><a href="${BASE}/">Kisi-Kisi UT</a></nav></header><main>${body}</main>
+<footer>Platform ini adalah sarana belajar mandiri dan tidak berafiliasi dengan Universitas Terbuka. Tidak menyediakan naskah ujian asli maupun layanan pengerjaan ujian.</footer></body></html>`;
+const mkCard = d => `<a class="card mk" data-sem="${d.semester || ''}" data-q="${esc((kodeText(d) + ' ' + d.nama_mk).toLowerCase())}" href="${BASE}/${d.slug}/"><b>${esc(kodeShort(d))}</b><span>${esc(d.nama_mk)}</span><em>Sem ${d.semester || '-'} · ${d.sks || '-'} SKS · ${d.pdf_ready ? 'PDF siap' : 'Kisi-kisi'}</em></a>`;
+const filterJs = `<script>(function(){var q=document.getElementById('s'),c=[].slice.call(document.querySelectorAll('.mk[data-q]')),b=[].slice.call(document.querySelectorAll('.chip')),sem='all';function f(){var t=q.value.toLowerCase().trim();c.forEach(function(x){x.style.display=(x.dataset.q.indexOf(t)>-1&&(sem==='all'||x.dataset.sem===sem))?'':'none'})}q.addEventListener('input',f);b.forEach(function(x){x.addEventListener('click',function(){sem=x.dataset.sem;b.forEach(function(y){y.setAttribute('aria-pressed',y===x)});f()})})})();</script>`;
+function listBlock(list) {
+  const sems = [...new Set(list.map(d => d.semester).filter(Boolean))].sort((a, b) => a - b);
+  return `<input id="s" class="srch" type="search" placeholder="Cari kode atau nama MK, contoh EMBS4101 atau Manajemen" aria-label="Cari mata kuliah">
+<div class="chips"><button class="chip" type="button" data-sem="all" aria-pressed="true">Semua</button>${sems.map(s => `<button class="chip" type="button" data-sem="${s}" aria-pressed="false">Sem ${s}</button>`).join('')}</div>
+<div class="grid">${list.map(mkCard).join('')}</div>${filterJs}`;
+}
+function prodiPage(p, list) {
+  const title = `Kisi-Kisi & Ringkasan Mata Kuliah ${p.nama} Universitas Terbuka`;
+  const desc = `Ringkasan fokus belajar per modul dan latihan soal mandiri mata kuliah ${p.nama} UT, kode baru dan kode lama.`;
+  return shell(title, desc, `${ORIGIN}${BASE}/${p.slug}/`, `<p class="crumb"><a href="${BASE}/">Kisi-Kisi UT</a> › ${esc(p.fakultas)}</p><h1>${esc(title)}</h1><p class="note">Bukan kisi-kisi resmi UT. Ringkasan disusun dari BMP untuk belajar mandiri.</p>${listBlock(list)}`);
+}
+function indexPage(list, prodis) {
+  const title = 'Kisi-Kisi & Latihan Soal Mata Kuliah Universitas Terbuka';
+  const desc = 'Ringkasan fokus belajar per modul dan latihan soal mandiri mata kuliah Universitas Terbuka per fakultas dan program studi.';
+  return shell(title, desc, `${ORIGIN}${BASE}/`, `<h1>${title}</h1><p class="note">Ringkasan per modul gratis, versi lengkap berbayar. Bukan kisi-kisi resmi UT.</p>
+<h2>Program studi</h2><div class="grid">${prodis.map(p => `<a class="card mk" href="${BASE}/${p.slug}/"><b>${esc(p.nama)}</b><span>${esc(p.fakultas)}</span><em>${p.n} mata kuliah</em></a>`).join('')}</div>
+<h2 style="margin-top:18px">Semua mata kuliah</h2>${listBlock(list)}`);
 }
 
 function main() {
@@ -114,13 +129,15 @@ function main() {
   if (!list.length) { console.error('Tidak ada data JSON'); process.exit(1); }
   fs.rmSync(DIST, { recursive: true, force: true }); fs.rmSync(PRINT, { recursive: true, force: true });
   fs.mkdirSync(DIST, { recursive: true }); fs.mkdirSync(PRINT, { recursive: true });
-  fs.writeFileSync(path.join(DIST, 'index.html'), indexPage(list));
+  const prodis = [...new Set(list.map(d => d.prodi).filter(Boolean))].map(n => { const m = list.filter(d => d.prodi === n); return { nama: n, slug: slugify(n), fakultas: m[0].fakultas, n: m.length, m }; });
+  fs.writeFileSync(path.join(DIST, 'index.html'), indexPage(list, prodis));
+  for (const p of prodis) { fs.mkdirSync(path.join(DIST, p.slug), { recursive: true }); fs.writeFileSync(path.join(DIST, p.slug, 'index.html'), prodiPage(p, p.m)); }
   for (const d of list) {
     fs.mkdirSync(path.join(DIST, d.slug), { recursive: true });
     fs.writeFileSync(path.join(DIST, d.slug, 'index.html'), coursePage(d));
     fs.writeFileSync(path.join(PRINT, d.slug + '.html'), printPage(d));
   }
-  const urls = [`${ORIGIN}${BASE}/`, ...list.map(d => `${ORIGIN}${BASE}/${d.slug}/`)];
+  const urls = [`${ORIGIN}${BASE}/`, ...prodis.map(p => `${ORIGIN}${BASE}/${p.slug}/`), ...list.map(d => `${ORIGIN}${BASE}/${d.slug}/`)];
   fs.writeFileSync(path.join(DIST, 'sitemap.xml'),
     `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(u => `<url><loc>${u}</loc></url>`).join('\n')}\n</urlset>\n`);
   console.log(`OK: ${list.length} mata kuliah -> dist/ dan print/`);
