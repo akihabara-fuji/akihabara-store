@@ -18,6 +18,7 @@ const wa = t => `https://wa.me/${WA}?text=${encodeURIComponent(t)}`;
 
 const CSS = fs.readFileSync(path.join(ROOT, 'style.css'), 'utf8');
 
+function kodeShort(d) { return d.kode_baru ? `${d.kode_baru} (${d.kode_lama[0]})` : d.kode_lama[0]; }
 function kodeText(d) {
   return d.kode_lama.join(' / ') + (d.kode_baru ? ' / ' + d.kode_baru : '');
 }
@@ -43,7 +44,7 @@ function modulRows(d, n) {
 }
 
 function coursePage(d) {
-  const title = `Kisi-Kisi & Ringkasan ${d.kode_lama[0]} ${d.nama_mk} per Modul`;
+  const title = `Kisi-Kisi & Ringkasan ${kodeShort(d)} ${d.nama_mk} per Modul`;
   const desc = `Ringkasan fokus belajar ${d.nama_mk} (${kodeText(d)}) per modul 1-${d.moduls.length} berdasarkan BMP${hasSoal(d) ? ', lengkap contoh soal latihan mandiri' : ''}. Versi lengkap ${rp(d.harga)}.`;
   const url = `${ORIGIN}${BASE}/${d.slug}/`;
   const free = hasSoal(d) ? d.soal.filter(q => d.gratis_soal.includes(q.no)) : [];
@@ -64,7 +65,7 @@ function coursePage(d) {
 <header class="nav"><a class="brand" href="/">${BRAND}</a><nav><a href="${BASE}/">Bank Soal</a></nav></header>
 <main>
 <p class="crumb"><a href="${BASE}/">Bank Soal</a> › ${esc(d.fakultas)} › ${esc(d.kode_lama[0])}</p>
-<h1>Kisi-Kisi & Ringkasan Fokus Belajar ${esc(d.kode_lama[0])} ${esc(d.nama_mk)}</h1>
+<h1>Kisi-Kisi & Ringkasan Fokus Belajar ${esc(kodeShort(d))} ${esc(d.nama_mk)}</h1>
 <p class="kodes">Kode: <b>${esc(kodeText(d))}</b></p>
 <p class="note">Ringkasan ini disusun dari Buku Materi Pokok (BMP) dan bukan kisi-kisi resmi dari UT. Isi adalah ringkasan belajar mandiri, bukan soal ujian asli.</p>
 <section class="card"><h2>Fokus belajar per modul</h2><table><tbody>${modulRows(d, 3)}</tbody></table>

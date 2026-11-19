@@ -1,0 +1,152 @@
+[
+ {
+  "kode_baru": "EMBS4101",
+  "kode_lama": "EKMA4116",
+  "nama_mk": "Manajemen",
+  "sks": 4
+ },
+ {
+  "kode_baru": "EMBS4102",
+  "kode_lama": "EKMA4111",
+  "nama_mk": "Pengantar Bisnis",
+  "sks": 3
+ },
+ {
+  "kode_baru": "EMBS4103",
+  "kode_lama": "EKMA4157",
+  "nama_mk": "Organisasi",
+  "sks": 3
+ },
+ {
+  "kode_baru": "MKDI4201",
+  "kode_lama": "ADBI4201",
+  "nama_mk": "Bahasa Inggris",
+  "sks": 3
+ },
+ {
+  "kode_baru": "MKWN4101",
+  "kode_lama": "MKWU4101",
+  "nama_mk": "Pendidikan Agama Islam",
+  "sks": 3
+ },
+ {
+  "kode_baru": "MKWN4108",
+  "kode_lama": null,
+  "nama_mk": "Bahasa Indonesia",
+  "sks": 2
+ },
+ {
+  "kode_baru": "EACC4101",
+  "kode_lama": "EKMA4115",
+  "nama_mk": "Pengantar Akuntansi",
+  "sks": 4
+ },
+ {
+  "kode_baru": "ECON4102",
+  "kode_lama": "ESPA4111",
+  "nama_mk": "Pengantar Ekonomi Mikro",
+  "sks": 3
+ },
+ {
+  "kode_baru": "ECON4103",
+  "kode_lama": "ESPA4122",
+  "nama_mk": "Matematika Ekonomi",
+  "sks": 3
+ },
+ {
+  "kode_baru": "ECON4314",
+  "kode_lama": "ESPA4314",
+  "nama_mk": "Perekonomian Indonesia",
+  "sks": 3
+ },
+ {
+  "kode_baru": "MKDI4202",
+  "kode_lama": null,
+  "nama_mk": "Belajar di Era Digital",
+  "sks": 3
+ },
+ {
+  "kode_baru": "MKWN4110",
+  "kode_lama": null,
+  "nama_mk": "Pancasila",
+  "sks": 2
+ },
+ {
+  "kode_baru": "ECON4101",
+  "kode_lama": "ESPA4110",
+  "nama_mk": "Pengantar Ekonomi Makro",
+  "sks": 3
+ },
+ {
+  "kode_baru": "EMBS4204",
+  "kode_lama": "EKMA4367",
+  "nama_mk": "Hubungan Industrial",
+  "sks": 2
+ },
+ {
+  "kode_baru": "EMBS4205",
+  "kode_lama": "EKMA4159",
+  "nama_mk": "Komunikasi Bisnis",
+  "sks": 3
+ },
+ {
+  "kode_baru": "EMBS4206",
+  "kode_lama": "EKMA4315",
+  "nama_mk": "Akuntansi Biaya",
+  "sks": 3
+ },
+ {
+  "kode_baru": "EMBS4207",
+  "kode_lama": null,
+  "nama_mk": "Perilaku Organisasi",
+  "sks": 3
+ },
+ {
+  "kode_baru": "MKKI4201",
+  "kode_lama": "ESPA4123",
+  "nama_mk": "Pengantar Statistika",
+  "sks": 3
+ },
+ {
+  "kode_baru": "MKWN4109",
+  "kode_lama": null,
+  "nama_mk": "Pendidikan Kewarganegaraan",
+  "sks": 2
+ },
+ {
+  "kode_baru": "EMBS4208",
+  "kode_lama": "EKMA4413",
+  "nama_mk": "Riset Operasi",
+  "sks": 3
+ },
+ {
+  "kode_baru": "EMBS4209",
+  "kode_lama": "EKMA4214",
+  "nama_mk": "Manajemen Sumber Daya Manusia",
+  "sks": 3
+ },
+ {
+  "kode_baru": "EMBS4210",
+  "kode_lama": null,
+  "nama_mk": "Manajemen Keuangan",
+  "sks": 3
+ },
+ {
+  "kode_baru": "EMBS4211",
+  "kode_lama": "EKMA4215",
+  "nama_mk": "Manajemen Operasi",
+  "sks": 3
+ },
+ {
+  "kode_baru": "EMBS4212",
+  "kode_lama": null,
+  "nama_mk": "Manajemen Pemasaran",
+  "sks": 3
+ },
+ {
+  "kode_baru": "MKDI4203",
+  "kode_lama": null,
+  "nama_mk": "Kewirausahaan di Era Digital",
+  "sks": 3
+ }
+]
