@@ -583,6 +583,74 @@
       border-color: var(--accent);
     }
 
+
+    /* ===== Bukti: video, konten, web, riset ===== */
+    .vtabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+    .vtab{font:600 .82rem var(--font-sans);padding:9px 16px;border-radius:var(--radius-pill);border:1px solid var(--line);background:var(--glass);color:var(--text-muted);cursor:pointer;transition:color .2s,border-color .2s,background .2s}
+    .vtab span{font-family:var(--font-mono);font-size:.7rem;opacity:.7;margin-left:4px}
+    .vtab:hover{color:var(--text);border-color:var(--line-strong)}
+    .vtab.active{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+    .vpanel{display:none}.vpanel.active{display:block}
+    .vflow{display:grid;gap:14px;background:var(--glass);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:18px}
+    .vflow p{font-size:.88rem;color:var(--text-muted);margin-top:6px}
+    .vflow-tag{font:600 .7rem var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+    .vflow ol{list-style:none;display:flex;flex-wrap:wrap;gap:8px;counter-reset:s}
+    .vflow li{counter-increment:s;font-size:.8rem;padding:6px 12px;border-radius:var(--radius-pill);border:1px solid var(--line);color:var(--text)}
+    .vflow li::before{content:counter(s) ". ";color:var(--accent);font-family:var(--font-mono)}
+    .vgrid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+    .vcard{background:var(--glass);border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden;display:flex;flex-direction:column;transition:transform .25s,border-color .25s}
+    .vcard:hover{transform:translateY(-2px);border-color:var(--line-strong)}
+    .vmedia{background:#000;display:flex;justify-content:center}
+    .vmedia video{width:100%;height:100%;object-fit:contain;display:block}
+    .vmedia.v169{aspect-ratio:16/9}.vmedia.v916{aspect-ratio:9/16;max-height:440px}
+    .vbody{padding:14px 16px 16px}.vbody h4{font-size:.95rem;font-weight:700;margin-bottom:4px}.vbody p{font-size:.8rem;color:var(--text-muted);margin-bottom:10px}
+    .vchips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+    .vchips span{font:500 .7rem var(--font-mono);padding:3px 9px;border-radius:var(--radius-pill);border:1px solid var(--line);color:var(--text-muted)}
+    .vchips span.on{color:#34d399;border-color:rgba(52,211,153,.4)}
+    .konten-split{display:grid;gap:26px}
+    @media(min-width:900px){.konten-split{grid-template-columns:minmax(260px,340px) 1fr;align-items:start}}
+    .car-box{background:var(--glass);border:1px solid var(--line);border-radius:var(--radius-lg);padding:14px}
+    .car-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:0;border-radius:var(--radius-md);scrollbar-width:none}
+    .car-track::-webkit-scrollbar{display:none}
+    .car-track img{flex:0 0 100%;width:100%;height:auto;scroll-snap-align:center;display:block}
+    .car-ctrl{display:flex;justify-content:space-between;align-items:center;margin:12px 0 8px}
+    .car-ctrl button{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--glass-2);color:var(--text);cursor:pointer;font-size:1rem}
+    .car-ctrl button:hover{border-color:var(--line-strong);color:var(--accent)}
+    .car-ctrl span{font:500 .8rem var(--font-mono);color:var(--text-muted)}
+    .car-cap{font-size:.78rem;color:var(--text-muted)}
+    .poster-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    @media(min-width:640px){.poster-grid{grid-template-columns:repeat(3,1fr)}}
+    .zoomable{cursor:zoom-in;margin:0;background:var(--glass);border:1px solid var(--line);border-radius:var(--radius-md);overflow:hidden;transition:transform .25s,border-color .25s}
+    .zoomable:hover{transform:translateY(-2px);border-color:var(--line-strong)}
+    .zoomable img{width:100%;display:block;aspect-ratio:4/3;object-fit:contain;background:#0d0f17}
+    .zoomable figcaption{font-size:.74rem;color:var(--text-muted);padding:8px 10px}
+    .konten-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+    .web-grid{display:grid;gap:16px}
+    @media(min-width:900px){.web-grid{grid-template-columns:repeat(3,1fr)}}
+    .webcard{background:var(--glass);border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden;display:flex;flex-direction:column}
+    .webcard img{width:100%;aspect-ratio:16/9;object-fit:cover;object-position:top;display:block;border-bottom:1px solid var(--line)}
+    .webbody{padding:16px 18px 18px;display:flex;flex-direction:column;gap:8px;flex:1}
+    .webbody h3{font-size:1.05rem;font-weight:800}.webbody p{font-size:.84rem;color:var(--text-muted);flex:1}
+    .wlive{font:500 .72rem var(--font-mono);color:#34d399}
+    .stack-strip{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:18px;font-size:.8rem}
+    .stack-strip span{font:600 .7rem var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-right:4px}
+    .stack-strip b{font-weight:600;padding:5px 12px;border-radius:var(--radius-pill);border:1px solid var(--line);color:var(--text)}
+    .master-box{display:grid;gap:16px;background:var(--glass);border:1px solid var(--line-strong);border-radius:var(--radius-lg);padding:22px;margin-bottom:20px;align-items:center}
+    @media(min-width:800px){.master-box{grid-template-columns:1fr auto}}
+    .master-box h3{font-size:1.15rem;font-weight:800;margin:6px 0}.master-box p{font-size:.88rem;color:var(--text-muted)}
+    .riset-grid{display:grid;gap:14px;grid-template-columns:repeat(2,1fr)}
+    @media(min-width:900px){.riset-grid{grid-template-columns:repeat(3,1fr)}}
+    .rtile img{aspect-ratio:4/3;object-fit:contain}
+    .rtile figcaption b{display:block;color:var(--text);font-size:.8rem;margin-bottom:2px}
+    .webquote{aspect-ratio:16/9;display:flex;flex-direction:column;justify-content:center;gap:8px;padding:18px 20px;background:linear-gradient(135deg,#12141d,#0d0f17);border-bottom:1px solid var(--line)}
+    .webquote i{font:500 .72rem var(--font-mono);color:var(--accent);font-style:normal}
+    .webquote b{font-size:1.05rem;line-height:1.3}
+    .webquote span{font-size:.78rem;color:var(--text-muted)}
+    .webquote em{font:500 .66rem var(--font-mono);color:var(--text-soft);font-style:normal;margin-top:4px}
+    .lb{position:fixed;inset:0;z-index:300;background:rgba(4,5,9,.92);display:none;align-items:center;justify-content:center;padding:20px;cursor:zoom-out}
+    .lb.open{display:flex}.lb img{max-width:100%;max-height:100%;border-radius:var(--radius-md)}
+    @media(max-width:520px){.vgrid{grid-template-columns:1fr}.vmedia.v916{max-height:520px}}
+
     /* Work Cards */
     .work-card {
       background: var(--glass);
@@ -865,11 +933,13 @@
         </a>
 
         <ul class="nav-links">
-          <li><a href="#what-i-do">What I Do</a></li>
-          <li><a href="#approach">Approach</a></li>
-          <li><a href="#works">Works</a></li>
-          <li><a href="#about">About</a></li>
-          <li><a href="#collaborate">Collaborate</a></li>
+          <li><a href="#what-i-do">Layanan</a></li>
+          <li><a href="#approach">Alur</a></li>
+          <li><a href="#video">Video</a></li>
+          <li><a href="#konten">Konten</a></li>
+          <li><a href="#web">Web</a></li>
+          <li><a href="#riset">Riset</a></li>
+          <li><a href="#about">Tentang</a></li>
         </ul>
 
         <div class="nav-actions">
@@ -893,13 +963,13 @@
         </p>
 
         <div class="hero-cta-group">
-          <a href="#works" class="btn btn-primary">Explore My Work &rarr;</a>
+          <a href="#video" class="btn btn-primary">Lihat Karya &rarr;</a>
           <a href="#collaborate" class="btn btn-outline">Let&rsquo;s Collaborate</a>
         </div>
 
         <div class="proof-strip">
-          <a class="proof-item" href="#works"><b>2</b> platform live: CatatanAkademik.com &amp; HeyAIPeople.site</a>
-          <a class="proof-item" href="#works"><b>2</b> bot WhatsApp aktif di VPS</a>
+          <a class="proof-item" href="#web"><b>2</b> platform live: CatatanAkademik.com &amp; HeyAIPeople.site</a>
+          <a class="proof-item" href="#web"><b>2</b> bot WhatsApp aktif di VPS</a>
           <a class="proof-item" href="#about"><b>12+</b> tahun memimpin, hingga 93 staf</a>
         </div>
 
@@ -936,14 +1006,14 @@
             <div class="cap-icon">02</div>
             <h3 class="cap-title">Social Media Strategy</h3>
             <p class="cap-text">Perencanaan pilar konten, kalender editorial lintas kanal (Instagram, TikTok, YouTube), serta perancangan narasi hook yang memaksimalkan retensi audiens.</p>
-            <a class="cap-proof" href="https://instagram.com/priyadi_dika" target="_blank" rel="noopener"><span>BUKTI</span>Akun aktif @priyadi_dika dan @akihabara.fuzi &nearr;</a>
+            <a class="cap-proof" href="#konten"><span>BUKTI</span>Carousel dan poster layanan di bagian Konten &nearr;</a>
           </article>
 
           <article class="glass-card reveal-up">
             <div class="cap-icon">03</div>
             <h3 class="cap-title">Short-Form Video Production</h3>
             <p class="cap-text">Produksi video pendek berbasis storyboard AI (image-to-video) dan animasi terprogram Remotion untuk Reels, TikTok, dan iklan digital.</p>
-            <a class="cap-proof" href="#works"><span>BUKTI</span>Iklan video vertikal 9:16 di bagian Works &nearr;</a>
+            <a class="cap-proof" href="#video"><span>BUKTI</span>15 video dalam 4 jenis, bisa diputar langsung &nearr;</a>
           </article>
 
           <article class="glass-card reveal-up">
@@ -957,14 +1027,14 @@
             <div class="cap-icon">05</div>
             <h3 class="cap-title">Website Management</h3>
             <p class="cap-text">Pengelolaan platform web konten, struktur SEO teknis, pipeline artikel berbasis Markdown, serta integrasi toko aset digital terkurasi.</p>
-            <a class="cap-proof" href="https://catatanakademik.com" target="_blank" rel="noopener"><span>BUKTI</span>catatanakademik.com dan heyaipeople.site, keduanya live &nearr;</a>
+            <a class="cap-proof" href="#web"><span>BUKTI</span>catatanakademik.com dan heyaipeople.site, keduanya live &nearr;</a>
           </article>
 
           <article class="glass-card reveal-up">
             <div class="cap-icon">06</div>
             <h3 class="cap-title">Social Media Analytics</h3>
             <p class="cap-text">Evaluasi metrik watch-time, hook rate, CTR, dan konversi untuk iterasi konten berbasis data nyata pada setiap siklus publikasi.</p>
-            <p class="cap-proof"><span>BUKTI</span>Alat analisis akun media sosial buatan sendiri (skor performa 0–100, adu dua akun)</p>
+            <a class="cap-proof" href="#riset"><span>BUKTI</span>Alat analisis akun buatan sendiri dan data nyata &nearr;</a>
           </article>
         </div>
       </div>
@@ -1029,38 +1099,25 @@
     </section>
 
     <!-- SECTION 03: SELECTED WORKS & LIVE SYSTEM SHOWCASE -->
+<section class="section-block" id="video"><div class="container"><div class="section-head reveal-up"><span class="section-num">03 // Karya Video</span><h2 class="section-title">15 Video, 4 Jenis Produksi</h2><p class="section-desc">Semua video dibuat sendiri sebagai contoh iklan dan konten afiliasi. Pilih jenis di bawah, lalu putar langsung; tiap video memuat format, durasi, dan status suara.</p></div><div class="vtabs reveal-up" role="tablist"><button class="vtab active" data-vtab="iklan" role="tab">Iklan Produk <span>5</span></button><button class="vtab" data-vtab="ugc" role="tab">UGC &amp; Drama Afiliasi <span>2</span></button><button class="vtab" data-vtab="motion" role="tab">Motion Brand &amp; Aplikasi <span>4</span></button><button class="vtab" data-vtab="explainer" role="tab">Explainer &amp; Teks Kinetik <span>4</span></button></div><div class="vpanel active" data-vpanel="iklan" role="tabpanel"><div class="vflow"><div><span class="vflow-tag">Teks → Gambar → Video</span><p>Iklan produk dibuat dari prompt teks menjadi gambar produk, lalu dianimasikan menjadi video.</p></div><ol><li>Brief produk dan hook</li><li>Prompt teks menjadi gambar produk</li><li>Gambar menjadi video di Google Flow</li><li>Suara dan musik</li><li>Edit akhir di CapCut</li></ol></div><div class="vgrid"><article class="vcard"><div class="vmedia v169"><video controls preload="none" playsinline poster="v/p-es.jpg"><source src="v/es_full.mp4" type="video/mp4"></video></div><div class="vbody"><h4>Iklan Es Krim Blueberry</h4><p>Produk makanan dengan visual percikan air dan buah.</p><div class="vchips"><span>16:9</span><span>10 dtk</span><span class="on">Dengan suara</span></div></div></article><article class="vcard"><div class="vmedia v169"><video controls preload="none" playsinline poster="v/p-jeans.jpg"><source src="v/jeans_full.mp4" type="video/mp4"></video></div><div class="vbody"><h4>Iklan Jeans Flare</h4><p>Produk fesyen: model berjalan, memperlihatkan potongan jeans.</p><div class="vchips"><span>16:9</span><span>10 dtk</span><span class="on">Dengan suara</span></div></div></article><article class="vcard"><div class="vmedia v169"><video controls preload="none" playsinline poster="v/p-wide.jpg"><source src="v/wide_full.mp4" type="video/mp4"></video></div><div class="vbody"><h4>Iklan Jeans Wide</h4><p>Close-up detail pinggang dan bahan jeans.</p><div class="vchips"><span>16:9</span><span>10 dtk</span><span class="on">Dengan suara</span></div></div></article><article class="vcard"><div class="vmedia v916"><video controls preload="none" playsinline poster="v/p-blouse.jpg"><source src="v/blouse_full.mp4" type="video/mp4"></video></div><div class="vbody"><h4>Iklan Blouse Bordir</h4><p>Format vertikal, menonjolkan detail bordir.</p><div class="vchips"><span>9:16</span><span>10 dtk</span><span class="on">Dengan suara</span></div></div></article><article class="vcard"><div class="vmedia v916"><video controls preload="none" playsinline poster="v/p-kids.jpg"><source src="v/kids_full.mp4" type="video/mp4"></video></div><div class="vbody"><h4>Iklan Busana Anak</h4><p>Format vertikal dengan teks sorot di layar.</p><div class="vchips"><span>9:16</span><span>10 dtk</span><span class="on">Dengan suara</span></div></div></article></div></div><div class="vpanel" data-vpanel="ugc" role="tabpanel"><div class="vflow"><div><span class="vflow-tag">Karakter berbicara ke kamera</span><p>Gaya ulasan ala kreator untuk konten afiliasi: karakter berbicara langsung ke kamera di adegan kamar kerja.</p></div><ol><li>Skrip dialog dan hook 3 detik</li><li>Karakter dan adegan dari prompt</li><li>Gambar menjadi video bicara</li><li>Voice-over</li><li>Edit dan caption</li></ol></div><div class="vgrid"><article class="vcard"><div class="vmedia v169"><video controls preload="none" playsinline poster="v/p-naya1.jpg"><source src="v/naya1_full.mp4" type="video/mp4"></video></div><div class="vbody"><h4>UGC Afiliasi #1</h4><p>Ulasan produk digital sambil menunjukkan layar laptop.</p><div class="vchips"><span>16:9</span><span>10 dtk</span><span class="on">Dengan suara</span></div></div></article><article class="vcard"><div class="vmedia v169"><video controls preload="none" playsinline poster="v/p-naya2.jpg"><source src="v/naya2_full.mp4" type="video/mp4"></video></div><div class="vbody"><h4>UGC Afiliasi #2</h4><p>Adegan lanjutan dengan karakter dan latar yang sama.</p><div class="vchips"><span>16:9</span><span>10 dtk</span><span class="on">Dengan suara</span></div></div></article></div></div><div class="vpanel" data-vpanel="motion" role="tabpanel"><div class="vflow"><div><span class="vflow-tag">Animasi logo, ikon, dan maskot</span><p>Iklan aplikasi dan layanan dengan animasi logo, ikon 3D, maskot, dan tampilan layar.</p></div><ol><li>Aset logo, ikon, dan maskot</li><li>Animasi gerak</li><li>Voice-over</li><li>Edit dan ekspor</li></ol></div><div class="vgrid"><article class="vcard"><div class="vmedia v169"><video controls preload="none" playsinline poster="v/p-tuntasync.jpg"><source src="v/tuntasync_full.mp4" type="video/mp4"></video></div><div class="vbody"><h4>Iklan Aplikasi: Animasi Logo</h4><p>Logo dan ikon pencarian bergerak dalam satu adegan.</p><div class="vchips"><span>16:9</span><span>10 dtk</span><span class="on">Dengan suara</span></div></div></article><article class="vcard"><div class="vmedia v169"><video controls preload="none" playsinline poster="v/p-student.jpg"><source src="v/student_full.mp4" type="video/mp4"></video></div><div class="vbody"><h4>Iklan Aplikasi: Ikon Fitur</h4><p>Ikon 3D pencarian, chat, dan dokumen.</p><div class="vchips"><span>16:9</span><span>8 dtk</span><span class="on">Dengan suara</span></div></div></article><article class="vcard"><div class="vmedia v169"><video controls preload="none" playsinline poster="v/p-bot.jpg"><source src="v/bot_full.mp4" type="video/mp4"></video></div><div class="vbody"><h4>Iklan Bot WhatsApp</h4><p>Maskot robot dan ajakan memakai bot WhatsApp.</p><div class="vchips"><span>16:9</span><span>10 dtk</span><span class="on">Dengan suara</span></div></div></article><article class="vcard"><div class="vmedia v169"><video controls preload="none" playsinline poster="v/p-produksi_ai.jpg"><source src="v/produksi_ai_full.mp4" type="video/mp4"></video></div><div class="vbody"><h4>Iklan Layanan Produksi Video AI</h4><p>Tampilan editor video di laptop untuk layanan produksi konten.</p><div class="vchips"><span>16:9</span><span>10 dtk</span><span class="on">Dengan suara</span></div></div></article></div></div><div class="vpanel" data-vpanel="explainer" role="tabpanel"><div class="vflow"><div><span class="vflow-tag">Animasi kode Remotion</span><p>Video penjelas dan teks bergerak yang dirender dari kode di Remotion, format vertikal untuk Reels dan TikTok.</p></div><ol><li>Skrip per adegan</li><li>Animasi komponen Remotion</li><li>Narasi suara (opsional)</li><li>Render vertikal 9:16</li></ol></div><div class="vgrid"><article class="vcard"><div class="vmedia v916"><video controls preload="none" playsinline poster="v/p-uaop.jpg"><source src="v/uaop_full.mp4" type="video/mp4"></video></div><div class="vbody"><h4>Explainer UT: Persiapan Ujian</h4><p>Penjelasan langkah persiapan ujian, dengan narasi suara.</p><div class="vchips"><span>9:16</span><span>32 dtk</span><span class="on">Dengan suara</span></div></div></article><article class="vcard"><div class="vmedia v916"><video controls preload="none" playsinline poster="v/p-explainer.jpg"><source src="assets/v-explainer.mp4" type="video/mp4"></video></div><div class="vbody"><h4>Explainer Alur Kerja</h4><p>Visual penjelas tanpa narasi.</p><div class="vchips"><span>9:16</span><span>25 dtk</span><span class="">Tanpa suara</span></div></div></article><article class="vcard"><div class="vmedia v916"><video controls preload="none" playsinline poster="v/p-cek-nilai.jpg"><source src="assets/v-cek-nilai.mp4" type="video/mp4"></video></div><div class="vbody"><h4>Explainer Kalender Akademik UT</h4><p>Visual penjelas langkah demi langkah, tanpa narasi.</p><div class="vchips"><span>9:16</span><span>30 dtk</span><span class="">Tanpa suara</span></div></div></article><article class="vcard"><div class="vmedia v916"><video controls preload="none" playsinline poster="v/p-showcase.jpg"><source src="assets/v-showcase.mp4" type="video/mp4"></video></div><div class="vbody"><h4>Teks Kinetik</h4><p>Teks bergerak bertema satu kata, satu gerakan.</p><div class="vchips"><span>9:16</span><span>19 dtk</span><span class="">Tanpa suara</span></div></div></article></div></div></div></section>
+<section class="section-block" id="konten"><div class="container"><div class="section-head reveal-up"><span class="section-num">04 // Konten Sosial Media</span><h2 class="section-title">Carousel Edukasi &amp; Poster Layanan</h2><p class="section-desc">Konten yang sudah diproduksi untuk Instagram dan TikTok: satu carousel edukasi lengkap dan enam poster layanan dengan gaya visual seragam.</p></div><div class="konten-split reveal-up"><div class="car-box"><div class="car-track" id="carTrack"><img src="assets/c-1.webp" alt="Slide 1 dari 7, carousel POV Boleh Buka Buku" loading="lazy" width="768" height="960"><img src="assets/c-2.webp" alt="Slide 2 dari 7, carousel POV Boleh Buka Buku" loading="lazy" width="768" height="960"><img src="assets/c-3.webp" alt="Slide 3 dari 7, carousel POV Boleh Buka Buku" loading="lazy" width="768" height="960"><img src="assets/c-4.webp" alt="Slide 4 dari 7, carousel POV Boleh Buka Buku" loading="lazy" width="768" height="960"><img src="assets/c-5.webp" alt="Slide 5 dari 7, carousel POV Boleh Buka Buku" loading="lazy" width="768" height="960"><img src="assets/c-6.webp" alt="Slide 6 dari 7, carousel POV Boleh Buka Buku" loading="lazy" width="768" height="960"><img src="assets/c-7.webp" alt="Slide 7 dari 7, carousel POV Boleh Buka Buku" loading="lazy" width="768" height="960"></div><div class="car-ctrl"><button type="button" id="carPrev" aria-label="Slide sebelumnya">&larr;</button><span id="carCount">1 / 7</span><button type="button" id="carNext" aria-label="Slide berikutnya">&rarr;</button></div><p class="car-cap">Carousel 7 slide: &ldquo;POV: Kamu mau ikut UAS UT, tapi masih bingung boleh buka buku?&rdquo; Sampul berisi hook, isi bertahap, penutup mengarah ke CatatanAkademik.com.</p></div><div><div class="poster-grid"><figure class="zoomable" data-zoom="v/ks-1.webp"><img src="v/ks-1.webp" alt="Poster layanan: Analisis Media Sosial" loading="lazy"><figcaption>Analisis Media Sosial</figcaption></figure><figure class="zoomable" data-zoom="v/ks-2.webp"><img src="v/ks-2.webp" alt="Poster layanan: Produksi Konten AI" loading="lazy"><figcaption>Produksi Konten AI</figcaption></figure><figure class="zoomable" data-zoom="v/ks-3.webp"><img src="v/ks-3.webp" alt="Poster layanan: Sistem Otomasi AI" loading="lazy"><figcaption>Sistem Otomasi AI</figcaption></figure><figure class="zoomable" data-zoom="v/ks-4.webp"><img src="v/ks-4.webp" alt="Poster layanan: Koordinasi Alur Kerja AI" loading="lazy"><figcaption>Koordinasi Alur Kerja AI</figcaption></figure><figure class="zoomable" data-zoom="v/ks-5.webp"><img src="v/ks-5.webp" alt="Poster layanan: Situs Web dengan AI" loading="lazy"><figcaption>Situs Web dengan AI</figcaption></figure><figure class="zoomable" data-zoom="v/ks-6.webp"><img src="v/ks-6.webp" alt="Poster layanan: Alat Analisis Dokumen" loading="lazy"><figcaption>Alat Analisis Dokumen</figcaption></figure></div><div class="konten-links"><a class="btn btn-outline btn-sm" href="https://instagram.com/priyadi_dika" target="_blank" rel="noopener">Instagram @priyadi_dika &nearr;</a><a class="btn btn-outline btn-sm" href="https://www.tiktok.com/@akihabara.fuzi" target="_blank" rel="noopener">TikTok @akihabara.fuzi &nearr;</a></div></div></div></div></section>
+<section class="section-block" id="web"><div class="container"><div class="section-head reveal-up"><span class="section-num">05 // Sistem Web &amp; Otomasi</span><h2 class="section-title">Sistem yang Berjalan dan Bisa Dibuka Langsung</h2><p class="section-desc">Dua situs dan dua bot WhatsApp berjalan di satu VPS. Semuanya aktif; tombol di tiap kartu membuka sistem aslinya.</p></div><div class="web-grid reveal-up">
+<article class="webcard"><img src="assets/k-admin.webp" alt="Panel admin CatatanAkademik.com" loading="lazy"><div class="webbody"><span class="live-dot wlive">Aktif</span><h3>CatatanAkademik.com</h3><p>Platform edukasi mahasiswa Universitas Terbuka: panduan, kelas tutorial, alat pemeriksaan dokumen, blog SEO, login Google, dan panel admin untuk pesanan, artikel, serta bot.</p><div class="vchips"><span>30+ artikel terbit</span><span>Panel admin</span><span>Search Console</span></div><a class="btn btn-primary btn-sm" href="https://catatanakademik.com" target="_blank" rel="noopener">Buka situs &nearr;</a></div></article>
+<article class="webcard"><div class="webquote"><i>heyaipeople.site</i><b>Katalog Prompt AI &amp; Storyboard 2D siap pakai.</b><span>10 katalog siap pakai &middot; Foto &amp; Video &middot; Pesan via WhatsApp</span><em>Teks dari beranda situs</em></div><div class="webbody"><span class="live-dot wlive">Aktif</span><h3>HeyAIPeople.site</h3><p>Katalog prompt foto AI dan storyboard video 2D siap pakai, dengan pratinjau hasil, prompt siap salin, kode Remotion 2D, dan pemesanan lewat WhatsApp.</p><div class="vchips"><span>Prompt siap salin</span><span>Kode Remotion 2D</span></div><a class="btn btn-primary btn-sm" href="https://heyaipeople.site/" target="_blank" rel="noopener">Buka katalog &nearr;</a></div></article>
+<article class="webcard"><img src="assets/k-bot.webp" alt="Bot WhatsApp membalas pertanyaan pengguna" loading="lazy"><div class="webbody"><span class="live-dot wlive">2 bot aktif</span><h3>Bot WhatsApp</h3><p>Bot pertama mengelola grup (anti-spam, pengingat, catatan). Bot kedua menangani admin dan notifikasi pesanan. Tangkapan layar menunjukkan bot membalas pertanyaan pengguna.</p><div class="vchips"><span>Node.js</span><span>PM2</span><span>WhatsApp</span></div></div></article></div>
+<div class="stack-strip reveal-up"><span>Server</span><b>VPS Ubuntu 24.04</b><b>Nginx</b><b>HTTPS</b><b>PM2</b><b>Node.js</b><b>Deploy lewat Git</b></div></div></section>
+<section class="section-block" id="riset"><div class="container"><div class="section-head reveal-up"><span class="section-num">06 // Riset &amp; Analitik</span><h2 class="section-title">Bukti Riset: Master Prompt dan Data Nyata</h2><p class="section-desc">Prompt di katalog bukan hasil sekali coba. Riset, uji, dan evaluasinya terlihat di sini: katalog master prompt, alat analisis buatan sendiri, dan data dari akun serta situs yang dikelola.</p></div>
+<div class="master-box reveal-up"><div><span class="vflow-tag">Master Prompt</span><h3>Katalog prompt siap salin di HeyAIPeople.site</h3><p>Setiap prompt diuji pada proyek nyata, lalu disimpan sebagai template dengan parameter yang konsisten: prompt foto, storyboard video, dan kode Remotion 2D. Itulah hasil riset yang bisa dipakai ulang.</p></div><a class="btn btn-primary btn-sm" href="https://heyaipeople.site/" target="_blank" rel="noopener">Lihat katalog &nearr;</a></div>
+<div class="riset-grid reveal-up"><figure class="zoomable rtile" data-zoom="v/an1.jpg"><img src="v/an1.jpg" alt="Pengunjung CatatanAkademik.com" loading="lazy"><figcaption><b>Pengunjung CatatanAkademik.com</b>2.763 pengunjung dalam 30 hari (14 Okt–12 Nov 2026), dari panel admin sendiri.</figcaption></figure><figure class="zoomable rtile" data-zoom="v/an6.jpg"><img src="v/an6.jpg" alt="TikTok Studio" loading="lazy"><figcaption><b>TikTok Studio</b>359 tayangan video pada 4–10 Nov 2026 di akun @akihabara.fuzi.</figcaption></figure><figure class="zoomable rtile" data-zoom="v/an2.jpg"><img src="v/an2.jpg" alt="Alat analisis: skor akun" loading="lazy"><figcaption><b>Alat analisis: skor akun</b>Skor akun 0–100 beserta kesehatan akun, performa konten, dan viralitas.</figcaption></figure><figure class="zoomable rtile" data-zoom="v/an3.jpg"><img src="v/an3.jpg" alt="Alat analisis: afiliator" loading="lazy"><figcaption><b>Alat analisis: afiliator</b>Niche, jenis produk yang cocok, dan jam upload yang disarankan.</figcaption></figure><figure class="zoomable rtile" data-zoom="v/an4.jpg"><img src="v/an4.jpg" alt="Alat analisis: rencana 7 hari" loading="lazy"><figcaption><b>Alat analisis: rencana 7 hari</b>Jadwal posting mingguan lengkap dengan hook dan hashtag.</figcaption></figure><figure class="zoomable rtile" data-zoom="v/an5.jpg"><img src="v/an5.jpg" alt="Alat analisis: saran perbaikan" loading="lazy"><figcaption><b>Alat analisis: saran perbaikan</b>Rekomendasi tindakan dari data akun yang dianalisis.</figcaption></figure></div></div></section>
+
     <section class="section-block" id="works">
       <div class="container">
         <div class="section-head reveal-up">
-          <span class="section-num">03 // Portfolio &amp; Live Systems</span>
-          <h2 class="section-title">Selected Works &amp; Live System Showcase</h2>
+          <span class="section-num">07 // Studi Kasus</span>
+          <h2 class="section-title">Studi Kasus Terpilih</h2>
           <p class="section-desc">
             Studi kasus produksi konten AI, platform edukasi berbasis SEO, dan infrastruktur otomasi yang berjalan aktif di server produksi.
           </p>
-        </div>
-
-        <!-- Live System Performance Showcase Split -->
-        <div class="showcase-split reveal-up">
-          <div>
-            <span class="eyebrow" style="margin-bottom: 12px;">&#9679; SISTEM YANG BERJALAN</span>
-            <h3 style="font-size: 1.45rem; font-weight: 800; margin-bottom: 10px;">
-              Ekosistem Terintegrasi: Konten, Web &amp; Storefront Aset AI
-            </h3>
-            <p style="font-size: 0.92rem; color: var(--text-muted); margin-bottom: 18px;">
-              Setiap eksperimen visual diuji pada proyek nyata sebelum dipublikasikan sebagai studi kasus maupun template prompt di <strong>heyaipeople.site</strong>.
-            </p>
-            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-              <a href="https://heyaipeople.site/" target="_blank" rel="noopener" class="btn btn-primary btn-sm">Kunjungi HeyAIPeople Store &nearr;</a>
-              <a href="https://catatanakademik.com" target="_blank" rel="noopener" class="btn btn-outline btn-sm">CatatanAkademik.com &nearr;</a>
-            </div>
-          </div>
-
-          <div>
-            <div class="metric-row"><div class="metric-label-line"><span>Bot WhatsApp di VPS</span><span class="live-dot" style="color: #34d399; font-family: var(--font-mono);">2 bot aktif</span></div></div>
-            <div class="metric-row"><div class="metric-label-line"><span>CatatanAkademik.com</span><span class="live-dot" style="color: #34d399; font-family: var(--font-mono);">Aktif</span></div></div>
-            <div class="metric-row"><div class="metric-label-line"><span>Blog artikel SEO (Markdown)</span><span class="live-dot" style="color: #34d399; font-family: var(--font-mono);">Aktif</span></div></div>
-            <div class="metric-row"><div class="metric-label-line"><span>Storefront HeyAIPeople</span><span class="live-dot" style="color: #34d399; font-family: var(--font-mono);">Aktif</span></div></div>
-          </div>
         </div>
 
         <!-- Category Filters -->
@@ -1093,7 +1150,7 @@
         </div>
 
         <div class="reveal-up">
-          <span class="section-num">04 // Background &amp; Operational Discipline</span>
+          <span class="section-num">08 // Latar Belakang</span>
           <h2 class="section-title">12+ Tahun Kepemimpinan Operasional Bertemu Teknologi AI Kreatif.</h2>
           <p style="color: var(--text-muted); font-size: 0.96rem; margin-bottom: 14px;">
             Berbekal pengalaman lebih dari 12 tahun memimpin tim operasional skala 24 hingga 93 staf di lingkungan perusahaan berstandar tinggi (<strong>PT Horizon Internusa Persada</strong>, <strong>PT Angkasa Pura Support</strong>, <strong>Mercu Buana Center</strong>, dan <strong>ISS Indonesia</strong>) serta latar pendidikan <strong>S1 Manajemen Universitas Terbuka</strong>, saya membawa ketelitian SOP, manajemen target, dan akuntabilitas hasil ke dalam dunia produksi konten AI.
@@ -1134,7 +1191,7 @@
     <section class="section-block" id="collaborate">
       <div class="container">
         <div class="section-head reveal-up">
-          <span class="section-num">05 // Direct Routing</span>
+          <span class="section-num">09 // Kontak</span>
           <h2 class="section-title">Let&rsquo;s Collaborate</h2>
           <p class="section-desc">
             Pilih jalur diskusi yang paling sesuai dengan kebutuhan proyek atau rekrutmen tim Anda untuk terhubung langsung via WhatsApp.
@@ -1224,6 +1281,7 @@
   </div><!-- /.page -->
 
   <!-- PROJECT DETAIL MODAL -->
+<div class="lb" id="lb" onclick="this.classList.remove('open')"><img id="lbImg" alt=""></div>
   <div class="modal-backdrop" id="workModal" onclick="if(event.target===this) closeWorkModal()">
     <div class="modal-panel" id="workModalBody"></div>
   </div>
@@ -1231,6 +1289,22 @@
   <!-- ========================================================================
        PORTFOLIO UI & DYNAMIC WORKS.JSON SCRIPT
        ======================================================================== -->
+  <script>
+    (function(){
+      document.querySelectorAll('.vtab').forEach(function(b){b.addEventListener('click',function(){
+        document.querySelectorAll('.vtab').forEach(function(x){x.classList.toggle('active',x===b)});
+        document.querySelectorAll('.vpanel').forEach(function(p){var on=p.dataset.vpanel===b.dataset.vtab;p.classList.toggle('active',on);if(!on)p.querySelectorAll('video').forEach(function(v){v.pause()})});
+      })});
+      document.addEventListener('play',function(e){if(e.target.tagName==='VIDEO')document.querySelectorAll('.vcard video').forEach(function(v){if(v!==e.target)v.pause()})},true);
+      var t=document.getElementById('carTrack'),c=document.getElementById('carCount');
+      if(t){var n=t.children.length;function go(d){var w=t.clientWidth;t.scrollBy({left:d*w,behavior:'smooth'})}
+        document.getElementById('carPrev').onclick=function(){go(-1)};document.getElementById('carNext').onclick=function(){go(1)};
+        t.addEventListener('scroll',function(){c.textContent=(Math.round(t.scrollLeft/t.clientWidth)+1)+' / '+n},{passive:true});}
+      var lb=document.getElementById('lb'),li=document.getElementById('lbImg');
+      document.querySelectorAll('.zoomable').forEach(function(z){z.addEventListener('click',function(){li.src=z.dataset.zoom;lb.classList.add('open')})});
+      document.addEventListener('keydown',function(e){if(e.key==='Escape')lb.classList.remove('open')});
+    })();
+  </script>
   <script>
     const FALLBACK_WORKS = [
   {
