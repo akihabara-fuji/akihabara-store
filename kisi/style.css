@@ -47,3 +47,5 @@ footer{max-width:880px;margin:0 auto;padding:0 16px 40px;font-size:12px;color:va
  td{border-color:#ccc}td:first-child{color:#8a5a00}td span,.note,.kodes,.q .top{color:#555}
  .tag{border-color:#bbb}
 }
+.pri{font-style:normal;font-size:12px;padding:2px 8px;border-radius:99px;border:1px solid #333;color:#a3a3a3;white-space:nowrap}
+.pri.hi{border-color:#f5a524;color:#f5a524}

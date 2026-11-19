@@ -34,16 +34,19 @@ function soalHtml(q, showKey) {
   return `<article class="q"><div class="top"><b>Soal ${q.no}</b> · Modul ${q.modul} · <span class="tag">${TYPE[q.tipe]}</span></div>${body}<ul class="opts">${opts}</ul>${pb}</article>`;
 }
 
+const hasSoal = d => Array.isArray(d.soal) && d.soal.length > 0;
+const hafalan = d => (d.poin_hafalan && d.poin_hafalan.length) ? `<section class="card"><h2>5 poin kunci untuk dihafal</h2><ol class="it">${d.poin_hafalan.map(x => `<li>${esc(x)}</li>`).join('')}</ol></section>` : '';
+
 function modulRows(d, n) {
-  const rows = d.moduls.map((m, i) => `<tr${i >= n ? ' class="x" hidden' : ''}><td>Modul ${m.no}</td><td><b>${esc(m.topik)}</b><br><span>${esc(m.fokus.join(' '))}</span></td></tr>`).join('');
+  const rows = d.moduls.map((m, i) => `<tr${i >= n ? ' class="x" hidden' : ''}><td>Modul ${m.no}</td><td><b>${esc(m.topik)}</b>${m.prioritas ? ` <em class="pri ${m.prioritas === 'Tinggi' ? 'hi' : ''}">Prioritas ${esc(m.prioritas)}</em>` : ''}<br><span>${esc(m.indikator || (m.fokus || []).join(' '))}</span></td></tr>`).join('');
   return rows;
 }
 
 function coursePage(d) {
   const title = `Kisi-Kisi & Ringkasan ${d.kode_lama[0]} ${d.nama_mk} per Modul`;
-  const desc = `Ringkasan fokus belajar ${d.nama_mk} (${kodeText(d)}) per modul 1-${d.moduls.length} berdasarkan BMP, lengkap contoh soal latihan mandiri. Versi lengkap ${rp(d.harga)}.`;
+  const desc = `Ringkasan fokus belajar ${d.nama_mk} (${kodeText(d)}) per modul 1-${d.moduls.length} berdasarkan BMP${hasSoal(d) ? ', lengkap contoh soal latihan mandiri' : ''}. Versi lengkap ${rp(d.harga)}.`;
   const url = `${ORIGIN}${BASE}/${d.slug}/`;
-  const free = d.soal.filter(q => d.gratis_soal.includes(q.no));
+  const free = hasSoal(d) ? d.soal.filter(q => d.gratis_soal.includes(q.no)) : [];
   const ld = {
     '@context': 'https://schema.org',
     '@graph': [
@@ -63,12 +66,12 @@ function coursePage(d) {
 <p class="crumb"><a href="${BASE}/">Bank Soal</a> › ${esc(d.fakultas)} › ${esc(d.kode_lama[0])}</p>
 <h1>Kisi-Kisi & Ringkasan Fokus Belajar ${esc(d.kode_lama[0])} ${esc(d.nama_mk)}</h1>
 <p class="kodes">Kode: <b>${esc(kodeText(d))}</b></p>
-<p class="note">Ringkasan ini disusun dari Buku Materi Pokok (BMP) dan bukan kisi-kisi resmi dari UT. Soal contoh adalah latihan mandiri buatan sendiri, bukan soal ujian asli.</p>
+<p class="note">Ringkasan ini disusun dari Buku Materi Pokok (BMP) dan bukan kisi-kisi resmi dari UT. Isi adalah ringkasan belajar mandiri, bukan soal ujian asli.</p>
 <section class="card"><h2>Fokus belajar per modul</h2><table><tbody>${modulRows(d, 3)}</tbody></table>
 <button class="more" id="mm" type="button">Baca lengkap (Modul 1–${d.moduls.length})</button></section>
-<section class="card"><h2>Contoh soal gratis (${free.length} dari ${d.soal.length})</h2>${free.map(q => soalHtml(q, true)).join('')}</section>
+${hafalan(d)}${free.length ? `<section class="card"><h2>Contoh soal gratis (${free.length} dari ${d.soal.length})</h2>${free.map(q => soalHtml(q, true)).join('')}</section>` : ''}
 <section class="card buy"><h2>Versi lengkap ${rp(d.harga)}</h2>
-<ul><li>Ringkasan fokus semua modul dalam PDF</li><li>${d.soal.length} soal latihan dengan kunci dan alasan</li><li>Siap dibaca di HP atau dicetak</li></ul>
+<ul><li>Ringkasan fokus semua modul dalam PDF</li>${hasSoal(d) ? `<li>${d.soal.length} soal latihan dengan kunci dan alasan</li>` : `<li>Penjabaran materi inti tiap modul dan rumus cepat</li>`}<li>Siap dibaca di HP atau dicetak</li></ul>
 <a class="btn" href="${buy}" rel="noopener">Beli lewat WhatsApp</a><p class="hint">PDF dikirim admin setelah pembayaran.</p></section>
 </main>
 <footer>Platform ini adalah sarana belajar mandiri dan tidak berafiliasi dengan Universitas Terbuka. Tidak menyediakan naskah ujian asli maupun layanan pengerjaan ujian.</footer>
@@ -83,7 +86,7 @@ function printPage(d) {
 <p class="kodes">Kode: <b>${esc(kodeText(d))}</b> · Catatan Akademik</p>
 <p class="note">Disusun dari Buku Materi Pokok (BMP), bukan kisi-kisi resmi UT dan bukan soal ujian asli. Untuk latihan mandiri.</p>
 <h2>Ringkasan fokus per modul</h2><table><tbody>${modulRows(d, 99)}</tbody></table>
-<h2>Soal latihan, kunci, dan alasan</h2>${d.soal.map(q => soalHtml(q, true)).join('')}
+${hafalan(d)}${hasSoal(d) ? `<h2>Soal latihan, kunci, dan alasan</h2>${d.soal.map(q => soalHtml(q, true)).join('')}` : ''}
 </main></body></html>`;
 }
 

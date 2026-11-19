@@ -1,0 +1,27 @@
+{
+  "slug": "ekma4116-manajemen",
+  "kode_lama": ["EKMA4116"],
+  "kode_baru": null,
+  "nama_mk": "Manajemen",
+  "fakultas": "S1 Manajemen, semester 2",
+  "status": "draf AI (Gemini), belum diverifikasi ke BMP; kode baru EMBS4102 belum dicek ke katalog UT",
+  "harga": 20000,
+  "moduls": [
+    { "no": 1, "topik": "Evolusi Teori Manajemen", "indikator": "Perbedaan manajemen ilmiah Taylor, administrasi Fayol, dan pendekatan kontingensi.", "prioritas": "Sedang" },
+    { "no": 2, "topik": "Lingkungan & Budaya Organisasi", "indikator": "Analisis lingkungan eksternal langsung dan tidak langsung serta dimensi budaya organisasi.", "prioritas": "Sedang" },
+    { "no": 3, "topik": "Perencanaan & Pengambilan Keputusan", "indikator": "Hierarki rencana (strategis, taktis, operasional) dan kriteria sasaran SMART.", "prioritas": "Tinggi" },
+    { "no": 4, "topik": "Pengorganisasian & Struktur", "indikator": "Rentang kendali (span of control), departementalisasi, serta sentralisasi dan desentralisasi.", "prioritas": "Tinggi" },
+    { "no": 5, "topik": "Perubahan & Inovasi", "indikator": "Model perubahan 3 tahap Kurt Lewin (unfreezing, changing, refreezing).", "prioritas": "Sedang" },
+    { "no": 6, "topik": "Motivasi Kerja", "indikator": "Hierarki kebutuhan Maslow, Teori Dua Faktor Herzberg, dan Teori Harapan Vroom.", "prioritas": "Tinggi" },
+    { "no": 7, "topik": "Kepemimpinan", "indikator": "Managerial Grid Blake dan Mouton serta Kepemimpinan Situasional Hersey-Blanchard.", "prioritas": "Tinggi" },
+    { "no": 8, "topik": "Komunikasi & Kerja Sama Tim", "indikator": "Hambatan komunikasi organisasi dan 5 tahap perkembangan kelompok Tuckman.", "prioritas": "Sedang" },
+    { "no": 9, "topik": "Pengendalian Organisasi", "indikator": "Pengendalian feedforward, concurrent, feedback dan 4 perspektif Balanced Scorecard.", "prioritas": "Tinggi" }
+  ],
+  "poin_hafalan": [
+    "Unity of Command (Fayol): satu bawahan hanya melapor kepada satu atasan langsung.",
+    "Model perubahan Kurt Lewin: Unfreezing, Changing, Refreezing.",
+    "Teori Dua Faktor Herzberg: gaji dan kondisi kerja masuk Hygiene Factors; prestasi dan tanggung jawab masuk Motivator.",
+    "Team Management (9,9) pada Managerial Grid: perhatian tinggi pada hasil produksi sekaligus hubungan karyawan.",
+    "Feedforward Control dilakukan sebelum proses berjalan untuk mencegah penyimpangan input."
+  ]
+}
