@@ -6,7 +6,7 @@
  "kode_baru": "EMBS4101",
  "nama_mk": "Manajemen",
  "fakultas": "Fakultas Ekonomi dan Bisnis",
- "status": "judul modul dan kegiatan belajar dari daftar isi resmi BMP EKMA4116 Edisi 3 (12 modul); poin hafalan masih draf AI",
+ "status": "modul dari daftar isi resmi BMP EKMA4116 Edisi 3; soal 1-24 dari Gemini, 25-30 ditulis Claude; kunci dicek logika konsep, kesesuaian dengan BMP belum diverifikasi",
  "harga": 20000,
  "moduls": [
   {
@@ -112,14 +112,473 @@
   }
  ],
  "poin_hafalan": [
-  "Unity of Command (Fayol): satu bawahan hanya melapor kepada satu atasan langsung.",
-  "Model perubahan Kurt Lewin: Unfreezing, Changing, Refreezing.",
-  "Teori Dua Faktor Herzberg: gaji dan kondisi kerja masuk Hygiene Factors; prestasi dan tanggung jawab masuk Motivator.",
-  "Team Management (9,9) pada Managerial Grid: perhatian tinggi pada hasil produksi sekaligus hubungan karyawan.",
-  "Feedforward Control dilakukan sebelum proses berjalan untuk mencegah penyimpangan input."
+  "Keterampilan manajerial Robert L. Katz berbeda tiap jenjang: Top Manager dominan keterampilan konseptual, Middle Manager dominan hubungan manusiawi, dan First-Line Manager dominan keterampilan teknis.",
+  "Teori Dua Faktor Frederick Herzberg memisahkan Hygiene Factors (gaji, kondisi kerja, kebijakan yang mencegah ketidakpuasan) dengan Motivators (prestasi, pengakuan, tanggung jawab yang memicu semangat kerja).",
+  "Urutan tiga tahap perubahan organisasi Kurt Lewin adalah Unfreezing (mencairkan kebiasaan lama), Changing (menerapkan pola baru), dan Refreezing (membakukan perilaku baru).",
+  "Pada Managerial Grid Blake dan Mouton, gaya Team Management (9,9) menyeimbangkan perhatian tinggi terhadap target produksi sekaligus kesejahteraan hubungan antaranggota tim.",
+  "Pengendalian feedforward dilakukan sebelum proses untuk menyaring kualitas input, pengendalian concurrent dilakukan saat proses berlangsung, dan pengendalian feedback mengevaluasi hasil akhir."
  ],
- "pdf_ready": false,
+ "pdf_ready": true,
  "prodi": "S1 Manajemen",
  "semester": 1,
- "sks": 4
+ "sks": 4,
+ "soal": [
+  {
+   "no": 1,
+   "modul": 1,
+   "tipe": "pg",
+   "pernyataan": "Menurut klasifikasi keterampilan manajerial Robert L. Katz, keterampilan yang paling dominan dibutuhkan oleh manajer puncak (top management) dalam merumuskan arah jangka panjang organisasi adalah...",
+   "opsi": [
+    "Keterampilan teknis operasional harian",
+    "Keterampilan konseptual untuk melihat organisasi secara menyeluruh",
+    "Keterampilan administratif pencatatan dokumen rutin",
+    "Keterampilan pengoperasian mesin produksi"
+   ],
+   "kunci": "B",
+   "pembahasan": "Manajer puncak membutuhkan keterampilan konseptual yang kuat untuk menganalisis situasi kompleks dan merumuskan strategi jangka panjang organisasi.",
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 2,
+   "modul": 1,
+   "tipe": "pg",
+   "pernyataan": "Perbedaan fokus utama antara pendekatan Manajemen Ilmiah Frederick W. Taylor dan Teori Administrasi Henri Fayol terletak pada...",
+   "opsi": [
+    "Taylor berfokus pada efisiensi kerja operasional individu, sedangkan Fayol berfokus pada fungsi manajerial dan struktur organisasi secara keseluruhan",
+    "Taylor menekankan budaya organisasi informal, sedangkan Fayol menekankan otomatisasi lini pabrik",
+    "Taylor merumuskan 14 prinsip administrasi umum, sedangkan Fayol merancang studi gerak dan waktu",
+    "Taylor menolak pembagian kerja spesialis, sedangkan Fayol menolak hierarki wewenang berjenjang"
+   ],
+   "kunci": "A",
+   "pembahasan": "Taylor mengkaji optimalisasi metode kerja di tingkat pekerja lapangan melalui studi waktu dan gerak, sedangkan Fayol merumuskan prinsip pengelolaan organisasi dari sudut pandang manajer.",
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 3,
+   "modul": 1,
+   "tipe": "pg",
+   "pernyataan": "Ketika terjadi keterlambatan pasokan bahan baku yang memicu ketegangan di gudang, seorang manajer operasional segera turun tangan meredam konflik dan menyusun jalur pengiriman alternatif. Menurut tipologi peran Henry Mintzberg, manajer tersebut sedang menjalankan peran...",
+   "opsi": [
+    "Figurehead dalam acara seremonial perusahaan",
+    "Spokesperson kepada media massa eksternal",
+    "Disturbance handler dalam menangani krisis operasional",
+    "Monitor yang mengumpulkan berita tren industri"
+   ],
+   "kunci": "C",
+   "pembahasan": "Peran disturbance handler (penangan gangguan) dijalankan manajer saat harus mengambil tindakan korektif menghadapi krisis atau masalah tak terduga.",
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 4,
+   "modul": 2,
+   "tipe": "pg",
+   "pernyataan": "Komponen lingkungan eksternal yang masuk ke dalam kategori lingkungan khusus (mikro) karena berinteraksi dan memengaruhi operasional harian perusahaan secara langsung adalah...",
+   "opsi": [
+    "Kebijakan suku bunga acuan bank sentral dan laju inflasi nasional",
+    "Pergeseran tren demografi penduduk usia produktif",
+    "Perkembangan teknologi kecerdasan buatan global",
+    "Pemasok bahan baku, pelanggan, dan pesaing langsung perusahaan"
+   ],
+   "kunci": "D",
+   "pembahasan": "Lingkungan khusus mencakup kekuatan eksternal yang berdampak langsung terhadap aktivitas bisnis harian organisasi, seperti pelanggan, pemasok, dan pesaing.",
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 5,
+   "modul": 2,
+   "tipe": "pg",
+   "pernyataan": "Sebuah perusahaan rintisan menerapkan tata ruang kantor terbuka tanpa sekat, gaya berpakaian kasual, serta memajang slogan inovasi di dinding lobi. Dalam model tiga tingkat budaya organisasi Edgar Schein, elemen-elemen tersebut termasuk lapisan...",
+   "opsi": [
+    "Artefak budaya yang tampak secara kasat mata",
+    "Asumsi dasar yang tidak disadari anggota organisasi",
+    "Strategi diversifikasi tingkat korporasi",
+    "Struktur wewenang lini formal"
+   ],
+   "kunci": "A",
+   "pembahasan": "Artefak merupakan lapisan budaya paling luar yang dapat dilihat, didengar, dan diamati secara langsung dalam keseharian organisasi.",
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 6,
+   "modul": 2,
+   "tipe": "pg",
+   "pernyataan": "Dalam piramida Tanggung Jawab Sosial Perusahaan (CSR) menurut Archie Carroll, kewajiban paling mendasar yang menjadi fondasi kelangsungan hidup perusahaan sebelum menjalankan tanggung jawab lainnya adalah...",
+   "opsi": [
+    "Tanggung jawab filantropis melalui donasi kegiatan sosial",
+    "Tanggung jawab ekonomis untuk menghasilkan laba dan menyediakan kebutuhan masyarakat",
+    "Tanggung jawab etis di luar ketentuan peraturan perundang-undangan",
+    "Tanggung jawab sukarela pelestarian kawasan hutan"
+   ],
+   "kunci": "B",
+   "pembahasan": "Tanggung jawab ekonomis berada di dasar piramida Carroll karena perusahaan harus tetap menghasilkan keuntungan dan berproduksi secara efisien agar dapat bertahan.",
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 7,
+   "modul": 3,
+   "tipe": "pg",
+   "pernyataan": "Perbandingan yang tepat antara rencana strategis dan rencana operasional dalam hierarki perencanaan organisasi adalah...",
+   "opsi": [
+    "Rencana strategis disusun supervisor harian, sedangkan rencana operasional disusun dewan direksi",
+    "Rencana strategis hanya mengatur anggaran kas mingguan, sedangkan rencana operasional mengatur visi lima tahun",
+    "Rencana strategis berhorizon jangka panjang dan menyeluruh, sedangkan rencana operasional berfokus pada pelaksanaan teknis jangka pendek",
+    "Rencana strategis bersifat kaku tanpa evaluasi, sedangkan rencana operasional tidak memiliki batas waktu"
+   ],
+   "kunci": "C",
+   "pembahasan": "Rencana strategis ditetapkan manajemen puncak untuk arah organisasi jangka panjang (3-5 tahun), sedangkan rencana operasional menjabarkan langkah teknis jangka pendek (<1 tahun).",
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 8,
+   "modul": 4,
+   "tipe": "pg",
+   "pernyataan": "Seorang staf layanan pelanggan memproses permohonan penukaran barang rusak sesuai batas garansi tujuh hari dengan mengisi formulir dan prosedur standar yang sudah baku. Keputusan yang diambil staf tersebut tergolong jenis...",
+   "opsi": [
+    "Keputusan tidak terprogram berbasis intuisi pribadi",
+    "Keputusan strategis ekspansi wilayah pemasaran baru",
+    "Keputusan dalam kondisi ketidakpastian penuh",
+    "Keputusan terprogram karena mengikuti prosedur baku atas masalah rutin"
+   ],
+   "kunci": "D",
+   "pembahasan": "Keputusan terprogram digunakan untuk menangani masalah yang bersifat rutin dan berulang melalui pedoman prosedur standar (SOP) yang telah ditetapkan.",
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 9,
+   "modul": 4,
+   "tipe": "pg",
+   "pernyataan": "Konsep rasionalitas terbatas (bounded rationality) yang dikemukakan oleh Herbert Simon menjelaskan bahwa manajer cenderung mengambil keputusan dengan cara...",
+   "opsi": [
+    "Memilih alternatif pertama yang dianggap cukup memuaskan (satisficing) karena keterbatasan informasi dan waktu",
+    "Menganalisis seluruh kemungkinan alternatif di pasar tanpa batas biaya dan waktu",
+    "Menyerahkan seluruh pilihan investasi strategis kepada mekanisme undian acak",
+    "Mengabaikan seluruh batasan anggaran dan tingkat risiko operasional"
+   ],
+   "kunci": "A",
+   "pembahasan": "Keterbatasan kapasitas manusia dalam memproses seluruh informasi membuat manajer menyederhanakan masalah dan melakukan satisficing alih-alih optimasi sempurna.",
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 10,
+   "modul": 5,
+   "tipe": "pg",
+   "pernyataan": "Apabila manajemen puncak memperlebar rentang kendali (span of control) sehingga satu manajer membawahi lebih banyak staf terampil, dampak langsungnya terhadap bentuk struktur organisasi adalah...",
+   "opsi": [
+    "Menambah jumlah jenjang manajer menengah secara signifikan",
+    "Membuat struktur organisasi lebih datar (flat) dengan lapisan hierarki yang lebih sedikit",
+    "Memperlambat arus komunikasi vertikal dari puncak ke tingkat bawah",
+    "Meningkatkan biaya gaji manajerial di setiap divisi operasional"
+   ],
+   "kunci": "B",
+   "pembahasan": "Rentang kendali yang lebar memangkas jumlah tingkatan manajemen sehingga menghasilkan struktur organisasi yang lebih datar dan efisien.",
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 11,
+   "modul": 5,
+   "tipe": "pg",
+   "pernyataan": "Perbedaan karakteristik desain antara organisasi mekanistik dan organisasi organik terletak pada...",
+   "opsi": [
+    "Organisasi mekanistik memiliki komunikasi lateral bebas, sedangkan organik memiliki aturan tertulis kaku",
+    "Organisasi mekanistik cocok untuk lingkungan dinamis, sedangkan organik cocok untuk lingkungan stabil",
+    "Organisasi mekanistik berciri formalisasi tinggi dan sentralisasi, sedangkan organik berciri fleksibel dan terdesentralisasi",
+    "Organisasi mekanistik meniadakan rantai komando, sedangkan organik menerapkan birokrasi ketat"
+   ],
+   "kunci": "C",
+   "pembahasan": "Struktur mekanistik mengandalkan aturan baku dan wewenang terpusat untuk lingkungan stabil, sedangkan struktur organik bersifat luwes dan terdesentralisasi untuk lingkungan dinamis.",
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 12,
+   "modul": 5,
+   "tipe": "pg",
+   "pernyataan": "Dalam sebuah perusahaan teknologi, seorang analis data melapor secara rutin kepada Manajer Departemen IT sekaligus kepada Manajer Proyek Pengembangan Aplikasi. Penerapan struktur ini mencerminkan ciri utama organisasi matriks berupa...",
+   "opsi": [
+    "Kesatuan komando tunggal tanpa koordinasi lintas unit",
+    "Departementalisasi geografis berdasarkan wilayah cabang",
+    "Birokrasi lini murni tanpa spesialisasi tugas",
+    "Jalur pelaporan ganda (dual-authority) yang memadukan struktur fungsional dan proyek"
+   ],
+   "kunci": "D",
+   "pembahasan": "Struktur matriks menggabungkan departementalisasi fungsional dan proyek sehingga menciptakan dua jalur komando bagi anggota tim.",
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 13,
+   "modul": 6,
+   "tipe": "pg",
+   "pernyataan": "Dalam model perubahan tiga tahap dari Kurt Lewin, upaya manajemen membakukan prosedur kerja digital baru serta memberikan penghargaan kepada karyawan yang konsisten menerapkannya termasuk tahap...",
+   "opsi": [
+    "Refreezing untuk mengunci perilaku baru menjadi standar tetap organisasi",
+    "Unfreezing untuk mencairkan kebiasaan kerja lama",
+    "Downsizing untuk mengurangi jumlah karyawan tetap",
+    "Brainstorming untuk menggali ide kreatif tahap awal"
+   ],
+   "kunci": "A",
+   "pembahasan": "Refreezing (pembekuan kembali) bertujuan menstabilkan perubahan agar perilaku baru melekat sebagai norma permanen dan tidak kembali ke pola lama.",
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 14,
+   "modul": 6,
+   "tipe": "pg",
+   "pernyataan": "Karyawan di bagian administrasi menolak penerapan sistem pengarsipan digital karena beredar kabar keliru bahwa sistem tersebut akan langsung memangkas jam kerja mereka. Taktik mengatasi resistensi perubahan yang paling tepat dilakukan manajer adalah...",
+   "opsi": [
+    "Pemberian sanksi pemotongan tunjangan secara sepihak",
+    "Komunikasi terbuka dan edukasi untuk meluruskan persepsi yang keliru",
+    "Manipulasi informasi agar karyawan tidak mengetahui dampak perubahan",
+    "Penundaan seluruh pembaruan sistem tanpa batas waktu"
+   ],
+   "kunci": "B",
+   "pembahasan": "Ketika penolakan bersumber dari kurangnya informasi atau kesalahpahaman, edukasi dan komunikasi terbuka menjadi langkah paling efektif untuk membangun pemahaman.",
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 15,
+   "modul": 7,
+   "tipe": "pg",
+   "pernyataan": "Berdasarkan Teori Dua Faktor Frederick Herzberg, kenaikan gaji pokok, perbaikan ventilasi ruang kerja, dan kebijakan cuti perusahaan dikategorikan sebagai hygiene factors, yang bermakna...",
+   "opsi": [
+    "Otomatis memicu prestasi kerja puncak dalam jangka panjang",
+    "Merupakan kebutuhan aktualisasi diri pada tingkat tertinggi",
+    "Mencegah munculnya ketidakpuasan kerja tetapi tidak otomatis menciptakan motivasi berprestasi",
+    "Menggantikan kebutuhan karyawan akan pengakuan dan tanggung jawab"
+   ],
+   "kunci": "C",
+   "pembahasan": "Hygiene factors hanya menjaga agar karyawan tidak merasa tidak puas; motivasi intrinsik untuk berprestasi tinggi berasal dari kelompok motivators.",
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 16,
+   "modul": 7,
+   "tipe": "pg",
+   "pernyataan": "Perbedaan mendasar antara kelompok teori isi motivasi (seperti Maslow dan McClelland) dengan kelompok teori proses motivasi (seperti Vroom dan Adams) adalah...",
+   "opsi": [
+    "Teori isi berfokus pada perhitungan bonus finansial, sedangkan teori proses berfokus pada sanksi disiplin",
+    "Teori isi hanya berlaku bagi manajer puncak, sedangkan teori proses berlaku bagi staf lapangan",
+    "Teori isi menolak adanya kebutuhan psikologis, sedangkan teori proses mengabaikan keadilan imbalan",
+    "Teori isi mengidentifikasi faktor kebutuhan yang memotivasi individu, sedangkan teori proses menjelaskan mekanisme kognitif terjadinya motivasi"
+   ],
+   "kunci": "D",
+   "pembahasan": "Teori isi menjawab pertanyaan mengenai kebutuhan apa yang mendorong seseorang, sedangkan teori proses menguraikan bagaimana proses berpikir dan persepsi memengaruhi pilihan perilaku.",
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 17,
+   "modul": 7,
+   "tipe": "pg",
+   "pernyataan": "Seorang analis pemasaran mengetahui bahwa rekan kerjanya dengan beban target dan masa kerja yang sama menerima fasilitas kendaraan dinas lebih baik, sehingga ia mulai mengurangi inisiatif lembur sukarela. Menurut Teori Keadilan J. Stacy Adams, tindakan karyawan tersebut merupakan upaya...",
+   "opsi": [
+    "Menyeimbangkan kembali rasio input terhadap outcome yang dirasa tidak adil",
+    "Meningkatkan kebutuhan afiliasi sosial di dalam kelompok kerja",
+    "Menjalankan tahap unfreezing dalam restrukturisasi divisi",
+    "Menerapkan pengendalian umpan maju sebelum proses promosi"
+   ],
+   "kunci": "A",
+   "pembahasan": "Dalam teori keadilan Adams, individu yang merasakan ketimpangan rasio hasil dibanding usaha akan menyesuaikan kontribusi (input) untuk memulihkan persepsi keadilan.",
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 18,
+   "modul": 8,
+   "tipe": "pg",
+   "pernyataan": "Pada model Managerial Grid karya Robert Blake dan Jane Mouton, gaya kepemimpinan yang memadukan perhatian maksimal terhadap pencapaian hasil produksi sekaligus kesejahteraan hubungan antaranggota tim berada pada koordinat...",
+   "opsi": [
+    "Country Club Management (1,9)",
+    "Team Management (9,9)",
+    "Impoverished Management (1,1)",
+    "Authority-Compliance Management (9,1)"
+   ],
+   "kunci": "B",
+   "pembahasan": "Team Management (9,9) menempatkan orientasi tugas dan orientasi hubungan manusia pada tingkat tertinggi secara seimbang.",
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 19,
+   "modul": 8,
+   "tipe": "pg",
+   "pernyataan": "Seorang kepala divisi membawahi tim auditor senior yang sudah memiliki kompetensi teknis sangat tinggi sekaligus komitmen dan kepercayaan diri penuh dalam menyelesaikan tugas. Menurut Teori Kepemimpinan Situasional Hersey dan Blanchard, gaya kepemimpinan yang paling sesuai adalah...",
+   "opsi": [
+    "Telling dengan instruksi teknis rinci dan pengawasan ketat",
+    "Selling dengan pengarahan tinggi disertai bujukan intensif",
+    "Delegating dengan menyerahkan wewenang dan tanggung jawab penuh kepada bawahan",
+    "Coercive dengan penerapan sanksi administratif berlapis"
+   ],
+   "kunci": "C",
+   "pembahasan": "Pada tingkat kesiapan bawahan tertinggi (mampu dan mau), pemimpin cukup mendelegasikan wewenang dengan arahan maupun dukungan minimal.",
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 20,
+   "modul": 8,
+   "tipe": "pg",
+   "pernyataan": "Perbedaan utama antara pemimpin transaksional dan pemimpin transformasional dalam memengaruhi pengikutnya adalah...",
+   "opsi": [
+    "Pemimpin transaksional menghindari penetapan target kerja, sedangkan transformasional fokus pada rutinitas administratif",
+    "Pemimpin transaksional menolak sistem insentif, sedangkan transformasional mengandalkan pengawasan birokratis",
+    "Pemimpin transaksional hanya bekerja di sektor publik, sedangkan transformasional hanya di perusahaan rintisan",
+    "Pemimpin transaksional memotivasi melalui pertukaran imbalan atas target, sedangkan transformasional menginspirasi visi dan perubahan nilai pengikut"
+   ],
+   "kunci": "D",
+   "pembahasan": "Kepemimpinan transaksional bertumpu pada transaksi imbalan dan target kinerja, sedangkan kepemimpinan transformasional mendorong pengikut melampaui kepentingan pribadi demi visi bersama.",
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 21,
+   "modul": 6,
+   "tipe": "pg",
+   "pernyataan": "Dalam model lima tahap perkembangan kelompok Bruce Tuckman, fase ketika para anggota tim mulai saling memperdebatkan pembagian peran, metode kerja, dan siapa yang memegang kendali arah kelompok disebut tahap...",
+   "opsi": [
+    "Storming yang ditandai konflik intrakelompok dalam menentukan peran",
+    "Performing saat tim bekerja produktif menyelesaikan target utama",
+    "Adjourning ketika tim dibubarkan setelah proyek selesai",
+    "Norming saat aturan kelompok telah disepakati bersama"
+   ],
+   "kunci": "A",
+   "pembahasan": "Tahap storming merupakan fase munculnya gesekan dan perdebatan internal mengenai peran serta kepemimpinan sebelum kelompok mencapai kesepakatan norma.",
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 22,
+   "modul": 7,
+   "tipe": "pg",
+   "pernyataan": "Seorang kepala cabang sengaja menyaring dan memperhalus laporan penurunan angka penjualan sebelum mengirimkannya kepada direksi di kantor pusat agar kinerjanya tetap terlihat positif. Hambatan komunikasi organisasi tersebut dikenal sebagai...",
+   "opsi": [
+    "Information overload akibat kelebihan arus pesan masuk",
+    "Filtering berupa penyaringan informasi agar tampak menyenangkan bagi penerima",
+    "Komunikasi lateral antarunit kerja yang setara",
+    "Umpan balik objektif dari pelanggan eksternal"
+   ],
+   "kunci": "B",
+   "pembahasan": "Filtering terjadi ketika pengirim pesan memanipulasi atau menyaring informasi secara sengaja sehingga penerima hanya memperoleh gambaran yang lebih menguntungkan.",
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 23,
+   "modul": 9,
+   "tipe": "pg",
+   "pernyataan": "Perbedaan mendasar antara pengendalian umpan maju (feedforward control) dan pengendalian umpan balik (feedback control) dalam manajemen operasi adalah...",
+   "opsi": [
+    "Feedforward dilakukan setelah laporan keuangan terbit, sedangkan feedback dilakukan sebelum bahan baku dibeli",
+    "Feedforward mengawasi pekerja di lini perakitan, sedangkan feedback mengevaluasi keluhan pelanggan bulan lalu",
+    "Feedforward mencegah penyimpangan pada input sebelum proses dimulai, sedangkan feedback mengevaluasi hasil setelah aktivitas selesai",
+    "Feedforward hanya menilai rasio likuiditas, sedangkan feedback hanya memeriksa kualitas bahan baku"
+   ],
+   "kunci": "C",
+   "pembahasan": "Feedforward control bersifat preventif dengan memeriksa kualitas sumber daya sebelum proses berjalan, sedangkan feedback control bersifat korektif berdasarkan evaluasi hasil akhir.",
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 24,
+   "modul": 9,
+   "tipe": "pg",
+   "pernyataan": "Manajemen sebuah perusahaan ritel memutuskan untuk tidak hanya mengevaluasi laporan laba rugi bulanan, tetapi juga mengukur tingkat retensi pelanggan, kecepatan waktu layanan kasir, serta jam pelatihan karyawan. Pendekatan pengendalian strategis ini menerapkan kerangka...",
+   "opsi": [
+    "Penghapusan seluruh indikator keuangan dalam evaluasi tahunan",
+    "Pemusatan seluruh wewenang keputusan pada satu manajer tunggal",
+    "Penggantian departemen fungsional menjadi organisasi virtual",
+    "Balanced Scorecard yang menilai kinerja dari perspektif keuangan, pelanggan, proses bisnis internal, serta pembelajaran dan pertumbuhan"
+   ],
+   "kunci": "D",
+   "pembahasan": "Balanced Scorecard (Kaplan & Norton) melengkapi ukuran kinerja keuangan masa lalu dengan tiga perspektif operasional pendorong pertumbuhan jangka panjang.",
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 25,
+   "modul": 10,
+   "tipe": "pg",
+   "pernyataan": "Perbedaan yang tepat antara kreativitas dan inovasi dalam organisasi adalah...",
+   "opsi": [
+    "Kreativitas adalah menghasilkan gagasan baru, sedangkan inovasi adalah menerapkan gagasan itu menjadi produk, proses, atau layanan yang bernilai",
+    "Kreativitas hanya terjadi di departemen riset, sedangkan inovasi hanya terjadi di departemen keuangan",
+    "Kreativitas selalu menghasilkan laba, sedangkan inovasi tidak pernah membutuhkan gagasan baru",
+    "Kreativitas dan inovasi memiliki arti yang sama persis dalam seluruh konteks organisasi"
+   ],
+   "kunci": "A",
+   "pembahasan": "Kreativitas berhenti pada lahirnya gagasan baru, sementara inovasi mengubah gagasan tersebut menjadi sesuatu yang diterapkan dan memberi nilai.",
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 26,
+   "modul": 10,
+   "tipe": "pg",
+   "pernyataan": "Joseph Schumpeter memandang wirausahawan terutama sebagai pihak yang berperan...",
+   "opsi": [
+    "Menyimpan kekayaan dalam bentuk kas agar terhindar dari risiko",
+    "Mengawasi pekerja agar mengikuti prosedur secara ketat",
+    "Menjadi pelaku inovasi yang menggerakkan perubahan ekonomi lewat kombinasi baru sumber daya",
+    "Menghindari persaingan dengan meniru seluruh produk pesaing"
+   ],
+   "kunci": "C",
+   "pembahasan": "Schumpeter menekankan peran wirausahawan sebagai inovator yang mengombinasikan sumber daya dengan cara baru sehingga mendorong perubahan dan pertumbuhan ekonomi.",
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 27,
+   "modul": 11,
+   "tipe": "pg",
+   "pernyataan": "Ciri manajemen UMKM yang paling lazim dibandingkan perusahaan besar adalah...",
+   "opsi": [
+    "Struktur organisasi sederhana dan pemilik sering merangkap pengelola sehingga keputusan dapat diambil cepat",
+    "Jenjang manajemen yang sangat banyak dengan pembagian departemen yang kaku",
+    "Pemisahan penuh antara pemilik dan manajer profesional pada semua usaha",
+    "Ketergantungan sepenuhnya pada pasar modal untuk pendanaan"
+   ],
+   "kunci": "A",
+   "pembahasan": "UMKM umumnya berstruktur sederhana dengan pemilik yang terlibat langsung dalam operasional, sehingga pengambilan keputusan relatif cepat.",
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 28,
+   "modul": 11,
+   "tipe": "pg",
+   "pernyataan": "Kendala yang umum dihadapi UMKM dalam mengembangkan usahanya adalah...",
+   "opsi": [
+    "Kelebihan tenaga ahli di setiap fungsi manajemen",
+    "Keterbatasan akses permodalan serta kemampuan manajerial dan pemasaran",
+    "Kewajiban menerbitkan saham kepada publik sejak awal berdiri",
+    "Jumlah pesaing yang selalu nol di semua pasar"
+   ],
+   "kunci": "B",
+   "pembahasan": "Keterbatasan modal, kemampuan manajerial, dan jangkauan pemasaran lazim menjadi hambatan utama pertumbuhan UMKM.",
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 29,
+   "modul": 12,
+   "tipe": "pg",
+   "pernyataan": "Sebuah toko daring memakai data riwayat belanja pelanggan untuk menampilkan rekomendasi produk yang berbeda bagi tiap pelanggan. Hal ini menggambarkan penciptaan nilai di era digital melalui...",
+   "opsi": [
+    "Pengurangan jumlah pelanggan agar layanan lebih sederhana",
+    "Penghapusan seluruh interaksi dengan pelanggan",
+    "Pemanfaatan data untuk personalisasi layanan",
+    "Pencetakan katalog fisik yang sama untuk semua pelanggan"
+   ],
+   "kunci": "C",
+   "pembahasan": "Data pelanggan dapat dimanfaatkan untuk menyesuaikan layanan secara personal sehingga nilai bagi pelanggan meningkat.",
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 30,
+   "modul": 12,
+   "tipe": "pg",
+   "pernyataan": "Pernyataan yang paling tepat tentang transformasi digital dalam organisasi adalah...",
+   "opsi": [
+    "Cukup dengan membeli perangkat komputer baru tanpa mengubah cara kerja",
+    "Hanya berlaku bagi perusahaan teknologi dan tidak relevan bagi usaha lain",
+    "Berarti menghentikan seluruh proses bisnis yang sudah ada",
+    "Perubahan proses dan model bisnis dengan memanfaatkan teknologi digital untuk menciptakan nilai baru"
+   ],
+   "kunci": "D",
+   "pembahasan": "Transformasi digital menyangkut perubahan cara kerja dan model bisnis, bukan sekadar pengadaan perangkat.",
+   "verifikasi": "dicek-konsep"
+  }
+ ],
+ "gratis_soal": [
+  1,
+  4,
+  10,
+  15,
+  23
+ ]
 }
