@@ -751,6 +751,35 @@
       font-weight: 600;
     }
 
+    /* ===== Coverflow karya (geser samping) ===== */
+    .cflow { position: relative; margin: 8px auto 0; max-width: 1200px; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+    .cflow-stage { position: relative; height: clamp(400px, 52vw, 470px); perspective: 1400px; overflow: hidden; cursor: grab; outline: none; }
+    .cflow-stage.drag { cursor: grabbing; }
+    .cflow-item { position: absolute; left: 50%; top: 0; width: min(400px, 78vw); margin-left: calc(min(400px, 78vw) / -2);
+      transition: transform .55s cubic-bezier(.23, 1, .32, 1), opacity .4s ease; will-change: transform; backface-visibility: hidden; }
+    .cflow-stage.drag .cflow-item { transition: none; }
+    .cflow-item .work-card { height: 100%; backdrop-filter: none; background: rgba(12, 22, 40, .94); }
+    .cflow-item .work-card:hover { transform: none; }
+    .cflow-item .work-body p { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .cflow-item .work-tags { margin-top: 8px; }
+    #works-more[hidden] { display: none; }
+    .cflow-item .work-card { background: #0c1628; transition: filter .4s ease; }
+    .cflow-item:not(.act) .work-card { filter: brightness(.5); }
+    .cflow-item.off { pointer-events: none; visibility: hidden; opacity: 0; }
+    .cflow-bar { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 18px; }
+    .cflow-btn { width: 44px; height: 44px; border-radius: 999px; border: 1px solid var(--line); background: var(--glass); color: inherit; cursor: pointer; display: grid; place-items: center; transition: border-color .2s ease, transform .15s ease; }
+    .cflow-btn:hover { border-color: rgba(93, 240, 168, .5); }
+    .cflow-btn:active { transform: scale(.95); }
+    .cflow-btn svg { width: 18px; height: 18px; }
+    .cflow-count { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; min-width: 64px; text-align: center; opacity: .8; font-variant-numeric: tabular-nums; }
+    @media (prefers-reduced-motion: reduce) { .cflow-item { transition: opacity .2s ease !important; } }
+    @media (max-width: 760px) {
+      .cflow-stage { height: 430px; }
+      /* blur di atas kanvas 3D yang bergerak sangat berat di HP */
+      *, *::before, *::after { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+    }
+    html.lowfx *, html.lowfx *::before, html.lowfx *::after { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+
     .works-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -1784,7 +1813,7 @@
       </div>
 
       <div class="filter-bar" id="filter-bar" data-reveal style="--rd: 100ms"></div>
-      <div class="works-grid" id="works-grid" aria-live="polite"></div>
+      <div class="cflow" id="cflow"><div class="cflow-stage" id="works-grid" tabindex="0" role="region" aria-roledescription="carousel" aria-label="Galeri karya, geser ke samping" aria-live="polite"></div><div class="cflow-bar"><button type="button" class="cflow-btn" id="cf-prev" aria-label="Karya sebelumnya"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><span class="cflow-count" id="cf-count">1 / 1</span><button type="button" class="cflow-btn" id="cf-next" aria-label="Karya berikutnya"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button></div></div>
       <div style="text-align: center; margin-top: 28px;"><button type="button" class="btn btn-outline" id="works-more" hidden>Lihat semua karya</button></div>
     </section>
 
@@ -2140,21 +2169,43 @@
       return `<img src="${esc(media)}" alt="${esc(item.title)}" loading="lazy" ${onErr} />` + fallback;
     }
 
+    let cfIndex = 0, cfItems = [], cfList = [];
+    const cfCount = document.getElementById('cf-count');
+    function cfLayout() {
+      const n = cfItems.length;
+      const w = cfItems[0] ? cfItems[0].offsetWidth : 400;
+      const step = w * 0.62;
+      cfItems.forEach((el, i) => {
+        const o = i - cfIndex, ab = Math.abs(o);
+        const rot = Math.max(-42, Math.min(42, -o * 30));
+        const x = o * step;
+        el.classList.toggle('off', ab > 3);
+        el.style.zIndex = String(100 - ab);
+        el.style.transform = window.__PREFERS_REDUCED__
+          ? `translate3d(${o * 6}%,0,0) scale(${ab ? .92 : 1})`
+          : `translate3d(${x}px,0,${-Math.min(ab, 3) * 130}px) rotateY(${rot}deg) scale(${1 - Math.min(ab, 3) * 0.08})`;
+        el.classList.toggle('act', ab === 0);
+        el.setAttribute('aria-hidden', ab ? 'true' : 'false');
+      });
+      cfCount.textContent = n ? `${cfIndex + 1} / ${n}` : '0 / 0';
+    }
+    function cfGo(i) { cfIndex = Math.max(0, Math.min(cfItems.length - 1, i)); cfLayout(); }
+
     function renderWorks() {
-      const all = works.filter((w) => activeFilter === 'all' || w.category === activeFilter);
-      const list = showAll ? all : all.slice(0, PAGE);
-      moreBtn.hidden = all.length <= list.length;
-      moreBtn.textContent = `Lihat semua karya (${all.length})`;
-      if (!list.length) {
+      cfList = works.filter((w) => activeFilter === 'all' || w.category === activeFilter);
+      moreBtn.hidden = true;
+      cfIndex = 0; cfItems = [];
+      if (!cfList.length) {
         worksGrid.innerHTML = `<div class="works-empty">Belum ada karya di kategori ini.</div>`;
+        cfLayout();
         return;
       }
       worksGrid.innerHTML = '';
-      list.forEach((item) => {
+      cfList.forEach((item, i) => {
+        const wrap = document.createElement('div');
+        wrap.className = 'cflow-item';
         const card = document.createElement('article');
         card.className = 'work-card';
-        card.tabIndex = 0;
-        card.setAttribute('role', 'button');
         card.setAttribute('aria-label', `Buka detail: ${item.title}`);
         const tools = Array.isArray(item.tools) ? item.tools : [];
         card.innerHTML = `
@@ -2166,18 +2217,44 @@
             <div class="work-body">
               <h3>${esc(item.title)}</h3>
               <p>${esc(item.summary)}</p>
-              ${item.metrics ? `<span class="work-metric">${esc(item.metrics)}</span>` : ''}
               <div class="work-tags">
-                <div class="tag-list">${tools.slice(0, 5).map((t) => `<span class="tag-chip">${esc(t)}</span>`).join('')}</div>
-                <span class="work-link-hint">Detail →</span>
+                <div class="tag-list">${tools.slice(0, 3).map((t) => `<span class="tag-chip">${esc(t)}</span>`).join('')}</div>
+                <span class="work-link-hint">${item.mediaType === 'video' ? 'Putar →' : 'Detail →'}</span>
               </div>
             </div>
           </div>`;
-        card.addEventListener('click', () => openModal(item));
-        card.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(item); } });
-        worksGrid.appendChild(card);
+        wrap.appendChild(card);
+        wrap.addEventListener('click', () => { if (cfMoved) return; i === cfIndex ? openModal(item) : cfGo(i); });
+        worksGrid.appendChild(wrap);
+        cfItems.push(wrap);
       });
+      cfLayout();
     }
+
+    // drag / swipe, tombol, keyboard
+    let cfMoved = false;
+    (function () {
+      const stage = worksGrid; let sx = 0, base = 0, down = false;
+      stage.addEventListener('pointerdown', (e) => { if (e.pointerType === 'mouse' && e.button !== 0) return; down = true; cfMoved = false; sx = e.clientX; base = cfIndex; });
+      window.addEventListener('pointermove', (e) => {
+        if (!down) return;
+        const dx = e.clientX - sx;
+        if (Math.abs(dx) > 8) { cfMoved = true; stage.classList.add('drag'); }
+        if (cfMoved) { const step = (cfItems[0] ? cfItems[0].offsetWidth : 400) * 0.5; const t = Math.round(base - dx / step); if (t !== cfIndex) cfGo(t); }
+      });
+      const up = () => { if (!down) return; down = false; stage.classList.remove('drag'); setTimeout(() => { cfMoved = false; }, 0); };
+      window.addEventListener('pointerup', up); window.addEventListener('pointercancel', up);
+      document.getElementById('cf-prev').addEventListener('click', () => cfGo(cfIndex - 1));
+      document.getElementById('cf-next').addEventListener('click', () => cfGo(cfIndex + 1));
+      stage.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') { e.preventDefault(); cfGo(cfIndex - 1); }
+        else if (e.key === 'ArrowRight') { e.preventDefault(); cfGo(cfIndex + 1); }
+        else if (e.key === 'Home') { e.preventDefault(); cfGo(0); }
+        else if (e.key === 'End') { e.preventDefault(); cfGo(cfItems.length - 1); }
+        else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (cfList[cfIndex]) openModal(cfList[cfIndex]); }
+      });
+      window.addEventListener('resize', cfLayout);
+    })();
 
     // ---------- Modal detail ----------
     const modal = document.getElementById('project-modal');
@@ -2401,7 +2478,8 @@
 
     const canvas = document.querySelector('.planet-canvas');
     const renderer = new THREE.WebGL1Renderer({ canvas, antialias: true });
-    renderer.setPixelRatio(window.devicePixelRatio);
+    const PR = () => Math.min(window.devicePixelRatio || 1, window.innerWidth < 760 ? 1 : (window.__LOWFX__ ? 1 : 1.25));
+    renderer.setPixelRatio(PR());
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.outputEncoding = THREE.sRGBEncoding;
     renderer.shadowMap.enabled = true;
@@ -3027,18 +3105,19 @@
       const h = window.innerHeight;
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
-      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setPixelRatio(PR());
       renderer.setSize(w, h);
-      torusComposer.setPixelRatio(window.devicePixelRatio);
+      torusComposer.setPixelRatio(PR());
       torusComposer.setSize(w, h);
-      bloomComposer.setPixelRatio(window.devicePixelRatio);
+      bloomComposer.setPixelRatio(PR());
       bloomComposer.setSize(w, h);
-      finalComposer.setPixelRatio(window.devicePixelRatio);
+      finalComposer.setPixelRatio(PR());
       finalComposer.setSize(w, h);
       uRes.value.set(w, h);
     });
 
     // Animation Loop
+    let perfSum = 0, perfN = 0;
     let lastTime = performance.now() * 0.001;
     let curP = 0;
     let curX = STOPS_X[0].v;
@@ -3049,7 +3128,20 @@
     function animate() {
       requestAnimationFrame(animate);
       const now = performance.now() * 0.001;
-      const dt = Math.min(now - lastTime, 0.05);
+      // pantau kelancaran: bila rata-rata frame lambat, turunkan kualitas otomatis
+      const raw = now - lastTime;
+      if (!window.__LOWFX__ && raw < 0.5) {
+        perfSum += raw; perfN++;
+        if (perfN >= 90) {
+          if (perfSum / perfN > 0.03) {
+            window.__LOWFX__ = true;
+            document.documentElement.classList.add('lowfx');
+            window.dispatchEvent(new Event('resize'));
+          }
+          perfSum = 0; perfN = 0;
+        }
+      }
+      const dt = Math.min(raw, 0.05);
       lastTime = now;
 
       planetTime.value += dt / 12;
