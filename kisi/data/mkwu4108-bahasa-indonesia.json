@@ -1,0 +1,441 @@
+{
+ "slug": "mkwu4108-bahasa-indonesia",
+ "kode_lama": [
+  "MKWU4108"
+ ],
+ "kode_baru": null,
+ "nama_mk": "Bahasa Indonesia",
+ "fakultas": "Mata Kuliah Wajib Umum (semua program studi)",
+ "status": "draf AI (Gemini), sampel dicek; no. 5 menunggu verifikasi",
+ "harga": 20000,
+ "moduls": [
+  {
+   "no": 1,
+   "topik": "Hakikat Bahasa",
+   "fokus": [
+    "Sifat arbitrer, produktif, dinamis; fungsi bahasa nasional vs bahasa negara."
+   ]
+  },
+  {
+   "no": 2,
+   "topik": "Sejarah Perkembangan Bahasa Indonesia",
+   "fokus": [
+    "Sumpah Pemuda 1928, kongres bahasa, perkembangan sistem ejaan."
+   ]
+  },
+  {
+   "no": 3,
+   "topik": "Menyimak & Berbicara",
+   "fokus": [
+    "Jenis menyimak (kritis, intensif, estetis) dan teknik presentasi formal."
+   ]
+  },
+  {
+   "no": 4,
+   "topik": "Membaca",
+   "fokus": [
+    "Langkah metode membaca SQ3R."
+   ]
+  },
+  {
+   "no": 5,
+   "topik": "Ejaan (EYD V) & Diksi",
+   "fokus": [
+    "Huruf kapital, huruf miring, penulisan kata depan, kata baku KBBI."
+   ]
+  },
+  {
+   "no": 6,
+   "topik": "Kalimat Efektif & Paragraf",
+   "fokus": [
+    "Kalimat tidak efektif, jenis paragraf, kohesi-koherensi."
+   ]
+  },
+  {
+   "no": 7,
+   "topik": "Karya Ilmiah",
+   "fokus": [
+    "Sistematika, abstrak, aturan kutipan dan parafrase."
+   ]
+  },
+  {
+   "no": 8,
+   "topik": "Ringkasan, Ikhtisar, & Resensi",
+   "fokus": [
+    "Perbedaan ringkasan dan ikhtisar, unsur resensi buku."
+   ]
+  },
+  {
+   "no": 9,
+   "topik": "Penyuntingan Bahasa",
+   "fokus": [
+    "Perbaikan morfologi, ejaan, dan struktur kalimat."
+   ]
+  }
+ ],
+ "soal": [
+  {
+   "no": 1,
+   "modul": 1,
+   "tipe": "pg",
+   "pernyataan": "Sifat bahasa yang menunjukkan tidak adanya hubungan wajib atau logis antara lambang bunyi dengan konsep atau benda yang dilambangkannya disebut sifat...",
+   "alasan_soal": null,
+   "butir": null,
+   "opsi": [
+    "Arbitrer",
+    "Konvensional",
+    "Produktif",
+    "Dinamis"
+   ],
+   "kunci": "A",
+   "pembahasan": "Arbitrer berarti mana suka; tidak ada hubungan logis antara bunyi kata dan wujud bendanya.",
+   "verifikasi": "sampel"
+  },
+  {
+   "no": 2,
+   "modul": 1,
+   "tipe": "pg",
+   "pernyataan": "Dalam kedudukannya sebagai bahasa negara berdasarkan Pasal 36 UUD 1945, bahasa Indonesia berfungsi sebagai...",
+   "alasan_soal": null,
+   "butir": null,
+   "opsi": [
+    "Lambang kebanggaan kebangsaan",
+    "Alat pemersatu berbagai suku bangsa",
+    "Bahasa pengantar resmi di lembaga pendidikan",
+    "Lambang identitas nasional"
+   ],
+   "kunci": "C",
+   "pembahasan": "Bahasa pengantar pendidikan adalah fungsi bahasa negara; opsi A, B, dan D adalah fungsi bahasa nasional (Sumpah Pemuda).",
+   "verifikasi": "sampel"
+  },
+  {
+   "no": 3,
+   "modul": 2,
+   "tipe": "pg",
+   "pernyataan": "Tonggak sejarah yang menandai pengakuan bahasa Indonesia secara politik sebagai bahasa persatuan sebelum kemerdekaan adalah...",
+   "alasan_soal": null,
+   "butir": null,
+   "opsi": [
+    "Kongres Bahasa Indonesia I di Solo tahun 1938",
+    "Ikrar Sumpah Pemuda tanggal 28 Oktober 1928",
+    "Penetapan UUD 1945 tanggal 18 Agustus 1945",
+    "Pemberlakuan Ejaan Republik tahun 1947"
+   ],
+   "kunci": "B",
+   "pembahasan": "Sumpah Pemuda 28 Oktober 1928 mengukuhkan bahasa Indonesia secara politis sebagai bahasa persatuan.",
+   "verifikasi": "sampel"
+  },
+  {
+   "no": 4,
+   "modul": 3,
+   "tipe": "pg",
+   "pernyataan": "Jenis kegiatan menyimak yang dilakukan untuk mengevaluasi gagasan pembicara secara objektif dengan menimbang kekuatan dan kelemahan argumen disebut menyimak...",
+   "alasan_soal": null,
+   "butir": null,
+   "opsi": [
+    "Ekstensif",
+    "Estetis",
+    "Kritis",
+    "Sekunder"
+   ],
+   "kunci": "C",
+   "pembahasan": "Menyimak kritis berfokus pada penilaian objektif terhadap kebenaran dan kelemahan argumen pembicara.",
+   "verifikasi": "sampel"
+  },
+  {
+   "no": 5,
+   "modul": 4,
+   "tipe": "pg",
+   "pernyataan": "Pada metode membaca SQ3R, tahapan yang bertujuan menguji dan meninjau ulang bagian bacaan yang belum dikuasai setelah selesai membaca keseluruhan teks adalah...",
+   "alasan_soal": null,
+   "butir": null,
+   "opsi": [
+    "Survey",
+    "Question",
+    "Recite",
+    "Review"
+   ],
+   "kunci": "D",
+   "pembahasan": "Review adalah langkah terakhir SQ3R untuk mengecek ulang bagian bacaan yang belum dipahami.",
+   "verifikasi": "menunggu"
+  },
+  {
+   "no": 6,
+   "modul": 5,
+   "tipe": "pg",
+   "pernyataan": "Penulisan huruf kapital dan huruf miring yang tepat sesuai kaidah EYD Edisi V terdapat pada kalimat...",
+   "alasan_soal": null,
+   "butir": null,
+   "opsi": [
+    "Mahasiswa Universitas Terbuka membaca buku Pengantar Bisnis (dicetak miring) di perpustakaan.",
+    "Kemarin paman saya menyeberangi selat Sunda menuju pulau Jawa.",
+    "Gubernur Jawa Barat meninjau perbaikan jalan di kabupaten Bandung.",
+    "Setiap tanggal 17 Agustus, rakyat Indonesia memperingati hari kemerdekaan."
+   ],
+   "kunci": "A",
+   "pembahasan": "Opsi A tepat (nama lembaga benar, judul buku dimiringkan). Seharusnya: Selat Sunda, Pulau Jawa, Kabupaten Bandung.",
+   "verifikasi": "sampel"
+  },
+  {
+   "no": 7,
+   "modul": 5,
+   "tipe": "pg",
+   "pernyataan": "Kelompok kata yang seluruhnya merupakan bentuk baku sesuai KBBI adalah...",
+   "alasan_soal": null,
+   "butir": null,
+   "opsi": [
+    "Analisis, risiko, kualitas, sistem",
+    "Analisa, resiko, kwalitas, sistim",
+    "Analisis, resiko, kualitas, sistem",
+    "Analisa, risiko, kwalitas, sistem"
+   ],
+   "kunci": "A",
+   "pembahasan": "Bentuk baku KBBI adalah analisis, risiko, kualitas, dan sistem.",
+   "verifikasi": "sampel"
+  },
+  {
+   "no": 8,
+   "modul": 6,
+   "tipe": "pg",
+   "pernyataan": "Perhatikan kalimat: \"Bagi seluruh peserta ujian wajib membawa kartu identitas.\" Kalimat tersebut tidak efektif karena melanggar syarat...",
+   "alasan_soal": null,
+   "butir": null,
+   "opsi": [
+    "Kehematan kata",
+    "Kesepadanan struktur (ketidakjelasan subjek)",
+    "Keparalelan bentuk",
+    "Kelogisan makna"
+   ],
+   "kunci": "B",
+   "pembahasan": "Kata depan \"bagi\" di awal kalimat menghilangkan fungsi subjek. Perbaikan: \"Seluruh peserta ujian wajib membawa kartu identitas.\"",
+   "verifikasi": "sampel"
+  },
+  {
+   "no": 9,
+   "modul": 6,
+   "tipe": "pg",
+   "pernyataan": "Paragraf yang menempatkan kalimat utama di bagian awal paragraf lalu diikuti kalimat-kalimat penjelas yang bersifat khusus disebut paragraf...",
+   "alasan_soal": null,
+   "butir": null,
+   "opsi": [
+    "Induktif",
+    "Deduktif",
+    "Iteratif",
+    "Campuran"
+   ],
+   "kunci": "B",
+   "pembahasan": "Deduktif: gagasan utama di awal (umum ke khusus). Induktif: gagasan utama di akhir (khusus ke umum).",
+   "verifikasi": "sampel"
+  },
+  {
+   "no": 10,
+   "modul": 7,
+   "tipe": "pg",
+   "pernyataan": "Bagian dalam artikel ilmiah yang menyajikan ringkasan padat mencakup tujuan, metode, hasil, dan simpulan dalam satu paragraf sepanjang 150–250 kata disebut...",
+   "alasan_soal": null,
+   "butir": null,
+   "opsi": [
+    "Prakata",
+    "Latar belakang",
+    "Abstrak",
+    "Rekomendasi"
+   ],
+   "kunci": "C",
+   "pembahasan": "Abstrak memuat ringkasan tujuan, metode, hasil, dan simpulan dalam satu paragraf padat.",
+   "verifikasi": "sampel"
+  },
+  {
+   "no": 11,
+   "modul": 8,
+   "tipe": "pg",
+   "pernyataan": "Perbedaan mendasar antara ringkasan dan ikhtisar terletak pada ketentuan bahwa...",
+   "alasan_soal": null,
+   "butir": null,
+   "opsi": [
+    "Ringkasan boleh mengacak urutan bab penulis, sedangkan ikhtisar harus berurutan",
+    "Ringkasan mempertahankan urutan alur dan sudut pandang penulis asli, sedangkan ikhtisar tidak terikat urutan bab",
+    "Ringkasan memuat penilaian subjektif pembaca, sedangkan ikhtisar berisi kutipan langsung",
+    "Ringkasan hanya berlaku untuk teks sastra, sedangkan ikhtisar khusus untuk laporan penelitian"
+   ],
+   "kunci": "B",
+   "pembahasan": "Ringkasan wajib mengikuti urutan bab/alur penulis asli, sedangkan ikhtisar bebas menyusun ulang urutan gagasan.",
+   "verifikasi": "sampel"
+  },
+  {
+   "no": 12,
+   "modul": 9,
+   "tipe": "pg",
+   "pernyataan": "Dalam penyuntingan naskah, perbaikan kata tidak baku seperti merubah menjadi mengubah serta menyontek menjadi mencontek termasuk ruang lingkup penyuntingan...",
+   "alasan_soal": null,
+   "butir": null,
+   "opsi": [
+    "Sistematika bab",
+    "Morfologi dan ejaan",
+    "Substansi data",
+    "Tipografi halaman"
+   ],
+   "kunci": "B",
+   "pembahasan": "Peluluhan bunyi awal k, p, t, s setelah awalan meN- (ubah → mengubah, sontek → mencontek) masuk ranah morfologi dan ejaan.",
+   "verifikasi": "sampel"
+  },
+  {
+   "no": 13,
+   "modul": 5,
+   "tipe": "sa",
+   "pernyataan": "Penulisan bentuk di mana dan ke dalam harus dipisah dari kata yang mengikutinya.",
+   "alasan_soal": "Unsur di dan ke pada kedua bentuk tersebut berfungsi sebagai kata depan (preposisi) yang menandai tempat atau arah, bukan awalan (prefiks).",
+   "butir": null,
+   "opsi": [
+    "Jika pernyataan benar, alasan benar, dan keduanya menunjukkan hubungan sebab akibat.",
+    "Jika pernyataan benar, alasan benar, tetapi keduanya tidak menunjukkan hubungan sebab akibat.",
+    "Jika salah satu dari pernyataan atau alasan salah.",
+    "Jika pernyataan dan alasan keduanya salah."
+   ],
+   "kunci": "A",
+   "pembahasan": "Pernyataan benar, alasan benar, dan berhubungan sebab-akibat (preposisi di/ke selalu ditulis terpisah).",
+   "verifikasi": "sampel"
+  },
+  {
+   "no": 14,
+   "modul": 6,
+   "tipe": "sa",
+   "pernyataan": "Paragraf yang padu harus memenuhi syarat kohesi dan koherensi antar-kalimat.",
+   "alasan_soal": "Koherensi berkaitan dengan keserasian bentuk gramatikal, sedangkan kohesi berkaitan dengan kepaduan makna antar-gagasan dalam paragraf.",
+   "butir": null,
+   "opsi": [
+    "Jika pernyataan benar, alasan benar, dan keduanya menunjukkan hubungan sebab akibat.",
+    "Jika pernyataan benar, alasan benar, tetapi keduanya tidak menunjukkan hubungan sebab akibat.",
+    "Jika salah satu dari pernyataan atau alasan salah.",
+    "Jika pernyataan dan alasan keduanya salah."
+   ],
+   "kunci": "C",
+   "pembahasan": "Pernyataan benar, alasan salah karena definisinya terbalik (kohesi = bentuk gramatikal, koherensi = kepaduan makna).",
+   "verifikasi": "sampel"
+  },
+  {
+   "no": 15,
+   "modul": 7,
+   "tipe": "sa",
+   "pernyataan": "Teknik parafrase dalam penyusunan karya ilmiah tetap mewajibkan penulis mencantumkan sumber rujukan asli.",
+   "alasan_soal": "Parafrase hanya mengubah struktur kalimat dan diksi tanpa mengubah gagasan pokok yang diambil dari penulis sumber.",
+   "butir": null,
+   "opsi": [
+    "Jika pernyataan benar, alasan benar, dan keduanya menunjukkan hubungan sebab akibat.",
+    "Jika pernyataan benar, alasan benar, tetapi keduanya tidak menunjukkan hubungan sebab akibat.",
+    "Jika salah satu dari pernyataan atau alasan salah.",
+    "Jika pernyataan dan alasan keduanya salah."
+   ],
+   "kunci": "A",
+   "pembahasan": "Pernyataan benar, alasan benar, dan saling berhubungan (ide pokok tetap milik penulis sumber sehingga wajib disitasi).",
+   "verifikasi": "sampel"
+  },
+  {
+   "no": 16,
+   "modul": 1,
+   "tipe": "sa",
+   "pernyataan": "Bahasa bersifat statis sehingga perbendaharaan kata suatu bahasa tidak pernah mengalami perubahan dari masa ke masa.",
+   "alasan_soal": "Kaidah bahasa baku melarang penyerapan istilah asing maupun pembentukan kosakata baru dalam masyarakat.",
+   "butir": null,
+   "opsi": [
+    "Jika pernyataan benar, alasan benar, dan keduanya menunjukkan hubungan sebab akibat.",
+    "Jika pernyataan benar, alasan benar, tetapi keduanya tidak menunjukkan hubungan sebab akibat.",
+    "Jika salah satu dari pernyataan atau alasan salah.",
+    "Jika pernyataan dan alasan keduanya salah."
+   ],
+   "kunci": "D",
+   "pembahasan": "Keduanya salah; bahasa bersifat dinamis sehingga terus berkembang dan menyerap kosakata baru.",
+   "verifikasi": "sampel"
+  },
+  {
+   "no": 17,
+   "modul": 1,
+   "tipe": "kk",
+   "pernyataan": "Fungsi bahasa Indonesia dalam kedudukannya sebagai bahasa negara meliputi...",
+   "alasan_soal": null,
+   "butir": [
+    "Bahasa resmi kenegaraan",
+    "Bahasa pengantar di dunia pendidikan",
+    "Alat perhubungan pada tingkat nasional untuk kepentingan pembangunan dan pemerintahan"
+   ],
+   "opsi": [
+    "Jika (1) dan (2) benar.",
+    "Jika (1) dan (3) benar.",
+    "Jika (2) dan (3) benar.",
+    "Jika (1), (2), dan (3) benar."
+   ],
+   "kunci": "D",
+   "pembahasan": "Pernyataan (1), (2), dan (3) seluruhnya merupakan fungsi resmi bahasa Indonesia sebagai bahasa negara.",
+   "verifikasi": "sampel"
+  },
+  {
+   "no": 18,
+   "modul": 5,
+   "tipe": "kk",
+   "pernyataan": "Berdasarkan kaidah EYD Edisi V, huruf miring digunakan untuk menuliskan...",
+   "alasan_soal": null,
+   "butir": [
+    "Judul buku, nama majalah, atau nama surat kabar yang dikutip dalam tulisan",
+    "Kata atau ungkapan bahasa daerah atau asing yang belum diserap ke dalam bahasa Indonesia",
+    "Nama penulis dan kota penerbit pada penulisan daftar pustaka"
+   ],
+   "opsi": [
+    "Jika (1) dan (2) benar.",
+    "Jika (1) dan (3) benar.",
+    "Jika (2) dan (3) benar.",
+    "Jika (1), (2), dan (3) benar."
+   ],
+   "kunci": "A",
+   "pembahasan": "Pernyataan (1) dan (2) benar; nama penulis dan kota penerbit pada daftar pustaka ditulis tegak biasa.",
+   "verifikasi": "sampel"
+  },
+  {
+   "no": 19,
+   "modul": 6,
+   "tipe": "kk",
+   "pernyataan": "Syarat yang menentukan keefektifan sebuah kalimat dalam ragam tulis ilmiah meliputi...",
+   "alasan_soal": null,
+   "butir": [
+    "Kesepadanan antara struktur gramatikal dan jalan pikiran yang logis",
+    "Keparalelan atau kesejajaran bentuk kata yang digunakan secara berurutan",
+    "Penggunaan dua kata bersinonim sekaligus agar makna kalimat lebih tegas"
+   ],
+   "opsi": [
+    "Jika (1) dan (2) benar.",
+    "Jika (1) dan (3) benar.",
+    "Jika (2) dan (3) benar.",
+    "Jika (1), (2), dan (3) benar."
+   ],
+   "kunci": "A",
+   "pembahasan": "(1) dan (2) benar; penggunaan dua sinonim sekaligus melanggar syarat kehematan (pleonasme).",
+   "verifikasi": "sampel"
+  },
+  {
+   "no": 20,
+   "modul": 8,
+   "tipe": "kk",
+   "pernyataan": "Unsur-unsur pokok yang lazim disajikan dalam penulisan sebuah resensi buku adalah...",
+   "alasan_soal": null,
+   "butir": [
+    "Identitas buku (judul, pengarang, penerbit, tahun terbit, jumlah halaman)",
+    "Sinopsis atau ringkasan isi buku",
+    "Penilaian terhadap keunggulan dan kelemahan buku"
+   ],
+   "opsi": [
+    "Jika (1) dan (2) benar.",
+    "Jika (1) dan (3) benar.",
+    "Jika (2) dan (3) benar.",
+    "Jika (1), (2), dan (3) benar."
+   ],
+   "kunci": "D",
+   "pembahasan": "(1), (2), dan (3) adalah komponen standar penyusunan resensi buku.",
+   "verifikasi": "sampel"
+  }
+ ],
+ "gratis_soal": [
+  1,
+  3,
+  4,
+  6,
+  7
+ ]
+}
