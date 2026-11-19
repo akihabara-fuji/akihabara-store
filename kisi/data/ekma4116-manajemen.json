@@ -6,62 +6,109 @@
  "kode_baru": "EMBS4101",
  "nama_mk": "Manajemen",
  "fakultas": "S1 Manajemen, semester 2",
- "status": "draf AI (Gemini), belum diverifikasi ke BMP; kode baru dicocokkan dengan KHS pemilik situs",
+ "status": "judul modul dan kegiatan belajar dari daftar isi resmi BMP EKMA4116 Edisi 3 (12 modul); poin hafalan masih draf AI",
  "harga": 20000,
  "moduls": [
   {
    "no": 1,
-   "topik": "Evolusi Teori Manajemen",
-   "indikator": "Perbedaan manajemen ilmiah Taylor, administrasi Fayol, dan pendekatan kontingensi.",
-   "prioritas": "Sedang"
+   "topik": "Manajemen: Pengantar",
+   "fokus": [
+    "Konsep dasar manajemen.",
+    "Perkembangan teori dan pemikiran manajemen."
+   ]
   },
   {
    "no": 2,
-   "topik": "Lingkungan & Budaya Organisasi",
-   "indikator": "Analisis lingkungan eksternal langsung dan tidak langsung serta dimensi budaya organisasi.",
-   "prioritas": "Sedang"
+   "topik": "Lingkungan Organisasi",
+   "fokus": [
+    "Lingkungan organisasi.",
+    "Etika bisnis dan tanggung jawab sosial.",
+    "Globalisasi."
+   ]
   },
   {
    "no": 3,
-   "topik": "Perencanaan & Pengambilan Keputusan",
-   "indikator": "Hierarki rencana (strategis, taktis, operasional) dan kriteria sasaran SMART.",
-   "prioritas": "Tinggi"
+   "topik": "Perencanaan dan Perencanaan Strategis",
+   "fokus": [
+    "Perencanaan.",
+    "Perencanaan strategis."
+   ]
   },
   {
    "no": 4,
-   "topik": "Pengorganisasian & Struktur",
-   "indikator": "Rentang kendali (span of control), departementalisasi, serta sentralisasi dan desentralisasi.",
-   "prioritas": "Tinggi"
+   "topik": "Pengambilan Keputusan",
+   "fokus": [
+    "Pengambilan keputusan.",
+    "Alat perencanaan dan pengambilan keputusan."
+   ]
   },
   {
    "no": 5,
-   "topik": "Perubahan & Inovasi",
-   "indikator": "Model perubahan 3 tahap Kurt Lewin (unfreezing, changing, refreezing).",
-   "prioritas": "Sedang"
+   "topik": "Pengorganisasian",
+   "fokus": [
+    "Desain organisasi.",
+    "Wewenang, departementalisasi, hubungan pelaporan, dan desain kerja.",
+    "Desain organisasi adaptif."
+   ]
   },
   {
    "no": 6,
-   "topik": "Motivasi Kerja",
-   "indikator": "Hierarki kebutuhan Maslow, Teori Dua Faktor Herzberg, dan Teori Harapan Vroom.",
-   "prioritas": "Tinggi"
+   "topik": "Penyusunan Staf",
+   "fokus": [
+    "Manajemen SDM.",
+    "Perubahan organisasi.",
+    "Kelompok."
+   ]
   },
   {
    "no": 7,
-   "topik": "Kepemimpinan",
-   "indikator": "Managerial Grid Blake dan Mouton serta Kepemimpinan Situasional Hersey-Blanchard.",
-   "prioritas": "Tinggi"
+   "topik": "Motivasi, Komunikasi, dan Mengelola Konflik",
+   "fokus": [
+    "Motivasi.",
+    "Komunikasi.",
+    "Mengelola konflik."
+   ]
   },
   {
    "no": 8,
-   "topik": "Komunikasi & Kerja Sama Tim",
-   "indikator": "Hambatan komunikasi organisasi dan 5 tahap perkembangan kelompok Tuckman.",
-   "prioritas": "Sedang"
+   "topik": "Kepemimpinan",
+   "fokus": [
+    "Kepemimpinan.",
+    "Kepemimpinan strategik."
+   ]
   },
   {
    "no": 9,
-   "topik": "Pengendalian Organisasi",
-   "indikator": "Pengendalian feedforward, concurrent, feedback dan 4 perspektif Balanced Scorecard.",
-   "prioritas": "Tinggi"
+   "topik": "Pengendalian",
+   "fokus": [
+    "Pengendalian.",
+    "Pengendalian keuangan.",
+    "Manajemen rantai nilai dan manajemen operasi."
+   ]
+  },
+  {
+   "no": 10,
+   "topik": "Kewirausahaan, Kreativitas, dan Inovasi",
+   "fokus": [
+    "Kewirausahaan.",
+    "Kreativitas dan inovasi dalam organisasi."
+   ]
+  },
+  {
+   "no": 11,
+   "topik": "Manajemen Usaha Mikro, Kecil, dan Menengah (UMKM)",
+   "fokus": [
+    "Lingkungan UMKM.",
+    "Manajemen UMKM."
+   ]
+  },
+  {
+   "no": 12,
+   "topik": "Manajemen Era Digital",
+   "fokus": [
+    "Lingkungan digital.",
+    "Menciptakan nilai di era teknologi digital."
+   ]
   }
  ],
  "poin_hafalan": [
