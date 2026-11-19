@@ -6,7 +6,7 @@ const path = require('path');
 const ROOT = __dirname;
 const DIST = path.join(ROOT, 'dist');
 const PRINT = path.join(ROOT, 'print');
-const BASE = process.env.KISI_BASE ?? '/bank-soal';          // jalur URL publik
+const BASE = process.env.KISI_BASE ?? '/kisi-kisi';          // jalur URL publik
 const BRAND = process.env.KISI_BRAND || 'CATATAN AKADEMIK';
 const ORIGIN = process.env.KISI_ORIGIN || 'https://catatanakademik.com';
 const WA = process.env.PAY_WA || '6285722227544';             // WA admin
@@ -114,7 +114,7 @@ function main() {
     fs.writeFileSync(path.join(PRINT, d.slug + '.html'), printPage(d));
   }
   const urls = [`${ORIGIN}${BASE}/`, ...list.map(d => `${ORIGIN}${BASE}/${d.slug}/`)];
-  fs.writeFileSync(path.join(DIST, 'sitemap-bank-soal.xml'),
+  fs.writeFileSync(path.join(DIST, 'sitemap.xml'),
     `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(u => `<url><loc>${u}</loc></url>`).join('\n')}\n</urlset>\n`);
   console.log(`OK: ${list.length} mata kuliah -> dist/ dan print/`);
 }
