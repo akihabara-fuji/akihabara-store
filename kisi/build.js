@@ -16,6 +16,12 @@ const rp = n => 'Rp' + n.toLocaleString('id-ID');
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const wa = t => `https://wa.me/${WA}?text=${encodeURIComponent(t)}`;
 
+const FORBIDDEN = ['joki', 'jasa tugas', 'jasa tuton', 'terima beres', 'bocoran', 'kunci jawaban asli', 'pasti tembus', 'pasti keluar', 'sering diujikan', 'sering keluar'];
+function validateClean(raw, name) {
+  const low = raw.toLowerCase(), hit = FORBIDDEN.filter(w => low.includes(w));
+  if (hit.length) { console.error(`[DITOLAK] ${name} memuat kata terlarang: ${hit.join(', ')}`); process.exit(1); }
+}
+
 const CSS = fs.readFileSync(path.join(ROOT, 'style.css'), 'utf8');
 
 function kodeShort(d) { return d.kode_baru ? `${d.kode_baru} (${d.kode_lama[0]})` : d.kode_lama[0]; }
@@ -57,7 +63,7 @@ function coursePage(d) {
         { '@type': 'ListItem', position: 2, name: d.nama_mk, item: url } ] }
     ]
   };
-  const buy = wa(`Halo admin, saya mau beli kisi-kisi lengkap ${d.kode_lama[0]} ${d.nama_mk} (${rp(d.harga)})`);
+  const buy = wa(`Halo admin, saya mau ${d.pdf_ready ? 'beli' : 'pesan'} kisi-kisi lengkap ${d.kode_lama[0]} ${d.nama_mk} (${rp(d.harga)})`);
   return `<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(title)} | ${BRAND}</title><meta name="description" content="${esc(desc)}">
 <link rel="canonical" href="${url}"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:locale" content="id_ID"><meta property="og:type" content="website">
@@ -73,7 +79,7 @@ function coursePage(d) {
 ${hafalan(d)}${free.length ? `<section class="card"><h2>Contoh soal gratis (${free.length} dari ${d.soal.length})</h2>${free.map(q => soalHtml(q, true)).join('')}</section>` : ''}
 <section class="card buy"><h2>Versi lengkap ${rp(d.harga)}</h2>
 <ul><li>Ringkasan fokus semua modul dalam PDF</li>${hasSoal(d) ? `<li>${d.soal.length} soal latihan dengan kunci dan alasan</li>` : `<li>Penjabaran materi inti tiap modul dan rumus cepat</li>`}<li>Siap dibaca di HP atau dicetak</li></ul>
-<a class="btn" href="${buy}" rel="noopener">Beli lewat WhatsApp</a><p class="hint">PDF dikirim admin setelah pembayaran.</p></section>
+<a class="btn" href="${buy}" rel="noopener">${d.pdf_ready ? 'Beli lewat WhatsApp' : 'Pesan lewat WhatsApp'}</a><p class="hint">${d.pdf_ready ? 'PDF dikirim admin setelah pembayaran.' : 'PDF sedang disiapkan. Admin kabari saat siap, bayar setelah file siap.'}</p></section>
 </main>
 <footer>Platform ini adalah sarana belajar mandiri dan tidak berafiliasi dengan Universitas Terbuka. Tidak menyediakan naskah ujian asli maupun layanan pengerjaan ujian.</footer>
 <script>document.getElementById('mm').addEventListener('click',function(){var h=document.querySelectorAll('tr.x');var o=h[0].hidden;h.forEach(function(r){r.hidden=!o});this.textContent=o?'Ringkas':'Baca lengkap (Modul 1–${d.moduls.length})'});</script>
@@ -104,7 +110,7 @@ function indexPage(list) {
 
 function main() {
   const dir = path.join(ROOT, 'data');
-  const list = fs.readdirSync(dir).filter(f => f.endsWith('.json')).sort().map(f => JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')));
+  const list = fs.readdirSync(dir).filter(f => f.endsWith('.json')).sort().map(f => (r => { validateClean(r, f); return JSON.parse(r); })(fs.readFileSync(path.join(dir, f), 'utf8')));
   if (!list.length) { console.error('Tidak ada data JSON'); process.exit(1); }
   fs.rmSync(DIST, { recursive: true, force: true }); fs.rmSync(PRINT, { recursive: true, force: true });
   fs.mkdirSync(DIST, { recursive: true }); fs.mkdirSync(PRINT, { recursive: true });
