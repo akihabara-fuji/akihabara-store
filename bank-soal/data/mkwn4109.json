@@ -1,0 +1,351 @@
+{
+ "slug": "mkwn4109-pendidikan-kewarganegaraan",
+ "kode_baru": "MKWN4109",
+ "kode_lama": [
+  "MKWU4109"
+ ],
+ "nama_mk": "Pendidikan Kewarganegaraan",
+ "fakultas": "Mata Kuliah Wajib Nasional (lintas fakultas)",
+ "prodi": "Seluruh program S1 dan diploma",
+ "semester": 2,
+ "sks": 2,
+ "edisi_bmp": "BMP Edisi 1, 6 modul (Universitas Terbuka, 2024-2025)",
+ "harga_satuan": 15000,
+ "catatan": "Butir soal adalah soal latihan orisinal buatan Catatan Akademik berdasarkan topik BMP, bukan soal ujian asli UT. BMP MKWN4109 Edisi 1 terdiri dari 6 modul; skema database mendukung hingga 9 modul untuk mata kuliah lain.",
+ "kisi_kisi": [
+  {
+   "modul": 1,
+   "judul": "Hakikat, tujuan, dan dinamika pendidikan kewarganegaraan",
+   "fokus": "Latar belakang, pengertian, tujuan PKn, dan perkembangannya pada masa Orde Lama, Orde Baru, dan Reformasi."
+  },
+  {
+   "modul": 2,
+   "judul": "Hakikat warga negara, kewarganegaraan, dan identitas nasional",
+   "fokus": "Pengertian negara dan warga negara, asas kewarganegaraan, hak dan kewajiban warga negara, pembentukan identitas nasional."
+  },
+  {
+   "modul": 3,
+   "judul": "Implementasi demokrasi dan hak asasi manusia",
+   "fokus": "Konsep dan sejarah demokrasi, demokrasi di Indonesia, konsep, sejarah, aturan, lembaga, dan pelanggaran HAM."
+  },
+  {
+   "modul": 4,
+   "judul": "Negara dan konstitusi serta penegakan hukum di Indonesia",
+   "fokus": "Teori terbentuknya negara, unsur dan fungsi negara, konstitusi, negara hukum, lembaga dan praktik penegakan hukum."
+  },
+  {
+   "modul": 5,
+   "judul": "Integrasi nasional dan wawasan nusantara dalam kehidupan berbangsa dan bernegara",
+   "fokus": "Faktor pendorong dan penghambat integrasi nasional, konsep serta penerapan wawasan nusantara."
+  },
+  {
+   "modul": 6,
+   "judul": "Globalisasi dan ketahanan nasional",
+   "fokus": "Konsep globalisasi, aspek serta kedudukan dan fungsi ketahanan nasional, pengaruh globalisasi terhadap ketahanan nasional Indonesia."
+  }
+ ],
+ "questions": [
+  {
+   "nomor_urut": 1,
+   "modul": 1,
+   "tipe": "pg_biasa",
+   "konten": {
+    "pertanyaan": "Pendidikan Kewarganegaraan di perguruan tinggi pada dasarnya bertujuan membentuk mahasiswa sebagai warga negara yang ...."
+   },
+   "opsi": {
+    "A": "hanya menghafal pasal-pasal konstitusi",
+    "B": "memiliki rasa kebangsaan dan cinta tanah air serta berperan aktif dalam kehidupan bernegara",
+    "C": "patuh pada aturan tanpa mempertanyakan kebijakan",
+    "D": "menguasai keahlian teknis tanpa memperhatikan nilai kebangsaan"
+   },
+   "kunci": "B",
+   "pembahasan": "Tujuan PKn adalah membekali mahasiswa dengan nilai, sikap, dan keterampilan sebagai warga negara yang bertanggung jawab dan berpartisipasi aktif. Pilihan lain terlalu sempit atau mengabaikan dimensi sikap dan partisipasi. Rujukan: Modul 1 (hakikat dan tujuan PKn).",
+   "is_free": 1
+  },
+  {
+   "nomor_urut": 2,
+   "modul": 1,
+   "tipe": "sebab_akibat",
+   "konten": {
+    "pernyataan": "Pendidikan Kewarganegaraan perlu dipelajari mahasiswa dari berbagai program studi.",
+    "alasan": "PKn membekali mahasiswa dengan nilai, sikap, dan keterampilan sebagai warga negara yang bertanggung jawab."
+   },
+   "opsi": {
+    "A": "Pernyataan benar, alasan benar, dan keduanya menunjukkan hubungan sebab akibat",
+    "B": "Pernyataan benar, alasan benar, tetapi keduanya tidak menunjukkan hubungan sebab akibat",
+    "C": "Pernyataan benar, alasan salah",
+    "D": "Pernyataan salah, alasan benar"
+   },
+   "kunci": "A",
+   "pembahasan": "Pernyataan benar karena PKn merupakan mata kuliah wajib untuk semua program. Alasan benar dan menjelaskan mengapa mata kuliah ini dibutuhkan lintas bidang, sehingga keduanya berhubungan sebab akibat. Rujukan: Modul 1.",
+   "is_free": 1
+  },
+  {
+   "nomor_urut": 3,
+   "modul": 2,
+   "tipe": "pg_biasa",
+   "konten": {
+    "pertanyaan": "Asas kewarganegaraan yang menentukan status warga negara berdasarkan keturunan atau darah orang tuanya disebut ...."
+   },
+   "opsi": {
+    "A": "ius soli",
+    "B": "ius sanguinis",
+    "C": "stelsel aktif",
+    "D": "bipatride"
+   },
+   "kunci": "B",
+   "pembahasan": "Ius sanguinis menentukan kewarganegaraan menurut pertalian darah atau keturunan, sedangkan ius soli menurut tempat kelahiran. Stelsel aktif adalah cara memperoleh kewarganegaraan melalui tindakan aktif, dan bipatride adalah keadaan berkewarganegaraan ganda. Rujukan: Modul 2 (kewarganegaraan).",
+   "is_free": 1
+  },
+  {
+   "nomor_urut": 4,
+   "modul": 2,
+   "tipe": "pg_biasa",
+   "konten": {
+    "pertanyaan": "Bendera Merah Putih, bahasa Indonesia, lambang Garuda Pancasila, dan lagu Indonesia Raya merupakan wujud ...."
+   },
+   "opsi": {
+    "A": "identitas nasional dalam bentuk simbol negara",
+    "B": "identitas kelompok etnis tertentu",
+    "C": "identitas organisasi politik",
+    "D": "identitas budaya daerah"
+   },
+   "kunci": "A",
+   "pembahasan": "Keempatnya adalah simbol negara yang menjadi penanda jati diri bangsa Indonesia, sehingga termasuk identitas nasional. Rujukan: Modul 2 (identitas nasional).",
+   "is_free": 1
+  },
+  {
+   "nomor_urut": 5,
+   "modul": 2,
+   "tipe": "kompleks_123",
+   "konten": {
+    "pengantar": "Perhatikan pernyataan tentang hak dan kewajiban warga negara berikut.",
+    "item_1": "Setiap warga negara berhak atas pekerjaan dan penghidupan yang layak.",
+    "item_2": "Setiap warga negara wajib menjunjung hukum dan pemerintahan.",
+    "item_3": "Pembelaan negara hanya menjadi kewajiban anggota TNI."
+   },
+   "opsi": {
+    "A": "(1) saja",
+    "B": "(1) dan (2)",
+    "C": "(2) dan (3)",
+    "D": "(1), (2), dan (3)"
+   },
+   "kunci": "B",
+   "pembahasan": "Pernyataan (1) dan (2) sesuai dengan Pasal 27 UUD NRI 1945. Pernyataan (3) salah karena upaya pembelaan negara adalah hak sekaligus kewajiban setiap warga negara. Rujukan: Modul 2 (hak dan kewajiban warga negara).",
+   "is_free": 1
+  },
+  {
+   "nomor_urut": 6,
+   "modul": 3,
+   "tipe": "pg_biasa",
+   "konten": {
+    "pertanyaan": "Pasal 1 ayat (2) UUD NRI 1945 menyatakan bahwa kedaulatan berada di tangan rakyat dan ...."
+   },
+   "opsi": {
+    "A": "dijalankan oleh Presiden sepenuhnya",
+    "B": "dilaksanakan menurut Undang-Undang Dasar",
+    "C": "diwakilkan kepada partai politik",
+    "D": "ditetapkan oleh pemerintah daerah"
+   },
+   "kunci": "B",
+   "pembahasan": "Rumusan pasal tersebut menegaskan bahwa kedaulatan rakyat dilaksanakan menurut UUD, sehingga pelaksanaannya tunduk pada konstitusi. Rujukan: Modul 3 (demokrasi).",
+   "is_free": 1
+  },
+  {
+   "nomor_urut": 7,
+   "modul": 3,
+   "tipe": "sebab_akibat",
+   "konten": {
+    "pernyataan": "Pemilihan umum merupakan sarana pelaksanaan kedaulatan rakyat dalam negara demokrasi.",
+    "alasan": "Melalui pemilihan umum, rakyat memilih wakil dan pemimpin yang akan menjalankan pemerintahan."
+   },
+   "opsi": {
+    "A": "Pernyataan benar, alasan benar, dan keduanya menunjukkan hubungan sebab akibat",
+    "B": "Pernyataan benar, alasan benar, tetapi keduanya tidak menunjukkan hubungan sebab akibat",
+    "C": "Pernyataan benar, alasan salah",
+    "D": "Pernyataan salah, alasan benar"
+   },
+   "kunci": "A",
+   "pembahasan": "Pernyataan benar. Alasan juga benar dan menjelaskan fungsi pemilu sebagai cara rakyat menyalurkan kedaulatannya, sehingga keduanya berhubungan sebab akibat. Rujukan: Modul 3.",
+   "is_free": 1
+  },
+  {
+   "nomor_urut": 8,
+   "modul": 3,
+   "tipe": "pg_biasa",
+   "konten": {
+    "pertanyaan": "Lembaga negara independen yang berfungsi melakukan pengkajian, penelitian, pemantauan, dan mediasi tentang hak asasi manusia di Indonesia adalah ...."
+   },
+   "opsi": {
+    "A": "Komisi Pemberantasan Korupsi",
+    "B": "Mahkamah Konstitusi",
+    "C": "Komisi Nasional Hak Asasi Manusia",
+    "D": "Ombudsman Republik Indonesia"
+   },
+   "kunci": "C",
+   "pembahasan": "Komnas HAM dibentuk dengan fungsi pengkajian, penelitian, penyuluhan, pemantauan, dan mediasi HAM. KPK menangani korupsi, MK menguji undang-undang, dan Ombudsman mengawasi pelayanan publik. Rujukan: Modul 3 (HAM).",
+   "is_free": 1
+  },
+  {
+   "nomor_urut": 9,
+   "modul": 4,
+   "tipe": "pg_biasa",
+   "konten": {
+    "pertanyaan": "Pengakuan dari negara lain terhadap berdirinya suatu negara dalam kajian ilmu kenegaraan termasuk unsur ...."
+   },
+   "opsi": {
+    "A": "konstitutif",
+    "B": "deklaratif",
+    "C": "fakultatif",
+    "D": "representatif"
+   },
+   "kunci": "B",
+   "pembahasan": "Unsur konstitutif adalah wilayah, rakyat, dan pemerintah yang berdaulat. Pengakuan negara lain bersifat menegaskan keberadaan negara sehingga disebut unsur deklaratif. Rujukan: Modul 4 (hakikat negara).",
+   "is_free": 1
+  },
+  {
+   "nomor_urut": 10,
+   "modul": 4,
+   "tipe": "pg_biasa",
+   "konten": {
+    "pertanyaan": "Dalam negara hukum, prinsip persamaan kedudukan di hadapan hukum berarti ...."
+   },
+   "opsi": {
+    "A": "pejabat negara memperoleh perlakuan hukum khusus",
+    "B": "hukum hanya berlaku bagi warga negara tertentu",
+    "C": "setiap warga negara diperlakukan sama oleh hukum tanpa diskriminasi",
+    "D": "putusan hukum boleh berbeda menurut status sosial"
+   },
+   "kunci": "C",
+   "pembahasan": "Pasal 27 ayat (1) UUD NRI 1945 menegaskan semua warga negara bersamaan kedudukannya di dalam hukum dan pemerintahan. Rujukan: Modul 4 (negara hukum dan penegakan hukum).",
+   "is_free": 1
+  },
+  {
+   "nomor_urut": 11,
+   "modul": 4,
+   "tipe": "kompleks_123",
+   "konten": {
+    "pengantar": "Perhatikan pernyataan tentang konstitusi di Indonesia berikut.",
+    "item_1": "Konstitusi merupakan hukum dasar tertinggi dalam penyelenggaraan negara.",
+    "item_2": "UUD NRI 1945 telah mengalami perubahan sebanyak empat kali pada tahun 1999 sampai 2002.",
+    "item_3": "Perubahan UUD dilakukan oleh Presiden melalui keputusan presiden."
+   },
+   "opsi": {
+    "A": "(1) saja",
+    "B": "(1) dan (2)",
+    "C": "(2) dan (3)",
+    "D": "(1), (2), dan (3)"
+   },
+   "kunci": "B",
+   "pembahasan": "Pernyataan (1) dan (2) benar. Pernyataan (3) salah karena kewenangan mengubah UUD berada pada MPR, bukan Presiden. Rujukan: Modul 4 (konstitusi).",
+   "is_free": 0
+  },
+  {
+   "nomor_urut": 12,
+   "modul": 4,
+   "tipe": "sebab_akibat",
+   "konten": {
+    "pernyataan": "Mahkamah Konstitusi berwenang menguji undang-undang terhadap Undang-Undang Dasar.",
+    "alasan": "Mahkamah Konstitusi berperan sebagai pengawal konstitusi."
+   },
+   "opsi": {
+    "A": "Pernyataan benar, alasan benar, dan keduanya menunjukkan hubungan sebab akibat",
+    "B": "Pernyataan benar, alasan benar, tetapi keduanya tidak menunjukkan hubungan sebab akibat",
+    "C": "Pernyataan benar, alasan salah",
+    "D": "Pernyataan salah, alasan benar"
+   },
+   "kunci": "A",
+   "pembahasan": "Pernyataan benar sesuai Pasal 24C UUD NRI 1945. Alasan benar dan menjelaskan dasar kewenangan tersebut: karena MK mengawal konstitusi, ia menguji undang-undang terhadap UUD. Rujukan: Modul 4.",
+   "is_free": 0
+  },
+  {
+   "nomor_urut": 13,
+   "modul": 5,
+   "tipe": "pg_biasa",
+   "konten": {
+    "pertanyaan": "Wawasan Nusantara memandang bangsa dan wilayah Indonesia sebagai ...."
+   },
+   "opsi": {
+    "A": "kumpulan pulau yang berdiri sendiri-sendiri",
+    "B": "satu kesatuan politik, ekonomi, sosial budaya, serta pertahanan dan keamanan",
+    "C": "wilayah yang dipisahkan oleh laut",
+    "D": "gabungan daerah dengan sistem hukum berbeda"
+   },
+   "kunci": "B",
+   "pembahasan": "Wawasan Nusantara adalah cara pandang bangsa Indonesia yang melihat dirinya dan wilayahnya sebagai satu kesatuan utuh pada berbagai bidang kehidupan. Rujukan: Modul 5.",
+   "is_free": 0
+  },
+  {
+   "nomor_urut": 14,
+   "modul": 5,
+   "tipe": "pg_biasa",
+   "konten": {
+    "pertanyaan": "Deklarasi Djuanda 13 Desember 1957 menegaskan bahwa ...."
+   },
+   "opsi": {
+    "A": "laut di antara pulau-pulau Indonesia merupakan bagian dari wilayah negara kepulauan Indonesia",
+    "B": "Indonesia melepaskan wilayah laut kepada negara tetangga",
+    "C": "Indonesia hanya menguasai laut sejauh tiga mil dari pantai",
+    "D": "batas wilayah ditentukan oleh perjanjian PBB tahun 1945"
+   },
+   "kunci": "A",
+   "pembahasan": "Deklarasi Djuanda menyatakan perairan di antara dan di sekitar pulau-pulau Indonesia sebagai bagian dari wilayah NKRI, sehingga menjadi dasar konsep negara kepulauan. Rujukan: Modul 5.",
+   "is_free": 0
+  },
+  {
+   "nomor_urut": 15,
+   "modul": 5,
+   "tipe": "kompleks_123",
+   "konten": {
+    "pengantar": "Perhatikan faktor-faktor berikut dalam kaitannya dengan integrasi nasional.",
+    "item_1": "Kesamaan sejarah perjuangan melawan penjajahan mendorong integrasi nasional.",
+    "item_2": "Bahasa Indonesia sebagai bahasa persatuan memperkuat integrasi nasional.",
+    "item_3": "Menguatnya sentimen kedaerahan yang sempit mendorong integrasi nasional."
+   },
+   "opsi": {
+    "A": "(1) saja",
+    "B": "(1) dan (2)",
+    "C": "(2) dan (3)",
+    "D": "(1), (2), dan (3)"
+   },
+   "kunci": "B",
+   "pembahasan": "Pernyataan (1) dan (2) adalah faktor pendorong integrasi. Pernyataan (3) salah karena sentimen kedaerahan yang sempit justru menjadi penghambat integrasi nasional. Rujukan: Modul 5.",
+   "is_free": 0
+  },
+  {
+   "nomor_urut": 16,
+   "modul": 6,
+   "tipe": "pg_biasa",
+   "konten": {
+    "pertanyaan": "Aspek yang termasuk Pancagatra dalam ketahanan nasional Indonesia adalah ...."
+   },
+   "opsi": {
+    "A": "geografi",
+    "B": "kekayaan alam",
+    "C": "ideologi",
+    "D": "kependudukan"
+   },
+   "kunci": "C",
+   "pembahasan": "Trigatra mencakup geografi, kekayaan alam, dan kependudukan, sedangkan Pancagatra mencakup ideologi, politik, ekonomi, sosial budaya, serta pertahanan dan keamanan. Rujukan: Modul 6.",
+   "is_free": 0
+  },
+  {
+   "nomor_urut": 17,
+   "modul": 6,
+   "tipe": "sebab_akibat",
+   "konten": {
+    "pernyataan": "Globalisasi dapat melemahkan identitas nasional apabila tidak disikapi secara selektif.",
+    "alasan": "Arus informasi dan budaya asing masuk tanpa batas sehingga nilai-nilai lokal dapat tergeser."
+   },
+   "opsi": {
+    "A": "Pernyataan benar, alasan benar, dan keduanya menunjukkan hubungan sebab akibat",
+    "B": "Pernyataan benar, alasan benar, tetapi keduanya tidak menunjukkan hubungan sebab akibat",
+    "C": "Pernyataan benar, alasan salah",
+    "D": "Pernyataan salah, alasan benar"
+   },
+   "kunci": "A",
+   "pembahasan": "Pernyataan benar. Alasan juga benar dan menjelaskan mekanisme pelemahan identitas, sehingga keduanya berhubungan sebab akibat. Rujukan: Modul 6 (globalisasi dan ketahanan nasional).",
+   "is_free": 0
+  }
+ ]
+}
