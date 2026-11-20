@@ -465,13 +465,21 @@
     }
 
     .step-pill {
-      padding: 16px 14px;
+      position: relative;
+      padding: 18px 14px 16px;
       border-radius: 14px;
       background: rgba(4, 6, 15, .52);
       border: 1px solid var(--line);
       text-align: left;
       cursor: pointer;
       transition: transform .2s ease, border-color .2s ease, background .2s ease;
+    }
+    .step-pill::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 14px; right: 14px;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(93, 240, 168, .55), rgba(93, 240, 168, 0));
     }
     .step-pill:hover,
     .step-pill.active {
@@ -493,14 +501,60 @@
       font-size: 15px;
       font-weight: 700;
       color: var(--ink);
-      margin-bottom: 4px;
+      margin-bottom: 10px;
     }
 
-    .step-desc {
-      font-size: 12px;
-      line-height: 1.45;
+    /* Baris input/output ala node automation (n8n-style) */
+    .step-io {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      font-size: 11.5px;
+      line-height: 1.4;
+      margin-top: 6px;
+    }
+    .step-io .io-tag {
+      flex: none;
+      font-family: var(--mono);
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+    .step-io .io-in {
+      color: var(--muted);
+      background: rgba(255, 255, 255, .06);
+    }
+    .step-io .io-out {
+      color: #04060f;
+      background: var(--accent);
+    }
+    .step-io .io-text { color: var(--muted); }
+    .step-pill.active .io-text,
+    .step-pill:hover .io-text { color: var(--ink); }
+
+    /* Jejak alur ringkas: arah input -> output tiap tahap, dan loop balik */
+    .flow-path {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px 4px;
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px dashed var(--line);
+      font-family: var(--mono);
+      font-size: 11px;
       color: var(--muted);
     }
+    .flow-path span { white-space: nowrap; }
+    .flow-arrow { color: var(--accent); font-weight: 700; }
+    .flow-loop {
+      border: 1px dashed rgba(93, 240, 168, .5);
+      border-radius: 999px;
+      padding: 1px 7px;
+    }
+    .flow-loop-label { color: var(--accent); }
 
     /* Showcase Split Grid */
     .showcase-grid {
@@ -1559,6 +1613,8 @@
       .section { padding: 64px 16px; }
       .card { padding: 24px; }
       .approach-steps { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .step-io { flex-direction: column; align-items: flex-start; gap: 2px; }
+      .flow-path { font-size: 10px; }
       .about-info { left: 12px; right: 12px; bottom: 12px; }
       .modal-content, .modal-head, .modal-foot { padding-left: 16px; padding-right: 16px; }
       .modal-foot .btn { width: 100%; }
@@ -1731,33 +1787,48 @@
           <div class="step-pill active" data-step="0" tabindex="0">
             <span class="step-num">01</span>
             <div class="step-name">Riset</div>
-            <div class="step-desc">Riset tren audiens &amp; celah kompetitor.</div>
+            <div class="step-io"><span class="io-tag io-in">IN</span><span class="io-text">Brief produk &amp; tren niche</span></div>
+            <div class="step-io"><span class="io-tag io-out">OUT</span><span class="io-text">Insight audiens &amp; ide hook</span></div>
           </div>
           <div class="step-pill" data-step="1" tabindex="0">
             <span class="step-num">02</span>
             <div class="step-name">Rencana</div>
-            <div class="step-desc">Pilar konten, hook 3 detik &amp; naskah.</div>
+            <div class="step-io"><span class="io-tag io-in">IN</span><span class="io-text">Insight dari riset</span></div>
+            <div class="step-io"><span class="io-tag io-out">OUT</span><span class="io-text">Pilar konten &amp; naskah siap produksi</span></div>
           </div>
           <div class="step-pill" data-step="2" tabindex="0">
             <span class="step-num">03</span>
             <div class="step-name">Produksi</div>
-            <div class="step-desc">Eksekusi visual, video AI &amp; voice-over.</div>
+            <div class="step-io"><span class="io-tag io-in">IN</span><span class="io-text">Naskah &amp; hook terpilih</span></div>
+            <div class="step-io"><span class="io-tag io-out">OUT</span><span class="io-text">Visual, video AI &amp; voice-over</span></div>
           </div>
           <div class="step-pill" data-step="3" tabindex="0">
             <span class="step-num">04</span>
             <div class="step-name">Publikasi</div>
-            <div class="step-desc">Distribusi lintas IG, TikTok, YouTube &amp; web.</div>
+            <div class="step-io"><span class="io-tag io-in">IN</span><span class="io-text">Aset final siap tayang</span></div>
+            <div class="step-io"><span class="io-tag io-out">OUT</span><span class="io-text">Konten live di IG, TikTok, YouTube &amp; web</span></div>
           </div>
           <div class="step-pill" data-step="4" tabindex="0">
             <span class="step-num">05</span>
             <div class="step-name">Analisis</div>
-            <div class="step-desc">Evaluasi retensi, CTR &amp; konversi.</div>
+            <div class="step-io"><span class="io-tag io-in">IN</span><span class="io-text">Data retensi, CTR &amp; konversi</span></div>
+            <div class="step-io"><span class="io-tag io-out">OUT</span><span class="io-text">Laporan insight &amp; celah perbaikan</span></div>
           </div>
           <div class="step-pill" data-step="5" tabindex="0">
             <span class="step-num">06</span>
             <div class="step-name">Perbaikan</div>
-            <div class="step-desc">Iterasi prompt &amp; optimasi alur kerja AI.</div>
+            <div class="step-io"><span class="io-tag io-in">IN</span><span class="io-text">Laporan insight</span></div>
+            <div class="step-io"><span class="io-tag io-out">OUT</span><span class="io-text">Prompt &amp; SOP baru</span></div>
           </div>
+        </div>
+        <div class="flow-path" aria-hidden="true">
+          <span>01 Riset</span><span class="flow-arrow">→</span>
+          <span>02 Rencana</span><span class="flow-arrow">→</span>
+          <span>03 Produksi</span><span class="flow-arrow">→</span>
+          <span>04 Publikasi</span><span class="flow-arrow">→</span>
+          <span>05 Analisis</span><span class="flow-arrow">→</span>
+          <span>06 Perbaikan</span><span class="flow-arrow flow-loop">↻</span>
+          <span class="flow-loop-label">kembali ke 01 Riset</span>
         </div>
       </div>
     </section>
