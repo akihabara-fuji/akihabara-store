@@ -53,9 +53,9 @@
       --muted-2: #707070;
       --line: rgba(255, 255, 255, .12);
       --line-strong: rgba(255, 255, 255, .22);
-      --accent: #ffffff;
-      --accent-2: #d4d4d4;
-      --accent-ink: #000000;
+      --accent: #ff7a1a;
+      --accent-2: #ff9a44;
+      --accent-ink: #1a0800;
       --glass: rgba(20, 20, 20, .58);
       --glass-2: rgba(28, 28, 28, .65);
       --radius: 18px;
@@ -205,11 +205,11 @@
     .btn-primary {
       color: var(--accent-ink);
       background: linear-gradient(180deg, var(--accent), var(--accent-2));
-      box-shadow: 0 10px 30px -8px rgba(255, 255, 255, .55), inset 0 1px 0 rgba(255, 255, 255, .4);
+      box-shadow: 0 10px 30px -8px rgba(255, 122, 26, .55), inset 0 1px 0 rgba(255, 255, 255, .4);
     }
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 16px 38px -8px rgba(255, 255, 255, .72);
+      box-shadow: 0 16px 38px -8px rgba(255, 122, 26, .72);
     }
     .btn-outline {
       color: var(--ink);
@@ -223,14 +223,15 @@
       transform: translateY(-2px);
     }
     .btn-ghost {
-      color: var(--ink);
-      background: rgba(255, 255, 255, .05);
-      border-color: var(--line-strong);
+      color: var(--accent);
+      background: rgba(255, 122, 26, .08);
+      border-color: rgba(255, 122, 26, .4);
       padding: 9px 16px;
       font-size: 13.5px;
     }
     .btn-ghost:hover {
-      background: rgba(255, 255, 255, .11);
+      background: rgba(255, 122, 26, .16);
+      border-color: rgba(255, 122, 26, .6);
     }
 
     /* SECTION 1 · HERO */
@@ -822,12 +823,12 @@
       font-weight: 600;
     }
 
-    /* ===== Coverflow karya (geser samping) ===== */
+    /* ===== Orbital karya (kartu melayang di ruang 3D) ===== */
     .cflow { position: relative; margin: 8px auto 0; max-width: 1200px; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
-    .cflow-stage { position: relative; height: clamp(400px, 52vw, 470px); perspective: 1400px; overflow: hidden; cursor: grab; outline: none; }
+    .cflow-stage { position: relative; height: clamp(480px, 58vw, 640px); perspective: 1600px; overflow: hidden; cursor: grab; outline: none; }
     .cflow-stage.drag { cursor: grabbing; }
-    .cflow-item { position: absolute; left: 50%; top: 0; width: min(400px, 78vw); margin-left: calc(min(400px, 78vw) / -2);
-      transition: transform .55s cubic-bezier(.23, 1, .32, 1), opacity .4s ease; will-change: transform; backface-visibility: hidden; }
+    .cflow-item { position: absolute; left: 50%; top: 50%; width: min(300px, 70vw);
+      transition: transform .6s cubic-bezier(.34, 1.1, .34, 1), opacity .5s ease, filter .5s ease; will-change: transform, opacity, filter; backface-visibility: hidden; transform-style: preserve-3d; }
     .cflow-stage.drag .cflow-item { transition: none; }
     .cflow-item .work-card { height: 100%; backdrop-filter: none; background: rgba(22, 22, 22, .94); }
     .cflow-item .work-card:hover { transform: none; }
@@ -835,8 +836,9 @@
     .cflow-item .work-tags { margin-top: 8px; }
     #works-more[hidden] { display: none; }
     .cflow-item .work-card { background: #141414; transition: filter .4s ease; }
-    .cflow-item:not(.act) .work-card { filter: brightness(.5); }
-    .cflow-item.off { pointer-events: none; visibility: hidden; opacity: 0; }
+    .cflow-item:not(.act) .work-card { filter: brightness(.55); }
+    .cflow-item.act .work-card { cursor: pointer; }
+    .cflow-item:not(.act) { cursor: pointer; }
     .cflow-bar { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 18px; }
     .cflow-btn { width: 44px; height: 44px; border-radius: 999px; border: 1px solid var(--line); background: var(--glass); color: inherit; cursor: pointer; display: grid; place-items: center; transition: border-color .2s ease, transform .15s ease; }
     .cflow-btn:hover { border-color: rgba(255, 255, 255, .5); }
@@ -845,7 +847,8 @@
     .cflow-count { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; min-width: 64px; text-align: center; opacity: .8; font-variant-numeric: tabular-nums; }
     @media (prefers-reduced-motion: reduce) { .cflow-item { transition: opacity .2s ease !important; } }
     @media (max-width: 760px) {
-      .cflow-stage { height: 430px; }
+      .cflow-stage { height: clamp(440px, 118vw, 520px); perspective: 1200px; }
+      .cflow-item { width: min(230px, 62vw); }
       /* blur di atas kanvas 3D yang bergerak sangat berat di HP */
       *, *::before, *::after { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
     }
@@ -2257,27 +2260,48 @@
       return `<img src="${esc(media)}" alt="${esc(item.title)}" loading="lazy" ${onErr} />` + fallback;
     }
 
+    // posisi orbital: kartu hero di tengah, satelit melayang di kedalaman berbeda
+    const ORBITAL_SLOTS = [
+      { xPct: 0, yPct: 0, zPx: 0, scale: 1, rotateX: 0, rotateY: 0, rotateZ: 0, opacity: 1, zIndex: 50, blur: 0 },
+      { xPct: -70, yPct: -38, zPx: -90, scale: 0.46, rotateX: 6, rotateY: 18, rotateZ: -5, opacity: 0.92, zIndex: 30, blur: 1 },
+      { xPct: -82, yPct: 32, zPx: -150, scale: 0.36, rotateX: -4, rotateY: 24, rotateZ: 4, opacity: 0.74, zIndex: 18, blur: 2.2 },
+      { xPct: 80, yPct: -30, zPx: -120, scale: 0.4, rotateX: 5, rotateY: -22, rotateZ: 5, opacity: 0.82, zIndex: 22, blur: 1.6 },
+      { xPct: 68, yPct: 40, zPx: -170, scale: 0.32, rotateX: -6, rotateY: -16, rotateZ: -4, opacity: 0.66, zIndex: 14, blur: 2.6 },
+    ];
+    function getOrbitalSlot(offset, total) {
+      if (offset < ORBITAL_SLOTS.length) return ORBITAL_SLOTS[offset];
+      const extra = offset - ORBITAL_SLOTS.length + 2;
+      const denom = Math.max(total - ORBITAL_SLOTS.length + 2, 3);
+      const angle = (extra / denom) * Math.PI * 2;
+      return {
+        xPct: Math.cos(angle) * 86, yPct: Math.sin(angle) * 36, zPx: -200,
+        scale: 0.3, rotateX: Math.sin(angle) * 6, rotateY: Math.cos(angle) * 20, rotateZ: 0,
+        opacity: 0.55, zIndex: 10, blur: 3,
+      };
+    }
     let cfIndex = 0, cfItems = [], cfList = [];
     const cfCount = document.getElementById('cf-count');
     function cfLayout() {
       const n = cfItems.length;
-      const w = cfItems[0] ? cfItems[0].offsetWidth : 400;
-      const step = w * 0.62;
       cfItems.forEach((el, i) => {
-        const o = i - cfIndex, ab = Math.abs(o);
-        const rot = Math.max(-42, Math.min(42, -o * 30));
-        const x = o * step;
-        el.classList.toggle('off', ab > 3);
-        el.style.zIndex = String(100 - ab);
+        const offset = n ? (((i - cfIndex) % n) + n) % n : 0;
+        const slot = getOrbitalSlot(offset, n);
+        el.style.zIndex = String(slot.zIndex);
+        el.style.opacity = String(slot.opacity);
+        el.style.filter = slot.blur ? `blur(${slot.blur}px)` : 'none';
         el.style.transform = window.__PREFERS_REDUCED__
-          ? `translate3d(${o * 6}%,0,0) scale(${ab ? .92 : 1})`
-          : `translate3d(${x}px,0,${-Math.min(ab, 3) * 130}px) rotateY(${rot}deg) scale(${1 - Math.min(ab, 3) * 0.08})`;
-        el.classList.toggle('act', ab === 0);
-        el.setAttribute('aria-hidden', ab ? 'true' : 'false');
+          ? `translate(-50%,-50%) translate3d(${offset === 0 ? 0 : (offset % 2 ? -36 : 36)}%,0,0) scale(${offset === 0 ? 1 : .86})`
+          : `translate(-50%,-50%) translate3d(${slot.xPct}%,${slot.yPct}%,${slot.zPx}px) rotateX(${slot.rotateX}deg) rotateY(${slot.rotateY}deg) rotateZ(${slot.rotateZ}deg) scale(${slot.scale})`;
+        el.classList.toggle('act', offset === 0);
+        el.setAttribute('aria-hidden', offset === 0 ? 'false' : 'true');
       });
       cfCount.textContent = n ? `${cfIndex + 1} / ${n}` : '0 / 0';
     }
-    function cfGo(i) { cfIndex = Math.max(0, Math.min(cfItems.length - 1, i)); cfLayout(); }
+    function cfGo(i) {
+      const n = cfItems.length;
+      cfIndex = n ? (((i % n) + n) % n) : 0;
+      cfLayout();
+    }
 
     function renderWorks() {
       cfList = works.filter((w) => activeFilter === 'all' || w.category === activeFilter);
@@ -2312,36 +2336,45 @@
             </div>
           </div>`;
         wrap.appendChild(card);
-        wrap.addEventListener('click', () => { if (cfMoved) return; i === cfIndex ? openModal(item) : cfGo(i); });
+        wrap.addEventListener('click', () => { if (cfMoved) return; if (i === cfIndex) { openModal(item); } else { cfGo(i); cfAutoKick(); } });
         worksGrid.appendChild(wrap);
         cfItems.push(wrap);
       });
       cfLayout();
     }
 
-    // drag / swipe, tombol, keyboard
-    let cfMoved = false;
+    // drag / swipe, tombol, keyboard, autoplay orbital
+    let cfMoved = false, cfAutoTimer = null;
+    function cfAutoStart() {
+      if (cfAutoTimer || window.__PREFERS_REDUCED__ || cfItems.length < 2) return;
+      cfAutoTimer = setInterval(() => cfGo(cfIndex + 1), 3200);
+    }
+    function cfAutoStop() { if (cfAutoTimer) { clearInterval(cfAutoTimer); cfAutoTimer = null; } }
+    function cfAutoKick() { cfAutoStop(); cfAutoStart(); }
     (function () {
       const stage = worksGrid; let sx = 0, base = 0, down = false;
-      stage.addEventListener('pointerdown', (e) => { if (e.pointerType === 'mouse' && e.button !== 0) return; down = true; cfMoved = false; sx = e.clientX; base = cfIndex; });
+      stage.addEventListener('pointerdown', (e) => { if (e.pointerType === 'mouse' && e.button !== 0) return; down = true; cfMoved = false; sx = e.clientX; base = cfIndex; cfAutoStop(); });
       window.addEventListener('pointermove', (e) => {
         if (!down) return;
         const dx = e.clientX - sx;
         if (Math.abs(dx) > 8) { cfMoved = true; stage.classList.add('drag'); }
-        if (cfMoved) { const step = (cfItems[0] ? cfItems[0].offsetWidth : 400) * 0.5; const t = Math.round(base - dx / step); if (t !== cfIndex) cfGo(t); }
+        if (cfMoved) { const step = (cfItems[0] ? cfItems[0].offsetWidth : 300) * 0.9; const t = Math.round(base - dx / step); if (t !== cfIndex) cfGo(t); }
       });
-      const up = () => { if (!down) return; down = false; stage.classList.remove('drag'); setTimeout(() => { cfMoved = false; }, 0); };
+      const up = () => { if (!down) return; down = false; stage.classList.remove('drag'); setTimeout(() => { cfMoved = false; }, 0); cfAutoStart(); };
       window.addEventListener('pointerup', up); window.addEventListener('pointercancel', up);
-      document.getElementById('cf-prev').addEventListener('click', () => cfGo(cfIndex - 1));
-      document.getElementById('cf-next').addEventListener('click', () => cfGo(cfIndex + 1));
+      stage.addEventListener('pointerenter', cfAutoStop);
+      stage.addEventListener('pointerleave', cfAutoStart);
+      document.getElementById('cf-prev').addEventListener('click', () => { cfGo(cfIndex - 1); cfAutoKick(); });
+      document.getElementById('cf-next').addEventListener('click', () => { cfGo(cfIndex + 1); cfAutoKick(); });
       stage.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowLeft') { e.preventDefault(); cfGo(cfIndex - 1); }
-        else if (e.key === 'ArrowRight') { e.preventDefault(); cfGo(cfIndex + 1); }
-        else if (e.key === 'Home') { e.preventDefault(); cfGo(0); }
-        else if (e.key === 'End') { e.preventDefault(); cfGo(cfItems.length - 1); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); cfGo(cfIndex - 1); cfAutoKick(); }
+        else if (e.key === 'ArrowRight') { e.preventDefault(); cfGo(cfIndex + 1); cfAutoKick(); }
+        else if (e.key === 'Home') { e.preventDefault(); cfGo(0); cfAutoKick(); }
+        else if (e.key === 'End') { e.preventDefault(); cfGo(cfItems.length - 1); cfAutoKick(); }
         else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (cfList[cfIndex]) openModal(cfList[cfIndex]); }
       });
       window.addEventListener('resize', cfLayout);
+      cfAutoStart();
     })();
 
     // ---------- Modal detail ----------
@@ -2502,17 +2535,17 @@
     const PLANET_CLOUDS_PNG = `${ASSET_BASE_URL}/planet-clouds.png`;
 
     const CONFIG = {
-      rimColor: '#ffffff', rimPower: 2.4, nightLights: 10, terrainDepth: 0.33, terrainShade: 1.3,
+      rimColor: '#c1faff', rimPower: 2.4, nightLights: 10, terrainDepth: 0.33, terrainShade: 1.3,
       oceanGlint: 0.45, oceanDeep: 0.12, oceanFlow: 3, oceanFlowSpeed: 0.8, oceanFlowScale: 2.1,
-      glowColor: '#ffffff', glowIntensity: 3.35, planetRadius: 1.95, spin: 0.03, initRotation: 2.07,
+      glowColor: '#3a6cff', glowIntensity: 3.35, planetRadius: 1.95, spin: 0.03, initRotation: 2.07,
       tilt: 0.37, autoRotate: 0,
       cloud1Height: 1.005, cloud1Opacity: 0.6, cloud1Spin: 0.06,
       cloud2Height: 1.03, cloud2Opacity: 0.5, cloud2Spin: 0.14,
       cloud3Height: 1.075, cloud3Opacity: 0.5, cloud3Spin: 0.1,
-      bgColor: '#0a0a0a', flameColor: '#ffffff', flameColor2: '#e5e5e5', flameAmt: 0.15,
-      atmoColor: '#e0e0e0', atmoCount: 320, atmoSize: 22, atmoSpeed: 0.8,
-      starColor: '#ffffff', starCount: 1400, starSize: 1.6, starFlicker: 1,
-      markerColor: '#ffffff', markerCount: 60, markerSize: 16, markerSpeed: 0.5,
+      bgColor: '#040a1e', flameColor: '#3a6cff', flameColor2: '#c1faff', flameAmt: 0.15,
+      atmoColor: '#9fc4ff', atmoCount: 320, atmoSize: 22, atmoSpeed: 0.8,
+      starColor: '#cfe0ff', starCount: 1400, starSize: 1.6, starFlicker: 1,
+      markerColor: '#ffd27a', markerCount: 60, markerSize: 16, markerSpeed: 0.5,
     };
 
     const LAYERS = { NONE: 0, TORUS_SCENE: 1, BLOOM_SCENE: 2, ENTIRE_SCENE: 3 };
@@ -2598,13 +2631,13 @@
     torusComposer.renderToScreen = false;
     torusComposer.addPass(renderScene);
     torusComposer.addPass(new ShaderPass(GammaCorrectionShader));
-    torusComposer.addPass(new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.22, 0.2, 0));
+    torusComposer.addPass(new UnrealBloomPass(new THREE.Vector2(window.innerWidth / 2, window.innerHeight / 2), 0.22, 0.2, 0));
     torusComposer.addPass(new ShaderPass(CopyShader));
 
     const bloomComposer = new EffectComposer(renderer);
     bloomComposer.renderToScreen = false;
     bloomComposer.addPass(renderScene);
-    bloomComposer.addPass(new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.5, 0.6, 0));
+    bloomComposer.addPass(new UnrealBloomPass(new THREE.Vector2(window.innerWidth / 2, window.innerHeight / 2), 0.5, 0.6, 0));
     bloomComposer.addPass(new ShaderPass(GammaCorrectionShader));
 
     // 1x1 black fallback texture for haloTexture uniform
@@ -2774,7 +2807,7 @@
         };
 
         const cMesh = new THREE.Mesh(
-          new THREE.SphereGeometry(CONFIG.planetRadius * CONFIG[layer.hKey], 64, 64),
+          new THREE.SphereGeometry(CONFIG.planetRadius * CONFIG[layer.hKey], 36, 36),
           cMat
         );
         cMesh.rotation.y = layer.ry;
@@ -3058,8 +3091,8 @@
     // Float-up entrance state
     let planetLoaded = false;
     let entryElapsed = 0;
-    const ENTRY_DUR = 1.9;
-    const ENTRY_START_Y = -6.5;
+    const ENTRY_DUR = 0.8;
+    const ENTRY_START_Y = -2.2;
 
     // Muat planet-lights.glb dan planet.glb BARENGAN (paralel), bukan berantai.
     // Sebelumnya planet.glb baru mulai di-fetch setelah planet-lights.glb selesai,
@@ -3182,9 +3215,7 @@
             float ripple = snoise(vec3(vCustomUv * 240.0, time * 4.0));
             float ndh = max(dot(normalizedNormal, halfDir) + ripple * 0.02, 0.0);
             float glint = pow(ndh, 140.0);
-            gl_FragColor.rgb += glint * waterMask * dayAmt * oceanGlint * vec3(1.0, 0.97, 0.88);
-            float mono = dot(gl_FragColor.rgb, vec3(0.299, 0.587, 0.114));
-            gl_FragColor.rgb = vec3(mono);`
+            gl_FragColor.rgb += glint * waterMask * dayAmt * oceanGlint * vec3(1.0, 0.97, 0.88);`
           );
         };
 
