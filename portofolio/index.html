@@ -3180,7 +3180,9 @@
             float ripple = snoise(vec3(vCustomUv * 240.0, time * 4.0));
             float ndh = max(dot(normalizedNormal, halfDir) + ripple * 0.02, 0.0);
             float glint = pow(ndh, 140.0);
-            gl_FragColor.rgb += glint * waterMask * dayAmt * oceanGlint * vec3(1.0, 0.97, 0.88);`
+            gl_FragColor.rgb += glint * waterMask * dayAmt * oceanGlint * vec3(1.0, 0.97, 0.88);
+            float mono = dot(gl_FragColor.rgb, vec3(0.299, 0.587, 0.114));
+            gl_FragColor.rgb = vec3(mono);`
           );
         };
 
