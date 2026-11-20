@@ -119,7 +119,7 @@
     "mediaUrl": "v/bot_full.mp4",
     "posterUrl": "v/bot.jpg",
     "externalLink": "",
-    "summary": "Video dibuat dengan AI.",
+    "summary": "Materi promosi Bot WhatsApp AI, satu lagi output dari pipeline produksi video AI yang sama: naskah, visual produk, image-to-video, siap tayang di Reels/TikTok.",
     "metrics": "",
     "promptOrWorkflow": "",
     "tools": []
@@ -133,7 +133,7 @@
     "mediaUrl": "v/jeans_full.mp4",
     "posterUrl": "v/jeans.jpg",
     "externalLink": "",
-    "summary": "Video dibuat dengan AI.",
+    "summary": "Iklan produk fashion (potongan flare), contoh lain dari pipeline foto-ke-video AI untuk konten e-commerce.",
     "metrics": "",
     "promptOrWorkflow": "",
     "tools": []
@@ -147,7 +147,7 @@
     "mediaUrl": "v/wide_full.mp4",
     "posterUrl": "v/wide.jpg",
     "externalLink": "",
-    "summary": "Video dibuat dengan AI.",
+    "summary": "Iklan produk fashion (wide leg), contoh lain dari pipeline foto-ke-video AI untuk konten e-commerce.",
     "metrics": "",
     "promptOrWorkflow": "",
     "tools": []
@@ -161,7 +161,7 @@
     "mediaUrl": "v/es_full.mp4",
     "posterUrl": "v/es.jpg",
     "externalLink": "",
-    "summary": "Video dibuat dengan AI.",
+    "summary": "Iklan produk minuman/makanan dingin, digarap dengan pipeline AI yang sama: dari visual produk sampai video singkat siap tayang.",
     "metrics": "",
     "promptOrWorkflow": "",
     "tools": []
@@ -175,7 +175,7 @@
     "mediaUrl": "v/tuntasync_full.mp4",
     "posterUrl": "v/tuntasync.jpg",
     "externalLink": "",
-    "summary": "Video dibuat dengan AI.",
+    "summary": "Motion graphic brand Tuntasync untuk materi promosi, dikerjakan dengan AI dari konsep sampai render final.",
     "metrics": "",
     "promptOrWorkflow": "",
     "tools": []
@@ -189,7 +189,7 @@
     "mediaUrl": "v/student_full.mp4",
     "posterUrl": "v/student.jpg",
     "externalLink": "",
-    "summary": "Video dibuat dengan AI.",
+    "summary": "Video promosi yang menjelaskan alur riset layanan Tuntasync dalam format singkat.",
     "metrics": "",
     "promptOrWorkflow": "",
     "tools": []
@@ -203,7 +203,7 @@
     "mediaUrl": "v/kids_full.mp4",
     "posterUrl": "v/kids.jpg",
     "externalLink": "",
-    "summary": "Video dibuat dengan AI.",
+    "summary": "Iklan produk baju anak, contoh lain dari pipeline produksi video AI untuk konten e-commerce.",
     "metrics": "",
     "promptOrWorkflow": "",
     "tools": []
@@ -217,7 +217,7 @@
     "mediaUrl": "v/blouse_full.mp4",
     "posterUrl": "v/blouse.jpg",
     "externalLink": "",
-    "summary": "Video dibuat dengan AI.",
+    "summary": "Iklan produk blouse, contoh lain dari pipeline produksi video AI untuk konten fashion e-commerce.",
     "metrics": "",
     "promptOrWorkflow": "",
     "tools": []
@@ -231,7 +231,7 @@
     "mediaUrl": "v/uaop_full.mp4",
     "posterUrl": "v/uaop.jpg",
     "externalLink": "",
-    "summary": "Video dibuat dengan AI.",
+    "summary": "Video edukasi UAOP, menjelaskan informasi akademik dalam format singkat untuk audiens mahasiswa Catatan Akademik.",
     "metrics": "",
     "promptOrWorkflow": "",
     "tools": []
@@ -245,7 +245,7 @@
     "mediaUrl": "v/naya1_full.mp4",
     "posterUrl": "v/naya1.jpg",
     "externalLink": "",
-    "summary": "Video dibuat dengan AI.",
+    "summary": "Video penjelasan proses audit akun media sosial: tangkapan layar metrik dan rekomendasi konten disampaikan secara ringkas.",
     "metrics": "",
     "promptOrWorkflow": "",
     "tools": []
@@ -259,7 +259,7 @@
     "mediaUrl": "v/naya2_full.mp4",
     "posterUrl": "v/naya2.jpg",
     "externalLink": "",
-    "summary": "Video dibuat dengan AI.",
+    "summary": "Satu lagi contoh video audit akun media sosial, bagian dari layanan analisa performa konten.",
     "metrics": "",
     "promptOrWorkflow": "",
     "tools": []
@@ -273,7 +273,7 @@
     "mediaUrl": "v/car1.jpg",
     "posterUrl": "",
     "externalLink": "",
-    "summary": "Carousel Instagram, 7 slide.",
+    "summary": "Carousel edukasi Instagram (7 slide) berisi info jadwal & panduan ujian UT, bagian dari strategi konten Catatan Akademik.",
     "metrics": "",
     "promptOrWorkflow": "",
     "tools": []
