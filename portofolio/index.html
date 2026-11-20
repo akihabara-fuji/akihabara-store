@@ -17,6 +17,21 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 
+  <!-- Buka koneksi lebih awal ke CDN berat (Three.js, aset planet, decoder DRACO) supaya globe 3D tidak terasa telat muncul -->
+  <link rel="preconnect" href="https://unpkg.com" crossorigin />
+  <link rel="preconnect" href="https://api.getlayers.ai" crossorigin />
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin />
+  <link rel="modulepreload" href="https://unpkg.com/three@0.143.0/build/three.module.js" />
+  <link rel="modulepreload" href="https://unpkg.com/three@0.143.0/examples/jsm/postprocessing/EffectComposer.js" />
+  <link rel="modulepreload" href="https://unpkg.com/three@0.143.0/examples/jsm/postprocessing/RenderPass.js" />
+  <link rel="modulepreload" href="https://unpkg.com/three@0.143.0/examples/jsm/postprocessing/UnrealBloomPass.js" />
+  <link rel="modulepreload" href="https://unpkg.com/three@0.143.0/examples/jsm/postprocessing/ShaderPass.js" />
+  <link rel="modulepreload" href="https://unpkg.com/three@0.143.0/examples/jsm/shaders/GammaCorrectionShader.js" />
+  <link rel="modulepreload" href="https://unpkg.com/three@0.143.0/examples/jsm/shaders/CopyShader.js" />
+  <link rel="modulepreload" href="https://unpkg.com/three@0.143.0/examples/jsm/loaders/GLTFLoader.js" />
+  <link rel="modulepreload" href="https://unpkg.com/three@0.143.0/examples/jsm/loaders/DRACOLoader.js" />
+  <link rel="modulepreload" href="https://unpkg.com/three@0.143.0/examples/jsm/controls/OrbitControls.js" />
+
   <!-- Importmap pinned to Three.js r0.143.0 -->
   <script type="importmap">
   {
@@ -3044,16 +3059,25 @@
     const ENTRY_DUR = 1.9;
     const ENTRY_START_Y = -6.5;
 
-    // Load planet-lights.glb first, then planet.glb
-    gltfLoader.load(PLANET_LIGHTS_GLB, (lightsGltf) => {
-      let nightTex = null;
-      lightsGltf.scene.traverse((child) => {
-        if (child.isMesh && child.material && child.material.map && !nightTex) {
-          nightTex = child.material.map;
-        }
-      });
+    // Muat planet-lights.glb dan planet.glb BARENGAN (paralel), bukan berantai.
+    // Sebelumnya planet.glb baru mulai di-fetch setelah planet-lights.glb selesai,
+    // jadi globe nongol lebih lambat karena nunggu 2x round-trip CDN secara berurutan.
+    const loadGlb = (url) => new Promise((resolve, reject) => gltfLoader.load(url, resolve, undefined, reject));
 
-      gltfLoader.load(PLANET_GLB, (planetGltf) => {
+    Promise.all([
+      loadGlb(PLANET_LIGHTS_GLB).catch((err) => { console.warn('Gagal memuat planet-lights.glb', err); return null; }),
+      loadGlb(PLANET_GLB)
+    ]).then(([lightsGltf, planetGltf]) => {
+      let nightTex = null;
+      if (lightsGltf) {
+        lightsGltf.scene.traverse((child) => {
+          if (child.isMesh && child.material && child.material.map && !nightTex) {
+            nightTex = child.material.map;
+          }
+        });
+      }
+
+      {
         let planetMesh = null;
         planetGltf.scene.traverse((child) => {
           if (child.isMesh && !planetMesh) {
@@ -3167,7 +3191,7 @@
 
         createLandMarkers(planetMesh);
         planetLoaded = true;
-      });
+      }
     });
 
     // Resize Handler
