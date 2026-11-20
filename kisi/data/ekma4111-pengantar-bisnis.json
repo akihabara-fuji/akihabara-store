@@ -1,0 +1,572 @@
+{
+ "slug": "ekma4111-pengantar-bisnis",
+ "kode_lama": [
+  "EKMA4111"
+ ],
+ "kode_baru": "EMBS4102",
+ "nama_mk": "Pengantar Bisnis",
+ "fakultas": "Fakultas Ekonomi dan Bisnis",
+ "prodi": "S1 Manajemen",
+ "semester": 1,
+ "sks": 3,
+ "harga": 20000,
+ "pdf_ready": true,
+ "status": "modul dari daftar isi resmi BMP EKMA4111; soal dan poin hafalan dari Gemini; kunci dicek logika konsep, kesesuaian dengan BMP belum diverifikasi",
+ "moduls": [
+  {
+   "no": 1,
+   "topik": "Pengertian Dasar Bisnis, Kewirausahaan, dan Lingkungan Bisnis",
+   "fokus": [
+    "Faktor produksi, pendapatan dan laba, serta lingkungan bisnis (ekonomi, hukum, teknologi)."
+   ]
+  },
+  {
+   "no": 2,
+   "topik": "Konsep Dasar Berdagang dan Pasar Bebas",
+   "fokus": [
+    "Keunggulan absolut dan komparatif, harga keseimbangan, dan kebijakan tarif impor."
+   ]
+  },
+  {
+   "no": 3,
+   "topik": "Etika Bisnis dan Tanggung Jawab Sosial",
+   "fokus": [
+    "Kode etik, tanggung jawab sosial terhadap pemangku kepentingan, dan whistleblowing."
+   ]
+  },
+  {
+   "no": 4,
+   "topik": "Kepemilikan Bisnis dan Bisnis Kecil",
+   "fokus": [
+    "PT, CV, dan waralaba: tanggung jawab pemilik dan karakteristik tiap bentuk."
+   ]
+  },
+  {
+   "no": 5,
+   "topik": "Manajemen Bisnis dan Organisasi pada Pasar Sekarang",
+   "fokus": [
+    "Fungsi manajemen, wewenang lini dan staf, serta desain organisasi matriks."
+   ]
+  },
+  {
+   "no": 6,
+   "topik": "Proses Produksi dan Pengendalian Produk Manufaktur",
+   "fokus": [
+    "Tata letak proses dan produk, Just-in-Time, dan jalur kritis."
+   ]
+  },
+  {
+   "no": 7,
+   "topik": "Memotivasi Karyawan untuk Menghasilkan Produk Berkualitas",
+   "fokus": [
+    "Teori Maslow dan Herzberg serta pengayaan pekerjaan."
+   ]
+  },
+  {
+   "no": 8,
+   "topik": "Pemasaran yang Berorientasi pada Pelanggan",
+   "fokus": [
+    "Bauran pemasaran 4P, segmentasi pasar, dan penetapan harga penetrasi."
+   ]
+  },
+  {
+   "no": 9,
+   "topik": "Mengelola Sumber Keuangan dan Laporan Keuangan",
+   "fokus": [
+    "Neraca dan laba rugi, pendanaan utang vs ekuitas, serta rasio lancar."
+   ]
+  }
+ ],
+ "poin_hafalan": [
+  "Lima faktor produksi utama dalam penciptaan kekayaan bisnis meliputi sumber daya alam, tenaga kerja, modal, kewirausahaan, dan pengetahuan.",
+  "Keunggulan komparatif terjadi ketika suatu negara memproduksi barang dengan biaya peluang lebih rendah dibanding negara lain, sedangkan keunggulan absolut terjadi saat negara memproduksi lebih efisien dengan sumber daya lebih sedikit.",
+  "Perseroan Terbatas (PT) merupakan badan hukum terpisah dengan tanggung jawab pemilik terbatas pada modal yang disetor, sedangkan Persekutuan Komanditer (CV) membedakan sekutu aktif pengelola dan sekutu pasif penyetor modal.",
+  "Dalam Teori Dua Faktor Herzberg, gaji dan kondisi kerja tergolong hygiene factors yang mencegah ketidakpuasan, sedangkan pengakuan dan tanggung jawab tergolong motivator yang mendorong kinerja.",
+  "Neraca menyajikan posisi aset, liabilitas, dan ekuitas pada tanggal tertentu, sedangkan laporan laba rugi merangkum pendapatan dan beban selama satu periode akuntansi."
+ ],
+ "soal": [
+  {
+   "no": 1,
+   "modul": 1,
+   "tipe": "pg",
+   "pernyataan": "Dalam teori penciptaan kekayaan bisnis modern, faktor produksi yang berperan mengombinasikan sumber daya alam, tenaga kerja, modal, dan pengetahuan untuk menghasilkan inovasi bernilai ekonomi adalah...",
+   "opsi": [
+    "Kewirausahaan",
+    "Distribusi logistik",
+    "Konsolidasi fiskal",
+    "Regulasi moneter"
+   ],
+   "kunci": "A",
+   "pembahasan": "Kewirausahaan merupakan faktor produksi penggerak yang berani mengambil risiko untuk mengorganisasikan seluruh sumber daya bisnis menjadi produk bernilai jual.",
+   "alasan_soal": null,
+   "butir": null,
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 2,
+   "modul": 1,
+   "tipe": "pg",
+   "pernyataan": "Perbedaan mendasar antara konsep pendapatan (revenue) dan laba (profit) dalam operasional suatu perusahaan adalah...",
+   "opsi": [
+    "Pendapatan dihitung setelah dikurangi pajak penghasilan, sedangkan laba adalah total kas masuk",
+    "Pendapatan adalah total uang yang diterima dari penjualan, sedangkan laba adalah selisih lebih pendapatan setelah dikurangi seluruh biaya operasional",
+    "Pendapatan hanya berasal dari pinjaman bank, sedangkan laba berasal dari setoran modal pemilik",
+    "Pendapatan mencerminkan nilai aset tetap perusahaan, sedangkan laba mencerminkan nilai utang jangka panjang"
+   ],
+   "kunci": "B",
+   "pembahasan": "Laba diperoleh apabila total penerimaan hasil penjualan (revenue) lebih besar daripada seluruh beban dan biaya yang dikeluarkan untuk menjalankan bisnis.",
+   "alasan_soal": null,
+   "butir": null,
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 3,
+   "modul": 1,
+   "tipe": "pg",
+   "pernyataan": "Sebuah perusahaan manufaktur menunda rencana pembangunan pabrik baru setelah bank sentral menaikkan suku bunga acuan dan pemerintah merevisi tarif pajak badan. Keputusan perusahaan tersebut merupakan respons terhadap perubahan...",
+   "opsi": [
+    "Lingkungan demografis dan budaya kerja",
+    "Lingkungan teknologi dan rantai pasok",
+    "Lingkungan ekonomi dan hukum",
+    "Lingkungan persaingan internal divisi"
+   ],
+   "kunci": "C",
+   "pembahasan": "Suku bunga acuan dan kebijakan perpajakan merupakan komponen utama lingkungan ekonomi dan hukum yang secara langsung memengaruhi biaya investasi bisnis.",
+   "alasan_soal": null,
+   "butir": null,
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 4,
+   "modul": 1,
+   "tipe": "pg",
+   "pernyataan": "Pemanfaatan sistem otomasi gudang berbasis sensor dan perangkat lunak analisis perilaku belanja daring termasuk dalam unsur lingkungan bisnis dimensi...",
+   "opsi": [
+    "Stabilitas politik regional",
+    "Keseimbangan neraca perdagangan",
+    "Struktur birokrasi pemerintah",
+    "Lingkungan teknologi"
+   ],
+   "kunci": "D",
+   "pembahasan": "Lingkungan teknologi mencakup berbagai penemuan, perangkat digital, dan sistem otomasi yang meningkatkan efisiensi produksi maupun pelayanan pelanggan.",
+   "alasan_soal": null,
+   "butir": null,
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 5,
+   "modul": 2,
+   "tipe": "pg",
+   "pernyataan": "Perbedaan utama antara teori keunggulan absolut Adam Smith dan teori keunggulan komparatif David Ricardo dalam perdagangan internasional terletak pada...",
+   "opsi": [
+    "Keunggulan absolut menekankan efisiensi produksi paling tinggi secara mutlak, sedangkan keunggulan komparatif menekankan biaya peluang yang paling rendah",
+    "Keunggulan absolut melarang kegiatan ekspor barang mentah, sedangkan keunggulan komparatif melarang kegiatan impor barang modal",
+    "Keunggulan absolut hanya berlaku pada sektor jasa keuangan, sedangkan keunggulan komparatif hanya berlaku pada sektor pertambangan",
+    "Keunggulan absolut menghapuskan penggunaan mata uang asing, sedangkan keunggulan komparatif mewajibkan sistem barter"
+   ],
+   "kunci": "A",
+   "pembahasan": "Teori keunggulan komparatif membuktikan bahwa dua negara tetap dapat saling memperoleh keuntungan perdagangan dengan berspesialisasi pada produk yang memiliki biaya peluang terendah.",
+   "alasan_soal": null,
+   "butir": null,
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 6,
+   "modul": 2,
+   "tipe": "pg",
+   "pernyataan": "Dalam mekanisme pasar bebas, harga keseimbangan (equilibrium price) tercapai pada kondisi...",
+   "opsi": [
+    "Pemerintah menetapkan batas harga maksimum di bawah biaya produksi",
+    "Jumlah barang yang diminta konsumen sama persis dengan jumlah barang yang ditawarkan produsen",
+    "Seluruh produsen sepakat menahan pasokan barang agar harga terus naik",
+    "Permintaan konsumen melebihi kapasitas produksi nasional secara terus-menerus"
+   ],
+   "kunci": "B",
+   "pembahasan": "Harga keseimbangan terbentuk pada titik perpotongan kurva permintaan dan penawaran ketika kuantitas yang diminta setara dengan kuantitas yang ditawarkan.",
+   "alasan_soal": null,
+   "butir": null,
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 7,
+   "modul": 2,
+   "tipe": "pg",
+   "pernyataan": "Untuk melindungi produsen tekstil dalam negeri dari serbuan produk luar negeri berharga murah, pemerintah memberlakukan bea masuk tambahan sebesar 25 persen atas setiap kain impor. Kebijakan proteksi perdagangan ini disebut...",
+   "opsi": [
+    "Embargo perdagangan total",
+    "Subsidi ekspor langsung",
+    "Tarif impor (import tariff)",
+    "Devaluasi nilai tukar"
+   ],
+   "kunci": "C",
+   "pembahasan": "Tarif impor merupakan pajak yang dikenakan atas barang yang masuk dari luar negeri untuk meningkatkan harga jualnya sehingga produk domestik lebih kompetitif.",
+   "alasan_soal": null,
+   "butir": null,
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 8,
+   "modul": 3,
+   "tipe": "pg",
+   "pernyataan": "Perbedaan karakteristik antara kode etik berbasis kepatuhan (compliance-based ethics code) dan kode etik berbasis integritas (integrity-based ethics code) adalah...",
+   "opsi": [
+    "Kode berbasis kepatuhan menghapuskan sanksi hukum, sedangkan kode berbasis integritas menerapkan denda administratif",
+    "Kode berbasis kepatuhan hanya berlaku bagi manajer puncak, sedangkan kode berbasis integritas hanya berlaku bagi pemasok",
+    "Kode berbasis kepatuhan berfokus pada donasi sosial, sedangkan kode berbasis integritas berfokus pada efisiensi anggaran",
+    "Kode berbasis kepatuhan menekankan pencegahan pelanggaran hukum melalui pengawasan dan hukuman, sedangkan kode berbasis integritas membangun nilai tanggung jawab bersama"
+   ],
+   "kunci": "D",
+   "pembahasan": "Kode etik berbasis kepatuhan mengandalkan aturan ketat dan sanksi untuk mencegah perilaku melanggar hukum, sedangkan kode berbasis integritas menumbuhkan budaya etis dari kesadaran internal karyawan.",
+   "alasan_soal": null,
+   "butir": null,
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 9,
+   "modul": 3,
+   "tipe": "pg",
+   "pernyataan": "Tanggung jawab sosial perusahaan (CSR) terhadap kelompok pemangku kepentingan (stakeholders) mencakup kewajiban perusahaan untuk...",
+   "opsi": [
+    "Menjaga keselamatan produk bagi konsumen, memberikan upah layak bagi karyawan, serta melestarikan lingkungan masyarakat sekitar",
+    "Memaksimalkan laba jangka pendek dengan mengabaikan standar pengolahan limbah pabrik",
+    "Membatasi keterbukaan informasi laporan keuangan kepada para pemegang saham minoritas",
+    "Mengalihkan seluruh kewajiban pajak perusahaan menjadi dana promosi pemasaran"
+   ],
+   "kunci": "A",
+   "pembahasan": "Tanggung jawab sosial menuntut perusahaan menyeimbangkan kepentingan seluruh pemangku kepentingan, mulai dari pelanggan, karyawan, investor, hingga masyarakat luas.",
+   "alasan_soal": null,
+   "butir": null,
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 10,
+   "modul": 3,
+   "tipe": "pg",
+   "pernyataan": "Seorang staf pengendalian mutu melaporkan temuan manipulasi uji kelayakan kemasan makanan kepada komite audit independen setelah laporannya diabaikan oleh kepala pabrik. Tindakan karyawan tersebut dikenal dengan istilah...",
+   "opsi": [
+    "Insider trading",
+    "Whistleblowing",
+    "Benchmarking",
+    "Outsourcing"
+   ],
+   "kunci": "B",
+   "pembahasan": "Whistleblowing adalah tindakan anggota organisasi yang mengungkap praktik tidak etis atau melanggar hukum demi melindungi kepentingan publik dan integritas perusahaan.",
+   "alasan_soal": null,
+   "butir": null,
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 11,
+   "modul": 4,
+   "tipe": "pg",
+   "pernyataan": "Perbedaan tanggung jawab hukum antara sekutu aktif (general partner) dan sekutu pasif (limited partner) dalam badan usaha Persekutuan Komanditer (CV) adalah...",
+   "opsi": [
+    "Sekutu aktif hanya menyetor modal tanpa ikut mengelola, sedangkan sekutu pasif memimpin operasional harian",
+    "Sekutu aktif dan sekutu pasif sama-sama bebas dari tanggung jawab utang perusahaan apabila terjadi kepailitan",
+    "Sekutu aktif mengelola perusahaan dengan tanggung jawab tidak terbatas hingga harta pribadi, sedangkan sekutu pasif hanya bertanggung jawab sebesar modal yang disetor",
+    "Sekutu aktif berhak menjual saham di bursa efek, sedangkan sekutu pasif berhak menetapkan pajak perusahaan"
+   ],
+   "kunci": "C",
+   "pembahasan": "Dalam struktur CV, sekutu aktif menjalankan kepengurusan usaha dengan tanggung jawab penuh, sementara sekutu pasif berperan sebagai penanam modal dengan risiko terbatas.",
+   "alasan_soal": null,
+   "butir": null,
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 12,
+   "modul": 4,
+   "tipe": "pg",
+   "pernyataan": "Keunggulan utama bentuk badan usaha Perseroan Terbatas (PT) dibandingkan perusahaan perseorangan dalam hal kelangsungan dan perlindungan pemilik adalah...",
+   "opsi": [
+    "Tidak memerlukan akta pendirian maupun pengesahan dari instansi pemerintah",
+    "Seluruh keuntungan perusahaan bebas dari pengenaan pajak penghasilan badan",
+    "Pemilik dapat mencampuradukkan kas pribadi dengan kas operasional perusahaan secara bebas",
+    "Merupakan entitas hukum terpisah sehingga tanggung jawab pemegang saham terbatas hanya pada nilai saham yang dimiliki"
+   ],
+   "kunci": "D",
+   "pembahasan": "Status badan hukum terpisah pada PT melindungi harta pribadi pemegang saham dari tuntutan utang perusahaan dan menjamin kesinambungan usaha.",
+   "alasan_soal": null,
+   "butir": null,
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 13,
+   "modul": 4,
+   "tipe": "pg",
+   "pernyataan": "Seorang wirausaha pemula memilih membuka gerai minuman dengan membeli lisensi merek, resep baku, dan sistem operasional dari perusahaan yang sudah mapan daripada membangun merek baru dari nol. Skema bisnis ini disebut...",
+   "opsi": [
+    "Waralaba (franchising)",
+    "Akuisisi horizontal",
+    "Koperasi konsumen",
+    "Konsolidasi merger"
+   ],
+   "kunci": "A",
+   "pembahasan": "Waralaba memberikan hak kepada penerima waralaba (franchisee) untuk menggunakan nama dagang dan sistem bisnis teruji milik pemberi waralaba (franchisor).",
+   "alasan_soal": null,
+   "butir": null,
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 14,
+   "modul": 5,
+   "tipe": "pg",
+   "pernyataan": "Fungsi manajemen yang berfokus pada penetapan tujuan organisasi, perumusan strategi pencapaian, serta penyusunan rencana tindakan untuk mengoordinasikan aktivitas adalah...",
+   "opsi": [
+    "Pengendalian (controlling)",
+    "Perencanaan (planning)",
+    "Pengorganisasian (organizing)",
+    "Pengarahan (leading)"
+   ],
+   "kunci": "B",
+   "pembahasan": "Perencanaan merupakan fungsi manajemen paling awal yang menentukan arah sasaran organisasi dan langkah strategis untuk mencapainya.",
+   "alasan_soal": null,
+   "butir": null,
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 15,
+   "modul": 5,
+   "tipe": "pg",
+   "pernyataan": "Perbedaan antara wewenang lini (line authority) dan wewenang staf (staff authority) dalam struktur organisasi perusahaan terletak pada...",
+   "opsi": [
+    "Wewenang lini hanya dimiliki konsultan eksternal, sedangkan wewenang staf dimiliki direktur utama",
+    "Wewenang lini mengatur kegiatan sosial karyawan, sedangkan wewenang staf mengatur target penjualan",
+    "Wewenang lini memberikan hak perintah langsung dalam rantai komando pencapaian tujuan utama, sedangkan wewenang staf memberikan saran dan dukungan teknis kepada unit lini",
+    "Wewenang lini bersifat sementara selama proyek berlangsung, sedangkan wewenang staf bersifat permanen seumur hidup"
+   ],
+   "kunci": "C",
+   "pembahasan": "Manajer lini memiliki wewenang komando langsung terhadap bawahan untuk menjalankan operasi inti, sedangkan unit staf berperan memberi nasihat keahlian seperti hukum atau riset.",
+   "alasan_soal": null,
+   "butir": null,
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 16,
+   "modul": 5,
+   "tipe": "pg",
+   "pernyataan": "Sebuah perusahaan perangkat lunak menugaskan insinyur dari departemen desain dan pemrograman untuk bekerja dalam tim proyek aplikasi baru di bawah koordinasi manajer proyek tanpa melepaskan status mereka di departemen fungsional asal. Desain organisasi ini merupakan bentuk...",
+   "opsi": [
+    "Organisasi birokrasi garis lurus",
+    "Organisasi terpusat tunggal",
+    "Organisasi komando militer",
+    "Organisasi matriks"
+   ],
+   "kunci": "D",
+   "pembahasan": "Organisasi matriks menggabungkan departementalisasi fungsional dan proyek sehingga menciptakan fleksibilitas sumber daya lintas fungsi untuk proyek khusus.",
+   "alasan_soal": null,
+   "butir": null,
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 17,
+   "modul": 6,
+   "tipe": "pg",
+   "pernyataan": "Perbedaan mendasar antara tata letak proses (process layout) dan tata letak produk (product layout) dalam perencanaan fasilitas manufaktur adalah...",
+   "opsi": [
+    "Tata letak proses mengelompokkan mesin sejenis berdasarkan fungsi untuk produk beragam, sedangkan tata letak produk menyusun mesin berurutan sesuai tahapan perakitan satu jenis produk massal",
+    "Tata letak proses hanya digunakan pada industri perkapalan berat, sedangkan tata letak produk hanya digunakan pada bengkel reparasi",
+    "Tata letak proses meniadakan seluruh pergerakan bahan baku, sedangkan tata letak produk mewajibkan pekerja berpindah antar-gedung",
+    "Tata letak proses menghasilkan barang standar bervolume tinggi, sedangkan tata letak produk menghasilkan barang pesanan satuan"
+   ],
+   "kunci": "A",
+   "pembahasan": "Tata letak proses cocok untuk produksi fleksibel beragam pesanan seperti bengkel atau rumah sakit, sedangkan tata letak produk dirancang untuk lini perakitan massal yang berulang.",
+   "alasan_soal": null,
+   "butir": null,
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 18,
+   "modul": 6,
+   "tipe": "pg",
+   "pernyataan": "Tujuan utama penerapan sistem pengendalian persediaan Just-in-Time (JIT) dalam proses manufaktur adalah...",
+   "opsi": [
+    "Menumpuk cadangan bahan baku di gudang untuk kebutuhan produksi selama dua tahun",
+    "Meminimalkan biaya penyimpanan persediaan dengan mendatangkan bahan baku tepat saat dibutuhkan dalam proses produksi",
+    "Mengganti seluruh pemasok lokal dengan gudang penyimpanan berkapasitas besar",
+    "Memperlambat jadwal pengiriman barang jadi agar harga jual di pasar meningkat"
+   ],
+   "kunci": "B",
+   "pembahasan": "Sistem Just-in-Time menekan pemborosan dan biaya simpan gudang melalui sinkronisasi pengiriman bahan baku tepat waktu dengan jadwal produksi.",
+   "alasan_soal": null,
+   "butir": null,
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 19,
+   "modul": 6,
+   "tipe": "pg",
+   "pernyataan": "Manajer operasi menyusun diagram jaringan kerja PERT untuk proyek peluncuran kendaraan listrik dan menemukan satu rangkaian aktivitas dengan total waktu terpanjang yang apabila terlambat satu hari saja akan menunda seluruh penyelesaian proyek. Rangkaian aktivitas tersebut disebut...",
+   "opsi": [
+    "Titik impas kapasitas",
+    "Waktu longgar (slack time)",
+    "Jalur kritis (critical path)",
+    "Batas kendali statistik"
+   ],
+   "kunci": "C",
+   "pembahasan": "Jalur kritis pada jaringan PERT merupakan lintasan kegiatan terpanjang tanpa waktu jeda sehingga menjadi fokus utama pengawasan jadwal proyek.",
+   "alasan_soal": null,
+   "butir": null,
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 20,
+   "modul": 7,
+   "tipe": "pg",
+   "pernyataan": "Menurut teori Hierarki Kebutuhan Abraham Maslow, urutan tingkatan kebutuhan manusia dari tingkat paling dasar hingga puncak adalah...",
+   "opsi": [
+    "Sosial, rasa aman, fisiologis, aktualisasi diri, dan penghargaan",
+    "Rasa aman, fisiologis, penghargaan, sosial, dan aktualisasi diri",
+    "Penghargaan, sosial, fisiologis, rasa aman, dan aktualisasi diri",
+    "Fisiologis, rasa aman, sosial, penghargaan, dan aktualisasi diri"
+   ],
+   "kunci": "D",
+   "pembahasan": "Maslow menyusun kebutuhan manusia secara berjenjang mulai dari kebutuhan fisik dasar (fisiologis), keamanan, afiliasi sosial, penghargaan, hingga aktualisasi diri.",
+   "alasan_soal": null,
+   "butir": null,
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 21,
+   "modul": 7,
+   "tipe": "pg",
+   "pernyataan": "Berdasarkan Teori Dua Faktor Frederick Herzberg, perbedaan dampak antara faktor pemelihara (hygiene factors) dan faktor motivator terhadap karyawan adalah...",
+   "opsi": [
+    "Faktor pemelihara seperti gaji dan kondisi kerja hanya mencegah ketidakpuasan, sedangkan faktor motivator seperti prestasi dan pengakuan mendorong kepuasan serta semangat kerja tinggi",
+    "Faktor pemelihara menciptakan loyalitas jangka panjang, sedangkan faktor motivator hanya menimbulkan keluhan administratif",
+    "Faktor pemelihara berkaitan dengan tanggung jawab pekerjaan, sedangkan faktor motivator berkaitan dengan peraturan jam masuk kantor",
+    "Faktor pemelihara hanya berlaku bagi karyawan kontrak, sedangkan faktor motivator hanya berlaku bagi jajaran direksi"
+   ],
+   "kunci": "A",
+   "pembahasan": "Herzberg menegaskan bahwa perbaikan lingkungan kerja dan upah (hygiene) menghilangkan rasa tidak puas, namun motivasi intrinsik sejati berasal dari isi pekerjaan itu sendiri (motivator).",
+   "alasan_soal": null,
+   "butir": null,
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 22,
+   "modul": 7,
+   "tipe": "pg",
+   "pernyataan": "Untuk meningkatkan kualitas rakitan komponen elektronik, manajemen memberikan wewenang kepada operator lini untuk merencanakan urutan kerja mereka sendiri, memeriksa kualitas hasil rakitan secara mandiri, dan mengusulkan perbaikan metode kerja. Praktik desain pekerjaan ini disebut...",
+   "opsi": [
+    "Rotasi pekerjaan (job rotation)",
+    "Pengayaan pekerjaan (job enrichment)",
+    "Simplifikasi tugas rutin",
+    "Sentralisasi pengawasan ketat"
+   ],
+   "kunci": "B",
+   "pembahasan": "Pengayaan pekerjaan (job enrichment) memperdalam tanggung jawab, otonomi, dan kendali karyawan atas pekerjaannya guna meningkatkan motivasi serta mutu hasil kerja.",
+   "alasan_soal": null,
+   "butir": null,
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 23,
+   "modul": 8,
+   "tipe": "pg",
+   "pernyataan": "Empat komponen utama dalam bauran pemasaran (marketing mix 4P) yang dikendalikan perusahaan untuk memuaskan pasar sasaran meliputi...",
+   "opsi": [
+    "Perencanaan, pengorganisasian, pengarahan, dan pengendalian",
+    "Produksi, pembukuan, perpajakan, dan pengauditan",
+    "Produk (product), harga (price), tempat/distribusi (place), dan promosi (promotion)",
+    "Pemasok, pesaing, perantara, dan pelanggan akhir"
+   ],
+   "kunci": "C",
+   "pembahasan": "Bauran pemasaran 4P mengintegrasikan pengembangan produk, strategi harga, saluran distribusi, dan komunikasi promosi untuk menciptakan nilai bagi pelanggan.",
+   "alasan_soal": null,
+   "butir": null,
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 24,
+   "modul": 8,
+   "tipe": "pg",
+   "pernyataan": "Perbedaan antara segmentasi pasar demografis dan segmentasi pasar psikografis dalam perumusan strategi pemasaran adalah...",
+   "opsi": [
+    "Segmentasi demografis membagi pasar berdasarkan iklim wilayah, sedangkan segmentasi psikografis membagi pasar berdasarkan tingkat inflasi",
+    "Segmentasi demografis berfokus pada frekuensi pembelian ulang, sedangkan segmentasi psikografis berfokus pada lokasi gerai ritel",
+    "Segmentasi demografis hanya digunakan pada pemasaran antarperusahaan, sedangkan segmentasi psikografis hanya digunakan pada penjualan bahan baku",
+    "Segmentasi demografis mengelompokkan konsumen berdasarkan usia, pendapatan, dan pendidikan, sedangkan segmentasi psikografis berdasarkan gaya hidup, nilai, dan kepribadian"
+   ],
+   "kunci": "D",
+   "pembahasan": "Segmentasi demografis menggunakan indikator kependudukan objektif seperti umur dan penghasilan, sementara segmentasi psikografis memetakan perilaku berdasarkan minat dan gaya hidup.",
+   "alasan_soal": null,
+   "butir": null,
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 25,
+   "modul": 8,
+   "tipe": "pg",
+   "pernyataan": "Saat meluncurkan layanan internet fiber baru di kawasan perumahan padat, sebuah perusahaan menetapkan tarif langganan awal yang jauh lebih rendah daripada pesaing untuk menarik sebanyak mungkin pelanggan dalam waktu singkat. Strategi penetapan harga ini disebut...",
+   "opsi": [
+    "Penetapan harga penetrasi (penetration pricing)",
+    "Penetapan harga menyaring pasar (skimming pricing)",
+    "Penetapan harga psikologis ganjil",
+    "Penetapan harga berbasis biaya penuh"
+   ],
+   "kunci": "A",
+   "pembahasan": "Penetration pricing menerapkan harga awal rendah guna mempercepat adopsi produk baru dan merebut pangsa pasar secara luas sebelum pesaing bereaksi.",
+   "alasan_soal": null,
+   "butir": null,
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 26,
+   "modul": 9,
+   "tipe": "pg",
+   "pernyataan": "Perbedaan mendasar antara laporan neraca (balance sheet) dan laporan laba rugi (income statement) dalam pelaporan keuangan perusahaan adalah...",
+   "opsi": [
+    "Neraca hanya mencatat transaksi kas tunai, sedangkan laporan laba rugi hanya mencatat transaksi kredit",
+    "Neraca menunjukkan posisi aset, liabilitas, dan ekuitas pada satu titik tanggal tertentu, sedangkan laporan laba rugi merangkum pendapatan dan beban selama satu periode",
+    "Neraca disusun khusus untuk kantor pajak, sedangkan laporan laba rugi disusun khusus untuk serikat pekerja",
+    "Neraca mengukur tingkat efisiensi pemasaran produk, sedangkan laporan laba rugi mengukur kapasitas mesin produksi"
+   ],
+   "kunci": "B",
+   "pembahasan": "Neraca menggambarkan potret kondisi kekayaan dan kewajiban perusahaan pada akhir tanggal pelaporan, sementara laporan laba rugi mengukur kinerja operasional selama rentang waktu tertentu.",
+   "alasan_soal": null,
+   "butir": null,
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 27,
+   "modul": 9,
+   "tipe": "pg",
+   "pernyataan": "Perbedaan karakteristik utama antara pendanaan utang (debt financing) dan pendanaan ekuitas (equity financing) bagi perusahaan perseroan adalah...",
+   "opsi": [
+    "Pendanaan utang memberikan hak suara dalam rapat umum pemegang saham, sedangkan pendanaan ekuitas mewajibkan pembayaran bunga tetap",
+    "Pendanaan utang tidak memiliki tanggal jatuh tempo pelunasan, sedangkan pendanaan ekuitas wajib dilunasi dalam waktu kurang dari satu tahun",
+    "Pendanaan utang menimbulkan kewajiban pembayaran pokok dan bunga tanpa mengurangi kepemilikan saham, sedangkan pendanaan ekuitas menjual kepemilikan saham tanpa kewajiban pelunasan pokok",
+    "Pendanaan utang hanya diperoleh dari penjualan saham perdana, sedangkan pendanaan ekuitas hanya diperoleh dari kredit modal kerja bank"
+   ],
+   "kunci": "C",
+   "pembahasan": "Pendanaan utang mempertahankan kendali penuh pemilik dengan konsekuensi beban bunga tetap, sedangkan pendanaan ekuitas membagi kepemilikan perusahaan kepada investor baru.",
+   "alasan_soal": null,
+   "butir": null,
+   "verifikasi": "dicek-konsep"
+  },
+  {
+   "no": 28,
+   "modul": 9,
+   "tipe": "pg",
+   "pernyataan": "Manajer keuangan membandingkan total aset lancar perusahaan sebesar Rp600 juta dengan total liabilitas jangka pendek sebesar Rp300 juta untuk memastikan kesiapan kas melunasi tagihan jatuh tempo bulan depan. Rasio keuangan yang sedang dianalisis manajer tersebut adalah...",
+   "opsi": [
+    "Rasio perputaran persediaan (inventory turnover)",
+    "Rasio margin laba bersih (net profit margin)",
+    "Rasio utang terhadap ekuitas (debt to equity ratio)",
+    "Rasio lancar (current ratio) sebagai indikator likuiditas"
+   ],
+   "kunci": "D",
+   "pembahasan": "Current ratio membagi aset lancar dengan liabilitas jangka pendek untuk mengukur kemampuan likuiditas perusahaan memenuhi kewajiban jangka pendeknya tepat waktu.",
+   "alasan_soal": null,
+   "butir": null,
+   "verifikasi": "dicek-konsep"
+  }
+ ],
+ "gratis_soal": [
+  1,
+  5,
+  14,
+  20,
+  23
+ ]
+}
