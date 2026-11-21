@@ -1,413 +1,460 @@
 [
-  {
-    "id": "catatanakademik",
-    "status": "Live",
-    "judul": "CatatanAkademik.com",
-    "ringkas": "Platform edukasi independen: panduan mahasiswa baru, kelas tutorial, alat pemeriksaan dokumen, blog, login Google, dan panel admin.",
-    "media": [
-      {
-        "tipe": "video",
-        "src": "assets/v-catatanakademik-walkthrough.mp4",
-        "poster": "assets/v-catatanakademik-walkthrough.webp",
-        "teks": "Penelusuran CatatanAkademik.com, 83 detik: kelas tuton, alat UT, kisi-kisi, blog, komunitas.",
-        "alt": ""
-      }
-    ],
-    "bagian": [
-      {
-        "label": "Masalah",
-        "isi": "Mahasiswa UT sulit menemukan panduan, kelas tutorial, dan alat pemeriksaan dokumen di satu tempat."
-      },
-      {
-        "label": "Yang dibangun",
-        "isi": "Platform edukasi independen: panduan mahasiswa baru, kelas tutorial, alat pemeriksaan dokumen, blog, login Google, dan panel admin."
-      },
-      {
-        "label": "Bukti",
-        "isi": "Situs yang bisa dibuka langsung, video penelusuran 83 detik di studi kasus, tangkapan layar panel admin di galeri, dan pemantauan indeks lewat Google Search Console."
-      },
-      {
-        "label": "Batasan",
-        "isi": "Jumlah pengguna dan dampaknya belum dipublikasikan. Fitur yang belum dirilis ditandai Planned."
-      },
-      {
-        "label": "Konteks",
-        "isi": "Proyek mandiri untuk mahasiswa Universitas Terbuka."
-      },
-      {
-        "label": "Pengguna",
-        "isi": "Mahasiswa UT, terutama mahasiswa baru."
-      },
-      {
-        "label": "Peran saya",
-        "isi": "Menyusun struktur konten, halaman web, alat bantu, panel admin, dan deployment di server sendiri. Sebagian kode dibantu AI dan saya periksa sendiri."
-      },
-      {
-        "label": "Alur",
-        "isi": "Pengunjung membaca panduan atau memakai alat, masuk lewat Google bila perlu, admin mengelola konten dari panel."
-      },
-      {
-        "label": "Alat",
-        "isi": "Web, SEO, VPS, Nginx, Google Search Console."
-      },
-      {
-        "label": "Evaluasi",
-        "isi": "Halaman dicek di HP dan desktop, tautan diuji, indeks dipantau."
-      },
-      {
-        "label": "Kegagalan",
-        "isi": "Saat membangun nextaja.com, sistem macet sehingga pengerjaan tidak bisa dilanjutkan."
-      },
-      {
-        "label": "Hasil",
-        "isi": "Platform berjalan. Dampak terhadap pengguna belum diukur."
-      },
-      {
-        "label": "Arsitektur",
-        "isi": "Pengunjung, web (panduan, kelas tuton, alat, blog), login Google, panel admin, server VPS."
-      },
-      {
-        "label": "Otomatis vs manusia",
-        "isi": "Artikel blog masuk sebagai draf dan dicek manual sebelum terbit. Pesanan dan file hasil ditangani admin secara manual."
-      },
-      {
-        "label": "Status fitur",
-        "isi": "Live (terlihat di video): panduan, kelas tuton, alat UT, kisi-kisi, blog, komunitas. Perlu verifikasi: Bedah Laporan, Cek dan Parafrase, sistem koin."
-      },
-      {
-        "label": "Hasil terukur",
-        "isi": "Belum diukur. Angka anggota grup atau pesanan bukan jumlah pengguna platform."
-      },
-      {
-        "label": "Langkah berikut",
-        "isi": "Dokumentasikan perbaikan setelah kegagalan nextaja.com."
-      }
-    ],
-    "meta": [
-      {
-        "k": "Peran",
-        "v": "Pembangun produk dan konten independen"
-      },
-      {
-        "k": "Status",
-        "v": "Live"
-      },
-      {
-        "k": "Bukti",
-        "v": "URL live, video walkthrough 83 detik, tangkapan layar fitur"
-      },
-      {
-        "k": "Batasan",
-        "v": "Penggunaan dan dampak akademik belum diukur"
-      },
-      {
-        "k": "Direkam/diperbarui",
-        "v": "November 2026"
-      }
-    ]
-  },
-  {
-    "id": "whatsapp",
-    "status": "Internal Tool",
-    "judul": "Otomasi WhatsApp (2 bot)",
-    "ringkas": "Dua bot di VPS: bot grup (anti-spam, pengingat, catatan) dan bot admin (notifikasi pesanan).",
-    "media": [
-      {
-        "tipe": "gambar",
-        "src": "assets/wa-bot-menu.webp",
-        "poster": "",
-        "teks": "Bot merespons untuk manajemen grup: catatan, pengingat, kas, laporan, antispam.",
-        "alt": "Bot grup menampilkan menu perintah: catat, pengingat, kas, laporan, antispam"
-      },
-      {
-        "tipe": "gambar",
-        "src": "assets/wa-bot-topik.webp",
-        "poster": "",
-        "teks": "Contoh batas topik: bot membatasi diri ke topik belajar di grup.",
-        "alt": "Contoh jawaban bot terkait batas topik"
-      }
-    ],
-    "bagian": [
-      {
-        "label": "Masalah",
-        "isi": "Pengelolaan grup dan pesanan dilakukan manual, berulang, dan mudah terlewat."
-      },
-      {
-        "label": "Yang dibangun",
-        "isi": "Dua bot di VPS: bot grup (anti-spam, pengingat, catatan) dan bot admin (notifikasi pesanan)."
-      },
-      {
-        "label": "Bukti",
-        "isi": "Dua tangkapan layar percakapan (tanpa nomor telepon): menu perintah manajemen grup dan contoh jawaban. Alur lengkap ada di studi kasus."
-      },
-      {
-        "label": "Batasan",
-        "isi": "Bot dijalankan di VPS dengan PM2. Uptime belum diukur secara formal."
-      },
-      {
-        "label": "Konteks",
-        "isi": "Dipakai untuk operasional layanan sendiri."
-      },
-      {
-        "label": "Pengguna",
-        "isi": "Admin dan anggota grup."
-      },
-      {
-        "label": "Peran saya",
-        "isi": "Merancang aturan, membangun bot, menjalankannya di server dengan PM2."
-      },
-      {
-        "label": "Alur grup",
-        "isi": "Pesan masuk, aturan terdeteksi, bot memproses, balasan otomatis, tinjauan manusia bila perlu."
-      },
-      {
-        "label": "Alur admin",
-        "isi": "Pesanan masuk, data divalidasi, notifikasi dikirim, admin bertindak, dicek ulang."
-      },
-      {
-        "label": "Alat",
-        "isi": "Node.js, WhatsApp, PM2, VPS."
-      },
-      {
-        "label": "Evaluasi",
-        "isi": "Diuji internal. Belum ada pengukuran periode."
-      },
-      {
-        "label": "Kegagalan",
-        "isi": "Bot kadang menjawab tidak sesuai topik. Contoh: soal kisi-kisi UKT di grup awalnya ditolak karena di luar topik belajar, lalu pertanyaan konsep UKT berikutnya dijawab."
-      },
-      {
-        "label": "Hasil",
-        "isi": "Berjalan untuk keperluan internal. Penghematan waktu belum diukur."
-      },
-      {
-        "label": "Arsitektur",
-        "isi": "WhatsApp, bot (Node.js, PM2, VPS), aturan, lalu balasan atau notifikasi ke admin."
-      },
-      {
-        "label": "Otomatis vs manusia",
-        "isi": "Otomatis: balasan perintah, pengingat, catatan, antispam. Manusia: admin memutuskan tindakan pesanan dan mengirim file."
-      },
-      {
-        "label": "Contoh pesan valid",
-        "isi": "\"Putri, ingatkan besok jam 7 pagi kumpul laporan\" (dari menu perintah bot)."
-      },
-      {
-        "label": "Contoh pesan gagal",
-        "isi": "Pertanyaan kisi-kisi UKT di grup ditolak sebagai di luar topik belajar."
-      },
-      {
-        "label": "Bot tidak merespons",
-        "isi": "Kondisi dan cara pemulihannya belum didokumentasikan."
-      },
-      {
-        "label": "Hasil terukur",
-        "isi": "Belum diukur."
-      },
-      {
-        "label": "Alur lengkap (berhasil)",
-        "isi": "Pesan masuk → pemicu cocok → validasi aturan → balasan bot → keluaran proses tercatat di PM2 → keputusan di luar aturan tetap diputuskan admin. Log pesan terstruktur belum didokumentasikan."
-      },
-      {
-        "label": "Langkah berikut",
-        "isi": "Rapikan batas topik bot dan tambahkan log pemantauan."
-      }
-    ],
-    "meta": [
-      {
-        "k": "Peran",
-        "v": "Pembangun alur otomasi"
-      },
-      {
-        "k": "Status",
-        "v": "Alat internal"
-      },
-      {
-        "k": "Bukti",
-        "v": "Tangkapan layar menu dan topik bot (disamarkan). Demo video terpisah per bot belum ada"
-      },
-      {
-        "k": "Batasan",
-        "v": "Uptime formal dan keandalan skala produksi belum diukur"
-      },
-      {
-        "k": "Direkam/diperbarui",
-        "v": "November 2026"
-      }
-    ]
-  },
-  {
-    "id": "remotion",
-    "status": "Personal Project",
-    "judul": "Mesin Konten Video (Remotion)",
-    "ringkas": "Mesin Remotion buatan sendiri: naskah per adegan menjadi data episode, divalidasi, dirender 1080x1920, lalu diaudit.",
-    "media": [
-      {
-        "tipe": "video",
-        "src": "assets/v-remotion-ep001.mp4",
-        "poster": "assets/v-remotion-ep001.webp",
-        "teks": "Hasil akhir: episode 1 seri \"Build with AI\", 37 detik, dirender dengan alur Remotion. Status: proyek pribadi, rendered dan diuji internal. Performa audiens belum diukur.",
-        "alt": ""
-      }
-    ],
-    "bagian": [
-      {
-        "label": "Masalah",
-        "isi": "Satu ide perlu menjadi banyak video vertikal dengan mutu yang konsisten."
-      },
-      {
-        "label": "Yang dibangun",
-        "isi": "Mesin Remotion buatan sendiri: naskah per adegan menjadi data episode, divalidasi, dirender 1080x1920, lalu diaudit."
-      },
-      {
-        "label": "Bukti",
-        "isi": "Lima video hasil render di galeri di bawah dan alur validasi sebelum render."
-      },
-      {
-        "label": "Batasan",
-        "isi": "Data tayangan, klik, dan konversi belum diukur."
-      },
-      {
-        "label": "Konteks",
-        "isi": "Seri video edukasi dan penjelasan proses untuk TikTok dan Reels."
-      },
-      {
-        "label": "Pengguna",
-        "isi": "Saya sendiri sebagai pembuat konten, lalu penonton di media sosial."
-      },
-      {
-        "label": "Peran saya",
-        "isi": "Menyusun naskah, struktur data episode, komposisi adegan, suara, subtitle, dan pemeriksaan hasil."
-      },
-      {
-        "label": "Alur",
-        "isi": "Naskah dikunci, data episode, validasi otomatis, contoh disetujui, render, audit suara dan tampilan."
-      },
-      {
-        "label": "Alat",
-        "isi": "Remotion, React, ElevenLabs, FFmpeg."
-      },
-      {
-        "label": "Evaluasi",
-        "isi": "Format benar, teks tidak meluap, subtitle sinkron, suara diperiksa."
-      },
-      {
-        "label": "Kegagalan",
-        "isi": "Pada tahap AI image-to-video untuk bahan visual, hasil render kadang tidak sesuai konsep yang diminta."
-      },
-      {
-        "label": "Hasil",
-        "isi": "Video berhasil dibuat dan diuji internal. Dampak terhadap audiens belum diukur."
-      },
-      {
-        "label": "Arsitektur",
-        "isi": "Naskah, data episode (JSON), validator, komposisi Remotion, render, audit."
-      },
-      {
-        "label": "Otomatis vs manusia",
-        "isi": "Otomatis: validasi data dan render. Manusia: naskah, suara, persetujuan contoh sebelum render, audit akhir."
-      },
-      {
-        "label": "Hasil terukur",
-        "isi": "Belum diukur. Video berhasil dibuat dan diuji internal."
-      },
-      {
-        "label": "Alur satu video",
-        "isi": "Brief → naskah → storyboard → data episode → render → QA → revisi → hasil akhir. Status: dirender dan diuji internal. Belum terbukti menghasilkan views atau konversi. Durasi, tangkapan komposisi, dan contoh revisi sebelum/sesudah per video belum dikumpulkan."
-      },
-      {
-        "label": "Langkah berikut",
-        "isi": "Dokumentasikan satu episode dari naskah sampai render."
-      }
-    ],
-    "meta": [
-      {
-        "k": "Peran",
-        "v": "Pembangun alur kerja konten AI"
-      },
-      {
-        "k": "Status",
-        "v": "Proyek pribadi / prototipe"
-      },
-      {
-        "k": "Bukti",
-        "v": "Video hasil render (episode 1). Rekaman proses brief-sampai-render belum ada"
-      },
-      {
-        "k": "Batasan",
-        "v": "Performa audiens dan konversi belum diukur"
-      },
-      {
-        "k": "Direkam/diperbarui",
-        "v": "November 2026"
-      }
-    ]
-  },
-  {
-    "id": "analisis",
-    "status": "Prototype",
-    "judul": "Prototipe Analisis Media Sosial",
-    "ringkas": "Evaluasi konten dari data analitik akun sendiri: hook, retensi, dan CTA.",
-    "media": [
-      {
-        "tipe": "video",
-        "src": "assets/v-analisis-sistem.mp4",
-        "poster": "assets/v-analisis-sistem.webp",
-        "teks": "Video penjelasan sistem analisis media sosial (KPI, tracker, perhitungan engagement), 53 detik, dibuat dengan Remotion. Ini penjelasan alur kerja, bukan laporan performa akun.",
-        "alt": ""
-      }
-    ],
-    "bagian": [
-      {
-        "label": "Masalah",
-        "isi": "Konten diposting tanpa evaluasi terstruktur, sehingga tidak jelas bagian mana yang gagal menahan penonton atau mengajak bertindak."
-      },
-      {
-        "label": "Data",
-        "isi": "2 konten akun Catatan Akademik, diposting 8 November 2026: 1 carousel Instagram dan 1 video TikTok 32 detik. Data diambil dari analitik bawaan platform, rentang 30 hari terakhir."
-      },
-      {
-        "label": "Temuan 1",
-        "isi": "Video TikTok: rata-rata durasi tonton 2,67 detik dari 32,2 detik (sekitar 8%), penonton yang menonton sampai habis 0%. Dugaan: hook dan pembukaan belum menahan penonton."
-      },
-      {
-        "label": "Temuan 2",
-        "isi": "CTA \"Save dan kirim ke teman\" belum menghasilkan aksi: carousel Instagram 0 save dan 0 share (jangkauan 13, tayangan 34); video TikTok 0 share, 0 kunjungan profil."
-      },
-      {
-        "label": "Rekomendasi",
-        "isi": "Hook 3 detik pertama berisi satu pertanyaan atau risiko yang spesifik; pendekkan video menjadi 15 sampai 20 detik; letakkan CTA setelah poin inti, bukan di caption panjang. Ini hipotesis, belum diuji."
-      },
-      {
-        "label": "Contoh sebelum dan sesudah",
-        "isi": "Sebelum: \"Pelanggaran ujian UT bisa berujung nilai E.\" Usulan: \"Satu pelanggaran ini bisa membuat semua nilai semester jadi E.\" Usulan belum diuji, tidak ada data sesudahnya."
-      },
-      {
-        "label": "Batasan",
-        "isi": "Hanya 2 konten pada akun yang masih kecil, jadi angka belum cukup untuk menyimpulkan. Ini prototipe pada akun milik sendiri, bukan data klien, dan bukan pengganti uji A/B terkontrol."
-      }
-    ],
-    "meta": [
-      {
-        "k": "Peran",
-        "v": "Pembangun kerangka analisis konten"
-      },
-      {
-        "k": "Status",
-        "v": "Prototype"
-      },
-      {
-        "k": "Bukti",
-        "v": "Analisis mandiri memakai data analitik bawaan akun sendiri (2 konten) dan video penjelasan sistem"
-      },
-      {
-        "k": "Batasan",
-        "v": "Rekomendasi masih hipotesis, belum divalidasi lewat uji terkontrol"
-      },
-      {
-        "k": "Direkam/diperbarui",
-        "v": "November 2026"
-      }
-    ]
-  }
+ {
+  "id": "catatanakademik",
+  "status": "Live",
+  "judul": "CatatanAkademik.com",
+  "ringkas": "Platform edukasi independen: panduan mahasiswa baru, kelas tutorial, alat pemeriksaan dokumen, blog, login Google, dan panel admin.",
+  "media": [
+   {
+    "tipe": "video",
+    "src": "assets/v-catatanakademik-walkthrough.mp4",
+    "poster": "assets/v-catatanakademik-walkthrough.webp",
+    "teks": "Penelusuran CatatanAkademik.com, 83 detik: kelas tuton, alat UT, kisi-kisi, blog, komunitas.",
+    "alt": ""
+   }
+  ],
+  "bagian": [
+   {
+    "label": "Masalah",
+    "isi": "Mahasiswa UT sulit menemukan panduan, kelas tutorial, dan alat pemeriksaan dokumen di satu tempat."
+   },
+   {
+    "label": "Yang dibangun",
+    "isi": "Platform edukasi independen: panduan mahasiswa baru, kelas tutorial, alat pemeriksaan dokumen, blog, login Google, dan panel admin."
+   },
+   {
+    "label": "Bukti",
+    "isi": "Situs yang bisa dibuka langsung, video penelusuran 83 detik di studi kasus, tangkapan layar panel admin di galeri, dan pemantauan indeks lewat Google Search Console."
+   },
+   {
+    "label": "Batasan",
+    "isi": "Jumlah pengguna dan dampaknya belum dipublikasikan. Fitur yang belum dirilis ditandai Planned."
+   },
+   {
+    "label": "Konteks",
+    "isi": "Proyek mandiri untuk mahasiswa Universitas Terbuka."
+   },
+   {
+    "label": "Pengguna",
+    "isi": "Mahasiswa UT, terutama mahasiswa baru."
+   },
+   {
+    "label": "Peran saya",
+    "isi": "Menyusun struktur konten, halaman web, alat bantu, panel admin, dan deployment di server sendiri. Sebagian kode dibantu AI dan saya periksa sendiri."
+   },
+   {
+    "label": "Alur",
+    "isi": "Pengunjung membaca panduan atau memakai alat, masuk lewat Google bila perlu, admin mengelola konten dari panel."
+   },
+   {
+    "label": "Alat",
+    "isi": "Web, SEO, VPS, Nginx, Google Search Console."
+   },
+   {
+    "label": "Evaluasi",
+    "isi": "Halaman dicek di HP dan desktop, tautan diuji, indeks dipantau."
+   },
+   {
+    "label": "Kegagalan",
+    "isi": "Saat membangun nextaja.com, sistem macet sehingga pengerjaan tidak bisa dilanjutkan."
+   },
+   {
+    "label": "Hasil",
+    "isi": "Platform berjalan. Dampak terhadap pengguna belum diukur."
+   },
+   {
+    "label": "Arsitektur",
+    "isi": "Pengunjung, web (panduan, kelas tuton, alat, blog), login Google, panel admin, server VPS."
+   },
+   {
+    "label": "Otomatis vs manusia",
+    "isi": "Artikel blog masuk sebagai draf dan dicek manual sebelum terbit. Pesanan dan file hasil ditangani admin secara manual."
+   },
+   {
+    "label": "Status fitur",
+    "isi": "Live (terlihat di video): panduan, kelas tuton, alat UT, kisi-kisi, blog, komunitas. Perlu verifikasi: Bedah Laporan, Cek dan Parafrase, sistem koin."
+   },
+   {
+    "label": "Hasil terukur",
+    "isi": "Belum diukur. Angka anggota grup atau pesanan bukan jumlah pengguna platform."
+   },
+   {
+    "label": "Langkah berikut",
+    "isi": "Dokumentasikan perbaikan setelah kegagalan nextaja.com."
+   }
+  ],
+  "meta": [
+   {
+    "k": "Peran",
+    "v": "Pembangun produk dan konten independen"
+   },
+   {
+    "k": "Status",
+    "v": "Live"
+   },
+   {
+    "k": "Bukti",
+    "v": "URL live, video walkthrough 83 detik, tangkapan layar fitur"
+   },
+   {
+    "k": "Batasan",
+    "v": "Penggunaan dan dampak akademik belum diukur"
+   },
+   {
+    "k": "Direkam/diperbarui",
+    "v": "November 2026"
+   }
+  ]
+ },
+ {
+  "id": "whatsapp",
+  "status": "Internal Tool",
+  "judul": "Otomasi WhatsApp (2 bot)",
+  "ringkas": "Dua bot di VPS: bot grup (anti-spam, pengingat, catatan) dan bot admin (notifikasi pesanan).",
+  "media": [
+   {
+    "tipe": "gambar",
+    "src": "assets/wa-bot-menu.webp",
+    "poster": "",
+    "teks": "Bot merespons untuk manajemen grup: catatan, pengingat, kas, laporan, antispam.",
+    "alt": "Bot grup menampilkan menu perintah: catat, pengingat, kas, laporan, antispam"
+   },
+   {
+    "tipe": "gambar",
+    "src": "assets/wa-bot-topik.webp",
+    "poster": "",
+    "teks": "Contoh batas topik: bot membatasi diri ke topik belajar di grup.",
+    "alt": "Contoh jawaban bot terkait batas topik"
+   }
+  ],
+  "bagian": [
+   {
+    "label": "Masalah",
+    "isi": "Pengelolaan grup dan pesanan dilakukan manual, berulang, dan mudah terlewat."
+   },
+   {
+    "label": "Yang dibangun",
+    "isi": "Dua bot di VPS: bot grup (anti-spam, pengingat, catatan) dan bot admin (notifikasi pesanan)."
+   },
+   {
+    "label": "Bukti",
+    "isi": "Dua tangkapan layar percakapan (tanpa nomor telepon): menu perintah manajemen grup dan contoh jawaban. Alur lengkap ada di studi kasus."
+   },
+   {
+    "label": "Batasan",
+    "isi": "Bot dijalankan di VPS dengan PM2. Uptime belum diukur secara formal."
+   },
+   {
+    "label": "Konteks",
+    "isi": "Dipakai untuk operasional layanan sendiri."
+   },
+   {
+    "label": "Pengguna",
+    "isi": "Admin dan anggota grup."
+   },
+   {
+    "label": "Peran saya",
+    "isi": "Merancang aturan, membangun bot, menjalankannya di server dengan PM2."
+   },
+   {
+    "label": "Alur grup",
+    "isi": "Pesan masuk, aturan terdeteksi, bot memproses, balasan otomatis, tinjauan manusia bila perlu."
+   },
+   {
+    "label": "Alur admin",
+    "isi": "Pesanan masuk, data divalidasi, notifikasi dikirim, admin bertindak, dicek ulang."
+   },
+   {
+    "label": "Alat",
+    "isi": "Node.js, WhatsApp, PM2, VPS."
+   },
+   {
+    "label": "Evaluasi",
+    "isi": "Diuji internal. Belum ada pengukuran periode."
+   },
+   {
+    "label": "Kegagalan",
+    "isi": "Bot kadang menjawab tidak sesuai topik. Contoh: soal kisi-kisi UKT di grup awalnya ditolak karena di luar topik belajar, lalu pertanyaan konsep UKT berikutnya dijawab."
+   },
+   {
+    "label": "Hasil",
+    "isi": "Berjalan untuk keperluan internal. Penghematan waktu belum diukur."
+   },
+   {
+    "label": "Arsitektur",
+    "isi": "WhatsApp, bot (Node.js, PM2, VPS), aturan, lalu balasan atau notifikasi ke admin."
+   },
+   {
+    "label": "Otomatis vs manusia",
+    "isi": "Otomatis: balasan perintah, pengingat, catatan, antispam. Manusia: admin memutuskan tindakan pesanan dan mengirim file."
+   },
+   {
+    "label": "Contoh pesan valid",
+    "isi": "\"Putri, ingatkan besok jam 7 pagi kumpul laporan\" (dari menu perintah bot)."
+   },
+   {
+    "label": "Contoh pesan gagal",
+    "isi": "Pertanyaan kisi-kisi UKT di grup ditolak sebagai di luar topik belajar."
+   },
+   {
+    "label": "Bot tidak merespons",
+    "isi": "Kondisi dan cara pemulihannya belum didokumentasikan."
+   },
+   {
+    "label": "Hasil terukur",
+    "isi": "Belum diukur."
+   },
+   {
+    "label": "Alur lengkap (berhasil)",
+    "isi": "Pesan masuk → pemicu cocok → validasi aturan → balasan bot → keluaran proses tercatat di PM2 → keputusan di luar aturan tetap diputuskan admin. Log pesan terstruktur belum didokumentasikan."
+   },
+   {
+    "label": "Langkah berikut",
+    "isi": "Rapikan batas topik bot dan tambahkan log pemantauan."
+   }
+  ],
+  "meta": [
+   {
+    "k": "Peran",
+    "v": "Pembangun alur otomasi"
+   },
+   {
+    "k": "Status",
+    "v": "Alat internal"
+   },
+   {
+    "k": "Bukti",
+    "v": "Tangkapan layar menu dan topik bot (disamarkan). Demo video terpisah per bot belum ada"
+   },
+   {
+    "k": "Batasan",
+    "v": "Uptime formal dan keandalan skala produksi belum diukur"
+   },
+   {
+    "k": "Direkam/diperbarui",
+    "v": "November 2026"
+   }
+  ]
+ },
+ {
+  "id": "remotion",
+  "status": "Personal Project",
+  "judul": "Mesin Konten Video (Remotion)",
+  "ringkas": "Mesin Remotion buatan sendiri: naskah per adegan menjadi data episode, divalidasi, dirender 1080x1920, lalu diaudit.",
+  "media": [
+   {
+    "tipe": "video",
+    "src": "assets/v-remotion-ep001.mp4",
+    "poster": "assets/v-remotion-ep001.webp",
+    "teks": "Hasil akhir: episode 1 seri \"Build with AI\", 37 detik, dirender dengan alur Remotion. Status: proyek pribadi, rendered dan diuji internal. Performa audiens belum diukur.",
+    "alt": ""
+   }
+  ],
+  "bagian": [
+   {
+    "label": "Masalah",
+    "isi": "Satu ide perlu menjadi banyak video vertikal dengan mutu yang konsisten."
+   },
+   {
+    "label": "Yang dibangun",
+    "isi": "Mesin Remotion buatan sendiri: naskah per adegan menjadi data episode, divalidasi, dirender 1080x1920, lalu diaudit."
+   },
+   {
+    "label": "Bukti",
+    "isi": "Lima video hasil render di galeri di bawah dan alur validasi sebelum render."
+   },
+   {
+    "label": "Batasan",
+    "isi": "Data tayangan, klik, dan konversi belum diukur."
+   },
+   {
+    "label": "Konteks",
+    "isi": "Seri video edukasi dan penjelasan proses untuk TikTok dan Reels."
+   },
+   {
+    "label": "Pengguna",
+    "isi": "Saya sendiri sebagai pembuat konten, lalu penonton di media sosial."
+   },
+   {
+    "label": "Peran saya",
+    "isi": "Menyusun naskah, struktur data episode, komposisi adegan, suara, subtitle, dan pemeriksaan hasil."
+   },
+   {
+    "label": "Alur",
+    "isi": "Naskah dikunci, data episode, validasi otomatis, contoh disetujui, render, audit suara dan tampilan."
+   },
+   {
+    "label": "Alat",
+    "isi": "Remotion, React, ElevenLabs, FFmpeg."
+   },
+   {
+    "label": "Evaluasi",
+    "isi": "Format benar, teks tidak meluap, subtitle sinkron, suara diperiksa."
+   },
+   {
+    "label": "Kegagalan",
+    "isi": "Pada tahap AI image-to-video untuk bahan visual, hasil render kadang tidak sesuai konsep yang diminta."
+   },
+   {
+    "label": "Hasil",
+    "isi": "Video berhasil dibuat dan diuji internal. Dampak terhadap audiens belum diukur."
+   },
+   {
+    "label": "Arsitektur",
+    "isi": "Naskah, data episode (JSON), validator, komposisi Remotion, render, audit."
+   },
+   {
+    "label": "Otomatis vs manusia",
+    "isi": "Otomatis: validasi data dan render. Manusia: naskah, suara, persetujuan contoh sebelum render, audit akhir."
+   },
+   {
+    "label": "Hasil terukur",
+    "isi": "Belum diukur. Video berhasil dibuat dan diuji internal."
+   },
+   {
+    "label": "Alur satu video",
+    "isi": "Brief → naskah → storyboard → data episode → render → QA → revisi → hasil akhir. Status: dirender dan diuji internal. Belum terbukti menghasilkan views atau konversi. Durasi, tangkapan komposisi, dan contoh revisi sebelum/sesudah per video belum dikumpulkan."
+   },
+   {
+    "label": "Langkah berikut",
+    "isi": "Dokumentasikan satu episode dari naskah sampai render."
+   }
+  ],
+  "meta": [
+   {
+    "k": "Peran",
+    "v": "Pembangun alur kerja konten AI"
+   },
+   {
+    "k": "Status",
+    "v": "Proyek pribadi / prototipe"
+   },
+   {
+    "k": "Bukti",
+    "v": "Video hasil render (episode 1). Rekaman proses brief-sampai-render belum ada"
+   },
+   {
+    "k": "Batasan",
+    "v": "Performa audiens dan konversi belum diukur"
+   },
+   {
+    "k": "Direkam/diperbarui",
+    "v": "November 2026"
+   }
+  ]
+ },
+ {
+  "id": "analisis",
+  "status": "Prototype",
+  "judul": "Prototipe Analisis Media Sosial",
+  "ringkas": "Evaluasi konten dari data analitik akun sendiri: hook, retensi, dan CTA.",
+  "media": [
+   {
+    "tipe": "video",
+    "src": "assets/v-analisis-sistem.mp4",
+    "poster": "assets/v-analisis-sistem.webp",
+    "teks": "Video penjelasan sistem analisis media sosial (KPI, tracker, perhitungan engagement), 53 detik, dibuat dengan Remotion. Ini penjelasan alur kerja, bukan laporan performa akun.",
+    "alt": ""
+   }
+  ],
+  "bagian": [
+   {
+    "label": "Masalah",
+    "isi": "Konten diposting tanpa evaluasi terstruktur, sehingga tidak jelas bagian mana yang gagal menahan penonton atau mengajak bertindak."
+   },
+   {
+    "label": "Data",
+    "isi": "2 konten akun Catatan Akademik, diposting 8 November 2026: 1 carousel Instagram dan 1 video TikTok 32 detik. Data diambil dari analitik bawaan platform, rentang 30 hari terakhir."
+   },
+   {
+    "label": "Temuan 1",
+    "isi": "Video TikTok: rata-rata durasi tonton 2,67 detik dari 32,2 detik (sekitar 8%), penonton yang menonton sampai habis 0%. Dugaan: hook dan pembukaan belum menahan penonton."
+   },
+   {
+    "label": "Temuan 2",
+    "isi": "CTA \"Save dan kirim ke teman\" belum menghasilkan aksi: carousel Instagram 0 save dan 0 share (jangkauan 13, tayangan 34); video TikTok 0 share, 0 kunjungan profil."
+   },
+   {
+    "label": "Rekomendasi",
+    "isi": "Hook 3 detik pertama berisi satu pertanyaan atau risiko yang spesifik; pendekkan video menjadi 15 sampai 20 detik; letakkan CTA setelah poin inti, bukan di caption panjang. Ini hipotesis, belum diuji."
+   },
+   {
+    "label": "Contoh sebelum dan sesudah",
+    "isi": "Sebelum: \"Pelanggaran ujian UT bisa berujung nilai E.\" Usulan: \"Satu pelanggaran ini bisa membuat semua nilai semester jadi E.\" Usulan belum diuji, tidak ada data sesudahnya."
+   },
+   {
+    "label": "Batasan",
+    "isi": "Hanya 2 konten pada akun yang masih kecil, jadi angka belum cukup untuk menyimpulkan. Ini prototipe pada akun milik sendiri, bukan data klien, dan bukan pengganti uji A/B terkontrol."
+   }
+  ],
+  "meta": [
+   {
+    "k": "Peran",
+    "v": "Pembangun kerangka analisis konten"
+   },
+   {
+    "k": "Status",
+    "v": "Prototype"
+   },
+   {
+    "k": "Bukti",
+    "v": "Analisis mandiri memakai data analitik bawaan akun sendiri (2 konten) dan video penjelasan sistem"
+   },
+   {
+    "k": "Batasan",
+    "v": "Rekomendasi masih hipotesis, belum divalidasi lewat uji terkontrol"
+   },
+   {
+    "k": "Direkam/diperbarui",
+    "v": "November 2026"
+   }
+  ]
+ },
+ {
+  "id": "heyaipeople",
+  "status": "Live",
+  "judul": "heyaipeople.site",
+  "ringkas": "Katalog prompt foto AI dan paket storyboard video 2D, dengan keranjang dan pemesanan lewat WhatsApp.",
+  "media": [],
+  "bagian": [
+   {
+    "label": "Masalah",
+    "isi": "Kreator pemula butuh prompt foto AI dan kerangka storyboard video yang siap dipakai, tanpa harus menyusun dari nol."
+   },
+   {
+    "label": "Yang dibangun",
+    "isi": "Situs katalog dengan filter kategori (produk dan iklan, karakter dan potret, arsitektur dan interior, ilustrasi 2D), pratinjau hasil, keranjang, dan tombol pesan ke WhatsApp admin."
+   },
+   {
+    "label": "Isi katalog",
+    "isi": "6 prompt foto AI, 4 paket storyboard ke video dengan kode Remotion 2D, dan 2 paket bundling."
+   },
+   {
+    "label": "Bukti",
+    "isi": "Situs yang bisa dibuka langsung di heyaipeople.site."
+   },
+   {
+    "label": "Batasan",
+    "isi": "Halaman masih menyebut dirinya kerangka/draf: produk dan harga contoh belum final. Pembayaran dan pengiriman prompt dilakukan manual lewat chat, belum otomatis. Belum ada data penjualan."
+   }
+  ],
+  "meta": [
+   {
+    "k": "Peran",
+    "v": "Pembangun situs dan penyusun katalog"
+   },
+   {
+    "k": "Status",
+    "v": "Live (isi katalog masih draf)"
+   },
+   {
+    "k": "Bukti",
+    "v": "URL live heyaipeople.site"
+   },
+   {
+    "k": "Batasan",
+    "v": "Produk dan harga belum final, belum ada data penjualan"
+   }
+  ]
+ }
 ]
