@@ -1993,7 +1993,13 @@
 
       <div class="filter-bar" id="filter-bar" data-reveal style="--rd: 100ms"></div>
       <div class="filter-bar sub-bar" id="sub-bar" hidden></div>
-      <div class="cflow" id="cflow"><div class="cflow-stage" id="works-grid" tabindex="0" role="region" aria-roledescription="carousel" aria-label="Galeri karya, geser ke samping" aria-live="polite"></div><div class="cflow-bar"><button type="button" class="cflow-btn" id="cf-prev" aria-label="Karya sebelumnya"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><span class="cflow-count" id="cf-count">1 / 1</span><button type="button" class="cflow-btn" id="cf-next" aria-label="Karya berikutnya"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button></div></div>
+      <div class="clc-root" id="w-stage" tabindex="0" role="region" aria-roledescription="carousel" aria-label="Galeri karya">
+        <div class="clc-glow"></div>
+        <div class="clc-slot" id="works-grid"></div>
+        <div class="clc-top"><b>GALERI KARYA</b><span>Geser atau klik kartu tengah untuk detail</span></div>
+        <div class="clc-copy" id="w-copy" aria-live="polite"></div>
+        <div class="clc-ctl"><div class="clc-count" id="cf-count"></div><div class="clc-bar"><span id="w-prog"></span></div><div class="clc-btns"><button type="button" class="clc-btn" id="cf-prev" aria-label="Sebelumnya"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><button type="button" class="clc-btn" id="cf-next" aria-label="Berikutnya"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button></div></div>
+      </div>
       <div style="text-align: center; margin-top: 28px;"><button type="button" class="btn btn-outline" id="works-more" hidden>Lihat semua karya</button></div>
     </section>
 
@@ -2407,7 +2413,7 @@
       };
     }
     let cfIndex = 0, cfItems = [], cfList = [];
-    const cfCount = document.getElementById('cf-count');
+    
     function cfLayout() {
       const n = cfItems.length;
       cfItems.forEach((el, i) => {
@@ -2430,44 +2436,20 @@
       cfLayout();
     }
 
+    let wLens = null;
     function renderWorks() {
       cfList = works.filter((w) => (activeFilter === 'all' || w.category === activeFilter) && (activeSub === 'all' || !SUBS[activeFilter] || jenisOf(w) === activeSub));
       moreBtn.hidden = true;
-      cfIndex = 0; cfItems = [];
-      if (!cfList.length) {
-        worksGrid.innerHTML = `<div class="works-empty">Belum ada karya di jenis ini.</div>`;
-        cfLayout();
-        return;
-      }
-      worksGrid.innerHTML = '';
-      cfList.forEach((item, i) => {
-        const wrap = document.createElement('div');
-        wrap.className = 'cflow-item';
-        const card = document.createElement('article');
-        card.className = 'work-card';
-        card.setAttribute('aria-label', `Buka detail: ${item.title}`);
-        const tools = Array.isArray(item.tools) ? item.tools : [];
-        card.innerHTML = `
-          <div>
-            <div class="work-media">
-              ${item.badge ? `<span class="work-badge">${esc(item.badge)}</span>` : ''}
-              ${mediaThumb(item)}
-            </div>
-            <div class="work-body">
-              <h3>${esc(item.title)}</h3>
-              <p>${esc(item.summary)}</p>
-              <div class="work-tags">
-                <div class="tag-list">${tools.slice(0, 3).map((t) => `<span class="tag-chip">${esc(t)}</span>`).join('')}</div>
-                <span class="work-link-hint">${item.mediaType === 'video' ? 'Putar →' : 'Detail →'}</span>
-              </div>
-            </div>
-          </div>`;
-        wrap.appendChild(card);
-        wrap.addEventListener('click', () => { if (cfMoved) return; if (i === cfIndex) { openModal(item); } else { cfGo(i); cfAutoKick(); } });
-        worksGrid.appendChild(wrap);
-        cfItems.push(wrap);
+      if (!wLens) wLens = makeLens({
+        root: document.getElementById('w-stage'), slot: worksGrid, copy: document.getElementById('w-copy'),
+        cnt: document.getElementById('cf-count'), prog: document.getElementById('w-prog'),
+        prev: document.getElementById('cf-prev'), next: document.getElementById('cf-next'),
+        onOpen: (sl) => openModal(sl._w)
       });
-      cfLayout();
+      wLens.set(cfList.map((w) => ({
+        judul: w.title, kategori: SUBS[w.category] ? jenisOf(w) : catLabel(w.category), keterangan: w.summary || '',
+        poster: safeUrl(w.posterUrl) || (w.mediaType === 'image' ? safeUrl(w.mediaUrl) : ''), _w: w
+      })).filter((x) => x.poster));
     }
 
     // drag / swipe, tombol, keyboard, autoplay orbital
@@ -2478,32 +2460,6 @@
     }
     function cfAutoStop() { if (cfAutoTimer) { clearInterval(cfAutoTimer); cfAutoTimer = null; } }
     function cfAutoKick() { cfAutoStop(); cfAutoStart(); }
-    (function () {
-      const stage = worksGrid; let sx = 0, base = 0, down = false;
-      stage.addEventListener('pointerdown', (e) => { if (e.pointerType === 'mouse' && e.button !== 0) return; down = true; cfMoved = false; sx = e.clientX; base = cfIndex; cfAutoStop(); });
-      window.addEventListener('pointermove', (e) => {
-        if (!down) return;
-        const dx = e.clientX - sx;
-        if (Math.abs(dx) > 8) { cfMoved = true; stage.classList.add('drag'); }
-        if (cfMoved) { const step = (cfItems[0] ? cfItems[0].offsetWidth : 300) * 0.9; const t = Math.round(base - dx / step); if (t !== cfIndex) cfGo(t); }
-      });
-      const up = () => { if (!down) return; down = false; stage.classList.remove('drag'); setTimeout(() => { cfMoved = false; }, 0); cfAutoStart(); };
-      window.addEventListener('pointerup', up); window.addEventListener('pointercancel', up);
-      stage.addEventListener('pointerenter', cfAutoStop);
-      stage.addEventListener('pointerleave', cfAutoStart);
-      document.getElementById('cf-prev').addEventListener('click', () => { cfGo(cfIndex - 1); cfAutoKick(); });
-      document.getElementById('cf-next').addEventListener('click', () => { cfGo(cfIndex + 1); cfAutoKick(); });
-      stage.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowLeft') { e.preventDefault(); cfGo(cfIndex - 1); cfAutoKick(); }
-        else if (e.key === 'ArrowRight') { e.preventDefault(); cfGo(cfIndex + 1); cfAutoKick(); }
-        else if (e.key === 'Home') { e.preventDefault(); cfGo(0); cfAutoKick(); }
-        else if (e.key === 'End') { e.preventDefault(); cfGo(cfItems.length - 1); cfAutoKick(); }
-        else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (cfList[cfIndex]) openModal(cfList[cfIndex]); }
-      });
-      window.addEventListener('resize', cfLayout);
-      cfAutoStart();
-    })();
-
     // ---------- Modal detail ----------
     const modal = document.getElementById('project-modal');
     const modalPreview = document.getElementById('modal-preview');
@@ -3461,8 +3417,6 @@
 
   <script>
   (function(){
-    var root=document.getElementById('ka-stage'),slot=document.getElementById('ka-slot'),fil=document.getElementById('ka-filter'),modal=document.getElementById('ka-modal'),body=document.getElementById('ka-body'),cap=document.getElementById('ka-cap'),copy=document.getElementById('ka-copy'),cnt=document.getElementById('ka-count'),prog=document.getElementById('ka-prog');
-    if(!root)return;
     function esc(t){return String(t==null?'':t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
     function ok(p){return typeof p==='string'&&/^v\/[A-Za-z0-9_\-\/.]+$/.test(p)}
     var VERT='attribute vec2 aPos;uniform vec2 uRes;uniform vec2 uSize;uniform float uX;uniform float uBend;uniform float uVel;uniform float uIntro;uniform float uLift;varying vec2 vUv;varying float vX;void main(){vec2 p=vec2(uX+(aPos.x-.5)*uSize.x,(aPos.y-.5)*uSize.y);p.y-=(1.-uIntro)*uSize.y*.9;vec2 n=p/(uRes*.5);float x=clamp(n.x,-1.4,1.4);n.y*=1.+uBend*x*x;n.y+=uVel*.05*sin(aPos.x*3.14159)*(aPos.y-.5);n.x*=1.-.06*uBend*x*x;n.y+=uLift;vUv=aPos;vX=x;gl_Position=vec4(n,0.,1.);}';
@@ -3476,7 +3430,8 @@
     function grid(sx,sy){var o=[];for(var y=0;y<sy;y++)for(var x=0;x<sx;x++){var x0=x/sx,x1=(x+1)/sx,y0=y/sy,y1=(y+1)/sy;o.push(x0,y0,x1,y0,x0,y1,x0,y1,x1,y0,x1,y1)}return new Float32Array(o)}
     function sh(gl,t,s){var o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);return o}
 
-    var all=[],slides=[],active='Semua',dispose=null,api={go:function(){},cur:function(){return 0}};
+    window.makeLens=function(cfg){
+      var root=cfg.root,slot=cfg.slot,copy=cfg.copy,cnt=cfg.cnt,prog=cfg.prog,modal={hidden:true},openItem=function(i){cfg.onOpen(slides[i],i)},slides=[],dispose=null,api={go:function(){},cur:function(){return 0}};
     function setCopy(i){
       var x=slides[i];if(!x)return;
       var words=String(x.judul).split(' ').map(function(w,wi,arr){var off=arr.slice(0,wi).join(' ').length;return '<span class="clc-w">'+w.split('').map(function(c,ci){return '<span class="clc-ch" style="transition-delay:'+(60+(off+ci)*22)+'ms">'+esc(c)+'</span>'}).join('')+'</span>'}).join(' ');
@@ -3485,12 +3440,6 @@
       requestAnimationFrame(function(){requestAnimationFrame(function(){copy.className='clc-copy clc-in'})});
       cnt.innerHTML=pad2(i+1)+' <i style="opacity:.45;font-style:normal">/ '+pad2(slides.length)+'</i>';
       prog.style.transform='scaleX('+((i+1)/slides.length)+')';
-    }
-    function openItem(i){
-      var x=slides[i];if(!x)return;var h='';
-      if(x.video&&ok(x.video)){h='<video controls autoplay playsinline poster="'+esc(x.poster)+'"><source src="'+esc(x.video)+'" type="video/mp4"></video>'}
-      else{var sl=(Array.isArray(x.slides)?x.slides:[x.poster]).map(function(s){return typeof s==='string'?s:(s&&s.src)}).filter(ok);h=sl.map(function(s){return '<img src="'+esc(s)+'" alt="'+esc(x.judul)+'">'}).join('')}
-      body.innerHTML=h;cap.textContent=(x.keterangan||'')+' Visual dibuat dengan AI; performa belum diukur.';modal.hidden=false;
     }
     function mount(){
       if(dispose){dispose();dispose=null}
@@ -3560,14 +3509,32 @@
       var io=new IntersectionObserver(function(en){visible=en[0].isIntersecting;if(visible)kick()});io.observe(root);
       dispose=function(){disposed=true;cancelAnimationFrame(raf);ro.disconnect();io.disconnect();root.removeEventListener('keydown',onKey);tex.forEach(function(t){gl.deleteTexture(t.t)});gl.deleteBuffer(buf);gl.deleteProgram(prog_)};
     }
-    function apply(){slides=all.filter(function(x){return active==='Semua'||x.kategori===active});mount()}
+      if(cfg.prev)cfg.prev.addEventListener('click',function(){api.go(-1)});
+      if(cfg.next)cfg.next.addEventListener('click',function(){api.go(1)});
+      return {set:function(sl){slides=sl;mount()}};
+    };
+  })();
+  </script>
+  <script>
+  (function(){
+    var root=document.getElementById('ka-stage'),slot=document.getElementById('ka-slot'),fil=document.getElementById('ka-filter'),modal=document.getElementById('ka-modal'),body=document.getElementById('ka-body'),cap=document.getElementById('ka-cap'),copy=document.getElementById('ka-copy'),cnt=document.getElementById('ka-count'),prog=document.getElementById('ka-prog');
+    if(!root)return;
+    function esc(t){return String(t==null?'':t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+    function ok(p){return typeof p==='string'&&/^v\/[A-Za-z0-9_\-\/.]+$/.test(p)}
+    var all=[],active='Semua';
+    function openItem(x){
+      if(!x)return;var h='';
+      if(x.video&&ok(x.video)){h='<video controls autoplay playsinline poster="'+esc(x.poster)+'"><source src="'+esc(x.video)+'" type="video/mp4"></video>'}
+      else{var sl=(Array.isArray(x.slides)?x.slides:[x.poster]).map(function(s){return typeof s==='string'?s:(s&&s.src)}).filter(ok);h=sl.map(function(s){return '<img src="'+esc(s)+'" alt="'+esc(x.judul)+'">'}).join('')}
+      body.innerHTML=h;cap.textContent=(x.keterangan||'')+' Visual dibuat dengan AI; performa belum diukur.';modal.hidden=false;
+    }
+    var lens=makeLens({root:root,slot:slot,copy:copy,cnt:cnt,prog:prog,onOpen:openItem,prev:document.getElementById('ka-prev'),next:document.getElementById('ka-next')});
+    function apply(){lens.set(all.filter(function(x){return active==='Semua'||x.kategori===active}))}
     function filters(){
       var base=['Video AI','Video Iklan','Video Komersial'],extra=all.map(function(x){return x.kategori}).filter(function(c,i,a){return c&&a.indexOf(c)===i&&base.indexOf(c)<0});
       fil.innerHTML=['Semua'].concat(base,extra).map(function(c){return '<button type="button" class="filter-btn'+(c===active?' active':'')+'" data-c="'+esc(c)+'">'+esc(c)+'</button>'}).join('');
     }
     fil.addEventListener('click',function(e){var b=e.target.closest('[data-c]');if(!b)return;active=b.getAttribute('data-c');filters();apply()});
-    document.getElementById('ka-prev').addEventListener('click',function(){api.go(-1)});
-    document.getElementById('ka-next').addEventListener('click',function(){api.go(1)});
     function close(){modal.hidden=true;body.innerHTML=''}
     document.getElementById('ka-x').addEventListener('click',close);
     modal.addEventListener('click',function(e){if(e.target===modal)close()});
