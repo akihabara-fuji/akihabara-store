@@ -11,7 +11,7 @@ fail(){ echo "GAGAL di baris $1, rollback"; [ -d "$BAK" ] && { rm -rf "$ROOT"; m
 trap 'fail $LINENO' ERR
 set -e
 mkdir -p "$NEW/assets" "$NEW/v"
-for f in index.html works.json; do curl -fsSL "$RAW/$f" -o "$NEW/$f"; done
+for f in index.html works.json proyek.json; do curl -fsSL "$RAW/$f" -o "$NEW/$f"; done
 grep -q 'Dika Priyadi' "$NEW/index.html"
 for a in v-uaop v-cek-nilai v-showcase v-explainer; do for x in mp4 webp; do curl -fsSL "$RAW/assets/$a.$x" -o "$NEW/assets/$a.$x"; done; done
 curl -fsSL "$RAW/assets/v-bukti-cover.mp4" -o "$NEW/assets/v-bukti-cover.mp4"
@@ -39,6 +39,7 @@ if A in o and A in n:
 PY
 cp "$NEW/index.html" "$ROOT/index.html"
 mkdir -p "$ROOT/assets" && cp "$NEW"/assets/* "$ROOT/assets/"
+[ -s "$ROOT/proyek.json" ] || cp "$NEW/proyek.json" "$ROOT/proyek.json"
 python3 - "$NEW/works.json" "$ROOT/works.json" <<'PY'
 import json, sys
 new = json.load(open(sys.argv[1])); cur = json.load(open(sys.argv[2]))
