@@ -107,132 +107,60 @@
   ]
  },
  {
-  "id": "whatsapp",
-  "status": "Internal Tool",
-  "judul": "Otomasi WhatsApp (2 bot)",
-  "ringkas": "Dua bot di VPS: bot grup (anti-spam, pengingat, catatan) dan bot admin (notifikasi pesanan).",
+  "id": "video-sosmed",
+  "status": "Karya",
+  "judul": "Video Sosial Media",
+  "ringkas": "Video pendek vertikal untuk sosial media: iklan produk, edukasi, dan penjelasan analisis akun, dengan visual hasil AI.",
   "media": [
    {
-    "tipe": "gambar",
-    "src": "assets/wa-bot-menu.webp",
-    "poster": "",
-    "teks": "Bot merespons untuk manajemen grup: catatan, pengingat, kas, laporan, antispam.",
-    "alt": "Bot grup menampilkan menu perintah: catat, pengingat, kas, laporan, antispam"
+    "tipe": "video",
+    "src": "assets/v-es-krim.mp4",
+    "poster": "assets/v-es-krim.webp",
+    "teks": "Contoh iklan produk (es). Video dibuat dengan AI.",
+    "alt": ""
    },
    {
-    "tipe": "gambar",
-    "src": "assets/wa-bot-topik.webp",
-    "poster": "",
-    "teks": "Contoh batas topik: bot membatasi diri ke topik belajar di grup.",
-    "alt": "Contoh jawaban bot terkait batas topik"
+    "tipe": "video",
+    "src": "assets/v-jeans-flare.mp4",
+    "poster": "assets/v-jeans-flare.webp",
+    "teks": "Contoh iklan fashion. Video dibuat dengan AI.",
+    "alt": ""
    }
   ],
   "bagian": [
    {
     "label": "Masalah",
-    "isi": "Pengelolaan grup dan pesanan dilakukan manual, berulang, dan mudah terlewat."
+    "isi": "Akun sosial media butuh video pendek yang rutin, sementara produksi manual memakan waktu dan biaya."
    },
    {
     "label": "Yang dibangun",
-    "isi": "Dua bot di VPS: bot grup (anti-spam, pengingat, catatan) dan bot admin (notifikasi pesanan)."
+    "isi": "Kumpulan video pendek: iklan produk dan fashion, video edukasi, motion brand, dan penjelasan analisis akun. Visual dihasilkan dengan alat AI."
    },
    {
     "label": "Bukti",
-    "isi": "Dua tangkapan layar percakapan (tanpa nomor telepon): menu perintah manajemen grup dan contoh jawaban. Alur lengkap ada di studi kasus."
+    "isi": "Video bisa diputar langsung di kartu ini dan di galeri Karya Video AI."
    },
    {
     "label": "Batasan",
-    "isi": "Bot dijalankan di VPS dengan PM2. Uptime belum diukur secara formal."
-   },
-   {
-    "label": "Konteks",
-    "isi": "Dipakai untuk operasional layanan sendiri."
-   },
-   {
-    "label": "Pengguna",
-    "isi": "Admin dan anggota grup."
-   },
-   {
-    "label": "Peran saya",
-    "isi": "Merancang aturan, membangun bot, menjalankannya di server dengan PM2."
-   },
-   {
-    "label": "Alur grup",
-    "isi": "Pesan masuk, aturan terdeteksi, bot memproses, balasan otomatis, tinjauan manusia bila perlu."
-   },
-   {
-    "label": "Alur admin",
-    "isi": "Pesanan masuk, data divalidasi, notifikasi dikirim, admin bertindak, dicek ulang."
-   },
-   {
-    "label": "Alat",
-    "isi": "Node.js, WhatsApp, PM2, VPS."
-   },
-   {
-    "label": "Evaluasi",
-    "isi": "Diuji internal. Belum ada pengukuran periode."
-   },
-   {
-    "label": "Kegagalan",
-    "isi": "Bot kadang menjawab tidak sesuai topik. Contoh: soal kisi-kisi UKT di grup awalnya ditolak karena di luar topik belajar, lalu pertanyaan konsep UKT berikutnya dijawab."
-   },
-   {
-    "label": "Hasil",
-    "isi": "Berjalan untuk keperluan internal. Penghematan waktu belum diukur."
-   },
-   {
-    "label": "Arsitektur",
-    "isi": "WhatsApp, bot (Node.js, PM2, VPS), aturan, lalu balasan atau notifikasi ke admin."
-   },
-   {
-    "label": "Otomatis vs manusia",
-    "isi": "Otomatis: balasan perintah, pengingat, catatan, antispam. Manusia: admin memutuskan tindakan pesanan dan mengirim file."
-   },
-   {
-    "label": "Contoh pesan valid",
-    "isi": "\"Putri, ingatkan besok jam 7 pagi kumpul laporan\" (dari menu perintah bot)."
-   },
-   {
-    "label": "Contoh pesan gagal",
-    "isi": "Pertanyaan kisi-kisi UKT di grup ditolak sebagai di luar topik belajar."
-   },
-   {
-    "label": "Bot tidak merespons",
-    "isi": "Kondisi dan cara pemulihannya belum didokumentasikan."
-   },
-   {
-    "label": "Hasil terukur",
-    "isi": "Belum diukur."
-   },
-   {
-    "label": "Alur lengkap (berhasil)",
-    "isi": "Pesan masuk → pemicu cocok → validasi aturan → balasan bot → keluaran proses tercatat di PM2 → keputusan di luar aturan tetap diputuskan admin. Log pesan terstruktur belum didokumentasikan."
-   },
-   {
-    "label": "Langkah berikut",
-    "isi": "Rapikan batas topik bot dan tambahkan log pemantauan."
+    "isi": "Belum ada data performa (tayangan, retensi, share) untuk video ini. Visualnya hasil AI, bukan rekaman produk nyata."
    }
   ],
   "meta": [
    {
     "k": "Peran",
-    "v": "Pembangun alur otomasi"
+    "v": "Perancang dan pembuat video"
    },
    {
     "k": "Status",
-    "v": "Alat internal"
+    "v": "Karya (galeri video)"
    },
    {
     "k": "Bukti",
-    "v": "Tangkapan layar menu dan topik bot (disamarkan). Demo video terpisah per bot belum ada"
+    "v": "Video yang bisa diputar"
    },
    {
     "k": "Batasan",
-    "v": "Uptime formal dan keandalan skala produksi belum diukur"
-   },
-   {
-    "k": "Direkam/diperbarui",
-    "v": "November 2026"
+    "v": "Belum ada data performa"
    }
   ]
  },
