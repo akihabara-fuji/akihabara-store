@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Ruang Admin Portofolio</title>
+<style>
+:root{--bg:#0b0d12;--panel:#12151c;--line:#232836;--ink:#eef0f5;--mut:#98a0b3;--acc:#ff8a3d;--ok:#3ddc97;--bad:#ff5d6c}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+.btn{background:#1b2030;border:1px solid var(--line);border-radius:10px;padding:8px 14px;cursor:pointer}.btn:hover{border-color:#3a4260}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#1a0e04;font-weight:700}.btn.bad{color:var(--bad)}.btn.sm{padding:4px 9px;font-size:12px;border-radius:8px}.btn[disabled]{opacity:.5;cursor:not-allowed}
+input[type=text],input[type=password],textarea,select{width:100%;background:#0d1017;border:1px solid var(--line);border-radius:9px;padding:8px 10px}
+textarea{min-height:76px;resize:vertical}label{display:block;margin:12px 0 4px;color:var(--mut);font-size:12px}label small{opacity:.7}
+#login{max-width:340px;margin:12vh auto;padding:24px;background:var(--panel);border:1px solid var(--line);border-radius:16px}
+#login h1{font-size:18px;margin:0 0 14px}.err{color:var(--bad);margin-top:10px;min-height:18px}
+#app{display:none;height:100vh;grid-template-rows:auto 1fr;grid-template-columns:230px minmax(0,1fr) minmax(0,.9fr)}
+#app.on{display:grid}
+header{grid-column:1/-1;display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel)}
+header b{font-size:15px}header .sp{flex:1}#st{color:var(--mut);font-size:12px}#st.d{color:var(--acc)}#st.e{color:var(--bad)}#st.o{color:var(--ok)}
+nav{border-right:1px solid var(--line);padding:12px 8px;overflow:auto;background:var(--panel)}
+nav button{display:block;width:100%;text-align:left;background:none;border:0;border-radius:10px;padding:10px 12px;cursor:pointer;margin-bottom:4px}
+nav button:hover{background:#1a1f2c}nav button.on{background:#1f2535;outline:1px solid #343c55}
+nav button i{display:block;font-style:normal;font-size:11px;color:var(--mut)}nav .n{float:right;color:var(--mut);font-size:12px}
+main{overflow:auto;padding:18px 20px}main h2{margin:0 0 4px;font-size:18px}main .sub{color:var(--mut);margin:0 0 14px}
+aside{border-left:1px solid var(--line);display:flex;flex-direction:column;min-width:0}aside .bar{padding:8px 12px;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:center;color:var(--mut);font-size:12px}
+aside iframe{flex:1;border:0;background:#fff;width:100%}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}.tabs button{background:#151a26;border:1px solid var(--line);border-radius:999px;padding:5px 12px;cursor:pointer;color:var(--mut)}.tabs button.on{background:var(--acc);border-color:var(--acc);color:#1a0e04;font-weight:700}
+.item{display:flex;gap:12px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:8px}
+.item img,.item .ph{width:64px;height:64px;object-fit:cover;border-radius:8px;background:#222;flex:none}.item .ph{display:grid;place-items:center;color:var(--mut);font-size:11px}
+.item .t{flex:1;min-width:0}.item .t b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.item .t span{color:var(--mut);font-size:12px}
+.tag{display:inline-block;background:#222a3d;border-radius:999px;padding:1px 8px;font-size:11px;margin-right:4px;color:#c9d1e6}.tag.dr{background:#3a2a10;color:var(--acc)}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:14px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.up{display:flex;gap:10px;align-items:center}.up img{width:56px;height:56px;object-fit:cover;border-radius:8px}.up code{font-size:11px;color:var(--mut);word-break:break-all}
+#ed{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:flex-start;justify-content:center;padding:4vh 12px;overflow:auto;z-index:20}#ed.on{display:flex}
+#ed .box{width:min(640px,100%);margin:0}.acts{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.info{background:#161c2b;border:1px dashed #3a4666;border-radius:12px;padding:12px 14px;color:#b8c2dc;margin-bottom:12px}
+@media(max-width:1100px){#app{grid-template-columns:200px minmax(0,1fr)}aside{display:none}}
+@media(max-width:700px){#app{grid-template-columns:1fr;grid-template-rows:auto auto 1fr}nav{display:flex;overflow:auto;border-right:0;border-bottom:1px solid var(--line)}nav button{white-space:nowrap;width:auto}nav button i{display:none}.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="login"><h1>Ruang Admin Portofolio</h1><label>Kata sandi</label><input type="password" id="pw" autocomplete="current-password"><div id="pw2" style="display:none"><label>Kata sandi baru <small>(min. 10 karakter, huruf dan angka)</small></label><input type="password" id="pwn" autocomplete="new-password"></div><div class="acts"><button class="btn pri" id="go">Masuk</button></div><div class="err" id="lerr"></div></div>
+
+<div id="app">
+  <header><b>Ruang Admin Portofolio</b><span id="st">Tersimpan</span><span class="sp"></span><button class="btn" id="reload">Muat ulang pratinjau</button><button class="btn pri" id="save">Simpan &amp; Terbitkan</button><button class="btn" id="out">Keluar</button></header>
+  <nav id="nav"></nav>
+  <main id="main"></main>
+  <aside><div class="bar"><span>Pratinjau halaman asli:</span><b id="pvl"></b></div><iframe id="pv" title="Pratinjau"></iframe></aside>
+</div>
+<div id="ed"><div class="box" id="edbox"></div></div>
+
+<script>
+(function(){
+var $=function(i){return document.getElementById(i)};
+function esc(t){return String(t==null?'':t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+var H={'x-hp':'1','content-type':'application/json'};
+function api(path,opt){opt=opt||{};opt.headers=Object.assign({'x-hp':'1'},opt.headers||{});opt.credentials='same-origin';return fetch(path,opt).then(function(r){return r.json().catch(function(){return {}}).then(function(j){if(!r.ok){var e=new Error(j.error||('Gagal ('+r.status+')'));e.status=r.status;e.must=j.must;throw e}return j})})}
+
+var KAT_WORKS=['AI Motion (Remotion)','AI Video & Content','Video Iklan','Video Drama','Web & SEO','AI Automation','Social Media Strategy'];
+var JENIS_MOTION=['Remotion Drama','Remotion Iklan','Remotion Horror','Remotion Portofolio'];
+var JENIS_VIDEO=['Video AI','Video Iklan','Video Komersial'];
+var JENIS_KARYA=['Video AI','Video Iklan','Video Komersial','Carousel'];
+function jenisFor(kat){return kat==='AI Motion (Remotion)'?JENIS_MOTION:(kat==='AI Video & Content'||kat==='Video Iklan'||kat==='Video Drama'?JENIS_VIDEO:[])}
+
+var S=null,dirty=false,sec='teks',tabK='Semua',tabW='Semua',tabJ='Semua',mustChange=false;
+var SECS=[
+ {k:'teks',t:'Teks Halaman',i:'Judul, kalimat hero, WhatsApp',a:'#beranda'},
+ {k:'proyek',t:'Empat Proyek',i:'Kartu studi kasus (info)',a:'#proyek'},
+ {k:'karya',t:'Karya Video AI',i:'Video iklan, komersial, carousel',a:'#karya-ai'},
+ {k:'galeri',t:'Galeri Karya & Motion AI',i:'Remotion drama/iklan/horror/portofolio',a:'#karya'},
+ {k:'riwayat',t:'Riwayat & Pulihkan',i:'Kembali ke versi sebelumnya',a:''}
+];
+function status(m,c){var s=$('st');s.textContent=m;s.className=c||''}
+function mark(){dirty=true;status('Ada perubahan, belum diterbitkan','d')}
+
+/* ---------- login ---------- */
+function showApp(){$('login').style.display='none';$('app').classList.add('on');load()}
+function init(){api('/api/me').then(function(j){if(j.ok&&!j.must)showApp();else if(j.ok&&j.must){mustChange=true;$('pw2').style.display='block';$('lerr').textContent='Ganti kata sandi dulu.'}}).catch(function(){})}
+$('go').onclick=function(){
+  var p=$('pw').value;$('lerr').textContent='';
+  if(mustChange){api('/api/admin/password',{method:'POST',headers:H,body:JSON.stringify({lama:p,baru:$('pwn').value})}).then(showApp).catch(function(e){$('lerr').textContent=e.message});return}
+  api('/api/login',{method:'POST',headers:H,body:JSON.stringify({password:p})}).then(function(j){if(j.must){mustChange=true;$('pw2').style.display='block';$('lerr').textContent='Ganti kata sandi dulu.'}else showApp()}).catch(function(e){$('lerr').textContent=e.message});
+};
+$('pw').addEventListener('keydown',function(e){if(e.key==='Enter')$('go').click()});
+$('out').onclick=function(){api('/api/logout',{method:'POST'}).then(function(){location.reload()})};
+
+/* ---------- data ---------- */
+function load(){api('/api/admin/state').then(function(s){S=s;S.works=S.works||[];S.karya=S.karya||[];S.remotion=S.remotion||[];S.site=S.site||{};dirty=false;status('Tersimpan','o');render();pv()}).catch(function(e){status(e.message,'e')})}
+function pv(){var s=SECS.filter(function(x){return x.k===sec})[0]||{};var a=s.a||'';$('pv').src='/'+(a?a:'');$('pvl').textContent=a||'(tidak ada)'}
+$('reload').onclick=function(){$('pv').src=$('pv').src.split('#')[0]+'?r='+Date.now()+(SECS.filter(function(x){return x.k===sec})[0].a||'')};
+$('save').onclick=function(){
+  status('Menyimpan dan menerbitkan…');$('save').disabled=true;
+  api('/api/admin/save',{method:'POST',headers:H,body:JSON.stringify(S)}).then(function(j){S=j.state;dirty=false;status('Terbit: '+((j.tayang||[]).join(', ')||'tanpa perubahan tayang'),'o');render();$('reload').click()}).catch(function(e){status('Gagal: '+e.message,'e');alert('Gagal menyimpan:\n'+e.message)}).then(function(){$('save').disabled=false});
+};
+window.addEventListener('beforeunload',function(e){if(dirty){e.preventDefault();e.returnValue=''}});
+
+/* ---------- unggah ---------- */
+function upload(file,kind){
+  status('Mengunggah '+file.name+'…');
+  return fetch('/api/admin/upload?kind='+kind,{method:'POST',headers:{'x-hp':'1'},credentials:'same-origin',body:file}).then(function(r){return r.json().then(function(j){if(!r.ok)throw new Error(j.error||'Unggah gagal');status('Unggah selesai','o');return j})});
+}
+function upField(id,label,kind,cur,cb){
+  return '<label>'+label+'</label><div class="up" data-up="'+id+'" data-kind="'+kind+'">'+(cur?(kind==='image'?'<img src="/'+esc(cur)+'" alt="">':'<span class="tag">video</span>'):'')+'<div><input type="file" accept="'+(kind==='image'?'image/jpeg,image/png,image/webp':'video/mp4')+'"><br><code>'+esc(cur||'belum ada file')+'</code></div></div>';
+}
+function bindUps(root,obj,after){
+  root.querySelectorAll('[data-up]').forEach(function(el){
+    var inp=el.querySelector('input');
+    inp.onchange=function(){var f=inp.files[0];if(!f)return;upload(f,el.getAttribute('data-kind')).then(function(j){obj[el.getAttribute('data-up')]=j.path;if(j.lebar){obj.lebar=j.lebar;obj.tinggi=j.tinggi}after()}).catch(function(e){status(e.message,'e');alert(e.message)})};
+  });
+}
+
+/* ---------- render ---------- */
+function render(){
+  $('nav').innerHTML=SECS.map(function(s){var n=s.k==='karya'?S.karya.length:(s.k==='galeri'?S.works.length:'');return '<button data-k="'+s.k+'" class="'+(s.k===sec?'on':'')+'">'+esc(s.t)+(n!==''?'<span class="n">'+n+'</span>':'')+'<i>'+esc(s.i)+'</i></button>'}).join('');
+  $('nav').querySelectorAll('button').forEach(function(b){b.onclick=function(){sec=b.getAttribute('data-k');render();pv()}});
+  var m=$('main');
+  if(sec==='teks')m.innerHTML=vTeks();else if(sec==='proyek')m.innerHTML=vProyek();else if(sec==='karya')m.innerHTML=vKarya();else if(sec==='galeri')m.innerHTML=vGaleri();else m.innerHTML='<h2>Riwayat &amp; Pulihkan</h2><p class="sub">Memuat…</p>';
+  bind();
+}
+function vTeks(){var s=S.site;return '<h2>Teks Halaman</h2><p class="sub">Bagian paling atas halaman (hero) dan kontak. Pratinjau di kanan.</p><div class="box"><label>Judul halaman (tab browser &amp; Google)</label><input type="text" data-s="judul" value="'+esc(s.judul)+'"><label>Deskripsi singkat (Google &amp; pratinjau tautan)</label><textarea data-s="deskripsi">'+esc(s.deskripsi)+'</textarea><label>Kalimat di bawah judul besar (hero)</label><textarea data-s="heroSub" style="min-height:110px">'+esc(s.heroSub)+'</textarea><label>Nomor WhatsApp <small>(format 62…, tanpa +)</small></label><input type="text" data-s="wa" value="'+esc(s.wa)+'"></div>'}
+function vProyek(){return '<h2>Empat Proyek</h2><p class="sub">Kartu studi kasus di halaman.</p><div class="info">Empat kartu ini (CatatanAkademik, Bot WhatsApp, Mesin Konten Remotion, Analisis Media Sosial) berisi teks bukti yang ditulis khusus, jadi tidak diedit dari sini. Minta Claude untuk mengubah isinya. Video dan gambar pendukung karya ada di menu <b>Karya Video AI</b> dan <b>Galeri Karya</b>.</div>'}
+function tabsHtml(list,cur,attr){return '<div class="tabs">'+list.map(function(t){return '<button data-'+attr+'="'+esc(t[0])+'" class="'+(cur===t[0]?'on':'')+'">'+esc(t[0])+' ('+t[1]+')</button>'}).join('')+'</div>'}
+function vKarya(){
+  var cnt={};S.karya.forEach(function(x){var j=x.jenis||(x.kategori==='Carousel'?'Carousel':'Video AI');cnt[j]=(cnt[j]||0)+1});
+  var tabs=[['Semua',S.karya.length]].concat(JENIS_KARYA.map(function(j){return [j,cnt[j]||0]}));
+  var h='<h2>Karya Video AI</h2><p class="sub">Muncul di bagian "Karya Video AI" (carousel lensa). Urutan di sini = urutan di halaman.</p>'+tabsHtml(tabs,tabK,'tk')+'<p><button class="btn pri" id="addK">+ Tambah karya</button></p>';
+  S.karya.forEach(function(x,i){var j=x.jenis||(x.kategori==='Carousel'?'Carousel':'Video AI');if(tabK!=='Semua'&&j!==tabK)return;
+    h+='<div class="item">'+(x.poster?'<img src="/'+esc(x.poster)+'" alt="">':'<div class="ph">no poster</div>')+'<div class="t"><b>'+esc(x.judul)+'</b><span><span class="tag">'+esc(j)+'</span>'+(x.draft?'<span class="tag dr">draf (disembunyikan)</span>':'')+(x.video?'':' <span class="tag">tanpa video</span>')+'</span></div><button class="btn sm" data-mv="k:'+i+':-1">↑</button><button class="btn sm" data-mv="k:'+i+':1">↓</button><button class="btn sm" data-ek="'+i+'">Ubah</button><button class="btn sm bad" data-dk="'+i+'">Hapus</button></div>'});
+  return h;
+}
+function vGaleri(){
+  var cats={};S.works.forEach(function(w){cats[w.category]=(cats[w.category]||0)+1});
+  var tabs=[['Semua',S.works.length]].concat(Object.keys(cats).map(function(c){return [c,cats[c]]}));
+  var h='<h2>Galeri Karya &amp; Motion AI</h2><p class="sub">Bagian "Perpustakaan Bukti / Galeri Karya". Pilih kategori, untuk Motion AI pilih juga jenisnya.</p>'+tabsHtml(tabs,tabW,'tw');
+  var subs=jenisFor(tabW);
+  if(subs.length){var jc={};S.works.forEach(function(w){if(w.category===tabW){var j=w.jenis||subs[subs.length-1];jc[j]=(jc[j]||0)+1}});h+=tabsHtml([['Semua',S.works.filter(function(w){return w.category===tabW}).length]].concat(subs.map(function(j){return [j,jc[j]||0]})),tabJ,'tj')}
+  h+='<p><button class="btn pri" id="addW">+ Tambah karya</button></p>';
+  S.works.forEach(function(w,i){if(tabW!=='Semua'&&w.category!==tabW)return;var sb=jenisFor(w.category);var j=w.jenis||(sb.length?sb[sb.length-1]:'');if(tabJ!=='Semua'&&sb.length&&j!==tabJ)return;
+    var th=w.posterUrl||w.image||'';
+    h+='<div class="item">'+(th?'<img src="/'+esc(th)+'" alt="">':'<div class="ph">no poster</div>')+'<div class="t"><b>'+esc(w.title)+'</b><span><span class="tag">'+esc(w.category)+'</span>'+(j?'<span class="tag">'+esc(j)+'</span>':'')+(w.draft?'<span class="tag dr">draf</span>':'')+'</span></div><button class="btn sm" data-mv="w:'+i+':-1">↑</button><button class="btn sm" data-mv="w:'+i+':1">↓</button><button class="btn sm" data-ew="'+i+'">Ubah</button><button class="btn sm bad" data-dw="'+i+'">Hapus</button></div>'});
+  return h;
+}
+function bind(){
+  var m=$('main');
+  m.querySelectorAll('[data-s]').forEach(function(el){el.oninput=function(){S.site[el.getAttribute('data-s')]=el.value;mark()}});
+  m.querySelectorAll('[data-tk]').forEach(function(b){b.onclick=function(){tabK=b.getAttribute('data-tk');render()}});
+  m.querySelectorAll('[data-tw]').forEach(function(b){b.onclick=function(){tabW=b.getAttribute('data-tw');tabJ='Semua';render()}});
+  m.querySelectorAll('[data-tj]').forEach(function(b){b.onclick=function(){tabJ=b.getAttribute('data-tj');render()}});
+  m.querySelectorAll('[data-mv]').forEach(function(b){b.onclick=function(){var p=b.getAttribute('data-mv').split(':'),arr=p[0]==='k'?S.karya:S.works,i=+p[1],j=i+ +p[2];if(j<0||j>=arr.length)return;var t=arr[i];arr[i]=arr[j];arr[j]=t;mark();render()}});
+  m.querySelectorAll('[data-dk]').forEach(function(b){b.onclick=function(){var i=+b.getAttribute('data-dk');if(confirm('Hapus "'+S.karya[i].judul+'"? (File di server tidak ikut terhapus)')){S.karya.splice(i,1);mark();render()}}});
+  m.querySelectorAll('[data-dw]').forEach(function(b){b.onclick=function(){var i=+b.getAttribute('data-dw');if(confirm('Hapus "'+S.works[i].title+'"?')){S.works.splice(i,1);mark();render()}}});
+  m.querySelectorAll('[data-ek]').forEach(function(b){b.onclick=function(){edK(+b.getAttribute('data-ek'))}});
+  m.querySelectorAll('[data-ew]').forEach(function(b){b.onclick=function(){edW(+b.getAttribute('data-ew'))}});
+  var a=$('addK');if(a)a.onclick=function(){edK(-1)};var w=$('addW');if(w)w.onclick=function(){edW(-1)};
+  if(sec==='riwayat')riwayat();
+}
+
+/* ---------- editor karya video ---------- */
+function openEd(html){$('edbox').innerHTML=html;$('ed').classList.add('on')}
+function closeEd(){$('ed').classList.remove('on');$('edbox').innerHTML=''}
+$('ed').addEventListener('mousedown',function(e){if(e.target===$('ed'))closeEd()});
+function edK(i){
+  var x=i<0?{judul:'',jenis:tabK!=='Semua'?tabK:'Video AI',keterangan:'',poster:'',video:'',keahlian:[],draft:false,slides:[]}:JSON.parse(JSON.stringify(S.karya[i]));
+  if(!x.jenis)x.jenis=x.kategori==='Carousel'?'Carousel':'Video AI';
+  function draw(){
+    openEd('<h2 style="margin:0 0 8px">'+(i<0?'Tambah':'Ubah')+' karya video</h2>'+
+    '<label>Judul</label><input type="text" id="f-judul" value="'+esc(x.judul)+'">'+
+    '<label>Jenis</label><select id="f-jenis">'+JENIS_KARYA.map(function(j){return '<option'+(j===x.jenis?' selected':'')+'>'+j+'</option>'}).join('')+'</select>'+
+    '<label>Keterangan singkat</label><textarea id="f-ket">'+esc(x.keterangan)+'</textarea>'+
+    upField('poster','Poster / gambar sampul (JPG, PNG, WebP)','image',x.poster)+
+    (x.jenis==='Carousel'?'<label>Slide carousel</label><div>'+(x.slides||[]).map(function(s){return '<img src="/'+esc(s)+'" style="width:56px;height:56px;object-fit:cover;border-radius:6px;margin:2px">'}).join('')+'</div><input type="file" id="f-slides" multiple accept="image/jpeg,image/png,image/webp">':upField('video','Video (MP4, opsional)','video',x.video))+
+    '<label>Kata kunci keahlian <small>(pisahkan dengan koma)</small></label><input type="text" id="f-ahli" value="'+esc((x.keahlian||[]).join(', '))+'">'+
+    '<label><input type="checkbox" id="f-draft"'+(x.draft?' checked':'')+'> Sembunyikan dari halaman (draf)</label>'+
+    '<div class="acts"><button class="btn" id="e-x">Batal</button><button class="btn pri" id="e-ok">Simpan</button></div>');
+    var box=$('edbox');
+    function pull(){x.judul=$('f-judul').value;x.jenis=$('f-jenis').value;x.keterangan=$('f-ket').value;x.keahlian=$('f-ahli').value.split(',').map(function(t){return t.trim()}).filter(Boolean);x.draft=$('f-draft').checked}
+    bindUps(box,x,function(){pull();draw()});
+    $('f-jenis').onchange=function(){pull();draw()};
+    var fs=$('f-slides');if(fs)fs.onchange=function(){var fl=[].slice.call(fs.files);x.slides=x.slides||[];fl.reduce(function(p,f){return p.then(function(){return upload(f,'image').then(function(j){x.slides.push(j.path)})})},Promise.resolve()).then(function(){pull();draw()}).catch(function(e){alert(e.message)})};
+    $('e-x').onclick=closeEd;
+    $('e-ok').onclick=function(){pull();if(!x.judul.trim())return alert('Judul wajib diisi');if(!x.poster)return alert('Poster wajib diunggah');
+      x.kategori=x.jenis==='Carousel'?'Carousel':'Video';if(x.jenis!=='Carousel')delete x.slides;
+      if(i<0)S.karya.push(x);else S.karya[i]=x;closeEd();mark();render()};
+  }
+  draw();
+}
+/* ---------- editor galeri ---------- */
+function edW(i){
+  var x=i<0?{title:'',category:tabW!=='Semua'?tabW:'AI Motion (Remotion)',jenis:'',summary:'',metrics:'',promptOrWorkflow:'',tools:[],badge:'',mediaType:'video',mediaUrl:'',posterUrl:'',externalLink:'',draft:false}:JSON.parse(JSON.stringify(S.works[i]));
+  function draw(){
+    var subs=jenisFor(x.category);if(subs.length&&subs.indexOf(x.jenis)<0)x.jenis=subs[subs.length-1];if(!subs.length)x.jenis='';
+    openEd('<h2 style="margin:0 0 8px">'+(i<0?'Tambah':'Ubah')+' karya</h2>'+
+    '<label>Judul</label><input type="text" id="w-title" value="'+esc(x.title)+'">'+
+    '<div class="row"><div><label>Kategori</label><select id="w-cat">'+KAT_WORKS.map(function(c){return '<option'+(c===x.category?' selected':'')+'>'+c+'</option>'}).join('')+'</select></div>'+
+    '<div><label>Jenis</label>'+(subs.length?'<select id="w-jenis">'+subs.map(function(j){return '<option'+(j===x.jenis?' selected':'')+'>'+j+'</option>'}).join('')+'</select>':'<input type="text" disabled value="(tidak ada jenis untuk kategori ini)">')+'</div></div>'+
+    '<label>Ringkasan <small>(maks. 500 karakter)</small></label><textarea id="w-sum">'+esc(x.summary)+'</textarea>'+
+    '<label>Data / status nyata <small>(contoh: durasi, status berjalan; jangan klaim yang belum terbukti)</small></label><input type="text" id="w-met" value="'+esc(x.metrics)+'">'+
+    '<label>Alur kerja / prompt</label><textarea id="w-flow" style="min-height:96px">'+esc(x.promptOrWorkflow)+'</textarea>'+
+    '<label>Tools <small>(pisahkan dengan koma)</small></label><input type="text" id="w-tools" value="'+esc((x.tools||[]).join(', '))+'">'+
+    '<div class="row"><div><label>Label kecil (badge)</label><input type="text" id="w-badge" value="'+esc(x.badge)+'"></div><div><label>Tipe media utama</label><select id="w-mt"><option value="video"'+(x.mediaType==='video'?' selected':'')+'>Video</option><option value="image"'+(x.mediaType==='image'?' selected':'')+'>Gambar</option></select></div></div>'+
+    upField('mediaUrl',x.mediaType==='video'?'File video (MP4)':'File gambar',x.mediaType==='video'?'video':'image',x.mediaUrl)+
+    upField('posterUrl','Poster / sampul (JPG, PNG, WebP)','image',x.posterUrl)+
+    '<label>Tautan eksternal <small>(opsional, diawali https://)</small></label><input type="text" id="w-link" value="'+esc(x.externalLink)+'">'+
+    '<label><input type="checkbox" id="w-draft"'+(x.draft?' checked':'')+'> Sembunyikan dari halaman (draf)</label>'+
+    '<div class="acts"><button class="btn" id="e-x">Batal</button><button class="btn pri" id="e-ok">Simpan</button></div>');
+    function pull(){x.title=$('w-title').value;x.category=$('w-cat').value;var j=$('w-jenis');x.jenis=j?j.value:'';x.summary=$('w-sum').value;x.metrics=$('w-met').value;x.promptOrWorkflow=$('w-flow').value;x.tools=$('w-tools').value.split(',').map(function(t){return t.trim()}).filter(Boolean);x.badge=$('w-badge').value;x.mediaType=$('w-mt').value;x.externalLink=$('w-link').value.trim();x.draft=$('w-draft').checked}
+    bindUps($('edbox'),x,function(){pull();draw()});
+    $('w-cat').onchange=function(){pull();x.jenis='';draw()};$('w-mt').onchange=function(){pull();draw()};
+    $('e-x').onclick=closeEd;
+    $('e-ok').onclick=function(){pull();if(!x.title.trim())return alert('Judul wajib diisi');
+      var img=x.posterUrl||(x.mediaType==='image'?x.mediaUrl:'');if(!img)return alert('Unggah poster (atau gambar utama) dulu');
+      x.image=img;x.workflow=(x.promptOrWorkflow||'').slice(0,500);x.tags=(x.tools||[]).slice(0,8);
+      if(!x.externalLink)delete x.externalLink;if(!x.jenis)delete x.jenis;
+      if(i<0)S.works.push(x);else S.works[i]=x;closeEd();mark();render()};
+  }
+  draw();
+}
+/* ---------- riwayat ---------- */
+function riwayat(){
+  api('/api/admin/versions').then(function(v){
+    var h='<h2>Riwayat &amp; Pulihkan</h2><p class="sub">Setiap kali menyimpan, versi lama tersimpan. Memulihkan akan langsung menerbitkan versi itu.</p>';
+    v.slice(0,40).forEach(function(r){h+='<div class="item"><div class="t"><b>#'+r.id+' · '+esc(new Date(r.ts).toLocaleString('id-ID'))+'</b><span>'+esc(r.note||'')+'</span></div><button class="btn sm" data-rs="'+r.id+'">Pulihkan</button></div>'});
+    $('main').innerHTML=h;
+    $('main').querySelectorAll('[data-rs]').forEach(function(b){b.onclick=function(){if(!confirm('Pulihkan versi #'+b.getAttribute('data-rs')+' dan terbitkan?'))return;api('/api/admin/restore',{method:'POST',headers:H,body:JSON.stringify({id:+b.getAttribute('data-rs')})}).then(function(j){S=j.state;status('Dipulihkan','o');sec='teks';render();pv()}).catch(function(e){alert(e.message)})}});
+  }).catch(function(e){$('main').innerHTML='<p class="err">'+esc(e.message)+'</p>'});
+}
+init();
+})();
+</script>
+</body>
+</html>

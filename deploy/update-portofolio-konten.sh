@@ -19,6 +19,24 @@ curl -fsSL "$RAW/assets/v-bukti-cover.jpg" -o "$NEW/assets/v-bukti-cover.jpg"
 for x in v-catatanakademik-walkthrough.mp4 v-catatanakademik-walkthrough.webp wa-bot-menu.webp wa-bot-topik.webp CV_Dika_Priyadi.pdf v-overview.mp4 v-overview.webp v-remotion-ep001.mp4 v-remotion-ep001.webp v-analisis-sistem.mp4 v-analisis-sistem.webp; do curl -fsSL "$RAW/assets/$x" -o "$NEW/assets/$x"; done
 python3 -c "import json,sys; assert len(json.load(open(sys.argv[1])))>0" "$NEW/works.json"
 cp -a "$ROOT" "$BAK"
+# teks yang diedit lewat Ruang Admin (judul, deskripsi, hero, WhatsApp) dipertahankan
+python3 - "$NEW/index.html" "$ROOT/index.html" <<'PY'
+import re,sys
+n=open(sys.argv[1],encoding='utf8').read(); o=open(sys.argv[2],encoding='utf8').read()
+A,B='<!--SLOT:heroSub-->','<!--/SLOT:heroSub-->'
+if A in o and A in n:
+    def seg(h,pat):
+        m=re.search(pat,h); return m
+    t=re.search(r'<title>[\s\S]*?</title>',o); n=re.sub(r'<title>[\s\S]*?</title>',lambda m:t.group(0),n,1) if t else n
+    for pat in (r'<meta property="og:title" content="[^"]*"',r'<meta name="description" content="[^"]*"',r'<meta property="og:description" content="[^"]*"'):
+        m=re.search(pat,o)
+        if m: n=re.sub(pat,lambda _:m.group(0),n,1)
+    m=re.search(re.escape(A)+r'[\s\S]*?'+re.escape(B),o)
+    if m: n=re.sub(re.escape(A)+r'[\s\S]*?'+re.escape(B),lambda _:m.group(0),n,1)
+    w=re.search(r'wa\.me/(\d+)',o)
+    if w: n=re.sub(r'wa\.me/\d+','wa.me/'+w.group(1),n)
+    open(sys.argv[1],'w',encoding='utf8').write(n); print('teks admin dipertahankan')
+PY
 cp "$NEW/index.html" "$ROOT/index.html"
 mkdir -p "$ROOT/assets" && cp "$NEW"/assets/* "$ROOT/assets/"
 python3 - "$NEW/works.json" "$ROOT/works.json" <<'PY'

@@ -1726,7 +1726,7 @@
         </h1>
 
         <p class="hero-sub" data-reveal style="--rd: 180ms">
-          Saya mengubah proses manual menjadi sistem AI yang terstruktur: bot WhatsApp, platform web, dan mesin konten video. 12+ tahun di operasional dan facility management; proyek AI dan digital independen sejak Agustus 2026.
+          <!--SLOT:heroSub-->Saya mengubah proses manual menjadi sistem AI yang terstruktur: bot WhatsApp, platform web, dan mesin konten video. 12+ tahun di operasional dan facility management; proyek AI dan digital independen sejak Agustus 2026.<!--/SLOT:heroSub-->
         </p>
         <p class="hero-open" data-reveal style="--rd: 240ms"><strong>Terbuka untuk posisi:</strong> AI Automation · AI Content/Video Production · Social Media Analysis.</p>
 
@@ -3540,7 +3540,7 @@
     modal.addEventListener('click',function(e){if(e.target===modal)close()});
     document.addEventListener('keydown',function(e){if(e.key==='Escape')close()});
     fetch('karya.json',{cache:'no-cache'}).then(function(r){return r.json()}).then(function(d){
-      all=(Array.isArray(d)?d:[]).filter(function(x){return x&&x.judul&&ok(x.poster)}).map(function(x){var t=((x.judul||'')+' '+(x.kategori||'')).toLowerCase();if(x.kategori==='Carousel')return x;x.kategori=/iklan/.test(t)?'Video Iklan':(/tuntasync|komersial|commercial|promo|brand/.test(t)?'Video Komersial':(['Video AI','Video Iklan','Video Komersial'].indexOf(x.kategori)>-1?x.kategori:'Video AI'));return x});
+      all=(Array.isArray(d)?d:[]).filter(function(x){return x&&x.judul&&ok(x.poster)}).map(function(x){var t=((x.judul||'')+' '+(x.kategori||'')).toLowerCase();if(x.kategori==='Carousel'||x.jenis==='Carousel'){x.kategori='Carousel';return x}if(['Video AI','Video Iklan','Video Komersial'].indexOf(x.jenis)>-1){x.kategori=x.jenis;return x}x.kategori=/iklan/.test(t)?'Video Iklan':(/tuntasync|komersial|commercial|promo|brand/.test(t)?'Video Komersial':(['Video AI','Video Iklan','Video Komersial'].indexOf(x.kategori)>-1?x.kategori:'Video AI'));return x});
       if(!all.length){document.getElementById('karya-ai').style.display='none';return}
       filters();apply();
     }).catch(function(){document.getElementById('karya-ai').style.display='none'});
