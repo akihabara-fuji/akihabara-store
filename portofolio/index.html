@@ -1679,8 +1679,10 @@
 @media(max-width:700px){.paths{grid-template-columns:1fr}}
 .flow{list-style:none;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:860px;margin:14px auto 0;padding:0;counter-reset:f}.flow li{position:relative;padding:10px 12px;border:1px dashed rgba(255,255,255,.16);border-radius:12px;text-align:left;font-size:12px;display:grid;gap:2px}.flow li:not(:last-child)::after{content:"\2192";position:absolute;right:-12px;top:50%;transform:translateY(-50%);opacity:.5;font-size:13px}.flow b{font-size:12.5px}.flow span{opacity:.7;line-height:1.4}
 .bukti{list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;max-width:1180px;margin:0 auto;padding:0}.bukti a{display:grid;gap:4px;height:100%;padding:14px 16px;border:1px solid rgba(255,255,255,.1);border-radius:14px;color:inherit;text-decoration:none}.bukti a:hover,.bukti a:focus-visible{border-color:rgba(255,138,61,.6)}.bukti b{font-size:14.5px}.bukti span{font-size:12.5px;opacity:.7;line-height:1.5}
-.case-f{margin:8px 0 0;display:grid;gap:2px;font-size:12.5px}.case-f dt{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;opacity:.55;margin-top:6px}.case-f dd{margin:0;line-height:1.45;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.case-f{margin:8px 0 0;display:grid;gap:2px;font-size:12.5px}.case-f dt{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;opacity:.55;margin-top:6px}.case .case-sum{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:13.5px;margin:6px 0 4px;min-height:0}.case-f dd{margin:0;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 @media(max-width:700px){.flow{grid-template-columns:1fr 1fr}.flow li::after{display:none}}
+#proyek .case-grid{grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;max-width:1180px;margin:0 auto}#proyek .case{padding:30px;gap:8px}#proyek .case h3{font-size:17px;margin:2px 0 0}#proyek .case .case-sum{font-size:13.5px;line-height:1.55;-webkit-line-clamp:3}#proyek .case .case-more{margin-top:auto;font-size:13px;padding:6px 12px}
+@media(max-width:900px){#proyek .case-grid{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}}
 </style>
 
 </head>
@@ -3637,7 +3639,7 @@
   })();
   </script>
 
-    <div class="cm" id="case-modal" hidden role="dialog" aria-modal="true" aria-labelledby="cm-title"><div class="cm-box"><button type="button" class="cm-x" id="cm-x" aria-label="Tutup">×</button><span class="st" id="cm-st"></span><h3 id="cm-title"></h3><div id="cm-body"></div></div></div>
+    <div class="cm" id="case-modal" data-lenis-prevent hidden role="dialog" aria-modal="true" aria-labelledby="cm-title"><div class="cm-box"><button type="button" class="cm-x" id="cm-x" aria-label="Tutup">×</button><span class="st" id="cm-st"></span><h3 id="cm-title"></h3><div id="cm-body"></div></div></div>
 
   <script>
   (function(){
@@ -3645,7 +3647,7 @@
     var body=document.getElementById('cm-body'),ti=document.getElementById('cm-title'),st=document.getElementById('cm-st'),last=null,DATA=null;
     function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
     var curId=null;
-    function show(){m.hidden=false;document.body.style.overflow='hidden';last=document.activeElement;document.getElementById('cm-x').focus();
+    function show(){if(window.__LENIS__)window.__LENIS__.stop();m.hidden=false;document.body.style.overflow='hidden';last=document.activeElement;document.getElementById('cm-x').focus();
       if(curId){try{history.replaceState(null,'','#proyek/'+curId)}catch(e){}}}
     function openClone(card){
       curId=null;var d=card.querySelector('details');if(!d)return;
@@ -3671,8 +3673,8 @@
         var a=el('article','card case');a.dataset.i=i;
         a.appendChild(el('span','st',p.status));var h=el('h3',null,p.judul);h.id='case-'+p.id;a.appendChild(h);
         var dl=el('dl','case-f');var bg=p.bagian||[];function fb(l){for(var j=0;j<bg.length;j++)if(bg[j].label===l)return bg[j].isi}
-        var ms=fb('Masalah'),sl=fb('Yang dibangun')||fb('Data');if(sl!==p.ringkas||!ms)a.appendChild(el('p','case-sum',p.ringkas));var bk=(p.meta||[]).filter(function(x){return x.k==='Bukti'})[0];
-        [['Masalah',ms],['Solusi',sl],['Bukti',bk&&bk.v]].forEach(function(r){if(r[1]){dl.appendChild(el('dt',null,r[0]));dl.appendChild(el('dd',null,r[1]))}});
+        var ms=fb('Masalah'),sl=fb('Yang dibangun')||fb('Data');a.appendChild(el('p','case-sum',p.ringkas));var bk=(p.meta||[]).filter(function(x){return x.k==='Bukti'})[0];
+        [['Masalah',ms],['Bukti',bk&&bk.v]].forEach(function(r){if(r[1]){dl.appendChild(el('dt',null,r[0]));dl.appendChild(el('dd',null,r[1]))}});
         if(dl.children.length)a.appendChild(dl);
         var b=el('button','case-more','Baca lengkap');b.type='button';a.appendChild(b);grid.appendChild(a);
       });
@@ -3687,7 +3689,7 @@
       if(e.target.closest('summary,.case-more')||!e.target.closest('a,video,button')){e.preventDefault();
         if(DATA&&card.dataset.i!=null)openData(DATA[+card.dataset.i]);else openClone(card)}
     });
-    function close(){curId&&history.replaceState(null,'','#proyek');curId=null;m.hidden=true;body.querySelectorAll('video').forEach(function(v){v.pause()});body.innerHTML='';document.body.style.overflow='';if(last&&last.focus)last.focus()}
+    function close(){curId&&history.replaceState(null,'','#proyek');curId=null;m.hidden=true;if(window.__LENIS__)window.__LENIS__.start();body.querySelectorAll('video').forEach(function(v){v.pause()});body.innerHTML='';document.body.style.overflow='';if(last&&last.focus)last.focus()}
     document.getElementById('cm-x').addEventListener('click',close);
     m.addEventListener('click',function(e){if(e.target===m)close()});
     document.addEventListener('keydown',function(e){if(m.hidden)return;if(e.key==='Escape')close();else if(e.key==='Tab'){var f=m.querySelectorAll('button,a[href],video[controls]');if(!f.length)return;var a=f[0],z=f[f.length-1];if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus()}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus()}}});
