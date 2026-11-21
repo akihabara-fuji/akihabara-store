@@ -2338,9 +2338,14 @@
       'Video Iklan': ['Video AI', 'Video Iklan', 'Video Komersial'],
       'Video Drama': ['Video AI', 'Video Iklan', 'Video Komersial']
     };
+    function subsFor(cat) {
+      const base = SUBS[cat] || [];
+      const extra = [...new Set(works.filter((w) => w.category === cat && w.jenis).map((w) => w.jenis))].filter((j) => !base.includes(j));
+      return [...base, ...extra];
+    }
     function jenisOf(w) {
-      const subs = SUBS[w.category] || [];
-      if (w.jenis && subs.includes(w.jenis)) return w.jenis;
+      if (w.jenis) return w.jenis;
+      if (!SUBS[w.category]) return '';
       const t = ((w.title || '') + ' ' + (w.jenis || '')).toLowerCase();
       if (w.category === 'AI Motion (Remotion)') {
         if (/drama/.test(t)) return 'Remotion Drama';
@@ -2355,8 +2360,8 @@
     let activeSub = 'all';
     const subBar = document.getElementById('sub-bar');
     function renderSub() {
-      const subs = SUBS[activeFilter];
-      if (!subs) { subBar.hidden = true; subBar.innerHTML = ''; return; }
+      const subs = subsFor(activeFilter);
+      if (!subs.length) { subBar.hidden = true; subBar.innerHTML = ''; return; }
       const n = (k) => works.filter((w) => w.category === activeFilter && (k === 'all' || jenisOf(w) === k)).length;
       subBar.hidden = false;
       subBar.innerHTML = ['all', ...subs].map((k) => `<button type="button" class="filter-btn${k === activeSub ? ' active' : ''}" data-sub="${esc(k)}">${esc(k === 'all' ? 'Semua jenis' : k)} (${n(k)})</button>`).join('');
@@ -2443,7 +2448,7 @@
 
     let wLens = null;
     function renderWorks() {
-      cfList = works.filter((w) => (activeFilter === 'all' || w.category === activeFilter) && (activeSub === 'all' || !SUBS[activeFilter] || jenisOf(w) === activeSub));
+      cfList = works.filter((w) => (activeFilter === 'all' || w.category === activeFilter) && (activeSub === 'all' || !subsFor(activeFilter).length || jenisOf(w) === activeSub));
       moreBtn.hidden = true;
       if (!wLens) wLens = makeLens({
         root: document.getElementById('w-stage'), slot: worksGrid, copy: document.getElementById('w-copy'),
@@ -2452,7 +2457,7 @@
         onOpen: (sl) => openModal(sl._w)
       });
       wLens.set(cfList.map((w) => ({
-        judul: w.title, kategori: SUBS[w.category] ? jenisOf(w) : catLabel(w.category), keterangan: w.summary || '',
+        judul: w.title, kategori: jenisOf(w) || catLabel(w.category), keterangan: w.summary || '',
         poster: safeUrl(w.posterUrl) || (w.mediaType === 'image' ? safeUrl(w.mediaUrl) : ''), _w: w
       })).filter((x) => x.poster));
     }
@@ -3545,7 +3550,7 @@
     modal.addEventListener('click',function(e){if(e.target===modal)close()});
     document.addEventListener('keydown',function(e){if(e.key==='Escape')close()});
     fetch('karya.json',{cache:'no-cache'}).then(function(r){return r.json()}).then(function(d){
-      all=(Array.isArray(d)?d:[]).filter(function(x){return x&&x.judul&&ok(x.poster)}).map(function(x){var t=((x.judul||'')+' '+(x.kategori||'')).toLowerCase();if(x.kategori==='Carousel'||x.jenis==='Carousel'){x.kategori='Carousel';return x}if(['Video AI','Video Iklan','Video Komersial'].indexOf(x.jenis)>-1){x.kategori=x.jenis;return x}x.kategori=/iklan/.test(t)?'Video Iklan':(/tuntasync|komersial|commercial|promo|brand/.test(t)?'Video Komersial':(['Video AI','Video Iklan','Video Komersial'].indexOf(x.kategori)>-1?x.kategori:'Video AI'));return x});
+      all=(Array.isArray(d)?d:[]).filter(function(x){return x&&x.judul&&ok(x.poster)}).map(function(x){var t=((x.judul||'')+' '+(x.kategori||'')).toLowerCase();if(x.kategori==='Carousel'||x.jenis==='Carousel'){x.kategori='Carousel';return x}if(x.jenis){x.kategori=x.jenis;return x}x.kategori=/iklan/.test(t)?'Video Iklan':(/tuntasync|komersial|commercial|promo|brand/.test(t)?'Video Komersial':(['Video AI','Video Iklan','Video Komersial'].indexOf(x.kategori)>-1?x.kategori:'Video AI'));return x});
       if(!all.length){document.getElementById('karya-ai').style.display='none';return}
       filters();apply();
     }).catch(function(){document.getElementById('karya-ai').style.display='none'});

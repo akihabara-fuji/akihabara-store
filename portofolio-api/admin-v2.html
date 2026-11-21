@@ -62,6 +62,11 @@ var KAT_WORKS=['AI Motion (Remotion)','AI Video & Content','Video Iklan','Video 
 var JENIS_MOTION=['Remotion Drama','Remotion Iklan','Remotion Horror','Remotion Portofolio'];
 var JENIS_VIDEO=['Video AI','Video Iklan','Video Komersial'];
 var JENIS_KARYA=['Video AI','Video Iklan','Video Komersial','Carousel'];
+function uniq(a){return a.filter(function(v,i){return v&&a.indexOf(v)===i})}
+function jenisK(){return uniq(JENIS_KARYA.concat((S?S.karya:[]).map(function(x){return x.jenis})))}
+function katsW(){return uniq(KAT_WORKS.concat((S?S.works:[]).map(function(w){return w.category})))}
+function subsW(cat){return uniq(jenisFor(cat).concat((S?S.works:[]).filter(function(w){return w.category===cat}).map(function(w){return w.jenis})))}
+function dl(id,list){return '<datalist id="'+id+'">'+list.map(function(v){return '<option value="'+esc(v)+'">'}).join('')+'</datalist>'}
 function jenisFor(kat){return kat==='AI Motion (Remotion)'?JENIS_MOTION:(kat==='AI Video & Content'||kat==='Video Iklan'||kat==='Video Drama'?JENIS_VIDEO:[])}
 
 var S=null,dirty=false,sec='teks',tabK='Semua',tabW='Semua',tabJ='Semua',mustChange=false;
@@ -130,20 +135,20 @@ function mvBtns(t,i){return '<button class="btn sm" title="Jadikan pertama" data
 function tabsHtml(list,cur,attr){return '<div class="tabs">'+list.map(function(t){return '<button data-'+attr+'="'+esc(t[0])+'" class="'+(cur===t[0]?'on':'')+'">'+esc(t[0])+' ('+t[1]+')</button>'}).join('')+'</div>'}
 function vKarya(){
   var cnt={};S.karya.forEach(function(x){var j=x.jenis||(x.kategori==='Carousel'?'Carousel':'Video AI');cnt[j]=(cnt[j]||0)+1});
-  var tabs=[['Semua',S.karya.length]].concat(JENIS_KARYA.map(function(j){return [j,cnt[j]||0]}));
+  var tabs=[['Semua',S.karya.length]].concat(jenisK().map(function(j){return [j,cnt[j]||0]}));
   var h='<h2>Karya Video AI</h2><p class="sub">Muncul di bagian "Karya Video AI" (carousel lensa). Urutan di sini = urutan di halaman.</p>'+tabsHtml(tabs,tabK,'tk')+'<p><button class="btn pri" id="addK">+ Tambah karya</button></p>';
   S.karya.forEach(function(x,i){var j=x.jenis||(x.kategori==='Carousel'?'Carousel':'Video AI');if(tabK!=='Semua'&&j!==tabK)return;
-    h+='<div class="item" draggable="true" data-dd="k:'+i+'">'+(x.poster?'<img src="/'+esc(x.poster)+'" alt="">':'<div class="ph">no poster</div>')+'<div class="t"><b>'+esc(x.judul)+'</b><span><span class="tag">'+esc(j)+'</span>'+(x.draft?'<span class="tag dr">draf (disembunyikan)</span>':'')+(x.video?'':' <span class="tag">tanpa video</span>')+'</span></div><select class="mvj" data-mj="'+i+'" title="Pindahkan ke jenis" style="width:auto"><option value="">Pindah ke…</option>'+JENIS_KARYA.filter(function(q){return q!==j}).map(function(q){return '<option>'+q+'</option>'}).join('')+'</select>'+mvBtns('k',i)+'<button class="btn sm" data-ek="'+i+'">Ubah</button><button class="btn sm bad" data-dk="'+i+'">Hapus</button></div>'});
+    h+='<div class="item" draggable="true" data-dd="k:'+i+'">'+(x.poster?'<img src="/'+esc(x.poster)+'" alt="">':'<div class="ph">no poster</div>')+'<div class="t"><b>'+esc(x.judul)+'</b><span><span class="tag">'+esc(j)+'</span>'+(x.draft?'<span class="tag dr">draf (disembunyikan)</span>':'')+(x.video?'':' <span class="tag">tanpa video</span>')+'</span></div><select class="mvj" data-mj="'+i+'" title="Pindahkan ke jenis" style="width:auto"><option value="">Pindah ke…</option>'+jenisK().filter(function(q){return q!==j}).map(function(q){return '<option>'+esc(q)+'</option>'}).join('')+'<option value="__baru">➕ Jenis baru…</option></select>'+mvBtns('k',i)+'<button class="btn sm" data-ek="'+i+'">Ubah</button><button class="btn sm bad" data-dk="'+i+'">Hapus</button></div>'});
   return h;
 }
 function vGaleri(){
   var cats={};S.works.forEach(function(w){cats[w.category]=(cats[w.category]||0)+1});
   var tabs=[['Semua',S.works.length]].concat(Object.keys(cats).map(function(c){return [c,cats[c]]}));
   var h='<h2>Galeri Karya &amp; Motion AI</h2><p class="sub">Bagian "Perpustakaan Bukti / Galeri Karya". Pilih kategori, untuk Motion AI pilih juga jenisnya.</p>'+tabsHtml(tabs,tabW,'tw');
-  var subs=jenisFor(tabW);
-  if(subs.length){var jc={};S.works.forEach(function(w){if(w.category===tabW){var j=w.jenis||subs[subs.length-1];jc[j]=(jc[j]||0)+1}});h+=tabsHtml([['Semua',S.works.filter(function(w){return w.category===tabW}).length]].concat(subs.map(function(j){return [j,jc[j]||0]})),tabJ,'tj')}
+  var subs=tabW==='Semua'?[]:subsW(tabW);
+  if(subs.length){var jc={};S.works.forEach(function(w){if(w.category===tabW){var j=w.jenis||subs[0];jc[j]=(jc[j]||0)+1}});h+=tabsHtml([['Semua',S.works.filter(function(w){return w.category===tabW}).length]].concat(subs.map(function(j){return [j,jc[j]||0]})),tabJ,'tj')}
   h+='<p><button class="btn pri" id="addW">+ Tambah karya</button></p>';
-  S.works.forEach(function(w,i){if(tabW!=='Semua'&&w.category!==tabW)return;var sb=jenisFor(w.category);var j=w.jenis||(sb.length?sb[sb.length-1]:'');if(tabJ!=='Semua'&&sb.length&&j!==tabJ)return;
+  S.works.forEach(function(w,i){if(tabW!=='Semua'&&w.category!==tabW)return;var sb=subsW(w.category);var j=w.jenis||(jenisFor(w.category).length?jenisFor(w.category)[jenisFor(w.category).length-1]:'');if(tabJ!=='Semua'&&sb.length&&j!==tabJ)return;
     var th=w.posterUrl||w.image||'';
     h+='<div class="item" draggable="true" data-dd="w:'+i+'">'+(th?'<img src="/'+esc(th)+'" alt="">':'<div class="ph">no poster</div>')+'<div class="t"><b>'+esc(w.title)+'</b><span><span class="tag">'+esc(w.category)+'</span>'+(j?'<span class="tag">'+esc(j)+'</span>':'')+(w.draft?'<span class="tag dr">draf</span>':'')+'</span></div>'+mvBtns('w',i)+'<button class="btn sm" data-ew="'+i+'">Ubah</button><button class="btn sm bad" data-dw="'+i+'">Hapus</button></div>'});
   return h;
@@ -157,7 +162,7 @@ function bind(){
   function arrOf(t){return t==='k'?S.karya:(t==='p'?S.proyek:S.works)}
   function moveTo(t,i,j){var arr=arrOf(t);if(j<0)j=0;if(j>=arr.length)j=arr.length-1;if(j===i)return;var it=arr.splice(i,1)[0];arr.splice(j,0,it);mark();render()}
   m.querySelectorAll('[data-mv]').forEach(function(b){b.onclick=function(){var p=b.getAttribute('data-mv').split(':'),i=+p[1];moveTo(p[0],i,p[2]==='first'?0:i+ +p[2])}});
-  m.querySelectorAll('[data-mj]').forEach(function(sel){sel.onchange=function(){if(!sel.value)return;var x=S.karya[+sel.getAttribute('data-mj')];x.jenis=sel.value;x.kategori=sel.value==='Carousel'?'Carousel':'Video';if(sel.value!=='Carousel')delete x.slides;mark();render()}});
+  m.querySelectorAll('[data-mj]').forEach(function(sel){sel.onchange=function(){if(!sel.value)return;var nv=sel.value;if(nv==='__baru'){nv=(prompt('Nama jenis baru:')||'').trim();if(!nv){render();return}}var x=S.karya[+sel.getAttribute('data-mj')];x.jenis=nv.slice(0,30);x.kategori=x.jenis==='Carousel'?'Carousel':'Video';if(x.jenis!=='Carousel')delete x.slides;mark();render()}});
   var dragI=null;
   m.querySelectorAll('[data-dd]').forEach(function(el){
     el.ondragstart=function(e){dragI=el.getAttribute('data-dd');el.style.opacity='.5';try{e.dataTransfer.setData('text/plain',dragI)}catch(_){}};
@@ -187,7 +192,7 @@ function edK(i){
   function draw(){
     openEd('<h2 style="margin:0 0 8px">'+(i<0?'Tambah':'Ubah')+' karya video</h2>'+
     '<label>Judul</label><input type="text" id="f-judul" value="'+esc(x.judul)+'">'+
-    '<label>Jenis</label><select id="f-jenis">'+JENIS_KARYA.map(function(j){return '<option'+(j===x.jenis?' selected':'')+'>'+j+'</option>'}).join('')+'</select>'+
+    '<label>Jenis <small>(pilih dari daftar atau ketik jenis baru sendiri)</small></label><input type="text" id="f-jenis" list="dl-jenis" maxlength="30" value="'+esc(x.jenis)+'" placeholder="mis. Video Drama, Reels, Podcast">'+dl('dl-jenis',jenisK())+
     '<label>Keterangan singkat</label><textarea id="f-ket">'+esc(x.keterangan)+'</textarea>'+
     upField('poster','Poster / gambar sampul (JPG, PNG, WebP)','image',x.poster)+
     (x.jenis==='Carousel'?'<label>Slide carousel</label><div>'+(x.slides||[]).map(function(s){return '<img src="/'+esc(s)+'" style="width:56px;height:56px;object-fit:cover;border-radius:6px;margin:2px">'}).join('')+'</div><input type="file" id="f-slides" multiple accept="image/jpeg,image/png,image/webp">':upField('video','Video (MP4, opsional)','video',x.video))+
@@ -195,7 +200,7 @@ function edK(i){
     '<label><input type="checkbox" id="f-draft"'+(x.draft?' checked':'')+'> Sembunyikan dari halaman (draf)</label>'+
     '<div class="acts"><button class="btn" id="e-x">Batal</button><button class="btn pri" id="e-ok">Simpan</button></div>');
     var box=$('edbox');
-    function pull(){x.judul=$('f-judul').value;x.jenis=$('f-jenis').value;x.keterangan=$('f-ket').value;x.keahlian=$('f-ahli').value.split(',').map(function(t){return t.trim()}).filter(Boolean);x.draft=$('f-draft').checked}
+    function pull(){x.judul=$('f-judul').value;x.jenis=($('f-jenis').value.trim()||'Video AI');x.keterangan=$('f-ket').value;x.keahlian=$('f-ahli').value.split(',').map(function(t){return t.trim()}).filter(Boolean);x.draft=$('f-draft').checked}
     bindUps(box,x,function(){pull();draw()});
     $('f-jenis').onchange=function(){pull();draw()};
     var fs=$('f-slides');if(fs)fs.onchange=function(){var fl=[].slice.call(fs.files);x.slides=x.slides||[];fl.reduce(function(p,f){return p.then(function(){return upload(f,'image').then(function(j){x.slides.push(j.path)})})},Promise.resolve()).then(function(){pull();draw()}).catch(function(e){alert(e.message)})};
@@ -210,11 +215,10 @@ function edK(i){
 function edW(i){
   var x=i<0?{title:'',category:tabW!=='Semua'?tabW:'AI Motion (Remotion)',jenis:'',summary:'',metrics:'',promptOrWorkflow:'',tools:[],badge:'',mediaType:'video',mediaUrl:'',posterUrl:'',externalLink:'',draft:false}:JSON.parse(JSON.stringify(S.works[i]));
   function draw(){
-    var subs=jenisFor(x.category);if(subs.length&&subs.indexOf(x.jenis)<0)x.jenis=subs[subs.length-1];if(!subs.length)x.jenis='';
-    openEd('<h2 style="margin:0 0 8px">'+(i<0?'Tambah':'Ubah')+' karya</h2>'+
+        openEd('<h2 style="margin:0 0 8px">'+(i<0?'Tambah':'Ubah')+' karya</h2>'+
     '<label>Judul</label><input type="text" id="w-title" value="'+esc(x.title)+'">'+
-    '<div class="row"><div><label>Kategori</label><select id="w-cat">'+KAT_WORKS.map(function(c){return '<option'+(c===x.category?' selected':'')+'>'+c+'</option>'}).join('')+'</select></div>'+
-    '<div><label>Jenis</label>'+(subs.length?'<select id="w-jenis">'+subs.map(function(j){return '<option'+(j===x.jenis?' selected':'')+'>'+j+'</option>'}).join('')+'</select>':'<input type="text" disabled value="(tidak ada jenis untuk kategori ini)">')+'</div></div>'+
+    '<div class="row"><div><label>Kategori <small>(pilih atau ketik baru)</small></label><input type="text" id="w-cat" list="dl-kat" maxlength="60" value="'+esc(x.category)+'">'+dl('dl-kat',katsW())+'</div>'+
+    '<div><label>Jenis <small>(pilih atau ketik baru)</small></label><input type="text" id="w-jenis" list="dl-wj" maxlength="60" value="'+esc(x.jenis)+'">'+dl('dl-wj',subsW(x.category))+'</div></div>'+
     '<label>Ringkasan <small>(maks. 500 karakter)</small></label><textarea id="w-sum">'+esc(x.summary)+'</textarea>'+
     '<label>Data / status nyata <small>(contoh: durasi, status berjalan; jangan klaim yang belum terbukti)</small></label><input type="text" id="w-met" value="'+esc(x.metrics)+'">'+
     '<label>Alur kerja / prompt</label><textarea id="w-flow" style="min-height:96px">'+esc(x.promptOrWorkflow)+'</textarea>'+
@@ -225,9 +229,9 @@ function edW(i){
     '<label>Tautan eksternal <small>(opsional, diawali https://)</small></label><input type="text" id="w-link" value="'+esc(x.externalLink)+'">'+
     '<label><input type="checkbox" id="w-draft"'+(x.draft?' checked':'')+'> Sembunyikan dari halaman (draf)</label>'+
     '<div class="acts"><button class="btn" id="e-x">Batal</button><button class="btn pri" id="e-ok">Simpan</button></div>');
-    function pull(){x.title=$('w-title').value;x.category=$('w-cat').value;var j=$('w-jenis');x.jenis=j?j.value:'';x.summary=$('w-sum').value;x.metrics=$('w-met').value;x.promptOrWorkflow=$('w-flow').value;x.tools=$('w-tools').value.split(',').map(function(t){return t.trim()}).filter(Boolean);x.badge=$('w-badge').value;x.mediaType=$('w-mt').value;x.externalLink=$('w-link').value.trim();x.draft=$('w-draft').checked}
+    function pull(){x.title=$('w-title').value;x.category=($('w-cat').value.trim()||'AI Motion (Remotion)');x.jenis=$('w-jenis').value.trim();x.summary=$('w-sum').value;x.metrics=$('w-met').value;x.promptOrWorkflow=$('w-flow').value;x.tools=$('w-tools').value.split(',').map(function(t){return t.trim()}).filter(Boolean);x.badge=$('w-badge').value;x.mediaType=$('w-mt').value;x.externalLink=$('w-link').value.trim();x.draft=$('w-draft').checked}
     bindUps($('edbox'),x,function(){pull();draw()});
-    $('w-cat').onchange=function(){pull();x.jenis='';draw()};$('w-mt').onchange=function(){pull();draw()};
+    $('w-cat').onchange=function(){pull();draw()};$('w-mt').onchange=function(){pull();draw()};
     $('e-x').onclick=closeEd;
     $('e-ok').onclick=function(){pull();if(!x.title.trim())return alert('Judul wajib diisi');
       var img=x.posterUrl||(x.mediaType==='image'?x.mediaUrl:'');if(!img)return alert('Unggah poster (atau gambar utama) dulu');
