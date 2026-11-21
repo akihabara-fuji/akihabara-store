@@ -162,6 +162,7 @@
     .proof-strip { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 18px; margin: 28px auto 0; padding: 0; max-width: 860px; font-size: 13px; color: var(--muted, #9a9a9a); }
     .proof-strip li::before { content: "✓ "; color: var(--accent); }
     .case figure { margin: 12px 0 0; } .case figure img, .case video { width: 100%; height: auto; border-radius: 10px; display: block; } .case figcaption { font-size: 12px; opacity: .65; margin-top: 6px; }
+    .recruiter { text-align: center; margin: 14px 0 0; font-size: 13px; opacity: .8; } .recruiter a { color: var(--accent); }
     .case-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
     .case { display: flex; flex-direction: column; gap: 10px; }
     .case h3 { margin: 0; }
@@ -1657,7 +1658,8 @@
     @media (prefers-reduced-motion: reduce) {
       .card, .lane, .work-card, .step-pill, .btn { transition: none !important; }
     }
-  </style>
+  @media(max-width:560px){.hero-actions .btn{width:100%;max-width:100%;white-space:normal;text-align:center;box-sizing:border-box}}
+</style>
 
 </head>
 <body>
@@ -1722,11 +1724,11 @@
         </p>
 
         <div class="hero-actions" data-reveal style="--rd: 300ms">
-          <a href="#karya" class="btn btn-primary">
-            <span>Lihat Sistem AI</span>
+          <a href="#kolaborasi" class="btn btn-primary">
+            <span>Diskusikan workflow yang ingin diotomatisasi</span>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
           </a>
-          <a href="#kolaborasi" class="btn btn-outline"><span>Diskusikan Proyek</span></a>
+          <a href="#proyek" class="btn btn-outline"><span>Lihat studi kasus dan demo</span></a>
         </div>
         <ul class="proof-strip" data-reveal style="--rd: 360ms">
           <li>12+ tahun operasional dan facility management</li>
@@ -1734,6 +1736,7 @@
           <li>SOP, jadwal, kontrol mutu, pelatihan, pelaporan, penanganan insiden</li>
           <li>Sedang membangun otomasi AI dan produk digital</li>
         </ul>
+        <p class="recruiter" data-reveal style="--rd: 420ms">Untuk rekruter: <a href="assets/CV_Dika_Priyadi.pdf" download>Unduh CV</a> · <a href="#proyek">Lihat bukti teknis</a></p>
       </div>
     </header>
 
@@ -1748,19 +1751,19 @@
           <span class="st">Live</span>
           <h3>CatatanAkademik.com</h3>
           <dl><dt>Masalah</dt><dd>Mahasiswa UT sulit menemukan panduan, kelas tutorial, dan alat pemeriksaan dokumen di satu tempat.</dd><dt>Yang dibangun</dt><dd>Platform edukasi independen: panduan mahasiswa baru, kelas tutorial, alat pemeriksaan dokumen, blog, login Google, dan panel admin.</dd><dt>Bukti</dt><dd>Situs yang bisa dibuka langsung, video penelusuran 83 detik di studi kasus, tangkapan layar panel admin di galeri, dan pemantauan indeks lewat Google Search Console.</dd><dt>Batasan</dt><dd>Jumlah pengguna dan dampaknya belum dipublikasikan. Fitur yang belum dirilis ditandai Planned.</dd></dl>
-          <details><summary>Baca studi kasus lengkap</summary><dl><dt>Konteks</dt><dd>Proyek mandiri untuk mahasiswa Universitas Terbuka.</dd><dt>Pengguna</dt><dd>Mahasiswa UT, terutama mahasiswa baru.</dd><dt>Peran saya</dt><dd>Menyusun struktur konten, halaman web, alat bantu, panel admin, dan deployment di server sendiri. Sebagian kode dibantu AI dan saya periksa sendiri.</dd><dt>Alur</dt><dd>Pengunjung membaca panduan atau memakai alat, masuk lewat Google bila perlu, admin mengelola konten dari panel.</dd><dt>Alat</dt><dd>Web, SEO, VPS, Nginx, Google Search Console.</dd><dt>Evaluasi</dt><dd>Halaman dicek di HP dan desktop, tautan diuji, indeks dipantau.</dd><dt>Kegagalan</dt><dd>Saat membangun nextaja.com, sistem macet sehingga pengerjaan tidak bisa dilanjutkan.</dd><dt>Hasil</dt><dd>Platform berjalan. Dampak terhadap pengguna belum diukur.</dd><dt>Langkah berikut</dt><dd>Dokumentasikan perbaikan setelah kegagalan nextaja.com.</dd></dl><figure><video controls preload="none" poster="assets/v-catatanakademik-walkthrough.webp"><source src="assets/v-catatanakademik-walkthrough.mp4" type="video/mp4"></video><figcaption>Penelusuran CatatanAkademik.com, 83 detik: kelas tuton, alat UT, kisi-kisi, blog, komunitas.</figcaption></figure></details>
+          <details><summary>Baca studi kasus lengkap</summary><dl><dt>Konteks</dt><dd>Proyek mandiri untuk mahasiswa Universitas Terbuka.</dd><dt>Pengguna</dt><dd>Mahasiswa UT, terutama mahasiswa baru.</dd><dt>Peran saya</dt><dd>Menyusun struktur konten, halaman web, alat bantu, panel admin, dan deployment di server sendiri. Sebagian kode dibantu AI dan saya periksa sendiri.</dd><dt>Alur</dt><dd>Pengunjung membaca panduan atau memakai alat, masuk lewat Google bila perlu, admin mengelola konten dari panel.</dd><dt>Alat</dt><dd>Web, SEO, VPS, Nginx, Google Search Console.</dd><dt>Evaluasi</dt><dd>Halaman dicek di HP dan desktop, tautan diuji, indeks dipantau.</dd><dt>Kegagalan</dt><dd>Saat membangun nextaja.com, sistem macet sehingga pengerjaan tidak bisa dilanjutkan.</dd><dt>Hasil</dt><dd>Platform berjalan. Dampak terhadap pengguna belum diukur.</dd><dt>Arsitektur</dt><dd>Pengunjung, web (panduan, kelas tuton, alat, blog), login Google, panel admin, server VPS.</dd><dt>Otomatis vs manusia</dt><dd>Artikel blog masuk sebagai draf dan dicek manual sebelum terbit. Pesanan dan file hasil ditangani admin secara manual.</dd><dt>Status fitur</dt><dd>Live (terlihat di video): panduan, kelas tuton, alat UT, kisi-kisi, blog, komunitas. Perlu verifikasi: Bedah Laporan, Cek dan Parafrase, sistem koin.</dd><dt>Hasil terukur</dt><dd>Belum diukur. Angka anggota grup atau pesanan bukan jumlah pengguna platform.</dd><dt>Langkah berikut</dt><dd>Dokumentasikan perbaikan setelah kegagalan nextaja.com.</dd></dl><figure><video controls preload="none" poster="assets/v-catatanakademik-walkthrough.webp"><source src="assets/v-catatanakademik-walkthrough.mp4" type="video/mp4"></video><figcaption>Penelusuran CatatanAkademik.com, 83 detik: kelas tuton, alat UT, kisi-kisi, blog, komunitas.</figcaption></figure></details>
         </article>
         <article class="card case" data-reveal>
           <span class="st">Internal Tool</span>
           <h3>Otomasi WhatsApp (2 bot)</h3>
-          <dl><dt>Masalah</dt><dd>Pengelolaan grup dan pesanan dilakukan manual, berulang, dan mudah terlewat.</dd><dt>Yang dibangun</dt><dd>Dua bot di VPS: bot grup (anti-spam, pengingat, catatan) dan bot admin (notifikasi pesanan).</dd><dt>Bukti</dt><dd>Dua tangkapan layar percakapan (tanpa nomor telepon): menu perintah manajemen grup dan contoh jawaban. Alur lengkap ada di studi kasus.</dd><dt>Batasan</dt><dd>Belum ada log waktu aktif resmi, jadi tidak ada klaim 24/7. Bagian manual ditandai di alur.</dd></dl>
-          <details><summary>Baca studi kasus lengkap</summary><dl><dt>Konteks</dt><dd>Dipakai untuk operasional layanan sendiri.</dd><dt>Pengguna</dt><dd>Admin dan anggota grup.</dd><dt>Peran saya</dt><dd>Merancang aturan, membangun bot, menjalankannya di server dengan PM2.</dd><dt>Alur grup</dt><dd>Pesan masuk, aturan terdeteksi, bot memproses, balasan otomatis, tinjauan manusia bila perlu.</dd><dt>Alur admin</dt><dd>Pesanan masuk, data divalidasi, notifikasi dikirim, admin bertindak, dicek ulang.</dd><dt>Alat</dt><dd>Node.js, WhatsApp, PM2, VPS.</dd><dt>Evaluasi</dt><dd>Diuji internal. Belum ada pengukuran periode.</dd><dt>Kegagalan</dt><dd>Bot kadang menjawab tidak sesuai topik. Contoh: soal kisi-kisi UKT di grup awalnya ditolak karena di luar topik belajar, lalu pertanyaan konsep UKT berikutnya dijawab.</dd><dt>Hasil</dt><dd>Berjalan untuk keperluan internal. Penghematan waktu belum diukur.</dd><dt>Langkah berikut</dt><dd>Rapikan batas topik bot dan tambahkan log pemantauan.</dd></dl><figure><img loading="lazy" src="assets/wa-bot-menu.webp" alt="Bot grup menampilkan menu perintah: catat, pengingat, kas, laporan, antispam"><figcaption>Bot merespons untuk manajemen grup: catatan, pengingat, kas, laporan, antispam.</figcaption></figure><figure><img loading="lazy" src="assets/wa-bot-topik.webp" alt="Contoh jawaban bot terkait batas topik"><figcaption>Contoh batas topik: bot membatasi diri ke topik belajar di grup.</figcaption></figure></details>
+          <dl><dt>Masalah</dt><dd>Pengelolaan grup dan pesanan dilakukan manual, berulang, dan mudah terlewat.</dd><dt>Yang dibangun</dt><dd>Dua bot di VPS: bot grup (anti-spam, pengingat, catatan) dan bot admin (notifikasi pesanan).</dd><dt>Bukti</dt><dd>Dua tangkapan layar percakapan (tanpa nomor telepon): menu perintah manajemen grup dan contoh jawaban. Alur lengkap ada di studi kasus.</dd><dt>Batasan</dt><dd>Bot dijalankan di VPS dengan PM2. Uptime belum diukur secara formal.</dd></dl>
+          <details><summary>Baca studi kasus lengkap</summary><dl><dt>Konteks</dt><dd>Dipakai untuk operasional layanan sendiri.</dd><dt>Pengguna</dt><dd>Admin dan anggota grup.</dd><dt>Peran saya</dt><dd>Merancang aturan, membangun bot, menjalankannya di server dengan PM2.</dd><dt>Alur grup</dt><dd>Pesan masuk, aturan terdeteksi, bot memproses, balasan otomatis, tinjauan manusia bila perlu.</dd><dt>Alur admin</dt><dd>Pesanan masuk, data divalidasi, notifikasi dikirim, admin bertindak, dicek ulang.</dd><dt>Alat</dt><dd>Node.js, WhatsApp, PM2, VPS.</dd><dt>Evaluasi</dt><dd>Diuji internal. Belum ada pengukuran periode.</dd><dt>Kegagalan</dt><dd>Bot kadang menjawab tidak sesuai topik. Contoh: soal kisi-kisi UKT di grup awalnya ditolak karena di luar topik belajar, lalu pertanyaan konsep UKT berikutnya dijawab.</dd><dt>Hasil</dt><dd>Berjalan untuk keperluan internal. Penghematan waktu belum diukur.</dd><dt>Arsitektur</dt><dd>WhatsApp, bot (Node.js, PM2, VPS), aturan, lalu balasan atau notifikasi ke admin.</dd><dt>Otomatis vs manusia</dt><dd>Otomatis: balasan perintah, pengingat, catatan, antispam. Manusia: admin memutuskan tindakan pesanan dan mengirim file.</dd><dt>Contoh pesan valid</dt><dd>"Putri, ingatkan besok jam 7 pagi kumpul laporan" (dari menu perintah bot).</dd><dt>Contoh pesan gagal</dt><dd>Pertanyaan kisi-kisi UKT di grup ditolak sebagai di luar topik belajar.</dd><dt>Bot tidak merespons</dt><dd>Kondisi dan cara pemulihannya belum didokumentasikan.</dd><dt>Hasil terukur</dt><dd>Belum diukur.</dd><dt>Langkah berikut</dt><dd>Rapikan batas topik bot dan tambahkan log pemantauan.</dd></dl><figure><img loading="lazy" src="assets/wa-bot-menu.webp" alt="Bot grup menampilkan menu perintah: catat, pengingat, kas, laporan, antispam"><figcaption>Bot merespons untuk manajemen grup: catatan, pengingat, kas, laporan, antispam.</figcaption></figure><figure><img loading="lazy" src="assets/wa-bot-topik.webp" alt="Contoh jawaban bot terkait batas topik"><figcaption>Contoh batas topik: bot membatasi diri ke topik belajar di grup.</figcaption></figure></details>
         </article>
         <article class="card case" data-reveal>
           <span class="st">Personal Project</span>
           <h3>Mesin Konten Video (Remotion)</h3>
           <dl><dt>Masalah</dt><dd>Satu ide perlu menjadi banyak video vertikal dengan mutu yang konsisten.</dd><dt>Yang dibangun</dt><dd>Mesin Remotion buatan sendiri: naskah per adegan menjadi data episode, divalidasi, dirender 1080x1920, lalu diaudit.</dd><dt>Bukti</dt><dd>Lima video hasil render di galeri di bawah dan alur validasi sebelum render.</dd><dt>Batasan</dt><dd>Data tayangan, klik, dan konversi belum diukur.</dd></dl>
-          <details><summary>Baca studi kasus lengkap</summary><dl><dt>Konteks</dt><dd>Seri video edukasi dan penjelasan proses untuk TikTok dan Reels.</dd><dt>Pengguna</dt><dd>Saya sendiri sebagai pembuat konten, lalu penonton di media sosial.</dd><dt>Peran saya</dt><dd>Menyusun naskah, struktur data episode, komposisi adegan, suara, subtitle, dan pemeriksaan hasil.</dd><dt>Alur</dt><dd>Naskah dikunci, data episode, validasi otomatis, contoh disetujui, render, audit suara dan tampilan.</dd><dt>Alat</dt><dd>Remotion, React, ElevenLabs, FFmpeg.</dd><dt>Evaluasi</dt><dd>Format benar, teks tidak meluap, subtitle sinkron, suara diperiksa.</dd><dt>Kegagalan</dt><dd>Pada tahap AI image-to-video untuk bahan visual, hasil render kadang tidak sesuai konsep yang diminta.</dd><dt>Hasil</dt><dd>Video berhasil dibuat dan diuji internal. Dampak terhadap audiens belum diukur.</dd><dt>Langkah berikut</dt><dd>Dokumentasikan satu episode dari naskah sampai render.</dd></dl></details>
+          <details><summary>Baca studi kasus lengkap</summary><dl><dt>Konteks</dt><dd>Seri video edukasi dan penjelasan proses untuk TikTok dan Reels.</dd><dt>Pengguna</dt><dd>Saya sendiri sebagai pembuat konten, lalu penonton di media sosial.</dd><dt>Peran saya</dt><dd>Menyusun naskah, struktur data episode, komposisi adegan, suara, subtitle, dan pemeriksaan hasil.</dd><dt>Alur</dt><dd>Naskah dikunci, data episode, validasi otomatis, contoh disetujui, render, audit suara dan tampilan.</dd><dt>Alat</dt><dd>Remotion, React, ElevenLabs, FFmpeg.</dd><dt>Evaluasi</dt><dd>Format benar, teks tidak meluap, subtitle sinkron, suara diperiksa.</dd><dt>Kegagalan</dt><dd>Pada tahap AI image-to-video untuk bahan visual, hasil render kadang tidak sesuai konsep yang diminta.</dd><dt>Hasil</dt><dd>Video berhasil dibuat dan diuji internal. Dampak terhadap audiens belum diukur.</dd><dt>Arsitektur</dt><dd>Naskah, data episode (JSON), validator, komposisi Remotion, render, audit.</dd><dt>Otomatis vs manusia</dt><dd>Otomatis: validasi data dan render. Manusia: naskah, suara, persetujuan contoh sebelum render, audit akhir.</dd><dt>Hasil terukur</dt><dd>Belum diukur. Video berhasil dibuat dan diuji internal.</dd><dt>Langkah berikut</dt><dd>Dokumentasikan satu episode dari naskah sampai render.</dd></dl></details>
         </article>
       </div>
     </section>
@@ -1926,11 +1929,11 @@
         <!-- Interactive Pipeline Preview Card -->
         <div class="dashboard" data-reveal style="--rd: 160ms">
           <div class="dash-top">
-            <div class="dash-title">Pipeline Konten AI · 7 Hari</div>
+            <div class="dash-title">Ilustrasi Alur Kerja · Konsep 7 Hari</div>
             <div class="dash-controls">
               <button type="button" class="dash-mode-btn active" id="mode-ai">Dengan AI</button>
               <button type="button" class="dash-mode-btn" id="mode-manual">Manual</button>
-              <span class="dash-live">Live</span>
+              <span class="dash-live">Ilustrasi</span>
             </div>
           </div>
 
@@ -1950,7 +1953,7 @@
             <span id="dash-note-left">Pipeline: GPT + Gemini + Google Flow + 9Router</span>
             <span id="dash-note-right" style="color: var(--accent);">Mode AI</span>
           </div>
-          <p class="dash-disclaimer">Ilustrasi alur kerja, bukan laporan performa akun tertentu.</p>
+          <p class="dash-disclaimer">Ilustrasi ini menjelaskan alur kerja, bukan laporan performa akun tertentu.</p>
         </div>
       </div>
 

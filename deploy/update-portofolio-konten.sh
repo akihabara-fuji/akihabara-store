@@ -16,7 +16,7 @@ grep -q 'Dika Priyadi' "$NEW/index.html"
 for a in v-uaop v-cek-nilai v-showcase v-explainer; do for x in mp4 webp; do curl -fsSL "$RAW/assets/$a.$x" -o "$NEW/assets/$a.$x"; done; done
 curl -fsSL "$RAW/assets/v-bukti-cover.mp4" -o "$NEW/assets/v-bukti-cover.mp4"
 curl -fsSL "$RAW/assets/v-bukti-cover.jpg" -o "$NEW/assets/v-bukti-cover.jpg"
-for x in v-catatanakademik-walkthrough.mp4 v-catatanakademik-walkthrough.webp wa-bot-menu.webp wa-bot-topik.webp; do curl -fsSL "$RAW/assets/$x" -o "$NEW/assets/$x"; done
+for x in v-catatanakademik-walkthrough.mp4 v-catatanakademik-walkthrough.webp wa-bot-menu.webp wa-bot-topik.webp CV_Dika_Priyadi.pdf; do curl -fsSL "$RAW/assets/$x" -o "$NEW/assets/$x"; done
 python3 -c "import json,sys; assert len(json.load(open(sys.argv[1])))>0" "$NEW/works.json"
 cp -a "$ROOT" "$BAK"
 cp "$NEW/index.html" "$ROOT/index.html"
