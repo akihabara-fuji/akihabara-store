@@ -158,6 +158,20 @@
       margin-bottom: 18px;
     }
 
+
+    .proof-strip { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 18px; margin: 28px auto 0; padding: 0; max-width: 860px; font-size: 13px; color: var(--muted, #9a9a9a); }
+    .proof-strip li::before { content: "✓ "; color: var(--accent); }
+    .case-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .case { display: flex; flex-direction: column; gap: 10px; }
+    .case h3 { margin: 0; }
+    .case .st { align-self: flex-start; font: 600 11px/1 'JetBrains Mono', monospace; letter-spacing: .06em; text-transform: uppercase; padding: 5px 9px; border: 1px solid var(--accent); color: var(--accent); border-radius: 99px; }
+    .case dl { margin: 0; display: grid; gap: 8px; font-size: 14px; }
+    .case dt { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; opacity: .6; }
+    .case dd { margin: 0; line-height: 1.5; }
+    .case details { border-top: 1px solid rgba(255,255,255,.12); padding-top: 10px; }
+    .case summary { cursor: pointer; color: var(--accent); font-weight: 600; font-size: 14px; }
+    .case details dl { margin-top: 12px; }
+    @media (max-width: 900px) { .case-grid { grid-template-columns: 1fr; } }
     .section-head {
       max-width: 700px;
       margin: 0 auto clamp(48px, 6vw, 76px);
@@ -1662,6 +1676,7 @@
         </a>
 
         <div class="nav-links">
+          <a href="#proyek">Proyek</a>
           <a href="#keahlian">Kemampuan</a>
           <a href="#cara-kerja">Cara Kerja</a>
           <a href="#karya">Sistem AI</a>
@@ -1678,6 +1693,7 @@
         </div>
       </nav>
       <div class="mobile-menu" id="mobile-menu">
+        <a href="#proyek">Proyek</a>
         <a href="#keahlian">Kemampuan</a>
         <a href="#cara-kerja">Cara Kerja</a>
         <a href="#karya">Sistem AI</a>
@@ -1711,8 +1727,42 @@
           </a>
           <a href="#kolaborasi" class="btn btn-outline"><span>Diskusikan Proyek</span></a>
         </div>
+        <ul class="proof-strip" data-reveal style="--rd: 360ms">
+          <li>12+ tahun operasional dan facility management</li>
+          <li>Pernah memimpin 24 sampai 93 staf</li>
+          <li>SOP, jadwal, kontrol mutu, pelatihan, pelaporan, penanganan insiden</li>
+          <li>Sedang membangun otomasi AI dan produk digital</li>
+        </ul>
       </div>
     </header>
+
+    <section class="section" id="proyek">
+      <div class="section-head">
+        <span class="eyebrow" data-reveal style="--rd: 0ms">PROYEK UTAMA</span>
+        <h2 data-reveal style="--rd: 60ms">Tiga proyek, lengkap dengan status dan batasannya</h2>
+        <p data-reveal style="--rd: 120ms">Tiap proyek menjawab: masalahnya apa, apa yang saya kerjakan, buktinya mana, statusnya apa, dan apa yang belum terbukti. Diverifikasi 21 November 2026.</p>
+      </div>
+      <div class="case-grid">
+        <article class="card case" data-reveal>
+          <span class="st">Live</span>
+          <h3>CatatanAkademik.com</h3>
+          <dl><dt>Masalah</dt><dd>Mahasiswa UT sulit menemukan panduan, kelas tutorial, dan alat pemeriksaan dokumen di satu tempat.</dd><dt>Yang dibangun</dt><dd>Platform edukasi independen: panduan mahasiswa baru, kelas tutorial, alat pemeriksaan dokumen, blog, login Google, dan panel admin.</dd><dt>Bukti</dt><dd>Situs yang bisa dibuka langsung, tangkapan layar panel admin di galeri, dan pemantauan indeks lewat Google Search Console.</dd><dt>Batasan</dt><dd>Jumlah pengguna dan dampaknya belum dipublikasikan. Fitur yang belum dirilis ditandai Planned.</dd></dl>
+          <details><summary>Baca studi kasus lengkap</summary><dl><dt>Konteks</dt><dd>Proyek mandiri untuk mahasiswa Universitas Terbuka.</dd><dt>Pengguna</dt><dd>Mahasiswa UT, terutama mahasiswa baru.</dd><dt>Peran saya</dt><dd>Menyusun struktur konten, halaman web, alat bantu, panel admin, dan deployment di server sendiri. Sebagian kode dibantu AI dan saya periksa sendiri.</dd><dt>Alur</dt><dd>Pengunjung membaca panduan atau memakai alat, masuk lewat Google bila perlu, admin mengelola konten dari panel.</dd><dt>Alat</dt><dd>Web, SEO, VPS, Nginx, Google Search Console.</dd><dt>Evaluasi</dt><dd>Halaman dicek di HP dan desktop, tautan diuji, indeks dipantau.</dd><dt>Kegagalan</dt><dd>Catatan kegagalan dan perbaikan belum didokumentasikan di halaman ini.</dd><dt>Hasil</dt><dd>Platform berjalan. Dampak terhadap pengguna belum diukur.</dd><dt>Langkah berikut</dt><dd>Tambahkan video penelusuran 60 sampai 90 detik.</dd></dl></details>
+        </article>
+        <article class="card case" data-reveal>
+          <span class="st">Internal Tool</span>
+          <h3>Otomasi WhatsApp (2 bot)</h3>
+          <dl><dt>Masalah</dt><dd>Pengelolaan grup dan pesanan dilakukan manual, berulang, dan mudah terlewat.</dd><dt>Yang dibangun</dt><dd>Dua bot di VPS: bot grup (anti-spam, pengingat, catatan) dan bot admin (notifikasi pesanan).</dd><dt>Bukti</dt><dd>Alur lengkap ada di studi kasus. Tangkapan layar pesan yang disamarkan menyusul.</dd><dt>Batasan</dt><dd>Belum ada log waktu aktif resmi, jadi tidak ada klaim 24/7. Bagian manual ditandai di alur.</dd></dl>
+          <details><summary>Baca studi kasus lengkap</summary><dl><dt>Konteks</dt><dd>Dipakai untuk operasional layanan sendiri.</dd><dt>Pengguna</dt><dd>Admin dan anggota grup.</dd><dt>Peran saya</dt><dd>Merancang aturan, membangun bot, menjalankannya di server dengan PM2.</dd><dt>Alur grup</dt><dd>Pesan masuk, aturan terdeteksi, bot memproses, balasan otomatis, tinjauan manusia bila perlu.</dd><dt>Alur admin</dt><dd>Pesanan masuk, data divalidasi, notifikasi dikirim, admin bertindak, dicek ulang.</dd><dt>Alat</dt><dd>Node.js, WhatsApp, PM2, VPS.</dd><dt>Evaluasi</dt><dd>Diuji internal. Belum ada pengukuran periode.</dd><dt>Kegagalan</dt><dd>Daftar error dan cara menangani bot atau server yang gagal belum ditulis.</dd><dt>Hasil</dt><dd>Berjalan untuk keperluan internal. Penghematan waktu belum diukur.</dd><dt>Langkah berikut</dt><dd>Tulis daftar error dan tambahkan log pemantauan.</dd></dl></details>
+        </article>
+        <article class="card case" data-reveal>
+          <span class="st">Personal Project</span>
+          <h3>Mesin Konten Video (Remotion)</h3>
+          <dl><dt>Masalah</dt><dd>Satu ide perlu menjadi banyak video vertikal dengan mutu yang konsisten.</dd><dt>Yang dibangun</dt><dd>Mesin Remotion buatan sendiri: naskah per adegan menjadi data episode, divalidasi, dirender 1080x1920, lalu diaudit.</dd><dt>Bukti</dt><dd>Lima video hasil render di galeri di bawah dan alur validasi sebelum render.</dd><dt>Batasan</dt><dd>Data tayangan, klik, dan konversi belum diukur.</dd></dl>
+          <details><summary>Baca studi kasus lengkap</summary><dl><dt>Konteks</dt><dd>Seri video edukasi dan penjelasan proses untuk TikTok dan Reels.</dd><dt>Pengguna</dt><dd>Saya sendiri sebagai pembuat konten, lalu penonton di media sosial.</dd><dt>Peran saya</dt><dd>Menyusun naskah, struktur data episode, komposisi adegan, suara, subtitle, dan pemeriksaan hasil.</dd><dt>Alur</dt><dd>Naskah dikunci, data episode, validasi otomatis, contoh disetujui, render, audit suara dan tampilan.</dd><dt>Alat</dt><dd>Remotion, React, ElevenLabs, FFmpeg.</dd><dt>Evaluasi</dt><dd>Format benar, teks tidak meluap, subtitle sinkron, suara diperiksa.</dd><dt>Kegagalan</dt><dd>Catatan kegagalan render belum didokumentasikan di halaman ini.</dd><dt>Hasil</dt><dd>Video berhasil dibuat dan diuji internal. Dampak terhadap audiens belum diukur.</dd><dt>Langkah berikut</dt><dd>Dokumentasikan satu episode dari naskah sampai render.</dd></dl></details>
+        </article>
+      </div>
+    </section>
 
     <!-- =========================================================
          01 · KEAHLIAN (6 kartu kaca 3x2)
@@ -1859,7 +1909,7 @@
     <section class="section" id="karya">
       <div class="showcase-grid" style="margin-bottom: clamp(56px, 8vw, 90px);">
         <div class="showcase-copy">
-          <span class="eyebrow" data-reveal style="--rd: 0ms">03 — GALERI KARYA</span>
+          <span class="eyebrow" data-reveal style="--rd: 0ms">03 — PERPUSTAKAAN BUKTI</span>
           <h2 data-reveal style="--rd: 90ms">Sistem AI yang saya bangun: bot, platform, dan mesin konten</h2>
           <p data-reveal style="--rd: 180ms">
             Setiap sistem dijelaskan dengan statusnya: berjalan, konsep, atau sedang dikembangkan. Bot WhatsApp dan platform CatatanAkademik berjalan di server; mesin konten Remotion menghasilkan video; proyek yang belum selesai ditulis sebagai konsep, bukan karya jadi.
@@ -1917,7 +1967,7 @@
           <img class="about-photo" src="v/about-photo.webp" alt="Foto Dika Priyadi" loading="lazy" />
           <div class="about-info">
             <div class="about-info-row"><span>Lokasi</span><span>Jakarta, Indonesia</span></div>
-            <div class="about-info-row"><span>Pendidikan</span><span>S1 Manajemen, Universitas Terbuka</span></div>
+            <div class="about-info-row"><span>Pendidikan</span><span>S1 Manajemen, Universitas Terbuka (sedang berjalan)</span></div>
             <div class="about-info-row"><span>Status</span><span><i class="status-dot"></i>Terbuka untuk Kolaborasi</span></div>
           </div>
         </div>
@@ -1962,7 +2012,7 @@
             <span class="eyebrow" style="margin-bottom: 8px;">REKAM JEJAK</span>
             <h3>Kepemimpinan &amp; Akademik</h3>
           </div>
-          <div class="exp-edu">🎓 S1 Manajemen — Universitas Terbuka</div>
+          <div class="exp-edu">🎓 S1 Manajemen — Universitas Terbuka (sedang berjalan)</div>
         </div>
 
         <div class="exp-grid">
