@@ -1663,6 +1663,7 @@
 .case .meta{list-style:none;margin:12px 0 0;padding:10px 0 0;border-top:1px solid rgba(255,255,255,.08);font-size:12.5px;color:var(--muted,#9a9a9a);display:grid;gap:3px}.case .meta b{color:#d8d8d8;font-weight:600}
 .case{display:flex;flex-direction:column}.case .case-sum{margin:8px 0 14px;font-size:14.5px;line-height:1.55;color:var(--muted,#b0b0b0);min-height:66px}.case details{margin-top:auto}.case details>summary{cursor:pointer;font-weight:600;color:var(--accent)}.case details[open]{margin-top:12px}
 .hero-video{max-width:760px;margin:26px auto 0}.hero-video video{width:100%;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:#000;display:block}.hero-video figcaption{font-size:12.5px;color:var(--muted,#9a9a9a);margin-top:8px;text-align:center}.case figure.cv video{max-height:420px;width:auto;max-width:100%;display:block;margin:0 auto;border-radius:10px}
+.ka-filter{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:0 0 20px}.ka-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.ka-card{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:6px;padding:10px;border:1px solid rgba(255,255,255,.1);border-radius:14px;background:rgba(255,255,255,.03)}.ka-card:hover,.ka-card:focus-visible{border-color:var(--accent)}.ka-th{position:relative;display:block;aspect-ratio:16/10;overflow:hidden;border-radius:9px;background:#111}.ka-th img{width:100%;height:100%;object-fit:cover;display:block}.ka-play{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.65);color:#fff;border-radius:999px;padding:3px 9px;font-size:12px}.ka-t{font-size:14px;font-weight:600;color:#eee;line-height:1.3}.ka-k{font-size:11.5px;color:var(--accent);font-family:var(--mono,monospace)}.ka-modal{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;padding:20px}.ka-modal[hidden]{display:none}.ka-box{position:relative;max-width:min(92vw,900px);max-height:92vh;overflow:auto;background:#101010;border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px}.ka-box video,.ka-box img{display:block;max-width:100%;max-height:72vh;margin:0 auto 8px;border-radius:8px}.ka-box p{font-size:13px;color:#aaa;margin:6px 0 0}.ka-x{position:absolute;top:6px;right:10px;font-size:26px;line-height:1;color:#fff;background:none;border:0;cursor:pointer;z-index:2}@media(max-width:900px){.ka-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
 
 </head>
@@ -1734,7 +1735,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
           </a>
           <a href="#proyek" class="btn btn-outline"><span>Lihat studi kasus</span></a>
-          <a href="#proyek" class="btn btn-outline"><span>Lihat demo</span></a>
+          <a href="#karya-ai" class="btn btn-outline"><span>Lihat demo</span></a>
         </div>
         <figure class="hero-video" data-reveal style="--rd: 330ms"><video controls preload="none" poster="assets/v-overview.webp"><source src="assets/v-overview.mp4" type="video/mp4"></video><figcaption>Overview 45 detik: CatatanAkademik, otomasi WhatsApp, Remotion, analisis media sosial. Menampilkan contoh proyek dan alur kerja, bukan klaim hasil bisnis.</figcaption></figure>
         <ul class="proof-strip" data-reveal style="--rd: 360ms">
@@ -1781,6 +1782,17 @@
         </article>
       </div>
     
+    </section>
+
+        <section class="section" id="karya-ai">
+      <div class="section-head">
+        <span class="eyebrow" data-reveal style="--rd: 0ms">KARYA VIDEO AI</span>
+        <h2 data-reveal style="--rd: 60ms">Video dan konten buatan AI</h2>
+        <p data-reveal style="--rd: 120ms">Contoh karya dengan bantuan AI. Visual dibuat dengan AI; ini contoh hasil kerja, bukan klaim performa atau penjualan.</p>
+      </div>
+      <div class="ka-filter" id="ka-filter"></div>
+      <div class="ka-grid" id="ka-grid"></div>
+      <div class="ka-modal" id="ka-modal" hidden><div class="ka-box"><button type="button" class="ka-x" id="ka-x" aria-label="Tutup">×</button><div id="ka-body"></div><p id="ka-cap"></p></div></div>
     </section>
 
     <!-- =========================================================
@@ -3402,6 +3414,41 @@
     }
 
     animate();
+  </script>
+
+  <script>
+  (function(){
+    var grid=document.getElementById('ka-grid'),fil=document.getElementById('ka-filter'),modal=document.getElementById('ka-modal'),body=document.getElementById('ka-body'),cap=document.getElementById('ka-cap');
+    if(!grid)return;
+    function esc(t){return String(t==null?'':t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+    function ok(p){return typeof p==='string'&&/^v\/[A-Za-z0-9_\-\/.]+$/.test(p)}
+    var items=[],active='Semua';
+    function render(){
+      var list=items.filter(function(x){return active==='Semua'||x.kategori===active});
+      grid.innerHTML=list.map(function(x){var i=items.indexOf(x);return '<button type="button" class="ka-card" data-i="'+i+'"><span class="ka-th"><img loading="lazy" src="'+esc(x.poster)+'" alt="'+esc(x.judul)+'">'+(x.video?'<span class="ka-play">▶</span>':'')+'</span><span class="ka-t">'+esc(x.judul)+'</span><span class="ka-k">'+esc(x.kategori||'')+'</span></button>'}).join('');
+    }
+    function filters(){
+      var cats=['Semua'].concat(items.map(function(x){return x.kategori}).filter(function(c,i,a){return c&&a.indexOf(c)===i}));
+      fil.innerHTML=cats.map(function(c){return '<button type="button" class="filter-btn'+(c===active?' active':'')+'" data-c="'+esc(c)+'">'+esc(c)+'</button>'}).join('');
+    }
+    fil.addEventListener('click',function(e){var b=e.target.closest('[data-c]');if(!b)return;active=b.getAttribute('data-c');filters();render()});
+    function close(){modal.hidden=true;body.innerHTML=''}
+    document.getElementById('ka-x').addEventListener('click',close);
+    modal.addEventListener('click',function(e){if(e.target===modal)close()});
+    document.addEventListener('keydown',function(e){if(e.key==='Escape')close()});
+    grid.addEventListener('click',function(e){
+      var b=e.target.closest('.ka-card');if(!b)return;var x=items[+b.getAttribute('data-i')];if(!x)return;
+      var h='';
+      if(x.video&&ok(x.video)){h='<video controls autoplay playsinline poster="'+esc(x.poster)+'"><source src="'+esc(x.video)+'" type="video/mp4"></video>'}
+      else{var sl=(Array.isArray(x.slides)?x.slides:[x.poster]).map(function(s){return typeof s==='string'?s:(s&&s.src)}).filter(ok);h=sl.map(function(s){return '<img src="'+esc(s)+'" alt="'+esc(x.judul)+'">'}).join('')}
+      body.innerHTML=h;cap.textContent=(x.keterangan||'')+' Visual dibuat dengan AI; performa belum diukur.';modal.hidden=false;
+    });
+    fetch('karya.json',{cache:'no-cache'}).then(function(r){return r.json()}).then(function(d){
+      items=(Array.isArray(d)?d:[]).filter(function(x){return x&&x.judul&&ok(x.poster)});
+      if(!items.length){document.getElementById('karya-ai').style.display='none';return}
+      filters();render();
+    }).catch(function(){document.getElementById('karya-ai').style.display='none'});
+  })();
   </script>
 </body>
 </html>
