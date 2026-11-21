@@ -1659,6 +1659,7 @@
       .card, .lane, .work-card, .step-pill, .btn { transition: none !important; }
     }
   @media(max-width:560px){.hero-actions .btn{width:100%;max-width:100%;white-space:normal;text-align:center;box-sizing:border-box}}
+.hero-open{margin:14px auto 0;max-width:760px;text-align:center;font-size:15px}
 </style>
 
 </head>
@@ -1722,13 +1723,15 @@
         <p class="hero-sub" data-reveal style="--rd: 180ms">
           Saya mengubah proses manual dan masalah operasional menjadi sistem AI yang terstruktur, berjalan, dan terus diperbaiki: bot WhatsApp, platform web, dan mesin konten video. Dasarnya 12+ tahun memimpin operasional.
         </p>
+        <p class="hero-open" data-reveal style="--rd: 240ms"><strong>Terbuka untuk posisi:</strong> AI Automation · AI Content/Video Production · Social Media Analysis.</p>
 
         <div class="hero-actions" data-reveal style="--rd: 300ms">
-          <a href="#kolaborasi" class="btn btn-primary">
-            <span>Diskusikan workflow yang ingin diotomatisasi</span>
+          <a href="assets/CV_Dika_Priyadi.pdf" download class="btn btn-primary">
+            <span>Unduh CV</span>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
           </a>
-          <a href="#proyek" class="btn btn-outline"><span>Lihat studi kasus dan demo</span></a>
+          <a href="#proyek" class="btn btn-outline"><span>Lihat studi kasus</span></a>
+          <a href="#proyek" class="btn btn-outline"><span>Lihat demo</span></a>
         </div>
         <ul class="proof-strip" data-reveal style="--rd: 360ms">
           <li>12+ tahun operasional dan facility management</li>
@@ -1736,14 +1739,14 @@
           <li>SOP, jadwal, kontrol mutu, pelatihan, pelaporan, penanganan insiden</li>
           <li>Sedang membangun otomasi AI dan produk digital</li>
         </ul>
-        <p class="recruiter" data-reveal style="--rd: 420ms">Untuk rekruter: <a href="assets/CV_Dika_Priyadi.pdf" download>Unduh CV</a> · <a href="#proyek">Lihat bukti teknis</a></p>
+        <p class="recruiter" data-reveal style="--rd: 420ms">Punya proses yang ingin diotomatisasi? <a href="#kolaborasi">Diskusikan proyek custom</a></p>
       </div>
     </header>
 
     <section class="section" id="proyek">
       <div class="section-head">
         <span class="eyebrow" data-reveal style="--rd: 0ms">PROYEK UTAMA</span>
-        <h2 data-reveal style="--rd: 60ms">Tiga proyek, lengkap dengan status dan batasannya</h2>
+        <h2 data-reveal style="--rd: 60ms">Empat proyek, lengkap dengan status dan batasannya</h2>
         <p data-reveal style="--rd: 120ms">Tiap proyek menjawab: masalahnya apa, apa yang saya kerjakan, buktinya mana, statusnya apa, dan apa yang belum terbukti. Diverifikasi 21 November 2026.</p>
       </div>
       <div class="case-grid">
@@ -1757,13 +1760,19 @@
           <span class="st">Internal Tool</span>
           <h3>Otomasi WhatsApp (2 bot)</h3>
           <dl><dt>Masalah</dt><dd>Pengelolaan grup dan pesanan dilakukan manual, berulang, dan mudah terlewat.</dd><dt>Yang dibangun</dt><dd>Dua bot di VPS: bot grup (anti-spam, pengingat, catatan) dan bot admin (notifikasi pesanan).</dd><dt>Bukti</dt><dd>Dua tangkapan layar percakapan (tanpa nomor telepon): menu perintah manajemen grup dan contoh jawaban. Alur lengkap ada di studi kasus.</dd><dt>Batasan</dt><dd>Bot dijalankan di VPS dengan PM2. Uptime belum diukur secara formal.</dd></dl>
-          <details><summary>Baca studi kasus lengkap</summary><dl><dt>Konteks</dt><dd>Dipakai untuk operasional layanan sendiri.</dd><dt>Pengguna</dt><dd>Admin dan anggota grup.</dd><dt>Peran saya</dt><dd>Merancang aturan, membangun bot, menjalankannya di server dengan PM2.</dd><dt>Alur grup</dt><dd>Pesan masuk, aturan terdeteksi, bot memproses, balasan otomatis, tinjauan manusia bila perlu.</dd><dt>Alur admin</dt><dd>Pesanan masuk, data divalidasi, notifikasi dikirim, admin bertindak, dicek ulang.</dd><dt>Alat</dt><dd>Node.js, WhatsApp, PM2, VPS.</dd><dt>Evaluasi</dt><dd>Diuji internal. Belum ada pengukuran periode.</dd><dt>Kegagalan</dt><dd>Bot kadang menjawab tidak sesuai topik. Contoh: soal kisi-kisi UKT di grup awalnya ditolak karena di luar topik belajar, lalu pertanyaan konsep UKT berikutnya dijawab.</dd><dt>Hasil</dt><dd>Berjalan untuk keperluan internal. Penghematan waktu belum diukur.</dd><dt>Arsitektur</dt><dd>WhatsApp, bot (Node.js, PM2, VPS), aturan, lalu balasan atau notifikasi ke admin.</dd><dt>Otomatis vs manusia</dt><dd>Otomatis: balasan perintah, pengingat, catatan, antispam. Manusia: admin memutuskan tindakan pesanan dan mengirim file.</dd><dt>Contoh pesan valid</dt><dd>"Putri, ingatkan besok jam 7 pagi kumpul laporan" (dari menu perintah bot).</dd><dt>Contoh pesan gagal</dt><dd>Pertanyaan kisi-kisi UKT di grup ditolak sebagai di luar topik belajar.</dd><dt>Bot tidak merespons</dt><dd>Kondisi dan cara pemulihannya belum didokumentasikan.</dd><dt>Hasil terukur</dt><dd>Belum diukur.</dd><dt>Langkah berikut</dt><dd>Rapikan batas topik bot dan tambahkan log pemantauan.</dd></dl><figure><img loading="lazy" src="assets/wa-bot-menu.webp" alt="Bot grup menampilkan menu perintah: catat, pengingat, kas, laporan, antispam"><figcaption>Bot merespons untuk manajemen grup: catatan, pengingat, kas, laporan, antispam.</figcaption></figure><figure><img loading="lazy" src="assets/wa-bot-topik.webp" alt="Contoh jawaban bot terkait batas topik"><figcaption>Contoh batas topik: bot membatasi diri ke topik belajar di grup.</figcaption></figure></details>
+          <details><summary>Baca studi kasus lengkap</summary><dl><dt>Konteks</dt><dd>Dipakai untuk operasional layanan sendiri.</dd><dt>Pengguna</dt><dd>Admin dan anggota grup.</dd><dt>Peran saya</dt><dd>Merancang aturan, membangun bot, menjalankannya di server dengan PM2.</dd><dt>Alur grup</dt><dd>Pesan masuk, aturan terdeteksi, bot memproses, balasan otomatis, tinjauan manusia bila perlu.</dd><dt>Alur admin</dt><dd>Pesanan masuk, data divalidasi, notifikasi dikirim, admin bertindak, dicek ulang.</dd><dt>Alat</dt><dd>Node.js, WhatsApp, PM2, VPS.</dd><dt>Evaluasi</dt><dd>Diuji internal. Belum ada pengukuran periode.</dd><dt>Kegagalan</dt><dd>Bot kadang menjawab tidak sesuai topik. Contoh: soal kisi-kisi UKT di grup awalnya ditolak karena di luar topik belajar, lalu pertanyaan konsep UKT berikutnya dijawab.</dd><dt>Hasil</dt><dd>Berjalan untuk keperluan internal. Penghematan waktu belum diukur.</dd><dt>Arsitektur</dt><dd>WhatsApp, bot (Node.js, PM2, VPS), aturan, lalu balasan atau notifikasi ke admin.</dd><dt>Otomatis vs manusia</dt><dd>Otomatis: balasan perintah, pengingat, catatan, antispam. Manusia: admin memutuskan tindakan pesanan dan mengirim file.</dd><dt>Contoh pesan valid</dt><dd>"Putri, ingatkan besok jam 7 pagi kumpul laporan" (dari menu perintah bot).</dd><dt>Contoh pesan gagal</dt><dd>Pertanyaan kisi-kisi UKT di grup ditolak sebagai di luar topik belajar.</dd><dt>Bot tidak merespons</dt><dd>Kondisi dan cara pemulihannya belum didokumentasikan.</dd><dt>Hasil terukur</dt><dd>Belum diukur.</dd><dt>Alur lengkap (berhasil)</dt><dd>Pesan masuk → pemicu cocok → validasi aturan → balasan bot → keluaran proses tercatat di PM2 → keputusan di luar aturan tetap diputuskan admin. Log pesan terstruktur belum didokumentasikan.</dd><dt>Langkah berikut</dt><dd>Rapikan batas topik bot dan tambahkan log pemantauan.</dd></dl><figure><img loading="lazy" src="assets/wa-bot-menu.webp" alt="Bot grup menampilkan menu perintah: catat, pengingat, kas, laporan, antispam"><figcaption>Bot merespons untuk manajemen grup: catatan, pengingat, kas, laporan, antispam.</figcaption></figure><figure><img loading="lazy" src="assets/wa-bot-topik.webp" alt="Contoh jawaban bot terkait batas topik"><figcaption>Contoh batas topik: bot membatasi diri ke topik belajar di grup.</figcaption></figure></details>
         </article>
         <article class="card case" data-reveal>
           <span class="st">Personal Project</span>
           <h3>Mesin Konten Video (Remotion)</h3>
           <dl><dt>Masalah</dt><dd>Satu ide perlu menjadi banyak video vertikal dengan mutu yang konsisten.</dd><dt>Yang dibangun</dt><dd>Mesin Remotion buatan sendiri: naskah per adegan menjadi data episode, divalidasi, dirender 1080x1920, lalu diaudit.</dd><dt>Bukti</dt><dd>Lima video hasil render di galeri di bawah dan alur validasi sebelum render.</dd><dt>Batasan</dt><dd>Data tayangan, klik, dan konversi belum diukur.</dd></dl>
-          <details><summary>Baca studi kasus lengkap</summary><dl><dt>Konteks</dt><dd>Seri video edukasi dan penjelasan proses untuk TikTok dan Reels.</dd><dt>Pengguna</dt><dd>Saya sendiri sebagai pembuat konten, lalu penonton di media sosial.</dd><dt>Peran saya</dt><dd>Menyusun naskah, struktur data episode, komposisi adegan, suara, subtitle, dan pemeriksaan hasil.</dd><dt>Alur</dt><dd>Naskah dikunci, data episode, validasi otomatis, contoh disetujui, render, audit suara dan tampilan.</dd><dt>Alat</dt><dd>Remotion, React, ElevenLabs, FFmpeg.</dd><dt>Evaluasi</dt><dd>Format benar, teks tidak meluap, subtitle sinkron, suara diperiksa.</dd><dt>Kegagalan</dt><dd>Pada tahap AI image-to-video untuk bahan visual, hasil render kadang tidak sesuai konsep yang diminta.</dd><dt>Hasil</dt><dd>Video berhasil dibuat dan diuji internal. Dampak terhadap audiens belum diukur.</dd><dt>Arsitektur</dt><dd>Naskah, data episode (JSON), validator, komposisi Remotion, render, audit.</dd><dt>Otomatis vs manusia</dt><dd>Otomatis: validasi data dan render. Manusia: naskah, suara, persetujuan contoh sebelum render, audit akhir.</dd><dt>Hasil terukur</dt><dd>Belum diukur. Video berhasil dibuat dan diuji internal.</dd><dt>Langkah berikut</dt><dd>Dokumentasikan satu episode dari naskah sampai render.</dd></dl></details>
+          <details><summary>Baca studi kasus lengkap</summary><dl><dt>Konteks</dt><dd>Seri video edukasi dan penjelasan proses untuk TikTok dan Reels.</dd><dt>Pengguna</dt><dd>Saya sendiri sebagai pembuat konten, lalu penonton di media sosial.</dd><dt>Peran saya</dt><dd>Menyusun naskah, struktur data episode, komposisi adegan, suara, subtitle, dan pemeriksaan hasil.</dd><dt>Alur</dt><dd>Naskah dikunci, data episode, validasi otomatis, contoh disetujui, render, audit suara dan tampilan.</dd><dt>Alat</dt><dd>Remotion, React, ElevenLabs, FFmpeg.</dd><dt>Evaluasi</dt><dd>Format benar, teks tidak meluap, subtitle sinkron, suara diperiksa.</dd><dt>Kegagalan</dt><dd>Pada tahap AI image-to-video untuk bahan visual, hasil render kadang tidak sesuai konsep yang diminta.</dd><dt>Hasil</dt><dd>Video berhasil dibuat dan diuji internal. Dampak terhadap audiens belum diukur.</dd><dt>Arsitektur</dt><dd>Naskah, data episode (JSON), validator, komposisi Remotion, render, audit.</dd><dt>Otomatis vs manusia</dt><dd>Otomatis: validasi data dan render. Manusia: naskah, suara, persetujuan contoh sebelum render, audit akhir.</dd><dt>Hasil terukur</dt><dd>Belum diukur. Video berhasil dibuat dan diuji internal.</dd><dt>Alur satu video</dt><dd>Brief → naskah → storyboard → data episode → render → QA → revisi → hasil akhir. Status: dirender dan diuji internal. Belum terbukti menghasilkan views atau konversi. Durasi, tangkapan komposisi, dan contoh revisi sebelum/sesudah per video belum dikumpulkan.</dd><dt>Langkah berikut</dt><dd>Dokumentasikan satu episode dari naskah sampai render.</dd></dl></details>
+        </article>
+        <article class="card case" data-reveal>
+          <span class="st">Prototype</span>
+          <h3>Prototipe Analisis Media Sosial</h3>
+          <dl><dt>Masalah</dt><dd>Konten diposting tanpa evaluasi terstruktur, sehingga tidak jelas bagian mana yang gagal menahan penonton atau mengajak bertindak.</dd><dt>Data</dt><dd>2 konten akun Catatan Akademik, diposting 8 November 2026: 1 carousel Instagram dan 1 video TikTok 32 detik. Data diambil dari analitik bawaan platform, rentang 30 hari terakhir.</dd><dt>Temuan 1</dt><dd>Video TikTok: rata-rata durasi tonton 2,67 detik dari 32,2 detik (sekitar 8%), penonton yang menonton sampai habis 0%. Dugaan: hook dan pembukaan belum menahan penonton.</dd><dt>Temuan 2</dt><dd>CTA "Save dan kirim ke teman" belum menghasilkan aksi: carousel Instagram 0 save dan 0 share (jangkauan 13, tayangan 34); video TikTok 0 share, 0 kunjungan profil.</dd><dt>Rekomendasi</dt><dd>Hook 3 detik pertama berisi satu pertanyaan atau risiko yang spesifik; pendekkan video menjadi 15 sampai 20 detik; letakkan CTA setelah poin inti, bukan di caption panjang. Ini hipotesis, belum diuji.</dd>
+          <dt>Contoh sebelum dan sesudah</dt><dd>Sebelum: "Pelanggaran ujian UT bisa berujung nilai E." Usulan: "Satu pelanggaran ini bisa membuat semua nilai semester jadi E." Usulan belum diuji, tidak ada data sesudahnya.</dd><dt>Batasan</dt><dd>Hanya 2 konten pada akun yang masih kecil, jadi angka belum cukup untuk menyimpulkan. Ini prototipe pada akun milik sendiri, bukan data klien, dan bukan pengganti uji A/B terkontrol.</dd></dl>
         </article>
       </div>
     </section>
