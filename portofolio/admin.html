@@ -237,6 +237,7 @@
                 <option value="Web & SEO">Web &amp; SEO</option>
                 <option value="AI Automation">Otomasi AI</option>
                 <option value="Social Media Strategy">Strategi Media Sosial</option>
+                <option value="AI Motion (Remotion)">Motion AI (Remotion)</option>
               </select>
             </div>
             <div class="field">
@@ -246,6 +247,11 @@
                 <option value="Live">Live</option>
                 <option value="Viral">Viral</option>
                 <option value="Internal Use">Internal Use</option>
+                <option value="Internal Tool">Internal Tool</option>
+                <option value="Prototype">Prototype</option>
+                <option value="Personal Project">Personal Project</option>
+                <option value="In Development">In Development</option>
+                <option value="Concept">Concept</option>
               </select>
             </div>
           </div>
@@ -308,7 +314,7 @@
       const TOKEN_KEY = 'porto_admin_token';
       const $ = (id) => document.getElementById(id);
       const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-      const CAT_LABEL = { 'AI Video & Content': 'Video & Konten AI', 'Web & SEO': 'Web & SEO', 'AI Automation': 'Otomasi AI', 'Social Media Strategy': 'Strategi Media Sosial' };
+      const CAT_LABEL = { 'AI Video & Content': 'Video & Konten AI', 'Web & SEO': 'Web & SEO', 'AI Automation': 'Otomasi AI', 'Social Media Strategy': 'Strategi Media Sosial', 'AI Motion (Remotion)': 'Motion AI (Remotion)' };
       const MAX = 50 * 1024 * 1024;
 
       let token = sessionStorage.getItem(TOKEN_KEY) || '';

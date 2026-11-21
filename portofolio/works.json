@@ -1,5 +1,24 @@
 [
   {
+    "id": "remotion-content-engine",
+    "title": "Mesin Konten Video Remotion",
+    "category": "AI Motion (Remotion)",
+    "summary": "Mesin video buatan sendiri: naskah per adegan menjadi data episode, divalidasi, dirender menjadi video vertikal 9:16 dengan suara per kalimat, lalu diaudit sebelum dipakai.",
+    "metrics": "Dipakai membuat seri video di bawah. Remotion 4, 1080x1920, 30 fps.",
+    "mediaUrl": "assets/v-uaop.mp4",
+    "mediaType": "video",
+    "posterUrl": "assets/v-uaop.webp",
+    "promptOrWorkflow": "Naskah per adegan -> data episode (JSON) -> validasi otomatis -> render Remotion 9:16 -> audit suara dan tampilan -> terbit.",
+    "tools": [
+      "Remotion",
+      "React",
+      "ElevenLabs",
+      "FFmpeg"
+    ],
+    "externalLink": "",
+    "badge": "Internal Tool"
+  },
+  {
     "id": "ai-commercial-video",
     "title": "AI Commercial & Short-Form Video",
     "category": "AI Video & Content",
