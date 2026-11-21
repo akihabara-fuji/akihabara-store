@@ -1677,6 +1677,10 @@
 .svc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;max-width:1180px;margin:0 auto}.svc{display:flex;flex-direction:column;gap:8px}.svc h3{font-size:17px;margin:2px 0 0}.svc p{font-size:13.5px;line-height:1.55;margin:0;opacity:.85}.svc dl{margin:4px 0 0;display:grid;gap:2px;font-size:12.5px}.svc dt{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;opacity:.55;margin-top:6px}.svc dd{margin:0;line-height:1.45}.svc-proof{margin-top:auto;padding-top:10px;font-size:13px;font-weight:600;color:var(--accent);text-decoration:none}.svc-go{font-size:12.5px;opacity:.75;color:inherit;text-decoration:underline;cursor:pointer}.svc .st{align-self:flex-start;display:inline-block;font:600 10.5px/1 'JetBrains Mono',monospace;letter-spacing:.06em;text-transform:uppercase;padding:5px 9px;border:1px solid rgba(255,138,61,.5);border-radius:999px;color:var(--accent)}
 .intake{max-width:760px;margin:26px auto 0;padding:20px;border:1px solid rgba(255,255,255,.1);border-radius:16px;display:grid;gap:12px;text-align:left}.intake h3{margin:0;font-size:17px}.intake-row{display:flex;flex-wrap:wrap;gap:8px}.intake-row label{cursor:pointer}.intake-row input{position:absolute;opacity:0;pointer-events:none}.intake-row span{display:inline-block;padding:8px 14px;border:1px solid rgba(255,255,255,.18);border-radius:999px;font-size:13px}.intake-row input:checked+span{background:var(--accent);border-color:var(--accent);color:#111;font-weight:600}.intake-row input:focus-visible+span{outline:2px solid #fff;outline-offset:2px}.intake-f{display:grid;gap:6px;font-size:12.5px;opacity:.9}.intake-f textarea,.intake-f input{font:inherit;font-size:14px;color:inherit;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:10px 12px;resize:vertical}.intake #intake-go{justify-self:start}.cm-share{float:right;margin:2px 10px 0 0;font:inherit;font-size:12.5px;color:#fff;background:none;border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:4px 12px;cursor:pointer}
 @media(max-width:700px){.paths{grid-template-columns:1fr}}
+.flow{list-style:none;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:860px;margin:14px auto 0;padding:0;counter-reset:f}.flow li{position:relative;padding:10px 12px;border:1px dashed rgba(255,255,255,.16);border-radius:12px;text-align:left;font-size:12px;display:grid;gap:2px}.flow li:not(:last-child)::after{content:"\2192";position:absolute;right:-12px;top:50%;transform:translateY(-50%);opacity:.5;font-size:13px}.flow b{font-size:12.5px}.flow span{opacity:.7;line-height:1.4}
+.bukti{list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;max-width:1180px;margin:0 auto;padding:0}.bukti a{display:grid;gap:4px;height:100%;padding:14px 16px;border:1px solid rgba(255,255,255,.1);border-radius:14px;color:inherit;text-decoration:none}.bukti a:hover,.bukti a:focus-visible{border-color:rgba(255,138,61,.6)}.bukti b{font-size:14.5px}.bukti span{font-size:12.5px;opacity:.7;line-height:1.5}
+.case-f{margin:8px 0 0;display:grid;gap:2px;font-size:12.5px}.case-f dt{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;opacity:.55;margin-top:6px}.case-f dd{margin:0;line-height:1.45;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+@media(max-width:700px){.flow{grid-template-columns:1fr 1fr}.flow li::after{display:none}}
 </style>
 
 </head>
@@ -1699,11 +1703,9 @@
         <div class="nav-links">
           <a href="#proyek">Proyek</a>
           <a href="#layanan">Layanan</a>
-          <a href="#keahlian">Kemampuan</a>
           <a href="#cara-kerja">Cara Kerja</a>
-          <a href="#karya">Sistem AI</a>
           <a href="#tentang">Tentang</a>
-          <a href="#kolaborasi">Kolaborasi</a>
+          <a href="#kolaborasi">Kontak</a>
         </div>
 
         <div class="nav-actions">
@@ -1717,11 +1719,9 @@
       <div class="mobile-menu" id="mobile-menu">
         <a href="#proyek">Proyek</a>
         <a href="#layanan">Layanan</a>
-        <a href="#keahlian">Kemampuan</a>
         <a href="#cara-kerja">Cara Kerja</a>
-        <a href="#karya">Sistem AI</a>
         <a href="#tentang">Tentang</a>
-        <a href="#kolaborasi">Kolaborasi</a>
+        <a href="#kolaborasi">Kontak</a>
         <a href="assets/CV_Dika_Priyadi.pdf" download>Unduh CV (PDF)</a>
       </div>
     </div>
@@ -1755,6 +1755,12 @@
           <a class="path" href="#layanan"><b>Saya ingin membangun sistem</b><span>Lihat layanan: otomasi, bot, website, konten, dan analisis media sosial.</span></a>
           <a class="path" href="#tentang"><b>Saya ingin melihat pengalaman</b><span>Lihat riwayat dan kemampuan, lalu <span class="plink" data-cv>unduh CV</span>.</span></a>
         </div>
+        <ol class="flow" data-reveal style="--rd: 340ms" aria-label="Alur kerja sistem">
+          <li><b>Input</b><span>Data, file, form, sistem</span></li>
+          <li><b>Proses otomasi &amp; AI</b><span>Ekstraksi, pemrosesan, pembuatan konten</span></li>
+          <li><b>Pemeriksaan manusia</b><span>Validasi dan catatan perbaikan</span></li>
+          <li><b>Output</b><span>Data terstruktur, konten, laporan</span></li>
+        </ol>
         <figure class="hero-video" data-reveal style="--rd: 330ms"><video controls preload="none" poster="assets/v-overview.webp"><source src="assets/v-overview.mp4" type="video/mp4"></video><figcaption>Overview 45 detik: CatatanAkademik, otomasi WhatsApp, Remotion, analisis media sosial. Menampilkan contoh proyek dan alur kerja, bukan klaim hasil bisnis.</figcaption></figure>
         <ul class="proof-strip" data-reveal style="--rd: 360ms">
           <li>12+ tahun operasional dan facility management</li>
@@ -1850,6 +1856,20 @@
           <a class="svc-proof" href="#proyek/remotion">Lihat bukti: mesin konten Remotion →</a>
           <a class="svc-go" target="_blank" rel="noopener noreferrer" data-wa="Halo Dika, saya ingin berdiskusi tentang strategi dan sistem produksi konten.">Diskusikan ini</a></article>
       </div>
+    </section>
+
+    <section class="section" id="bukti">
+      <div class="section-head">
+        <span class="eyebrow">BUKTI</span>
+        <h2>Yang bisa Anda buka dan periksa sendiri</h2>
+      </div>
+      <ul class="bukti">
+        <li><a href="https://catatanakademik.com" target="_blank" rel="noopener noreferrer"><b>Situs live</b><span>CatatanAkademik.com, bisa dibuka langsung.</span></a></li>
+        <li><a href="#karya-ai"><b>Video</b><span>Karya video AI dan hasil render.</span></a></li>
+        <li><a href="#karya"><b>Tangkapan layar</b><span>Panel admin dan tampilan sistem.</span></a></li>
+        <li><a href="#cara-kerja"><b>Diagram alur</b><span>Cara kerja dari masukan sampai hasil.</span></a></li>
+        <li><a href="#proyek"><b>Batasan</b><span>Tiap studi kasus mencatat apa yang belum terbukti.</span></a></li>
+      </ul>
     </section>
 
     <section class="section features" id="keahlian">
@@ -3650,7 +3670,11 @@
       list.forEach(function(p,i){
         var a=el('article','card case');a.dataset.i=i;
         a.appendChild(el('span','st',p.status));var h=el('h3',null,p.judul);h.id='case-'+p.id;a.appendChild(h);
-        a.appendChild(el('p','case-sum',p.ringkas));var b=el('button','case-more','Baca lengkap');b.type='button';a.appendChild(b);grid.appendChild(a);
+        var dl=el('dl','case-f');var bg=p.bagian||[];function fb(l){for(var j=0;j<bg.length;j++)if(bg[j].label===l)return bg[j].isi}
+        var ms=fb('Masalah'),sl=fb('Yang dibangun')||fb('Data');if(sl!==p.ringkas||!ms)a.appendChild(el('p','case-sum',p.ringkas));var bk=(p.meta||[]).filter(function(x){return x.k==='Bukti'})[0];
+        [['Masalah',ms],['Solusi',sl],['Bukti',bk&&bk.v]].forEach(function(r){if(r[1]){dl.appendChild(el('dt',null,r[0]));dl.appendChild(el('dd',null,r[1]))}});
+        if(dl.children.length)a.appendChild(dl);
+        var b=el('button','case-more','Baca lengkap');b.type='button';a.appendChild(b);grid.appendChild(a);
       });
       var h2=document.querySelector('#proyek .section-head h2');
       if(h2){var w=['','Satu','Dua','Tiga','Empat','Lima','Enam','Tujuh','Delapan'][list.length];h2.textContent=w?w+' proyek':'Proyek utama'}
