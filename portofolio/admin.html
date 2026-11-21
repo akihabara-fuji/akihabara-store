@@ -238,6 +238,8 @@
                 <option value="AI Automation">Otomasi AI</option>
                 <option value="Social Media Strategy">Strategi Media Sosial</option>
                 <option value="AI Motion (Remotion)">Motion AI (Remotion)</option>
+                <option value="Video Iklan">Video Iklan</option>
+                <option value="Video Drama">Video Drama</option>
               </select>
             </div>
             <div class="field">
@@ -314,7 +316,7 @@
       const TOKEN_KEY = 'porto_admin_token';
       const $ = (id) => document.getElementById(id);
       const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-      const CAT_LABEL = { 'AI Video & Content': 'Video & Konten AI', 'Web & SEO': 'Web & SEO', 'AI Automation': 'Otomasi AI', 'Social Media Strategy': 'Strategi Media Sosial', 'AI Motion (Remotion)': 'Motion AI (Remotion)' };
+      const CAT_LABEL = { 'AI Video & Content': 'Video & Konten AI', 'Web & SEO': 'Web & SEO', 'AI Automation': 'Otomasi AI', 'Social Media Strategy': 'Strategi Media Sosial', 'AI Motion (Remotion)': 'Motion AI (Remotion)', 'Video Iklan': 'Video Iklan', 'Video Drama': 'Video Drama' };
       const MAX = 50 * 1024 * 1024;
 
       let token = sessionStorage.getItem(TOKEN_KEY) || '';

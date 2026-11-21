@@ -48,7 +48,7 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'DikaAdmin2026!';
 const TOKEN_TTL_MS = 12 * 60 * 60 * 1000; // 12 jam
 const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 
-const CATEGORIES = ['AI Video & Content', 'Web & SEO', 'AI Automation', 'Social Media Strategy', 'AI Motion (Remotion)'];
+const CATEGORIES = ['AI Video & Content', 'Web & SEO', 'AI Automation', 'Social Media Strategy', 'AI Motion (Remotion)', 'Video Iklan', 'Video Drama'];
 const BADGES = ['Live', 'Showcase', 'Viral', 'Internal Use', 'Internal Tool', 'Prototype', 'Personal Project', 'In Development', 'Concept'];
 const MEDIA_TYPES = ['image', 'video', 'embed'];
 
