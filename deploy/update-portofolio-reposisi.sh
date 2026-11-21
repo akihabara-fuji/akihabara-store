@@ -21,3 +21,6 @@ print('proyek.json diatur:',[x.get('id') for x in p])
 PY
 chown www-data:www-data "$F"; chmod a+r "$F"
 echo "OK reposisi proyek selesai"
+
+# sinkron state admin supaya Simpan & Terbitkan tidak menimpa teks baru
+curl -fsSL "https://raw.githubusercontent.com/akihabara-fuji/akihabara-store/${1:-portofolio-dika}/deploy/sync-admin-state.js" -o /tmp/sync-admin-state.js && node --no-warnings /tmp/sync-admin-state.js
