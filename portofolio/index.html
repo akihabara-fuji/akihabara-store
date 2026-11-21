@@ -102,7 +102,7 @@
       color-scheme: light;
     }
     .planet-canvas { filter: hue-rotate(165deg) saturate(1.15); }
-    html[data-theme="light"] .planet-canvas { filter: invert(1) hue-rotate(345deg) saturate(1.25); opacity: .9; }
+    html[data-theme="light"] .planet-canvas { filter: invert(1) grayscale(1) sepia(.55) saturate(1.6) hue-rotate(-8deg); mix-blend-mode: multiply; opacity: .55; }
     html[data-theme="light"] *, html[data-theme="light"] *::before, html[data-theme="light"] *::after { text-shadow: none !important; }
     html[data-theme="light"] .amb { display: none; }
     .theme-toggle { width: 40px; height: 40px; border-radius: 999px; border: 1px solid var(--line-strong); background: transparent; color: var(--ink); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: background .2s, transform .16s; }
