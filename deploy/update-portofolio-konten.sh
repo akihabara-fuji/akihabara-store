@@ -16,6 +16,7 @@ grep -q 'Dika Priyadi' "$NEW/index.html"
 for a in v-uaop v-cek-nilai v-showcase v-explainer; do for x in mp4 webp; do curl -fsSL "$RAW/assets/$a.$x" -o "$NEW/assets/$a.$x"; done; done
 curl -fsSL "$RAW/assets/v-bukti-cover.mp4" -o "$NEW/assets/v-bukti-cover.mp4"
 curl -fsSL "$RAW/assets/v-bukti-cover.jpg" -o "$NEW/assets/v-bukti-cover.jpg"
+for x in v-catatanakademik-walkthrough.mp4 v-catatanakademik-walkthrough.webp wa-bot-menu.webp wa-bot-topik.webp; do curl -fsSL "$RAW/assets/$x" -o "$NEW/assets/$x"; done
 python3 -c "import json,sys; assert len(json.load(open(sys.argv[1])))>0" "$NEW/works.json"
 cp -a "$ROOT" "$BAK"
 cp "$NEW/index.html" "$ROOT/index.html"
@@ -30,7 +31,7 @@ if add:
 print('works.json: +%d karya baru, total %d' % (len(add), len(cur) + len(add)))
 PY
 chown -R www-data:www-data "$ROOT"; chmod -R a+rX "$ROOT"
-for p in / /works.json /assets/v-uaop.mp4 /assets/v-uaop.webp /assets/v-bukti-cover.mp4 /assets/v-bukti-cover.jpg /assets/v-cek-nilai.mp4 /assets/v-showcase.mp4 /assets/v-explainer.mp4; do
+for p in / /works.json /assets/v-uaop.mp4 /assets/v-uaop.webp /assets/v-bukti-cover.mp4 /assets/v-bukti-cover.jpg /assets/v-cek-nilai.mp4 /assets/v-showcase.mp4 /assets/v-catatanakademik-walkthrough.mp4 /assets/wa-bot-menu.webp /assets/v-explainer.mp4; do
   s=$(curl -sk -o /dev/null -w '%{http_code}' --resolve dikapriyadi.catatanakademik.com:443:127.0.0.1 "https://dikapriyadi.catatanakademik.com$p"); echo "$p $s"
   [ "$s" = 200 ] || fail $LINENO
 done
