@@ -89,5 +89,90 @@
     ],
     "externalLink": "",
     "badge": "Internal Use"
+  },
+  {
+    "id": "motion-uaop",
+    "title": "Video Info UAOP (Motion)",
+    "category": "AI Motion (Remotion)",
+    "summary": "Video motion edukasi yang menjelaskan tata cara UAOP Universitas Terbuka, dibuat untuk mahasiswa di TikTok dan Reels.",
+    "metrics": "Durasi 32 detik, vertikal 9:16. Dirender dengan Remotion.",
+    "mediaUrl": "assets/v-uaop.mp4",
+    "mediaType": "video",
+    "posterUrl": "assets/v-uaop.webp",
+    "promptOrWorkflow": "Naskah per adegan disusun dan dikunci -> adegan, teks, dan subtitle dibangun sebagai komposisi Remotion -> tampilan tiap adegan dicek -> render video vertikal 9:16.",
+    "tools": [
+      "Remotion",
+      "React"
+    ],
+    "externalLink": "",
+    "badge": "Showcase"
+  },
+  {
+    "id": "motion-cek-nilai",
+    "title": "Video Info Cek Nilai UAS (Motion)",
+    "category": "AI Motion (Remotion)",
+    "summary": "Video motion pendek berisi cara melihat nilai UAS Universitas Terbuka langkah demi langkah.",
+    "metrics": "Durasi 30 detik, vertikal 9:16.",
+    "mediaUrl": "assets/v-cek-nilai.mp4",
+    "mediaType": "video",
+    "posterUrl": "assets/v-cek-nilai.webp",
+    "promptOrWorkflow": "Naskah per adegan disusun dan dikunci -> adegan, teks, dan subtitle dibangun sebagai komposisi Remotion -> tampilan tiap adegan dicek -> render video vertikal 9:16.",
+    "tools": [
+      "Remotion",
+      "React"
+    ],
+    "externalLink": "",
+    "badge": "Showcase"
+  },
+  {
+    "id": "motion-bukti-cover",
+    "title": "Alur Cover Dulu, Isi Belakangan (Motion)",
+    "category": "AI Motion (Remotion)",
+    "summary": "Video penjelas alur produksi: konsep cover dibuat dan disetujui lebih dulu, baru isi dikerjakan.",
+    "metrics": "Durasi 10 detik, 1080x1920. Dirender dengan Remotion.",
+    "mediaUrl": "assets/v-bukti-cover.mp4",
+    "mediaType": "video",
+    "posterUrl": "assets/v-bukti-cover.jpg",
+    "promptOrWorkflow": "Konsep cover -> persetujuan -> isi konten -> render. Adegan dan teks dibangun sebagai komposisi Remotion lalu dirender 9:16.",
+    "tools": [
+      "Remotion",
+      "React"
+    ],
+    "externalLink": "",
+    "badge": "Showcase"
+  },
+  {
+    "id": "motion-showcase",
+    "title": "Showcase Gaya Teks Kata Kunci (Motion)",
+    "category": "AI Motion (Remotion)",
+    "summary": "Contoh gaya video motion dengan teks kata kunci besar yang muncul bergantian mengikuti ritme.",
+    "metrics": "Durasi 19 detik, vertikal 9:16.",
+    "mediaUrl": "assets/v-showcase.mp4",
+    "mediaType": "video",
+    "posterUrl": "assets/v-showcase.webp",
+    "promptOrWorkflow": "Naskah per adegan disusun dan dikunci -> adegan, teks, dan subtitle dibangun sebagai komposisi Remotion -> tampilan tiap adegan dicek -> render video vertikal 9:16.",
+    "tools": [
+      "Remotion",
+      "React"
+    ],
+    "externalLink": "",
+    "badge": "Showcase"
+  },
+  {
+    "id": "motion-explainer",
+    "title": "Explainer Video Motion Gratis (Motion)",
+    "category": "AI Motion (Remotion)",
+    "summary": "Penjelasan singkat cara membuat video motion tanpa biaya langganan.",
+    "metrics": "Durasi 25 detik, vertikal 9:16.",
+    "mediaUrl": "assets/v-explainer.mp4",
+    "mediaType": "video",
+    "posterUrl": "assets/v-explainer.webp",
+    "promptOrWorkflow": "Naskah per adegan disusun dan dikunci -> adegan, teks, dan subtitle dibangun sebagai komposisi Remotion -> tampilan tiap adegan dicek -> render video vertikal 9:16.",
+    "tools": [
+      "Remotion",
+      "React"
+    ],
+    "externalLink": "",
+    "badge": "Showcase"
   }
 ]

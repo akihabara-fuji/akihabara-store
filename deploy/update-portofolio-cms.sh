@@ -53,13 +53,23 @@ grep -q 'Admin Galeri Karya' "$NEW/admin.html"
 python3 -c "import json,sys; assert len(json.load(open(sys.argv[1])))>0" "$NEW/works.json"
 # Semua gambar/video karya dikirim ikut deploy (jangan mengandalkan isi server lama)
 mkdir -p "$NEW/v" "$NEW/assets"
-for f in v/hero_robot.webp v/ks-1.webp v/ks-2.webp v/ks-3.webp v/ks-4.webp v/ks-5.webp v/ks-6.webp v/produksi_ai.jpg v/produksi_ai_full.mp4 v/hero_dika.webp v/hero_dika_bw.webp v/hands-cutout.png v/about-photo.webp v/an1.jpg v/an2.jpg v/an3.jpg v/an4.jpg v/an5.jpg v/an6.jpg v/blouse.jpg v/blouse_full.mp4 v/car1.jpg v/car2.jpg v/car3.jpg v/car4.jpg v/car5.jpg v/car6.jpg v/car7.jpg v/es.jpg v/es.mp4 v/es_full.mp4 v/jeans.jpg v/jeans.mp4 v/jeans_full.mp4 v/kids.jpg v/kids_full.mp4 v/naya1.jpg v/naya1.mp4 v/naya1_full.mp4 v/naya2.jpg v/naya2.mp4 v/naya2_full.mp4 v/student.jpg v/student_full.mp4 v/tuntasync.jpg v/tuntasync.mp4 v/tuntasync_full.mp4 v/uaop.jpg v/uaop_full.mp4 v/wide.jpg v/wide_full.mp4 v/bot.jpg v/bot.mp4 v/bot_full.mp4 assets/m1.webp assets/CV_Dika_Priyadi.pdf assets/k-admin.webp assets/k-analisa1.webp assets/k-analisa2.webp assets/k-bot.webp assets/f-lapangan.webp assets/f-kafe.webp assets/f-selamat.webp assets/f-sadewa.webp assets/f-ramadhan.webp assets/c-1.webp assets/c-2.webp assets/c-3.webp assets/c-4.webp assets/c-5.webp assets/c-6.webp assets/c-7.webp assets/v-cek-nilai.mp4 assets/v-cek-nilai.webp assets/v-es-krim.mp4 assets/v-es-krim.webp assets/v-explainer.mp4 assets/v-explainer.webp assets/v-jeans-flare.mp4 assets/v-jeans-flare.webp assets/v-jeans-wide.mp4 assets/v-jeans-wide.webp assets/v-mga-iklan.mp4 assets/v-mga-iklan.webp assets/v-naya-1.mp4 assets/v-naya-1.webp assets/v-showcase.mp4 assets/v-showcase.webp assets/v-tuntasync.mp4 assets/v-tuntasync.webp assets/v-uaop.mp4 assets/v-uaop.webp og.jpg favicon.svg apple-touch-icon.png robots.txt sitemap.xml; do curl -fsSL "$RAW/portofolio/$f" -o "$NEW/$f"; done
+for f in v/hero_robot.webp v/ks-1.webp v/ks-2.webp v/ks-3.webp v/ks-4.webp v/ks-5.webp v/ks-6.webp v/produksi_ai.jpg v/produksi_ai_full.mp4 v/hero_dika.webp v/hero_dika_bw.webp v/hands-cutout.png v/about-photo.webp v/an1.jpg v/an2.jpg v/an3.jpg v/an4.jpg v/an5.jpg v/an6.jpg v/blouse.jpg v/blouse_full.mp4 v/car1.jpg v/car2.jpg v/car3.jpg v/car4.jpg v/car5.jpg v/car6.jpg v/car7.jpg v/es.jpg v/es.mp4 v/es_full.mp4 v/jeans.jpg v/jeans.mp4 v/jeans_full.mp4 v/kids.jpg v/kids_full.mp4 v/naya1.jpg v/naya1.mp4 v/naya1_full.mp4 v/naya2.jpg v/naya2.mp4 v/naya2_full.mp4 v/student.jpg v/student_full.mp4 v/tuntasync.jpg v/tuntasync.mp4 v/tuntasync_full.mp4 v/uaop.jpg v/uaop_full.mp4 v/wide.jpg v/wide_full.mp4 v/bot.jpg v/bot.mp4 v/bot_full.mp4 assets/m1.webp assets/CV_Dika_Priyadi.pdf assets/k-admin.webp assets/k-analisa1.webp assets/k-analisa2.webp assets/k-bot.webp assets/f-lapangan.webp assets/f-kafe.webp assets/f-selamat.webp assets/f-sadewa.webp assets/f-ramadhan.webp assets/c-1.webp assets/c-2.webp assets/c-3.webp assets/c-4.webp assets/c-5.webp assets/c-6.webp assets/c-7.webp assets/v-cek-nilai.mp4 assets/v-cek-nilai.webp assets/v-es-krim.mp4 assets/v-es-krim.webp assets/v-explainer.mp4 assets/v-explainer.webp assets/v-jeans-flare.mp4 assets/v-jeans-flare.webp assets/v-jeans-wide.mp4 assets/v-jeans-wide.webp assets/v-mga-iklan.mp4 assets/v-mga-iklan.webp assets/v-naya-1.mp4 assets/v-naya-1.webp assets/v-showcase.mp4 assets/v-showcase.webp assets/v-tuntasync.mp4 assets/v-tuntasync.webp assets/v-uaop.mp4 assets/v-uaop.webp assets/v-bukti-cover.mp4 assets/v-bukti-cover.jpg og.jpg favicon.svg apple-touch-icon.png robots.txt sitemap.xml; do curl -fsSL "$RAW/portofolio/$f" -o "$NEW/$f"; done
 node --check "$NEW/api/server.js"
 
 # 2. File web (aset lama di v/ dan assets/ tidak disentuh)
 cp -a "$ROOT" "$BAK"
 cp "$NEW/index.html" "$NEW/admin.html" "$ROOT/"
 [ -f "$ROOT/works.json" ] || cp "$NEW/works.json" "$ROOT/works.json"
+# Karya baru dari repo ditambahkan ke works.json server (hanya id yang belum ada; isi dari admin tidak diubah)
+python3 - "$NEW/works.json" "$ROOT/works.json" <<'PY'
+import json, sys
+new = json.load(open(sys.argv[1])); cur = json.load(open(sys.argv[2]))
+have = {w.get('id') for w in cur}
+add = [w for w in new if w.get('id') not in have]
+if add:
+    json.dump(cur + add, open(sys.argv[2], 'w'), ensure_ascii=False, indent=2)
+print('works.json: +%d karya baru' % len(add))
+PY
 mkdir -p "$ROOT/v/uploads" "$ROOT/assets"
 cp "$NEW"/v/* "$ROOT/v/" 2>/dev/null || true
 cp "$NEW"/assets/* "$ROOT/assets/"
