@@ -18,7 +18,7 @@ textarea{min-height:76px;resize:vertical}label{display:block;margin:12px 0 4px;c
 #app{display:none;height:100vh;grid-template-rows:auto 1fr;grid-template-columns:230px minmax(0,1fr) minmax(0,.9fr)}
 #app.on{display:grid}
 header{grid-column:1/-1;display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel)}
-header b{font-size:15px}header .sp{flex:1}#st{color:var(--mut);font-size:12px}#st.d{color:var(--acc)}#st.e{color:var(--bad)}#st.o{color:var(--ok)}
+header b{font-size:15px}header .sp{flex:1}#st{color:var(--mut);font-size:13px;font-weight:600}#st.d{color:var(--acc)}#st.e{color:var(--bad)}#st.o{color:var(--ok)}
 nav{border-right:1px solid var(--line);padding:12px 8px;overflow:auto;background:var(--panel)}
 nav button{display:block;width:100%;text-align:left;background:none;border:0;border-radius:10px;padding:10px 12px;cursor:pointer;margin-bottom:4px}
 nav button:hover{background:#1a1f2c}nav button.on{background:#1f2535;outline:1px solid #343c55}
@@ -78,7 +78,8 @@ var SECS=[
  {k:'riwayat',t:'Riwayat & Pulihkan',i:'Kembali ke versi sebelumnya',a:''}
 ];
 function status(m,c){var s=$('st');s.textContent=m;s.className=c||''}
-function mark(){dirty=true;status('Ada perubahan, belum diterbitkan','d')}
+var saveT=null,saving=false;
+function mark(){dirty=true;status('Menerbitkan otomatis…','d');clearTimeout(saveT);saveT=setTimeout(doSave,900)}
 
 /* ---------- login ---------- */
 function showApp(){$('login').style.display='none';$('app').classList.add('on');load()}
@@ -95,10 +96,12 @@ $('out').onclick=function(){api('/api/logout',{method:'POST'}).then(function(){l
 function load(){api('/api/admin/state').then(function(s){S=s;S.works=S.works||[];S.karya=S.karya||[];S.remotion=S.remotion||[];S.proyek=S.proyek||[];S.site=S.site||{};dirty=false;status('Tersimpan','o');render();pv()}).catch(function(e){status(e.message,'e')})}
 function pv(){var s=SECS.filter(function(x){return x.k===sec})[0]||{};var a=s.a||'';$('pv').src='/'+(a?a:'');$('pvl').textContent=a||'(tidak ada)'}
 $('reload').onclick=function(){$('pv').src=$('pv').src.split('#')[0]+'?r='+Date.now()+(SECS.filter(function(x){return x.k===sec})[0].a||'')};
-$('save').onclick=function(){
-  status('Menyimpan dan menerbitkan…');$('save').disabled=true;
-  api('/api/admin/save',{method:'POST',headers:H,body:JSON.stringify(S)}).then(function(j){S=j.state;dirty=false;status('Terbit: '+((j.tayang||[]).join(', ')||'tanpa perubahan tayang'),'o');render();$('reload').click()}).catch(function(e){status('Gagal: '+e.message,'e');alert('Gagal menyimpan:\n'+e.message)}).then(function(){$('save').disabled=false});
-};
+function doSave(){
+  if(saving){clearTimeout(saveT);saveT=setTimeout(doSave,700);return}
+  saving=true;clearTimeout(saveT);status('Menyimpan dan menerbitkan…','d');$('save').disabled=true;
+  api('/api/admin/save',{method:'POST',headers:H,body:JSON.stringify(S)}).then(function(j){S=j.state;S.works=S.works||[];S.karya=S.karya||[];S.remotion=S.remotion||[];S.proyek=S.proyek||[];S.site=S.site||{};dirty=false;status('✔ Sudah tayang di halaman live ('+((j.tayang||[]).join(', ')||'tanpa perubahan')+')','o');render();$('reload').click()}).catch(function(e){status('✖ GAGAL terbit, halaman live BELUM berubah: '+e.message,'e');alert('GAGAL TERBIT — halaman live belum berubah.\n\n'+e.message)}).then(function(){saving=false;$('save').disabled=false});
+}
+$('save').onclick=doSave;
 window.addEventListener('beforeunload',function(e){if(dirty){e.preventDefault();e.returnValue=''}});
 
 /* ---------- unggah ---------- */
