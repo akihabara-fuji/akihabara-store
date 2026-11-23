@@ -82,8 +82,8 @@ nginx -t; systemctl reload nginx
 
 # 3. verifikasi domain baru dulu (belum mengubah isi)
 V=$(mktemp); curl -sk --resolve "$NEW:443:127.0.0.1" "https://$NEW/" -o "$V"; grep -q 'Berbasis AI' "$V"
-A=$(curl -sk -o /dev/null -w '%{http_code}' --resolve "$NEW:443:127.0.0.1" "https://$NEW/admin"); echo "admin di domain baru: $A"
-K=$(curl -sk -o /dev/null -w '%{http_code}' --resolve "$NEW:443:127.0.0.1" "https://$NEW/api/kasus/state"); echo "api kasus tanpa login: $K (harus 401)"
+A=$(curl -sk -o /dev/null -w '%{http_code}' --resolve "$NEW:443:127.0.0.1" "https://$NEW/admin" || true); echo "admin di domain baru: $A"
+K=$(curl -sk -o /dev/null -w '%{http_code}' --resolve "$NEW:443:127.0.0.1" "https://$NEW/api/kasus/state" || true); echo "api kasus tanpa login: $K (harus 401)"
 
 # 4. ganti link di berkas statis (canonical, OG, JSON-LD, sitemap, robots); cadangan dulu
 mkdir -p "$BAK/web"; for f in index.html sitemap.xml robots.txt; do [ -f "$ROOT/$f" ] && cp -a "$ROOT/$f" "$BAK/web/$f"; done
