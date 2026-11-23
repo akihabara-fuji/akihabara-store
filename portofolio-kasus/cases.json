@@ -210,20 +210,8 @@
    "tahap": []
   },
   {
-   "id": "bot",
-   "no": "06",
-   "judul": "Chatbot WhatsApp (2 bot)",
-   "status": "Tayang",
-   "ringkas": "Dua bot WhatsApp aktif di server pribadi, dikelola PM2.",
-   "peran": "Operator",
-   "tgl": "Berjalan · November 2026",
-   "batas": "Tanpa klaim uptime atau jumlah pengguna.",
-   "thumb": "assets/wa-bot-menu.webp",
-   "tahap": []
-  },
-  {
    "id": "strategi",
-   "no": "07",
+   "no": "06",
    "judul": "Strategi Sistem Konten",
    "status": "Karya",
    "ringkas": "Alur riset sampai publikasi dengan pembagian peran AI dan pemeriksaan manusia.",
@@ -235,7 +223,7 @@
   },
   {
    "id": "alat",
-   "no": "08",
+   "no": "07",
    "judul": "Alat Analisis Akun Media Sosial",
    "status": "Prototipe",
    "ringkas": "Alat buatan sendiri untuk membaca metrik akun.",

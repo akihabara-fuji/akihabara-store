@@ -28,7 +28,7 @@ mkdir -p "$NEW"
 for f in index.html cases.json server.js kasus.html; do curl -fsSL "$RAW/$f" -o "$NEW/$f"; done
 "$NODE" --check "$NEW/server.js"
 grep -q 'Berbasis AI' "$NEW/index.html"; grep -q 'id="case-modal"' "$NEW/index.html"; grep -q 'Studi Kasus' "$NEW/kasus.html"
-python3 -c "import json,sys;d=json.load(open(sys.argv[1]));assert d['skema']==1 and len(d['karya'])==8" "$NEW/cases.json"
+python3 -c "import json,sys;d=json.load(open(sys.argv[1]));assert d['skema']==1 and len(d['karya'])==7" "$NEW/cases.json"
 mkdir -p "$PRE"; cp -a "$ROOT/index.html" "$PRE/index.html"; [ -f "$ROOT/cases.json" ] && cp -a "$ROOT/cases.json" "$PRE/cases.json" || HAD_CASES=0
 # 1. modul admin kasus
 mkdir -p "$APP" "$DATA"; cp "$NEW/server.js" "$NEW/kasus.html" "$APP"/
