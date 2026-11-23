@@ -80,9 +80,10 @@ cp "$NEW/index.html" "$ROOT/index.html.new" && mv "$ROOT/index.html.new" "$ROOT/
 systemctl is-active --quiet dp-kasus
 [ "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3109/api/kasus/state)" = 401 ]
 H=https://dikapriyadi.catatanakademik.com
-curl -fsS "$H/admin/kasus" | grep -q 'Studi Kasus'
-curl -fsS "$H/cases.json" | grep -q '"skema"'
-curl -fsS "$H/" | grep -q 'Berbasis AI'
+V=/tmp/dp-kasus-v.$$
+curl -fsS "$H/admin/kasus" -o "$V"; grep -q 'Studi Kasus' "$V"
+curl -fsS "$H/cases.json" -o "$V"; grep -q '"skema"' "$V"
+curl -fsS "$H/" -o "$V"; grep -q 'Berbasis AI' "$V"; rm -f "$V"
 [ "$(curl -s -o /dev/null -w '%{http_code}' $H/admin)" = 200 ]
 rm -rf "$NEW"
 echo "OK, commit $C live. Cadangan: $PRE"
