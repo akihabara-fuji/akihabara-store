@@ -82,7 +82,7 @@ nginx -t; systemctl reload nginx
 
 # 3. verifikasi domain baru dulu (belum mengubah isi)
 V=$(mktemp); HC=$(curl -sk --max-time 20 --resolve "$NEW:443:127.0.0.1" "https://$NEW/" -o "$V" -w '%{http_code}' || true); echo "domain baru: http $HC, $(wc -c < "$V") byte"
-grep -q 'Berbasis AI' "$V" || { echo "isi tidak cocok:"; curl -sk -I --max-time 15 --resolve "$NEW:443:127.0.0.1" "https://$NEW/" | head -6; sed -n '/server_name dikapriyadi.site www/,/^}/p' $CONF | head -12 | cut -c1-120; echo "--- server_name aktif:"; nginx -T 2>/dev/null | grep -n "server_name.*$NEW"; false; }
+grep -q 'Berbasis AI' "$V" || { echo "isi tidak cocok:"; curl -sk -I --max-time 15 --resolve "$NEW:443:127.0.0.1" "https://$NEW/" | head -6; nginx -T 2>/dev/null | grep -n -E 'listen .*443|server_name|default_server' | cut -c1-100 | head -40; echo "--- server_name aktif:"; nginx -T 2>/dev/null | grep -n "server_name.*$NEW"; false; }
 A=$(curl -sk -o /dev/null -w '%{http_code}' --resolve "$NEW:443:127.0.0.1" "https://$NEW/admin" || true); echo "admin di domain baru: $A"
 K=$(curl -sk -o /dev/null -w '%{http_code}' --resolve "$NEW:443:127.0.0.1" "https://$NEW/api/kasus/state" || true); echo "api kasus tanpa login: $K (harus 401)"
 
