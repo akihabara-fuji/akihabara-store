@@ -6,7 +6,7 @@ set -uo pipefail
 C="${1:?commit wajib}"
 RAW="https://raw.githubusercontent.com/akihabara-fuji/akihabara-store/$C/portofolio-kasus"
 ROOT=/var/www/dikapriyadi; APP=/opt/dp-kasus; DATA=/var/lib/dp-kasus; SNIP=/etc/nginx/snippets/dp-kasus.conf
-BASE_SHA=aadaa89d82e5240b   # 16 hex pertama sha256 index.html live yang diuji (23 Nov 2026)
+BASE_SHA=e744e0429e99ba6d   # 16 hex pertama sha256 index.html live yang diuji (23 Nov 2026)
 TS=$(date +%s); PRE=/root/dikapriyadi.pre-kasus.$TS; NEW=/tmp/dp-kasus-new.$$; NGX=""; NGXBAK=""; DONE_IDX=0; HAD_CASES=1
 fail(){
   echo "GAGAL di baris $1, mengembalikan"
