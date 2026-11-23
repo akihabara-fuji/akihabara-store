@@ -1,0 +1,249 @@
+{
+ "skema": 1,
+ "diperbarui": "2026-11-23",
+ "karya": [
+  {
+   "id": "analisis",
+   "no": "01",
+   "judul": "Analisis Performa Konten Media Sosial",
+   "status": "Karya",
+   "ringkas": "Analisis awal (pilot) hook, retensi, dan CTA dari data analitik bawaan Instagram dan TikTok.",
+   "peran": "Analis",
+   "tgl": "Konten 8 November 2026 · diperbarui 23 November 2026",
+   "batas": "Sampel baru 2 konten; rekomendasi masih hipotesis.",
+   "thumb": "assets/v-analisis-sistem.webp",
+   "tahap": [
+    {
+     "id": "data",
+     "n": "01",
+     "nama": "Pengumpulan Data",
+     "tujuan": "Mengambil angka mentah dari analitik bawaan agar pembacaan tidak bersandar pada dugaan.",
+     "keluaran": "Catatan metrik 2 konten (1 carousel Instagram, 1 video TikTok 32,2 detik), diunggah 8 November 2026.",
+     "tata": [],
+     "alat": [
+      "Analitik bawaan Instagram",
+      "Analitik bawaan TikTok"
+     ],
+     "ai": "",
+     "manusia": "",
+     "bukti": [],
+     "hasil": "2 konten tercatat dari akun Catatan Akademik; sumber: analitik bawaan platform, rentang 30 hari.",
+     "angka": [
+      {
+       "nama": "Konten dianalisis",
+       "nilai": "2 (1 carousel Instagram, 1 video TikTok)",
+       "sumber": "Analitik bawaan Instagram dan TikTok",
+       "periode": "30 hari",
+       "sampel": "2 konten"
+      }
+     ],
+     "kendala": "",
+     "batasan": "Sampel 2 konten belum mewakili seluruh akun."
+    },
+    {
+     "id": "hook",
+     "n": "02",
+     "nama": "Pembacaan Hook",
+     "tujuan": "Menilai apakah 3 detik pertama menahan penonton.",
+     "keluaran": "",
+     "tata": [],
+     "alat": [],
+     "ai": "",
+     "manusia": "",
+     "bukti": [],
+     "hasil": "",
+     "angka": [],
+     "kendala": "",
+     "batasan": ""
+    },
+    {
+     "id": "retensi",
+     "n": "03",
+     "nama": "Retensi",
+     "tujuan": "Membaca seberapa lama penonton bertahan.",
+     "keluaran": "Pembacaan waktu tonton video TikTok.",
+     "tata": [],
+     "alat": [
+      "Analitik bawaan TikTok"
+     ],
+     "ai": "",
+     "manusia": "",
+     "bukti": [],
+     "hasil": "Rata-rata waktu tonton TikTok 2,67 detik dari 32,2 detik (sekitar 8,3% durasi); penonton yang menonton sampai habis 0%.",
+     "angka": [
+      {
+       "nama": "Rata-rata waktu tonton",
+       "nilai": "2,67 detik dari 32,2 detik",
+       "sumber": "Analitik bawaan TikTok",
+       "periode": "30 hari",
+       "sampel": "1 video"
+      },
+      {
+       "nama": "Penonton sampai habis",
+       "nilai": "0%",
+       "sumber": "Analitik bawaan TikTok",
+       "periode": "30 hari",
+       "sampel": "1 video"
+      }
+     ],
+     "kendala": "",
+     "batasan": "Satu video; belum ada pembanding."
+    },
+    {
+     "id": "cta",
+     "n": "04",
+     "nama": "CTA",
+     "tujuan": "Melihat apakah ajakan bertindak menghasilkan simpan, bagikan, atau kunjungan profil.",
+     "keluaran": "Catatan respons per konten.",
+     "tata": [],
+     "alat": [],
+     "ai": "",
+     "manusia": "",
+     "bukti": [],
+     "hasil": "Instagram: jangkauan 13, tayangan 34, simpan 0, bagikan 0. TikTok: bagikan 0, kunjungan profil 0.",
+     "angka": [
+      {
+       "nama": "Jangkauan / tayangan Instagram",
+       "nilai": "13 / 34",
+       "sumber": "Analitik bawaan Instagram",
+       "periode": "30 hari",
+       "sampel": "1 carousel"
+      },
+      {
+       "nama": "Simpan / bagikan Instagram",
+       "nilai": "0 / 0",
+       "sumber": "Analitik bawaan Instagram",
+       "periode": "30 hari",
+       "sampel": "1 carousel"
+      },
+      {
+       "nama": "Bagikan / kunjungan profil TikTok",
+       "nilai": "0 / 0",
+       "sumber": "Analitik bawaan TikTok",
+       "periode": "30 hari",
+       "sampel": "1 video"
+      }
+     ],
+     "kendala": "",
+     "batasan": "Angka kecil; belum bisa ditarik kesimpulan statistik."
+    },
+    {
+     "id": "rek",
+     "n": "05",
+     "nama": "Rekomendasi",
+     "tujuan": "Menyusun perubahan yang bisa diuji pada konten berikutnya.",
+     "keluaran": "Tiga hipotesis perbaikan.",
+     "tata": [],
+     "alat": [],
+     "ai": "",
+     "manusia": "",
+     "bukti": [],
+     "hasil": "Hipotesis (belum diuji): (1) hook 3 detik pertama lebih spesifik; (2) durasi 15–20 detik; (3) CTA diletakkan setelah poin utama.",
+     "angka": [],
+     "kendala": "",
+     "batasan": "Seluruhnya hipotesis; belum diuji pada unggahan lanjutan."
+    },
+    {
+     "id": "eks",
+     "n": "06",
+     "nama": "Rencana Eksperimen",
+     "tujuan": "Menguji hipotesis dengan perubahan terkontrol.",
+     "keluaran": "",
+     "tata": [],
+     "alat": [],
+     "ai": "",
+     "manusia": "",
+     "bukti": [],
+     "hasil": "",
+     "angka": [],
+     "kendala": "",
+     "batasan": ""
+    }
+   ]
+  },
+  {
+   "id": "remotion",
+   "no": "02",
+   "judul": "Mesin Konten Video (Remotion)",
+   "status": "Karya",
+   "ringkas": "Naskah per adegan menjadi data episode, divalidasi, dirender 1080×1920, lalu diaudit.",
+   "peran": "Perancang dan operator",
+   "tgl": "Episode 1 · November 2026",
+   "batas": "Baru 1 episode (37 detik); dampak ke penonton belum diukur.",
+   "thumb": "assets/v-remotion-ep001.webp",
+   "tahap": []
+  },
+  {
+   "id": "video-sosmed",
+   "no": "03",
+   "judul": "Video Sosial Media (visual AI)",
+   "status": "Karya",
+   "ringkas": "Iklan produk, fashion, dan video edukasi vertikal dengan visual hasil AI.",
+   "peran": "Perancang dan pembuat video",
+   "tgl": "November 2026",
+   "batas": "Belum ada data performa; visual hasil AI, bukan rekaman produk nyata.",
+   "thumb": "assets/v-es-krim.webp",
+   "tahap": []
+  },
+  {
+   "id": "catatanakademik",
+   "no": "04",
+   "judul": "CatatanAkademik.com",
+   "status": "Tayang",
+   "ringkas": "Platform edukasi mahasiswa UT: panduan, kelas tutorial, alat pemeriksaan dokumen, blog, panel admin.",
+   "peran": "Perancang dan pembangun",
+   "tgl": "Tayang · diperbarui November 2026",
+   "batas": "Jumlah pengguna dan dampak belum dipublikasikan.",
+   "thumb": "assets/v-catatanakademik-walkthrough.webp",
+   "tahap": []
+  },
+  {
+   "id": "heyaipeople",
+   "no": "05",
+   "judul": "heyaipeople.site",
+   "status": "Tayang",
+   "ringkas": "Katalog prompt foto AI dan paket storyboard video, pemesanan lewat WhatsApp.",
+   "peran": "Pembangun situs dan penyusun katalog",
+   "tgl": "Tayang · November 2026",
+   "batas": "Isi katalog masih draf; belum ada data penjualan.",
+   "thumb": "",
+   "tahap": []
+  },
+  {
+   "id": "bot",
+   "no": "06",
+   "judul": "Chatbot WhatsApp (2 bot)",
+   "status": "Tayang",
+   "ringkas": "Dua bot WhatsApp aktif di server pribadi, dikelola PM2.",
+   "peran": "Operator",
+   "tgl": "Berjalan · November 2026",
+   "batas": "Tanpa klaim uptime atau jumlah pengguna.",
+   "thumb": "assets/wa-bot-menu.webp",
+   "tahap": []
+  },
+  {
+   "id": "strategi",
+   "no": "07",
+   "judul": "Strategi Sistem Konten",
+   "status": "Karya",
+   "ringkas": "Alur riset sampai publikasi dengan pembagian peran AI dan pemeriksaan manusia.",
+   "peran": "Penyusun",
+   "tgl": "November 2026",
+   "batas": "Dokumen pilar dan evaluasi belum disertakan.",
+   "thumb": "",
+   "tahap": []
+  },
+  {
+   "id": "alat",
+   "no": "08",
+   "judul": "Alat Analisis Akun Media Sosial",
+   "status": "Prototipe",
+   "ringkas": "Alat buatan sendiri untuk membaca metrik akun.",
+   "peran": "Pembangun",
+   "tgl": "November 2026",
+   "batas": "Prototipe; belum dipakai publik.",
+   "thumb": "assets/k-analisa1.webp",
+   "tahap": []
+  }
+ ]
+}
