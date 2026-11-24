@@ -1792,6 +1792,47 @@ html{background:#0b0d12}body{background:transparent}#dp-bg{position:fixed;inset:
 #proyek.dp-pin .case-grid>.cs-card .cs-th{aspect-ratio:16/10;margin:2px 0 4px}
 #proyek.dp-pin .case-grid>.cs-card .cs-meta,#proyek.dp-pin .case-grid>.cs-card .case-sum{font-size:13px;line-height:1.5}
 #proyek.dp-pin .cs-dots,#proyek.dp-pin .cs-nav{margin-top:6px}
+/* Bukti: pohon alur */
+#bukti .bt{position:relative;max-width:460px;margin:8px auto 0;padding:26px 22px;display:flex;flex-direction:column;align-items:stretch;border:1px solid rgba(255,255,255,.12);border-radius:24px;background-color:#0f0f0f;background-image:radial-gradient(rgba(255,255,255,.10) 1px,transparent 1.2px);background-size:18px 18px}
+#bukti .bt a{color:inherit;text-decoration:none}
+#bukti .bt-head,#bukti .bt-card,#bukti .bt-row{position:relative;display:flex;border:1px solid rgba(255,255,255,.14);border-radius:16px;background:#171717;transition:border-color .2s,transform .2s}
+#bukti .bt-head{align-items:center;gap:12px;padding:14px 16px}
+#bukti .bt-ic{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:#e5e5e5;color:#171717;font-size:13px}
+#bukti .bt-head b{font-size:16px;font-weight:600}
+#bukti .bt-head em,#bukti .bt-row em{margin-left:auto;font-style:normal;font-size:12px;color:#a3a3a3;text-align:right}
+#bukti .bt-card{flex-direction:column;gap:8px;padding:16px}
+#bukti .bt-card b,#bukti .bt-row b{font-size:16px;font-weight:600;color:#fafafa}
+#bukti .bt-card span{font-size:13.5px;line-height:1.5;color:#a3a3a3}
+#bukti .bt-row{align-items:center;gap:12px;padding:14px 16px}
+#bukti .bt-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:2px}
+#bukti .bt-tags u{text-decoration:none;font:500 11px 'JetBrains Mono',monospace;padding:5px 10px;border-radius:9px;border:1px solid rgba(255,255,255,.16);background:#222;color:#d4d4d4}
+#bukti .bt-ln{align-self:center;width:0;height:30px;border-left:2px solid #a3a3a3;opacity:.7}
+#bukti .bt-ln.dash{border-left-style:dashed}
+#bukti .bt-pill{align-self:center;margin:12px 0;padding:6px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.16);background:#1a1a1a;font-size:12.5px;color:#d4d4d4}
+#bukti .bt-warn{border-style:dashed;border-color:rgba(247,141,36,.55)}
+#bukti .bt-warn b{color:#f78d24}
+#bukti a.bt-card:hover,#bukti a.bt-row:hover,#bukti a.bt-card:focus-visible,#bukti a.bt-row:focus-visible{border-color:#f78d24;transform:translateY(-2px)}
+@media(min-width:901px){
+#bukti .bt{max-width:1180px;flex-direction:row;align-items:stretch;padding:24px 20px}
+#bukti .bt-head,#bukti .bt-card,#bukti .bt-row{flex:1 1 0;min-width:0}
+#bukti .bt-head{flex-direction:column;align-items:flex-start;justify-content:center;gap:10px}
+#bukti .bt-head em,#bukti .bt-row em{margin-left:0;text-align:left}
+#bukti .bt-row{flex-direction:column;align-items:flex-start;justify-content:center;gap:8px}
+#bukti .bt-row em{font-size:13.5px;line-height:1.5}
+#bukti .bt-ln{align-self:center;flex:0 0 26px;min-width:26px;width:26px;opacity:.7;height:0;border-left:0;border-top:2px solid #a3a3a3}
+#bukti .bt-ln.dash{border-top-style:dashed;border-left:0}
+#bukti .bt-pill{display:block;flex:0 0 26px;width:26px;height:0;margin:0;padding:0;font-size:0;border:0;border-top:2px dashed #a3a3a3;border-radius:0;background:none;align-self:center;opacity:.7}
+}
+
+@media(min-width:821px){
+#proyek.dp-pin .case-grid>.cs-card .cs-th{aspect-ratio:auto!important;height:clamp(110px,calc(100vh - 640px),250px)!important}
+#proyek.dp-pin .cs-chain li{padding:9px 12px}
+#proyek.dp-pin .cs-chain span{display:none}
+}
+.svc a.svc-proof{display:inline-flex;align-items:center;align-self:flex-start;gap:6px;padding:9px 16px;border-radius:14px;background:#f78d24;color:#171717!important;font-weight:700;font-size:13px;line-height:1.3;text-decoration:none!important;border:0;transition:filter .2s,transform .2s}
+.svc a.svc-proof:hover,.svc a.svc-proof:focus-visible{filter:brightness(1.08);transform:translateY(-1px)}
+@media(min-width:821px) and (min-height:900px){#proyek.dp-pin .cs-chain span{display:block}}
+@media(min-width:821px) and (max-height:780px){#proyek.dp-pin .case-grid>.cs-card .case-sum{display:none!important}#proyek.dp-pin .section-head p{display:none}}
 @media(prefers-reduced-motion:reduce){#proyek .case-grid>.cs-card{transition:none;transform:none!important}}
 @media(max-width:700px){#proyek .case-grid>.cs-card{flex-basis:84%;transform:none;opacity:1}#proyek .case-grid>.cs-card.is-active{transform:none}#proyek .case-grid{padding-top:22px}}
 
@@ -2011,13 +2052,19 @@ html{background:#0b0d12}body{background:transparent}#dp-bg{position:fixed;inset:
         <span class="eyebrow">BUKTI</span>
         <h2>Yang bisa Anda buka dan periksa sendiri</h2>
       </div>
-      <ul class="bukti">
-        <li><a href="https://catatanakademik.com" target="_blank" rel="noopener noreferrer"><b>Situs live</b><span>CatatanAkademik.com, bisa dibuka langsung.</span></a></li>
-        <li><a href="#karya-ai"><b>Video</b><span>Karya video AI dan hasil render.</span></a></li>
-        <li><a href="#karya"><b>Tangkapan layar</b><span>Panel admin dan tampilan sistem.</span></a></li>
-        <li><a href="#cara-kerja"><b>Diagram alur</b><span>Cara kerja dari masukan sampai hasil.</span></a></li>
-        <li><a href="#proyek"><b>Batasan</b><span>Tiap studi kasus mencatat apa yang belum terbukti.</span></a></li>
-      </ul>
+      <div class="bt" role="list" aria-label="Bukti yang bisa diperiksa">
+        <div class="bt-head" role="listitem"><span class="bt-ic">&#9670;</span><b>Bukti karya</b><em>5 jenis, semua bisa dibuka</em></div>
+        <i class="bt-ln" aria-hidden="true"></i>
+        <a class="bt-card" role="listitem" href="https://catatanakademik.com" target="_blank" rel="noopener noreferrer"><b>Situs live</b><span>CatatanAkademik.com, bisa dibuka langsung.</span><div class="bt-tags"><u>Tab baru</u></div></a>
+        <i class="bt-ln dash" aria-hidden="true"></i>
+        <a class="bt-row" role="listitem" href="#karya-ai"><b>Video</b><em>Karya video AI dan hasil render.</em></a>
+        <i class="bt-ln" aria-hidden="true"></i>
+        <a class="bt-card" role="listitem" href="#karya"><b>Tangkapan layar</b><span>Panel admin dan tampilan sistem.</span><div class="bt-tags"><u>Panel admin</u><u>Tampilan sistem</u></div></a>
+        <i class="bt-ln dash" aria-hidden="true"></i>
+        <a class="bt-card" role="listitem" href="#cara-kerja"><b>Diagram alur</b><span>Cara kerja dari masukan sampai hasil.</span><div class="bt-tags"><u>Masukan</u><u>Proses</u><u>Hasil</u></div></a>
+        <span class="bt-pill">Batasan</span>
+        <a class="bt-card bt-warn" role="listitem" href="#proyek"><b>Yang belum terbukti</b><span>Tiap studi kasus mencatat apa yang belum terbukti.</span></a>
+      </div>
     </section>
 
     <section class="section features" id="keahlian">
