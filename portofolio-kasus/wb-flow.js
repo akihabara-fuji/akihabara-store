@@ -651,7 +651,7 @@ svg.react-flow__connectionline {
 .wbv .wb-tools button{font:600 11px 'JetBrains Mono',monospace;padding:6px 9px;border-radius:7px;border:0;background:transparent;color:var(--wb-fg);cursor:pointer}.wbv .wb-tools button:hover{background:rgba(255,255,255,.08)}
 @media(max-width:600px){.wbv .wb-tools{top:8px;right:8px;left:8px;justify-content:space-between}}
 
-.wbv-panel{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:18px;padding:16px;align-items:center}
+.wbv{display:flex;flex-direction:column}.wbv-panel{order:-1;border-top:0;border-bottom:1px solid var(--wb-border);display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:20px;padding:18px;align-items:center}
 .wbv-media{border-radius:14px;overflow:hidden;background:#000;aspect-ratio:16/10;display:grid;place-items:center}
 .wbv-media video,.wbv-media img{width:100%;height:100%;object-fit:contain;display:block;background:#000}
 .wbv-empty{display:grid;gap:8px;justify-items:center;text-align:center;padding:16px;color:var(--wb-muted)}.wbv-empty span{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--wb-border);color:#f78d24}.wbv-empty em{font-style:normal;font-size:12px}
