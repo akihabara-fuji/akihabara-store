@@ -1811,6 +1811,7 @@ html{background:#0b0d12}body{background:transparent}#dp-bg{position:fixed;inset:
 #bukti .bt-pill{align-self:center;margin:12px 0;padding:6px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.16);background:#1a1a1a;font-size:12.5px;color:#d4d4d4}
 #bukti .bt-warn{border-style:dashed;border-color:rgba(247,141,36,.55)}
 #bukti .bt-warn b{color:#f78d24}
+
 #bukti a.bt-card:hover,#bukti a.bt-row:hover,#bukti a.bt-card:focus-visible,#bukti a.bt-row:focus-visible{border-color:#f78d24;transform:translateY(-2px)}
 @media(min-width:901px){
 #bukti .bt{max-width:1180px;flex-direction:row;align-items:stretch;padding:24px 20px}
@@ -1873,6 +1874,8 @@ html{background:#0b0d12}body{background:transparent}#dp-bg{position:fixed;inset:
 .cm-box{--fg-rgb:255,255,255;color:#ededed}.cm-box h3{color:#fff}.cm-box p,.cm-box li,.cm-box dd,.cm-box td,.cm-box th,.cm-box figcaption{color:inherit}
 .skip-link{position:fixed;left:12px;top:-60px;z-index:1000;background:var(--accent);color:#111;font-weight:700;padding:10px 16px;border-radius:10px;text-decoration:none;transition:top .15s}.skip-link:focus{top:12px}
 </style>
+<script>window.__GAL=fetch("galeri.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).catch(function(){return null});
+function applyBagian(b){if(!b)return;[["kartu","#proyek .section-head"],["video","#karya-ai .section-head"],["karya","#karya .showcase-copy"]].forEach(function(m){var o=b[m[0]],box=document.querySelector(m[1]);if(!o||!box)return;var e=box.querySelector(".eyebrow"),h=box.querySelector("h2"),p=box.querySelector("p");if(o.label&&e)e.textContent=o.label;if(o.judul&&h)h.textContent=o.judul;if(o.intro&&p)p.textContent=o.intro})}</script>
 </head>
 <body>
 <canvas id="dp-bg" aria-hidden="true"></canvas>
@@ -2568,12 +2571,13 @@ html{background:#0b0d12}body{background:transparent}#dp-bg{position:fixed;inset:
     };
 
     // Cadangan bila works.json tidak bisa dibaca (mis. dibuka via file://)
-    const FALLBACK_WORKS = [{"id": "remotion-content-engine", "title": "Mesin Konten Video Remotion", "category": "AI Motion (Remotion)", "summary": "Mesin video buatan sendiri: naskah per adegan menjadi data episode, divalidasi, dirender menjadi video vertikal 9:16 dengan suara per kalimat, lalu diaudit sebelum dipakai.", "metrics": "Dipakai membuat seri video di bawah. Remotion 4, 1080x1920, 30 fps.", "mediaUrl": "assets/v-uaop.mp4", "mediaType": "video", "posterUrl": "assets/v-uaop.webp", "promptOrWorkflow": "Naskah per adegan -> data episode (JSON) -> validasi otomatis -> render Remotion 9:16 -> audit suara dan tampilan -> terbit.", "tools": ["Remotion", "React", "ElevenLabs", "FFmpeg"], "externalLink": "", "badge": "Internal Tool"}, {"id": "ai-commercial-video", "title": "AI Commercial & Short-Form Video", "category": "AI Video & Content", "summary": "Produksi visual produk fesyen dan iklan video pendek vertikal 9:16, dari brief, hook, dan naskah sampai video AI.", "metrics": "Alur lengkap dari riset hook sampai video vertikal 9:16 siap publikasi.", "mediaUrl": "v/jeans.jpg", "mediaType": "image", "posterUrl": "", "promptOrWorkflow": "Riset hook 3 detik pertama -> Visual dan video AI dengan Google Flow -> Motion graphic dan editing dengan Remotion dan CapCut -> Voice-over ElevenLabs.", "tools": ["Google Flow", "Remotion", "CapCut", "ElevenLabs"], "externalLink": "https://heyaipeople.site", "badge": "Live"}, {"id": "catatan-akademik-edtech", "title": "CatatanAkademik.com — EdTech & SEO Platform", "category": "Web & SEO", "summary": "Platform edukasi untuk mahasiswa Universitas Terbuka: panduan mahasiswa baru, kelas tutorial, alat pemeriksaan dokumen, blog, login Google, dan panel admin.", "metrics": "Platform aktif dan terindeks Google Search Console.", "mediaUrl": "v/car1.jpg", "mediaType": "image", "posterUrl": "", "promptOrWorkflow": "Struktur artikel dan internal linking -> Pengelolaan website di VPS -> Pemantauan indeksasi Google Search Console.", "tools": ["SEO", "Content Strategy", "Web Management"], "externalLink": "https://catatanakademik.com", "badge": "Live"}, {"id": "whatsapp-ai-bot-vps", "title": "Bot WhatsApp di VPS", "category": "AI Automation", "summary": "Dua bot WhatsApp berjalan di VPS: satu mengelola grup (anti-spam, pengingat, catatan), satu menangani admin dan notifikasi pesanan.", "metrics": "Dua bot aktif di VPS.", "mediaUrl": "v/bot.jpg", "mediaType": "image", "posterUrl": "", "promptOrWorkflow": "Node.js dan PM2 di VPS -> Pesan grup dan pesanan diproses otomatis -> Notifikasi diteruskan ke admin.", "tools": ["Node.js", "VPS / PM2", "WhatsApp Automation"], "externalLink": "", "badge": "Internal Use"}, {"id": "multi-model-routing", "title": "Koordinasi Workflow AI (Hermes & 9Router)", "category": "AI Automation", "summary": "Pengaturan GPT, Gemini, Claude, dan Google Flow dalam satu alur kerja untuk konten dan proyek web; pekerjaan rutin diarahkan lewat agen Hermes dan router 9Router agar hemat kuota.", "metrics": "Dipakai harian untuk produksi konten dan pengembangan proyek.", "mediaUrl": "v/hero_robot.webp", "mediaType": "image", "posterUrl": "", "promptOrWorkflow": "Tentukan kebutuhan -> Bagi peran antarmodel AI -> Pekerjaan rutin lewat Hermes dan 9Router -> Deploy ke VPS.", "tools": ["Hermes", "9Router", "Prompt Engineering"], "externalLink": "", "badge": "Internal Use"}, {"id": "automated-seo-markdown", "title": "Blog Otomatis: Artikel AI ke Markdown", "category": "Web & SEO", "summary": "Artikel SEO ditulis AI dalam format markdown, diunggah lewat menu blog, lalu dicek manual sebelum terbit.", "metrics": "Setiap artikel dicek manual sebelum terbit.", "mediaUrl": "assets/k-admin.webp", "mediaType": "image", "posterUrl": "", "promptOrWorkflow": "Draf markdown -> Unggah lewat menu blog -> Cek manual -> Terbit.", "tools": ["Markdown", "SEO", "Blog"], "externalLink": "", "badge": "Internal Use"}, {"id": "motion-uaop", "title": "Video Info UAOP (Motion)", "category": "AI Motion (Remotion)", "summary": "Video motion edukasi yang menjelaskan tata cara UAOP Universitas Terbuka, dibuat untuk mahasiswa di TikTok dan Reels.", "metrics": "Durasi 32 detik, vertikal 9:16. Dirender dengan Remotion.", "mediaUrl": "assets/v-uaop.mp4", "mediaType": "video", "posterUrl": "assets/v-uaop.webp", "promptOrWorkflow": "Naskah per adegan disusun dan dikunci -> adegan, teks, dan subtitle dibangun sebagai komposisi Remotion -> tampilan tiap adegan dicek -> render video vertikal 9:16.", "tools": ["Remotion", "React"], "externalLink": "", "badge": "Showcase"}, {"id": "motion-cek-nilai", "title": "Video Info Cek Nilai UAS (Motion)", "category": "AI Motion (Remotion)", "summary": "Video motion pendek berisi cara melihat nilai UAS Universitas Terbuka langkah demi langkah.", "metrics": "Durasi 30 detik, vertikal 9:16.", "mediaUrl": "assets/v-cek-nilai.mp4", "mediaType": "video", "posterUrl": "assets/v-cek-nilai.webp", "promptOrWorkflow": "Naskah per adegan disusun dan dikunci -> adegan, teks, dan subtitle dibangun sebagai komposisi Remotion -> tampilan tiap adegan dicek -> render video vertikal 9:16.", "tools": ["Remotion", "React"], "externalLink": "", "badge": "Showcase"}, {"id": "motion-bukti-cover", "title": "Alur Cover Dulu, Isi Belakangan (Motion)", "category": "AI Motion (Remotion)", "summary": "Video penjelas alur produksi: konsep cover dibuat dan disetujui lebih dulu, baru isi dikerjakan.", "metrics": "Durasi 10 detik, 1080x1920. Dirender dengan Remotion.", "mediaUrl": "assets/v-bukti-cover.mp4", "mediaType": "video", "posterUrl": "assets/v-bukti-cover.jpg", "promptOrWorkflow": "Konsep cover -> persetujuan -> isi konten -> render. Adegan dan teks dibangun sebagai komposisi Remotion lalu dirender 9:16.", "tools": ["Remotion", "React"], "externalLink": "", "badge": "Showcase"}, {"id": "motion-showcase", "title": "Showcase Gaya Teks Kata Kunci (Motion)", "category": "AI Motion (Remotion)", "summary": "Contoh gaya video motion dengan teks kata kunci besar yang muncul bergantian mengikuti ritme.", "metrics": "Durasi 19 detik, vertikal 9:16.", "mediaUrl": "assets/v-showcase.mp4", "mediaType": "video", "posterUrl": "assets/v-showcase.webp", "promptOrWorkflow": "Naskah per adegan disusun dan dikunci -> adegan, teks, dan subtitle dibangun sebagai komposisi Remotion -> tampilan tiap adegan dicek -> render video vertikal 9:16.", "tools": ["Remotion", "React"], "externalLink": "", "badge": "Showcase"}, {"id": "motion-explainer", "title": "Explainer Video Motion Gratis (Motion)", "category": "AI Motion (Remotion)", "summary": "Penjelasan singkat cara membuat video motion tanpa biaya langganan.", "metrics": "Durasi 25 detik, vertikal 9:16.", "mediaUrl": "assets/v-explainer.mp4", "mediaType": "video", "posterUrl": "assets/v-explainer.webp", "promptOrWorkflow": "Naskah per adegan disusun dan dikunci -> adegan, teks, dan subtitle dibangun sebagai komposisi Remotion -> tampilan tiap adegan dicek -> render video vertikal 9:16.", "tools": ["Remotion", "React"], "externalLink": "", "badge": "Showcase"}];
+    const FALLBACK_WORKS = [];
 
     // ---------- Galeri karya dinamis ----------
     const worksGrid = document.getElementById('works-grid');
     const filterBar = document.getElementById('filter-bar');
     let works = [];
+    let GAL = null;
     let activeFilter = 'all';
     const PAGE = 6;
     let showAll = false;
@@ -2582,6 +2586,8 @@ html{background:#0b0d12}body{background:transparent}#dp-bg{position:fixed;inset:
 
     async function loadWorks() {
       try {
+        const gal = await window.__GAL;
+        if (gal && Array.isArray(gal.works)) { GAL = gal; works = gal.works; applyBagian(gal.bagian); return finishWorks(); }
         const res = await fetch('works.json?t=' + Date.now(), { cache: 'no-store' });
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const data = await res.json();
@@ -2595,6 +2601,9 @@ html{background:#0b0d12}body{background:transparent}#dp-bg{position:fixed;inset:
           works = FALLBACK_WORKS;
         }
       }
+      finishWorks();
+    }
+    function finishWorks() {
       renderFilters();
       renderWorks();
     }
@@ -2608,12 +2617,13 @@ html{background:#0b0d12}body{background:transparent}#dp-bg{position:fixed;inset:
       'Video Drama': ['Video AI', 'Video Iklan', 'Video Komersial']
     };
     function subsFor(cat) {
-      const base = SUBS[cat] || [];
+      const base = GAL ? (GAL.subs[cat] || []) : (SUBS[cat] || []);
       const extra = [...new Set(works.filter((w) => w.category === cat && w.jenis).map((w) => w.jenis))].filter((j) => !base.includes(j));
       return [...base, ...extra];
     }
     function jenisOf(w) {
       if (w.jenis) return w.jenis;
+      if (GAL) return '';
       if (!SUBS[w.category]) return '';
       const t = ((w.title || '') + ' ' + (w.jenis || '')).toLowerCase();
       if (w.category === 'AI Motion (Remotion)') {
@@ -2638,7 +2648,7 @@ html{background:#0b0d12}body{background:transparent}#dp-bg{position:fixed;inset:
     }
 
     function renderFilters() {
-      const cats = [...new Set(works.map((w) => w.category).filter(Boolean))];
+      const cats = GAL ? GAL.kategori_works.filter((c) => works.some((w) => w.category === c)) : [...new Set(works.map((w) => w.category).filter(Boolean))];
       const btns = [{ key: 'all', label: `Semua (${works.length})` }, ...cats.map((c) => ({ key: c, label: catLabel(c) }))];
       filterBar.innerHTML = btns.map((b) => `<button type="button" class="filter-btn${b.key === activeFilter ? ' active' : ''}" data-filter="${esc(b.key)}">${esc(b.label)}</button>`).join('');
       filterBar.querySelectorAll('.filter-btn').forEach((btn) => btn.addEventListener('click', () => {
@@ -3113,9 +3123,11 @@ react-dom/cjs/react-dom.production.min.js:
       body.innerHTML=h;cap.textContent=(x.keterangan||'')+' Visual dibuat dengan AI; performa belum diukur.';modal.hidden=false;
     }
     var lens=makeLens({root:root,slot:slot,copy:copy,cnt:cnt,prog:prog,onOpen:openItem,prev:document.getElementById('ka-prev'),next:document.getElementById('ka-next')});
-    function apply(){lens.set(all.filter(function(x){return active==='Semua'||x.kategori===active}))}
+    var GV=null;
+    function inJ(x){return Array.isArray(x._j)?x._j.indexOf(active)>=0:x.kategori===active}
+    function apply(){lens.set(all.filter(function(x){return active==='Semua'||inJ(x)}))}
     function filters(){
-      var base=['Video AI','Video Iklan','Video Komersial'],extra=all.map(function(x){return x.kategori}).filter(function(c,i,a){return c&&a.indexOf(c)===i&&base.indexOf(c)<0});
+      var base=GV?GV.jenis_video.filter(function(j){return all.some(function(x){return x._j.indexOf(j)>=0})}):['Video AI','Video Iklan','Video Komersial'],extra=GV?[]:all.map(function(x){return x.kategori}).filter(function(c,i,a){return c&&a.indexOf(c)===i&&base.indexOf(c)<0});
       fil.innerHTML=['Semua'].concat(base,extra).map(function(c){return '<button type="button" class="filter-btn'+(c===active?' active':'')+'" data-c="'+esc(c)+'">'+esc(c)+'</button>'}).join('');
     }
     fil.addEventListener('click',function(e){var b=e.target.closest('[data-c]');if(!b)return;active=b.getAttribute('data-c');filters();apply()});
@@ -3123,8 +3135,8 @@ react-dom/cjs/react-dom.production.min.js:
     document.getElementById('ka-x').addEventListener('click',close);
     modal.addEventListener('click',function(e){if(e.target===modal)close()});
     document.addEventListener('keydown',function(e){if(e.key==='Escape')close()});
-    fetch('karya.json',{cache:'no-cache'}).then(function(r){return r.json()}).then(function(d){
-      all=(Array.isArray(d)?d:[]).filter(function(x){return x&&x.judul&&ok(x.poster)}).map(function(x){var t=((x.judul||'')+' '+(x.kategori||'')).toLowerCase();if(x.kategori==='Carousel'||x.jenis==='Carousel'){x.kategori='Carousel';return x}if(x.jenis){x.kategori=x.jenis;return x}x.kategori=/iklan/.test(t)?'Video Iklan':(/tuntasync|komersial|commercial|promo|brand/.test(t)?'Video Komersial':(['Video AI','Video Iklan','Video Komersial'].indexOf(x.kategori)>-1?x.kategori:'Video AI'));return x});
+    (window.__GAL||Promise.resolve(null)).then(function(g){if(g&&Array.isArray(g.karya)){GV=g;applyBagian(g.bagian);return g.karya.map(function(x){x._j=(x.jenis&&x.jenis.length)?x.jenis.slice():[x.kategori||'Video'];x.kategori=x._j[0];return x})}return fetch('karya.json',{cache:'no-cache'}).then(function(r){return r.json()})}).then(function(d){
+      all=(Array.isArray(d)?d:[]).filter(function(x){return x&&x.judul&&ok(x.poster)}).map(function(x){if(GV)return x;var t=((x.judul||'')+' '+(x.kategori||'')).toLowerCase();if(x.kategori==='Carousel'||x.jenis==='Carousel'){x.kategori='Carousel';return x}if(x.jenis){x.kategori=x.jenis;return x}x.kategori=/iklan/.test(t)?'Video Iklan':(/tuntasync|komersial|commercial|promo|brand/.test(t)?'Video Komersial':(['Video AI','Video Iklan','Video Komersial'].indexOf(x.kategori)>-1?x.kategori:'Video AI'));return x});
       if(!all.length){document.getElementById('karya-ai').style.display='none';return}
       filters();apply();
     }).catch(function(){document.getElementById('karya-ai').style.display='none'});
@@ -3242,7 +3254,7 @@ react-dom/cjs/react-dom.production.min.js:
       var n=stages(k).length;if(n)a.appendChild(el('p','cs-meta',n+' tahap terdokumentasi'));
       var b=el('button','case-more',n?'Buka tahapan':'Baca lengkap');b.type='button';a.appendChild(b);grid.appendChild(a)});
     var h2=document.querySelector('#proyek .section-head h2');var w=['','Satu','Dua','Tiga','Empat','Lima','Enam','Tujuh','Delapan','Sembilan','Sepuluh'][CASES.length];if(h2)h2.textContent=w?w+' karya':'Karya dan studi kasus';
-    var p=document.querySelector('#proyek .section-head p');if(p)p.textContent='Klik kartu untuk membuka tahapan, cara kerja, bukti, dan batasan setiap karya.'}
+    var p=document.querySelector('#proyek .section-head p');if(p)p.textContent='Klik kartu untuk membuka tahapan, cara kerja, bukti, dan batasan setiap karya.';if(window.__GAL)window.__GAL.then(function(g){if(g)applyBagian(g.bagian)})}
   function fromHash(){var mm=/^#proyek\/([a-z0-9-]+)(?:\/([a-z0-9-]+))?$/.exec(location.hash);if(!mm||!CASES)return;
     var s=document.getElementById('proyek');if(s&&m.hidden)s.scrollIntoView();mm[2]?openTahap(mm[1],mm[2]):openKarya(mm[1])}
   /* fallback tanpa data: perilaku lama (klon <details>) */
