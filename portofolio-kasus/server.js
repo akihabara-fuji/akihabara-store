@@ -53,6 +53,22 @@ function cleanTahap(t, kl, idx) {
     kendala: T(label + ' kendala', t.kendala, 800), batasan: T(label + ' batasan', t.batasan, 600) };
   if (t.draft === true) o.draft = true; return o;
 }
+function cleanMedia(arr, kl) {
+  return (Array.isArray(arr) ? arr : []).slice(0, 12).map((m, i) => { const l = kl + ' media ' + (i + 1); const src = str(m && m.src, 200);
+    if (!PATH_RE.test(src) || src.includes('..') || src.includes('//') || !EXT_RE.test(src)) bad(l + ': lokasi berkas tidak valid');
+    if (/^v\/uploads\//.test(src) && !fs.existsSync(path.join(WEB, src))) bad(l + ': berkas belum ada di server (' + src + ')');
+    const o = { src, teks: T(l + ' keterangan', m.teks, 300), alt: T(l + ' teks alternatif', m.alt, 200) };
+    const pz = str(m.poster, 200); if (pz) { if (!PATH_RE.test(pz) || pz.includes('..') || !/\.(jpe?g|png|webp)$/i.test(pz)) bad(l + ': sampul tidak valid'); o.poster = pz; } return o; });
+}
+function cleanPoin(obj, kl) {
+  const o = {}; if (!obj || typeof obj !== 'object') return o;
+  for (const key of Object.keys(obj).slice(0, 40)) { const l = kl + ' media poin "' + key.slice(0, 40) + '"'; const m = obj[key]; if (!m || !m.src) continue; const k = str(key, 60); if (!k) continue; const r = cleanMedia([m], l)[0]; o[k] = { src: r.src, alt: r.alt }; if (r.poster) o[k].poster = r.poster; }
+  return o;
+}
+function cleanBagian(arr, kl) {
+  return (Array.isArray(arr) ? arr : []).slice(0, 20).map((b, i) => { const l = kl + ' bagian ' + (i + 1); const label = T(l + ' judul', b && b.label, 80), isi = T(l + ' isi', b && b.isi, 1500);
+    if (!label || !isi) bad(l + ': judul dan isi wajib diisi (atau hapus bagian ini)'); return { label, isi }; });
+}
 function cleanState(inp) {
   const K = Array.isArray(inp && inp.karya) ? inp.karya : bad('Data karya tidak ada'); if (K.length < 1 || K.length > 20) bad('Jumlah karya harus 1–20');
   const seen = new Set();
@@ -63,16 +79,27 @@ function cleanState(inp) {
     let thumb = str(k.thumb, 200); if (thumb) { if (!PATH_RE.test(thumb) || thumb.includes('..') || !/\.(jpe?g|png|webp)$/i.test(thumb)) bad(kl + ': gambar kartu tidak valid'); }
     const ts = new Set();
     const tahap = (Array.isArray(k.tahap) ? k.tahap : []).slice(0, 20).map((t, j) => { const c = cleanTahap(t, kl, j); if (ts.has(c.id)) bad(kl + ': kode tahap ganda (' + c.id + ')'); ts.add(c.id); return c; });
-    const o = { id, no: String(i + 1).padStart(2, '0'), judul, status, ringkas: T(kl + ' ringkasan', k.ringkas, 400), peran: T(kl + ' peran', k.peran, 140), tgl: T(kl + ' waktu', k.tgl, 140), batas: T(kl + ' batasan', k.batas, 400), thumb, tahap };
+    const o = { id, no: String(i + 1).padStart(2, '0'), judul, status, ringkas: T(kl + ' ringkasan', k.ringkas, 400), peran: T(kl + ' peran', k.peran, 140), tgl: T(kl + ' waktu', k.tgl, 140), batas: T(kl + ' batasan', k.batas, 400), thumb, tahap, mediaAkhir: cleanMedia(k.mediaAkhir, kl), bagian: cleanBagian(k.bagian, kl), media: cleanPoin(k.media, kl) };
     if (k.draft === true) o.draft = true; return o;
   });
   return { skema: 1, diperbarui: new Date(Date.now() + 7 * 3600e3).toISOString().slice(0, 10), karya };
 }
 const stripDraft = st => ({ skema: st.skema, diperbarui: st.diperbarui, karya: st.karya.filter(k => !k.draft).map((k, i) => Object.assign({}, k, { no: String(i + 1).padStart(2, '0'), tahap: k.tahap.filter(t => !t.draft).map((t, j) => { const c = Object.assign({}, t, { n: String(j + 1).padStart(2, '0') }); delete c.draft; return c; }) })).map(k => { delete k.draft; return k; }) });
 function atomicWrite(file, data) { const tmp = file + '.tmp-' + process.pid; const fd = fs.openSync(tmp, 'w', 0o644); try { fs.writeSync(fd, data); fs.fsyncSync(fd); } finally { fs.closeSync(fd); } fs.renameSync(tmp, file); }
+// Media jendela kartu + bagian teks dulu hanya ada di proyek.json (tidak bisa diubah dari admin). Disalin sekali ke data kartu.
+function migrateMedia(st) {
+  let ch = false; let P = null; try { P = JSON.parse(fs.readFileSync(path.join(WEB, 'proyek.json'), 'utf8')); } catch (e) { P = null; }
+  for (const k of (st.karya || [])) {
+    if (!Array.isArray(k.mediaAkhir)) { const o = Array.isArray(P) ? P.find(x => x && x.id === k.id) : null; k.mediaAkhir = o && Array.isArray(o.media) ? o.media.filter(m => m && m.src).map(m => ({ src: String(m.src), poster: m.poster ? String(m.poster) : undefined, teks: String(m.teks || ''), alt: String(m.alt || '') })) : []; k.mediaAkhir.forEach(m => { if (!m.poster) delete m.poster; }); ch = true; }
+    if (!Array.isArray(k.bagian)) { const o = Array.isArray(P) ? P.find(x => x && x.id === k.id) : null; k.bagian = o && Array.isArray(o.bagian) ? o.bagian.filter(b => b && b.label && b.isi).map(b => ({ label: String(b.label), isi: String(b.isi) })) : []; ch = true; }
+  }
+  return ch;
+}
 function getState() {
-  if (fs.existsSync(STATE)) return JSON.parse(fs.readFileSync(STATE, 'utf8'));
-  if (fs.existsSync(OUT)) { const st = JSON.parse(fs.readFileSync(OUT, 'utf8')); atomicWrite(STATE, JSON.stringify(st)); return st; }
+  let st = null;
+  if (fs.existsSync(STATE)) st = JSON.parse(fs.readFileSync(STATE, 'utf8'));
+  else if (fs.existsSync(OUT)) { st = JSON.parse(fs.readFileSync(OUT, 'utf8')); atomicWrite(STATE, JSON.stringify(st)); }
+  if (st) { if (migrateMedia(st)) { atomicWrite(STATE, JSON.stringify(st)); try { atomicWrite(OUT, JSON.stringify(stripDraft(st), null, 1) + '\n'); } catch (e) { /* abaikan */ } } return st; }
   return { skema: 1, diperbarui: '', karya: [] };
 }
 function putState(st, note) {
@@ -149,12 +176,15 @@ function galeriOut(st) {
 function galeriPaths(st) { const s = new Set(); for (const w of st.works) { s.add(w.mediaUrl); s.add(w.posterUrl); } for (const x of st.karya) { s.add(x.video); s.add(x.poster); (x.slides || []).forEach(v => s.add(v)); } s.delete(''); return s; }
 function getGaleri() { if (fs.existsSync(GST)) return JSON.parse(fs.readFileSync(GST, 'utf8')); const st = importGaleri(); atomicWrite(GST, JSON.stringify(st)); return st; }
 function ensureGaleriOut() { const st = getGaleri(); if (!fs.existsSync(GOUT)) atomicWrite(GOUT, JSON.stringify(galeriOut(st), null, 1) + '\n'); return st; }
-function purgeFiles(oldSt, newSt) {
-  // Hapus permanen: berkas unggahan (v/uploads/) yang tidak dipakai lagi oleh galeri maupun kartu karya.
-  const keep = galeriPaths(newSt); try { const c = getState(); for (const k of c.karya) { keep.add(k.thumb); for (const t of (k.tahap || [])) for (const b of (t.bukti || [])) { keep.add(b.src); keep.add(b.poster); } } } catch (e) { /* abaikan */ }
-  const gone = []; for (const f of galeriPaths(oldSt)) { if (keep.has(f) || !/^v\/uploads\/[A-Za-z0-9_\-.]+$/.test(f)) continue; const fp = path.join(WEB, f); try { if (fp.startsWith(path.join(WEB, 'v', 'uploads') + path.sep) && fs.existsSync(fp)) { fs.unlinkSync(fp); gone.push(f); } } catch (e) { /* abaikan */ } }
+function keepOthers(skip) { const keep = new Set(); if (skip !== 'g') { try { for (const f of galeriPaths(getGaleri())) keep.add(f); } catch (e) { /* abaikan */ } } if (skip !== 'c') { try { for (const f of casePaths(getState())) keep.add(f); } catch (e) { /* abaikan */ } } if (skip !== 'k') { try { const k = getKonten(); if (k) for (const f of konPaths(k)) keep.add(f); } catch (e) { /* abaikan */ } } return keep; }
+function purgeOld(oldSet, newSet) {
+  // Hapus permanen: berkas unggahan (v/uploads/) yang tidak dipakai lagi oleh galeri, kartu karya, maupun konten halaman.
+  const keep = new Set(newSet); const gone = [];
+  for (const f of oldSet) { if (keep.has(f) || !/^v\/uploads\/[A-Za-z0-9_\-.]+$/.test(f)) continue; const fp = path.join(WEB, f);
+    try { if (fp.startsWith(path.join(WEB, 'v', 'uploads') + path.sep) && fs.existsSync(fp)) { fs.unlinkSync(fp); gone.push(f); } } catch (e) { /* abaikan */ } }
   return gone;
 }
+function purgeFiles(oldSt, newSt) { const keep = keepOthers('g'); for (const f of galeriPaths(newSt)) keep.add(f); return purgeOld(galeriPaths(oldSt), keep); }
 function putGaleri(st, note) {
   const old = getGaleri(); const oldOut = fs.existsSync(GOUT) ? fs.readFileSync(GOUT) : null; const next = JSON.stringify(galeriOut(st), null, 1) + '\n';
   try { atomicWrite(GOUT, next); atomicWrite(GST, JSON.stringify(st)); } catch (e) { if (oldOut) atomicWrite(GOUT, oldOut); throw new Error('Gagal menerbitkan, dikembalikan: ' + e.message); }
@@ -164,13 +194,105 @@ function putGaleri(st, note) {
   return purgeFiles(old, st);
 }
 function galeriVersions() { return fs.readdirSync(GVER).sort().reverse().map(f => { const j = JSON.parse(fs.readFileSync(path.join(GVER, f), 'utf8')); return { id: f.replace('.json', ''), ts: new Date(+f.replace('.json', '')).toISOString(), note: j.note, works: j.state.works.length, karya: j.state.karya.length }; }); }
-function casePaths(st) { const s = new Set(); for (const k of (st.karya || [])) { s.add(k.thumb); for (const t of (k.tahap || [])) for (const b of (t.bukti || [])) { s.add(b.src); s.add(b.poster); } } s.delete(''); s.delete(undefined); return s; }
-function purgeCases(oldSt, newSt) {
-  const keep = casePaths(newSt); try { for (const f of galeriPaths(getGaleri())) keep.add(f); } catch (e) { /* abaikan */ }
-  for (const f of casePaths(oldSt)) { if (keep.has(f) || !/^v\/uploads\/[A-Za-z0-9_\-.]+$/.test(f)) continue; const fp = path.join(WEB, f); try { if (fs.existsSync(fp)) fs.unlinkSync(fp); } catch (e) { /* abaikan */ } }
-}
+function casePaths(st) { const s = new Set(); for (const k of (st.karya || [])) { s.add(k.thumb); for (const t of (k.tahap || [])) for (const b of (t.bukti || [])) { s.add(b.src); s.add(b.poster); } for (const m of (k.mediaAkhir || [])) { s.add(m.src); s.add(m.poster); } for (const m of Object.values(k.media || {})) { s.add(m.src); s.add(m.poster); } } s.delete(''); s.delete(undefined); return s; }
+function purgeCases(oldSt, newSt) { const keep = keepOthers('c'); for (const f of casePaths(newSt)) keep.add(f); return purgeOld(casePaths(oldSt), keep); }
 try { ensureGaleriOut(); } catch (e) { console.error('galeri awal gagal:', e.message); }
 // ================= akhir modul galeri =================
+// ================= Konten halaman (konten.json): hero, layanan, keahlian, bio, kontak, dll =================
+// Pola sama dengan galeri: state di DATA, hasil terbit di WEB/konten.json. Skema dipakai bersama oleh admin (form otomatis) dan validasi server.
+const KST = path.join(DATA, 'konten-state.json'), KOUT = path.join(WEB, 'konten.json'), KVER = path.join(DATA, 'versions-konten');
+fs.mkdirSync(KVER, { recursive: true });
+const S = (label, n, o) => Object.assign({ t: 's', label, n: n || 120 }, o || {});
+const A = (label, n) => ({ t: 'a', label, n: n || 600 });
+const B = label => ({ t: 'b', label });
+const SEL = (label, opts) => ({ t: 'sel', label, opts });
+const L = (label, max, item, o) => Object.assign({ t: 'l', label, max, item }, o || {});
+const SS = (label, max, len) => ({ t: 'ss', label, max, len: len || 200 });
+const O = (label, f) => ({ t: 'o', label, f });
+const HREF = S('Tujuan tautan', 200, { href: true });
+const KSCHEMA = {
+  nav: O('Menu atas', { links: L('Tautan menu', 8, { teks: S('Teks', 40), href: HREF }), cv: S('Tombol Unduh CV (atas)', 40), hubungi: S('Tombol Hubungi (atas)', 40), cvMobile: S('Unduh CV di menu ponsel', 40) }),
+  hero: O('Hero (paling atas)', { badge: S('Lencana', 160), judul: S('Judul besar', 200), miring: S('Bagian miring di judul', 200), sub: A('Sub-judul', 700), bukaLabel: S('Label posisi', 60), buka: A('Posisi yang dibuka', 300), janji: S('Janji', 200),
+    tombol: L('Tombol hero', 5, { teks: S('Teks', 50), href: HREF, gaya: SEL('Gaya', ['utama', 'garis']) }),
+    jalur: L('Jalur pengunjung (kotak)', 6, { judul: S('Judul', 60), teks: A('Isi', 300), href: HREF, cv: B('Sisipkan tautan "Unduh CV" di akhir isi') }),
+    alur: L('Alur kerja (langkah)', 8, { judul: S('Judul', 60), teks: S('Keterangan', 120) }),
+    video: O('Video hero', { src: S('Video (mp4)', 200, { file: 'vid' }), poster: S('Sampul video', 200, { file: 'img' }), teks: S('Keterangan', 300) }),
+    bukti: SS('Strip bukti', 8, 200), rekrut: O('Baris rekrutmen', { teks: S('Teks', 100), link: S('Teks tautan', 40), href: HREF }) }),
+  bukti: O('Bagian Bukti', { label: S('Eyebrow', 60), judul: S('Judul', 140), headJudul: S('Judul kepala pohon', 60), headTeks: S('Keterangan kepala pohon', 100),
+    item: L('Item bukti', 12, { jenis: SEL('Jenis', ['kartu', 'baris', 'pill']), judul: S('Judul', 80), teks: S('Isi', 200), href: HREF, tags: SS('Label kecil', 5, 40), warn: B('Tandai sebagai peringatan (oranye)') }) }),
+  layanan: O('Layanan', { label: S('Eyebrow', 60), judul: S('Judul', 140), intro: A('Pengantar', 400),
+    kartu: L('Kartu layanan', 12, { id: S('Kode (untuk tautan #kode)', 40, { id: true }), status: SEL('Status', ['Live', 'Karya', 'Prototipe']), judul: S('Judul', 80), desc: A('Deskripsi', 300), masuk: S('Masukan', 160), hasil: S('Hasil', 160), buktiTeks: S('Teks tautan bukti', 100), buktiHref: HREF, wa: A('Pesan WhatsApp tombol', 400), tombol: S('Teks tombol', 40), sembunyi: B('Sembunyikan') }) }),
+  keahlian: O('Keahlian', { label: S('Eyebrow', 60), judul: S('Judul', 140), intro: A('Pengantar', 400),
+    kartu: L('Kartu keahlian', 12, { judul: S('Judul', 80), desc: A('Deskripsi', 400), ikon: { t: 'ikon', label: 'Ikon' }, sembunyi: B('Sembunyikan') }), stack: SS('Daftar perangkat', 20, 40) }),
+  cara: O('Cara kerja', { label: S('Eyebrow', 60), judul: S('Judul', 200), kutipan: A('Kutipan', 400),
+    langkah: L('Langkah', 10, { nama: S('Nama', 50), pendek: S('Nama pendek (di alur)', 30), masuk: S('Masukan (IN)', 100), keluar: S('Keluaran (OUT)', 100) }) }),
+  tentang: O('Bio / Tentang', { foto: S('Foto profil', 200, { file: 'img' }), alt: S('Teks alternatif foto', 120), label: S('Eyebrow', 60), judul: S('Judul', 140), paragraf: SS('Paragraf bio (**tebal**)', 6, 900),
+    info: L('Baris info', 8, { k: S('Nama', 40), v: S('Isi', 140), status: B('Beri titik status hijau') }),
+    cv: O('Tombol CV', { tampil: B('Tampilkan tombol Unduh CV'), teks: S('Teks tombol', 40), file: S('Berkas CV (PDF)', 200, { file: 'pdf' }) }), tombol2: O('Tombol kedua', { teks: S('Teks', 40), href: HREF }),
+    angka: L('Kotak angka', 6, { nilai: S('Angka / nilai', 40), label: S('Keterangan', 200), sembunyi: B('Sembunyikan') }),
+    rekam: O('Rekam jejak', { label: S('Eyebrow', 60), judul: S('Judul', 80), pendidikan: S('Pendidikan', 140), item: L('Pengalaman', 20, { id: S('Kode', 40, { id: true, hidden: true }), peran: S('Jabatan', 140), periode: S('Periode', 40), org: A('Instansi dan keterangan', 500), sembunyi: B('Sembunyikan') }) }) }),
+  kontak: O('Kontak dan kolaborasi', { wa: S('Nomor WhatsApp (angka, awali 62)', 16, { wa: true }), email: S('Email', 100, { email: true }), label: S('Eyebrow', 60), judul: S('Judul', 200), intro: A('Pengantar', 400),
+    jalur: L('Jalur kolaborasi', 6, { label: S('Label', 20), judul: S('Judul', 80), teks: A('Isi', 300), tombol: L('Tombol', 5, { teks: S('Teks', 50), gaya: SEL('Gaya', ['utama', 'garis']), jenis: SEL('Jenis', ['wa', 'cv', 'email', 'link']), nilai: A('Isi (pesan WA / alamat email / tautan)', 400), subjek: S('Subjek email', 100) }) }),
+    formJudul: S('Judul formulir', 100), formJenis: L('Pilihan jenis kebutuhan', 8, { label: S('Label', 40), value: S('Nilai yang dikirim', 60) }), formKebutuhanPh: S('Contoh isian kebutuhan', 200), formTargetPh: S('Contoh isian target', 200), formTombol: S('Teks tombol formulir', 60), copyright: S('Teks hak cipta', 200) }),
+  kaki: O('Footer', { brand: S('Kalimat di bawah nama', 200), sosial: L('Tautan sosial (ikon tetap)', 6, { nama: S('Nama', 30, { ro: true }), href: HREF }, { fixed: true }),
+    kolom: L('Kolom footer', 4, { judul: S('Judul kolom', 40), otomatis: B('Isi otomatis dari daftar Layanan'), link: L('Tautan', 10, { teks: S('Teks', 80), href: HREF, wa: A('Pesan WhatsApp (isi jika tautan WA)', 400) }) }) })
+};
+const HREF_RE = /^(#[A-Za-z0-9_\-\/]{0,60}|https?:\/\/[^\s<>"']{3,280}|mailto:[^\s<>"']{3,160}|(v|assets)\/[A-Za-z0-9_\-\/.]{1,160})$/;
+function kClean(node, v, label, ctx) {
+  switch (node.t) {
+    case 's': {
+      let x = node.wa ? String(v == null ? '' : v).replace(/\D/g, '').slice(0, node.n) : (node.href ? str(v, node.n) : T(label, v, node.n));
+      if (node.wa) { if (x.length < 10 || !/^62/.test(x)) bad(label + ': nomor harus diawali 62 dan 10–15 angka'); return x; }
+      if (node.href) { if (x && !HREF_RE.test(x)) bad(label + ': tautan tidak valid (pakai #bagian, https://..., mailto:..., atau berkas v/ atau assets/)'); if (/^(v|assets)\//.test(x) && (x.includes('..') || x.includes('//'))) bad(label + ': tautan tidak valid'); return x; }
+      if (node.email) { if (x && !/^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/.test(x)) bad(label + ': email tidak valid'); return x; }
+      if (node.id) { x = str(v, node.n); if (x && !ID_RE.test(x)) bad(label + ': kode harus huruf kecil/angka/strip'); return x; }
+      if (node.file) { x = str(v, node.n); if (!x) return ''; const re = node.file === 'pdf' ? /\.pdf$/i : (node.file === 'vid' ? /\.(mp4|webm)$/i : /\.(jpe?g|png|webp)$/i);
+        if (!PATH_RE.test(x) || x.includes('..') || x.includes('//') || !re.test(x)) bad(label + ': berkas tidak valid'); if (/^v\/uploads\//.test(x) && !fs.existsSync(path.join(WEB, x))) bad(label + ': berkas belum ada di server'); return x; }
+      return x; }
+    case 'a': return T(label, v, node.n);
+    case 'b': return v === true;
+    case 'sel': { const x = str(v, 40); return node.opts.includes(x) ? x : node.opts[0]; }
+    case 'ikon': { const n = Math.floor(+v); return Number.isFinite(n) && n >= 0 && n < (ctx.ikon || []).length ? n : 0; }
+    case 'ss': return (Array.isArray(v) ? v : []).slice(0, node.max).map(x => T(label, x, node.len)).filter(Boolean);
+    case 'o': { const o = {}; for (const k of Object.keys(node.f)) o[k] = kClean(node.f[k], (v || {})[k], label + ' / ' + node.f[k].label, ctx); return o; }
+    case 'l': { const arr = (Array.isArray(v) ? v : []).slice(0, node.max); const seen = new Set();
+      const out = arr.map((it, i) => { const o = {}; const l = label + ' #' + (i + 1); for (const k of Object.keys(node.item)) o[k] = kClean(node.item[k], (it || {})[k], l + ' / ' + node.item[k].label, ctx);
+        if (node.item.id) { if (!o.id) { let b = slug(o.judul || o.peran || 'item'), id = b, n = 2; while (seen.has(id) || arr.some((z, j) => j !== i && z && z.id === id)) id = b + '-' + n++; o.id = id; } if (seen.has(o.id)) bad(l + ': kode ganda (' + o.id + ')'); seen.add(o.id); }
+        return o; });
+      if (node.fixed && arr.length !== (ctx.fixedLen && ctx.fixedLen[label])) { /* tidak ada tambah/hapus untuk daftar tetap, diatur di bawah */ }
+      return out; }
+  }
+  return null;
+}
+function cleanKonten(inp, ikon) {
+  if (!inp || typeof inp !== 'object') bad('Data konten tidak ada');
+  const out = { skema: 1 }; for (const k of Object.keys(KSCHEMA)) out[k] = kClean(KSCHEMA[k], inp[k], KSCHEMA[k].label, { ikon });
+  out.keahlian.ikonSet = ikon; // daftar ikon tidak bisa diubah dari admin (hanya dipilih)
+  return out;
+}
+function kontenOut(st) {
+  const vis = x => x.sembunyi !== true, strip = a => a.filter(vis).map(x => { const o = Object.assign({}, x); delete o.sembunyi; return o; });
+  const o = JSON.parse(JSON.stringify(st)); o.diperbarui = new Date(Date.now() + 7 * 3600e3).toISOString().slice(0, 10);
+  o.layanan.kartu = strip(o.layanan.kartu); o.keahlian.kartu = strip(o.keahlian.kartu); o.tentang.angka = strip(o.tentang.angka); o.tentang.rekam.item = strip(o.tentang.rekam.item); return o;
+}
+function konPaths(st) { const s = new Set(); try { s.add(st.tentang.foto); s.add(st.tentang.cv.file); s.add(st.hero.video.src); s.add(st.hero.video.poster); } catch (e) { /* abaikan */ } s.delete(''); s.delete(undefined); return s; }
+function getKonten() {
+  if (fs.existsSync(KST)) return JSON.parse(fs.readFileSync(KST, 'utf8'));
+  const sf = path.join(APP, 'konten.seed.json'); if (!fs.existsSync(sf)) return null;
+  const seed = JSON.parse(fs.readFileSync(sf, 'utf8')); const st = cleanKonten(seed, (seed.keahlian && seed.keahlian.ikonSet) || []); atomicWrite(KST, JSON.stringify(st)); return st;
+}
+function ensureKontenOut() { const st = getKonten(); if (st && !fs.existsSync(KOUT)) atomicWrite(KOUT, JSON.stringify(kontenOut(st), null, 1) + '\n'); return st; }
+function putKonten(st, note) {
+  const old = getKonten(); const oldOut = fs.existsSync(KOUT) ? fs.readFileSync(KOUT) : null; const next = JSON.stringify(kontenOut(st), null, 1) + '\n';
+  try { atomicWrite(KOUT, next); atomicWrite(KST, JSON.stringify(st)); } catch (e) { if (oldOut) atomicWrite(KOUT, oldOut); throw new Error('Gagal menerbitkan, dikembalikan: ' + e.message); }
+  fs.mkdirSync(KVER, { recursive: true }); fs.writeFileSync(path.join(KVER, Date.now() + '.json'), JSON.stringify({ note, state: st }));
+  const names = fs.readdirSync(KVER).sort(); for (const f of names.slice(0, Math.max(0, names.length - 40))) fs.unlinkSync(path.join(KVER, f));
+  return old ? purgeOld(konPaths(old), konPaths(st)) : [];
+}
+function kontenVersions() { return fs.readdirSync(KVER).sort().reverse().map(f => ({ id: f.replace('.json', ''), ts: new Date(+f.replace('.json', '')).toISOString(), note: JSON.parse(fs.readFileSync(path.join(KVER, f), 'utf8')).note })); }
+try { ensureKontenOut(); } catch (e) { console.error('konten awal gagal:', e.message); }
+// ================= akhir modul konten =================
+try { getState(); } catch (e) { console.error('state kartu gagal:', e.message); }
 
 // ---- auth via admin lama ----
 function authOK(req) {
@@ -183,7 +305,7 @@ function authOK(req) {
 const HDR = { 'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'DENY', 'Referrer-Policy': 'no-referrer', 'X-Robots-Tag': 'noindex, nofollow', 'Cache-Control': 'no-store' };
 function send(res, code, body, extra) { const isObj = typeof body === 'object' && !Buffer.isBuffer(body); res.writeHead(code, Object.assign({ 'Content-Type': isObj ? 'application/json; charset=utf-8' : 'text/html; charset=utf-8' }, HDR, extra || {})); res.end(isObj ? JSON.stringify(body) : body); }
 function readBody(req, max) { return new Promise((ok, no) => { const a = []; let n = 0; req.on('data', c => { n += c.length; if (n > max) { no(Object.assign(new Error('Data terlalu besar'), { user: true })); req.destroy(); } else a.push(c); }); req.on('end', () => ok(Buffer.concat(a))); req.on('error', no); }); }
-let lastSave = 0, lastGSave = 0;
+let lastSave = 0, lastGSave = 0, lastKSave = 0;
 http.createServer(async (req, res) => {
   try {
     const p = new URL(req.url, 'http://x').pathname;
@@ -208,6 +330,23 @@ http.createServer(async (req, res) => {
       const f = path.join(GVER, b.id + '.json'); if (!fs.existsSync(f)) return send(res, 404, { error: 'Versi tidak ada' });
       const st = cleanGaleri(JSON.parse(fs.readFileSync(f, 'utf8')).state); putGaleri(st, 'Kembalikan versi ' + b.id); return send(res, 200, { ok: true, state: st });
     }
+    if (p === '/api/kasus/pdf' && req.method === 'POST') {
+      if (Date.now() - lastKSave < 700) return send(res, 429, { error: 'Terlalu cepat, coba lagi sebentar' });
+      const buf = await readBody(req, 8e6); if (buf.length < 100 || buf.slice(0, 5).toString() !== '%PDF-') bad('Berkas bukan PDF yang valid');
+      const dir = path.join(WEB, 'v', 'uploads'); fs.mkdirSync(dir, { recursive: true }); const name = 'CV_Dika_Priyadi-' + Date.now() + '.pdf'; fs.writeFileSync(path.join(dir, name), buf, { mode: 0o644 });
+      return send(res, 200, { path: 'v/uploads/' + name });
+    }
+    if (p === '/api/kasus/konten' && req.method === 'GET') { const st = getKonten(); return send(res, 200, { state: st, schema: KSCHEMA, ikon: st ? st.keahlian.ikonSet : [] }); }
+    if (p === '/api/kasus/konten/save' && req.method === 'POST') {
+      if (Date.now() - lastKSave < 700) return send(res, 429, { error: 'Terlalu cepat, coba lagi sebentar' });
+      const cur = getKonten(); const st = cleanKonten(JSON.parse((await readBody(req, 2e6)).toString()), cur ? cur.keahlian.ikonSet : []); const gone = putKonten(st, 'Simpan'); lastKSave = Date.now(); return send(res, 200, { ok: true, state: st, terhapus: gone });
+    }
+    if (p === '/api/kasus/konten/versions' && req.method === 'GET') return send(res, 200, kontenVersions());
+    if (p === '/api/kasus/konten/restore' && req.method === 'POST') {
+      const b = JSON.parse((await readBody(req, 1000)).toString()); if (!/^\d{10,16}$/.test(String(b.id))) bad('Versi tidak valid');
+      const f = path.join(KVER, b.id + '.json'); if (!fs.existsSync(f)) return send(res, 404, { error: 'Versi tidak ada' });
+      const cur = getKonten(); const st = cleanKonten(JSON.parse(fs.readFileSync(f, 'utf8')).state, cur.keahlian.ikonSet); putKonten(st, 'Kembalikan versi ' + b.id); return send(res, 200, { ok: true, state: st });
+    }
     if (p === '/api/kasus/versions' && req.method === 'GET') return send(res, 200, versions());
     if (p === '/api/kasus/restore' && req.method === 'POST') {
       const b = JSON.parse((await readBody(req, 1000)).toString()); if (!/^\d{10,16}$/.test(String(b.id))) bad('Versi tidak valid');
@@ -217,4 +356,4 @@ http.createServer(async (req, res) => {
     return send(res, 404, { error: 'Tidak ada' });
   } catch (e) { if (!e.user) console.error(e); send(res, e.user ? 400 : 500, { error: e.user ? e.message : 'Terjadi kesalahan server' }); }
 }).listen(PORT, '127.0.0.1', () => console.log('dp-kasus di 127.0.0.1:' + PORT));
-module.exports = { cleanState, stripDraft, cleanGaleri, galeriOut, importGaleri };
+module.exports = { cleanState, stripDraft, cleanGaleri, galeriOut, importGaleri, cleanKonten, kontenOut, KSCHEMA };

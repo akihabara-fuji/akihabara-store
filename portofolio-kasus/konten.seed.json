@@ -1,0 +1,626 @@
+{
+ "nav": {
+  "links": [
+   {
+    "teks": "Proyek",
+    "href": "#proyek"
+   },
+   {
+    "teks": "Layanan",
+    "href": "#layanan"
+   },
+   {
+    "teks": "Cara Kerja",
+    "href": "#cara-kerja"
+   },
+   {
+    "teks": "Tentang",
+    "href": "#tentang"
+   },
+   {
+    "teks": "Kontak",
+    "href": "#kolaborasi"
+   }
+  ],
+  "cv": "Unduh CV",
+  "hubungi": "Hubungi Saya",
+  "cvMobile": "Unduh CV (PDF)"
+ },
+ "hero": {
+  "badge": "AI Social Media Analyst & AI Video Production Specialist",
+  "judul": "Sistem Konten & Website Berbasis AI,",
+  "miring": "dari riset sampai siap tayang.",
+  "sub": "Saya mengevaluasi konten media sosial dari data analitik dan memproduksi video pendek lewat alur kerja AI yang terstruktur. 12+ tahun di operasional dan facility management; proyek AI dan digital independen sejak Agustus 2026.",
+  "bukaLabel": "Terbuka untuk posisi:",
+  "buka": "Social Media Analyst · AI Video Production · AI Social Media & Affiliate Specialist.",
+  "janji": "Setiap klaim di sini ada buktinya yang bisa dibuka.",
+  "tombol": [
+   {
+    "teks": "Lihat studi kasus",
+    "href": "#proyek",
+    "gaya": "utama"
+   },
+   {
+    "teks": "Hubungi saya",
+    "href": "#kolaborasi",
+    "gaya": "garis"
+   },
+   {
+    "teks": "Lihat demo",
+    "href": "#karya-ai",
+    "gaya": "garis"
+   }
+  ],
+  "jalur": [
+   {
+    "judul": "Rekruter / HRD",
+    "teks": "Telusuri kemampuan, studi kasus, dan rekam jejak operasional.",
+    "href": "#tentang",
+    "cv": true
+   },
+   {
+    "judul": "Klien",
+    "teks": "Lihat contoh analisis konten dan produksi video AI beserta prosesnya.",
+    "href": "#proyek",
+    "cv": false
+   },
+   {
+    "judul": "Kolaborator",
+    "teks": "Pelajari alur kerja dan sistem yang dapat dikembangkan bersama.",
+    "href": "#cara-kerja",
+    "cv": false
+   }
+  ],
+  "alur": [
+   {
+    "judul": "Brief & data",
+    "teks": "Tujuan, naskah, data analitik"
+   },
+   {
+    "judul": "Analisis & produksi AI",
+    "teks": "Evaluasi konten, pembuatan video"
+   },
+   {
+    "judul": "Pemeriksaan manusia",
+    "teks": "Validasi dan catatan perbaikan"
+   },
+   {
+    "judul": "Output",
+    "teks": "Temuan, rekomendasi, video"
+   }
+  ],
+  "video": {
+   "src": "assets/v-overview.mp4",
+   "poster": "assets/v-overview.webp",
+   "teks": "Overview 45 detik: CatatanAkademik, Remotion, analisis media sosial, dan proyek pendukung. Menampilkan contoh proyek dan alur kerja, bukan klaim hasil bisnis."
+  },
+  "bukti": [
+   "12+ tahun operasional dan facility management",
+   "Pernah memimpin 24 sampai 93 staf",
+   "SOP, jadwal, kontrol mutu, pelatihan, pelaporan, penanganan insiden",
+   "Proyek independen: analisis konten, video AI, dan publikasi digital"
+  ],
+  "rekrut": {
+   "teks": "Untuk rekrutmen atau kolaborasi:",
+   "link": "hubungi saya",
+   "href": "#kolaborasi"
+  }
+ },
+ "bukti": {
+  "label": "BUKTI",
+  "judul": "Yang bisa Anda buka dan periksa sendiri",
+  "headJudul": "Bukti karya",
+  "headTeks": "5 jenis, semua bisa dibuka",
+  "item": [
+   {
+    "jenis": "kartu",
+    "judul": "Situs live",
+    "teks": "CatatanAkademik.com, bisa dibuka langsung.",
+    "href": "https://catatanakademik.com",
+    "tags": [
+     "Tab baru"
+    ],
+    "warn": false
+   },
+   {
+    "jenis": "baris",
+    "judul": "Video",
+    "teks": "Karya video AI dan hasil render.",
+    "href": "#karya-ai",
+    "tags": [],
+    "warn": false
+   },
+   {
+    "jenis": "kartu",
+    "judul": "Tangkapan layar",
+    "teks": "Panel admin dan tampilan sistem.",
+    "href": "#karya",
+    "tags": [
+     "Panel admin",
+     "Tampilan sistem"
+    ],
+    "warn": false
+   },
+   {
+    "jenis": "kartu",
+    "judul": "Diagram alur",
+    "teks": "Cara kerja dari masukan sampai hasil.",
+    "href": "#cara-kerja",
+    "tags": [
+     "Masukan",
+     "Proses",
+     "Hasil"
+    ],
+    "warn": false
+   },
+   {
+    "jenis": "pill",
+    "judul": "Batasan",
+    "teks": "",
+    "href": "",
+    "tags": [],
+    "warn": false
+   },
+   {
+    "jenis": "kartu",
+    "judul": "Yang belum terbukti",
+    "teks": "Tiap studi kasus mencatat apa yang belum terbukti.",
+    "href": "#proyek",
+    "tags": [],
+    "warn": true
+   }
+  ]
+ },
+ "layanan": {
+  "label": "LAYANAN",
+  "judul": "Kemampuan yang bisa saya kerjakan",
+  "intro": "Setiap kemampuan punya bukti yang bisa dibuka. Status proyek ditulis apa adanya: live, karya, atau prototipe.",
+  "kartu": [
+   {
+    "id": "svc-web",
+    "status": "Live",
+    "judul": "Platform Web & Produk Digital",
+    "desc": "Membangun website dan sistem web yang bisa dikelola sendiri.",
+    "masuk": "Kebutuhan, alur, konteks pengguna",
+    "hasil": "Website, panel admin, sistem internal",
+    "buktiTeks": "Lihat bukti: CatatanAkademik →",
+    "buktiHref": "#proyek/catatanakademik",
+    "wa": "Halo Dika, saya ingin berdiskusi tentang pembuatan website atau sistem web.",
+    "tombol": "Diskusikan ini"
+   },
+   {
+    "id": "svc-konten",
+    "status": "Karya",
+    "judul": "Konten & Video AI",
+    "desc": "Memproduksi video, visual, dan carousel dengan alur yang terstruktur.",
+    "masuk": "Naskah, ide, referensi",
+    "hasil": "Video pendek, iklan, carousel, aset visual",
+    "buktiTeks": "Lihat demo karya video →",
+    "buktiHref": "#karya-ai",
+    "wa": "Halo Dika, saya ingin berdiskusi tentang produksi konten atau video berbasis AI.",
+    "tombol": "Diskusikan ini"
+   },
+   {
+    "id": "svc-analisis",
+    "status": "Prototipe",
+    "judul": "Analisis Media Sosial",
+    "desc": "Membaca data akun untuk menemukan pola konten dan peluang perbaikan.",
+    "masuk": "Data akun Instagram, TikTok, YouTube",
+    "hasil": "Temuan, rekomendasi, rencana eksperimen",
+    "buktiTeks": "Lihat bukti: prototipe analisis →",
+    "buktiHref": "#proyek/analisis",
+    "wa": "Halo Dika, saya ingin berdiskusi tentang analisis media sosial untuk akun saya.",
+    "tombol": "Diskusikan ini"
+   },
+   {
+    "id": "svc-strategi",
+    "status": "Prototipe",
+    "judul": "Strategi Sistem Konten",
+    "desc": "Menyusun pilar, kalender, dan alur produksi konten yang bisa diulang.",
+    "masuk": "Tujuan, audiens, sumber materi",
+    "hasil": "Pilar konten, kalender, alur produksi",
+    "buktiTeks": "Lihat bukti: mesin konten Remotion →",
+    "buktiHref": "#proyek/remotion",
+    "wa": "Halo Dika, saya ingin berdiskusi tentang strategi dan sistem produksi konten.",
+    "tombol": "Diskusikan ini"
+   }
+  ]
+ },
+ "keahlian": {
+  "label": "01 — KEAHLIAN",
+  "judul": "Kemampuan Inti: Alur Kerja AI, Otomasi, dan Deployment",
+  "intro": "Kemampuan inti di atas, perangkat (GPT, Gemini, Claude, dan lainnya) di bawah: perangkat berganti, cara merancang sistemnya tetap.",
+  "kartu": [
+   {
+    "judul": "Alur Kerja LLM",
+    "desc": "Merancang alur kerja dan prompt berbasis model bahasa: pembagian peran model, aturan keluaran, dan tahap pemeriksaan manusia.",
+    "ikon": 0
+   },
+   {
+    "judul": "Otomasi Proses",
+    "desc": "Mengubah pekerjaan berulang menjadi alur otomatis: konten terjadwal, notifikasi, dan pemeriksaan hasil, lengkap dengan batas kapan sistem berhenti. Pendukung kerja konten.",
+    "ikon": 1
+   },
+   {
+    "judul": "Deployment & Server",
+    "desc": "Menjalankan sistem sampai bisa diakses: VPS, Nginx, PM2, SSL, GitHub, dan domain.",
+    "ikon": 2
+   },
+   {
+    "judul": "Produk Web",
+    "desc": "Membangun platform web dengan login, panel admin, SEO, dan pengelolaan konten mandiri.",
+    "ikon": 3
+   },
+   {
+    "judul": "Mesin Konten Video",
+    "desc": "Mesin Remotion buatan sendiri: naskah menjadi data episode, dirender menjadi video 9:16, lalu diaudit.",
+    "ikon": 4
+   },
+   {
+    "judul": "Evaluasi & Mutu",
+    "desc": "Memeriksa hasil AI sebelum dipakai: validasi, audit keluaran, dan analisis performa konten berbasis data.",
+    "ikon": 5
+   }
+  ],
+  "stack": [
+   "GPT",
+   "Gemini",
+   "Claude",
+   "Google Flow",
+   "CapCut",
+   "ElevenLabs",
+   "Remotion",
+   "Hermes",
+   "9Router",
+   "Node.js / VPS"
+  ],
+  "ikonSet": [
+   "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"6\" height=\"6\" rx=\"1.5\"></rect><rect x=\"15\" y=\"15\" width=\"6\" height=\"6\" rx=\"1.5\"></rect><path d=\"M6 9v3a3 3 0 0 0 3 3h3\"></path></svg>",
+   "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\"></path><circle cx=\"9\" cy=\"7\" r=\"4\"></circle><path d=\"M22 21v-2a4 4 0 0 0-3-3.87\"></path><path d=\"M16 3.13a4 4 0 0 1 0 7.75\"></path></svg>",
+   "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M13 2 3 14h9l-1 8 10-12h-9l1-8Z\"></path></svg>",
+   "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z\"></path><path d=\"m9 12 2 2 4-4\"></path></svg>",
+   "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"10\"></circle><path d=\"M2 12h20\"></path><path d=\"M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20Z\"></path></svg>",
+   "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 19V5\"></path><path d=\"M4 19h16\"></path><path d=\"M8 16v-4\"></path><path d=\"M13 16V8\"></path><path d=\"M18 16v-7\"></path></svg>"
+  ]
+ },
+ "cara": {
+  "label": "02 — CARA KERJA",
+  "judul": "Memahami. Memetakan. Memilih peran AI. Membangun. Menjalankan. Mengevaluasi.",
+  "kutipan": "“AI tidak perlu dipakai di setiap langkah. Sistem yang baik tahu bagian mana yang diserahkan ke AI, mana yang aturan biasa, dan mana yang tetap dikerjakan manusia.”",
+  "langkah": [
+   {
+    "nama": "Memahami",
+    "masuk": "Masalah & konteks operasional",
+    "keluar": "Kebutuhan yang jelas",
+    "pendek": "Memahami"
+   },
+   {
+    "nama": "Memetakan",
+    "masuk": "Alur kerja yang berjalan sekarang",
+    "keluar": "Peta alur dan titik masalah",
+    "pendek": "Memetakan"
+   },
+   {
+    "nama": "Memilih Peran AI",
+    "masuk": "Peta alur kerja",
+    "keluar": "Pembagian: AI, aturan, manusia",
+    "pendek": "Peran AI"
+   },
+   {
+    "nama": "Membangun",
+    "masuk": "Pembagian peran",
+    "keluar": "Otomasi dengan kontrol dan batas",
+    "pendek": "Membangun"
+   },
+   {
+    "nama": "Menjalankan",
+    "masuk": "Sistem siap pakai",
+    "keluar": "Deploy dan pemantauan di server",
+    "pendek": "Menjalankan"
+   },
+   {
+    "nama": "Mengevaluasi",
+    "masuk": "Hasil nyata di lapangan",
+    "keluar": "Perbaikan alur dan aturan",
+    "pendek": "Mengevaluasi"
+   }
+  ]
+ },
+ "tentang": {
+  "foto": "v/about-photo.webp",
+  "alt": "Foto Dika Priyadi",
+  "label": "04 — TENTANG",
+  "judul": "Disiplin operasional, dibawa ke kerja konten dan AI",
+  "paragraf": [
+   "Saya membawa **12+ tahun pengalaman kepemimpinan operasional**, memimpin tim operasional di PT Horizon Internusa Persada, PT Angkasa Pura Support, Mercu Buana Center, dan ISS Indonesia.",
+   "SOP saya jadikan alur kerja, pengendalian mutu saya jadikan tahap pemeriksaan, dan penanganan insiden saya jadikan aturan kapan sistem berhenti dan menyerahkan ke manusia. Hasilnya alur kerja konten dan AI yang jelas, bisa diukur, dan bisa diulang."
+  ],
+  "info": [
+   {
+    "k": "Lokasi",
+    "v": "Jakarta, Indonesia",
+    "status": false
+   },
+   {
+    "k": "Pendidikan",
+    "v": "S1 Manajemen, Universitas Terbuka (sedang berjalan)",
+    "status": false
+   },
+   {
+    "k": "Status",
+    "v": "Terbuka untuk Kolaborasi",
+    "status": true
+   }
+  ],
+  "cv": {
+   "tampil": true,
+   "teks": "Unduh CV (PDF)",
+   "file": "assets/CV_Dika_Priyadi.pdf"
+  },
+  "tombol2": {
+   "teks": "Hubungi Saya",
+   "href": "#kolaborasi"
+  },
+  "angka": [
+   {
+    "nilai": "12+ Tahun",
+    "label": "Kepemimpinan & SOP"
+   },
+   {
+    "nilai": "2 Konten",
+    "label": "dianalisis dari data bawaan Instagram dan TikTok"
+   },
+   {
+    "nilai": "1 Episode",
+    "label": "seri Build with AI (37 detik), dirender dengan Remotion; dampak ke penonton belum diukur"
+   }
+  ],
+  "rekam": {
+   "label": "REKAM JEJAK",
+   "judul": "Kepemimpinan & Akademik",
+   "pendidikan": "S1 Manajemen — Universitas Terbuka (sedang berjalan)",
+   "item": [
+    {
+     "id": "r1",
+     "peran": "AI Social Media Analyst & AI Video Production (independen)",
+     "periode": "Sekarang",
+     "org": "Independen sejak Agustus 2026 — menganalisis performa konten dari data analitik akun sendiri, memproduksi video AI dengan alur Remotion, dan mengelola platform publikasi CatatanAkademik.com. Proyek mandiri, bukan pekerjaan klien."
+    },
+    {
+     "id": "r2",
+     "peran": "Pengalaman pendukung: otomasi & platform",
+     "periode": "Sekarang",
+     "org": "Menjalankan dua bot WhatsApp di VPS (PM2) untuk pengelolaan grup dan notifikasi pesanan, serta mengelola server CatatanAkademik.com. Pendukung kerja konten, bukan fokus karier."
+    },
+    {
+     "id": "r3",
+     "peran": "Supervisor · 24 staf",
+     "periode": "2024 – 2026",
+     "org": "PT Horizon Internusa Persada — menyusun SOP, jadwal kerja, serta laporan harian dan bulanan."
+    },
+    {
+     "id": "r4",
+     "peran": "Supervisor · 59 staf",
+     "periode": "2022 – 2024",
+     "org": "PT Angkasa Pura Support — area MRT Jakarta dan Kereta Cepat Jakarta. Best Employee Project MRT Jakarta 2023."
+    },
+    {
+     "id": "r5",
+     "peran": "Supervisor · hingga 93 staf",
+     "periode": "2021 – 2022",
+     "org": "Mercu Buana Center — memimpin tim terbesar, pengawasan operasional harian dan pelatihan tim."
+    },
+    {
+     "id": "r6",
+     "peran": "Supervisor",
+     "periode": "2014 – 2021",
+     "org": "ISS Indonesia — area apartemen Jakarta Barat dan kampus. Best Employee ISS Indonesia."
+    }
+   ]
+  }
+ },
+ "kontak": {
+  "wa": "6285722227544",
+  "email": "dika.priyadi@catatanakademik.com",
+  "label": "05 — KOLABORASI",
+  "judul": "Punya kebutuhan analisis konten atau video AI? Ceritakan kebutuhannya.",
+  "intro": "Pilih jalur yang paling sesuai. Tombol membuka WhatsApp dengan pesan yang sudah disiapkan; saya balas dengan pertanyaan klarifikasi dan langkah berikutnya.",
+  "jalur": [
+   {
+    "label": "JALUR 01",
+    "judul": "Produksi Konten & Video AI",
+    "teks": "Video iklan produk, Reels/TikTok, carousel, dan aset visual kampanye berbasis AI.",
+    "tombol": [
+     {
+      "teks": "Konsultasi via WhatsApp",
+      "gaya": "utama",
+      "jenis": "wa",
+      "nilai": "Halo Dika, saya ingin konsultasi produksi konten/video iklan berbasis AI untuk brand saya. Boleh dibantu jelaskan alur dan estimasinya?",
+      "subjek": ""
+     }
+    ]
+   },
+   {
+    "label": "JALUR 02",
+    "judul": "Analisis & Strategi Media Sosial",
+    "teks": "Evaluasi konten dari data analitik, rekomendasi hook dan CTA, serta rencana eksperimen.",
+    "tombol": [
+     {
+      "teks": "Konsultasi via WhatsApp",
+      "gaya": "utama",
+      "jenis": "wa",
+      "nilai": "Halo Dika, saya ingin konsultasi analisis dan strategi media sosial untuk akun saya.",
+      "subjek": ""
+     }
+    ]
+   },
+   {
+    "label": "JALUR 03",
+    "judul": "Recruiter & Hiring",
+    "teks": "Untuk HRD dan perekrut: unduh CV, atau hubungi langsung lewat WhatsApp maupun email.",
+    "tombol": [
+     {
+      "teks": "Unduh CV (PDF)",
+      "gaya": "utama",
+      "jenis": "cv",
+      "nilai": "assets/CV_Dika_Priyadi.pdf",
+      "subjek": ""
+     },
+     {
+      "teks": "Chat WhatsApp",
+      "gaya": "garis",
+      "jenis": "wa",
+      "nilai": "Halo Dika, saya dari tim rekrutmen dan tertarik dengan profil Anda sebagai AI Social Media & Digital Content Specialist. Apakah bisa dijadwalkan obrolan singkat?",
+      "subjek": ""
+     },
+     {
+      "teks": "Kirim Email",
+      "gaya": "garis",
+      "jenis": "email",
+      "nilai": "dika.priyadi@catatanakademik.com",
+      "subjek": "Peluang Kerja - Dika Priyadi"
+     }
+    ]
+   }
+  ],
+  "formJudul": "Atau ceritakan kebutuhan Anda singkat",
+  "formJenis": [
+   {
+    "label": "Analisis media sosial",
+    "value": "analisis media sosial"
+   },
+   {
+    "label": "Video AI",
+    "value": "konten video AI"
+   },
+   {
+    "label": "Strategi konten",
+    "value": "strategi konten"
+   },
+   {
+    "label": "Website",
+    "value": "website atau landing page"
+   },
+   {
+    "label": "Lainnya",
+    "value": "lainnya"
+   }
+  ],
+  "formKebutuhanPh": "Contoh: video TikTok saya cepat ditinggalkan penonton, ingin tahu penyebabnya",
+  "formTargetPh": "Contoh: rata-rata durasi tonton naik",
+  "formTombol": "Mulai diskusi via WhatsApp",
+  "copyright": "Dika Priyadi — dikapriyadi.site · Analisis Konten & Video AI."
+ },
+ "kaki": {
+  "brand": "AI Social Media Analyst & AI Video Production Specialist — Jakarta, Indonesia.",
+  "sosial": [
+   {
+    "nama": "Instagram",
+    "href": "https://www.instagram.com/priyadi_dika/"
+   },
+   {
+    "nama": "TikTok",
+    "href": "https://www.tiktok.com/@akihabara.fuzi"
+   },
+   {
+    "nama": "YouTube",
+    "href": "https://www.youtube.com/channel/UCE-D3sZyS8EW35CxJPVyT_A"
+   }
+  ],
+  "kolom": [
+   {
+    "judul": "Navigasi",
+    "link": [
+     {
+      "teks": "Proyek",
+      "href": "#proyek",
+      "wa": ""
+     },
+     {
+      "teks": "Layanan",
+      "href": "#layanan",
+      "wa": ""
+     },
+     {
+      "teks": "Kemampuan",
+      "href": "#keahlian",
+      "wa": ""
+     },
+     {
+      "teks": "Cara Kerja",
+      "href": "#cara-kerja",
+      "wa": ""
+     },
+     {
+      "teks": "Pengalaman Pendukung",
+      "href": "#karya",
+      "wa": ""
+     },
+     {
+      "teks": "Tentang",
+      "href": "#tentang",
+      "wa": ""
+     }
+    ]
+   },
+   {
+    "judul": "Layanan",
+    "link": [
+     {
+      "teks": "Platform Web & Produk Digital",
+      "href": "#svc-web",
+      "wa": ""
+     },
+     {
+      "teks": "Konten & Video AI",
+      "href": "#svc-konten",
+      "wa": ""
+     },
+     {
+      "teks": "Analisis Media Sosial",
+      "href": "#svc-analisis",
+      "wa": ""
+     },
+     {
+      "teks": "Strategi Sistem Konten",
+      "href": "#svc-strategi",
+      "wa": ""
+     }
+    ],
+    "otomatis": true
+   },
+   {
+    "judul": "Kontak",
+    "link": [
+     {
+      "teks": "WhatsApp",
+      "href": "",
+      "wa": "Halo Dika, saya menemukan portofolio Anda dan ingin berdiskusi."
+     },
+     {
+      "teks": "dika.priyadi@catatanakademik.com",
+      "href": "mailto:dika.priyadi@catatanakademik.com",
+      "wa": ""
+     },
+     {
+      "teks": "Instagram",
+      "href": "https://www.instagram.com/priyadi_dika/",
+      "wa": ""
+     },
+     {
+      "teks": "TikTok",
+      "href": "https://www.tiktok.com/@akihabara.fuzi",
+      "wa": ""
+     },
+     {
+      "teks": "YouTube",
+      "href": "https://www.youtube.com/channel/UCE-D3sZyS8EW35CxJPVyT_A",
+      "wa": ""
+     }
+    ]
+   }
+  ]
+ },
+ "skema": 1,
+ "diperbarui": ""
+}
