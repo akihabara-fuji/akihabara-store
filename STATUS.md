@@ -1,13 +1,14 @@
 # STATUS papan kantor
 
-Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-25 16:40 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
+Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-25 23:48 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
 Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 
 ## Rahasia bocor (harus segera dihapus)
 - tidak ada
 
 ## Format rusak
-- tidak ada
+- `LAPORAN/2026-11-25-2350-portofolio-sistem-kerja.md`: kurang BELUM:
+- `LAPORAN/2026-11-25-2350-portofolio-sistem-kerja.md`: isi Cek silang harus MENUNGGU / LULUS / GAGAL, tertulis "tidak diminta"
 
 ## Menunggu cek silang
 - `SETORAN/2026-11-17-0856-gpt.md`: MENUNGGU Gemini
@@ -41,11 +42,11 @@ Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 - semua bebas
 
 ## Laporan terbaru
+- `LAPORAN/2026-11-25-2350-portofolio-sistem-kerja.md`
 - `LAPORAN/2026-11-25-1330-jadwal-konten.md`
 - `LAPORAN/2026-11-25-0820-remotion.md`
 - `LAPORAN/2026-11-17-1245-audit-ulang.md`
 - `LAPORAN/2026-11-17-0855-heyaipeople-audit.md`
-- `LAPORAN/2026-11-17-0829-artefak.md`
 
 ## Setoran terbaru
 - `SETORAN/2026-11-17-1015-gpt.md`

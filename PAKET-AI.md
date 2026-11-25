@@ -1,6 +1,6 @@
 # PAKET PAPAN KANTOR AI PEOPLE
 
-Salinan otomatis branch kantor (2026-11-25 16:40 WIB). Jangan diedit di sini: sumbernya GitHub akihabara-fuji/akihabara-store branch kantor.
+Salinan otomatis branch kantor (2026-11-25 23:48 WIB). Jangan diedit di sini: sumbernya GitHub akihabara-fuji/akihabara-store branch kantor.
 Isi: STATUS.md, AI/BACA-DULU.md, AI/PERAN.md, ATURAN.md, KUNCI.md, BAGAN.md, SETORAN/README.md, ESTAFET/README.md, ARTEFAK/RINGKAS.md, PROYEK/heyaipeople/MASTER_BRAND_GUIDELINES.md, PROYEK/heyaipeople/CONTENT_REGISTRY.md, PROYEK/heyaipeople/DESIGN_REGISTRY.md, PROYEK/README.md, lalu HANDOFF tiap proyek.
 
 
@@ -8,14 +8,15 @@ Isi: STATUS.md, AI/BACA-DULU.md, AI/PERAN.md, ATURAN.md, KUNCI.md, BAGAN.md, SET
 
 # STATUS papan kantor
 
-Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-25 16:40 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
+Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-25 23:48 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
 Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 
 ## Rahasia bocor (harus segera dihapus)
 - tidak ada
 
 ## Format rusak
-- tidak ada
+- `LAPORAN/2026-11-25-2350-portofolio-sistem-kerja.md`: kurang BELUM:
+- `LAPORAN/2026-11-25-2350-portofolio-sistem-kerja.md`: isi Cek silang harus MENUNGGU / LULUS / GAGAL, tertulis "tidak diminta"
 
 ## Menunggu cek silang
 - `SETORAN/2026-11-17-0856-gpt.md`: MENUNGGU Gemini
@@ -49,11 +50,11 @@ Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 - semua bebas
 
 ## Laporan terbaru
+- `LAPORAN/2026-11-25-2350-portofolio-sistem-kerja.md`
 - `LAPORAN/2026-11-25-1330-jadwal-konten.md`
 - `LAPORAN/2026-11-25-0820-remotion.md`
 - `LAPORAN/2026-11-17-1245-audit-ulang.md`
 - `LAPORAN/2026-11-17-0855-heyaipeople-audit.md`
-- `LAPORAN/2026-11-17-0829-artefak.md`
 
 ## Setoran terbaru
 - `SETORAN/2026-11-17-1015-gpt.md`
@@ -896,11 +897,14 @@ Tujuan akhir semua kerja: pengikut naik, pengunjung ke heyaipeople.site, pesanan
 <!-- Dipindah dari branch portofolio-dika: portofolio-src/HANDOFF.md (versi f0c8db0, 16 Nov 2026 19.30). Mulai sekarang hanya file ini yang diperbarui. -->
 # HANDOFF portofolio Dika Priyadi (baca ini dulu, jangan tanya ulang)
 
-## STATUS NYATA (diperbarui 25 Nov 2026 09.30, Claude)  ← bagian ini menang atas semua bagian di bawahnya
-- Situs live: https://dikapriyadi.site . Kode: branch `portofolio-kasus`, folder `portofolio-kasus/` (index.html halaman tunggal, server.js = admin "dp-kasus", konten.seed.json, wb-flow.js, sistem-kerja/index.html). Commit live terakhir: 55543ba19bec7a5bdea618195ef815ffd5b92a70 (25 Nov, halaman Sistem Kerja). Sebelumnya 1f18136.
+## STATUS NYATA (diperbarui 25 Nov 2026 23.50, Claude)  ← bagian ini menang atas semua bagian di bawahnya
+- Situs live: https://dikapriyadi.site . Kode: branch `portofolio-kasus`, folder `portofolio-kasus/` (index.html halaman tunggal, server.js = admin "dp-kasus", konten.seed.json, wb-flow.js, sistem-kerja/index.html). Commit live terakhir: 5134ed58dbefeb4b3f1232be7843c006647e81b1 (25 Nov 23.45, Sistem Kerja menonjol). Sebelumnya 55543ba (halaman Sistem Kerja) dan 1f18136.
 - VPS: web root /var/www/dikapriyadi, aplikasi /opt/dp-kasus (service systemd dp-kasus), data /var/lib/dp-kasus (konten-state.json, galeri.json, cases.json), nginx. Menu navigasi dibaca dari konten.json (`nav.links`, maksimal 8; sekarang 6 termasuk Sistem Kerja). Validasi href admin: HREF_RE di server.js.
-- Halaman Sistem Kerja: /sistem-kerja/ (satu berkas HTML mandiri, data localStorage `asos-v1` per pengunjung, tanpa backend, berlabel "DATA DEMO — BUKAN DATA AKTUAL"). Berkas ini TERKUNCI (ACC Dika), jangan diubah tanpa perintah. Teruji live 25 Nov: menu dari beranda membuka halaman, dropdown HP muncul, tanpa scroll horizontal, galeri.json dan cases.json 200.
-- Deploy: satu perintah curl dari GitHub dengan SHA lengkap, root, lewat hPanel Web console (hpanel.hostinger.com/vps/2040957/overview, terminal dci.hostingervps.com/5181). Pola skrip: deploy/update-portofolio-sistemkerja.sh (cek sha live dulu, cadangan ke /root, rollback otomatis, cetak `OK, commit <sha> live`). Cadangan terakhir: /root/dikapriyadi.pre-sistemkerja.1795572571. Tulis skrip baru dari pola itu; JANGAN pakai update-portofolio.sh, update-portofolio-cms.sh, update-portofolio-admin.sh, atau /root/update-koin.sh (semua milik sistem lama, menimpa isi live).
+- Halaman Sistem Kerja: /sistem-kerja/ (satu berkas HTML mandiri, data localStorage `asos-v1` per pengunjung, tanpa backend, berlabel "DATA DEMO — BUKAN DATA AKTUAL"). Isi terakhir (25 Nov 23.45, ACC Dika): modul pertama "Alur Kerja" (peta 11 tahap IDE-DIEVALUASI berwarna, klik tahap membuka detail), warna per bagian, routing #alur~KODE. Jangan diubah tanpa perintah. Teruji live 25 Nov: menu dari beranda membuka halaman, dropdown HP muncul, tanpa scroll horizontal, galeri.json dan cases.json 200.
+- Deploy: satu perintah curl dari GitHub dengan SHA lengkap, root, lewat hPanel Web console (hpanel.hostinger.com/vps/2040957/overview, terminal dci.hostingervps.com/5181). Pola skrip: deploy/update-portofolio-sistemkerja.sh (cek sha live dulu, cadangan ke /root, rollback otomatis, cetak `OK, commit <sha> live`). Skrip terbaru: deploy/update-portofolio-sk-alur.sh (cek sha index.html live 504b5df5ea22edbe dulu; untuk deploy berikutnya salin polanya dan ganti BASE_SHA ke sha index.html live sekarang). Cadangan terakhir: /root/dikapriyadi.pre-skalur.1795625212 (sebelumnya pre-sistemkerja.1795572571). Tulis skrip baru dari pola itu; JANGAN pakai update-portofolio.sh, update-portofolio-cms.sh, update-portofolio-admin.sh, atau /root/update-koin.sh (semua milik sistem lama, menimpa isi live).
+- SISTEM KERJA MENONJOL (ACC Dika dan live 25 Nov 23.45, TERKUNCI): (a) menu Sistem Kerja jadi pertama (pill oranye + label DEMO; urutan diatur di konten.json/konten-state.json `nav.links`, bukan hanya HTML); (b) tombol hero pertama oranye "Lihat Sistem Kerja" (`hero.tombol`); (c) alur 11 tahap gaya n8n tepat di bawah hero (`section.skb2`, node mengarah ke sistem-kerja/#alur~KODE, kartu ke-12 oranye "Buka ruang kerja demo"); (d) video overview hero dipindah ke bawah alur (isi video tidak diubah, jangan diutak-atik); (e) lebar konten --maxw 1440px; (f) navbar punya garis oranye penanda bagian aktif saat scroll (Proyek, Layanan, Cara Kerja, Tentang, Kontak); (g) teks kartu Tentang di bagian atas; (h) tiap bagian muncul perlahan saat scroll (.sec-rv); (i) efek teks per kalimat tidak lagi menghilangkan spasi di sekitar tulisan tebal.
+- Belum dicek di live: penanda navbar saat scroll, tampilan HP, kartu Tentang dengan foto asli (lolos tes lokal).
+- Catatan: push ke GitHub sempat 503 selama sekitar 1 jam karena layanan kredensial; tidak ada yang perlu diubah, sekarang normal.
 - Aturan Dika: perubahan visual/animasi = mock dulu, tunggu ACC; deploy hanya setelah Dika bilang; yang sudah ACC terkunci; teks formal Indonesia; jangan klaim "sudah jalan" tanpa bukti.
 - Belum selesai: (1) pengunjung/HRD hanya melihat data demo Sistem Kerja, data nyata Dika baru ada kalau dibuat penyimpanan bersama di server (mengubah berkas terkunci, perlu mock dan ACC); (2) halaman Sistem Kerja belum punya tombol kembali ke beranda dan banyak label Inggris (usulan, belum di-ACC); (3) halaman "Progres Produksi" Remotion untuk HRD (usulan); (4) bagian di bawah ini sudah lama dan memuat domain, branch, dan admin lama (catatanakademik.com, portofolio-dika, dp-admin, porto-api) yang belum diverifikasi masih aktif atau tidak; anggap arsip.
 
