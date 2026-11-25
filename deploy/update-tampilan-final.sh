@@ -30,9 +30,9 @@ inst "$N/depan.html" "$APP/depan.html" root:root
 inst "$N/kasus.html" "$APP/kasus.html" root:root
 V=/tmp/dp-v.$$
 curl -fsS https://dikapriyadi.site/ -o "$V"; grep -q 'class="hgrid"' "$V"; grep -q 'id="penutup"' "$V"; ! grep -q 'dp-bg' "$V"
-curl -fsS https://dikapriyadi.site/sistem-kerja/ | grep -q "C.tangga="
-curl -fsS https://dikapriyadi.site/admin/kasus/depan | grep -q 'sb-mod'
-curl -fsS https://dikapriyadi.site/admin/kasus | grep -q 'sb-mod'
+curl -fsS https://dikapriyadi.site/sistem-kerja/ -o "$V.sk"; grep -q "C.tangga=" "$V.sk"
+curl -fsS https://dikapriyadi.site/admin/kasus/depan -o "$V.d"; grep -q 'sb-mod' "$V.d"
+curl -fsS https://dikapriyadi.site/admin/kasus -o "$V.k"; grep -q 'sb-mod' "$V.k"
 for a in v-remotion-ep001.mp4 v-remotion-ep001.webp; do [ "$(curl -s -o /dev/null -w '%{http_code}' https://dikapriyadi.site/assets/$a)" = 200 ]; done
 curl -fsS https://dikapriyadi.site/cases.json | python3 -c "import sys,json;d=json.load(sys.stdin);assert len(d['karya'])==10;print('karya live:',len(d['karya']))"
 systemctl is-active dp-kasus
