@@ -1995,9 +1995,15 @@ html:not(.fx-off) .hero::before,html:not(.fx-off) .hero::after{display:none}
 </style>
 <script>window.__GAL=fetch("galeri.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).catch(function(){return null});window.__KON=fetch("konten.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).catch(function(){return null});
 function applyBagian(b){if(!b)return;[["kartu","#proyek .section-head"],["video","#karya-ai .section-head"],["karya","#karya .showcase-copy"]].forEach(function(m){var o=b[m[0]],box=document.querySelector(m[1]);if(!o||!box)return;var e=box.querySelector(".eyebrow"),h=box.querySelector("h2"),p=box.querySelector("p");if(o.label&&e)e.textContent=o.label;if(o.judul&&h)h.textContent=o.judul;if(o.intro&&p)p.textContent=o.intro})}</script>
-<style id="sec-rv">@media(min-width:1200px){.about-photo{aspect-ratio:21/9}.about-info{top:70%}}
+<style id="sec-rv">
+:root{--navh:80px}
+.section#layanan,.section#bukti,.section#keahlian,.section#cara-kerja,.section#karya,.section#tentang,.section#kolaborasi{scroll-margin-top:var(--navh);min-height:calc(100svh - var(--navh));box-sizing:border-box;display:flex;flex-direction:column;justify-content:flex-start;isolation:isolate;padding-top:clamp(20px,2.6vw,36px)}
+.section#proyek,.skb2,.hv-sec{scroll-margin-top:var(--navh)}
+.section#layanan>*,.section#bukti>*,.section#keahlian>*,.section#cara-kerja>*,.section#karya>*,.section#tentang>*,.section#kolaborasi>*{max-width:100%}
+@media(max-width:860px){.section#layanan,.section#bukti,.section#keahlian,.section#cara-kerja,.section#karya,.section#tentang,.section#kolaborasi{min-height:0;display:block}}
+@media(min-width:1200px){.about-photo{aspect-ratio:21/9}.about-info{top:70%}}
 .section,.skb,.hv-sec{scroll-margin-top:84px}
-main>.section,.section#proyek,.section#layanan,.section#bukti,.section#keahlian,.section#cara-kerja,.section#karya,.section#tentang,.section#kolaborasi{padding-top:clamp(56px,7vw,104px);padding-bottom:clamp(56px,7vw,104px);position:relative}
+.section#layanan,.section#bukti,.section#keahlian,.section#cara-kerja,.section#karya,.section#tentang,.section#kolaborasi{position:relative}
 #layanan::before,#bukti::before,#keahlian::before,#cara-kerja::before,#karya::before,#tentang::before,#kolaborasi::before{content:"";position:absolute;top:0;left:24px;right:24px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.14),transparent);pointer-events:none}
 .rv-on .sec-rv{opacity:0;transform:translateY(34px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1);transition-delay:calc(var(--i,0)*90ms);will-change:opacity,transform}
 .rv-on .sec-rv.in2{opacity:1;transform:none}
@@ -3647,5 +3653,5 @@ function spy(){var y=innerHeight*0.38,act=null;IDS.forEach(function(id){var e=do
 function place2(a,box){var ar=a.getBoundingClientRect(),br=box.getBoundingClientRect();ind.style.width=ar.width+'px';ind.style.transform='translateX('+(ar.left-br.left)+'px)';ind.style.opacity=1}
 var t;addEventListener('scroll',function(){cancelAnimationFrame(t);t=requestAnimationFrame(spy)},{passive:true});addEventListener('resize',function(){spy.f=1;spy()});addEventListener('load',function(){spy.f=1;spy()});setTimeout(function(){spy.f=1;spy()},1200);spy();
 window.cvFit&&0})();
-</script></body>
+</script><script>(function(){var h=location.hash;if(!h||h.length<2)return;function go(){var e=document.getElementById(h.slice(1));if(e)e.scrollIntoView()}addEventListener("load",function(){setTimeout(go,900);setTimeout(go,2400)})})();</script></body>
 </html>
