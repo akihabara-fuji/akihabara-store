@@ -150,54 +150,55 @@ footer a{color:#fff;text-decoration:underline;text-underline-offset:3px}
 </head>
 <body>
 <div class="bg"></div>
+{{BANNER_HTML}}
 <nav><div class="nav-in">
  <a class="logo" href="#top">heyaipeople<b>.site</b></a>
- <div class="nav-links"><a href="#prompt-foto">Prompt Foto</a><a href="#storyboard">Storyboard → Video</a><a href="#cara-kerja">Cara Kerja</a><a href="#bundling">Bundling</a><a href="/blog/">Blog</a></div>
+ <div class="nav-links"><a href="#prompt-foto">{{T_nav1}}</a><a href="#storyboard">{{T_nav2}}</a><a href="#cara-kerja">{{T_nav3}}</a><a href="#bundling">{{T_nav4}}</a><a href="/blog/">Blog</a></div>
  <button class="btn btn-o cartbtn" onclick="openCart()">Keranjang <span class="badge" id="cc">0</span></button>
 </div></nav>
 
 <main class="wrap" id="top">
 <div class="hero">
  <div>
-  <span class="pill"><i></i>Marketplace AI · Real work, real process, real proof</span>
+  <span class="pill"><i></i>{{T_pill}}</span>
   <h1 class="disp">{{H_A}} <em>{{H_EM}}</em> {{H_B}}</h1>
   <p class="lead">{{LEAD}}</p>
   <div class="cta"><a class="btn btn-o" href="#prompt-foto">{{CTA1}}</a><a class="btn btn-g" href="#storyboard">{{CTA2}}</a></div>
-  <div class="stats"><div><b class="disp">{{COUNT}}</b><span>Katalog siap pakai</span></div><div><b class="disp">2</b><span>Format: Foto &amp; Video</span></div><div><b class="disp">WA</b><span>Pesan &amp; kirim cepat</span></div></div>
+  <div class="stats"><div><b class="disp">{{COUNT}}</b><span>{{T_st1}}</span></div><div><b class="disp">{{T_st2n}}</b><span>{{T_st2}}</span></div><div><b class="disp">{{T_st3n}}</b><span>{{T_st3}}</span></div></div>
  </div>
  <div class="stage" id="stage"><div class="rig" id="rig">
   <div class="floor"></div><div class="ring a"></div>
-  <div class="ph p1"><canvas id="h1"></canvas><div class="cap"><span>Cyberpunk</span><span>4:5</span></div></div>
-  <div class="ph p2"><canvas id="h2"></canvas><div class="cap"><span>Kopi Susu Studio</span><span>Flux.1</span></div></div>
-  <div class="ph p3"><canvas id="h3"></canvas><div class="cap"><span>Villa Ubud</span><span>MJ v6</span></div></div>
-  <div class="chip c1"><i></i>Prompt siap salin</div><div class="chip c2"><i></i>Remotion 2D (TSX)</div><div class="chip c3"><i></i>Kling → Video AI</div>
+  <div class="ph p1"><canvas id="h1"></canvas><div class="cap"><span>{{T_cap1a}}</span><span>{{T_cap1b}}</span></div></div>
+  <div class="ph p2"><canvas id="h2"></canvas><div class="cap"><span>{{T_cap2a}}</span><span>{{T_cap2b}}</span></div></div>
+  <div class="ph p3"><canvas id="h3"></canvas><div class="cap"><span>{{T_cap3a}}</span><span>{{T_cap3b}}</span></div></div>
+  <div class="chip c1"><i></i>{{T_chip1}}</div><div class="chip c2"><i></i>{{T_chip2}}</div><div class="chip c3"><i></i>{{T_chip3}}</div>
  </div></div>
 </div>
 </main>
 
-<div class="mq"><div><span>Flux.1 Dev</span><span>Midjourney v6</span><span>Kling 1.6</span><span>Remotion 2D</span><span>Prompt Foto</span><span>Storyboard</span><span>Lisensi komersial</span><span>Flux.1 Dev</span><span>Midjourney v6</span><span>Kling 1.6</span><span>Remotion 2D</span><span>Prompt Foto</span><span>Storyboard</span><span>Lisensi komersial</span></div></div>
+<div class="mq"><div>{{MQ_HTML}}</div></div>
 
 <section id="prompt-foto"><div class="wrap">
- <div class="head rv"><div><span class="kick">Katalog A · Prompt Foto</span><h2 class="disp">Katalog Prompt Foto AI Teruji</h2><p class="sub">Lihat hasil fotonya dulu, baru buka prompt lengkapnya. Satu prompt contoh gratis sudah terbuka.</p></div>
- <div class="tools"><input class="search" id="q" placeholder="Cari prompt foto..."></div></div>
+ <div class="head rv"><div><span class="kick">{{T_aK}}</span><h2 class="disp">{{T_aT}}</h2><p class="sub">{{T_aS}}</p></div>
+ <div class="tools"><input class="search" id="q" placeholder="{{T_search}}"></div></div>
  <div class="pills rv" id="pills"></div>
  <div class="grid3" id="photoGrid"></div>
 </div></section>
 
 <section id="storyboard" style="background:#fff;border-block:1px solid var(--line)"><div class="wrap">
- <div class="head rv"><div><span class="kick">Katalog B · Storyboard → Video</span><h2 class="disp">Paket Storyboard Gambar → Video AI &amp; Remotion 2D</h2><p class="sub">Dua keyframe, prompt gambar, prompt video, dan kode Remotion 2D dalam satu paket.</p></div></div>
+ <div class="head rv"><div><span class="kick">{{T_bK}}</span><h2 class="disp">{{T_bT}}</h2><p class="sub">{{T_bS}}</p></div></div>
  <div class="grid2" id="sbGrid"></div>
 </div></section>
 
 <section id="cara-kerja"><div class="wrap">
- <div class="head rv"><div><span class="kick">Cara kerja</span><h2 class="disp">Tiga langkah, tanpa ribet.</h2></div></div>
+ <div class="head rv"><div><span class="kick">{{T_cK}}</span><h2 class="disp">{{T_cT}}</h2></div></div>
  <div class="steps">
 {{STEPS_HTML}}
  </div>
 </div></section>
 
 <section id="bundling" style="padding-top:20px"><div class="wrap">
- <div class="head rv"><div><span class="kick">Hemat hingga 65% · sekali bayar</span><h2 class="disp">Paket Bundling Prompt &amp; Remotion 2D</h2><p class="sub">Buka kunci banyak prompt sekaligus dengan harga lebih hemat untuk kreator &amp; agensi.</p></div></div>
+ <div class="head rv"><div><span class="kick">{{T_dK}}</span><h2 class="disp">{{T_dT}}</h2><p class="sub">{{T_dS}}</p></div></div>
  <div class="bun">
 {{BUNDLES_HTML}}
  </div>
@@ -205,7 +206,7 @@ footer a{color:#fff;text-decoration:underline;text-underline-offset:3px}
 
 {{FAQ_HTML}}
 <footer><div class="wrap fgrid"><div><div class="logo" style="color:#fff;font-size:20px">heyaipeople<b>.site</b></div><p style="margin-top:10px;font-size:13px">{{F_COPY}}</p><p style="font-size:13px;margin-top:6px">{{F_NOTE}}</p></div>
-<p style="font-size:13px">Ikuti kami: {{F_LINKS}}</p></div></footer>
+<p style="font-size:13px">{{T_follow}} {{F_LINKS}}</p></div></footer>
 
 <div class="ov" id="ov" onclick="closeCart()"></div>
 <aside class="drawer" id="dr"><div class="dh">Keranjang<button onclick="closeCart()" style="font-size:22px">×</button></div>

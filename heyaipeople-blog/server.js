@@ -33,6 +33,8 @@ const num = v => Math.max(0, Math.min(99999999, Math.round(+v || 0)));
 const IMG = /^\/uploads\/[a-f0-9]{32}\.jpg$/;
 let SEEDSITE = {};
 try { SEEDSITE = JSON.parse(fs.readFileSync(path.join(__dirname, 'seed.json'), 'utf8')).site || {}; } catch (e) {}
+let DEFTEXT = {};
+try { DEFTEXT = JSON.parse(fs.readFileSync(path.join(__dirname, 'text.default.json'), 'utf8')); } catch (e) {}
 function cleanState(inp) {
   const o = { products: [], site: {} };
   const seen = new Set();
@@ -69,6 +71,9 @@ function cleanState(inp) {
   o.site.faq = (Array.isArray(s.faq) ? s.faq : []).slice(0, 20).map(x => ({ q: str(x && x.q, 200), a: str(x && x.a, 800) })).filter(x => x.q && x.a);
   const f = s.footer || {};
   o.site.footer = { copy: str(f.copy, 200), note: str(f.note, 300), ig: url(f.ig), tt: url(f.tt), yt: url(f.yt) };
+  const tx = (s.text && typeof s.text === 'object') ? s.text : {};
+  o.site.text = {}; for (const k in DEFTEXT) o.site.text[k] = tx[k] === undefined ? DEFTEXT[k] : str(tx[k], k === 'mq' ? 400 : 300);
+  o.site.banner = { on: !!(s.banner && s.banner.on), text: str(s.banner && s.banner.text, 200), link: url(s.banner && s.banner.link) };
   if (o.site.wa.length < 8) throw new Error('Nomor WhatsApp tidak valid');
   if (!o.site.title) throw new Error('Judul halaman wajib diisi');
   return o;
@@ -106,6 +111,11 @@ function build(st) {
     TITLE_H: esc(s.title), DESC_H: esc(s.desc), H_A: esc(s.heroA), H_EM: esc(s.heroEm), H_B: esc(s.heroB), LEAD: esc(s.lead), CTA1: esc(s.cta1), CTA2: esc(s.cta2),
     COUNT: String(vis.length), ACCENT: s.accent, ACCENT2: mix(s.accent), WA: s.wa, TPL_JSON: jsn(s.tpl), PHOTOPRODUCTS_JSON: jsn(photos), STORYBOARDPRODUCTS_JSON: jsn(sbs)
   };
+  const pcts = s.bundles.filter(b => b.show && b.old > b.price && b.price > 0).map(b => Math.floor((b.old - b.price) / b.old * 100));
+  const hemat = pcts.length ? Math.max(...pcts) : 0;
+  for (const k in s.text) map['T_' + k] = esc(s.text[k]).split('{hemat}').join(String(hemat));
+  map.MQ_HTML = (() => { const a = String(s.text.mq || '').split(',').map(x => x.trim()).filter(Boolean).map(x => '<span>' + esc(x) + '</span>').join(''); return a + a; })();
+  map.BANNER_HTML = s.banner && s.banner.on && s.banner.text ? '<div style="background:' + s.accent + ';color:#fff;text-align:center;padding:9px 14px;font-size:13px;font-weight:600">' + (s.banner.link ? '<a href="' + esc(s.banner.link) + '" style="color:#fff;text-decoration:underline">' + esc(s.banner.text) + '</a>' : esc(s.banner.text)) + '</div>' : '';
   let h = fs.readFileSync(path.join(APP, 'template.html'), 'utf8');
   for (const k in map) h = h.split('{{' + k + '}}').join(map[k]);
   if (/\{\{[A-Z_0-9]+\}\}/.test(h)) throw new Error('Template belum terisi lengkap');
@@ -126,7 +136,7 @@ if (!kget('state')) {
 }
 
 if (kget('state') && !process.env.HP_NOBUILD) {
-  try { const cur = getState(); if (!cur.site.bundles) { const m = cleanState(cur); putState(m, 'Migrasi tahap 2'); build(m); } } catch (e) { console.error('migrasi gagal', e.message); }
+  try { const cur = getState(); if (!cur.site.bundles || !cur.site.text) { const m = cleanState(cur); putState(m, 'Migrasi tahap 2'); build(m); } } catch (e) { console.error('migrasi gagal', e.message); }
 }
 
 // ---------- backup harian ----------
