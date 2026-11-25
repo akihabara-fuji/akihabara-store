@@ -22,6 +22,16 @@ input[type=text],textarea,select{width:100%;font:inherit;color:var(--ink);backgr
 .bk{border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:8px;background:#0e121a}.bk img,.bk video{max-width:180px;max-height:120px;border-radius:8px;display:block;margin-bottom:6px}
 table{width:100%;border-collapse:collapse;font-size:13px}td,th{border:1px solid var(--line);padding:4px}td input{width:100%;min-width:90px;padding:6px;font-size:13px}.scroll{overflow-x:auto}
 .login{max-width:520px;margin:60px auto;text-align:center}ul.todo{margin:6px 0 0;padding-left:18px;color:var(--mut);font-size:13.5px}
+
+/* === SHELL ADMIN (sidebar + bilah atas) === */
+body.shelled{display:grid;grid-template-columns:240px minmax(0,1fr);min-height:100vh}
+.sb{background:var(--panel);border-right:1px solid var(--line);padding:16px 12px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh;overflow:auto}
+.sb .lg{padding:2px 8px 14px;border-bottom:1px solid var(--line);margin-bottom:8px}.sb .lg b{font-size:16px}.sb .lg small{display:block;color:var(--mut);font-size:12px}
+.sb a,.sb button.nv{display:flex;gap:10px;align-items:center;width:100%;text-align:left;padding:9px 12px;border-radius:10px;color:var(--mut);text-decoration:none;background:none;border:0;font:inherit;min-height:0;cursor:pointer}
+.sb a:hover,.sb button.nv:hover{color:var(--ink)}.sb a.on,.sb button.nv.on{background:rgba(247,141,36,.14);color:var(--ink);box-shadow:inset 3px 0 var(--acc)}
+.sb .sp{flex:1}.sb hr{border:0;border-top:1px solid var(--line);margin:8px 0;width:100%}
+.wrap{min-width:0}.live{display:inline-flex;gap:8px;align-items:center;border:1px solid rgba(63,191,127,.5);color:var(--ok);padding:5px 12px;border-radius:99px;font-size:13px;background:rgba(63,191,127,.08)}.live:before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ok)}
+@media(max-width:900px){body.shelled{grid-template-columns:1fr}.sb{position:static;height:auto;flex-direction:row;overflow-x:auto;padding:8px}.sb .lg,.sb hr,.sb .sp{display:none}.sb a,.sb button.nv{width:auto;white-space:nowrap}}
 </style>
 </head>
 <body>
@@ -119,5 +129,16 @@ window.addEventListener('beforeunload',function(e){if(dirty){e.preventDefault();
 load().catch(function(e){if(e.status===401){$('gate').hidden=false}else{$('gate').hidden=false;$('gate').querySelector('p').textContent=e.message}});
 })();
 </script>
+<script>(function(){function go(){if(document.body.classList.contains('shelled'))return;var here=location.pathname.replace(/\/$/,'');
+var sb=document.createElement('nav');sb.className='sb';sb.setAttribute('aria-label','Menu admin');
+sb.innerHTML='<div class="lg"><b>dikapriyadi.site</b><small>Ruang Admin</small></div><a href="/admin/kasus/depan" data-p="/admin/kasus/depan">Tampilan depan</a><div id="sb-mod"></div><a href="/admin/kasus" data-p="/admin/kasus">Studi kasus</a><hr><a href="/sistem-kerja/">Sistem Kerja (demo)</a><a href="/admin">Ruang admin utama</a><div class="sp"></div><a href="/" target="_blank" rel="noopener">Lihat situs utama ↗</a>';
+var w=document.createElement('div');w.className='wrap';
+Array.prototype.slice.call(document.body.children).forEach(function(n){if(n.tagName==='SCRIPT'||n.id==='msg')return;w.appendChild(n)});
+document.body.insertBefore(sb,document.body.firstChild);document.body.insertBefore(w,sb.nextSibling);document.body.classList.add('shelled');
+sb.querySelectorAll('a[data-p]').forEach(function(a){if(a.getAttribute('data-p')===here)a.classList.add('on')});
+var h=w.querySelector('header');if(h&&!h.querySelector('.live')){var l=document.createElement('span');l.className='live';l.textContent='Live';h.insertBefore(l,h.children[1]||null)}
+var tb=document.getElementById('tabs');if(tb){var mod=document.getElementById('sb-mod');function sync(){mod.innerHTML='';Array.prototype.forEach.call(tb.querySelectorAll('button'),function(b,i){var x=document.createElement('button');x.type='button';x.className='nv'+(b.classList.contains('on')?' on':'');x.style.paddingLeft='26px';x.textContent=(i+1)+'. '+b.textContent;x.onclick=function(){b.click();setTimeout(sync,50)};mod.appendChild(x)})}
+sync();new MutationObserver(sync).observe(tb,{childList:true,subtree:true,attributes:true,attributeFilter:['class']})}}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',go);else go()})()</script>
 </body>
 </html>
