@@ -237,13 +237,13 @@ const KSCHEMA = {
   kaki: O('Footer', { brand: S('Kalimat di bawah nama', 200), sosial: L('Tautan sosial (ikon tetap)', 6, { nama: S('Nama', 30, { ro: true }), href: HREF }, { fixed: true }),
     kolom: L('Kolom footer', 4, { judul: S('Judul kolom', 40), otomatis: B('Isi otomatis dari daftar Layanan'), link: L('Tautan', 10, { teks: S('Teks', 80), href: HREF, wa: A('Pesan WhatsApp (isi jika tautan WA)', 400) }) }) })
 };
-const HREF_RE = /^(#[A-Za-z0-9_\-\/]{0,60}|https?:\/\/[^\s<>"']{3,280}|mailto:[^\s<>"']{3,160}|(v|assets)\/[A-Za-z0-9_\-\/.]{1,160})$/;
+const HREF_RE = /^(#[A-Za-z0-9_\-\/]{0,60}|https?:\/\/[^\s<>"']{3,280}|mailto:[^\s<>"']{3,160}|(v|assets)\/[A-Za-z0-9_\-\/.]{1,160}|sistem-kerja\/)$/;
 function kClean(node, v, label, ctx) {
   switch (node.t) {
     case 's': {
       let x = node.wa ? String(v == null ? '' : v).replace(/\D/g, '').slice(0, node.n) : (node.href ? str(v, node.n) : T(label, v, node.n));
       if (node.wa) { if (x.length < 10 || !/^62/.test(x)) bad(label + ': nomor harus diawali 62 dan 10–15 angka'); return x; }
-      if (node.href) { if (x && !HREF_RE.test(x)) bad(label + ': tautan tidak valid (pakai #bagian, https://..., mailto:..., atau berkas v/ atau assets/)'); if (/^(v|assets)\//.test(x) && (x.includes('..') || x.includes('//'))) bad(label + ': tautan tidak valid'); return x; }
+      if (node.href) { if (x && !HREF_RE.test(x)) bad(label + ': tautan tidak valid (pakai #bagian, https://..., mailto:..., berkas v/ atau assets/, atau sistem-kerja/)'); if (/^(v|assets)\//.test(x) && (x.includes('..') || x.includes('//'))) bad(label + ': tautan tidak valid'); return x; }
       if (node.email) { if (x && !/^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/.test(x)) bad(label + ': email tidak valid'); return x; }
       if (node.id) { x = str(v, node.n); if (x && !ID_RE.test(x)) bad(label + ': kode harus huruf kecil/angka/strip'); return x; }
       if (node.file) { x = str(v, node.n); if (!x) return ''; const re = node.file === 'pdf' ? /\.pdf$/i : (node.file === 'vid' ? /\.(mp4|webm)$/i : /\.(jpe?g|png|webp)$/i);

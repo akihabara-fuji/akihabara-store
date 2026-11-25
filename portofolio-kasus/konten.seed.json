@@ -20,6 +20,10 @@
    {
     "teks": "Kontak",
     "href": "#kolaborasi"
+   },
+   {
+    "teks": "Sistem Kerja",
+    "href": "sistem-kerja/"
    }
   ],
   "cv": "Unduh CV",

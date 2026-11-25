@@ -1898,6 +1898,7 @@ function applyBagian(b){if(!b)return;[["kartu","#proyek .section-head"],["video"
           <a href="#cara-kerja">Cara Kerja</a>
           <a href="#tentang">Tentang</a>
           <a href="#kolaborasi">Kontak</a>
+          <a href="sistem-kerja/">Sistem Kerja</a>
         </div>
 
         <div class="nav-actions">
@@ -1915,6 +1916,7 @@ function applyBagian(b){if(!b)return;[["kartu","#proyek .section-head"],["video"
         <a href="#cara-kerja">Cara Kerja</a>
         <a href="#tentang">Tentang</a>
         <a href="#kolaborasi">Kontak</a>
+        <a href="sistem-kerja/">Sistem Kerja</a>
         <a href="assets/CV_Dika_Priyadi.pdf" download>Unduh CV (PDF)</a>
       </div>
     </div>
@@ -3172,7 +3174,7 @@ react-dom/cjs/react-dom.production.min.js:
   function shell(k,t){unflow();body.innerHTML='';cur={k:k,t:t||null}}
   /* Alur karya (kanvas ala n8n, dimuat saat dibutuhkan) */
   var flowP=null;
-  function loadFlow(cb){if(window.WBFlowMount)return cb();if(!flowP)flowP=new Promise(function(res,rej){var sc=document.createElement('script');sc.src='wb-flow.js?v=1';sc.onload=res;sc.onerror=rej;document.head.appendChild(sc)});flowP.then(cb).catch(function(){})}
+  function loadFlow(cb){if(window.WBFlowMount)return cb();if(!flowP)flowP=new Promise(function(res,rej){var sc=document.createElement('script');sc.src='wb-flow.js?v=20261125';sc.onload=res;sc.onerror=rej;document.head.appendChild(sc)});flowP.then(cb).catch(function(){})}
   function fsh(t,n){t=String(t||'');return t.length>n?t.slice(0,n-1).trim()+'…':t}
   var MEDRE=/^(assets|v)\/[A-Za-z0-9_\/.-]+\.(mp4|webm|jpe?g|png|webp)$/;
   function medFor(k,key){var m=(k.media||{})[key];if(!m||!m.src||!MEDRE.test(m.src))return undefined;var vid=/\.(mp4|webm)$/.test(m.src);return {t:vid?'video':'foto',src:m.src,poster:(m.poster&&MEDRE.test(m.poster))?m.poster:undefined,alt:m.alt||''}}
