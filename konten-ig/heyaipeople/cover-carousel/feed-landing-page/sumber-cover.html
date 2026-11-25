@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mock Cover HeyAIPeople</title>
+
+
+<style>@font-face{font-family:Poppins;font-weight:500;src:url(https://cdn.jsdelivr.net/npm/@fontsource/poppins/files/poppins-latin-500-normal.woff2)}
+@font-face{font-family:Poppins;font-weight:600;src:url(https://cdn.jsdelivr.net/npm/@fontsource/poppins/files/poppins-latin-600-normal.woff2)}
+@font-face{font-family:Poppins;font-weight:800;src:url(https://cdn.jsdelivr.net/npm/@fontsource/poppins/files/poppins-latin-800-normal.woff2)}
+@font-face{font-family:Caveat;font-weight:700;src:url(https://cdn.jsdelivr.net/npm/@fontsource/caveat/files/caveat-latin-700-normal.woff2)}
+html,body{margin:0;width:1080px;height:1350px;overflow:hidden;background:#f7f7f5}
+.band{padding:0!important;max-width:none!important}h1,.note,.ctrl,ul,.tag{display:none!important}
+.wrap{width:3240px!important;padding:0!important;transform:translateX(calc(var(--off)*-1px))}
+.panel{border-right:0!important}
+
+/* VOICE: santai, jujur, "gw bongkar caranya" — kreator ngobrol, bukan iklan.
+   IDEA: kertas putih bersih yang disambung satu garis putus-putus dari slide ke slide (gaya referensi Threads).
+   PICTURE: roket abu-abu terbang di garis, nyebrang dari cover ke slide 2.
+   COLOUR and TYPE: putih #F7F7F5, hitam #111, abu-abu saja (aturan feed monokrom); Poppins 800 + Caveat tulisan tangan.
+   LAYOUT: kop IG di atas, hook besar di tengah, garis+roket di bawah; cover + intip slide 2 berdampingan. */
+:root{color-scheme:light;--bg:#e9e9e6;--paper:#f7f7f5;--ink:#111;--mute:#6b6b6b}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Poppins,system-ui,sans-serif;overflow-x:clip}
+.band{padding:clamp(20px,4vw,48px) max(4vw,12px);max-width:1240px;margin:auto}
+h1{font-size:clamp(20px,3vw,28px);line-height:1.1;margin:0 0 6px}
+p.note{margin:0 0 18px;color:#444;font-size:15px}
+.wrap{container-type:inline-size;width:100%}
+.stage{position:relative;display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;--u:calc(33.333cqw/1080)}
+.panel{position:relative;aspect-ratio:4/5;background:var(--paper);overflow:hidden;border-right:1px solid #d6d6d2}
+.panel:last-of-type{border-right:0}
+.tag{position:absolute;top:-26px;left:0;font-size:13px;color:#555}
+.head{position:absolute;top:calc(var(--u)*56);left:calc(var(--u)*64);right:calc(var(--u)*64);display:flex;align-items:center;gap:calc(var(--u)*22);}
+.ava{width:calc(var(--u)*92);height:calc(var(--u)*92);border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-weight:800;font-size:calc(var(--u)*40);flex:none}
+.nm b{display:block;font-size:calc(var(--u)*36);line-height:1.15;font-weight:600}
+.nm span{display:block;font-size:calc(var(--u)*26);color:var(--mute);font-weight:500}
+.hand{margin-left:auto;width:calc(var(--u)*70);height:calc(var(--u)*70);}
+.hook{position:absolute;left:calc(var(--u)*64);right:calc(var(--u)*64);top:calc(var(--u)*360)}
+.scr{font-family:Caveat,cursive;font-size:calc(var(--u)*120);line-height:1;display:inline-block;}
+.big{font-weight:800;font-size:calc(var(--u)*104);line-height:1.04;letter-spacing:-.01em;margin-top:calc(var(--u)*14)}
+.big span{display:block;}
+.big span:nth-child(1){animation-delay:1.3s}.big span:nth-child(2){animation-delay:1.5s}.big span:nth-child(3){animation-delay:1.7s}.big span:nth-child(4){animation-delay:1.9s}.big span:nth-child(5){animation-delay:2.1s}
+.foot{position:absolute;left:calc(var(--u)*64);bottom:calc(var(--u)*60);font-family:Caveat,cursive;font-size:calc(var(--u)*46);color:#333;}
+.scr{max-width:100%}
+.line{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.ctrl{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+button{font:600 15px Poppins,sans-serif;min-height:44px;padding:0 18px;border-radius:10px;border:1.5px solid var(--ink);background:var(--ink);color:#fff;cursor:pointer}
+button:focus-visible{outline:3px solid #888;outline-offset:2px}
+ul{margin:18px 0 0;padding-left:20px;color:#333;font-size:15px}
+@keyframes down{from{opacity:0;transform:translateY(-30%)}}
+@keyframes write{to{clip-path:inset(0 0 0 0)}}
+@keyframes pop{to{opacity:1;transform:none}}
+@keyframes fade{to{opacity:1}}
+@keyframes wig{0%,100%{transform:translateX(0)}50%{transform:translateX(-25%)}}
+@media(prefers-reduced-motion:reduce){*{animation-duration:0s!important;animation-delay:0s!important}.scr{clip-path:none}}
+</style>
+</head>
+<body>
+<div class="band">
+<h1>Mock 3 cover feed — HeyAIPeople</h1>
+<p class="note">Urutan di grid profil: P03 | P02 | P01. Urutan posting: P01 dulu, lalu P02, lalu P03. Tiap cover punya hook sendiri, jadi tetap nyambung kalau dilihat satu-satu. Ukuran 1080×1350, teks di dalam zona aman crop grid 3:4.</p>
+<div class="wrap" style="padding-top:26px">
+<div class="stage" id="stage">
+  <section class="panel">
+    <div class="tag">P03 · posting ke-3</div>
+    <div class="head"><div class="ava">H</div><div class="nm"><b>heyaipeople</b><span>Prompt AI &amp; landing page</span></div>
+      <svg class="hand" viewBox="0 0 64 64" fill="none" stroke="#111" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 34V12a4 4 0 0 1 8 0v18m0-6a4 4 0 0 1 8 0v8m0-4a4 4 0 0 1 8 0v10c0 10-6 16-15 16h-2c-6 0-9-3-12-8l-6-10a4 4 0 0 1 7-4l4 6"/><path d="M6 10h10M10 6l-4 4 4 4"/></svg></div>
+    <div class="hook">
+      <div class="scr">mau jualan prompt?</div>
+      <div class="big"><span>mulai dari</span><span>1 landing page</span><span>dulu, bukan</span><span>10 produk.</span></div>
+    </div>
+    <div class="foot">simpen, biar nggak lupa →</div>
+  </section>
+  <section class="panel">
+    <div class="tag">P02 · posting ke-2</div>
+    <div class="head"><div class="ava">H</div><div class="nm"><b>heyaipeople</b><span>Prompt AI &amp; landing page</span></div>
+      <svg class="hand" viewBox="0 0 64 64" fill="none" stroke="#111" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 34V12a4 4 0 0 1 8 0v18m0-6a4 4 0 0 1 8 0v8m0-4a4 4 0 0 1 8 0v10c0 10-6 16-15 16h-2c-6 0-9-3-12-8l-6-10a4 4 0 0 1 7-4l4 6"/><path d="M6 10h10M10 6l-4 4 4 4"/></svg></div>
+    <div class="hook">
+      <div class="scr">nggak bisa ngoding?</div>
+      <div class="big"><span>tetep bisa</span><span>punya web</span><span>jualan prompt</span><span>sendiri.</span></div>
+    </div>
+    <div class="foot">ini alur gw dari nol →</div>
+  </section>
+  <section class="panel">
+    <div class="tag">P01 · posting ke-1</div>
+    <div class="head"><div class="ava">H</div><div class="nm"><b>heyaipeople</b><span>Prompt AI &amp; landing page</span></div>
+      <svg class="hand" viewBox="0 0 64 64" fill="none" stroke="#111" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 34V12a4 4 0 0 1 8 0v18m0-6a4 4 0 0 1 8 0v8m0-4a4 4 0 0 1 8 0v10c0 10-6 16-15 16h-2c-6 0-9-3-12-8l-6-10a4 4 0 0 1 7-4l4 6"/><path d="M6 10h10M10 6l-4 4 4 4"/></svg></div>
+    <div class="hook">
+      <div class="scr">Serius,</div>
+      <div class="big"><span>web jualan</span><span>prompt ini</span><span>100% dibikin</span><span>pake Claude.</span></div>
+    </div>
+    <div class="foot">geser, gw bongkar caranya →</div>
+  </section>
+  <svg class="line" id="line" viewBox="0 0 3240 1350" preserveAspectRatio="none" aria-hidden="true">
+    <defs><mask id="m"><path d="M70 1170 C 420 1020, 700 1290, 1080 1150 S 1760 1010, 2160 1130 S 2900 1260, 3200 1120" stroke="#fff" stroke-width="30" fill="none" pathLength="1" stroke-dasharray="1" stroke-dashoffset="0"></path></mask></defs>
+    <path id="p" d="M70 1170 C 420 1020, 700 1290, 1080 1150 S 1760 1010, 2160 1130 S 2900 1260, 3200 1120" stroke="#111" stroke-width="5" stroke-dasharray="18 16" fill="none" mask="url(#m)"/>
+    <g>
+      <g transform="translate(-40 -22)">
+        <path d="M0 22 L-26 12 Q-38 22 -26 32 Z" fill="#9a9a9a"><animate attributeName="opacity" values="1;.4;1" dur=".25s" repeatCount="indefinite"/></path>
+        <path d="M6 4 L-6 -12 L22 4 Z M6 40 L-6 56 L22 40 Z" fill="#555"/>
+        <path d="M0 6 H52 Q86 22 52 38 H0 Q-6 22 0 6 Z" fill="#f2f2f2" stroke="#111" stroke-width="4"/>
+        <circle cx="46" cy="22" r="8" fill="#111"/>
+      </g>
+      <animateMotion dur="7s" begin="0s" repeatCount="indefinite" rotate="auto" keyTimes="0;1" keyPoints="0;1" calcMode="linear"><mpath href="#p"/></animateMotion>
+    </g>
+  </svg>
+</div>
+</div>
+<div class="ctrl"><button id="re" type="button">Putar ulang roket</button></div>
+<ul>
+  <li>Warna cuma putih, hitam, abu-abu (aturan feed sampai 100 post). Kertasnya putih, nggak krem kayak referensi.</li>
+  <li>Kop IG sama di semua slide. Foto profil sementara huruf "H", nanti diganti logo asli.</li>
+  <li>Garis + roket nyambung lintas 3 cover di grid; di grid IG ada jarak tipis antar kotak dan sisi kiri-kanan kepotong ±34px, jadi garisnya sedikit "putus" di sambungan.</li>
+</ul>
+</div>
+<script>
+{
+const re=document.getElementById('re');
+re.addEventListener('click',()=>{
+  const st=document.getElementById('stage');
+  st.querySelectorAll('.head,.scr,.big span,.foot,.hand').forEach(el=>{el.style.animation='none';void el.offsetWidth;el.style.animation=''});
+  try{document.getElementById('line').setCurrentTime(0)}catch(e){}
+});
+}
+</script>
+</body>
+</html>
