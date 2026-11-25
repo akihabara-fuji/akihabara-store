@@ -1,6 +1,16 @@
 <!-- Dipindah dari branch portofolio-dika: portofolio-src/HANDOFF.md (versi f0c8db0, 16 Nov 2026 19.30). Mulai sekarang hanya file ini yang diperbarui. -->
 # HANDOFF portofolio Dika Priyadi (baca ini dulu, jangan tanya ulang)
 
+## STATUS NYATA (diperbarui 25 Nov 2026 09.30, Claude)  ← bagian ini menang atas semua bagian di bawahnya
+- Situs live: https://dikapriyadi.site . Kode: branch `portofolio-kasus`, folder `portofolio-kasus/` (index.html halaman tunggal, server.js = admin "dp-kasus", konten.seed.json, wb-flow.js, sistem-kerja/index.html). Commit live terakhir: 55543ba19bec7a5bdea618195ef815ffd5b92a70 (25 Nov, halaman Sistem Kerja). Sebelumnya 1f18136.
+- VPS: web root /var/www/dikapriyadi, aplikasi /opt/dp-kasus (service systemd dp-kasus), data /var/lib/dp-kasus (konten-state.json, galeri.json, cases.json), nginx. Menu navigasi dibaca dari konten.json (`nav.links`, maksimal 8; sekarang 6 termasuk Sistem Kerja). Validasi href admin: HREF_RE di server.js.
+- Halaman Sistem Kerja: /sistem-kerja/ (satu berkas HTML mandiri, data localStorage `asos-v1` per pengunjung, tanpa backend, berlabel "DATA DEMO — BUKAN DATA AKTUAL"). Berkas ini TERKUNCI (ACC Dika), jangan diubah tanpa perintah. Teruji live 25 Nov: menu dari beranda membuka halaman, dropdown HP muncul, tanpa scroll horizontal, galeri.json dan cases.json 200.
+- Deploy: satu perintah curl dari GitHub dengan SHA lengkap, root, lewat hPanel Web console (hpanel.hostinger.com/vps/2040957/overview, terminal dci.hostingervps.com/5181). Pola skrip: deploy/update-portofolio-sistemkerja.sh (cek sha live dulu, cadangan ke /root, rollback otomatis, cetak `OK, commit <sha> live`). Cadangan terakhir: /root/dikapriyadi.pre-sistemkerja.1795572571. Tulis skrip baru dari pola itu; JANGAN pakai update-portofolio.sh, update-portofolio-cms.sh, update-portofolio-admin.sh, atau /root/update-koin.sh (semua milik sistem lama, menimpa isi live).
+- Aturan Dika: perubahan visual/animasi = mock dulu, tunggu ACC; deploy hanya setelah Dika bilang; yang sudah ACC terkunci; teks formal Indonesia; jangan klaim "sudah jalan" tanpa bukti.
+- Belum selesai: (1) pengunjung/HRD hanya melihat data demo Sistem Kerja, data nyata Dika baru ada kalau dibuat penyimpanan bersama di server (mengubah berkas terkunci, perlu mock dan ACC); (2) halaman Sistem Kerja belum punya tombol kembali ke beranda dan banyak label Inggris (usulan, belum di-ACC); (3) halaman "Progres Produksi" Remotion untuk HRD (usulan); (4) bagian di bawah ini sudah lama dan memuat domain, branch, dan admin lama (catatanakademik.com, portofolio-dika, dp-admin, porto-api) yang belum diverifikasi masih aktif atau tidak; anggap arsip.
+
+## ARSIP (sebelum 25 Nov 2026, domain dan sistem lama; jangan dipakai tanpa verifikasi)
+
 ## RUANG ADMIN PORTOFOLIO (live 2026-11-18)  ← baca dulu
 - URL: https://dikapriyadi.catatanakademik.com/admin . Kode di branch portofolio-admin: portofolio-admin/server.js + admin.html, skrip pasang deploy/update-portofolio-admin.sh <commit> (curl dari GitHub, jalankan sebagai root; aman diulang, ada rollback).
 - Service systemd dp-admin (Node 22, node:sqlite, port 3108, user www-data). Data/DB di /var/lib/dp-admin, cadangan harian di /var/backups/dp-admin (14 hari). Nginx: snippet /etc/nginx/snippets/dp-admin.conf di-include di server block situs.
