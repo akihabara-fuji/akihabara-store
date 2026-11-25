@@ -1858,6 +1858,13 @@ html{background:#0b0d12}body{background:transparent}
 .plink{color:#f78d24!important;font-weight:700;text-decoration:underline;text-underline-offset:3px}
 header .btn-outline,#tentang .btn-outline,#kolaborasi .btn-outline,#karya .btn-outline,#karya-ai .btn-outline,.case-more,#mobile-menu a[download]{color:#060606!important;background:linear-gradient(180deg,#ffa64d,#f78d24)!important;border-color:transparent!important;box-shadow:0 10px 30px -8px rgba(247,141,36,.55),inset 0 1px 0 rgba(255,255,255,.4)}
 .btn-outline:hover,.case-more:hover{box-shadow:0 16px 38px -8px rgba(247,141,36,.72)}
+/* Jalur video digabung (ACC Dika 25 Nov): satu bagian, dua tab */
+.lane-tabs{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 22px}
+.lane-tab{font:inherit;font-weight:700;font-size:14px;color:var(--ink);background:rgba(var(--fg-rgb),.06);border:1px solid var(--line-strong);border-radius:999px;padding:9px 18px;cursor:pointer}
+.lane-tab em{font-style:normal;opacity:.7;margin-left:6px;font-weight:600}
+.lane-tab.on{color:#060606;background:linear-gradient(180deg,#ffa64d,#f78d24);border-color:transparent;box-shadow:0 10px 30px -8px rgba(247,141,36,.55)}
+.ka-wrap{padding:0;margin:0}.ka-wrap .section-head{display:none}
+#karya{padding-top:clamp(40px,6vw,72px)}
 /* Tentang (ACC Dika 25 Nov): foto lebar penuh, teks penjelasan di dalam foto sisi kiri */
 .about-grid{display:block;position:relative}
 .about-photo-wrap{max-width:none;width:100%;margin:0}
@@ -2022,22 +2029,7 @@ function applyBagian(b){if(!b)return;[["kartu","#proyek .section-head"],["video"
     
     </section>
 
-        <section class="section" id="karya-ai">
-      <div class="section-head">
-        <span class="eyebrow" data-reveal style="--rd: 0ms">KARYA VIDEO AI</span>
-        <h2 data-reveal style="--rd: 60ms">Video dan konten buatan AI</h2>
-        <p data-reveal style="--rd: 120ms">Contoh karya dengan bantuan AI. Visual dibuat dengan AI; ini contoh hasil kerja, bukan klaim performa atau penjualan.</p>
-      </div>
-      <div class="ka-filter" id="ka-filter"></div>
-      <div class="clc-root" id="ka-stage" tabindex="0" role="region" aria-roledescription="carousel" aria-label="Karya Video AI">
-        <div class="clc-glow"></div>
-        <div class="clc-slot" id="ka-slot"></div>
-        <div class="clc-top"><b>KARYA VIDEO AI</b><span id="ka-hint">Geser atau klik kartu tengah untuk memutar</span></div>
-        <div class="clc-copy" id="ka-copy" aria-live="polite"></div>
-        <div class="clc-ctl"><div class="clc-count" id="ka-count"></div><div class="clc-bar"><span id="ka-prog"></span></div><div class="clc-btns"><button type="button" class="clc-btn" id="ka-prev" aria-label="Sebelumnya"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><button type="button" class="clc-btn" id="ka-next" aria-label="Berikutnya"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button></div></div>
-      </div>
-      <div class="ka-modal" id="ka-modal" hidden><div class="ka-box"><button type="button" class="ka-x" id="ka-x" aria-label="Tutup">×</button><div id="ka-body"></div><p id="ka-cap"></p></div></div>
-    </section>
+
 
     <!-- =========================================================
          01 · KEAHLIAN (6 kartu kaca 3x2)
@@ -2273,6 +2265,29 @@ function applyBagian(b){if(!b)return;[["kartu","#proyek .section-head"],["video"
         </div>
       </div>
 
+      <div class="lane-tabs" role="tablist" aria-label="Jalur video">
+        <button type="button" role="tab" class="lane-tab on" id="lt-video" data-lane="video" aria-selected="true">Video jadi <em>13</em></button>
+        <button type="button" role="tab" class="lane-tab" id="lt-proyek" data-lane="proyek" aria-selected="false">Proyek dan Remotion <em>11</em></button>
+      </div>
+      <div id="lane-video">
+        <div class="ka-wrap" id="karya-ai" role="tabpanel" aria-label="Video jadi">
+      <div class="section-head">
+        <span class="eyebrow" data-reveal style="--rd: 0ms">KARYA VIDEO AI</span>
+        <h2 data-reveal style="--rd: 60ms">Video dan konten buatan AI</h2>
+        <p data-reveal style="--rd: 120ms">Contoh karya dengan bantuan AI. Visual dibuat dengan AI; ini contoh hasil kerja, bukan klaim performa atau penjualan.</p>
+      </div>
+      <div class="ka-filter" id="ka-filter"></div>
+      <div class="clc-root" id="ka-stage" tabindex="0" role="region" aria-roledescription="carousel" aria-label="Karya Video AI">
+        <div class="clc-glow"></div>
+        <div class="clc-slot" id="ka-slot"></div>
+        <div class="clc-top"><b>KARYA VIDEO AI</b><span id="ka-hint">Geser atau klik kartu tengah untuk memutar</span></div>
+        <div class="clc-copy" id="ka-copy" aria-live="polite"></div>
+        <div class="clc-ctl"><div class="clc-count" id="ka-count"></div><div class="clc-bar"><span id="ka-prog"></span></div><div class="clc-btns"><button type="button" class="clc-btn" id="ka-prev" aria-label="Sebelumnya"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><button type="button" class="clc-btn" id="ka-next" aria-label="Berikutnya"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button></div></div>
+      </div>
+      <div class="ka-modal" id="ka-modal" hidden><div class="ka-box"><button type="button" class="ka-x" id="ka-x" aria-label="Tutup">×</button><div id="ka-body"></div><p id="ka-cap"></p></div></div>
+    </div>
+      </div>
+      <div id="lane-proyek" hidden>
       <div class="filter-bar" id="filter-bar" data-reveal style="--rd: 100ms"></div>
       <div class="filter-bar sub-bar" id="sub-bar" hidden></div>
       <div class="clc-root" id="w-stage" tabindex="0" role="region" aria-roledescription="carousel" aria-label="Galeri karya">
@@ -2283,6 +2298,7 @@ function applyBagian(b){if(!b)return;[["kartu","#proyek .section-head"],["video"
         <div class="clc-ctl"><div class="clc-count" id="cf-count"></div><div class="clc-bar"><span id="w-prog"></span></div><div class="clc-btns"><button type="button" class="clc-btn" id="cf-prev" aria-label="Sebelumnya"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><button type="button" class="clc-btn" id="cf-next" aria-label="Berikutnya"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button></div></div>
       </div>
       <div style="text-align: center; margin-top: 28px;"><button type="button" class="btn btn-outline" id="works-more" hidden>Lihat semua karya</button></div>
+      </div>
     </section>
 
     <!-- =========================================================
@@ -3413,5 +3429,15 @@ react-dom/cjs/react-dom.production.min.js:
 })();
 </script>
 
+<script>
+(function(){
+  var tabs=document.querySelectorAll('.lane-tab'),pv=document.getElementById('lane-video'),pp=document.getElementById('lane-proyek');if(!pv||!pp||!tabs.length)return;
+  function show(l,quiet){var v=l==='video';pv.hidden=!v;pp.hidden=v;tabs.forEach(function(t){var on=t.dataset.lane===l;t.classList.toggle('on',on);t.setAttribute('aria-selected',on?'true':'false')});
+    [60,300].forEach(function(ms){setTimeout(function(){window.dispatchEvent(new Event('resize'))},ms)})}
+  tabs.forEach(function(t){t.addEventListener('click',function(){show(t.dataset.lane)})});
+  document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href="#karya-ai"],a[href="#works-grid"]');if(!a)return;var id=a.getAttribute('href').slice(1);show(id==='karya-ai'?'video':'proyek');e.preventDefault();setTimeout(function(){var el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'})},120)},true);
+  if(location.hash==='#works-grid')show('proyek');
+})();
+</script>
 </body>
 </html>
