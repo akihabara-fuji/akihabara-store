@@ -1995,6 +1995,42 @@ html:not(.fx-off) .hero::before,html:not(.fx-off) .hero::after{display:none}
 </style>
 <script>window.__GAL=fetch("galeri.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).catch(function(){return null});window.__KON=fetch("konten.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).catch(function(){return null});
 function applyBagian(b){if(!b)return;[["kartu","#proyek .section-head"],["video","#karya-ai .section-head"],["karya","#karya .showcase-copy"]].forEach(function(m){var o=b[m[0]],box=document.querySelector(m[1]);if(!o||!box)return;var e=box.querySelector(".eyebrow"),h=box.querySelector("h2"),p=box.querySelector("p");if(o.label&&e)e.textContent=o.label;if(o.judul&&h)h.textContent=o.judul;if(o.intro&&p)p.textContent=o.intro})}</script>
+<style id="sk-mock">
+.nav-links a[href="sistem-kerja/"]{color:#060606;background:linear-gradient(180deg,#ffa64d,#f78d24);padding:7px 14px;border-radius:999px;font-weight:700;display:inline-flex;gap:8px;align-items:center;box-shadow:0 8px 22px -8px rgba(247,141,36,.7)}
+.nav-links a[href="sistem-kerja/"]::after{content:"DEMO";font-style:normal;font-size:10px;letter-spacing:.08em;text-transform:uppercase;background:#060606;color:#ffa64d;padding:2px 7px;border-radius:99px}
+.mobile-menu a[href="sistem-kerja/"]{color:#f78d24;font-weight:700}
+.skb{padding:0 24px;margin:clamp(24px,4vw,48px) auto 0;max-width:1180px}
+.skb-in{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(20px,4vw,48px);align-items:center;padding:clamp(24px,4vw,44px);border-radius:22px;border:1px solid rgba(247,141,36,.55);background:radial-gradient(60% 90% at 100% 0%,rgba(247,141,36,.20),transparent 70%),rgba(var(--fg-rgb),.04);color:var(--ink);text-decoration:none;position:relative;overflow:hidden;transition:transform .25s,box-shadow .25s}
+.skb-in:hover{transform:translateY(-3px);box-shadow:0 24px 60px -24px rgba(247,141,36,.55)}
+.skb-l small{font-family:var(--mono);font-size:12px;letter-spacing:.16em;color:#f78d24}
+.skb-l h2{margin:10px 0 0;font-size:clamp(26px,3.6vw,44px);line-height:1.08;letter-spacing:-.03em}
+.skb-l h2 em{font-style:normal;color:#f78d24}
+.skb-l p{margin:14px 0 0;color:var(--muted);max-width:52ch;font-size:15px;line-height:1.55}
+.skb-btn{margin-top:22px;display:inline-flex;gap:10px;align-items:center;padding:14px 24px;border-radius:999px;font-weight:700;color:#060606;background:linear-gradient(180deg,#ffa64d,#f78d24);box-shadow:0 12px 32px -8px rgba(247,141,36,.65)}
+.skb-btn svg{width:18px;height:18px}
+.skb-r{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.skb-r li{display:flex;gap:12px;align-items:center;padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:rgba(var(--fg-rgb),.04);font-weight:600;font-size:14.5px;opacity:0;transform:translateX(14px);animation:skin .6s cubic-bezier(.2,.8,.2,1) forwards}
+.skb-r li b{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;font-size:12px;background:rgba(var(--fg-rgb),.1)}
+.skb-r li.on{border-color:#f78d24;background:rgba(247,141,36,.14)}
+.skb-r li.on b{background:#f78d24;color:#060606}
+.skb-r li:nth-child(1){animation-delay:.1s}.skb-r li:nth-child(2){animation-delay:.18s}.skb-r li:nth-child(3){animation-delay:.26s}.skb-r li:nth-child(4){animation-delay:.34s}.skb-r li:nth-child(5){animation-delay:.42s}.skb-r li:nth-child(6){animation-delay:.5s}.skb-r li:nth-child(7){animation-delay:.58s}
+@keyframes skin{to{opacity:1;transform:none}}
+@media(max-width:820px){.skb{padding:0 16px}.skb-in{grid-template-columns:1fr}.skb-r{grid-template-columns:1fr 1fr}}
+@media(prefers-reduced-motion:reduce){.skb-r li{animation:none;opacity:1;transform:none}}
+.skb2 .cv-sc{overflow-x:auto;border:1px solid var(--ln);border-radius:16px;background:radial-gradient(circle,rgba(255,255,255,.07) 1px,transparent 1.5px) 0 0/22px 22px,rgba(255,255,255,.02)}
+.cv{position:relative}.cv svg{position:absolute;inset:0;pointer-events:none}.cv .e{fill:none;stroke-width:2.2;stroke-dasharray:6 6;opacity:.75;animation:cvf 1.2s linear infinite}@keyframes cvf{to{stroke-dashoffset:-24}}
+.cv .nd{position:absolute;width:150px;height:84px;padding:10px 12px 10px 16px;border-radius:14px;background:#17181b;border:1px solid color-mix(in srgb,var(--c) 55%,#2b2d32);text-decoration:none;color:#ececec;display:flex;flex-direction:column;justify-content:center;box-shadow:0 10px 26px -14px var(--c);transition:transform .2s,box-shadow .2s}
+.cv .nd::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:4px;border-radius:0 4px 4px 0;background:var(--c)}
+.cv .nd:hover,.cv .nd.on{transform:translateY(-3px);box-shadow:0 16px 34px -12px var(--c);border-color:var(--c)}
+.cv .nd i{position:absolute;right:8px;top:8px;font-style:normal;font-size:11px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:var(--c);color:#0b0b0b;font-weight:700}
+.cv .nd b{font-size:13px;letter-spacing:.02em;padding-right:22px}.cv .nd span{font-size:11.5px;color:#9b9da4;margin-top:2px}
+.cv .nd em{font-style:normal;font-size:10.5px;margin-top:6px;align-self:flex-start;padding:1px 8px;border-radius:99px;border:1px solid var(--c);color:var(--c)}
+@media(prefers-reduced-motion:reduce){.cv .e{animation:none}}
+.skb2{max-width:1180px}.skb2-h small{font-family:var(--mono);font-size:12px;letter-spacing:.16em;color:#f78d24}.skb2-h h2{margin:10px 0 0;font-size:clamp(26px,3.6vw,44px);line-height:1.08;letter-spacing:-.03em}.skb2-h h2 em{font-style:normal;color:#f78d24}.skb2-h p{color:var(--muted);margin:12px 0 18px;max-width:60ch}.skb2-b{margin-top:20px;text-decoration:none}
+.skb2 .cv .nd{background:#17181b}
+.cv .nd.nd-go{background:linear-gradient(180deg,#ffa64d,#f78d24);border-color:transparent;color:#060606;align-items:center;justify-content:center;text-align:center;gap:6px;box-shadow:0 12px 30px -10px rgba(247,141,36,.7)}.cv .nd.nd-go::before{display:none}.cv .nd.nd-go b{padding:0;font-size:13px;color:#060606}.cv .nd.nd-go svg{position:static;width:20px;height:20px}
+
+</style>
 </head>
 <body>
 
@@ -2012,12 +2048,12 @@ function applyBagian(b){if(!b)return;[["kartu","#proyek .section-head"],["video"
         </a>
 
         <div class="nav-links">
+          <a href="sistem-kerja/">Sistem Kerja</a>
           <a href="#proyek">Proyek</a>
           <a href="#layanan">Layanan</a>
           <a href="#cara-kerja">Cara Kerja</a>
           <a href="#tentang">Tentang</a>
           <a href="#kolaborasi">Kontak</a>
-          <a href="sistem-kerja/">Sistem Kerja</a>
         </div>
 
         <div class="nav-actions">
@@ -2030,12 +2066,12 @@ function applyBagian(b){if(!b)return;[["kartu","#proyek .section-head"],["video"
         </div>
       </nav>
       <div class="mobile-menu" id="mobile-menu">
+        <a href="sistem-kerja/">Sistem Kerja</a>
         <a href="#proyek">Proyek</a>
         <a href="#layanan">Layanan</a>
         <a href="#cara-kerja">Cara Kerja</a>
         <a href="#tentang">Tentang</a>
         <a href="#kolaborasi">Kontak</a>
-        <a href="sistem-kerja/">Sistem Kerja</a>
         <a href="assets/CV_Dika_Priyadi.pdf" download>Unduh CV (PDF)</a>
       </div>
     </div>
@@ -2060,7 +2096,8 @@ function applyBagian(b){if(!b)return;[["kartu","#proyek .section-head"],["video"
         </p>
 <p class="hero-open" data-reveal style="--rd: 240ms"><strong>Terbuka untuk posisi:</strong> Social Media Analyst · AI Video Production · AI Social Media &amp; Affiliate Specialist.</p>
 <div class="hero-actions" data-reveal style="--rd: 300ms">
-<a href="#proyek" class="btn btn-primary"><span>Lihat studi kasus</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+<a href="sistem-kerja/" class="btn btn-primary"><span>Lihat Sistem Kerja</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+<a href="#proyek" class="btn btn-outline"><span>Lihat studi kasus</span></a>
 <a href="#karya-ai" class="btn btn-outline"><span>Lihat demo</span></a>
 </div>
 <div class="rtabs" data-reveal style="--rd: 320ms">
@@ -2095,6 +2132,10 @@ function applyBagian(b){if(!b)return;[["kartu","#proyek .section-head"],["video"
         <p class="recruiter" data-reveal style="--rd: 420ms">Untuk rekrutmen atau kolaborasi: <a href="#kolaborasi">hubungi saya</a></p>
       </div>
     </header>
+    <section class="skb skb2" aria-label="Alur Sistem Kerja">
+      <div class="skb2-h"><small>SISTEM KERJA · VERSI DEMO</small><h2>Dari ide sampai dievaluasi, <em>11 tahap dalam satu alur.</em></h2><p>Klik tahap mana pun untuk masuk ke ruang kerja demo. Data contoh; kerja nyata klien tetap private.</p></div>
+      <div class="cv-sc"><div class="cv" style="width:1130px;height:350px"><svg width="1130" height="350" aria-hidden="true"><path d="M170 78 C200 78 180 78 210 78" class="e" style="stroke:#f6c344"/><circle r="4" fill="#f6c344"><animateMotion dur="2.4s" begin="0.0s" repeatCount="indefinite" path="M170 78 C200 78 180 78 210 78"/></circle><path d="M360 78 C390 78 370 78 400 78" class="e" style="stroke:#4aa8ff"/><circle r="4" fill="#4aa8ff"><animateMotion dur="2.4s" begin="0.2s" repeatCount="indefinite" path="M360 78 C390 78 370 78 400 78"/></circle><path d="M550 78 C580 78 560 78 590 78" class="e" style="stroke:#9b7bff"/><circle r="4" fill="#9b7bff"><animateMotion dur="2.4s" begin="0.4s" repeatCount="indefinite" path="M550 78 C580 78 560 78 590 78"/></circle><path d="M740 78 C770 78 750 78 780 78" class="e" style="stroke:#ff5fa2"/><circle r="4" fill="#ff5fa2"><animateMotion dur="2.4s" begin="0.6000000000000001s" repeatCount="indefinite" path="M740 78 C770 78 750 78 780 78"/></circle><path d="M930 78 C960 78 940 78 970 78" class="e" style="stroke:#ff7a1a"/><circle r="4" fill="#ff7a1a"><animateMotion dur="2.4s" begin="0.8s" repeatCount="indefinite" path="M930 78 C960 78 940 78 970 78"/></circle><path d="M1045 120 C1045 200 95 156 95 236" class="e" style="stroke:#2ec4b6"/><circle r="4" fill="#2ec4b6"><animateMotion dur="2.4s" begin="1.0s" repeatCount="indefinite" path="M1045 120 C1045 200 95 156 95 236"/></circle><path d="M170 278 C200 278 180 278 210 278" class="e" style="stroke:#5fd08a"/><circle r="4" fill="#5fd08a"><animateMotion dur="2.4s" begin="1.2000000000000002s" repeatCount="indefinite" path="M170 278 C200 278 180 278 210 278"/></circle><path d="M360 278 C390 278 370 278 400 278" class="e" style="stroke:#00b8d9"/><circle r="4" fill="#00b8d9"><animateMotion dur="2.4s" begin="1.4000000000000001s" repeatCount="indefinite" path="M360 278 C390 278 370 278 400 278"/></circle><path d="M550 278 C580 278 560 278 590 278" class="e" style="stroke:#b5e04a"/><circle r="4" fill="#b5e04a"><animateMotion dur="2.4s" begin="1.6s" repeatCount="indefinite" path="M550 278 C580 278 560 278 590 278"/></circle><path d="M740 278 C770 278 750 278 780 278" class="e" style="stroke:#ff6b6b"/><circle r="4" fill="#ff6b6b"><animateMotion dur="2.4s" begin="1.8s" repeatCount="indefinite" path="M740 278 C770 278 750 278 780 278"/></circle></svg><a class="nd" data-k="IDE" href="sistem-kerja/#alur~IDE" style="left:20px;top:36px;--c:#f6c344"><i>1</i><b>IDE</b><span>Ide masuk daftar</span><em>Dika</em></a><a class="nd" data-k="BRIEF" href="sistem-kerja/#alur~BRIEF" style="left:210px;top:36px;--c:#4aa8ff"><i>2</i><b>BRIEF</b><span>Brief dan riset</span><em>Gemini</em></a><a class="nd" data-k="NASKAH" href="sistem-kerja/#alur~NASKAH" style="left:400px;top:36px;--c:#9b7bff"><i>3</i><b>NASKAH</b><span>Naskah dan suara</span><em>GPT</em></a><a class="nd" data-k="KLIP" href="sistem-kerja/#alur~KLIP" style="left:590px;top:36px;--c:#ff5fa2"><i>4</i><b>KLIP</b><span>Klip dan aset</span><em>Flow</em></a><a class="nd" data-k="RAKIT" href="sistem-kerja/#alur~RAKIT" style="left:780px;top:36px;--c:#ff7a1a"><i>5</i><b>RAKIT</b><span>Rakit di Remotion</span><em>Claude</em></a><a class="nd" data-k="AUDIT" href="sistem-kerja/#alur~AUDIT" style="left:970px;top:36px;--c:#2ec4b6"><i>6</i><b>AUDIT</b><span>Cek silang</span><em>Claude</em></a><a class="nd" data-k="ACC" href="sistem-kerja/#alur~ACC" style="left:20px;top:236px;--c:#5fd08a"><i>7</i><b>ACC</b><span>Persetujuan</span><em>Dika</em></a><a class="nd" data-k="SIAP_JADWAL" href="sistem-kerja/#alur~SIAP_JADWAL" style="left:210px;top:236px;--c:#00b8d9"><i>8</i><b>SIAP JADWAL</b><span>Tanggal dan jam</span><em>Dika</em></a><a class="nd" data-k="TERJADWAL" href="sistem-kerja/#alur~TERJADWAL" style="left:400px;top:236px;--c:#b5e04a"><i>9</i><b>TERJADWAL</b><span>Menunggu tayang</span><em>Dika</em></a><a class="nd" data-k="DIPOSTING" href="sistem-kerja/#alur~DIPOSTING" style="left:590px;top:236px;--c:#ff6b6b"><i>10</i><b>DIPOSTING</b><span>Diposting manual</span><em>Dika</em></a><a class="nd" data-k="DIEVALUASI" href="sistem-kerja/#alur~DIEVALUASI" style="left:780px;top:236px;--c:#c084fc"><i>11</i><b>DIEVALUASI</b><span>Metrik dibaca</span><em>Claude</em></a><a class="nd nd-go" href="sistem-kerja/" style="left:970px;top:236px;--c:#ff7a1a"><b>Buka ruang kerja demo</b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a></div></div>
+    </section>
 
     <section class="section" id="proyek">
       <div class="section-head">
@@ -3577,5 +3618,6 @@ list.forEach(function(el){io.observe(el)})}
 var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('sx-in');io.unobserve(e.target)}})},{threshold:.25,rootMargin:'0px 0px -6% 0px'});
 function go(){run();setTimeout(run,2500)}if(document.readyState==='complete')setTimeout(go,900);else addEventListener('load',function(){setTimeout(go,900)});
 })()</script>
-</body>
+<script>window.cvFit=()=>{document.querySelectorAll('.cv-sc').forEach(sc=>{const c=sc.firstElementChild,w=sc.clientWidth;c.style.zoom=w>=700?Math.min(1,(w-2)/1130):1;sc.style.height=''})};addEventListener('resize',()=>window.cvFit&&window.cvFit()); window.cvFit();
+window.cvFit&&window.cvFit();</script></body>
 </html>

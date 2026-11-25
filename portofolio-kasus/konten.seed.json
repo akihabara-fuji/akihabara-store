@@ -2,6 +2,10 @@
  "nav": {
   "links": [
    {
+    "teks": "Sistem Kerja",
+    "href": "sistem-kerja/"
+   },
+   {
     "teks": "Proyek",
     "href": "#proyek"
    },
@@ -20,10 +24,6 @@
    {
     "teks": "Kontak",
     "href": "#kolaborasi"
-   },
-   {
-    "teks": "Sistem Kerja",
-    "href": "sistem-kerja/"
    }
   ],
   "cv": "Unduh CV",
@@ -40,9 +40,14 @@
   "janji": "Setiap klaim di sini ada buktinya yang bisa dibuka.",
   "tombol": [
    {
+    "teks": "Lihat Sistem Kerja",
+    "href": "sistem-kerja/",
+    "gaya": "utama"
+   },
+   {
     "teks": "Lihat studi kasus",
     "href": "#proyek",
-    "gaya": "utama"
+    "gaya": "garis"
    },
    {
     "teks": "Hubungi saya",
