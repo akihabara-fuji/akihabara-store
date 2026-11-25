@@ -1,0 +1,58 @@
+<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Jadwal Konten · Kantor AI People</title>
+<style>
+:root{--bg:#0c0d10;--p:#16181d;--l:#262a33;--t:#e9eaee;--m:#9aa0ad;--o:#f78d24;--ig:#d6409f;--tt:#25c4b4;--yt:#e5484d;--fb:#3b82f6;--bl:#a78bfa;--ok:#4ade80}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);font:14px/1.5 system-ui,Segoe UI,sans-serif}
+header{padding:18px 20px 8px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+h1{font-size:20px;margin:0}small{color:var(--m)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}.tabs button,.chips button{background:var(--p);color:var(--t);border:1px solid var(--l);border-radius:8px;padding:7px 14px;cursor:pointer;font:inherit}
+.tabs button.on{background:var(--o);color:#111;border-color:var(--o);font-weight:600}
+.stat{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;padding:8px 20px}
+.stat div{background:var(--p);border:1px solid var(--l);border-radius:10px;padding:10px 14px}.stat b{font-size:22px;display:block}
+.stat .bad b{color:#ff6b6b}
+.chips{padding:6px 20px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}.chips button.on{border-color:var(--o);color:var(--o)}
+main{padding:10px 20px 40px}
+.alert{margin:8px 20px;padding:10px 14px;border:1px solid #6b4a12;background:#2a2110;border-radius:10px}
+.kan{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(210px,1fr);gap:10px;overflow-x:auto;padding-bottom:10px}
+.col{background:var(--p);border:1px solid var(--l);border-radius:10px;padding:10px;min-height:120px}.col h3{font-size:12px;margin:0 0 8px;letter-spacing:.06em;color:var(--m)}
+.card{border:1px solid var(--l);border-left:4px solid var(--m);border-radius:8px;padding:8px 10px;margin-bottom:8px;background:#1b1e25}
+.card.instagram{border-left-color:var(--ig)}.card.tiktok{border-left-color:var(--tt)}.card.youtube{border-left-color:var(--yt)}.card.facebook{border-left-color:var(--fb)}.card.blog,.card.web{border-left-color:var(--bl)}
+.card b{display:block;font-weight:600}.card small{display:block}.late{color:#ff6b6b}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--l);vertical-align:top}th{color:var(--m);font-weight:500;font-size:12px}
+.tag{display:inline-block;border:1px solid var(--l);border-radius:20px;padding:1px 9px;font-size:12px}
+.flow{display:grid;gap:8px;overflow-x:auto}.fr{display:grid;grid-template-columns:110px repeat(11,minmax(86px,1fr));gap:6px;align-items:stretch;min-width:1180px}
+.fr>div{background:var(--p);border:1px solid var(--l);border-radius:8px;padding:6px 8px;font-size:12px;min-height:46px}.fr .h{background:none;border:0;color:var(--m);font-weight:600}
+.fr .on{border-color:var(--o)}.fr .n{font-size:18px;font-weight:700}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}.day{background:var(--p);border:1px solid var(--l);border-radius:8px;min-height:92px;padding:6px}.day h4{margin:0 0 4px;font-size:11px;color:var(--m)}.day.today{border-color:var(--o)}
+.empty{color:var(--m);padding:30px;text-align:center}
+@media(max-width:700px){.cal{grid-template-columns:1fr}}
+</style></head><body>
+<header><div><h1>Jadwal konten</h1><small id="sub"></small></div>
+<div class="tabs" id="tabs"></div></header>
+<div class="stat" id="stat"></div><div id="alert"></div>
+<div class="chips" id="fil"></div><main id="main"></main>
+<script src="data.js"></script>
+<script>
+var D=window.JADWAL,R=D.rows,TG=D.tangga,V='kanban',FA='',FP='';
+var TH=['kanban','tabel','flowchart','kalender'],LBL={kanban:'Kanban',tabel:'Tabel',flowchart:'Flowchart',kalender:'Kalender'};
+function $(i){return document.getElementById(i)}function h(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function rows(){return R.filter(function(r){return(!FA||r.akun===FA)&&(!FP||r.platform===FP)})}
+function card(r){return '<div class="card '+h(r.platform)+'"><b>'+h(r.judul)+'</b><small>'+h(r.akun||'akun ?')+' · '+h(r.platform||'platform ?')+' · '+h(r.format||'format ?')+'</small><small class="'+(r.telat?'late':'')+'">'+(r.tanggal?h(r.tanggal)+' '+h(r.jam):'tanpa tanggal')+(r.telat?' · terlambat':'')+'</small><small>Pemegang: '+h(r.pemegang)+'</small></div>'}
+function kanban(x){return '<div class="kan">'+TG.map(function(t){var c=x.filter(function(r){return r.tahap===t});return '<div class="col"><h3>'+t.replace('_',' ')+' · '+c.length+'</h3>'+(c.map(card).join('')||'<small>kosong</small>')+'</div>'}).join('')+'</div>'}
+function tabel(x){return x.length?'<table><tr><th>Judul</th><th>Akun</th><th>Platform</th><th>Format</th><th>Tahap</th><th>Pemegang</th><th>Jadwal</th><th>Hasil</th></tr>'+x.map(function(r){var hs=['views','likes','saves','shares'].filter(function(k){return r[k]}).map(function(k){return k+' '+h(r[k])}).join(' · ');return '<tr><td>'+h(r.judul)+'<br><small>'+h(r.id)+'</small></td><td>'+h(r.akun||'?')+'</td><td>'+h(r.platform||'?')+'</td><td>'+h(r.format||'?')+'</td><td><span class="tag">'+h(r.tahap)+'</span></td><td>'+h(r.pemegang)+'</td><td class="'+(r.telat?'late':'')+'">'+(h(r.tanggal)+' '+h(r.jam)).trim()+(r.telat?' · terlambat':'')+'</td><td>'+(hs||'<small>belum ada</small>')+'</td></tr>'}).join('')+'</table>':'<div class="empty">Tidak ada konten.</div>'}
+function flow(x){var P=['instagram','tiktok','youtube','facebook','blog','web'];var o='<div class="flow"><div class="fr"><div class="h"></div>'+TG.map(function(t){return '<div class="h">'+t.replace('_',' ')+'</div>'}).join('')+'</div>';
+P.forEach(function(p){var xs=x.filter(function(r){return r.platform===p});o+='<div class="fr"><div class="h">'+p+' ('+xs.length+')</div>'+TG.map(function(t){var c=xs.filter(function(r){return r.tahap===t});return '<div class="'+(c.length?'on':'')+'"><span class="n">'+c.length+'</span>'+(c[0]?'<br>'+h(c[0].judul.slice(0,26))+(c.length>1?'… +'+(c.length-1):''):'')+'</div>'}).join('')+'</div>'});
+var nop=x.filter(function(r){return P.indexOf(r.platform)<0});if(nop.length)o+='<div class="fr"><div class="h">platform ? ('+nop.length+')</div>'+TG.map(function(t){var c=nop.filter(function(r){return r.tahap===t});return '<div class="'+(c.length?'on':'')+'"><span class="n">'+c.length+'</span></div>'}).join('')+'</div>';return o+'</div>'}
+function kal(x){var t=new Date();t.setHours(0,0,0,0);var s=new Date(t);s.setDate(s.getDate()-s.getDay()+1-7);var o='<div class="cal">';for(var i=0;i<21;i++){var d=new Date(s);d.setDate(s.getDate()+i);var k=d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);var c=x.filter(function(r){return r.tanggal===k});o+='<div class="day'+(+d===+t?' today':'')+'"><h4>'+d.toLocaleDateString('id-ID',{weekday:'short',day:'numeric',month:'short'})+'</h4>'+c.map(function(r){return '<div class="card '+h(r.platform)+'"><b>'+h(r.judul.slice(0,40))+'</b><small>'+h(r.tahap)+(r.telat?' · <span class=late>terlambat</span>':'')+'</small></div>'}).join('')+'</div>'}
+var un=x.filter(function(r){return!r.tanggal});return o+'</div>'+(un.length?'<h3>Tanpa tanggal ('+un.length+')</h3>'+un.map(card).join(''):'')}
+function draw(){var x=rows();$('sub').textContent='Semua jam WIB (UTC+7) · dibuat '+D.dibuat+' · hanya tampilan, ubah lewat jadwal.csv atau alat/jadwal.py';
+$('tabs').innerHTML=TH.map(function(v){return '<button class="'+(v===V?'on':'')+'" data-v="'+v+'">'+LBL[v]+'</button>'}).join('');
+var tl=R.filter(function(r){return r.telat}),sp=R.filter(function(r){return r.tahap==='SIAP_JADWAL'}).length;
+$('stat').innerHTML=[[R.length,'Total konten'],[R.filter(function(r){return['BRIEF','NASKAH','KLIP','RAKIT','AUDIT'].indexOf(r.tahap)>=0}).length,'Dalam produksi'],[R.filter(function(r){return r.tahap==='ACC'}).length,'Menunggu ACC Dika'],[R.filter(function(r){return r.tahap==='TERJADWAL'}).length,'Terjadwal'],[R.filter(function(r){return r.tahap==='DIPOSTING'||r.tahap==='DIEVALUASI'}).length,'Sudah diposting'],[tl.length,'Terlambat','bad']].map(function(a){return '<div class="'+(a[2]||'')+'"><b>'+a[0]+'</b>'+a[1]+'</div>'}).join('');
+$('alert').innerHTML=tl.length?'<div class="alert"><b>Terlambat ('+tl.length+')</b>: '+tl.slice(0,4).map(function(r){return h(r.judul.slice(0,40))+' ('+h(r.tanggal)+')'}).join(' · ')+(tl.length>4?' …':'')+'</div>':'';
+var ak=['','pribadi','heyaipeople','catatanakademik'],pl=['','instagram','tiktok','youtube','facebook','blog','web'];
+$('fil').innerHTML='<small>Akun</small>'+ak.map(function(a){return '<button class="'+(a===FA?'on':'')+'" data-a="'+a+'">'+(a||'semua')+'</button>'}).join('')+' <small>Platform</small>'+pl.map(function(a){return '<button class="'+(a===FP?'on':'')+'" data-p="'+a+'">'+(a||'semua')+'</button>'}).join('');
+$('main').innerHTML=V==='kanban'?kanban(x):V==='tabel'?tabel(x):V==='flowchart'?flow(x):kal(x)}
+document.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;if(b.dataset.v)V=b.dataset.v;if('a'in b.dataset)FA=b.dataset.a;if('p'in b.dataset)FP=b.dataset.p;draw()});
+draw();
+</script></body></html>

@@ -1,0 +1,36 @@
+name: cek-papan
+on:
+  push:
+    branches: [kantor]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  cek:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Periksa papan dan tulis STATUS.md
+        id: cek
+        run: python3 alat/cek_papan.py
+        continue-on-error: true
+      - name: Jadwal konten (impor, setoran, validasi, bangun)
+        run: |
+          python3 alat/jadwal.py impor-estafet
+          python3 alat/jadwal.py terapkan-setoran
+          python3 alat/jadwal.py bangun
+        continue-on-error: true
+      - name: Susun PAKET-AI.md
+        run: python3 alat/paket_ai.py
+      - name: Simpan STATUS.md dan PAKET-AI.md
+        run: |
+          if ! git diff --quiet -- STATUS.md PAKET-AI.md JADWAL || [ -n "$(git ls-files --others --exclude-standard PAKET-AI.md)" ]; then
+            git config user.name "cek-papan"
+            git config user.email "cek-papan@users.noreply.github.com"
+            git add STATUS.md PAKET-AI.md JADWAL
+            git commit -m "status: diperbarui otomatis"
+            git push
+          fi
+      - name: Gagalkan kalau ada rahasia bocor atau format rusak
+        if: steps.cek.outcome == 'failure'
+        run: exit 1
