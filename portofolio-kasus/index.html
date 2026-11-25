@@ -1996,6 +1996,17 @@ html:not(.fx-off) .hero::before,html:not(.fx-off) .hero::after{display:none}
 <script>window.__GAL=fetch("galeri.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).catch(function(){return null});window.__KON=fetch("konten.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).catch(function(){return null});
 function applyBagian(b){if(!b)return;[["kartu","#proyek .section-head"],["video","#karya-ai .section-head"],["karya","#karya .showcase-copy"]].forEach(function(m){var o=b[m[0]],box=document.querySelector(m[1]);if(!o||!box)return;var e=box.querySelector(".eyebrow"),h=box.querySelector("h2"),p=box.querySelector("p");if(o.label&&e)e.textContent=o.label;if(o.judul&&h)h.textContent=o.judul;if(o.intro&&p)p.textContent=o.intro})}</script>
 <style id="sec-rv">
+@media(min-width:861px){
+#karya .showcase-grid{margin-bottom:clamp(16px,2vh,28px)!important}
+#karya .showcase-copy{max-width:980px}
+#karya .showcase-copy h2{font-size:clamp(30px,3.4vw,48px);line-height:1.08}
+#karya .showcase-copy p{margin-top:10px}
+#karya .lane-tabs{margin-bottom:12px}
+#karya .ka-filter{margin-bottom:14px}
+#karya .eg-mode .clc-slot,#karya .cf-mode .clc-slot,#karya .clc-slot{height:clamp(260px,calc(100svh - 548px),540px)!important}
+}
+@media(min-width:861px) and (max-height:820px){#karya .showcase-copy p,#karya .showcase-copy>div{display:none}#karya .eg-mode .clc-slot,#karya .cf-mode .clc-slot,#karya .clc-slot{height:clamp(240px,calc(100svh - 410px),540px)!important}}
+
 :root{--navh:80px}
 .section#layanan,.section#bukti,.section#keahlian,.section#cara-kerja,.section#karya,.section#tentang,.section#kolaborasi{scroll-margin-top:var(--navh);min-height:calc(100svh - var(--navh));box-sizing:border-box;display:flex;flex-direction:column;justify-content:flex-start;isolation:isolate;padding-top:clamp(20px,2.6vw,36px)}
 .section#proyek,.skb2,.hv-sec{scroll-margin-top:var(--navh)}
