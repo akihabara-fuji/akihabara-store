@@ -1,6 +1,6 @@
 # PAKET PAPAN KANTOR AI PEOPLE
 
-Salinan otomatis branch kantor (2026-11-25 09:10 WIB). Jangan diedit di sini: sumbernya GitHub akihabara-fuji/akihabara-store branch kantor.
+Salinan otomatis branch kantor (2026-11-25 12:59 WIB). Jangan diedit di sini: sumbernya GitHub akihabara-fuji/akihabara-store branch kantor.
 Isi: STATUS.md, AI/BACA-DULU.md, AI/PERAN.md, ATURAN.md, KUNCI.md, BAGAN.md, SETORAN/README.md, ESTAFET/README.md, ARTEFAK/RINGKAS.md, PROYEK/heyaipeople/MASTER_BRAND_GUIDELINES.md, PROYEK/heyaipeople/CONTENT_REGISTRY.md, PROYEK/heyaipeople/DESIGN_REGISTRY.md, PROYEK/README.md, lalu HANDOFF tiap proyek.
 
 
@@ -8,7 +8,7 @@ Isi: STATUS.md, AI/BACA-DULU.md, AI/PERAN.md, ATURAN.md, KUNCI.md, BAGAN.md, SET
 
 # STATUS papan kantor
 
-Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-25 09:10 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
+Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-25 12:59 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
 Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 
 ## Rahasia bocor (harus segera dihapus)
@@ -23,6 +23,7 @@ Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 - `LAPORAN/2026-11-17-0700-claude.md`: MENUNGGU Gemini
 - `LAPORAN/2026-11-17-1245-audit-ulang.md`: MENUNGGU GPT
 - `LAPORAN/2026-11-25-0820-remotion.md`: MENUNGGU GPT (baca SISTEM.md + MULAI-REMOTION.md, cek apakah prompt B bisa dipakai tanpa penjelasan tambahan)
+- `LAPORAN/2026-11-25-1330-jadwal-konten.md`: MENUNGGU GPT (baca JADWAL/README.md dan PANDUAN-AI.md, coba satu baris "Jadwal:" di setoran)
 
 ## Gagal cek silang (perlu diperbaiki pembuatnya)
 - tidak ada
@@ -48,11 +49,11 @@ Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 - semua bebas
 
 ## Laporan terbaru
+- `LAPORAN/2026-11-25-1330-jadwal-konten.md`
 - `LAPORAN/2026-11-25-0820-remotion.md`
 - `LAPORAN/2026-11-17-1245-audit-ulang.md`
 - `LAPORAN/2026-11-17-0855-heyaipeople-audit.md`
 - `LAPORAN/2026-11-17-0829-artefak.md`
-- `LAPORAN/2026-11-17-0700-claude.md`
 
 ## Setoran terbaru
 - `SETORAN/2026-11-17-1015-gpt.md`
