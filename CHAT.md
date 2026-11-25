@@ -28,5 +28,6 @@ Tiap chat yang kerja untuk kantor dicatat di sini. Sesi baru menambah barisnya s
 | [Sinkron papan GitHub dengan artefak](https://claude.ai/code/session_01HjNgUohW62C89YnXCWNhsP) | akun-2 | Claude | 09 Koordinasi · PROYEK/kantor-ai | aktif |
 | [Remotion BUILD WITH AI Part 5–6 dan serah terima](https://claude.ai/code/session_01HjNgUnAEcdxd8YBjqgC9mn) | akun-2 | Remotion | 04 / 13 Video Remotion · PROYEK/video-remotion | aktif |
 | [Rencana 3 AI satu papan](https://claude.ai/code/session_01M65NzTec9NBdBZFMScBFWC) | akun-1 | Claude | 09 Koordinasi · PROYEK/kantor-ai | aktif |
+| [Remotion 3 jalur + dashboard](https://claude.ai/code/session_01M65NzVTAd8sskzGQVzcPwk) | akun-1 | Remotion | video-remotion (sistem 3 jalur) | aktif |
 
 Chat dari akun Claude kedua: baris pertama di atas. Sesi lain di akun itu menambah barisnya sendiri.

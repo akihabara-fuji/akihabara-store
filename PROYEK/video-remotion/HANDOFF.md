@@ -2,6 +2,9 @@
 
 Terakhir diperbarui: 16 Nov 2026 22.52 WIB · Claude akun-2 · Remotion. Satu-satunya HANDOFF proyek ini; file serah terima lain (D:\...\SERAH-TERIMA\PROMPT-SERAH-TERIMA.*, dokumen Project claude.ai "handoff-remotion-kang-catat.md") sudah jadi penunjuk ke sini.
 
+## SISTEM 3 JALUR (mulai 25 Nov 2026) — baca ini dulu
+Semua video Remotion baru (jalur Pribadi, HeyAIPeople, CatatanAkademik) memakai `SISTEM.md` di folder ini: ceklis 11 butir, aturan tetap, serah terima. Tiap video punya `video/<ID>/STATUS.md`; data semua video di `progres.json`. Prompt pembuka untuk Claude/GPT/Gemini/Hermes di `MULAI-REMOTION.md`. Dashboard Dika: https://claude.ai/artifact/1kvdq7zRzcaoEAGmLJby3v (db dokumen `kantor/state`, isinya sama dengan progres.json). Isi HANDOFF di bawah ini tetap berlaku untuk seri BUILD WITH AI dan repo kang-catat-plus.
+
 ## Ringkas
 - Tujuan: produksi video vertikal 1080x1920 30fps seri "BUILD WITH AI" (Part 1–30) dengan Remotion 4.0.539, suara Rafiq (ElevenLabs web, Eleven v4), biaya nol, laptop i3/8GB. Per Part: video + thumbnail A/B + paket caption (hook baris 1, CTA lengkap baris terakhir). Tidak diposting sebelum Dika ACC.
 - Status: Part 1–2 selesai lama. Part 3 dan 4 (v3) selesai. Part 5 "Prompt jelas bukan panjang" dan Part 6 "AI partner berpikir": v1 selesai, validator LOLOS, menunggu ACC Dika (revisi mungkin: volume SFX, gerakan). Part 7+ belum dikerjakan (naskah dari 30 naskah resmi di artefak Kantor Ai People dan file 30_naskah_dika_priyadi_build_with_ai.md di Downloads laptop).

@@ -1,0 +1,202 @@
+{
+ "diperbarui": "2026-11-25",
+ "ceklis": [
+  "Prompt GPT",
+  "Naskah GPT",
+  "Naskah suara",
+  "Voice",
+  "Mock ACC",
+  "Render",
+  "Audit",
+  "Caption+CTA",
+  "Thumbnail",
+  "Simpan",
+  "Siap posting"
+ ],
+ "root": "D:\\FOLDER VIDEO KONTEN\\",
+ "produksi": [
+  {
+   "id": "P-01",
+   "j": "Pribadi",
+   "t": "BUILD WITH AI Part 08",
+   "c": [
+    true,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "lanjut": "Ambil naskah Part 08 dari file 30 naskah, lalu tulis naskah suara (naskah sudah ada, jadi butir Prompt GPT/Naskah GPT dilewati)."
+  },
+  {
+   "id": "H-01",
+   "j": "HeyAIPeople",
+   "t": "Pasar Setan Lawu Part 4",
+   "c": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "lanjut": "Tulis prompt GPT untuk naskah Part 4 yang melanjutkan ending Part 3."
+  },
+  {
+   "id": "H-02",
+   "j": "HeyAIPeople",
+   "t": "The AI Night Shift Ep 02",
+   "c": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "lanjut": "Tulis prompt GPT untuk naskah Ep02."
+  },
+  {
+   "id": "C-01",
+   "j": "CatatanAkademik",
+   "t": "Info UAOP (maskot slime)",
+   "c": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "lanjut": "Tulis prompt GPT + daftar fakta yang harus dicek di situs resmi UT."
+  }
+ ],
+ "jadi": [
+  {
+   "id": "v1",
+   "t": "Pasar Setan Lawu Part 1",
+   "j": "HeyAIPeople",
+   "dur": 176,
+   "p": "06_Hasil_Render\\PasarSetanLawu_suara.mp4",
+   "post": "Belum posting"
+  },
+  {
+   "id": "v2",
+   "t": "Pasar Setan Part 2",
+   "j": "HeyAIPeople",
+   "dur": 131,
+   "p": "06_Hasil_Render\\PasarSetan_Part2.mp4",
+   "post": "Belum posting"
+  },
+  {
+   "id": "v3",
+   "t": "Pasar Setan Part 3",
+   "j": "HeyAIPeople",
+   "dur": 178,
+   "p": "06_Hasil_Render\\PasarSetan_Part3.mp4",
+   "post": "Belum posting"
+  },
+  {
+   "id": "v4",
+   "t": "The AI Night Shift Ep 01",
+   "j": "HeyAIPeople",
+   "dur": 188,
+   "p": "BUILD-WITH-AI\\Night-Shift-Ep01\\HeyAIPeople_NightShift_Ep01.mp4",
+   "post": "Belum posting"
+  },
+  {
+   "id": "v6",
+   "t": "Fakta vs Mitos (demo)",
+   "j": "HeyAIPeople",
+   "dur": 17,
+   "p": "06_Hasil_Render\\Draft\\Mistis_FaktaVsMitos_demo.mp4",
+   "post": "Belum posting"
+  },
+  {
+   "id": "v7",
+   "t": "BUILD WITH AI Part 3",
+   "j": "Pribadi",
+   "dur": 34,
+   "p": "BUILD-WITH-AI\\Part-03\\Part3-video.mp4",
+   "post": "Belum posting"
+  },
+  {
+   "id": "v8",
+   "t": "BUILD WITH AI Part 4",
+   "j": "Pribadi",
+   "dur": 34,
+   "p": "BUILD-WITH-AI\\Part-04\\Part4-video.mp4",
+   "post": "Belum posting"
+  },
+  {
+   "id": "v9",
+   "t": "BUILD WITH AI Part 5",
+   "j": "Pribadi",
+   "dur": 31,
+   "p": "BUILD-WITH-AI\\Part-05\\Part5-video.mp4",
+   "post": "Belum posting"
+  },
+  {
+   "id": "v10",
+   "t": "BUILD WITH AI Part 6",
+   "j": "Pribadi",
+   "dur": 32,
+   "p": "BUILD-WITH-AI\\Part-06\\Part6-video.mp4",
+   "post": "Belum posting"
+  },
+  {
+   "id": "v11",
+   "t": "BUILD WITH AI Part 7",
+   "j": "Pribadi",
+   "dur": 32,
+   "p": "BUILD-WITH-AI\\Part-07\\Part7-video.mp4",
+   "post": "Belum posting"
+  },
+  {
+   "id": "v12",
+   "t": "Audit 360",
+   "j": "Pribadi",
+   "dur": 101,
+   "p": "audit360-remotion\\remotion-audit360\\out\\audit-360.mp4",
+   "post": "Belum posting"
+  },
+  {
+   "id": "v13",
+   "t": "Sistem Social Media Specialist",
+   "j": "Pribadi",
+   "dur": 52,
+   "p": "SistemSocialMediaSpecialist.mp4",
+   "post": "Belum posting"
+  },
+  {
+   "id": "v15",
+   "t": "Portfolio 02 Social Media Strategy v2",
+   "j": "Pribadi",
+   "dur": 61,
+   "p": "Portfolio02_SocialMediaStrategy_v2.mp4",
+   "post": "Belum posting"
+  }
+ ],
+ "catatan": "Video yang jalurnya belum dikonfirmasi Dika (Cek Fakta Gibran, Cerita Claude v2, 1108) tidak dimasukkan."
+}
