@@ -3255,9 +3255,9 @@ react-dom/cjs/react-dom.production.min.js:
     body.appendChild(nv);var w=waLink(k,t);if(w){var wr=el('div','cs-actions');wr.appendChild(w);body.appendChild(wr)}
     setHash('#proyek/'+k.id+'/'+t.id);if(m.hidden)show();else box.scrollTop=0}
   /* kartu */
-  var ROLE={analisis:'Analisis',alat:'Analisis',strategi:'Strategi',remotion:'Produksi',"video-sosmed":'Produksi',catatanakademik:'Publikasi',heyaipeople:'Publikasi'};
-  function chain(){if(document.querySelector('.cs-chain'))return;var ul=el('ul','cs-chain');ul.setAttribute('aria-label','Rantai dari analisis sampai affiliate');
-    [['Analisis','Membaca performa akun dan konten'],['Strategi','Menentukan arah sistem konten'],['Produksi','Video dan visual AI'],['Publikasi','Situs dan kanal tempat konten tayang'],['Affiliate','Bukti hasil menyusul']].forEach(function(x,i){var li=el('li',i===4?'kosong':null);li.appendChild(el('b',null,x[0]));li.appendChild(el('span',null,x[1]));ul.appendChild(li)});
+  var ROLE={analisis:'Analisis',alat:'Analisis',remotion:'Produksi',"video-sosmed":'Produksi',"sosmed-llm":'Sosial media',affiliate:'Affiliate',catatanakademik:'Website',heyaipeople:'Website',"bot-wa-grup":'Chatbot WhatsApp',"bot-wa-qa":'Chatbot WhatsApp'};
+  function chain(){if(document.querySelector('.cs-chain'))return;var ul=el('ul','cs-chain');ul.setAttribute('aria-label','Satu sistem: analisis, produksi, sosial media, affiliate, website, chatbot');
+    [['Analisis','Membaca akun dan performa konten'],['Produksi','Video dan visual AI'],['Sosial media','Pengelolaan akun berbasis LLM'],['Affiliate','Sistem kerja spesialis affiliate'],['Website','Dua situs yang saya bangun'],['Chatbot','Asisten WhatsApp untuk grup dan tanya jawab']].forEach(function(x){var li=el('li');li.appendChild(el('b',null,x[0]));li.appendChild(el('span',null,x[1]));ul.appendChild(li)});
     grid.parentNode.insertBefore(ul,grid)}
   function render(){
     chain();grid.innerHTML='';
@@ -3271,8 +3271,8 @@ react-dom/cjs/react-dom.production.min.js:
       if(k.batas)a.appendChild(el('p','cs-batas','Batasan: '+k.batas));
       var n=stages(k).length;if(n)a.appendChild(el('p','cs-meta',n+' tahap terdokumentasi'));
       var b=el('button','case-more',n?'Buka tahapan':'Baca lengkap');b.type='button';if(/analisis performa konten media sosial|mesin konten video/i.test(k.judul))b.classList.add('case-hi');a.appendChild(b);grid.appendChild(a)});
-    var h2=document.querySelector('#proyek .section-head h2');var w=['','Satu','Dua','Tiga','Empat','Lima','Enam','Tujuh','Delapan','Sembilan','Sepuluh'][CASES.length];if(h2)h2.textContent=w?w+' karya':'Karya dan studi kasus';
-    var p=document.querySelector('#proyek .section-head p');if(p)p.textContent='Klik kartu untuk membuka tahapan, cara kerja, bukti, dan batasan setiap karya.';if(window.__GAL)window.__GAL.then(function(g){if(g)applyBagian(g.bagian)})}
+    var h2=document.querySelector('#proyek .section-head h2');var w=['','Satu','Dua','Tiga','Empat','Lima','Enam','Tujuh','Delapan','Sembilan','Sepuluh','Sebelas','Dua belas'][CASES.length];if(h2)h2.textContent=w?w+' karya':'Karya dan studi kasus';
+    var p=document.querySelector('#proyek .section-head p');if(p)p.textContent='Setiap karya adalah satu bagian dari sistem yang sama, dari analisis sampai chatbot. Klik kartu untuk membuka isi, bukti, dan batasannya.';if(window.__GAL)window.__GAL.then(function(g){if(g)applyBagian(g.bagian)})}
   function fromHash(){var mm=/^#proyek\/([a-z0-9-]+)(?:\/([a-z0-9-]+))?$/.exec(location.hash);if(!mm||!CASES)return;
     var s=document.getElementById('proyek');if(s&&m.hidden)s.scrollIntoView();mm[2]?openTahap(mm[1],mm[2]):openKarya(mm[1])}
   /* fallback tanpa data: perilaku lama (klon <details>) */
