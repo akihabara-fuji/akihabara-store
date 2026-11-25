@@ -1,6 +1,6 @@
 # PAKET PAPAN KANTOR AI PEOPLE
 
-Salinan otomatis branch kantor (2026-11-25 07:58 WIB). Jangan diedit di sini: sumbernya GitHub akihabara-fuji/akihabara-store branch kantor.
+Salinan otomatis branch kantor (2026-11-25 08:16 WIB). Jangan diedit di sini: sumbernya GitHub akihabara-fuji/akihabara-store branch kantor.
 Isi: STATUS.md, AI/BACA-DULU.md, AI/PERAN.md, ATURAN.md, KUNCI.md, BAGAN.md, SETORAN/README.md, ESTAFET/README.md, ARTEFAK/RINGKAS.md, PROYEK/heyaipeople/MASTER_BRAND_GUIDELINES.md, PROYEK/heyaipeople/CONTENT_REGISTRY.md, PROYEK/heyaipeople/DESIGN_REGISTRY.md, PROYEK/README.md, lalu HANDOFF tiap proyek.
 
 
@@ -8,7 +8,7 @@ Isi: STATUS.md, AI/BACA-DULU.md, AI/PERAN.md, ATURAN.md, KUNCI.md, BAGAN.md, SET
 
 # STATUS papan kantor
 
-Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-25 07:58 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
+Dibuat otomatis oleh `alat/cek_papan.py` (2026-11-25 08:16 WIB). Jangan diedit manual: perbaiki file sumbernya, status ini ikut berubah.
 Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 
 ## Rahasia bocor (harus segera dihapus)
@@ -22,6 +22,7 @@ Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 - `SETORAN/2026-11-17-1009-gpt.md`: MENUNGGU Gemini
 - `LAPORAN/2026-11-17-0700-claude.md`: MENUNGGU Gemini
 - `LAPORAN/2026-11-17-1245-audit-ulang.md`: MENUNGGU GPT
+- `LAPORAN/2026-11-25-0820-remotion.md`: MENUNGGU GPT (baca SISTEM.md + MULAI-REMOTION.md, cek apakah prompt B bisa dipakai tanpa penjelasan tambahan)
 
 ## Gagal cek silang (perlu diperbaiki pembuatnya)
 - tidak ada
@@ -47,11 +48,11 @@ Semua AI baca file ini dulu untuk tahu apa yang menunggu dicek.
 - semua bebas
 
 ## Laporan terbaru
+- `LAPORAN/2026-11-25-0820-remotion.md`
 - `LAPORAN/2026-11-17-1245-audit-ulang.md`
 - `LAPORAN/2026-11-17-0855-heyaipeople-audit.md`
 - `LAPORAN/2026-11-17-0829-artefak.md`
 - `LAPORAN/2026-11-17-0700-claude.md`
-- `LAPORAN/2026-11-17-0555-claude.md`
 
 ## Setoran terbaru
 - `SETORAN/2026-11-17-1015-gpt.md`
@@ -966,6 +967,9 @@ Beranda: sapaan "Halo, saya" + nama + bio di tahap awal (home.hi, home.nama); fo
 # HANDOFF — video-remotion (seri BUILD WITH AI, repo Remotion kang-catat-plus)
 
 Terakhir diperbarui: 16 Nov 2026 22.52 WIB · Claude akun-2 · Remotion. Satu-satunya HANDOFF proyek ini; file serah terima lain (D:\...\SERAH-TERIMA\PROMPT-SERAH-TERIMA.*, dokumen Project claude.ai "handoff-remotion-kang-catat.md") sudah jadi penunjuk ke sini.
+
+## SISTEM 3 JALUR (mulai 25 Nov 2026) — baca ini dulu
+Semua video Remotion baru (jalur Pribadi, HeyAIPeople, CatatanAkademik) memakai `SISTEM.md` di folder ini: ceklis 11 butir, aturan tetap, serah terima. Tiap video punya `video/<ID>/STATUS.md`; data semua video di `progres.json`. Prompt pembuka untuk Claude/GPT/Gemini/Hermes di `MULAI-REMOTION.md`. Dashboard Dika: https://claude.ai/artifact/1kvdq7zRzcaoEAGmLJby3v (db dokumen `kantor/state`, isinya sama dengan progres.json). Isi HANDOFF di bawah ini tetap berlaku untuk seri BUILD WITH AI dan repo kang-catat-plus.
 
 ## Ringkas
 - Tujuan: produksi video vertikal 1080x1920 30fps seri "BUILD WITH AI" (Part 1–30) dengan Remotion 4.0.539, suara Rafiq (ElevenLabs web, Eleven v4), biaya nol, laptop i3/8GB. Per Part: video + thumbnail A/B + paket caption (hook baris 1, CTA lengkap baris terakhir). Tidak diposting sebelum Dika ACC.
