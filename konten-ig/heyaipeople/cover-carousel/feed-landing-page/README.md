@@ -1,7 +1,7 @@
 # Cover carousel HeyAIPeople — feed landing page (3 feed)
 
 Urutan grid profil: P03 | P02 | P01. Urutan posting: P01 → P02 → P03.
-Ukuran 1080×1350 (4:5). Warna putih/hitam/abu-abu. Hanya roket kuning yang bergerak (12 detik, loop) di garis yang muterin hook tiap cover lalu nyambung ke cover berikutnya; teks diam.
+Ukuran 1080×1350 (4:5). Warna putih/hitam/abu-abu. 9 roket kuning berjarak sama (3 per cover) bergerak beriringan (12 detik, loop mulus) di garis yang muterin hook tiap cover lalu nyambung ke cover berikutnya; teks diam.
 
 | File | Isi |
 |---|---|
