@@ -1716,7 +1716,7 @@
 
 
 /* Tema Graphite Mono (21st.dev): grafit monokrom, radius 1rem; tombol utama tetap orange */
-html{background:#0b0d12}body{background:transparent}#dp-bg{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;display:block}
+html{background:#0b0d12}body{background:transparent}
 .btn,.nav-cta,.case-more,.cs-btn,a.btn{border-radius:999px}
 #proyek{background:transparent!important;border:0!important;box-shadow:none!important}
 #proyek::before{display:none!important}
@@ -1852,7 +1852,20 @@ html{background:#0b0d12}body{background:transparent}#dp-bg{position:fixed;inset:
 .cf-cap{text-align:center;display:grid;gap:4px;justify-items:center;max-width:620px;margin:0 auto;padding:0 12px}.cf-cap span{font:600 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}.cf-cap b{font-size:clamp(18px,2.4vw,24px);font-weight:700;letter-spacing:-.01em;color:var(--ink)}.cf-cap em{font-style:normal;font-size:13.5px;line-height:1.5;color:var(--muted)}
 #karya .showcase-grid{grid-template-columns:1fr;justify-items:center;text-align:center}#karya .showcase-copy{max-width:680px}#karya .showcase-copy>div{display:flex;justify-content:center}
 .cs-flow{min-height:420px;margin:4px 0 14px}.cm-box .cs-flow .react-flow__node{cursor:grab}
-.about-photo{object-position:75% 50%}@media(max-width:900px){.about-photo{aspect-ratio:1/1;object-position:66% 50%}}
+/* Tombol penting jadi orange (ACC Dika 25 Nov): Unduh CV, Analisis Performa Konten Media Sosial, Mesin Konten Video */
+.nav-actions .btn-ghost,.nav-actions a[download]{color:#060606;background:linear-gradient(180deg,#ffa64d,#f78d24);border-color:transparent;box-shadow:0 10px 30px -8px rgba(247,141,36,.55),inset 0 1px 0 rgba(255,255,255,.4)}
+.nav-actions .btn-ghost:hover{background:linear-gradient(180deg,#ffa64d,#f78d24);box-shadow:0 16px 38px -8px rgba(247,141,36,.72);transform:translateY(-2px)}
+.plink{color:#f78d24!important;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.case-more.case-hi{color:#060606!important;background:linear-gradient(180deg,#ffa64d,#f78d24)!important;border-color:transparent!important;box-shadow:0 10px 30px -8px rgba(247,141,36,.55),inset 0 1px 0 rgba(255,255,255,.4)}
+.case-more.case-hi:hover{box-shadow:0 16px 38px -8px rgba(247,141,36,.72)}
+/* Tentang: foto lebar di kanan, penjelasan bertipografi di kiri */
+.about-grid{grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);align-items:center}
+.about-copy{order:1}.about-photo-wrap{order:2;max-width:none}
+.about-photo{height:auto;max-width:100%;aspect-ratio:16/10;object-position:62% 40%}
+.about-copy h2{font-size:clamp(30px,3.5vw,48px);line-height:1.08;letter-spacing:-.02em}
+.about-copy>p:first-of-type{font-size:clamp(17px,1.5vw,20px);line-height:1.55;color:var(--ink)}
+@media(max-width:980px){.about-grid{grid-template-columns:minmax(0,1fr)}.about-photo-wrap{order:-1;max-width:none;margin:0;width:100%}.about-copy{order:0}}
+@media(max-width:700px){.about-info{position:static;margin-top:12px;backdrop-filter:none}}
 .about-info{padding:12px 14px;gap:6px}.about-info-row{font-size:12.5px;align-items:flex-start}.about-info-row span:last-child{text-wrap:balance}
 
 .cm-box .cs-crumb{font:500 12px 'JetBrains Mono',monospace;opacity:.75;margin:0 0 8px}.cs-crumb button{font:inherit;color:var(--accent);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline}
@@ -1878,7 +1891,7 @@ html{background:#0b0d12}body{background:transparent}#dp-bg{position:fixed;inset:
 function applyBagian(b){if(!b)return;[["kartu","#proyek .section-head"],["video","#karya-ai .section-head"],["karya","#karya .showcase-copy"]].forEach(function(m){var o=b[m[0]],box=document.querySelector(m[1]);if(!o||!box)return;var e=box.querySelector(".eyebrow"),h=box.querySelector("h2"),p=box.querySelector("p");if(o.label&&e)e.textContent=o.label;if(o.judul&&h)h.textContent=o.judul;if(o.intro&&p)p.textContent=o.intro})}</script>
 </head>
 <body>
-<canvas id="dp-bg" aria-hidden="true"></canvas>
+
   <a class="skip-link" href="#proyek">Lewati ke konten utama</a>
 
   <!-- Main Glassmorphism Portfolio Layer -->
@@ -3093,24 +3106,7 @@ react-dom/cjs/react-dom.production.min.js:
     };
   })();
   </script>
-  <script>
-  (function(){
-    var cv=document.getElementById('dp-bg');if(!cv||!cv.getContext)return;var cx=cv.getContext('2d');
-    var CH='@#&*+=<>/0123456789ABCDEFGHJKLMNPRSTUWXYZ',P=[],S=[],W=0,H=0,dpr=Math.min(window.devicePixelRatio||1,1.5),raf=0,reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
-    function size(){W=innerWidth;H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;cx.setTransform(dpr,0,0,dpr,0,0);
-      var n=Math.max(26,Math.min(72,Math.round(W*H/20000)));P=[];for(var i=0;i<n;i++)P.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.22,vy:(Math.random()-.5)*.22,c:CH[Math.floor(Math.random()*CH.length)],a:.16+Math.random()*.2});
-      S=[];for(var j=0;j<9;j++)S.push({x:Math.random()*W,y:Math.random()*H,l:60+Math.random()*90,v:.25+Math.random()*.5})}
-    function frame(){cx.clearRect(0,0,W,H);cx.fillStyle='#0b0d12';cx.fillRect(0,0,W,H);
-      cx.lineWidth=1;for(var i=0;i<P.length;i++){var a=P[i];for(var j=i+1;j<P.length;j++){var b=P[j],dx=a.x-b.x,dy=a.y-b.y,d=dx*dx+dy*dy;if(d<19600){cx.strokeStyle='rgba(190,200,220,'+(0.09*(1-d/19600)).toFixed(3)+')';cx.beginPath();cx.moveTo(a.x,a.y);cx.lineTo(b.x,b.y);cx.stroke()}}}
-      cx.font='13px "JetBrains Mono",monospace';cx.textAlign='center';
-      P.forEach(function(p){if(!reduce){p.x+=p.vx;p.y+=p.vy;if(p.x<-20)p.x=W+20;if(p.x>W+20)p.x=-20;if(p.y<-20)p.y=H+20;if(p.y>H+20)p.y=-20}cx.fillStyle='rgba(200,208,222,'+p.a.toFixed(2)+')';cx.fillText(p.c,p.x,p.y)});
-      S.forEach(function(s){if(!reduce){s.y+=s.v;if(s.y-s.l>H){s.y=-10;s.x=Math.random()*W}}var g=cx.createLinearGradient(0,s.y-s.l,0,s.y);g.addColorStop(0,'rgba(150,170,205,0)');g.addColorStop(1,'rgba(150,170,205,.32)');cx.fillStyle=g;cx.fillRect(s.x,s.y-s.l,1.4,s.l)});
-      if(!reduce)raf=requestAnimationFrame(frame)}
-    size();frame();
-    var t;addEventListener('resize',function(){clearTimeout(t);t=setTimeout(function(){cancelAnimationFrame(raf);size();frame()},150)});
-    document.addEventListener('visibilitychange',function(){if(reduce)return;if(document.hidden)cancelAnimationFrame(raf);else{cancelAnimationFrame(raf);frame()}});
-  })();
-  </script>
+  
   <script>
   (function(){
     var root=document.getElementById('ka-stage'),slot=document.getElementById('ka-slot'),fil=document.getElementById('ka-filter'),modal=document.getElementById('ka-modal'),body=document.getElementById('ka-body'),cap=document.getElementById('ka-cap'),copy=document.getElementById('ka-copy'),cnt=document.getElementById('ka-count'),prog=document.getElementById('ka-prog');
@@ -3254,7 +3250,7 @@ react-dom/cjs/react-dom.production.min.js:
       a.appendChild(el('p','cs-meta','Peran: '+k.peran+(k.tgl?' · '+k.tgl:'')));
       if(k.batas)a.appendChild(el('p','cs-batas','Batasan: '+k.batas));
       var n=stages(k).length;if(n)a.appendChild(el('p','cs-meta',n+' tahap terdokumentasi'));
-      var b=el('button','case-more',n?'Buka tahapan':'Baca lengkap');b.type='button';a.appendChild(b);grid.appendChild(a)});
+      var b=el('button','case-more',n?'Buka tahapan':'Baca lengkap');b.type='button';if(/analisis performa konten media sosial|mesin konten video/i.test(k.judul))b.classList.add('case-hi');a.appendChild(b);grid.appendChild(a)});
     var h2=document.querySelector('#proyek .section-head h2');var w=['','Satu','Dua','Tiga','Empat','Lima','Enam','Tujuh','Delapan','Sembilan','Sepuluh'][CASES.length];if(h2)h2.textContent=w?w+' karya':'Karya dan studi kasus';
     var p=document.querySelector('#proyek .section-head p');if(p)p.textContent='Klik kartu untuk membuka tahapan, cara kerja, bukti, dan batasan setiap karya.';if(window.__GAL)window.__GAL.then(function(g){if(g)applyBagian(g.bagian)})}
   function fromHash(){var mm=/^#proyek\/([a-z0-9-]+)(?:\/([a-z0-9-]+))?$/.exec(location.hash);if(!mm||!CASES)return;
