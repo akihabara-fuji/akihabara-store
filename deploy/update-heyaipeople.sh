@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Deploy heyaipeople.site. Jalankan sebagai root di VPS: bash update-heyaipeople.sh <commit>
 set -uo pipefail
-[ -d /opt/hey-admin ] && { echo "Ruang admin terpasang: jangan pakai skrip ini (menimpa index.html buatan admin). Pakai deploy/update-heyai-admin.sh"; exit 1; }
 C="${1:?commit wajib}"
 REPO=akihabara-fuji/akihabara-store
 RAW="https://raw.githubusercontent.com/$REPO/$C/heyaipeople"
