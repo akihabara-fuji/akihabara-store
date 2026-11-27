@@ -15,6 +15,7 @@
 .ks-cover:after{content:"";position:absolute;right:-30px;bottom:-40px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.09)}
 .ks-chip{align-self:flex-start;font-size:10px;font-weight:800;letter-spacing:.08em;background:rgba(0,0,0,.35);color:#fff;border-radius:6px;padding:2px 8px}
 .ks-ct{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:21px;line-height:1.12;letter-spacing:-.02em;color:#fff;position:relative;z-index:1}
+.ks-ct{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-size:clamp(16px,1.6vw,21px);min-height:0}
 .ks-by{display:flex;justify-content:space-between;font-size:10px;color:#e3fbf7;font-weight:600;position:relative;z-index:1}
 .ks-body{padding:16px 16px 18px;display:flex;flex-direction:column;gap:10px;flex:1}
 .ks-pill{text-align:center;font-size:12px;font-weight:800;border-radius:999px;padding:4px 12px;background:#a78bfa;color:#1a1033}
