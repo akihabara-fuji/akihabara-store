@@ -34,15 +34,16 @@ function create({ SITE, ACAD, extra, kisiList, pub, log = () => {} }) {
     const blogMod = maxDay(blog.map(b => b.lastmod));
 
     // 1. Beranda
-    const home = pages.find(p => p.loc === `${SITE}/`);
-    add(`${SITE}/`, "1.0", "daily", home && home.lastmod || blogMod || mkMod);
+    const isHome = p => p.loc === `${SITE}/` || p.loc === `${base}/`;
+    const home = pages.find(isHome);
+    add(`${mode === "acad" ? base : SITE}/`, "1.0", "daily", home && home.lastmod || blogMod || mkMod);
     if (mode !== "acad" && ACAD !== SITE) return [...out.values()];
 
     // 2. Kisi-kisi
     if (mk.length) add(`${base}/kisi-kisi`, "0.9", "daily", mkMod);
     // 3. Halaman alat / layanan statis
     for (const p of pages) {
-      if (p.loc === `${SITE}/`) continue;
+      if (isHome(p)) continue;
       const seg = p.loc.replace(/\/+$/, "").split("/").pop();
       if (/\/kisi-kisi$/.test(p.loc)) continue; // sudah ditulis di atas
       add(p.loc, TOOLS.has(seg) ? "0.8" : p.pri || "0.7", "weekly", p.lastmod);
