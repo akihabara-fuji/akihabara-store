@@ -7,11 +7,11 @@ const tema = require("./tema");
 const navfix = require("./navfix");
 const buildKonten = require("./konten-pages");
 
-module.exports = function mountPages({ app, express, texts = null, settings = null }) {
+module.exports = function mountPages({ app, express, texts = null, settings = null, kisi = null }) {
   const dir = path.join(__dirname, "pages");
   // Tautan pesanan memuat token rahasia: jangan bocor lewat Referer ke pihak ketiga (mis. Google Fonts), dan jangan boleh di-iframe.
-  const ADM = /^\/admin\/(parafrase|layanan)(\/|\?|$)/; // halaman admin boleh dibingkai oleh /admin (satu asal), halaman murid tidak
-  app.use(["/ruangakademikut", "/ms/parafrase", "/ms/admin/parafrase", "/admin/parafrase", "/admin/layanan", "/ms/layanan"], (req, res, next) => {
+  const ADM = /^\/admin\/(parafrase|layanan|kisi)(\/|\?|$)/; // halaman admin boleh dibingkai oleh /admin (satu asal), halaman murid tidak
+  app.use(["/ruangakademikut", "/ms/parafrase", "/ms/admin/parafrase", "/admin/parafrase", "/admin/layanan", "/admin/kisi", "/ms/layanan"], (req, res, next) => {
     res.set({ "Referrer-Policy": "no-referrer", "X-Content-Type-Options": "nosniff", "X-Frame-Options": ADM.test(req.originalUrl) ? "SAMEORIGIN" : "DENY", "Content-Security-Policy": ADM.test(req.originalUrl) ? "frame-ancestors 'self'" : "frame-ancestors 'none'" });
     next();
   });
@@ -97,6 +97,15 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
   app.get(SHORT ? ["/ruangakademikut/kegiatan/:slug", "/kegiatan/:slug"] : "/ruangakademikut/kegiatan/:slug", kpage(req => KP.kegiatan(String(req.params.slug)), "komunitas"));
   app.get(SHORT ? ["/ruangakademikut/bedah-data-ut", "/bedah-data-ut"] : "/ruangakademikut/bedah-data-ut", kpage(() => KP.bedahTeks(bedahCfg()), "alat"));
   app.get(SHORT ? ["/ruangakademikut/tutorial-online/materi/:id", "/tutorial-online/materi/:id"] : "/ruangakademikut/tutorial-online/materi/:id", kpage(req => { const r = KP.materi(String(req.params.id)); if (r && app.locals.konten) app.locals.konten.hit(String(req.params.id)).catch(() => {}); return r; }, "tuton"));
+  /* Kisi-kisi: katalog, halaman per mata kuliah (alamat bisa dibagikan), dan status pesanan. */
+  if (kisi) {
+    const KS = require("./kisi-pages")(kisi);
+    const kp = (long, short) => SHORT ? ["/ruangakademikut/" + long, "/" + long] : "/ruangakademikut/" + long;
+    app.get(kp("kisi-kisi"), kpage(() => KS.katalog(), "kisi"));
+    app.get(kp("kisi-kisi/pesanan/:token"), (req, res) => { res.set({ "Cache-Control": "no-store", "X-Robots-Tag": "noindex", "Referrer-Policy": "no-referrer" }); return kpage(() => KS.pesanan(), "kisi")(req, res); });
+    app.get(kp("kisi-kisi/:slug"), kpage(req => KS.mk(String(req.params.slug)), "kisi"));
+    app.get(["/admin/kisi", "/admin/kisi/"], (req, res) => fs.readFile(path.join(dir, "kisi-admin.html"), "utf8", (err, html) => err ? res.status(500).end() : res.set({ "Cache-Control": "no-store", "X-Robots-Tag": "noindex" }).type("html").send(html)));
+  }
   app.get("/ruangakademikut/layanan", page("layanan.html"));
   app.get(SHORT ? ["/ruangakademikut/tutorial-online", "/tutorial-online"] : "/ruangakademikut/tutorial-online", kpage(req => KP.tuton(req), "tuton"));
   app.get("/ruangakademikut/blog-ut", page("blog-ut.html"));
@@ -136,7 +145,7 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
   /* Verifikasi Bing Webmaster Tools (kode per akun, bukan rahasia) */
   app.get("/BingSiteAuth.xml", (req, res) => res.type("application/xml").set("Cache-Control", "public, max-age=3600")
     .send('<?xml version="1.0"?>\n<users>\n\t<user>5A51A6D49E191DE95E89EA165A5F3815</user>\n</users>'));
-  const ASSETS = new Set(["konten.css", "konten.js", "bedah-teks.js", "site.css", "hub.css", "common.js", "cek.js", "pesanan.js", "admin.js", "studio.js", "bedah.js", "layanan.js", "tutorial.js", "tutorial.css", "baru.css", "layanan-admin.js", "blog-ut.js", "nilai-ut.js", "kalkulator.js", "wordlib.js", "sampul.js", "tracker.js", "kalender.js", "maba.js", "logo-ut.png", "sitasi-apa.js", "sitasi.js"]);
+  const ASSETS = new Set(["konten.css", "konten.js", "bedah-teks.js", "site.css", "hub.css", "common.js", "cek.js", "pesanan.js", "admin.js", "studio.js", "bedah.js", "layanan.js", "tutorial.js", "tutorial.css", "baru.css", "layanan-admin.js", "blog-ut.js", "nilai-ut.js", "kalkulator.js", "wordlib.js", "sampul.js", "tracker.js", "kalender.js", "maba.js", "logo-ut.png", "sitasi-apa.js", "sitasi.js", "kisi.js", "kisi.css", "kisi-admin.js"]);
   app.get(["/ruangakademikut/assets/:f", "/assets/ut/:f"], (req, res) => {
     if (!ASSETS.has(req.params.f)) return res.status(404).end();
     sendAsset(res, path.join(dir, req.params.f), "no-cache");

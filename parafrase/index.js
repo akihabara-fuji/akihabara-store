@@ -19,6 +19,7 @@ const mountAudit = require("./audit");
 const mountBedah = require("./bedah");
 const mountDokumen = require("./dokumen");
 const mountLayanan = require("./layanan");
+const mountKisi = require("./kisi");
 const mountBotApi = require("./botapi");
 const mountOrders = require("./orders");
 const createTraffic = require("./traffic").create;
@@ -53,7 +54,8 @@ module.exports = function mount(ctx) {
   if (secret.length < 32) { fs.mkdirSync(path.dirname(secretFile), { recursive: true }); secret = crypto.randomBytes(32).toString("hex"); fs.writeFileSync(secretFile, secret, { mode: 0o600 }); }
 
   const texts = createTexts({ db, dir: path.join(__dirname, "pages") });
-  const pages = mountPages({ app, express, texts, settings });
+  const kisi = mountKisi({ app, express, db, settings, root: ROOT, sameOrigin: sameOrigin || (() => true), requireAdmin, secret });
+  const pages = mountPages({ app, express, texts, settings, kisi });
   mountCards({ app, root: ROOT, requireAdmin });
   mountSiteImg({ app, root: ROOT, requireAdmin });
   mountUlasan({ app, root: ROOT, requireAdmin });
@@ -125,8 +127,8 @@ else if(/\\/(?:ruangakademikut\\/)?(layanan|cek-parafrase-mandiri|audit)(?:[\\/?
   });
   mountBotApi({ app, express, db });
   mountLayanan({ app, express, db, settings, orders, notifier, root: ROOT, sameOrigin: sameOrigin || (() => true), secret, requireAdmin, userFrom });
-  const t = setInterval(() => { uploads.purgeExpired().catch(() => {}); orders.expireUnpaid().catch(() => {}); orders.sweepRetention().catch(() => {}); dokumen.purgeExpired().catch(() => {}); }, 10 * 60 * 1000); t.unref();
+  const t = setInterval(() => { try { kisi.expire(); } catch {} uploads.purgeExpired().catch(() => {}); orders.expireUnpaid().catch(() => {}); orders.sweepRetention().catch(() => {}); dokumen.purgeExpired().catch(() => {}); }, 10 * 60 * 1000); t.unref();
   const t2 = setInterval(() => notifier.flush().catch(() => {}), 30 * 1000); t2.unref();
 
-  return { db, settings, uploads, orders, notifier, texts, pages, traffic };
+  return { db, settings, uploads, orders, notifier, texts, pages, traffic, kisi };
 };

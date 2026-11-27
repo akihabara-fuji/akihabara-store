@@ -33,7 +33,7 @@
   const ALL = ["owner", "editor", "cs"], ED = ["owner", "editor"], CS = ["owner", "cs"], OWN = ["owner"];
   /* Menu samping: 10 item. Item yang punya beberapa halaman memakai tab di atas isi halaman (TABG), bukan sub-menu. */
   const TABG = {
-    pesanan: [["orders", "Semua pesanan", CS], ["payments", "Konfirmasi bayar", CS], ["dokumen", "Cek & Parafrase", OWN], ["tools/parafrase", "Cek & Parafrase", ["cs"]], ["tools/layanan", "Kirim hasil", CS]],
+    pesanan: [["orders", "Semua pesanan", CS], ["payments", "Konfirmasi bayar", CS], ["dokumen", "Cek & Parafrase", OWN], ["tools/parafrase", "Cek & Parafrase", ["cs"]], ["tools/layanan", "Kirim hasil", CS], ["tools/kisi", "Kisi-kisi", CS]],
     artikel: [["posts", "Daftar artikel", ED], ["posts/new", "Tulis artikel", ED], ["artikel-cta", "CTA Kelas Tuton", ED], ["taxonomy", "Kategori & tag", ED], ["comments", "Komentar", ED]],
     media: [["media", "Pustaka", ED], ["images", "Gambar situs", ED]],
     tampilan: [["editor", "Editor halaman", OWN], ["texts", "Teks & nama", OWN], ["testimonials", "Testimoni", ED], ["profil", "Portofolio", ED], ["tema", "Tema & font", OWN]],
@@ -162,7 +162,7 @@
     [/^tuton$/, ED, pTuton], [/^artikel-cta$/, ED, pArtikelCta], [/^komunitas$/, ED, pKomunitas], [/^profil$/, ED, pProfil],
     [/^studio$/, ED, pStudio], [/^images$/, ED, pImages], [/^tema$/, OWN, pTema], [/^taxonomy$/, ED, pTaxonomy], [/^media$/, ED, pMedia], [/^comments$/, ED, pComments],
     [/^orders$/, CS, pOrders], [/^orders\/([A-Za-z0-9-]+)$/, CS, m => pOrder(m[1])], [/^payments$/, CS, pPayments],
-    [/^tools\/(parafrase|layanan)$/, CS, m => pEmbed(m[1])], [/^customers$/, CS, pCustomers],
+    [/^tools\/(parafrase|layanan|kisi)$/, CS, m => pEmbed(m[1])], [/^customers$/, CS, pCustomers],
     [/^testimonials$/, ED, pTestimonials], [/^dokumen$/, OWN, pDokumen], [/^dokumen\/([a-f0-9]{16})$/, OWN, m => pDokumenDetail(m[1])], [/^editor$/, OWN, pPageEditor], [/^texts$/, OWN, pTexts], [/^services$/, OWN, pServices], [/^wa$/, OWN, pWa], [/^reports$/, OWN, pReports], [/^settings$/, OWN, pSettings], [/^seo$/, OWN, pSeo], [/^admins$/, OWN, pAdmins], [/^log$/, OWN, pLog], [/^account$/, ALL, pAccount],
   ];
   const params = () => new URLSearchParams((location.hash.split("?")[1]) || "");
@@ -898,6 +898,7 @@
     $("#rg").onchange = e => go("traffic", { days: e.target.value });
   }
   function pEmbed(which) {
+    if (which === "kisi") return setPage("Kisi-kisi", "Mata kuliah, 5 soal latihan, voucher, klaim bukti bagikan, pesanan QRIS, dan kirim file ke WhatsApp.", `<iframe class="embed" title="Kisi-kisi" src="/admin/kisi?embed=1"></iframe>`);
     const t = which === "parafrase" ? ["Antrean Cek & Parafrase", "Antrean, Word berwarna, cek ulang, kirim hasil, QRIS, gambar situs, dan pesan WhatsApp. Pembayaran dikonfirmasi di menu Konfirmasi Pembayaran.", "/admin/parafrase?embed=1"] : ["Kirim Hasil Layanan", "Tugas, Diskusi, Metopen, dan Revisi yang sudah dibayar", "/admin/layanan?embed=1"];
     setPage(t[0], t[1], `<iframe class="embed" title="${esc(t[0])}" src="${t[2]}"></iframe>`);
   }

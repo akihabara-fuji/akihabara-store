@@ -78,13 +78,13 @@ cl(){ curl -sL -o /dev/null -w '%{http_code}' --resolve "$1:443:127.0.0.1" "http
 get(){ curl -fsS --resolve "$1:443:127.0.0.1" "https://$1$2"; }
 has(){ local b; b=$(get "$1" "$2") || return 1; [[ "$b" == *"$3"* ]]; }
 CA="${CA_HOST:-catatanakademik.com}"
-for u in / /blog /sitemap.xml /robots.txt /admin/ /layanan /portal-ut /kalkulator-nilai-ut /ms/layanan/config /ms/galeri /buat-cv-ats /sampul-tugas /surat-lamaran /tracker-kelulusan /kalender-akademik /panduan-maba; do x=$(c $CA "$u"); echo "$CA$u $x"; [ "$x" = 200 ] || { [ "$x" = 301 ] && case "$u" in /buat-cv-ats|/surat-lamaran) true;; *) false;; esac; }; done
+for u in / /blog /sitemap.xml /robots.txt /admin/ /layanan /portal-ut /kalkulator-nilai-ut /ms/layanan/config /ms/galeri /buat-cv-ats /sampul-tugas /surat-lamaran /tracker-kelulusan /kalender-akademik /panduan-maba /kisi-kisi /kisi-kisi/spin4401-filologi /ms/kisi/list; do x=$(c $CA "$u"); echo "$CA$u $x"; [ "$x" = 200 ] || { [ "$x" = 301 ] && case "$u" in /buat-cv-ats|/surat-lamaran) true;; *) false;; esac; }; done
 for u in /ruangakademikut /ruangakademikut/layanan /ruangakademikut/assets/studio.js; do x=$(cl $CA "$u"); echo "portal CA ${u##*/} $x"; [ "$x" = 200 ]; done
 x=$(c $CA /ruangakademikut/audit); echo "portal CA audit $x"; [ "$x" = 200 ] || [ "$x" = 301 ]
 has $CA /admin/ 'Admin · Catatan Akademik' || { echo "Panel admin CA tidak tampil di /admin"; false; }
 has $CA /ms/layanan/config 'metopen' || { echo "Konfigurasi layanan tidak terbaca"; false; }
 echo "Isi halaman: OK"
-for u in /ms/admin/ca/me /ms/admin/posts /ms/admin/ca/orders /ms/admin/studio/NA-0; do x=$(c $CA $u); echo "API $u tanpa login: $x"; [ "$x" = 401 ]; done
+for u in /ms/admin/ca/me /ms/admin/posts /ms/admin/ca/orders /ms/admin/studio/NA-0 /ms/admin/kisi; do x=$(c $CA $u); echo "API $u tanpa login: $x"; [ "$x" = 401 ]; done
 has $CA /ms/admin/studio-page 'id="mB"' || { echo "Halaman Studio tidak tampil"; false; }
 x=$(c $CA /halaman-tidak-ada); echo "404: $x"; [ "$x" = 404 ]
 trap - ERR

@@ -332,6 +332,32 @@ const MIGRATIONS = [
     const have = new Set(db.prepare("PRAGMA table_info(doc_library)").all().map(c => c.name));
     if (!have.has("purged_at")) db.exec("ALTER TABLE doc_library ADD COLUMN purged_at INTEGER");
   },
+  /* Kisi-kisi: katalog mata kuliah, voucher, klaim potongan, pesanan. Isi awal 16 MK + 5 soal latihan (INSERT OR IGNORE, tidak menimpa ubahan admin). */
+  db => {
+    db.exec(`
+    CREATE TABLE IF NOT EXISTS kisi_mk (
+      id INTEGER PRIMARY KEY AUTOINCREMENT, kode TEXT NOT NULL UNIQUE, nama TEXT NOT NULL, jenis TEXT NOT NULL DEFAULT 'Objektif',
+      periode TEXT NOT NULL DEFAULT '20262', slug TEXT NOT NULL UNIQUE, harga INTEGER NOT NULL DEFAULT 50000, tampil INTEGER NOT NULL DEFAULT 1,
+      soal TEXT NOT NULL DEFAULT '[]', file_path TEXT, file_name TEXT, created_at INTEGER NOT NULL DEFAULT 0);
+    CREATE TABLE IF NOT EXISTS kisi_voucher (
+      code TEXT PRIMARY KEY, pct INTEGER NOT NULL, kuota INTEGER NOT NULL DEFAULT 1, terpakai INTEGER NOT NULL DEFAULT 0, berlaku_sampai INTEGER,
+      mk_id INTEGER, wa TEXT, klaim_id INTEGER, aktif INTEGER NOT NULL DEFAULT 1, created_at INTEGER NOT NULL DEFAULT 0);
+    CREATE TABLE IF NOT EXISTS kisi_klaim (
+      id INTEGER PRIMARY KEY AUTOINCREMENT, mk_id INTEGER NOT NULL, wa TEXT NOT NULL, shots TEXT NOT NULL DEFAULT '[]', hashes TEXT NOT NULL DEFAULT '[]',
+      status TEXT NOT NULL DEFAULT 'baru', voucher_code TEXT, note TEXT, created_at INTEGER NOT NULL DEFAULT 0, decided_at INTEGER);
+    CREATE UNIQUE INDEX IF NOT EXISTS kisi_klaim_aktif ON kisi_klaim(wa, mk_id) WHERE status IN ('baru','valid');
+    CREATE TABLE IF NOT EXISTS kisi_pesanan (
+      id TEXT PRIMARY KEY, token TEXT NOT NULL UNIQUE, mk_id INTEGER NOT NULL, wa TEXT NOT NULL, harga INTEGER NOT NULL, voucher_code TEXT,
+      potongan INTEGER NOT NULL DEFAULT 0, unique_code INTEGER NOT NULL DEFAULT 0, total INTEGER NOT NULL, status TEXT NOT NULL DEFAULT 'menunggu_bayar',
+      created_at INTEGER NOT NULL DEFAULT 0, paid_claimed_at INTEGER, confirmed_at INTEGER, sent_at INTEGER);
+    CREATE INDEX IF NOT EXISTS kisi_pesanan_status ON kisi_pesanan(status);
+    `);
+    const slugOf = require("./kisi").slugOf;
+    const { MK } = require("./kisi-seed");
+    const ins = db.prepare("INSERT OR IGNORE INTO kisi_mk (kode,nama,jenis,periode,slug,harga,tampil,soal,created_at) VALUES (?,?,?,?,?,50000,1,?,?)");
+    const now = Date.now();
+    for (const [kode, jenis, nama, soal] of MK) ins.run(kode, nama, jenis, "20262", slugOf(kode, nama), JSON.stringify(soal), now);
+  },
 ];
 
 
