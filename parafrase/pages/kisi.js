@@ -8,6 +8,10 @@
   function modal(html) { var m = document.createElement("div"); m.className = "ks-modal on"; m.innerHTML = '<div class="ks-box" role="dialog" aria-modal="true">' + html + "</div>"; m.addEventListener("click", function (e) { if (e.target === m) m.remove(); }); document.body.appendChild(m); return m; }
   function wire(m, sel, fn) { var e = m.querySelector(sel); if (e) e.addEventListener("click", fn); return e; }
 
+  /* tombol kembali: balik ke halaman sebelumnya di situs ini, kalau tidak ada ke beranda */
+  var bk = document.querySelector("[data-back]");
+  if (bk) bk.addEventListener("click", function (e) { if (history.length > 1 && document.referrer && document.referrer.indexOf(location.origin) === 0) { e.preventDefault(); history.back(); } });
+
   /* ---------- katalog ---------- */
   var grid = $("ksgrid");
   if (grid) {

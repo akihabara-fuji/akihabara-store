@@ -2,8 +2,8 @@
 "use strict";
 const EH = v => String(v == null ? "" : v).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const rp = n => "Rp" + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-const HEADX = '<link rel="stylesheet" href="/ruangakademikut/assets/kisi.css?v=1">';
-const FOOT = '<script src="/ruangakademikut/assets/kisi.js?v=1" defer></script>';
+const HEADX = '<link rel="stylesheet" href="/ruangakademikut/assets/kisi.css?v=2">';
+const FOOT = '<script src="/ruangakademikut/assets/kisi.js?v=2" defer></script>';
 
 module.exports = function buildKisi(kisi) {
   const card = m => `<a class="ks-card" href="/ruangakademikut/kisi-kisi/${EH(m.slug)}" data-q="${EH((m.kode + " " + m.nama).toLowerCase())}"><div class="ks-cover${m.jenis === "Uraian" ? " u" : ""}"><span class="ks-chip">KISI-KISI</span><div class="ks-ct">${EH(m.nama)}</div><div class="ks-by"><span>Catatan Akademik</span><span>catatanakademik.com</span></div></div><div class="ks-body"><span class="ks-pill">${EH(m.kode)} · ${EH(m.jenis)}</span><h3>Kisi-kisi ${EH(m.nama)}</h3><p>5 soal latihan gratis, plus kisi-kisi lengkap periode ${EH(m.periode)}.</p><div class="ks-meta">Periode ${EH(m.periode)} · 5 soal gratis</div><span class="ks-rd">Latihan →</span></div></a>`;
@@ -14,7 +14,7 @@ module.exports = function buildKisi(kisi) {
       title: "Kisi-kisi UT: Latihan 5 Soal Gratis per Mata Kuliah | Catatan Akademik",
       desc: "Ujian UT tinggal hitungan hari. Coba 5 soal latihan gratis untuk tiap mata kuliah, lalu lihat bagian mana yang belum nempel.",
       canon: "/ruangakademikut/kisi-kisi", headx: HEADX,
-      body: `<main class="wrap ks"><span class="ks-eb">Kisi-kisi UT</span><h1>Ujian tinggal hitungan hari. <em>Latihan dulu</em> 5 soalnya.</h1><p class="ks-lead">Pilih mata kuliahmu, coba soal latihannya gratis, lalu lihat bagian mana yang belum nempel sebelum hari ujian.</p><input class="ks-s" id="ksq" type="search" placeholder="Cari kode atau nama mata kuliah" aria-label="Cari mata kuliah" autocomplete="off"><div class="ks-grid" id="ksgrid" data-max="8">${items.map(card).join("") || "<p>Belum ada mata kuliah.</p>"}</div><p class="ks-none" id="ksnone" hidden>Mata kuliah tidak ditemukan.</p>${items.length > 8 ? `<div class="ks-more" id="ksmore"><button class="ks-btn ghost" type="button">Lihat semua ${items.length} mata kuliah</button></div>` : ""}</main>${FOOT}`,
+      body: `<main class="wrap ks"><a class="ks-back" href="/" data-back>← Kembali</a><br><span class="ks-eb">Kisi-kisi UT</span><h1>Ujian tinggal hitungan hari. <em>Latihan dulu</em> 5 soalnya.</h1><p class="ks-lead">Pilih mata kuliahmu, coba soal latihannya gratis, lalu lihat bagian mana yang belum nempel sebelum hari ujian.</p><input class="ks-s" id="ksq" type="search" placeholder="Cari kode atau nama mata kuliah" aria-label="Cari mata kuliah" autocomplete="off"><div class="ks-grid" id="ksgrid" data-max="8">${items.map(card).join("") || "<p>Belum ada mata kuliah.</p>"}</div><p class="ks-none" id="ksnone" hidden>Mata kuliah tidak ditemukan.</p>${items.length > 8 ? `<div class="ks-more" id="ksmore"><button class="ks-btn ghost" type="button">Lihat semua ${items.length} mata kuliah</button></div>` : ""}</main>${FOOT}`,
     };
   }
 
@@ -33,7 +33,7 @@ module.exports = function buildKisi(kisi) {
 
   function pesanan() {
     return { title: "Status pesanan Kisi-kisi | Catatan Akademik", desc: "Status pesanan kisi-kisi.", canon: "", robots: "noindex,nofollow", headx: HEADX,
-      body: `<main class="wrap ks" id="kspesanan"><h1>Status pesanan</h1><div id="ksps">Memuat...</div></main>${FOOT}` };
+      body: `<main class="wrap ks" id="kspesanan"><a class="ks-back" href="/ruangakademikut/kisi-kisi">← Semua mata kuliah</a><h1>Status pesanan</h1><div id="ksps">Memuat...</div></main>${FOOT}` };
   }
   return { katalog, mk, pesanan, card };
 };
