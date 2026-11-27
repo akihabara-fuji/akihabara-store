@@ -54,6 +54,7 @@ module.exports = function mountKisi({ app, express, db, settings, root, sameOrig
     if (!v || !v.aktif) return { ok: false, error: "Kode tidak berlaku." };
     if (v.terpakai >= v.kuota) return { ok: false, error: "Kuota voucher sudah habis." };
     if (v.berlaku_sampai && v.berlaku_sampai < now) return { ok: false, error: "Voucher sudah kedaluwarsa." };
+    if (mk && !mk.file_path) return { ok: false, error: "Voucher hanya berlaku untuk kisi-kisi yang file lengkapnya sudah tersedia." };
     if (v.mk_id && mk && v.mk_id !== mk.id) return { ok: false, error: "Voucher ini untuk mata kuliah lain." };
     if (v.wa && wa && v.wa !== wa) return { ok: false, error: "Voucher ini terikat ke nomor WhatsApp lain." };
     return { ok: true, v };
@@ -156,6 +157,7 @@ module.exports = function mountKisi({ app, express, db, settings, root, sameOrig
       let dir = null;
       try {
         const b = req.body || {}, files = req.files || [], mk = bySlug(b.slug); if (!mk) throw bad(404, "Mata kuliah tidak ditemukan.");
+        if (!mk.file_path) throw bad(400, "Klaim voucher belum dibuka untuk mata kuliah ini.");
         const wa = wa62(b.wa); if (!wa) throw bad(400, "Nomor WhatsApp tidak valid.");
         if (files.length < KLAIM_GRUP) throw bad(400, `Baru ${files.length} dari ${KLAIM_GRUP} screenshot. Lengkapi dulu ya.`);
         for (const f of files) { const e = ext(f.originalname); if (!SHOT_OK[e] || !SHOT_OK[e](f.buffer)) throw bad(415, "Screenshot harus berupa gambar .jpg, .png, atau .webp yang valid."); }

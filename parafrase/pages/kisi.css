@@ -65,3 +65,4 @@
 .ks-st.d{background:var(--acc);color:var(--on-accent);border-color:var(--acc)}
 @media(max-width:560px){.ks-cta h3{font-size:22px}.ks-btn{padding:0 20px}}
 .ks .ks-vban h2 em{color:#f3ff4d;background:none}
+.ks-row[hidden]{display:none}

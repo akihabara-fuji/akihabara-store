@@ -40,8 +40,8 @@
     /* bayar QRIS */
     $("kspay").addEventListener("click", function () {
       var disc = null;
-      var m = modal('<h3>Bayar via QRIS</h3><div style="font-size:14px;color:var(--muted);margin-top:6px">Kisi-kisi lengkap ' + esc(d.nama) + ', harga normal ' + rp(d.harga) + '. Punya voucher? Masukkan kodenya.</div><div class="ks-sub sm" style="margin-top:6px">' + (d.ada_file ? 'Setelah pembayaran dikonfirmasi admin, file langsung bisa kamu unduh dari halaman pesanan.' : 'Setelah pembayaran dikonfirmasi, kamu chat admin lewat WhatsApp untuk menerima file.') + '</div>'
-        + '<input type="tel" id="kswa" placeholder="Nomor WhatsApp, 08xxxxxxxxxx" inputmode="numeric" autocomplete="tel"><div class="ks-row"><input type="text" id="ksvc" placeholder="Kode voucher" autocapitalize="characters"><button class="ks-btn ghost sm" id="kspk" type="button">Pakai</button></div><div class="ks-msg" id="ksvm"></div>'
+      var m = modal('<h3>Bayar via QRIS</h3><div style="font-size:14px;color:var(--muted);margin-top:6px">Kisi-kisi lengkap ' + esc(d.nama) + ', harga normal ' + rp(d.harga) + '.' + (d.ada_file ? ' Punya voucher? Masukkan kodenya.' : '') + '</div><div class="ks-sub sm" style="margin-top:6px">' + (d.ada_file ? 'Setelah pembayaran dikonfirmasi admin, file langsung bisa kamu unduh dari halaman pesanan.' : 'Setelah pembayaran dikonfirmasi, kamu chat admin lewat WhatsApp untuk menerima file.') + '</div>'
+        + '<input type="tel" id="kswa" placeholder="Nomor WhatsApp, 08xxxxxxxxxx" inputmode="numeric" autocomplete="tel"><div class="ks-row"' + (d.ada_file ? '' : ' hidden') + '><input type="text" id="ksvc" placeholder="Kode voucher" autocapitalize="characters"><button class="ks-btn ghost sm" id="kspk" type="button">Pakai</button></div><div class="ks-msg" id="ksvm"></div>'
         + '<div class="ks-tot"><span>Total bayar</span><b id="kstt">' + rp(d.harga) + '</b></div><div class="ks-msg bad" id="ksem"></div><button class="ks-btn" id="ksgo" type="button" style="margin-top:10px">Lanjut ke QRIS</button> <button class="ks-btn ghost sm" id="kstutup" type="button">Tutup</button>');
       wire(m, "#kstutup", function () { m.remove(); });
       wire(m, "#kspk", function () {
@@ -58,7 +58,7 @@
     });
 
     /* klaim voucher */
-    $("ksklaim").addEventListener("click", function () {
+    if ($("ksklaim")) $("ksklaim").addEventListener("click", function () {
       var m = modal('<h3>Klaim voucher 60%</h3><ol class="ks-steps"><li>Bagikan link halaman ini ke 5 grup berbeda.</li><li>Screenshot tiap grup: nama grup dan link harus terlihat.</li><li>Unggah 5 screenshot di bawah.</li><li>Admin cek. Kalau valid, kode dikirim ke WhatsApp-mu.</li></ol>'
         + '<div style="font-size:13px;margin-top:10px;color:var(--muted)">Link yang dibagikan: <b style="color:var(--text);word-break:break-all">' + esc(link.replace(/^https?:\/\//, "")) + '</b></div>'
         + '<div class="ks-shots" id="kssh">' + [0, 1, 2, 3, 4].map(function (i) { return '<label><input type="file" accept="image/jpeg,image/png,image/webp"><span>Grup ' + (i + 1) + "</span></label>"; }).join("") + '</div>'
