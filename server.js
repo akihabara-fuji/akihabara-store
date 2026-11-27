@@ -310,16 +310,12 @@ app.get("/robots.txt", (req, res) => {
   const base = isAcadHost(req) ? ACAD : SITE;
   res.type("text/plain").send(`User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /ms/\nDisallow: /grup\nDisallow: /go/\n\nSitemap: ${base}/sitemap.xml\n`);
 });
-/* Halaman Kisi-kisi per mata kuliah (ribuan) masuk sitemap agar bisa dicari lewat kode atau nama MK. */
-const kisiUrls = base => { try { return typeof pf !== "undefined" && pf.kisi ? [{ loc: `${base}/kisi-kisi`, pri: "0.9" }, ...[...new Set(pf.kisi.list().map(m => { const c = String(m.nama || "").trim().charAt(0).toUpperCase(); return /[A-Z]/.test(c) ? c : "Z"; }))].sort().map(l => ({ loc: `${base}/kisi-kisi/indeks/${l.toLowerCase()}`, pri: "0.6" })), ...pf.kisi.list().map(m => ({ loc: `${base}/kisi-kisi/${m.slug}`, pri: "0.5" }))] : []; } catch { return []; } };
-app.get("/sitemap.xml", (req, res) => {
-  const urls = ACAD === SITE
-    ? [{ loc: `${SITE}/`, pri: "1.0" }, { loc: `${SITE}/blog`, pri: "0.8" }, ...extra.pageUrls(), ...extra.blogUrls(), ...kisiUrls(SITE)]
-    : isAcadHost(req)
-      ? [{ loc: `${ACAD}/blog`, lastmod: extra.blogUrls().map(u => u.lastmod).filter(Boolean).sort().pop(), pri: "0.8" }, ...extra.pageUrls(), ...extra.blogUrls(), ...kisiUrls(ACAD)]
-      : [{ loc: `${SITE}/`, pri: "1.0" }];
-  res.type("application/xml").send(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(u => `  <url><loc>${u.loc}</loc>${u.lastmod ? `<lastmod>${u.lastmod}</lastmod>` : ""}<priority>${u.pri}</priority></url>`).join("\n")}\n</urlset>\n`);
-});
+/* Sitemap otomatis: modul sitemap.js membangun XML dari data nyata, menulis public/sitemap.xml, dan melayani GET /sitemap.xml. */
+const sitemap = require("./sitemap").create({ SITE, ACAD, extra: { pageUrls: () => extra.pageUrls(), blogUrls: () => extra.blogUrls() }, kisiList: () => (typeof pf !== "undefined" && pf.kisi ? pf.kisi.list() : []), pub: PUB, log: m => console.warn("[sitemap]", m) });
+app.use((req, res, next) => { if (req.method !== "GET" && /^\/ms\/admin\//.test(req.path)) res.on("finish", () => { if (res.statusCode < 400) sitemap.schedule(); }); next(); });
+app.get("/sitemap.xml", sitemap.serve(isAcadHost));
+setTimeout(() => { try { sitemap.generateSitemap(); } catch (e) { console.warn("[sitemap]", e.message); } }, 1500).unref();
+setInterval(() => sitemap.schedule(100), 6 * 3600 * 1000).unref();
 app.get(["/", "/index.html"], async (req, res) => {
   const html = await fsp.readFile(TEMPLATE, "utf8");
   const json = JSON.stringify(publicStore()).replace(/</g, "\\u003c").replace(/\u2028|\u2029/g, "");

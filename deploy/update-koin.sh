@@ -81,6 +81,7 @@ CA="${CA_HOST:-catatanakademik.com}"
 for u in / /blog /sitemap.xml /robots.txt /admin/ /layanan /portal-ut /kalkulator-nilai-ut /ms/layanan/config /ms/galeri /buat-cv-ats /sampul-tugas /surat-lamaran /tracker-kelulusan /kalender-akademik /panduan-maba /kisi-kisi /kisi-kisi/spin4401-filologi /kisi-kisi/ekma4111-pengantar-bisnis/ /kisi-kisi/adbi4130-pengantar-administrasi-niaga /kisi-kisi/indeks/a /ms/kisi/list; do x=$(c $CA "$u"); echo "$CA$u $x"; [ "$x" = 200 ] || { [ "$x" = 301 ] && case "$u" in /buat-cv-ats|/surat-lamaran) true;; *) false;; esac; }; done
 for u in /ruangakademikut /ruangakademikut/layanan /ruangakademikut/assets/studio.js; do x=$(cl $CA "$u"); echo "portal CA ${u##*/} $x"; [ "$x" = 200 ]; done
 x=$(c $CA /ruangakademikut/audit); echo "portal CA audit $x"; [ "$x" = 200 ] || [ "$x" = 301 ]
+has $CA /sitemap.xml 'kisi-kisi/indeks/a</loc><lastmod>' || { echo "Sitemap tidak memuat indeks kisi-kisi"; false; }
 has $CA /admin/ 'Admin · Catatan Akademik' || { echo "Panel admin CA tidak tampil di /admin"; false; }
 has $CA /ms/layanan/config 'metopen' || { echo "Konfigurasi layanan tidak terbaca"; false; }
 echo "Isi halaman: OK"

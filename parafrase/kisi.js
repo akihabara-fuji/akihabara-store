@@ -41,8 +41,8 @@ module.exports = function mountKisi({ app, express, db, settings, root, sameOrig
   const json = express.json({ limit: "64kb" });
 
   /* ---------- data ---------- */
-  const mkRow = r => r && ({ id: r.id, kode: r.kode, nama: r.nama, jenis: r.jenis, periode: r.periode, slug: r.slug, harga: r.harga, tampil: !!r.tampil, ada_file: !!r.file_path, jml_soal: r.jml != null ? r.jml : soalOf(r).length });
-  const list = () => db.prepare("SELECT id,kode,nama,jenis,periode,slug,harga,tampil,file_path,json_array_length(soal) AS jml FROM kisi_mk WHERE tampil=1 ORDER BY id").all().map(mkRow);
+  const mkRow = r => r && ({ id: r.id, kode: r.kode, nama: r.nama, jenis: r.jenis, periode: r.periode, slug: r.slug, harga: r.harga, tampil: !!r.tampil, ada_file: !!r.file_path, jml_soal: r.jml != null ? r.jml : soalOf(r).length, dibuat: r.created_at });
+  const list = () => db.prepare("SELECT id,kode,nama,jenis,periode,slug,harga,tampil,file_path,created_at,json_array_length(soal) AS jml FROM kisi_mk WHERE tampil=1 ORDER BY id").all().map(mkRow);
   const bySlug = slug => db.prepare("SELECT * FROM kisi_mk WHERE slug=? AND tampil=1").get(String(slug || ""));
   const soalOf = r => { try { return JSON.parse(r.soal || "[]"); } catch { return []; } };
 

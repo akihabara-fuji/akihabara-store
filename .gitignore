@@ -18,3 +18,4 @@ data/studio.sqlite
 data/indexnow.key
 data/*.db*
 *.bak*
+public/sitemap.xml
