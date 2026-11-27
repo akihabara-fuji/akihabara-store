@@ -311,7 +311,7 @@ app.get("/robots.txt", (req, res) => {
   res.type("text/plain").send(`User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /ms/\nDisallow: /grup\nDisallow: /go/\n\nSitemap: ${base}/sitemap.xml\n`);
 });
 /* Halaman Kisi-kisi per mata kuliah (ribuan) masuk sitemap agar bisa dicari lewat kode atau nama MK. */
-const kisiUrls = base => { try { return typeof pf !== "undefined" && pf.kisi ? pf.kisi.list().map(m => ({ loc: `${base}/kisi-kisi/${m.slug}`, pri: "0.5" })) : []; } catch { return []; } };
+const kisiUrls = base => { try { return typeof pf !== "undefined" && pf.kisi ? [{ loc: `${base}/kisi-kisi`, pri: "0.9" }, ...[...new Set(pf.kisi.list().map(m => { const c = String(m.nama || "").trim().charAt(0).toUpperCase(); return /[A-Z]/.test(c) ? c : "Z"; }))].sort().map(l => ({ loc: `${base}/kisi-kisi/indeks/${l.toLowerCase()}`, pri: "0.6" })), ...pf.kisi.list().map(m => ({ loc: `${base}/kisi-kisi/${m.slug}`, pri: "0.5" }))] : []; } catch { return []; } };
 app.get("/sitemap.xml", (req, res) => {
   const urls = ACAD === SITE
     ? [{ loc: `${SITE}/`, pri: "1.0" }, { loc: `${SITE}/blog`, pri: "0.8" }, ...extra.pageUrls(), ...extra.blogUrls(), ...kisiUrls(SITE)]

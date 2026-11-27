@@ -103,6 +103,7 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
     const kp = (long, short) => SHORT ? ["/ruangakademikut/" + long, "/" + long] : "/ruangakademikut/" + long;
     app.get(kp("kisi-kisi"), kpage(() => KS.katalog(), "kisi"));
     app.get(kp("kisi-kisi/pesanan/:token"), (req, res) => { res.set({ "Cache-Control": "no-store", "X-Robots-Tag": "noindex", "Referrer-Policy": "no-referrer" }); return kpage(() => KS.pesanan(), "kisi")(req, res); });
+    app.get(kp("kisi-kisi/indeks/:huruf"), kpage(req => KS.indeks(String(req.params.huruf)), "kisi"));
     app.get(kp("kisi-kisi/:slug"), kpage(req => KS.mk(String(req.params.slug)), "kisi"));
     app.get(["/admin/kisi", "/admin/kisi/"], (req, res) => fs.readFile(path.join(dir, "kisi-admin.html"), "utf8", (err, html) => err ? res.status(500).end() : res.set({ "Cache-Control": "no-store", "X-Robots-Tag": "noindex" }).type("html").send(html)));
   }

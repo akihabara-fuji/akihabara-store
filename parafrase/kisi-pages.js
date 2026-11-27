@@ -2,21 +2,69 @@
 "use strict";
 const EH = v => String(v == null ? "" : v).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const rp = n => "Rp" + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-const HEADX = '<link rel="stylesheet" href="/ruangakademikut/assets/kisi.css?v=5">';
-const FOOT = '<script src="/ruangakademikut/assets/kisi.js?v=3" defer></script>';
+const HEADX = '<link rel="stylesheet" href="/ruangakademikut/assets/kisi.css?v=6">';
+const FOOT = '<script src="/ruangakademikut/assets/kisi.js?v=4" defer></script>';
 
 module.exports = function buildKisi(kisi) {
   const pill = (kode, jenis) => EH(kode) + (jenis ? " · " + EH(jenis) : "");
-  const ket = m => (m.jml_soal > 0 ? "5 soal latihan gratis, plus " : "") + "kisi-kisi lengkap periode " + EH(m.periode) + ".";
+  /* 5 pola deskripsi kartu (dipilih dari kode MK) supaya teks tiap kartu tidak seragam. Sama persis dengan versi di pages/kisi.js. */
+  const jt = j => (j === "Objektif" ? "pilihan ganda (objektif)" : j === "Uraian" ? "uraian" : "");
+  const vi = k => { let h = 0; for (let i = 0; i < k.length; i++) h = (h * 31 + k.charCodeAt(i)) % 5; return h; };
+  const ket = m => {
+    const t = jt(m.jenis), n = EH(m.nama), k = EH(m.kode), p = EH(m.periode);
+    const a = [
+      `Kisi-kisi UAS UT ${n} periode ${p}${t ? ", ujian " + t : ""}.`,
+      `Persiapan UAS ${k} (${n}): latihan soal dan kisi-kisi lengkap.`,
+      `Cek kesiapan UAS ${n} lewat latihan soal ${t || "mata kuliah"} periode ${p}.`,
+      `${k}: latihan soal ${t ? t + " " : ""}${n} untuk UAS periode ${p}.`,
+      `Belajar ${n} jelang UAS UT? Buka kisi-kisi lengkap periode ${p}.`,
+    ][vi(m.kode)];
+    return a + (m.jml_soal > 0 ? " 5 soal latihan gratis." : "");
+  };
   const card = m => `<a class="ks-card" href="/ruangakademikut/kisi-kisi/${EH(m.slug)}" data-q="${EH((m.kode + " " + m.nama).toLowerCase())}"><div class="ks-cover${m.jenis === "Uraian" ? " u" : ""}"><span class="ks-chip">KISI-KISI</span><div class="ks-ct">${EH(m.nama)}</div><div class="ks-by"><span>Catatan Akademik</span><span>catatanakademik.com</span></div></div><div class="ks-body"><span class="ks-pill">${pill(m.kode, m.jenis)}</span><h3>Kisi-kisi ${EH(m.nama)}</h3><p>${ket(m)}</p><div class="ks-meta">Periode ${EH(m.periode)}${m.jml_soal > 0 ? " · 5 soal gratis" : ""}</div><span class="ks-rd">${m.jml_soal > 0 ? "Latihan" : "Lihat"} →</span></div></a>`;
 
+  const FAQ = [
+    ["Apa itu UAS UT?", "UAS adalah Ujian Akhir Semester di Universitas Terbuka. Ujian ini diikuti mahasiswa di akhir semester dan menjadi salah satu komponen nilai akhir mata kuliah. Bobot dan ketentuannya bisa berbeda tiap mata kuliah, jadi cek informasi resmi di ut.ac.id."],
+    ["Apakah soal latihan di sini sama dengan soal UAS UT yang asli?", "Tidak. Soal latihan di Catatan Akademik kami susun sendiri mengikuti topik mata kuliahnya, bukan salinan atau bocoran soal ujian. Fungsinya mengecek bagian mana yang belum kamu kuasai sebelum ujian."],
+    ["Apa bedanya ujian objektif dan uraian di UT?", "Ujian objektif berupa soal pilihan ganda, sedangkan ujian uraian meminta kamu menjawab dengan kalimat sendiri. Jenis ujian tiap mata kuliah tertera di kartu, kecuali yang belum disebut oleh sumbernya."],
+    ["Bagaimana cara memakai kisi-kisi UAS UT biar efektif?", "Cari mata kuliahmu, kerjakan latihan soalnya dulu tanpa buka catatan, lalu catat topik yang salah. Fokuskan belajar ke topik itu, baru ulangi latihan menjelang hari ujian."],
+    ["Apakah latihan soalnya gratis?", "Mata kuliah yang bertanda 5 soal gratis bisa dicoba tanpa daftar dan tanpa bayar. Kisi-kisi lengkap per mata kuliah tersedia berbayar, dengan pembayaran lewat QRIS dan konfirmasi admin."],
+  ];
+  const BASE = "https://catatanakademik.com";
+  const ldJson = o => '<script type="application/ld+json">' + JSON.stringify(o).replace(/</g, "\\u003c") + "</script>";
+  const fmt = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  const letterOf = m => { const c = String(m.nama || "").trim().charAt(0).toUpperCase(); return /[A-Z]/.test(c) ? c : "Z"; };
+  const letters = items => { const o = {}; items.forEach(m => { const l = letterOf(m); o[l] = (o[l] || 0) + 1; }); return o; };
+
   function katalog() {
-    const items = kisi.list(), first = items.slice(0, 8);
+    const items = kisi.list(), first = items.slice(0, 8), L = letters(items);
+    const T = "UAS UT: Kisi-kisi & Latihan Soal | Catatan Akademik";
+    const D = "Cari kisi-kisi UAS UT dan latihan soal UAS UT online per mata kuliah. " + fmt(items.length) + " mata kuliah, ada 5 soal latihan gratis. Coba sekarang!";
+    const ld = [
+      { "@context": "https://schema.org", "@type": "CollectionPage", name: "Kisi-kisi UAS UT dan Latihan Soal per Mata Kuliah", url: BASE + "/kisi-kisi", description: D, inLanguage: "id", isPartOf: { "@type": "WebSite", name: "Catatan Akademik", url: BASE } },
+      { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: FAQ.map(f => ({ "@type": "Question", name: f[0], acceptedAnswer: { "@type": "Answer", text: f[1] } })) },
+      { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Beranda", item: BASE + "/" }, { "@type": "ListItem", position: 2, name: "Kisi-kisi UAS UT", item: BASE + "/kisi-kisi" }] },
+    ].map(ldJson).join("");
+    const idx = `<section class="ks-idx" aria-label="Daftar mata kuliah per huruf"><h2>Daftar kisi-kisi UAS UT berdasarkan huruf</h2><p>Tidak mau scroll? Pilih huruf depan nama mata kuliahmu.</p><nav>${Object.keys(L).sort().map(l => `<a href="/ruangakademikut/kisi-kisi/indeks/${l.toLowerCase()}">${l}<small>${L[l]}</small></a>`).join("")}</nav></section>`;
+    const art = `<article class="ks-art"><h2>Latihan Soal UAS UT Online</h2><p>Menjelang UAS, banyak mahasiswa UT bingung mulai belajar dari mana. Halaman ini mengumpulkan kisi-kisi UAS UT untuk ${fmt(items.length)} mata kuliah. Tiap mata kuliah punya halaman sendiri, dan sebagian sudah dilengkapi 5 soal latihan yang bisa dicoba gratis.</p><h3>Perbedaan Ujian Objektif dan Uraian UT</h3><p>Ujian objektif berupa pilihan ganda, jadi kamu perlu teliti membaca opsi dan hafal konsep inti. Ujian uraian menuntut jawaban dengan kalimat sendiri, jadi latihannya lebih ke menjelaskan konsep dan memberi contoh. Jenis ujian tiap mata kuliah tertera di kartunya.</p><h3>Cara Menggunakan Kisi-Kisi UAS UT</h3><p>Mulai dengan mengerjakan latihan soal tanpa membuka catatan, lalu catat topik yang masih salah. Setelah itu pelajari topik tersebut lewat modul atau kisi-kisi lengkap, dan ulangi latihan beberapa hari sebelum ujian. Cara ini lebih hemat waktu daripada membaca semua modul dari awal.</p><h2>Pertanyaan yang Sering Diajukan tentang UAS UT</h2>${FAQ.map(f => `<h3>${EH(f[0])}</h3><p>${EH(f[1])}</p>`).join("")}</article>`;
     return {
-      title: "Kisi-kisi UT: Latihan 5 Soal Gratis per Mata Kuliah | Catatan Akademik",
-      desc: "Ujian UT tinggal hitungan hari. Coba 5 soal latihan gratis untuk tiap mata kuliah, lalu lihat bagian mana yang belum nempel.",
-      canon: "/ruangakademikut/kisi-kisi", headx: HEADX,
-      body: `<main class="wrap ks"><a class="ks-back" href="/" data-back>← Kembali</a><br><span class="ks-eb">Kisi-kisi UT</span><h1>Ujian tinggal hitungan hari. <em>Latihan dulu</em> 5 soalnya.</h1><p class="ks-lead">Pilih mata kuliahmu, coba soal latihannya gratis, lalu lihat bagian mana yang belum nempel sebelum hari ujian.</p><input class="ks-s" id="ksq" type="search" placeholder="Cari kode atau nama mata kuliah" aria-label="Cari mata kuliah" autocomplete="off"><div class="ks-grid" id="ksgrid" data-max="8" data-n="${items.length}">${first.map(card).join("") || "<p>Belum ada mata kuliah.</p>"}</div><p class="ks-none" id="ksnone" hidden>Mata kuliah tidak ditemukan.</p>${items.length > 8 ? `<div class="ks-more" id="ksmore"><button class="ks-btn ghost" type="button">Lihat semua ${String(items.length).replace(/\B(?=(\d{3})+(?!\d))/g, ".")} mata kuliah</button></div>` : ""}</main>${FOOT}`,
+      title: T, desc: D,
+      canon: "/ruangakademikut/kisi-kisi", headx: HEADX + ld,
+      body: `<main class="wrap ks"><a class="ks-back" href="/" data-back>← Kembali</a><br><span class="ks-eb">Kisi-kisi UAS UT</span><h1>Kisi-kisi UAS UT &amp; <em>Latihan Soal</em> per Mata Kuliah</h1><p class="ks-lead">Ujian tinggal hitungan hari. Latihan dulu 5 soalnya. Pilih mata kuliahmu, coba soal latihan UAS UT gratis, lalu lihat bagian mana yang belum nempel.</p><input class="ks-s" id="ksq" type="search" placeholder="Cari kode atau nama mata kuliah" aria-label="Cari mata kuliah" autocomplete="off"><div class="ks-grid" id="ksgrid" data-max="8" data-n="${items.length}">${first.map(card).join("") || "<p>Belum ada mata kuliah.</p>"}</div><p class="ks-none" id="ksnone" hidden>Mata kuliah tidak ditemukan.</p>${items.length > 8 ? `<div class="ks-more" id="ksmore"><button class="ks-btn ghost" type="button">Lihat semua ${fmt(items.length)} mata kuliah</button></div>` : ""}${idx}${art}</main>${FOOT}`,
+    };
+  }
+
+  function indeks(h) {
+    const l = String(h || "").toUpperCase(); if (!/^[A-Z]$/.test(l)) return null;
+    const items = kisi.list(), L = letters(items), list = items.filter(m => letterOf(m) === l).sort((a, b) => a.nama.localeCompare(b.nama, "id"));
+    if (!list.length) return null;
+    const nav = Object.keys(L).sort().map(x => `<a href="/ruangakademikut/kisi-kisi/indeks/${x.toLowerCase()}"${x === l ? ' class="on"' : ""}>${x}</a>`).join("");
+    const ld = ldJson({ "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Beranda", item: BASE + "/" }, { "@type": "ListItem", position: 2, name: "Kisi-kisi UAS UT", item: BASE + "/kisi-kisi" }, { "@type": "ListItem", position: 3, name: "Huruf " + l, item: BASE + "/kisi-kisi/indeks/" + l.toLowerCase() }] });
+    return {
+      title: `Kisi-kisi UAS UT Berawalan ${l}: ${list.length} Mata Kuliah | Catatan Akademik`,
+      desc: `Daftar kisi-kisi UAS UT dan latihan soal untuk ${list.length} mata kuliah berawalan huruf ${l}, lengkap dengan kode MK dan jenis ujian.`,
+      canon: "/ruangakademikut/kisi-kisi/indeks/" + l.toLowerCase(), headx: HEADX + ld,
+      body: `<main class="wrap ks"><a class="ks-back" href="/ruangakademikut/kisi-kisi">← Semua mata kuliah</a><h1>Kisi-kisi UAS UT mata kuliah berawalan <em>${l}</em></h1><p class="ks-lead">${list.length} mata kuliah. Pilih salah satu untuk membuka kisi-kisi dan latihan soalnya.</p><nav class="ks-az">${nav}</nav><ul class="ks-ul">${list.map(m => `<li><a href="/ruangakademikut/kisi-kisi/${EH(m.slug)}"><b>${EH(m.nama)}</b><span>${pill(m.kode, m.jenis)}</span></a></li>`).join("")}</ul></main>${FOOT}`,
     };
   }
 
@@ -38,5 +86,5 @@ module.exports = function buildKisi(kisi) {
     return { title: "Status pesanan Kisi-kisi | Catatan Akademik", desc: "Status pesanan kisi-kisi.", canon: "", robots: "noindex,nofollow", headx: HEADX,
       body: `<main class="wrap ks" id="kspesanan"><a class="ks-back" href="/ruangakademikut/kisi-kisi">← Semua mata kuliah</a><h1>Status pesanan</h1><div id="ksps">Memuat...</div></main>${FOOT}` };
   }
-  return { katalog, mk, pesanan, card };
+  return { katalog, mk, pesanan, card, indeks, letters, letterOf };
 };

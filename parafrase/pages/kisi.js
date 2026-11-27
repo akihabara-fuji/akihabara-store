@@ -17,9 +17,22 @@
   if (grid) {
     var q = $("ksq"), more = $("ksmore"), none = $("ksnone"), PAGE = 24, shown = PAGE, all = null, mode = "first", loading = null;
     var firstHtml = grid.innerHTML, total = +grid.dataset.n || 0;
+    /* pola deskripsi kartu; harus sama dengan ket() di kisi-pages.js */
+    function ket(kode, jenis, nama, per, jml) {
+      var t = jenis === "Objektif" ? "pilihan ganda (objektif)" : jenis === "Uraian" ? "uraian" : "", n = esc(nama), k = esc(kode), p = esc(per), h = 0, i;
+      for (i = 0; i < kode.length; i++) h = (h * 31 + kode.charCodeAt(i)) % 5;
+      var a = [
+        "Kisi-kisi UAS UT " + n + " periode " + p + (t ? ", ujian " + t : "") + ".",
+        "Persiapan UAS " + k + " (" + n + "): latihan soal dan kisi-kisi lengkap.",
+        "Cek kesiapan UAS " + n + " lewat latihan soal " + (t || "mata kuliah") + " periode " + p + ".",
+        k + ": latihan soal " + (t ? t + " " : "") + n + " untuk UAS periode " + p + ".",
+        "Belajar " + n + " jelang UAS UT? Buka kisi-kisi lengkap periode " + p + "."
+      ][h];
+      return a + (jml > 0 ? " 5 soal latihan gratis." : "");
+    }
     function cardHtml(m) {
       var kode = m[0], jenis = m[1], nama = m[2], slug = m[3], per = m[4], jml = m[5];
-      return '<a class="ks-card" href="/ruangakademikut/kisi-kisi/' + esc(slug) + '"><div class="ks-cover' + (jenis === "Uraian" ? " u" : "") + '"><span class="ks-chip">KISI-KISI</span><div class="ks-ct">' + esc(nama) + '</div><div class="ks-by"><span>Catatan Akademik</span><span>catatanakademik.com</span></div></div><div class="ks-body"><span class="ks-pill">' + esc(kode) + (jenis ? " · " + esc(jenis) : "") + "</span><h3>Kisi-kisi " + esc(nama) + "</h3><p>" + (jml > 0 ? "5 soal latihan gratis, plus " : "") + "kisi-kisi lengkap periode " + esc(per) + '.</p><div class="ks-meta">Periode ' + esc(per) + (jml > 0 ? " · 5 soal gratis" : "") + '</div><span class="ks-rd">' + (jml > 0 ? "Latihan" : "Lihat") + " →</span></div></a>";
+      return '<a class="ks-card" href="/ruangakademikut/kisi-kisi/' + esc(slug) + '"><div class="ks-cover' + (jenis === "Uraian" ? " u" : "") + '"><span class="ks-chip">KISI-KISI</span><div class="ks-ct">' + esc(nama) + '</div><div class="ks-by"><span>Catatan Akademik</span><span>catatanakademik.com</span></div></div><div class="ks-body"><span class="ks-pill">' + esc(kode) + (jenis ? " · " + esc(jenis) : "") + "</span><h3>Kisi-kisi " + esc(nama) + "</h3><p>" + ket(kode, jenis, nama, per, jml) + '</p><div class="ks-meta">Periode ' + esc(per) + (jml > 0 ? " · 5 soal gratis" : "") + '</div><span class="ks-rd">' + (jml > 0 ? "Latihan" : "Lihat") + " →</span></div></a>";
     }
     function ensure() {
       if (all) return Promise.resolve(all);

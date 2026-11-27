@@ -67,3 +67,9 @@
 @media(max-width:560px){.ks-cta h3{font-size:22px}.ks-btn{padding:0 20px}}
 .ks .ks-vban h2 em{color:#f3ff4d;background:none}
 .ks-row[hidden]{display:none}
+
+.ks-idx{margin:44px 0 0}.ks-idx h2,.ks-art h2{font-size:clamp(20px,2.6vw,26px);margin:0 0 6px}.ks-idx p{margin:0 0 14px;opacity:.75}
+.ks-idx nav,.ks-az{display:flex;flex-wrap:wrap;gap:8px}.ks-idx nav a,.ks-az a{display:inline-flex;align-items:baseline;gap:5px;padding:8px 13px;border-radius:10px;border:1px solid var(--border,rgba(127,127,127,.3));text-decoration:none;color:inherit;font-weight:700}
+.ks-idx nav a small{font-weight:500;opacity:.6;font-size:11px}.ks-az{margin:14px 0 18px}.ks-az a.on{background:var(--accent,#a78bfa);color:#14102a;border-color:transparent}
+.ks-ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px}.ks-ul a{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:12px;border:1px solid var(--border,rgba(127,127,127,.3));text-decoration:none;color:inherit}.ks-ul a:hover{border-color:var(--accent,#a78bfa)}.ks-ul span{font-size:12px;opacity:.65}
+.ks-art{margin:44px 0 0;max-width:760px}.ks-art h3{font-size:17px;margin:22px 0 6px}.ks-art p{margin:0;line-height:1.7;opacity:.85}
