@@ -78,7 +78,7 @@ cl(){ curl -sL -o /dev/null -w '%{http_code}' --resolve "$1:443:127.0.0.1" "http
 get(){ curl -fsS --resolve "$1:443:127.0.0.1" "https://$1$2"; }
 has(){ local b; b=$(get "$1" "$2") || return 1; [[ "$b" == *"$3"* ]]; }
 CA="${CA_HOST:-catatanakademik.com}"
-for u in / /blog /sitemap.xml /robots.txt /admin/ /layanan /portal-ut /kalkulator-nilai-ut /ms/layanan/config /ms/galeri /buat-cv-ats /sampul-tugas /surat-lamaran /tracker-kelulusan /kalender-akademik /panduan-maba /kisi-kisi /kisi-kisi/spin4401-filologi /ms/kisi/list; do x=$(c $CA "$u"); echo "$CA$u $x"; [ "$x" = 200 ] || { [ "$x" = 301 ] && case "$u" in /buat-cv-ats|/surat-lamaran) true;; *) false;; esac; }; done
+for u in / /blog /sitemap.xml /robots.txt /admin/ /layanan /portal-ut /kalkulator-nilai-ut /ms/layanan/config /ms/galeri /buat-cv-ats /sampul-tugas /surat-lamaran /tracker-kelulusan /kalender-akademik /panduan-maba /kisi-kisi /kisi-kisi/spin4401-filologi /kisi-kisi/ekma4111-pengantar-bisnis/ /ms/kisi/list; do x=$(c $CA "$u"); echo "$CA$u $x"; [ "$x" = 200 ] || { [ "$x" = 301 ] && case "$u" in /buat-cv-ats|/surat-lamaran) true;; *) false;; esac; }; done
 for u in /ruangakademikut /ruangakademikut/layanan /ruangakademikut/assets/studio.js; do x=$(cl $CA "$u"); echo "portal CA ${u##*/} $x"; [ "$x" = 200 ]; done
 x=$(c $CA /ruangakademikut/audit); echo "portal CA audit $x"; [ "$x" = 200 ] || [ "$x" = 301 ]
 has $CA /admin/ 'Admin · Catatan Akademik' || { echo "Panel admin CA tidak tampil di /admin"; false; }
