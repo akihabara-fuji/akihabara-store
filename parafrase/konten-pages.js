@@ -21,7 +21,7 @@ module.exports = function build(app) {
     return `<section class="kt-sec"><h2>Kata teman belajar</h2>${body}</section>`;
   }
 
-  const BAN = `<aside class="kt-ban" role="note"><span>Pembaruan: layanan jasa sudah ditutup. Catatan Akademik kini platform edukasi mandiri untuk belajar memakai AI dengan etis.</span><a href="/grup?dari=pembaruan">Ikuti kabar di grup WhatsApp</a></aside>`;
+  const BAN = `<aside class="kt-ban" role="note"><span>Pembaruan: layanan jasa sudah ditutup. Catatan Akademik kini platform edukasi mandiri: belajar memakai AI dengan etis, plus latihan soal dan kisi-kisi UAS UT berbasis modul.</span><a href="/grup?dari=pembaruan">Ikuti kabar di grup WhatsApp</a></aside>`;
   function pustaka(k) {
     const E = k.E, items = [];
     k.D.KEYS.forEach(id => { const j = k.jenisOf(id); if (j.prompt) items.push({ j: id, label: j.label, t: "Uji kerangka " + j.label.toLowerCase(), p: j.prompt }); });
