@@ -42,7 +42,7 @@
   };
   const NAV = [
     { items: [["dashboard", "Dashboard", "home", ALL]] },
-    { h: "Pesanan", items: [["g:pesanan", "Pesanan", "box", CS], ["customers", "Pelanggan", "users", CS]] },
+    { h: "Pesanan", items: [["g:pesanan", "Pesanan", "box", CS], ["customers", "Pelanggan", "users", CS], ["tools/kisi", "Kisi-kisi", "doc", CS]] },
     { h: "Isi situs", items: [["tuton", "Kelas Tuton", "doc", ED], ["g:artikel", "Artikel", "doc", ED], ["komunitas", "Komunitas", "users", ED], ["g:media", "Media", "img", ED], ["studio", "Studio Sosmed", "send", ED], ["g:tampilan", "Tampilan", "pen", ED]] },
     { h: "Pengaturan", items: [["services", "Layanan & Harga", "price", OWN], ["wa", "Bot WhatsApp", "send", OWN], ["g:laporan", "Laporan", "chart", ED], ["g:pengaturan", "Pengaturan", "cog", OWN]] },
   ];
