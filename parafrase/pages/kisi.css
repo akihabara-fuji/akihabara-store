@@ -65,7 +65,7 @@
 .ks-st{display:inline-block;font-size:13px;font-weight:700;padding:3px 12px;border-radius:999px;border:1px solid var(--border);background:var(--surface2)}
 .ks-st.d{background:var(--acc);color:var(--on-accent);border-color:var(--acc)}
 @media(max-width:560px){.ks-cta h3{font-size:22px}.ks-btn{padding:0 20px}}
-.ks .ks-vban h2 em{color:#f3ff4d;background:none}
+.ks .ks-vban h2 em{color:#f59e0b;background:none}
 .ks-row[hidden]{display:none}
 
 .ks-idx{margin:44px 0 0}.ks-idx h2,.ks-art h2{font-size:clamp(20px,2.6vw,26px);margin:0 0 6px}.ks-idx p{margin:0 0 14px;opacity:.75}
