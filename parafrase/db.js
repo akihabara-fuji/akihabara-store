@@ -358,6 +358,17 @@ const MIGRATIONS = [
     const now = Date.now();
     for (const [kode, jenis, nama, soal] of MK) ins.run(kode, nama, jenis, "20262", slugOf(kode, nama), JSON.stringify(soal), now);
   },
+  /* Kisi-kisi: seluruh mata kuliah (1.470) dari kisi-daftar.txt, baris "KODE|J|Nama" (J: O objektif, U uraian, - tidak disebut; angka 1 di belakang J = periode 20261).
+     Hanya kode, nama, jenis; soal latihan kosong sampai diisi admin. INSERT OR IGNORE: MK yang sudah ada (16 awal, ubahan admin) tidak disentuh. */
+  db => {
+    const slugOf = require("./kisi").slugOf;
+    const txt = require("fs").readFileSync(require("path").join(__dirname, "kisi-daftar.txt"), "utf8");
+    const rows = txt.split("\n").map(l => l.trim()).filter(Boolean).map(l => { const [kode, j, ...n] = l.split("|"); return { kode: kode.trim(), j: (j || "").trim(), nama: n.join("|").trim() }; })
+      .filter(r => /^[A-Z]{4}\d{4}$/.test(r.kode) && r.nama).sort((a, b) => (a.kode < b.kode ? -1 : a.kode > b.kode ? 1 : 0));
+    const ins = db.prepare("INSERT OR IGNORE INTO kisi_mk (kode,nama,jenis,periode,slug,harga,tampil,soal,created_at) VALUES (?,?,?,?,?,50000,1,'[]',?)");
+    const now = Date.now();
+    db.transaction(() => { for (const r of rows) ins.run(r.kode, r.nama, r.j[0] === "O" ? "Objektif" : r.j[0] === "U" ? "Uraian" : "", r.j.endsWith("1") ? "20261" : "20262", slugOf(r.kode, r.nama), now); })();
+  },
 ];
 
 

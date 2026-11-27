@@ -30,12 +30,21 @@
   function mkBox(m) {
     var n = !m; m = m || { kode: "", nama: "", jenis: "Objektif", periode: "20262", harga: 50000, tampil: false };
     return '<details class="o" data-id="' + (m.id || "") + '"><summary><b>' + (n ? "+ Tambah mata kuliah" : esc(m.kode) + " · " + esc(m.nama)) + "</b> " + (n ? "" : st(m.tampil ? "valid" : "ditolak", m.tampil).replace(">Valid<", ">Tampil<").replace(">Ditolak<", ">Disembunyikan<") + ' <span class="m">/kisi-kisi/' + esc(m.slug) + " · " + (m.soal.length) + " soal · " + (m.file ? "file: " + esc(m.file) : "file belum ada") + "</span>") + "</summary>"
-      + '<p>Kode <input data-f="kode" value="' + esc(m.kode) + '" size="12"' + (n ? "" : " readonly") + '> Nama <input data-f="nama" value="' + esc(m.nama) + '" size="36"> Jenis <select data-f="jenis"><option' + (m.jenis === "Objektif" ? " selected" : "") + ">Objektif</option><option" + (m.jenis === "Uraian" ? " selected" : "") + '>Uraian</option></select> Periode <input data-f="periode" value="' + esc(m.periode) + '" size="6"> Harga <input data-f="harga" type="number" value="' + m.harga + '" style="width:110px"> <label><input type="checkbox" data-f="tampil"' + (m.tampil ? " checked" : "") + '> Tampil di situs</label></p>'
+      + '<p>Kode <input data-f="kode" value="' + esc(m.kode) + '" size="12"' + (n ? "" : " readonly") + '> Nama <input data-f="nama" value="' + esc(m.nama) + '" size="36"> Jenis <select data-f="jenis"><option value=""' + (m.jenis ? "" : " selected") + '>Tidak disebut</option><option' + (m.jenis === "Objektif" ? " selected" : "") + ">Objektif</option><option" + (m.jenis === "Uraian" ? " selected" : "") + '>Uraian</option></select> Periode <input data-f="periode" value="' + esc(m.periode) + '" size="6"> Harga <input data-f="harga" type="number" value="' + m.harga + '" style="width:110px"> <label><input type="checkbox" data-f="tampil"' + (m.tampil ? " checked" : "") + '> Tampil di situs</label></p>'
       + soalForm(m) + '<p><button data-a="simpan">Simpan</button>' + (n ? "" : ' <span class="m">Unggah file lengkap (PDF/Word/ZIP):</span> <input type="file" data-f="file"> <button class="g" data-a="unggah">Unggah</button>' + (m.file ? ' <a href="/ms/admin/kisi/mk/' + m.id + '/file">Unduh file</a>' : "")) + "</p></details>";
   }
 
+  /* ribuan MK: tampilkan yang dicari (maks 30); tanpa kata kunci, yang sudah punya soal/file lalu sisanya sampai 30 */
+  function mkList() {
+    var t = ((document.getElementById("mkq") || {}).value || "").trim().toLowerCase(), pool = S.mk;
+    if (t) pool = pool.filter(function (m) { return (m.kode + " " + m.nama).toLowerCase().indexOf(t) >= 0; });
+    else pool = pool.filter(function (m) { return m.soal.length || m.file; }).concat(pool.filter(function (m) { return !m.soal.length && !m.file; }));
+    var cut = pool.slice(0, 30);
+    return '<p class="m">' + S.mk.length + " mata kuliah. Menampilkan " + cut.length + (pool.length > cut.length ? " dari " + pool.length : "") + ". " + S.mk.filter(function (m) { return m.soal.length; }).length + " punya soal latihan, " + S.mk.filter(function (m) { return m.file; }).length + " punya file lengkap.</p>" + cut.map(mkBox).join("") + (t ? "" : mkBox(null));
+  }
   function render() {
-    var h = "<h2>Mata kuliah</h2>" + S.mk.map(mkBox).join("") + mkBox(null);
+    var q0 = (document.getElementById("mkq") || {}).value || "";
+    var h = '<h2>Mata kuliah</h2><p><input id="mkq" type="search" size="40" placeholder="Cari kode atau nama mata kuliah" value="' + esc(q0) + '"></p><div id="mkl">' + mkList() + "</div>";
     h += '<p><button class="g" data-a="harga">Atur harga semua MK</button></p>';
     h += "<h2>Pesanan</h2>" + (S.pesanan.length ? "<table><tr><th>Pesanan</th><th>MK</th><th>WA</th><th>Total</th><th>Status</th><th>Aksi</th></tr>" + S.pesanan.map(function (o) {
       var b = "";
@@ -57,6 +66,7 @@
   }
   function load() { return fetch("/ms/admin/kisi", { cache: "no-store" }).then(function (r) { if (r.status === 401 || r.status === 403) throw new Error("Masuk sebagai admin dulu."); return r.json(); }).then(function (j) { var open = [].slice.call(A.querySelectorAll("details[open]")).map(function (d) { return d.dataset.id; }); S = j; render(); A.querySelectorAll("details").forEach(function (d) { if (open.indexOf(d.dataset.id) >= 0) d.open = true; }); }).catch(function (e) { A.textContent = e.message; }); }
 
+  A.addEventListener("input", function (e) { if (e.target.id === "mkq" && S) { var l = document.getElementById("mkl"); if (l) l.innerHTML = mkList(); } });
   A.addEventListener("click", function (e) {
     var b = e.target.closest("button"); if (!b) return;
     var d = b.closest("details"), g = function (f) { return d.querySelector('[data-f="' + f + '"]'); };

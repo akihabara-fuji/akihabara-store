@@ -41,8 +41,8 @@ module.exports = function mountKisi({ app, express, db, settings, root, sameOrig
   const json = express.json({ limit: "64kb" });
 
   /* ---------- data ---------- */
-  const mkRow = r => r && ({ id: r.id, kode: r.kode, nama: r.nama, jenis: r.jenis, periode: r.periode, slug: r.slug, harga: r.harga, tampil: !!r.tampil, ada_file: !!r.file_path });
-  const list = () => db.prepare("SELECT * FROM kisi_mk WHERE tampil=1 ORDER BY id").all().map(mkRow);
+  const mkRow = r => r && ({ id: r.id, kode: r.kode, nama: r.nama, jenis: r.jenis, periode: r.periode, slug: r.slug, harga: r.harga, tampil: !!r.tampil, ada_file: !!r.file_path, jml_soal: r.jml != null ? r.jml : soalOf(r).length });
+  const list = () => db.prepare("SELECT id,kode,nama,jenis,periode,slug,harga,tampil,file_path,json_array_length(soal) AS jml FROM kisi_mk WHERE tampil=1 ORDER BY id").all().map(mkRow);
   const bySlug = slug => db.prepare("SELECT * FROM kisi_mk WHERE slug=? AND tampil=1").get(String(slug || ""));
   const soalOf = r => { try { return JSON.parse(r.soal || "[]"); } catch { return []; } };
 
@@ -75,7 +75,7 @@ module.exports = function mountKisi({ app, express, db, settings, root, sameOrig
   }
 
   /* ---------- API publik ---------- */
-  app.get("/ms/kisi/list", (req, res) => { res.set("Cache-Control", "public, max-age=10"); res.json({ items: list() }); });
+  app.get("/ms/kisi/list", (req, res) => { res.set("Cache-Control", "public, max-age=60"); res.json({ items: list().map(m => [m.kode, m.jenis, m.nama, m.slug, m.periode, m.jml_soal]) }); });
 
   app.get("/ms/kisi/mk/:slug", (req, res) => {
     const r = bySlug(req.params.slug); if (!r) return res.status(404).json({ error: "Mata kuliah tidak ditemukan." });
@@ -195,7 +195,7 @@ module.exports = function mountKisi({ app, express, db, settings, root, sameOrig
       const b = req.body || {}, kode = String(b.kode || "").trim().toUpperCase(), nama = String(b.nama || "").trim().slice(0, 120);
       if (!/^[A-Z]{3,5}\d{3,5}$/.test(kode)) throw bad(400, "Kode MK tidak valid (contoh SPMT4207).");
       if (nama.length < 3) throw bad(400, "Nama mata kuliah terlalu pendek.");
-      const jenis = b.jenis === "Uraian" ? "Uraian" : "Objektif", periode = /^\d{5}$/.test(String(b.periode || "")) ? String(b.periode) : "20262";
+      const jenis = b.jenis === "Uraian" ? "Uraian" : b.jenis === "Objektif" ? "Objektif" : "", periode = /^\d{5}$/.test(String(b.periode || "")) ? String(b.periode) : "20262";
       const harga = Number.isInteger(b.harga) && b.harga >= 1000 && b.harga <= 1000000 ? b.harga : 50000;
       const soal = b.soal === undefined ? null : cleanSoal(b.soal), tampil = b.tampil ? 1 : 0;
       if (tampil && !(soal ? soal.length : soalOf(db.prepare("SELECT soal FROM kisi_mk WHERE kode=?").get(kode) || { soal: "[]" }).length)) throw bad(400, "Isi soal latihan dulu sebelum ditampilkan.");

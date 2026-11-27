@@ -310,11 +310,13 @@ app.get("/robots.txt", (req, res) => {
   const base = isAcadHost(req) ? ACAD : SITE;
   res.type("text/plain").send(`User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /ms/\nDisallow: /grup\nDisallow: /go/\n\nSitemap: ${base}/sitemap.xml\n`);
 });
+/* Halaman Kisi-kisi per mata kuliah (ribuan) masuk sitemap agar bisa dicari lewat kode atau nama MK. */
+const kisiUrls = base => { try { return typeof pf !== "undefined" && pf.kisi ? pf.kisi.list().map(m => ({ loc: `${base}/kisi-kisi/${m.slug}`, pri: "0.5" })) : []; } catch { return []; } };
 app.get("/sitemap.xml", (req, res) => {
   const urls = ACAD === SITE
-    ? [{ loc: `${SITE}/`, pri: "1.0" }, { loc: `${SITE}/blog`, pri: "0.8" }, ...extra.pageUrls(), ...extra.blogUrls()]
+    ? [{ loc: `${SITE}/`, pri: "1.0" }, { loc: `${SITE}/blog`, pri: "0.8" }, ...extra.pageUrls(), ...extra.blogUrls(), ...kisiUrls(SITE)]
     : isAcadHost(req)
-      ? [{ loc: `${ACAD}/blog`, lastmod: extra.blogUrls().map(u => u.lastmod).filter(Boolean).sort().pop(), pri: "0.8" }, ...extra.pageUrls(), ...extra.blogUrls()]
+      ? [{ loc: `${ACAD}/blog`, lastmod: extra.blogUrls().map(u => u.lastmod).filter(Boolean).sort().pop(), pri: "0.8" }, ...extra.pageUrls(), ...extra.blogUrls(), ...kisiUrls(ACAD)]
       : [{ loc: `${SITE}/`, pri: "1.0" }];
   res.type("application/xml").send(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(u => `  <url><loc>${u.loc}</loc>${u.lastmod ? `<lastmod>${u.lastmod}</lastmod>` : ""}<priority>${u.pri}</priority></url>`).join("\n")}\n</urlset>\n`);
 });

@@ -1,0 +1,1470 @@
+SPFI4306|O|Fisika Atom
+SPIN4401|O|Filologi
+SPBO4327|O|Materi Kurikuler Biologi Sekolah Menengah
+MPMT5104|U|ALJABAR
+FSSP4101|O|Pengantar Ilmu Administrasi
+SPTP4311|O|Teknologi Pendidikan dalam Pendidikan Jarak Jauh
+STDA4201|O|Basis Data NoSQL
+SPGK4401|O|Pengembangan Konsep dan Pembelajaran PKn di SD
+SPMT4424|O|Struktur Aljabar
+SPMT4207|O|Aljabar Linear
+STIK4236|O|Metode Sampling
+STPL4210|O|Perencanaan Transportasi
+FSIP4308|O|Pengelolaan Perpustakaan Sekolah
+SPFI4402|U|Fisika Kuantum
+MKWN4109|O|Pendidikan Kewarganegaraan
+SPAD4310|O|Bimbingan Konseling untuk Anak Usia Dini
+MPMT5103|U|FONDASI MATEMATIKA DAN BUKTI DALAM MATEMATIKA
+FSIK4306|O|Komunikasi Persuasif
+SPTP4402|O|Manajemen Strategik dalam Pengembangan Diklat
+FSSO4203|O|Sosiologi Keluarga
+STPL4333|O|Perencanaan Kawasan Tangguh Bencana
+SPAD4308|O|Komputer dalam Kegiatan Pengembangan Anak Usia Dini
+FSSO4204|O|Teori Sosiologi Modern
+SPKM4305|O|Kimia Polimer
+STTP4214|O|Sistem Jaminan Mutu di Industri Pangan
+STPL4406|O|Kesehatan Lingkungan
+FSSI4103|O|Pengantar Ilmu Sastra
+FSPE4104|O|Sistem Pemerintahan Desa
+SPFI4206|U|Fisika Matematika
+SPKM4402|O|Kimia Analitik Instrumen
+SPBI4205|O|Structural Revision and Conversion
+FSIK4403|O|Komunikasi Politik
+SPTP4406|O|Inovasi Pembelajaran
+ESTA4206|O|Manajemen Operasional Layanan Kepariwisataan
+STPL4104|O|Teknik Presentasi dan Komunikasi
+FSIP4205|O|Preservasi dan Konservasi Media Informasi
+FSIK4202|O|Komunikasi Multi Kultural
+EPFA4441|O|Manajemen Aset Organisasi Publik
+STTP4113|O|Analisis Pangan
+STBI4121|O|Struktur dan Perkembangan Tumbuhan
+EPFA4331|O|Audit Internal Organisasi Publik
+FSAP4305|O|Korupsi dan Anti Korupsi
+STPL4107|O|Teori Perencanaan
+SPEK4403|O|Manajemen Koperasi
+SPFI4403|O|Gelombang dan Optika
+ESTA4207|O|Pemasaran Jasa Pariwisata
+SPGK4409|O|Bahasa dan Sastra Indonesia di SD
+SPBI4203|U|Essay Writing
+STSI4209|O|Pemrograman Berbasis Web
+FSIP4304|O|Literasi Informasi
+SPIK4006|O|Filsafat Ilmu
+FSIP4102|O|Pengembangan Koleksi
+FSIK4407|O|Periklanan
+SPBI4104|O|Verb Patterns in Texts
+SPGK4405|O|Pengembangan Konsep dan Pembelajaran IPA di SD
+SPGK4205|O|Pendidikan IPA SD
+STPL4217|O|Perencanaan dan Pengelolaan Lingkungan
+SPBI4107|O|Introduction to Linguistics
+SPMT4425|O|Statistika Matematik
+FSAB4204|U|Keuangan Bisnis
+MKUM5209|U|Teori dan Metode Perbandingan Hukum Konstitusi
+FSIH4307|O|Hukum Pidana Internasional
+SPIN4405|O|Bahasa Bantu
+EPFA4343|U|Laboratorium Akuntansi Pendidikan
+SPGK4307|O|Bimbingan Konseling di SD
+MSLK5203|U|ANALISIS RISIKO DAN KEBERLANJUTAN LINGKUNGAN
+SPIN4206|U|Keterampilan Menulis
+STSI4103|O|Sistem Operasi
+STMA4214|U|Pengantar Analisis Real
+EPFA4326|O|Teori Akuntansi Organisasi Publik
+EACC4419|O|Analisis Informasi Keuangan
+EMBS4204|O|Hubungan Industrial
+FSAB4312|O|Bahasa Inggris Bisnis
+STMA4215|U|Kalkulus Peubah Banyak
+EMBS4313|O|Analisis Kinerja Keuangan
+FSIK4307|O|Metode Penelitian Komunikasi
+EPFA4328|O|Sistem Pengendalian Manajemen Organisasi Publik
+MPAD5201|U|Kurikulum Adaptif PAUD
+STTP4303|O|Rancangan Produk Pangan dan Gizi
+FSAP4205|O|Manajemen Pelayanan Publik
+MAPU5101|U|TEORI ADMINISTRASI
+MPMT5201|U|GEOMETRI
+SPKN4103|O|Hak Asasi Manusia di Era Globalisasi
+MKUM5103|U|Metodologi Penelitian Hukum
+FSAR4203|O|Sistem Informasi Kearsipan
+STMA4222|U|Pemrograman Linear
+MMPI5302|U|LEGALITAS HUKUM KELAUTAN & PERIKANAN
+STAG4421|O|Konservasi Sumber Daya Pertanian
+SPGK4105|O|Literasi Karakter dan Kepramukaan
+STSI4307|U|Data Mining
+MMPI5303|U|PENGOLAHAN HASIL PERIKANAN
+FSIH4104|O|Hukum Perdata
+EMBS4325|O|Pengembangan Produk
+FSSO4201|O|Metode Penelitian Kualitatif
+FSIK4105|O|Komunikasi Korporasi
+FSSI4208|U|Analisis Teks dalam Penerjemahan
+STMA4223|U|Metode Numerik
+STMA4411|U|Pemodelan Matematis
+STAG4222|O|Ekonomi Produksi
+EKMA5101|U|PERILAKU ORGANISASI
+EMBS4322|O|Audit SDM
+FSAP4406|O|Monitoring dan Evaluasi Kebijakan Publik
+STBI4212|O|Fisiologi Tumbuhan
+STPL4405|O|Etika Profesi Perencana
+MMPI5101|U|EKOLOGI
+SPKN4309|O|Media dan Komunikasi Sosial
+MAPU5302|U|MANAJ. STRATEGIK ORGANISASI PUBLIK
+MIPK5101|U|PERENCANAAN DAN PEMBIAYAAN PENDIDIKAN
+MKUM5210|U|Hukum Administrasi dan Pemerintahan Daerah
+STMA4225|U|Pengantar Teori Grup
+ESHA4409|O|Ayat dan Hadist Ekonomi
+FSSI4404|U|Translation: Art, Craftmanship, and Travel
+STPL4328|O|Perencanaan Perdesaan
+FSIP4316|O|Jaringan Kerjasama Perpustakaan dan Informasi
+MPDR5202|U|STATISTIKA PENDIDIKAN
+STSI4308|O|Komunikasi Bisnis dan Teknis
+FSSI4206|O|English Morpho-Syntax
+EPFA4342|U|Laboratorium Akuntansi Desa
+SPKN4307|O|Etika Kepemimpinan
+SPFI4309|O|Alat dan Metode Pengukuran
+EACC4417|U|Laboratorium Auditing
+SPBO4428|O|Ilmu Gizi dan Kesehatan
+FSSO4207|O|Sosiologi Politik
+EMBS4430|O|Manajemen Strategik
+SPAD4303|O|Manajemen PAUD
+FSSO4209|O|Statistik Sosial
+FSPE4206|O|Ekologi Pemerintahan
+MKUM5104|U|Sosiologi Hukum Transaksi Elektronik
+FSIK4309|O|Penulisan Konten Media Baru
+STAG4214|O|Kelembagaan Agribisnis
+FSAP4202|O|Implementasi Kebijakan Publik
+FSAP4407|O|Collaborative Governance
+STPL4326|O|Perancangan Kota dan Kawasan
+SPBI4106|O|Critical Reading
+FSIP4201|O|Pengolahan Bahan Nonbuku
+MSLK5110|U|PSIKOLOGI LINGKUNGAN
+FSIP4317|O|Pengembangan Perpustakaan Digital
+FSSI4450|U|Ujian Komprehensif Tertulis (UKT)
+STBI4223|O|Mikrobiologi
+STPL4450|U|Ujian Komprehensif Tertulis (UKT)
+SIPS4102|O|Ilmu Politik Kenegaraan dan Hukum dalam PIPS
+FSIP4206|O|Teknologi Komunikasi dan Informasi
+STIK4122|U|Pengantar Probabilitas
+FSAB4202|O|Akuntansi Keuangan Dasar
+SPKN4207|O|Hukum dan Lembaga Internasional
+FSAR4304|O|Pengelolaan Arsip Elektronik
+SPIN4301|O|Wacana Bahasa Indonesia
+SPEK4203|O|Perekonomian Indonesia
+SPGK4104|O|Pendidikan Olahraga di SD
+FSIP4307|O|Manajemen Penerbitan
+SPGK4103|O|Geometri dan Pengukuran Dasar di SD
+STPL4218|U|Perumahan dan Permukiman
+MPMT5101|U|SEJARAH DAN FILSAFAT MATEMATIKA
+SPFI4401|U|Fisika Zat Padat
+SPTP4312|O|Manajemen Penyiaran Televisi
+STMA4123|U|Matematika Diskret
+STMA4412|U|Persamaan Diferensial Parsial
+ECON4319|O|Ekonomi Pendidikan
+FSAB4306|O|Etika dan Hukum Bisnis
+MMPI5201|U|BUDIDAYA PERIKANAN
+SPAD4503|O|Materi Kurikuler PAUD
+FSSO4101|O|Pengantar Sosiologi
+MKUM5205|U|Tindak Pidana Ekonomi
+SPTP4316|O|Manajemen Lingkungan Belajar
+EPFA4109|U|Laboratorium Akuntansi Organisasi Publik
+STSI4409|O|Data Warehouse
+STSI4406|U|Manajemen Proyek Sistem Informasi
+IPEM4431|O1|MANAJEMEN PEMERINTAHAN
+EPFA4107|O|Sistem Akuntansi Organisasi Publik
+STMA4211|U|Persamaan Diferensial Biasa
+STAG4318|O|Budidaya Tanaman Pangan dan Perkebunan
+SPAD4201|O|Metode Pengembangan Kognitif
+MPMT5203|U|METODE PENELITIAN PENDIDIKAN MATEMATIKA
+FSIH4203|O|Hukum Acara Pidana
+STTP4103|O|Mikrobiologi Dasar Pangan
+STTP4114|O|Biokimia Pangan
+EMBS4321|O|Sistem Informasi Manajemen
+EMBS4432|O|Studi Kelayakan Bisnis
+MIPK5201|U|METODE PENELITIAN PENDIDIKAN
+EMBS4319|O|Manajemen Pengetahuan
+STMA4321|U|Teori Antrian
+MPAD5101|U|Multiperspektif Filsafat PAUD
+STSI4208|U|Analisis dan Perancangan Sistem
+EKMA5320|U|Manajemen Kinerja
+STPL4332|O|Perencanaan Kawasan Warisan Budaya
+STMA4450|U|Ujian Komprehensif Tertulis (UKT)
+MPDR5103|U|METODE PENELITIAN PENDIDIKAN
+STAG4329|O|Manajemen Risiko Agribisnis
+SPTP4307|O|Produksi Media Sederhana Tiga Dimensi
+MAPU5301|U|ANALISIS KEBIJAKAN PUBLIK
+STPL4212|O|Perencanaan Perkotaan
+STAG4326|O|Pengolahan Hasil Perikanan
+FSSP4208|O|Pajak Internasional
+MSLK5105|U|PEMODELAN LINGKUNGAN
+FSPE4101|O|Pengantar Ilmu Politik
+FSSO4408|O|Sosiologi Kependudukan
+EKMA5103|U|METODE KUANTITATIF
+SPKN4203|O|Hukum Dagang, Perburuhan dan Perpajakan
+EMBS4316|O|Manajemen Operasi Jasa
+FSAR4407|O|Pemeliharaan dan Pengamanan Arsip
+MAPU5103|U|METODE PENELITIAN ADMINISTRASI
+EMBS4324|O|Manajemen Perubahan
+SPKN4420|O|Hukum Islam
+FSAR4402|O|Perancangan Jadwal Retensi Arsip
+STIK4245|U|Aljabar Linear Terapan
+MSLK5108|U|METODOLOGI PENELITIAN DI ERA DIGITAL
+STAG4327|O|Perencanaan dan Pengembangan Agribisnis
+FSIH4303|O|Hukum Pidana Ekonomi
+FSSI4303|U|Translation: Sociology, Archaeology, and Communication
+MKUM5203|U|Hukum Pidana Anak
+FSSI4210|O|Pragmatik
+EACC4450|U|Ujian Komprehensif Tertulis (UKT)
+MPDR5104|U|EVALUASI PROGRAM PENDIDIKAN
+MKUM5202|U|Sistem Peradilan Pidana
+STPL4101|O|Kependudukan dan Analisis Demografi
+FSSI4405|U|Translation: Medicine, Technology, and Sport
+EMBS4450|U|Ujian Komprehensif Tertulis (UKT)
+FSIH4205|O|Hukum Agraria
+EACC4422|O|Analisis dan Perancangan Sistem
+FSAB4450|U|Ujian Komprehensif Tertulis (UKT)
+EPFA4111|O|Pajak Pusat dan Daerah
+FSAP4408|O|Inovasi Organisasi
+STAG4224|O|Pemasaran Produk Agribisnis
+MMPI5103|U|STATISTIKA
+MMPI5102|U|MANAJEMEN SUMBER DAYA PERIKANAN
+MKUM5105|U|Filsafat Hukum
+SPKN4205|O|Teori dan Hukum Konstitusi
+STAG4450|U|Ujian Komprehensif Tertulis (UKT)
+SPAD4301|O|Asesmen Kegiatan Pengembangan Anak Usia Dini
+MKUM5101|U|Legal Services
+STMA4423|O|Teknik Presentasi dan Komunikasi Matematika
+FSIK4402|O|Audit Komunikasi
+EPFA4334|O|Sikular Ekonomi
+FSSP4204|O|Pajak Daerah dan Retribusi Daerah
+MKWN4101|O|Pendidikan Agama Islam
+EKMA5104|U|METODE PENELITIAN BISNIS
+FSIP4207|O|Profesi Pustakawan
+SPKN4308|O|Pendidikan Anti Korupsi
+FSSI4101|O|Basic Reading
+STIK4450|U|Ujian Komprehensif Tertulis (UKT)
+EKMA5309|U|MANAJEMEN STRATEGIK
+MSLK5104|U|EKOEFISIENSI LINGKUNGAN
+SPKM4307|O|Pengembangan Kurikulum dan Pembelajaran Kimia
+MIPK5301|U|EVALUASI PROGRAM PENDIDIKAN
+MSLK5101|U|EKOLOGI
+EKMA5318|U|Pemasaran Strategik
+SPAD4207|O|Metode Pengembangan Nilai Agama dan Moral
+MPMT5202|U|TEORI BILANGAN
+STBI4411|O|Bioinformatika
+FSAP4404|O|Birokrasi dan Governansi Publik
+ECON4450|U|Ujian Komprehensif Tertulis (UKT)
+FSAB4301|O|Manajemen Risiko Dan Asuransi
+STBI4311|O|Hortikultura
+MPMT5303|U|ANALISIS REAL
+FSSI4402|U|Translation: Economic, Finance, and Industry
+STAG4122|O|Psikologi Belajar Mengajar
+MAPU5102|U|TEORI DAN ISU PEMBANGUNAN
+SPAD4505|O|Inovasi Pembelajaran Anak Usia Dini
+FSSO4401|O|Sosiologi Lingkungan
+EACC4210|O|Tata Kelola dan Manajemen Resiko
+FSSI4406|U|Translation: Government, Law, and Politics
+STIK4482|O|Demografi
+SPAI4209|O|Tafsir Tarbawi
+STTP4102|U|Kimia Organik Pangan
+STIK4471|O|Statistika Pengawasan Kualitas
+EPFA4341|U|Laboratorium Akuntansi Kesehatan
+SPAD4103|O|Psikologi Perkembangan Anak
+STBI4423|O|Dasar-dasar Konservasi
+EKMA5207|U|MANAJEMEN SUMBER DAYA MANUSIA
+FSIP4202|O|Sumber-Sumber Informasi
+STBI4321|O|Imunologi
+FSAB4103|O|Asas-asas Manajemen
+FSIK4405|O|Opini Publik
+EMBS4318|O|Pengembangan SDM
+MKUM5102|U|Teori Hukum
+STBI4211|O|Sistematika Hewan
+ESHA4450|U|Ujian Komprehensif Tertulis (UKT)
+MPMT5302|U|EVALUASI PEMBELAJARAN MATEMATIKA
+FSPE4406|O|Kebijakan dan Manajemen Bencana
+EPFA4215|O|Akuntansi Biaya Organisasi Publik
+SPAI4206|O|Metode dan Strategi Pembelajaran PAI
+MSLK5103|U|PEMBANGUNAN DAN LINGKUNGAN
+STBI4123|O|Ekologi
+MSLK5106|U|TATA RUANG DAN LINGKUNGAN
+EPFA4329|O|Akuntansi Organisasi Tidak Berorientasi Laba
+FSIP4419|O|Aspek Hukum dan Bisnis Informasi
+STMA4122|U|Pengantar Teori Peluang
+MMPI5301|U|SOSIAL EKONOMI MASYARAKAT PERIKANAN
+FSSP4206|U|PPN dan PPnBM
+EMBS4206|O|Akuntansi Biaya
+SPIN4106|O|Dasar-dasar Membaca
+MMPI5104|U|PENGELOLAAN WILAYAH PESISIR DAN LAUT
+STAG4412|O|Organisasi Sosial dan Kepemimpinan
+STTP4201|U|Satuan Operasi Industri Pangan
+MAPU5303|U|KEBIJ.PENGEMB. WILAYAH & PERKOTAAN
+STIK4235|U|Pengantar Statistika Matematis
+SPKN4302|O|Evaluasi Pembelajaran PKn
+EPFA4224|O|Penganggaran Organisasi Publik
+STSI4206|O|Proses Bisnis
+FSIH4450|U|Ujian Komprehensif Tertulis (UKT)
+STIK4246|U|Metode Statistika Multivariat
+SPAI4210|O|Hadis Tarbawi
+FSAR4450|U|Ujian Komprehensif Tertulis (UKT)
+FSSO4406|O|Sosiologi Agama
+STSI4202|U|Rekayasa Perangkat Lunak
+STTP4450|U|Ujian Komprehensif Tertulis (UKT)
+EPFA4223|O|Tata Kelola Organisasi Publik
+EPFA4222|U|Laboratorium Pengukuran Kinerja Organisasi Publik
+STBI4112|O|Struktur Hewan
+MKUM5301|U|Sejarah Hukum dan IPTEK
+SPBI4402|U|Academic Writing
+FSSI4204|U|Grammar Translation Exercises
+FSAB4308|O|Metode Penelitian Bisnis
+ESHA4208|O|Ushul Fiqh
+STAG4211|O|Sosiologi Pedesaan dan Perkotaan
+ESHA4216|O|Akuntansi Keuangan Syariah
+ADPU4341|O1|TEORI ORGANISASI
+STTP4301|O|Etika Profesi di Bidang Pangan
+SPIN4107|U|Dasar-dasar Menulis
+FSAR4206|O|Klasifikasi dan Pemberkasan Arsip
+STIK4234|U|Model Linear Terapan
+EPFA4327|O|Etika & Pendidikan Anti Korupsi
+STTP4403|O|Pengemasan dan Penyimpanan Pangan
+SPKM4401|U|Ikatan Kimia
+SPTP4306|O|Evaluasi Program Pembelajaran
+STAG4112|O|Dasar-Dasar Agribisnis
+FSIH4204|O|Hukum Islam dan Acara Peradilan Agama
+MPBI5204|U|EFL CURRICULUM AND MATERIALS DEVELOPMENT
+EKMA5317|U|Perilaku Konsumen
+MPAD5303|U|Anak Berkebutuhan Khusus
+SPAD4501|O|Pengembangan Sumber dan Bahan Belajar PAUD
+EMBS4328|O|Manajemen Rantai Pasokan
+SPIN4101|O|Linguistik Umum
+MPAD5102|U|Perspektif dan Pendekatan Penelitian Pendidikan Anak usia Dini
+MPDR5105|U|KEBIJAKAN DAN PENGEMBANGAN KURIKULUM PENDIDIKAN DASAR
+FSSI4304|U|Translation: Management, Taxation, and Insurance
+FSAB4311|O|Kepabeanan dan Cukai
+STMA4311|U|Riset Operasi
+SPTP4201|O|Pengembangan Kurikulum & Pembelajaran
+MPBI5302|U|SOCIOLINGUISTICS IN LANGUAGE TEACHING
+STSI4407|O|Manajemen Layanan Teknologi Informasi
+FSAB4403|O|Riset Operasi Bisnis
+MPDR5204|U|DIFUSI INOVASI PENDIDIKAN
+SPKN4106|O|Manajemen Pemilu
+STTP4308|O|Pangan Fungsional
+ECON4103|O|Matematika Ekonomi
+SPMT4211|U|Kalkulus Integral
+FSPE4401|O|Etika Pemerintahan
+SPGK4305|O|Desain Kurikulum Pendidikan Sekolah Dasar untuk Pembangunan Berkelanjutan
+MSLK5201|U|ANALISIS KEBIJAKAN LINGKUNGAN
+STAG4328|O|Agripreneurship
+SPBI4405|O|Second Language Acquisition
+MAPU5104|U|INOVASI & PERUBAHAN ORGANISASI
+EPFA4214|O|Akuntansi Keuangan Menengah Organisasi Publik
+MPDR5203|U|DESAIN DAN MODEL PEMBELAJARAN INOVATIF DAN INTERAKTIF
+MSLK5102|U|KELEMBAGAAN LINGKUNGAN
+SPFI4204|O|Pengembangan Kurikulum dan Pembelajaran Fisika
+MPAD5301|U|Pengasuhan
+EKMA5205|U|MANAJEMEN KEUANGAN
+EKMA5206|U|MANAJEMEN PEMASARAN
+STIK4241|U|Statistika Inferensial
+SPFI4301|U|Fisika Statistik
+EKMA5208|U|MANAJEMEN OPERASI
+STMA4422|U|Pengantar Teori Ring
+STSI4106|U|Logika Informatika
+FSSO4102|O|Sistem Sosial Budaya Indonesia
+MAPU5201|U|MANAJEMEN SUMBER DAYA MANUSIA
+STSI4408|O|E-Bisnis
+EACC4102|U|Laboratorium Pengantar Akuntansi
+STMA4221|U|Analisis Real
+MMPI5202|U|METODOLOGI PENELITIAN
+FSIK4106|O|Teknologi Informasi dan Komunikasi
+FSSI4207|U|Sejarah Pemikiran Modern
+EPFA4108|O|Manajemen Keuangan Organisasi Publik
+SPBI4103|U|Basic Composition
+MPDR5102|U|INTEGRASI TEORI DAN PRAKTEK PEMBELAJARAN
+SPIN4406|O|Pengajaran Bahasa Indonesia bagi Penutur Asing
+FSIP4303|O|Pemasaran Jasa Informasi Perpustakaan
+MPBI5101|U|CRITICAL READING AND WRITING
+SPGK4303|O|Tren Pembelajaran Matematika SD Abad ke-21
+EMBS4210|O|Manajemen Keuangan
+SPIN4108|O|Cerita Rekaan
+FSAP4450|U|Ujian Komprehensif Tertulis (UKT)
+STMA4111|O|Kalkulus Diferensial
+FSAB4206|O|Manajemen Operasi Bisnis
+STSI4201|O|Pemrograman Berbasis Desktop
+MPAD5203|U|Pengelolaan Pembiayaan PAUD
+EKMA5319|U|Pengembangan Sumber Daya Manusia
+STIK4233|U|Analisis Data Statistik
+SPFI4101|O|Mekanika dan Kalor
+SPFI4205|O|Termodinamika
+FSAP4402|O|Analisis Kebijakan Publik
+FSSI4205|U|Penerjemahan Karya Fiksi
+STPL4407|U|Perencanaan Tapak
+STPL4215|U|Metode Analisis Perencanaan
+PDGK4304|O1|BAHASA INGGRIS UNTUK GURU SD
+STDA4101|U|Pengantar Sains Data
+FSSI4107|O|Intermediate Reading
+FSDP3303|O|Pajak Internasional
+STTP4318|U|Perancangan Unit Pengolahan Pangan
+FSAB4309|O|Kreativitas dan Inovasi
+FSPE4203|O|Teknologi Informasi Pemerintahan
+STSI4304|O|Dasar Infrastruktur TI
+STBI4124|O|Sistematika Tumbuhan
+EPFA4333|O|Teknologi Informasi Akuntansi Organisasi Publik
+EMBS4103|O|Organisasi
+EACC4206|U|Laboratorium Perpajakan
+STIK4232|O|Rancangan Percobaan
+EPFA4110|O|Keuangan Negara dan Daerah
+FSAB4307|O|Bisnis Internasional
+STBI4450|U|Ujian Komprehensif Tertulis (UKT)
+SPKN4101|O|Pembinaan Generasi Muda di Era Globalisasi
+SPFI4303|O|Elektronika
+EKMA5102|U|SISTEM INFORMASI MANAJEMEN
+MPMT5204|U|ANALISIS KURIKULUM MATEMATIKA
+FSSI4106|U|English for Translation
+MPDR5201|U|PERENCANAAN DAN PEMBIAYAAN PENDIDIKAN DASAR
+FSAB4104|O|Corporate Governance
+SPAD4450|U|Ujian Komprehensif Tertulis (UKT)
+EMBS4211|O|Manajemen Operasi
+STMA4413|U|Geometri Analitik
+FSIP4401|O|Bahasa Inggris untuk Pustakawan
+SPAI4207|O|Filsafat Pendidikan Islam
+FSPE4204|O|Tata Kelola Pemerintahan
+MPBI5303|U|INNOVATIONS IN ELT
+SPAD4104|O|Strategi Kegiatan Pengembangan di PAUD
+STSI4204|O|Analisis dan Visualisasi Data
+FSSO4202|O|Metode Penelitian Kuantitatif
+EMBS4320|O|Hukum Bisnis
+SPGK4410|O|Strategi Pembelajaran Kontemporer di SD
+SPKN4305|O|Hubungan Internasional di Era Globalisasi
+STMA4112|O|Matematika Dasar
+FSPE4407|O|Komunikasi Pemerintahan
+STSI4101|O|Pengantar Sistem Informasi
+FSAP4201|O|Administrasi Pembangunan & Reformasi Administrasi
+STPL4106|O|Ekonomi wilayah dan kota
+SPAI4208|O|Sejarah Pendidikan Islam
+SPKN4102|O|Sejarah Perjuangan Bangsa
+MPDR5301|U|KEPEMIMPINAN DAN MANAJEMEN PENDIDIKAN DASAR
+FSIH4211|O|Hukum dan Masyarakat
+STBI4222|O|Genetika
+FSSI4209|U|Advanced Writing
+STPL4335|O|Perencanaan Pesisir dan Pulau-pulau Kecil
+STDA4204|O|Machine Learning
+SPKN4301|O|Kriminologi dan Kenakalan Remaja di Era Globalisasi
+MPBI5202|U|GRAMMAR ANALYSIS
+STMA4323|U|Teori Keputusan
+SPBI4102|O|Intensive Reading
+SPBO4101|O|Strategi Pembelajaran Biologi
+STIK4351|O|Pengantar Proses Stokastik
+SPEK4201|O|Ekonomi Pembangunan
+SPMT4430|O|Metode dan Model Matematika
+SPIK4004|O|Teori Belajar dan Pembelajaran
+SPMT4427|O|Pengembangan Kurikulum dan Pembelajaran Matematika
+FSSO4409|O|Sosiologi Industri
+STTP4312|O|Penanganan dan Pengolahan Hasil Perikanan
+SPTP4204|O|Sistem Pendidikan Terbuka dan Jarak Jauh
+SPTP4304|O|Pengembangan Program Pendidikan dan Pelatihan
+SPBO4425|O|Pembinaan Kehidupan Keluarga
+SPTP4310|O|Perancangan Web Pembelajaran
+EMBS4212|O|Manajemen Pemasaran
+SPMT4214|O|Program Linear
+SPFI4311|O|Materi Kurikuler Fisika Sekolah Menengah
+STIK4247|O|Metode Statistika Non Parametrik
+SPAD4206|O|Metode Pengembangan Seni
+FSIK4305|O|Komunikasi Organisasi
+SPAD4208|O|Profesionalitas Guru PAUD
+STPL4327|O|Ekologi Politik
+STTP4316|O|Manajemen Lingkungan untuk Industri Pangan Berkelanjutan
+STIK4123|O|Aplikasi Pemrograman R
+SPKM4101|O|Kimia Dasar
+FSIP4306|O|Metode Penelitian Perpustakan
+FSSI4104|U|Intermediate Writing
+SPAD4305|O|Isu Kritis PAUD
+SPKM4310|O|Kimia Lingkungan
+SPKM4205|U|Kimia Organik Dasar
+FSIP4203|O|Manajemen Perpustakaan
+STPL4214|O|Analisis Lokasi dan Pola Keruangan
+SIPS4402|O|Pendidikan Ilmu Pengetahuan Sosial
+ECON4428|O|Perencanaan SDM
+STTP4304|O|Nutrifikasi Pangan
+SPKM4202|O|Kimia Unsur Golongan Utama dan Transisi
+SPKN4404|O|Filsafat Pancasila
+SPBI4303|O|English for Tourism
+EKMA5312|U|MANAJEMEN INVESTASI
+SPAD4309|O|Seni Keterampilan Anak
+STDA4202|O|Analitik Big Data
+SPIN4207|O|Semantik Bahasa Indonesia
+STPL4325|O|Pembiayaan Pembangunan
+SPKM4103|O|Kimia Analitik Dasar
+SPMT4208|O|Matematika Lanjut
+SPFI4305|O|Listrik Magnet
+SPKM4303|U|Kinetika Kimia
+SPTP4208|O|Pemanfaatan Sumber Belajar
+SPKN4202|O|Strategi Pembelajaran PKn
+SPKN4201|O|Materi Kurikuler Pendidikan Kewarganegaraan
+MAPU5203|U|PEMERINTAHAN DAERAH
+SPMT4101|O|Geometri
+FSSO4407|O|Kebijakan Sosial
+STIK4472|O|Pengantar Sosiometri
+STPL4108|O|Tata guna dan Pengembangan Lahan
+ECON4427|O|Ekonomi Bencana
+FSSO4206|O|Sosiologi Pembangunan
+SPFI4209|O|Evaluasi Pembelajaran Fisika
+STDA4203|O|Pengantar Kecerdasan Artifisial
+SPBI4409|O|Literary Appreciation
+ESTA4315|O|Kebijakan Pembangunan Pariwisata
+SPGK4202|O|Konsep Dasar IPA SD
+SPBO4207|O|Morfologi Tumbuhan
+SPBI4110|O|Clause Complexes in Texts
+FSIK4205|O|Filsafat dan Etika Komunikasi
+ESTA4101|O|Pengantar Pariwisata
+FSIK4201|O|Sistem Komunikasi
+EPFA4221|O|Audit Organisasi Publik
+STSI4405|O|Keamanan Sistem Informasi
+MKUM5208|U|Teori dan Perancangan Perundang-undangan Lanjut
+SPAI4201|O|Nahwu dan Sharaf
+SPBO4210|O|Perkembangan Hewan
+MKUM5207|U|Kriminologi Modern
+SPKM4309|O|Kimia Bahan Makanan
+SPFI4404|O|Biofisika
+ESTA4423|O|Ekonomi Pariwisata
+STPL4334|O|Perencanaan Wilayah
+SPGK4203|O|Pendidikan Kewarganegaraan SD
+SPAI4105|O|Teori dan Prinsip Pengembangan Media
+STTP4313|O|Penanganan dan Pengolahan Hasil Ternak
+STSI4402|O|Tata Kelola Teknologi Informasi
+ESTA4103|O|Akuntansi Pariwisata
+MPMT5301|U|PEMBELAJARAN MATEMATIKA
+STAG4322|O|Media Komunikasi Agribisnis
+SPIN4205|O|Puisi
+MAPU5202|U|ADMINISTRASI KEUANGAN PUBLIK
+SPIN4201|O|Sintaksis Bahasa Indonesia
+FSSP4207|O|Akuntansi Perpajakan
+STIK4352|O|Inferensi Bayesian
+FSPE4103|O|Sistem Pemerintahan Indonesia
+STTP4402|O|Regulasi Pangan
+STPL4109|O|Prasarana Wilayah dan Kota
+SPBI4301|O|English Morphology and Syntax
+SPIN4307|O|Sanggar Bahasa dan Sastra Indonesia
+SPGK4304|O|Asesmen dalam Pembelajaran SD
+SPBO4314|O|Fisiologi Hewan
+EACC4205|O|Akuntansi Keuangan Menengah II
+SPAI4205|O|Pengembangan Kurikulum dan Pembelajaran PAI
+SPBO4404|O|Evolusi dan Sistematika Makhluk Hidup
+SPBI4311|O|Sociolinguistics
+STBI4111|O|Biologi Sel dan Molekuler
+FSSO4210|O|Sosiologi Perilaku Menyimpang
+SPBO4202|O|Asesmen Pembelajaran Biologi
+SPGK4404|O|Pengembangan Konsep dan Pembelajaran IPS di SD
+SPMT4316|O|Pengantar Analisis Real
+ECON4417|O|Ekonomi Industri
+SPKN4402|O|Hukum Perdata dan Acara Perdata
+STIK4362|O|Analisis Data Kategorik
+STPL4211|O|Sistem Informasi Perencanaan
+SPDA4401|O|Penanganan Anak Berkebutuhan Khusus
+SPEK4306|O|Bank dan Lembaga Keuangan
+SPIN4105|O|Teori Sastra
+SPMT4315|O|Analisis Vektor
+SPAD4204|O|Metode Pengembangan Sosial Emosional
+FSIK4404|O|Komunikasi Inovasi
+SPFI4310|U|Mekanika Lanjut
+ESTA4205|O|Pariwisata Berbasis Kreativitas
+SPBI4108|O|Introduction to Literature
+MPDR5101|U|FILSAFAT PENDIDIKAN DASAR
+SPMT4429|O|Teori Bilangan
+ESTA4314|O|Manajemen Restoran dan Katering
+SPMT4319|O|Metode Numerik
+STTP4315|O|Penanganan dan Pengolahan Hasil Hortikultura
+SPKM4312|O|Kimia Farmasi
+FSSP4203|O|Pajak Penghasilan Badan
+SPTP4401|O|Produksi Bahan Pembelajaran Berbasis Online
+ESTA4210|O|Manajemen Keuangan Pariwisata
+SPFI4406|O|Fisika Terapan
+SPIN4208|O|Pengembangan Kurikulum dan Pembelajaran Bahasa Indonesia
+SPIK4002|O|Perkembangan Peserta Didik
+ESTA4426|O|Isu-Isu Kontemporer Pariwisata
+EACC4315|O|Analisis Bisnis Akuntansi
+FSAB4305|O|Bisnis Digital
+SPMT4104|O|Strategi Pembelajaran Matematika
+SPKM4311|U|Kimia Kompleks Koordinasi dan Organologam
+SPIN4403|O|Sosiopragmatik
+FSIK4101|O|Pengantar Ilmu Komunikasi
+FSSO4103|O|Teori Sosiologi Klasik
+EPFA4219|O|Akuntansi Keuangan Lanjutan Organisasi Publik
+ESTA4318|O|Investasi dan Risiko Pariwisata
+SPIN4104|O|Morfofonologi Bahasa Indonesia
+SPKN4306|O|Hukum Pidana dan Acara Pidana
+FSAB4101|O|Pengantar Bisnis
+STMA4121|U|Kalkulus Integral
+ESTA4317|O|Manajemen Destinasi
+SPAD4203|O|Pengembangan Terpadu PAUD
+STPL4404|O|Kota dan Wilayah Cerdas
+SPAD4306|O|Musik dan Tari
+SPIN4308|O|Retorika
+SPFI4202|O|Ilmu Pengetahuan Bumi dan Antariksa
+FSIK4109|O|Sosiologi Komunikasi
+SPBI4408|O|Intercultural Communication
+FSIK4206|O|Bahasa Inggris Komunikasi
+SPKM4301|O|Evaluasi Pembelajaran Kimia
+SPAI4202|O|Pengantar Studi Islam
+FSIK4104|O|Komunikasi Massa
+SPBI4209|O|Syllabus Design and Material Development
+ESTA4319|O|Pemasaran Strategik Pariwisata
+SPKN4104|O|Ilmu Kewarganegaraan
+ESTA4321|O|Ekowisata
+SPBI4401|O|Interactive Language Teaching
+FSIK4208|O|Isu dan Komunikasi Krisis
+ESTA4209|O|Perencanaan Pariwisata
+SPBO4323|O|Pendidikan Lingkungan Hidup
+SPIN4306|O|Penyuntingan
+SPAD4502|O|Pelibatan Orang Tua di PAUD
+SPMT4431|O|Kalkulus Lanjut
+SPBO4415|O|Anatomi dan Fisiologi Manusia
+SPMT4428|O|Matematika Diskrit
+SPIN4404|O|Psikolinguistik
+STPL4216|O|Hukum dan Administrasi Perencanaan
+SPMT4318|O|Penerapan Matematika Sekolah
+SPMT4215|O|Geometri Transformasi
+MKDI4201|O|Bahasa Inggris
+STIK4231|O|Persamaan Diferensial
+STBI4312|O|Etnobiologi
+SPKM4104|O|Kimia Larutan
+STBI4324|O|Publikasi Ilmiah Hasil Riset Biologi
+FSIK4304|O|Komunikasi Pemasaran Terpadu
+SPEK4202|O|Evaluasi Pembelajaran Ekonomi Koperasi
+FSIP4104|O|Layanan Perpustakaan
+ESTA4424|O|Studi Kelayakan Bisnis Pariwisata
+STTP4211|O|Evaluasi Sensori
+STIK4111|O|Dasar Pemrograman R
+SPBO4417|O|Biokimia
+SPBI4206|O|Extensive Reading
+SPAD4307|O|Pengembangan Kecerdasan Majemuk
+SPBI4309|O|Pragmatics in ELT
+EKMA5313|U|MANAJEMEN KEUANGAN INTERNASIONAL
+SPBI4410|O|Translation
+FSIP4309|O|Pembinaan Minat Baca
+SPAD4105|O|Metode Pengembangan Bahasa
+STTP4309|O|Bioteknologi Pangan
+SPEK4402|O|Manajemen Produksi dan Industri Kecil
+SPGK4102|O|Aritmatika dan Pengolahan Data di SD
+SPBI4307|O|Research in ELT
+MKUM5206|U|Tindak Pidana Politik
+SPBI4208|O|Language Teaching Assessment
+SPTP4207|O|Landasan Teknologi Pendidikan
+SPBO4226|O|Bioteknologi
+SPAI4404|O|Bimbingan Konseling Pendidikan Islam
+SPMT4322|O|Materi Kurikuler Matematika Sekolah Menengah
+STTP4401|U|Rancangan Percobaan untuk Teknologi Pangan
+EMBS4429|O|Pemasaran Jasa
+SPIN4202|O|Keterampilan Membaca
+SPTP4305|O|Prinsip Desain Pesan
+SPEK4309|O|Ekonomi Sumber Daya Manusia dan Alam
+SPBI4305|O|Language Teaching Methods
+SPAD4102|O|Perkembangan dan Pengembangan AUD
+SPKM4405|O|Kimia Industri
+SPFI4102|O|Elektromagnetika dan Fisika Modern
+FSIK4303|O|Produksi Media
+MMPI5204|U|EKONOMI PEMBANGUNAN PERIKANAN
+FSIK4209|O|Manajemen Industri Media
+SPBI4407|O|Teaching English to Young Learners
+FSSO4402|O|Sosiologi Pendidikan
+STPL4105|O|Geografi Untuk Perencanaan Wilayah dan Kota
+SPGK4301|O|Pendidikan Bahasa Indonesia SD
+FSSP4202|O|Pajak Penghasilan Orang Pribadi
+SPEK4103|O|Strategi Pembelajaran Ekonomi dan Koperasi
+FSIK4102|O|Komunikasi Personal Bermedia
+SPBO4409|O|Perkembangan Tumbuhan
+ESTA4102|O|Sosiologi Pariwisata
+STMA4113|O|Aljabar Linear Elementer
+SPBI4312|O|English for Science and Technology
+SPBI4204|O|Language Teaching Strategies
+SPEK4401|O|Ekonomi Internasional
+SPGK4406|O|Pengembangan Konsep dan Pembelajaran Bahasa Indonesia di SD
+STTP4212|O|Evaluasi Nilai Gizi Pangan
+SPKM4204|O|Kimia Pemisahan dan Elektroforesis
+SPKM4406|U|Struktur dan Kereaktifan Senyawa Organik
+ESHA4420|O|Ekonomi Moneter Islam
+FSIK4103|O|Public Speaking
+MKWN4110|O|Pancasila
+FSIK4301|O|Digital Public Relations
+FSAP4303|O|Advokasi Kebijakan Publik
+SPEK4303|O|Materi Kurikuler Ekonomi dan Koperasi
+SPBI4310|O|Discourse Analysis
+SPAD4101|O|Bermain dan Permainan Anak
+SPEK4205|O|Sejarah Teori-Teori Ekonomi
+SPEK4308|O|Sistem Informasi Manajemen dan Pengambilan Keputusan
+SPKN4403|O|Sistem dan Pendidikan Politik di Era Digital
+SPKM4201|O|Strategi dan Modelling dalam Pembelajaran Kimia
+SPKM4313|O|Materi Kurikuler Kimia Sekolah Menengah
+STTP4111|O|Mikrobiologi dan Sanitasi Pangan
+SPMT4103|O|Matematika Dasar
+SPTP4408|O|Asesmen Hasil Belajar
+SPAD4202|O|Metode Pengembangan Fisik
+ESTA4211|O|Manajemen MICE
+MKWN4108|O|Bahasa Indonesia
+FSSI4102|U|Basic Writing
+SPMT4209|O|Evaluasi Pembelajaran Matematika
+MKUM5201|U|Politik Hukum Pidana
+SPAD4401|O|Kesehatan dan Gizi Anak Usia Dini
+SPKM4308|O|Kimia Katalis
+FSIK4107|O|Psikologi Komunikasi
+FSIP4405|O|Psikologi Perpustakaan
+EPFA4220|U|Laboratorium Penganggaran Organisasi Publik
+FSIP4301|O|Media Teknologi
+SPKM4203|U|Termodinamika Kimia
+SPAD4209|O|Dasar-dasar Matematika dan Sains Anak Usia Dini
+EPFA4104|O|Pengantar Akuntansi Organisasi Publik
+FSIK4207|O|Digital Media
+SPTP4314|O|Produksi Media Audio dan Video
+STBI4314|O|Perspektif Gulma dalam Biologi
+SPKM4102|O|Kimia Anorganik Dasar
+STMA4313|U|Pemodelan dan Visualisasi Data
+ESTA4313|O|Perilaku Konsumen Pariwisata
+SPEK4305|O|Ekonomi Pendidikan
+SPBI4406|O|Technology-enhanced Language Learning
+SIPS4303|O|Sosiologi Indonesia
+ECON4325|O|Ekonomi Kriminalitas
+SPGK4411|O|Pembelajaran Tematik Terintegrasi di SD
+SPTP4407|O|Teknologi Kinerja
+SPKN4204|O|Pengembangan Kurikulum dan Pembelajaran PKn
+SPEK4301|O|Manajemen Pemasaran
+STPL4401|O|Sistem Sosial
+SPGK4306|O|Pembelajaran Seni Budaya dan Prakarya di SD
+ESTA4208|O|Geografi Pariwisata
+SPTP4303|O|Desain Sistem Pembelajaran
+STBI4322|O|Bioetika
+ESTA4204|O|Manajemen Pemasaran Pariwisata
+SPIN4402|O|Kritik Sastra
+FSIK4308|O|Teknik Public Relations
+FSSI4301|O|Advanced Reading
+STTP4213|O|Keamanan Pangan
+SPAD4205|O|Pengelolaan Kegiatan Pengembangan Anak Usia Dini
+FSIK4203|O|Teori Komunikasi
+SPGK4201|O|Perkembangan, Kebutuhan, dan Hak Anak di SD
+ESTA4425|O|Komunikasi Bisnis Pariwisata
+STPL4403|O|Kearifan Lokal dalam Penataan Ruang
+EPFA4448|O|Manajemen Strategik Organisasi Publik
+SPMT4206|O|Geometri Ruang
+FSSO4211|O|Perubahan dan Masalah Sosial
+STTP4203|O|Teknologi Pengolahan Pangan
+SPIN4204|O|Evaluasi Pembelajaran Bahasa Indonesia
+FSIK4108|O|Komunikasi Bisnis
+SPMT4317|O|Hakekat dan Sejarah Matematika
+FSAB4102|O|Pengantar Ilmu Ekonomi
+SPBI4306|O|English for Business
+FSIP4305|O|Penelusuran Informasi
+SPMT4323|O|Pengantar Topologi
+SPIN4303|O|Drama
+STPL4103|O|Pengantar Proses Perencanaan
+STIK4112|O|Pengumpulan dan Penyajian Data
+MPMT5102|U|PERKEMBANGAN PENDIDIKAN MATEMATIKA
+SPBO4421|O|Biologi Kelautan
+MPDR5302|U|STUDI KOMPARATIF PENDIDIKAN DASAR DI BERBAGAI NEGARA
+SPAI4203|O|Sejarah Peradaban Islam
+SPIN4103|O|Sejarah Sastra
+FSSO4205|O|Sosiologi Gender
+SPKM4306|O|Radio Kimia
+SPBO4214|O|Fisiologi Tumbuhan
+FSIK4204|O|Perencanaan Program Komunikasi
+SPGK4403|O|Pengembangan Konsep dan Pembelajaran Matematika di SD
+FSIK4406|O|Komunikasi Internasional
+SPMT4432|O|Geometri Analitik Bidang dan Ruang
+SPFI4201|O|Strategi Pembelajaran Fisika
+SPEK4204|O|Pengembangan Kurikulum dan Pembelajaran Ekonomi Koperasi
+ESTA4312|O|Manajemen Jasa Perjalanan
+FSIP4101|O|Pengantar Ilmu Perpustakaan
+SPMT4105|O|Workshop Matematika
+STIK4121|O|Metode Statistik
+FSIP4402|O|Penyusunan Artikel dan Publikasi Sekunder
+SIPS4401|O|Ilmu Geografi dan Pelestarian Lingkungan dalam PIPS.
+FSIP4103|O|Organisasi Informasi
+STAG4223|O|Metode Penyuluhan Pertanian
+STSI4309|O|Administrasi Jaringan
+STAG4325|O|Pengolahan Hasil Ternak
+STSI4403|O|Manajemen Resiko dan Audit Sistem Informasi
+STAG4321|O|Dinamika Kelompok Masyarakat Agribisnis
+FSSP4308|O|Pembelanjaan
+STAG4313|O|Dasar-Dasar Budidaya Tanaman
+STSI4102|O|Algoritma dan Pemrograman
+STAG4316|O|Nutrisi dan Pakan Ternak
+STSI4404|O|Keamanan Jaringan
+STAG4121|O|Manajemen Agribisnis
+MKWN4103|O|Pendidikan Agama Kristen
+FSDP3101|O|Pajak Penghasilan Orang Pribadi
+STSI4207|O|Sistem Informasi Manajemen
+SPIK4001|O|Pengantar Pendidikan
+MKWN4105|O|Pendidikan Agama Hindu
+FSSP4406|O|Etika Profesi Pajak
+STAG4113|O|Pengantar Ilmu Pertanian
+STSI4203|O|Interaksi Manusia dan Komputer
+STSI4306|O|Arsitektur dan Perancangan Sistem Enterprise
+STSI4104|O|Struktur Data
+STSI4303|O|Pemrograman Berbasis Perangkat Bergerak
+STSI4302|O|Administrasi Server
+STMA4314|O|Matematika Keuangan
+STAG4317|O|Keteknikan Budi Daya Perikanan
+SPGK4407|O|Psikologi Belajar Mengajar
+STSI4305|O|Etika Profesi
+STSI4205|O|Jaringan Komputer
+STAG4324|O|Pengolahan Hasil Pertanian
+FSDP3201|O|Pajak Penghasilan Badan
+FSDP3308|O|Pajak Daerah dan Retribusi Daerah
+STIK4481|O|Machine Learning
+FSDP3307|O|Studi Kasus Perpajakan
+FSSP4304|O|Pajak Bumi dan Bangunan
+SPIK4005|O|Profesi Keguruan
+FSSP4103|O|Pengantar Perpajakan
+STTP4317|O|Manajemen pada Industri Pangan
+STMA4213|O|Aljabar Linear
+ECON4429|O|Ekonomika Data
+STMA4312|O|Pengantar Analisis Jaringan
+STAG4225|O|Studi Kelayakan Agribisnis
+MKDI4202|O|Belajar di Era Digital
+FSSP4303|O|Akuntansi Biaya
+MKDI4203|O|Kewirausahaan di Era Digital
+SPMT4102|O|Kalkulus Diferensial
+FSSP4102|O|Tata Cara Pelaksanaan Perpajakan
+STAG4314|O|Manajemen Produksi Usaha Ternak
+FSAB4205|O|Manajemen Pemasaran
+ADPG4448|O1|PERBANDINGAN SISTEM KEPEGAWAIAN
+FSAB4203|O|Perencanaan dan Pengembangan Bisnis
+ADBI4130|-|Pengantar Administrasi Niaga
+STSI4105|O|Basis Data
+ADPG4447|O1|PEMBERHENTIAN DAN PENSIUN PEGAWAI
+FSAB4401|O|Administrasi Perpajakan
+FSAB4201|O|Filsafat Bisnis
+ADBI4235|-|Kepabeanan dan Cukai
+ADBI4331|-|Uang dan Perbankan
+ADBI4335|-|Akuntansi Menengah
+ADBI4432|-|Bisnis Internasional
+FSAB4310|O|Teori Pembuatan Keputusan
+PAUD4401|-|Metode Pengembangan Perilaku dan Kemampuan Dasar Anak Usia Dini
+PBIN4432|-|Linguistik Bandingan
+ADBI4435|-|Administrasi Biaya
+PDGK4306|-|Pembelajaran Berwawasan Kemasyarakatan
+ADBI4201|-|Bahasa Inggris Niaga
+PDGK4301|-|Evaluasi Pembelajaran di SD
+PWKL4201|-|Pengantar Perencanaan Wilayah dan Kota
+PWKL4320|-|Hukum dan Kelembagaan Lingkungan
+ADBI4437|-|Kebijakan Bisnis
+ADBI4530|-|Riset Operasi
+PBIS4121|-|Second Language Acquisition
+ADPG4340|-|Perencanaan dan Rekrutmen Pegawai
+ADBI4440|-|Kewirausahaan
+ADPG4442|-|Sistem Informasi Kepegawaian
+ADPG4444|-|Manajemen Kompensasi
+ADPG4341|-|Pengintegrasian Pegawai
+ADPG4445|-|Analisis Jabatan
+ADPG4342|-|Pengembangan Pegawai
+ADPG4443|-|Manajemen Kinerja Pegawai
+ASIP4314|-|Arsip Bisnis
+PEFI4302|-|Evaluasi Pembelajaran Fisika
+PEMA4130|-|Materi Kurikuler Matematika SMP
+PEBI4522|-|Konservasi SDA dan Lingkungan
+PEFI4303|-|Pengembangan Kurikulum dan Pembelajaran Fisika
+SATS4313|-|Demografi
+PEFI4525|-|Teori Relativitas
+SATS4423|-|Analisis Runtun Waktu
+SPAR4313|-|Geografi Pariwisata Internasional
+SPIN4203|O|Strategi Pembelajaran Bahasa Indonesia
+ADPU4217|-|Organisasi dan Manajemen
+ADPU4218|-|Psikologi Sosial
+PEMA4210|-|Statistika Pendidikan
+PKNI4208|-|Hukum Dagang, Perburuhan, dan Perpajakan
+ADPU4333|-|Administrasi Keuangan
+ADPU4337|-|Usaha-usaha Milik Negara dan Daerah
+ADPU4510|-|Perbandingan Administrasi Negara
+ADPU4331|-|Administrasi Perkantoran
+ADPU4430|-|Administrasi Kepegawaian
+ADPU4330|-|Perkoperasian
+ADPU4533|-|Etika Administrasi Pemerintahan
+ASIP4301|-|Manajemen Pusat Arsip
+ASIP4205|-|Manual Kearsipan
+ASIP4308|-|Manajemen Rekod Audio Visual
+PKNI4421|-|Hukum Perdata dan Acara Perdata
+ASIP4104|-|Reprografi Arsip
+ASIP4426|-|Akuisisi Arsip
+ASIP4427|-|Metode Penelitian dan Laporan Kearsipan
+BIOL4117|-|Struktur Tumbuhan
+EMBS4314|O|Model Bisnis
+BING4316|-|English Morpho-Syntax
+PUST4104|-|Layanan Perpustakaan
+BIOL4119|-|Fisika Umum I
+BIOL4214|-|Hidrobiologi
+BIOL4225|-|Taksonomi Tumbuhan Rendah
+ASIP4432|-|Otomasi Dalam Kearsipan
+BIOL4311|-|Taksonomi Tumbuhan Tinggi
+BIOL4314|-|Fisiologi Tumbuhan
+BIOL4328|-|Ekologi Gulma
+BIOL4217|-|Fisika Umum II
+BIOL4221|-|Taksonomi Avertebrata
+BIOL4312|-|Embriologi Tumbuhan
+BIOL4322|-|Taksonomi Vertebrata
+BIOL4423|-|Hortikultura
+EKAP4301|-|Tata Kelola Sektor Publik
+EKAP4401|-|Audit Sektor Publik
+EKAP4405|-|Manajemen Keuangan Sektor Publik
+SKOM4437|-|Analisis Sistem Informasi
+EKAP4418|-|Akuntansi Kesehatan
+EKAP4419|-|Akuntansi Kecamatan dan Desa
+EKMA4157|-|Organisasi
+EKMA4213|-|Manajemen Keuangan
+BIOL4417|-|Ekologi Manusia
+EKMA4215|-|Manajemen Operasi
+EKMA4216|-|Manajemen Pemasaran
+EKAP4403|-|Penganggaran Sektor Publik
+EKMA4311|-|Studi Kelayakan Bisnis
+EKMA4313|-|Akuntansi Keuangan Menengah II
+EKMA4316|-|Hukum Bisnis
+EKMA4367|-|Hubungan Industrial
+EKMA4369|-|Manajemen Operasi Jasa
+EKMA4366|-|Pengembangan SDM
+EKMA4434|-|Sistem Informasi Manajemen
+EKMA4476|-|Audit SDM
+MACC5103|U|Akuntansi Manajemen Strategik
+EKMA4370|-|Kewirausahaan
+MHUM5105|U|Filsafat Hukum
+ESBI4202|O|Ide dan Peluang Bisnis
+MPDS5102|U|Integrasi Teori dan Praktik Pembelajaran
+FSSP4305|O|Kebijakan Fiskal dan Moneter
+EACC4208|O|Akuntansi Keuangan Lanjutan I
+MPDS5103|U|Metode Penelitian Pendidikan
+EACC4418|O|Akuntansi Keuangan Lanjutan II
+EKMA4478|-|Analisis Kasus Bisnis
+EKMA4414|-|Manajemen Strategik
+EKMA4479|-|Pasar dan Instrumen Keuangan Islam
+EKMA4569|-|Perencanaan Pemasaran
+EKMA4482|-|Akuntansi Keuangan Syariah
+EKSI4202|-|Hukum Pajak
+EKMA4570|-|Penganggaran
+EKSI4204|-|Analisis Informasi Keuangan
+EKMA4565|-|Manajemen Perubahan
+ESPA4424|-|Analisis Pembangunan Ekonomi
+EKMA4568|-|Pemasaran Jasa
+ESPA4534|-|Perencanaan Sumber Daya Manusia
+ESPA4527|-|Ekonomi Perkotaan dan Transportasi
+FISD4211|-|Fisika Dasar I
+MIAP5103|U|Organisasi dan Manajemen Publik
+ESPA4512|-|Sejarah Perekonomian
+MACC5102|U|Pelaporan Korporat
+ESPA4513|-|Ekonomi Industri
+FSSP4307|O|Metode Penelitian Perpajakan
+ESPA4123|-|Statistika Ekonomi
+ESPA4221|-|Teori Ekonomi Mikro
+MBIS5104|U|Applied Linguistics
+MBIS5103|U|Language Teaching Methods
+ESPA4318|-|Sistem Ekonomi
+MACC5104|U|Strategi Bisnis dan Kepemimpinan
+ESPA4220|-|Teori Ekonomi Makro
+HKUM4101|-|Bahasa dan Terminologi Hukum
+ESPA4323|-|Ekonomi Koperasi
+HKUM4204|-|Hukum Adat
+HKUM4308|-|Hukum Perbankan dan Tindak Pidana Pencucian Uang
+HKUM4311|-|Hukum Pidana Ekonomi
+HKUM4305|-|Hukum Pidana Internasional
+IDIK4007|-|Metode Penelitian
+HKUM4407|-|Hukum Pajak dan Acara Perpajakan
+IDIK4010|-|Komputer Media Pembelajaran
+IDIK4013|-|Teknik Penulisan Karya Ilmiah
+MACC5101|U|Desain Ekonomi Sirkular dalam Organisasi
+IPEM4318|-|Sistem Kepartaian dan Pemilu
+IPEM4323|-|Legislatif Indonesia
+IPEM4424|-|Filsafat Ilmu Pemerintahan
+IPEM4208|-|Sistem Pemerintahan Desa
+IPEM4215|-|Teori Politik
+FSSP4309|O|Kebijakan Perpajakan
+IPEM4437|-|Kekuatan Sosial Politik Indonesia
+ISIP4211|-|Logika
+IPEM4425|-|Hubungan Pusat dan Daerah
+KIMD4110|-|Kimia Dasar I
+LUHT4211|-|Dasar-Dasar Penyuluhan Pertanian
+IPEM4428|-|Ekonomi Pemerintahan
+LUHT4213|-|Klimatologi Pertanian
+ISIP4214|-|Sistem Sosial Budaya Indonesia
+LUHT4212|-|Dasar-dasar Ilmu Tanah
+LUHT4214|-|Lingkungan Ternak
+FSIH4101|O|Pengantar Ilmu Hukum
+LUHT4217|-|Dasar-Dasar Agribisnis
+FSPE4410|O|Sosiologi Pemerintahan
+MPDS5203|U|Evaluasi Program Pendidikan
+LUHT4310|-|Dasar-Dasar Perlindungan Tanaman
+MPDS5101|U|Filsafat Pendidikan Dasar
+LUHT4327|-|Organisasi Sosial dan Kepemimpinan
+LUHT4311|-|Manajemen Keuangan Pertanian
+LUHT4326|-|Pemuliaan Ternak
+LUHT4328|-|Manajemen Pelatihan
+LUHT4333|-|Tataniaga Pertanian
+LUHT4334|-|Tataniaga Peternakan
+LUHT4340|-|Budidaya Ternak Perah
+FSSO4405|O|Sosiologi Multikultur
+LUHT4343|-|Administrasi Penyuluhan Pertanian
+FSIH4102|O|Sistem Hukum Indonesia
+LUHT4344|-|Budidaya Tanaman Pangan Utama
+MMPK5103|U|Statistika
+LUHT4345|-|Budidaya Tanaman Perkebunan Utama
+LUHT4349|-|Bangunan dan Peralatan Kandang
+LUHT4351|-|Inovasi Teknologi Perikanan
+LUHT4330|-|Media Penyuluhan ertanian
+LUHT4353|-|Teknik Penulisan Ilmiah
+LUHT4335|-|Tataniaga Perikanan
+LUHT4434|-|Teknik Pembenihan Ikan
+LUHT4354|-|Kewirausahaan
+LUHT4429|-|Programa dan Evaluasi Penyuluhan Pertanian
+LUHT4449|-|Gizi dan Kesehatan Keluarga
+LUHT4450|-|Pemanfaatan Limbah Pertanian
+LUHT4431|-|Teknologi Benih
+LUHT4453|-|Pengembangan Budidaya Ikan
+LUHT4443|-|Teknologi Pengolahan Hasil Perikanan
+LUHT4447|-|Ekonomi Produksi
+LUHT4455|-|Konservasi Sumber Daya Perairan
+MATA4431|-|Metode Matematis I
+LUHT4448|-|Konservasi Sumber Daya Pertanian
+MATA4432|-|Metode Matematis II
+LUHT4452|-|Pengolahan Limbah Ternak
+MMAN5104|U|Manajemen Keuangan Bisnis
+MKDU4109|-|Ilmu Sosial dan Budaya Dasar
+MKWU4108|-|Bahasa Indonesia
+PANG4112|-|Kimia Fisik Pangan
+MPMA5104|U|Pembelajaran Matematika
+MATA4221|-|Geometri
+MATA4232|-|Himpunan Kabur
+MKWN4107|O|Pendidikan Agama Konghucu
+MSIL5105|U|Metodologi Penelitian Lingkungan di Era Digital
+MPMA5103|U|Metode Penelitian Pendidikan Matematika
+MKWN4104|O|Pendidikan Agama Budha
+MKDU4112|-|Ilmu Alamiah Dasar
+PAJA3435|-|Auditing IB
+PAJA3337|-|Auditing I A
+PANG4212|-|Pengantar Teknologi Pangan
+PANG4214|-|Mikrobiologi Pangan
+STTP4314|O|Penanganan dan Pengolahan Hasil Serealia dan Palawija
+STTP4204|O|Prinsip Teknik Pangan
+STTP4112|O|Kimia Pangan
+MKWN4102|O|Pendidikan Agama Katholik
+PANG4222|-|Biokimia Pangan
+FSIH4403|O|Arbitrase, Mediasi, dan Negosiasi
+SPIK4008|O|Penelitian Tindakan Kelas
+STTP4202|O|Metabolisme Zat Gizi Pangan
+FSAR4401|O|Manajemen Arsip Aktif
+ESHA4417|O|Perbankan Umum dan Syariah
+FSSI4403|O|Penyuntingan Teks Terjemahan
+FSAR4202|O|Penilaian dan Penyusutan Arsip
+FSAR4101|O|Pengantar Ilmu Kearsipan
+ECON4226|O|Ekonomi Keuangan Internasional
+FSIH4305|O|Hukum Persaingan Usaha
+PANG4228|-|Penyimpanan dan Penggudangan
+ESHA4219|O|Manajemen Keuangan Islam
+PANG4227|-|Pengemasan Pangan
+PANG4317|-|Sanitasi dalam Penanganan Pangan
+PANG4315|-|Manajemen Industri Pangan
+ECON4314|O|Perekonomian Indonesia
+EMBS4209|O|Manajemen Sumber Daya Manusia
+PANG4224|-|Ekonomi Pangan
+PAUD4105|-|Bahasa Inggris Untuk Guru PAUD
+PAUD4303|-|Manajemen Pendidikan TK/PAUD
+PANG4321|-|Ekonomi Teknik
+FSAR4205|O|Pengurusan Surat, Tata Persuratan dan Formulir
+PAUD4101|-|Metode Pengembangan Kognitif
+ESHA4221|O|Manajemen Sumber Daya Insani
+PAUD4102|-|Metode Pengembangan Moral dan Nilai-Nilai Agama
+PAUD4107|-|Dasar-dasar Pendidikan TK
+STBI4422|O|Entomologi
+ECON4101|O|Pengantar Ekonomi Makro
+PAUD4204|-|Media Dan Sumber Belajar TK
+FSIH4207|O|Ilmu Perundang-Undangan
+FSSI4401|O|Keterampilan Merangkum Bacaan
+EMBS4208|O|Riset Operasi
+SPBO4222|O|Biologi Konservasi
+ECON4215|O|Ekonomi Moneter
+EMBS4101|O|Manajemen
+FSSI4201|O|Teori dan Masalah Penerjemahan
+FSIH4407|O|Hak Kekayaan Intelektual
+EMBS4327|O|Ekonomi Manajerial
+STAG4302|O|Pembangunan Masyarakat Desa dan Kota
+EMBS4205|O|Komunikasi Bisnis
+FSIH4202|O|Hukum Acara Perdata
+ECON4324|O|Ekonomi Kesehatan
+EMBS4323|O|Pemasaran Strategik
+ECON4321|O|Ekonomi Sumber Daya Alam dan Lingkungan
+PAUD4409|-|Kurikulum Pendidikan Anak Usia Dini
+ESHA4422|O|Hukum Bisnis Islam
+PBIN4101|-|Linguistik Umum
+PBIN4102|-|Fonologi Bahasa Indonesia
+PBIN4103|-|Teori Belajar Bahasa
+PBIN4328|-|Pembinaan dan Pengembangan Bahasa Indonesia
+PBIN4219|-|Pengajaran Apresiasi Sastra
+PBIN4436|-|Bahasa Bantu
+PBIN4108|-|Membaca 1
+PBIN4218|-|Pengajaran Keterampilan Berbahasa
+PBIN4326|-|Analisis Kesalahan Berbahasa
+SPEK4307|O|Akuntansi Biaya
+PBIN4431|-|Sosiolinguistik
+FSAP4206|O|Administrasi Pemerintahan Desa
+ECON4320|O|Ekonometrika
+FSIH4105|O|Hukum Pidana
+ESHA4426|O|Pasar dan Instrumen Keuangan Islam
+ECON4235|O|Ekonomi Regional
+EACC4421|O|Teori Akuntansi
+FSPE4404|O|Tata Kelola Keuangan Pemerintahan
+SPBO4211|O|Genetika
+FSAR4106|O|Akses dan Layanan Arsip
+ECON4308|O|Ekonomi Sumber Daya Manusia
+FSSI4105|O|Pengantar Lingusitik Umum
+FSAP4304|O|Filsafat Administrasi
+SPIK4009|O|Pengembangan Bahan Ajar
+FSSI4203|O|Semantics
+FSPE4408|O|Manajemen Konflik
+ECON4206|O|Ekonomi Publik
+EACC4211|O|Auditing I
+PBIS4107|-|Reading I
+ESHA4102|O|Bahasa Arab
+EMBS4102|O|Pengantar Bisnis
+ESHA4101|O|Sejarah Pemikiran Ekonomi Islam
+FSIH4310|O|Pengujian Peraturan Perundang-Undangan
+STBI4421|O|Pengendalian Hayati
+FSPE4205|O|Sistem Pemerintahan Daerah
+PBIS4208|-|Reading II
+PBIS4429|-|English for Children
+ECON4102|O|Pengantar Ekonomi Mikro
+PDGK4101|-|Keterampilan Berbahasa Indonesia SD
+PDGK4104|-|Perspektif Pendidikan SD
+STBI4316|O|Ekologi Laut
+FSPE4402|O|Tata Kelola Aset Pemerintahan
+PDGK4108|-|Matematika
+FSAR4103|O|Arsip Sejarah Lisan
+SPGK4101|O|Konsep IPS SD
+SPEK4101|O|Pengantar Ilmu Ekonomi
+EPFA4225|O|Pengukuran Kinerja Organisasi Publik
+FSAR4107|O|Pemasaran Jasa Kearsipan di Era Digital
+EACC4416|O|Auditing II
+PDGK4302|-|Pembelajaran Kelas Rangkap
+FSIH4107|O|Hukum Administrasi Negara
+FSAR4108|O|Dasar-Dasar Informasi
+EACC4207|O|Sistem Informasi Akuntansi
+ECON4204|O|Statistika Ekonomi dan Bisnis
+FSPE4207|O|Metodologi Ilmu Pemerintahan
+SPBO4416|O|Mikrobiologi
+FSSI4202|O|Tata Bahasa Indonesia dan Komposisi
+ESHA4105|O|Teori Ekonomi Mikro Islam
+FSAP4207|O|Administrasi Pertanahan
+FSAP4102|O|Teori Organisasi
+EACC4313|U|Akuntansi Sektor Publik
+FSAP4307|O|Manajemen Proyek
+ECON4205|O|Ekonomi Perencanaan
+PDGK4405|-|Materi dan Pembelajaran IPS SD
+PDGK4303|-|Perspektif Global
+PDGK4406|-|Pembelajaran Matematika SD
+PEBI4303|-|Pengembangan Kurikulum dan Pembelajaran Biologi
+PDGK4407|-|Pengantar Pendidikan Anak Berkebutuhan Khusus
+PEBI4526|-|Materi Kurikuler Biologi SMP
+PDGK4505|-|Pembaharuan Dalam Pembelajaran di SD
+PEFI4205|-|Alat dan Metode Pengukuran
+PEBI4311|-|Genetika
+PEFI4206|-|Elektronika
+PEFI4101|-|Fisika Dasar 1
+PEFI4208|-|Termodinamika
+FSAR4208|O|Pengelolaan Arsip Vital
+FSPE4403|O|Manajemen Stratejik Pemerintahan
+EACC4209|O|Teori Portofolio & Analisis Investasi
+FSAR4301|O|Arsip Kelautan
+STBI4110|O|Biologi Umum
+ECON4432|O|Ekonomi Kelembagaan
+ESHA4425|O|Ekonomi Pembangunan Islam
+FSIH4201|O|Hukum Internasional
+STBI4122|O|Embriologi Hewan
+FSAR4405|O|Pembinaan dan Pengawasan Kearsipan
+ESHA4427|O|Kewirausahaan Syariah
+FSAP4103|O|Kebijakan Publik
+STBI4412|O|Ekologi Hewan
+FSPE4202|O|Sistem Politik Indonesia
+ECON4422|O|Ekonomi Pertanian
+STBI4425|O|Pencemaran Lingkungan
+ESHA4104|O|Pengantar Ekonomi Makro Islam
+FSIH4409|O|Hukum Perlindungan Konsumen
+ESHA4215|O|Manajemen Perbankan Syariah
+ECON4424|O|Ekonomi Pembangunan Lanjutan
+PEFI4313|-|Pengantar Fisika Statistik
+PEFI4310|-|Gelombang
+PEFI4327|-|Materi Kurikuler Fisika SLTP
+PEFI4418|-|Fisika Statistik
+PEFI4311|-|Optik
+PEFI4314|-|Pengantar Fisika Kuantum
+PEKI4416|-|Kimia Organik 3
+PEMA4102|-|Matematika Dasar 1
+PEFI4315|-|Pengantar Fisika Zat Padat
+STAG4311|O|Sistem Budidaya Ikan
+FSPE4201|O|Birokrasi Pemerintahan
+PEKI4303|-|Pengembangan Kurikulum dan Pembelajaran Kimia
+PEFI4422|-|Fisika Inti
+PEMA4108|-|Kalkulus 1
+FSAR4201|O|Dasar-dasar Kesekretarisan
+FSIH4212|O|Hukum Dagang dan Kepailitan
+ESHA4107|O|Pengantar Bisnis Islam
+ECON4435|O|Kebanksentralan dan Kebijakan Moneter
+FSPE4409|O|Dinamika Pembangunan Masyarakat Desa dan Kota
+SPBO4308|U|Struktur Hewan
+ECON4113|O|Matematika Ekonomi dan Bisnis
+FSAR4403|O|Publikasi dan Pameran Arsip di Era Digital
+FSIH4208|O|Hukum Perjanjian
+ECON4207|O|Ekonomi Pembangunan
+ECON4216|O|Ekonomi Internasional
+FSIH4402|O|Interpretasi dan Penalaran Hukum
+FSAP4401|O|Kepemimpinan & Pengambilan Keputusan
+SPIK4108|O|Pendidikan Orang Dewasa
+ECON4323|O|Evaluasi Proyek
+FSIH4406|O|Hukum Telematika
+FSAP4208|O|Perilaku Organisasi
+PEMA4218|-|Kalkulus 2
+PEPA4202|-|Desain dan Pembuatan Alat Peraga IPA
+PEPA4204|-|Studi Lapangan IPA
+PEPA4201|-|Pengelolaan Laboratorium IPA
+PKNI4203|-|Ilmu Politik dan Kenegaraan
+PKNI4302|-|Evaluasi Pembelajaran Bidang Studi PKn
+PKNI4204|-|Hukum Adat
+PKNI4209|-|Kriminologi dan Kenakalan Remaja
+PKNI4312|-|Pembinaan Generasi Muda
+PKNI4310|-|Hukum dan Lembaga Internasional
+ESHA4424|O|Manajemen Risiko dan Asuransi Syariah
+PKNI4317|-|Hak Asasi Manusia
+FSAR4104|O|Sejarah Kearsipan
+PKNI4315|-|Hukum dan Peradilan Tata Usaha Negara
+ECON4112|O|Teori Ekonomi Mikro
+PKNI4420|-|Hukum Islam
+ESHA4103|O|Pengantar Ekonomi Mikro Islam
+ESHA4318|O|Akuntansi Perbankan Syariah
+FSIH4405|O|Filsafat Hukum dan Etika Profesi
+FSAB4303|O|Ekonomi Bisnis
+EMBS4326|O|Akuntansi Manajemen
+EACC4103|O|Akuntansi Keuangan Menengah I
+EMBS4317|O|Perilaku Konsumen
+ESHA4223|O|Ekonomi Ziswaf
+SPBO4218|O|Biologi Sel
+STBI4313|O|Ekologi Tumbuhan
+EMBS4433|O|E-Business
+FSAR4105|O|Manajemen Arsip Statis
+SPTP4205|O|Model-model Pembelajaran Inovatif
+STBI4413|O|Parasitologi
+EACC4101|O|Pengantar Akuntansi
+ESHA4210|O|Teori Ekonomi Makro Islam
+FSAB4304|O|Sistem Bisnis di Indonesia
+FSIH4308|O|Tindak Pidana Khusus
+STBI4315|O|Mikrobiologi Lingkungan
+PKNI4419|-|Konstitusi UUD 45
+PKNI4422|-|Sistem Politik Indonesia
+PKOP4206|-|Pendidikan Kewirausahaan
+PKNI4423|-|Pendidikan Politik
+PSOS4102|-|Ilmu Politik, Kenegaraan dan Hukum dalam PIPS
+PSOS4104|-|Ilmu Ekonomi dalam PIPS
+PSOS4204|-|Ilmu Sejarah dalam PIPS
+PUST4312|-|Pemasaran Jasa Informasi Perpustakaan
+PUST4207|-|Profesi Pustakawan
+EMBS4207|O|Perilaku Organisasi
+FSAR4406|O|Organisasi Tata Laksana & Lembaga Kearsipan
+ESHA4212|O|Fiqih Muamalah
+ESHA4211|O|Ekonomi Islam
+PUST4316|-|Jaringan Kerjasama Perpustakaan dan Informasi
+EACC4314|O|Bank & Lembaga Keuangan Non Bank
+FSIH4304|O|Hukum Perusahaan
+STAG4212|O|Pengembangan Produk Agribisnis
+FSPE4102|O|Pengantar Ilmu Pemerintahan
+FSAR4204|O|Manajemen Arsip InAktif
+FSPE4208|O|Strategi Pembangunan dan Perubahan Sosial
+SPIK4012|O|Manajemen Berbasis Sekolah
+FSAP4405|O|Penguatan Kapasitas Kelembagaan
+FSAR4305|O|Rekam Medis
+STBI4221|O|Fisiologi Hewan
+FSAP4203|O|Sistem Administrasi Negara Kesatuan Republik Indonesia
+ADPG4446|O1|PENGENDALIAN PEGAWAI
+PUST4419|-|Aspek Hukum dan Bisnis Informasi
+STBI4424|O|Ekologi Hutan Tropis
+PWKL4101|-|Kependudukan
+STBI4323|O|Evolusi
+ADPG4449|O1|KAPITA SELEKTA MANAJEMEN KEPEGAWAIAN
+PWKL4301|-|Ekonomi Wilayah dan Kota
+PWKL4302|-|Etika Lingkungan
+PWKL4106|-|Pengantar Ilmu Lingkungan
+PWKL4221|-|Pengelolaan Sumber Daya Air
+PWKL4310|-|Ekonomi Lingkungan
+PWKL4220|-|Konservasi Sumber Daya Alam dan Lingkungan
+PWKL4402|-|Pendekatan Sistem
+PWKL4405|-|Audit Lingkungan
+PWKL4403|-|Sistem Pelaporan Lingkungan
+SATS4120|-|Matematika 1
+FSAP4204|O|Administrasi Pemerintahan Daerah
+SATS4210|-|Matematika II
+EPFA4339|O|Akuntansi Pendidikan
+FSAP4301|O|Governansi Digital
+FSIH4408|O|Hukum Ketenagakerjaan
+STAG4312|O|Manajemen Rantai Pasok Agribisnis
+ESHA4214|O|Etika Bisnis Syariah
+FSAR4102|O|Aspek Hukum Dalam Kearsipan
+SPEK4404|O|Analisis Laporan Keuangan
+ECON4211|O|Teori Ekonomi Makro
+ECON4318|O|Sistem Keuangan Pusat dan Daerah
+ESHA4413|O|Bank dan Lembaga Keuangan Syariah
+EACC4312|O|Audit Manajemen
+FSAR4207|O|Etika Profesi kearsipan
+FSIH4106|O|Hukum Tata Negara
+ESHA4106|O|Pengantar Akuntansi Syariah
+SPEK4102|O|Pengantar Ilmu Manajemen
+STAG4221|O|Pembangunan Pertanian
+EMBS4434|O|Manajemen Kualitas
+FSAP4306|O|Perencanaan Kota
+ECON4310|O|Sejarah Pemikiran Ekonomi
+FSAP4101|O|Pengantar Ilmu Administrasi Publik
+FSIH4103|O|Ilmu Negara
+SKOM4330|-|Teknik Mencari dan Menulis Berita
+SKOM4439|-|Hukum Media Massa
+SKOM4205|-|Sosiologi Komunikasi Massa
+SKOM4441|-|Komunikasi Sosial
+SKOM4207|-|Sistem Komunikasi Indonesia
+SOSI4205|-|Sosiologi Ekonomi
+SKOM4321|-|Opini Publik
+FSIH4302|O|Tindak Pidana Korupsi
+EACC4420|O|Sistem Pengendalian Manajemen
+SKOM4327|-|Manajemen Hubungan Masyarakat
+ECON4309|O|Analisis Data Demografi
+ECON4430|O|Ekonomi Jaminan Sosial
+FSPE4405|O|Perbandingan Pemerintahan
+ECON4333|O|Teknik dan Analisis Ekonomi
+SOSI4202|-|Filsafat Sosial
+EACC4104|O|Perpajakan
+FSSP4201|U|Aplikasi Komputer Akuntansi
+EMBS4431|O|Manajemen Kinerja
+FSIH4401|O|Hukum dan Hak Asasi Manusia
+FSIH4404|O|Hukum Lingkungan
+FSAB4402|O|Psikologi Industri dan Organisasi
+SPBO4205|O|Ekologi
+SOSI4306|-|Metode Penelitian Kualitatif
+FSPE4105|O|Hukum Tata Pemerintahan
+SOSI4308|-|Sosiologi Perkotaan
+SOSI4311|-|Metode Penelitian Kuantitatif
+SOSI4313|-|Pemasaran Sosial
+SOSI4302|-|Teori Kriminologi
+SOSI4401|-|Sosiologi Alih Teknologi
+SOSI4403|-|Sosiologi Produksi
+SOSI4405|-|Sosiologi Konsumsi
+SOSI4303|-|Sosiologi Pedesaan
+SOSI4304|-|Teori dan Metode Intervensi Sosial
+SOSI4410|-|Sosiologi Kesehatan
+SOSI4408|-|Sosiologi Politik
+SOSI4415|-|Sosiologi Pariwisata
+SOSI4416|-|Sosiologi Hukum
+SOSI4310|-|Sosiologi Organisasi
+SOSI4404|-|Sosiologi Distribusi
+BING4102|-|Reading I
+SOSI4414|-|Statistik Sosial
+BING4104|-|Reading II
+BING4206|-|Reading III
+SPAR4102|-|Sosiologi Pariwisata
+SPAR4103|-|Pemahaman Lintas Budaya
+EKMA4480|-|Manajemen Risiko dan Asuransi Syariah
+MKKI4201|O|PENGANTAR STATISTIK
+TPEN4204|-|Sistem Pendidikan Terbuka dan Jarak Jauh
+TPEN4307|-|Media Sederhana 3 Dimensi
+ADBI4436|-|Operasional Bank
+TPEN4315|-|Produksi Media Audio/Radio
+BING4208|-|Reading IV
+TPEN4401|-|Produksi Bahan Pembelajaran Berbasis Online
+MPTP5104|U|Metodologi Penelitian Teknologi Pendidikan
+FISD4212|-|Fisika Dasar II
+MSIL5102|U|Kelembagaan Lingkungan
+SPEK4206|U|Matematika Ekonomi
+IPEM4433|-|Pembangunan Pemerintahan
+MPUD5101|U|Multiperspektif Filsafat PAUD
+ADBI4332|-|Akuntansi Dasar
+MKWU4109|-|Pendidikan Kewarganegaraan
+MKWU4110|-|Pancasila
+SPAI4204|O|Studi Ilmu Al-Quran dan Hadis
+MSIM4101|-|Pengantar Sistem Informasi
+BING4315|-|Morfologi & Sintaksis Bahasa Indonesia
+ESPA4532|-|Ekonomi Pendidikan
+MSIM4205|-|Proses Bisnis
+PANG4207|-|Kimia Analitik
+PAUD4203|-|Evaluasi Perkembangan Anak TK
+PAUD4108|-|Strategi Kegiatan Pengemb. di TK
+PAUD4205|-|Kesehatan dan Gizi
+PAUD4302|-|Pembelajaran Terpadu
+PEBI4205|-|Ekologi
+PAUD4207|-|Kurikulum dan Bahan Belajar TK
+PAUD4301|-|Pembaharuan Pendidikan TK
+PEBI4416|-|Mikrobiologi
+PEMA4209|-|Komputer 2
+PEMA4206|-|Komputer 1
+PEBI4427|-|Parasitologi
+PEMA4421|-|Persamaan Diferensial
+PKNI4205|-|Sistem Pemerintahan Daerah
+PKOP4425|-|Analisis Laporan Keuangan
+PUST4105|-|Pengantar Kearsipan
+SKOM4322|-|Perkembangan Teknologi Komunikasi
+SPAR4417|-|Metode Penelitian Pariwisata
+SPAR4209|-|Manajemen Sumber Daya Manusia Pariwisata
+SATS4222|-|Rancangan Percobaan
+PEBI4418|-|Biologi Sel
+EPFA4440|O|Akuntansi Manajemen Organisasi Publik
+MPUD5102|U|Perspektif dan Pendekatan Penelitian Pendidikan Anak Usia Dini
+STAG4111|O|Dasar-Dasar Penyuluhan
+MSIL5101|U|Ekologi
+MSIL5104|U|Ekoefisiensi Lingkungan
+ESTA4320|O|Pariwisata Halal
+PEMA4524|-|Pengantar Analisis Kompleks
+PKNI4101|-|Peng. Ilmu Hkm. & Peng.Tata Hkm.Ind.
+PKOP4101|-|Pengantar Ilmu Ekonomi
+PKOP4102|-|Pengantar Ilmu Manajemen
+PKOP4317|-|Teori Ekonomi Mikro
+PKOP4420|-|Akuntansi Biaya
+PUST4311|-|Sumber-Sumber Informasi
+SATS4310|-|Statistika Pengawasan Kualitas
+SPAI4402|O|Akhlak
+SPAI4309|O|Analisis Data Penelitian Kualitatif
+SPAI4305|O|Kompetensi Guru PAI
+MSIL5103|U|Pembangunan dan Lingkungan
+SPKN4310|O|Komunikasi Interkultural dalam Masyarakat Global
+SPAI4301|O|Islam dan Sains
+EPFA4336|O|Audit Forensik
+STDA4302|O|Platform Sains Data dan Kecerdasan Artifisial
+EPFA4338|O|Akuntansi Kesehatan
+MHUM5103|U|Metodologi Penelitian Hukum
+MHUM5102|U|Teori Hukum
+MIAP5104|U|Teori dan Praktik Kebijakan Publik
+ESBI4201|O|Berpikir Kreatif dan Inovatif
+MPMA5102|U|Perkembangan Pendidikan Matematika
+MPDS5104|U|Kebijakan dan Pengembangan Kurikulum Pendidikan Dasar
+MMAN5101|U|Metode Penelitian Bisnis
+MMAN5102|U|Manajemen Sumber Daya Manusia dan Modal Manusia
+MIAP5101|U|Teori Administrasi Publik
+MHUM5101|U|Legal Servis
+MMAN5103|U|Manajemen Pemasaran Terintegrasi
+MMPK5101|U|Ekologi Perairan
+MIAP5102|U|Metode Penelitian Administrasi
+MMPK5105|U|Pengelolaan Sumber Daya Perikanan
+ESTA4322|O|Heritage
+MHUM5104|U|Sosiologi Hukum Transaksi Elektronik
+MPBI5104|U|APPLIED LINGUISTICS
+MMPI5203|U|METODE PENANGKAPAN IKAN
+MPBI5103|U|LANGUAGE TEACHING METHODS
+STMA4322|U|Matematika Aktuaria
+MSLK5107|U|VALUASI LINGKUNGAN
+MBIS5101|U|Critical Reading and Writing
+SPGK4450|U|Ujian Komprehensif Tertulis (UKT)
+SPBO4203|O|Pengembangan Kurikulum dan PembelajaranBiologi
+STPL4331|O|Pengelolaan Sumber Daya Air
+FSIH4206|O|Hukum Adat
+SIPA4201|O|Desain Pengembangan Laboratorium IPA
+MMPK5104|U|Pengelolaan Wilayah Pesisir dan Laut
+STIK4243|O|Analisis Runtun Waktu
+MPMA5101|U|Sejarah dan Filsafat Matematika
+MPMA5105|U|Evaluasi Pembelajaran Matematika
+MPDS5202|U|Statistika Pendidikan
+EPFA4340|O|Akuntansi Desa
+SPFI4308|O|Fisika Inti
+EPFA4443|O|Analisis Laporan Keuangan Organisasi Publik
+EPFA4442|U|Laboratorium Pengadaan Barang dan Jasa
+FSIP4450|U|Ujian Komprehensif Tertulis (UKT)
+FSSO4403|O|Sosiologi Korupsi
+MPBI5201|U|ASSESSMENT IN LANGUAGE TEACHING
+MSLK5202|U|SISTEM MANAJEMEN LINGKUNGAN
+STTP4305|O|Pangan Halal
+MKUM5211|U|Hukum Tata Negara Lanjut
+SPKN4105|O|Jurnalisme Kewarganegaraan
+STMA4421|U|Fungsi Kompleks
+FSSO4208|O|Sosiologi Pariwisata
+FSSP4306|O|Auditing
+FSSO4404|O|Sosiologi Kerja
+FSIH4301|O|Hukum Perdata Internasional
+STTP4101|O|Pengantar Kimia untuk Teknologi Pangan
+STSI4301|U|Sistem Pendukung Keputusan
+STMA4212|U|Fungsi Vektor
+FSIH4306|O|Hukum Pajak dan Acara Perpajakan

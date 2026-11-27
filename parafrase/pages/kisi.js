@@ -12,16 +12,34 @@
   var bk = document.querySelector("[data-back]");
   if (bk) bk.addEventListener("click", function (e) { if (history.length > 1 && document.referrer && document.referrer.indexOf(location.origin) === 0) { e.preventDefault(); history.back(); } });
 
-  /* ---------- katalog ---------- */
+  /* ---------- katalog: 8 kartu dari server; daftar lengkap dimuat saat dicari atau "Lihat semua", lalu ditampilkan bertahap ---------- */
   var grid = $("ksgrid");
   if (grid) {
-    var cards = [].slice.call(grid.querySelectorAll(".ks-card")), max = +grid.dataset.max || 8, all = false, q = $("ksq"), more = $("ksmore");
-    var draw = function () {
-      var t = (q.value || "").trim().toLowerCase(), n = 0;
-      cards.forEach(function (c) { var hit = !t || c.dataset.q.indexOf(t) >= 0; if (hit) n++; c.hidden = !hit || (!all && !t && n > max); });
-      $("ksnone").hidden = n > 0 || !t; if (more) more.hidden = all || !!t;
-    };
-    q.addEventListener("input", draw); if (more) more.querySelector("button").addEventListener("click", function () { all = true; draw(); }); draw();
+    var q = $("ksq"), more = $("ksmore"), none = $("ksnone"), PAGE = 24, shown = PAGE, all = null, mode = "first", loading = null;
+    var firstHtml = grid.innerHTML, total = +grid.dataset.n || 0;
+    function cardHtml(m) {
+      var kode = m[0], jenis = m[1], nama = m[2], slug = m[3], per = m[4], jml = m[5];
+      return '<a class="ks-card" href="/ruangakademikut/kisi-kisi/' + esc(slug) + '"><div class="ks-cover' + (jenis === "Uraian" ? " u" : "") + '"><span class="ks-chip">KISI-KISI</span><div class="ks-ct">' + esc(nama) + '</div><div class="ks-by"><span>Catatan Akademik</span><span>catatanakademik.com</span></div></div><div class="ks-body"><span class="ks-pill">' + esc(kode) + (jenis ? " · " + esc(jenis) : "") + "</span><h3>Kisi-kisi " + esc(nama) + "</h3><p>" + (jml > 0 ? "5 soal latihan gratis, plus " : "") + "kisi-kisi lengkap periode " + esc(per) + '.</p><div class="ks-meta">Periode ' + esc(per) + (jml > 0 ? " · 5 soal gratis" : "") + '</div><span class="ks-rd">' + (jml > 0 ? "Latihan" : "Lihat") + " →</span></div></a>";
+    }
+    function ensure() {
+      if (all) return Promise.resolve(all);
+      if (!loading) loading = api("/ms/kisi/list").then(function (j) { all = j.items; return all; }).catch(function (e) { loading = null; toast(e.message); throw e; });
+      return loading;
+    }
+    var moreBtn = more && more.querySelector("button");
+    function draw() {
+      var t = (q.value || "").trim().toLowerCase();
+      if (!t && mode === "first") { grid.innerHTML = firstHtml; none.hidden = true; if (more) { more.hidden = false; moreBtn.textContent = "Lihat semua " + String(total).replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " mata kuliah"; } return; }
+      ensure().then(function (items) {
+        var hit = t ? items.filter(function (m) { return (m[0] + " " + m[2]).toLowerCase().indexOf(t) >= 0; }) : items;
+        grid.innerHTML = hit.slice(0, shown).map(cardHtml).join("");
+        none.hidden = hit.length > 0 || !t;
+        if (more) { more.hidden = hit.length <= shown; moreBtn.textContent = "Muat lebih banyak (" + String(hit.length - shown).replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " lagi)"; }
+      }).catch(function () {});
+    }
+    var tm = null;
+    q.addEventListener("input", function () { shown = PAGE; mode = q.value.trim() ? "all" : mode; clearTimeout(tm); tm = setTimeout(draw, 120); });
+    if (moreBtn) moreBtn.addEventListener("click", function () { if (mode === "first") { mode = "all"; shown = PAGE; } else shown += PAGE; draw(); });
   }
 
   /* ---------- halaman satu mata kuliah ---------- */
@@ -29,7 +47,7 @@
   if (root) {
     var d = JSON.parse(root.dataset.mk), link = location.origin + location.pathname;
     $("kscopy").addEventListener("click", function () { (navigator.clipboard ? navigator.clipboard.writeText(link) : Promise.reject()).then(function () { toast("Link disalin"); }, function () { window.prompt("Salin link ini:", link); }); });
-    $("kscek").addEventListener("click", function () {
+    if ($("kscek")) $("kscek").addEventListener("click", function () {
       var benar = 0, kosong = 0;
       d.soal.forEach(function (s, i) {
         var fs = $("ksform").querySelectorAll(".ks-q")[i], pick = fs.querySelector("input:checked"), ls = fs.querySelectorAll("label"), pb = fs.querySelector(".ks-pb");
