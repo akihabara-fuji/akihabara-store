@@ -4,6 +4,10 @@
 set -euo pipefail
 CONF=/etc/nginx/sites-available/catatanakademik
 BAK=/root/nginx-catatanakademik.sebelum-kisi
+# konfigurasi dikunci chattr +i (ca-lock): buka sementara, kunci lagi saat selesai, seperti skrip nginx lainnya
+LOCKED=0; lsattr -d "$CONF" 2>/dev/null | cut -d" " -f1 | grep -q i && LOCKED=1
+[ $LOCKED = 1 ] && chattr -i "$CONF"
+trap '[ $LOCKED = 1 ] && chattr +i "$CONF"' EXIT
 case "${1:-}" in
   restore)
     [ -f "$BAK" ] || { echo "Tidak ada cadangan nginx."; exit 1; }
