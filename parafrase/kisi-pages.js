@@ -2,7 +2,7 @@
 "use strict";
 const EH = v => String(v == null ? "" : v).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const rp = n => "Rp" + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-const HEADX = '<link rel="stylesheet" href="/ruangakademikut/assets/kisi.css?v=3">';
+const HEADX = '<link rel="stylesheet" href="/ruangakademikut/assets/kisi.css?v=4">';
 const FOOT = '<script src="/ruangakademikut/assets/kisi.js?v=2" defer></script>';
 
 module.exports = function buildKisi(kisi) {
