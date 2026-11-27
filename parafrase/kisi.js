@@ -238,7 +238,7 @@ module.exports = function mountKisi({ app, express, db, settings, root, sameOrig
       const b = req.body || {}, pct = Number(b.pct), kuota = Number(b.kuota || 1);
       if (!Number.isInteger(pct) || pct < 1 || pct > 100) throw bad(400, "Potongan 1 sampai 100 persen.");
       if (!Number.isInteger(kuota) || kuota < 1 || kuota > 10000) throw bad(400, "Kuota 1 sampai 10.000.");
-      let code = String(b.code || "").trim().toUpperCase(); if (code && !/^[A-Z0-9]{4,16}$/.test(code)) throw bad(400, "Kode 4 sampai 16 huruf atau angka.");
+      let code = String(b.code || "").trim().toUpperCase(); if (code && !/^[A-Z0-9]{4,24}$/.test(code)) throw bad(400, "Kode 4 sampai 24 huruf atau angka.");
       code = code || newCode(); if (db.prepare("SELECT 1 FROM kisi_voucher WHERE code=?").get(code)) throw bad(409, "Kode sudah ada.");
       const sampai = b.sampai ? Date.parse(String(b.sampai) + "T23:59:59+07:00") : null; if (b.sampai && !Number.isFinite(sampai)) throw bad(400, "Tanggal tidak valid.");
       const mk = b.mk_id ? Number(b.mk_id) : null; if (mk && !db.prepare("SELECT 1 FROM kisi_mk WHERE id=?").get(mk)) throw bad(400, "MK tidak ditemukan.");
