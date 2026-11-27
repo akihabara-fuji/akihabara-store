@@ -30,7 +30,7 @@ a{color:inherit}
 .strip p{flex:1 1 360px;margin:0;font-size:14px;line-height:1.5}
 .pills{display:flex;flex-wrap:wrap;gap:10px}
 .pill{min-height:44px;padding:0 18px;border-radius:999px;border:1px solid var(--link);color:var(--link);font-weight:700;font-size:14px;display:inline-flex;align-items:center;text-decoration:none;background:var(--surface)}
-.pill.g{background:#1B7F3B;border-color:#1B7F3B;color:#fff}
+.pill.g{background:#C2560C;border-color:#C2560C;color:#fff}
 .btn{min-height:52px;padding:0 28px;border-radius:999px;border:none;background:var(--btn);color:#fff;font-weight:700;font-size:16px;cursor:pointer;font-family:inherit}
 .btn[disabled]{background:#B8C4D0;cursor:not-allowed}
 .btn.ghost{background:var(--surface);color:var(--text);border:1px solid var(--dash);min-height:44px;padding:0 14px;font-size:14px;font-weight:500;border-radius:8px}
