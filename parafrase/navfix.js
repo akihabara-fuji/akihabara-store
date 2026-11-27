@@ -14,12 +14,12 @@ function navLinks({ active = "", cek = false } = {}) {
     + '<a href="/ruangakademikut/panduan-maba" class="' + on("maba").trim() + '">Panduan Maba</a>'
     + dd
     + ALAT.replace("{ON}", on("alat"))
-    + '<a href="/kisi-kisi/">Kisi-kisi</a>'
     + '<a href="/ruangakademikut/komunitas" class="' + on("komunitas").trim() + '">Komunitas</a>'
     + '<a href="/ruangakademikut/blog-ut" class="' + on("blog").trim() + '">Blog</a>'
+    + '<a href="/ruangakademikut/kisi-kisi" class="' + on("kisi").trim() + '">Kisi-kisi</a>'
     + (cek ? '<a href="/ruangakademikut/pesanan" class="only-m">Cek Pesanan</a>' : "") + "</nav>";
 }
-const FILE_ACTIVE = { "tutorial-online.html": "tuton", "komunitas.html": "komunitas", "kegiatan.html": "komunitas", "panduan-maba.html": "maba", "blog-ut.html": "blog", "bedah.html": "alat", "portal-ut.html": "alat", "alat-nilai.html": "alat", "alat-sampul.html": "alat", "alat-tracker.html": "alat", "alat-kalender.html": "alat", "sitasi.html": "alat" };
+const FILE_ACTIVE = { "tutorial-online.html": "tuton", "komunitas.html": "komunitas", "kegiatan.html": "komunitas", "panduan-maba.html": "maba", "blog-ut.html": "blog", "bedah.html": "alat", "portal-ut.html": "alat", "alat-nilai.html": "alat", "alat-sampul.html": "alat", "alat-tracker.html": "alat", "alat-kalender.html": "alat", "sitasi.html": "alat", "kisi.html": "kisi" };
 const HIDE_PRICE = "<style>.price,.soon-p,[data-harga]{display:none!important}</style>";
 
 function fix(html, { file = "", active, cek = false, harga = false } = {}) {
