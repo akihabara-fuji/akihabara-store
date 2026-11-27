@@ -10,7 +10,7 @@
 .kt-tabs{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px}
 .kt-tabs button,.kt-chips button{min-height:44px;padding:0 20px;border-radius:999px;border:1px solid var(--dash);background:var(--surface);color:var(--text);font:inherit;font-weight:700;cursor:pointer;transition:background .15s,color .15s,transform .15s}
 .kt-tabs button:hover,.kt-chips button:hover{transform:translateY(-1px)}
-.kt-tabs button.on,.kt-chips button.on{background:var(--vi);border-color:var(--vi);color:#fff}[data-theme=dark] .kt-tabs button.on,[data-theme=dark] .kt-chips button.on{color:#0a0a1c}
+.kt-tabs button.on,.kt-chips button.on{background:var(--vi);border-color:var(--vi);color:#fff}[data-theme=dark] .kt-tabs button.on,[data-theme=dark] .kt-chips button.on{color:#09090b}
 .kt-chips{display:flex;flex-wrap:wrap;gap:8px}.kt-chips button{min-height:38px;padding:0 14px;font-size:14px}
 .js .kt-panel{display:none}.js .kt-panel.on{display:block;animation:ktIn .35s ease both}
 @keyframes ktIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
@@ -83,7 +83,7 @@
 .pf-pol{margin-top:30px}.pf-pol .card{margin-bottom:12px}
 @media print{.nav,.ft,.pf-marq,.pf-cta,.pf-b1,.pf-b2{display:none!important}.rv{opacity:1!important;transform:none!important}}
 /* Bedah teks */
-.bt-steps{list-style:none;display:flex;flex-wrap:wrap;gap:10px;padding:0;margin:0 0 18px}.bt-steps li{display:flex;gap:8px;align-items:center;padding:8px 14px;border-radius:999px;border:1px solid var(--border);color:var(--muted);font-weight:700;font-size:14px}.bt-steps li.on{background:var(--vi);border-color:var(--vi);color:#fff}[data-theme=dark] .bt-steps li.on{color:#0a0a1c}.bt-steps span{width:22px;height:22px;border-radius:50%;background:rgba(127,127,127,.25);display:flex;align-items:center;justify-content:center;font-size:12px}
+.bt-steps{list-style:none;display:flex;flex-wrap:wrap;gap:10px;padding:0;margin:0 0 18px}.bt-steps li{display:flex;gap:8px;align-items:center;padding:8px 14px;border-radius:999px;border:1px solid var(--border);color:var(--muted);font-weight:700;font-size:14px}.bt-steps li.on{background:var(--vi);border-color:var(--vi);color:#fff}[data-theme=dark] .bt-steps li.on{color:#09090b}.bt-steps span{width:22px;height:22px;border-radius:50%;background:rgba(127,127,127,.25);display:flex;align-items:center;justify-content:center;font-size:12px}
 .bt .card{padding:clamp(16px,3vw,26px);margin-bottom:14px}.bt textarea{width:100%;box-sizing:border-box;border:1px solid var(--dash);border-radius:12px;background:var(--surface);color:var(--text);font:inherit;line-height:1.6;padding:12px;resize:vertical}
 .bt-l{font-size:12px;font-weight:800;letter-spacing:.6px;color:var(--muted);display:block;margin:12px 0 6px}.bt-or{display:flex;align-items:center;gap:12px;color:var(--muted);margin:14px 0}.bt-or span{flex:1;height:1px;background:var(--border)}
 .bt-drop{border:2px dashed var(--dash);border-radius:14px;padding:22px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px}.bt-drop.over{border-color:var(--vi);background:var(--soft)}.bt-drop p{margin:0;font-weight:700}
@@ -112,6 +112,6 @@
 .bt-lg{position:sticky;top:8px;z-index:5;display:flex;flex-wrap:wrap;gap:6px 14px;padding:9px 14px;margin-bottom:12px;border:1px solid var(--dash);border-radius:12px;background:var(--surface);font-size:13px}.bt-lg b{font-weight:800}
 .bt-lg .lA b{color:#c2410c}.bt-lg .lB b{color:#b45309}.bt-lg .lC b{color:#0f766e}.bt-lg .lD b{color:#4a2fd6}
 .bt-badge{margin-bottom:12px;padding:10px 14px;border-radius:12px;background:#dff5ef;color:#0b6b5c;font-weight:700}
-[data-theme=dark] .bt-lg .lA b{color:#fb923c}[data-theme=dark] .bt-lg .lB b{color:#fbbf24}[data-theme=dark] .bt-lg .lC b{color:#2dd4bf}[data-theme=dark] .bt-lg .lD b{color:#a5b4fc}
+[data-theme=dark] .bt-lg .lA b{color:#fb923c}[data-theme=dark] .bt-lg .lB b{color:#fbbf24}[data-theme=dark] .bt-lg .lC b{color:#2dd4bf}[data-theme=dark] .bt-lg .lD b{color:#fcd34d}
 [data-theme=dark] .bt-s.flag[data-t=A]{color:#fdba74;background:#4a2511}[data-theme=dark] .bt-s.flag[data-t=B]{color:#fcd34d;background:#44330d}[data-theme=dark] .bt-s.flag[data-t=C]{color:#5eead4;background:#0f3b36}[data-theme=dark] .bt-s.flag[data-t=D]{color:#c7d2fe;background:#2b2554}
 [data-theme=dark] .bt-badge{background:#173a26;color:#a6e3bb}

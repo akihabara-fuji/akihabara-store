@@ -1,10 +1,10 @@
 /* Halaman Tutorial Online. Memakai token tema (var(--btn), --acc, --bg...) supaya ikut paket tema admin. */
 .tx-hd{position:relative;overflow:hidden;background:#0e0b1f;color:#fff;text-align:center;padding:56px 0 44px}
 .tx-hd:before,.tx-hd:after{content:"";position:absolute;border-radius:50%;filter:blur(70px);opacity:.45;animation:txfl 9s ease-in-out infinite}
-.tx-hd:before{width:340px;height:340px;background:var(--btn,#673de6);left:-80px;top:-110px}.tx-hd:after{width:280px;height:280px;background:var(--acc,#a78bfa);right:-60px;bottom:-120px;animation-delay:-4s}
+.tx-hd:before{width:340px;height:340px;background:var(--btn,#b45309);left:-80px;top:-110px}.tx-hd:after{width:280px;height:280px;background:var(--acc,#ffcc00);right:-60px;bottom:-120px;animation-delay:-4s}
 @keyframes txfl{50%{transform:translate(36px,26px) scale(1.1)}}
 .tx-hd .wrap{position:relative;z-index:1}.tx-hd h1{font-size:clamp(32px,5vw,52px);line-height:1.08;margin:6px 0 12px;color:#fff}.tx-hd p{color:#cfcaea;max-width:620px;margin:0 auto}
-.tx-eb{display:inline-block;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#c4b5fd}
+.tx-eb{display:inline-block;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#fde68a}
 .tx-seg{display:inline-flex;gap:6px;background:#ffffff1c;border-radius:999px;padding:5px;margin-top:24px}.tx-seg button{border:0;background:none;color:#fff;font:700 14.5px/1 inherit;font-family:inherit;padding:11px 22px;border-radius:999px;cursor:pointer;transition:background .2s,color .2s}
 .tx-seg button[aria-selected=true]{background:#fff;color:#0e0b1f}
 .tx-pane{padding-top:44px;padding-bottom:64px}.tx-pane[hidden]{display:none}.tx-pane h2{font-size:clamp(22px,3vw,32px);margin:44px 0 8px}.tx-pane>h2:first-child{margin-top:0}

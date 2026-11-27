@@ -15,10 +15,10 @@ test("setiap paket lulus kontras 4,5 di mode Terang dan Gelap", () => {
 });
 test("bawaan tidak mengubah apa pun; ID asing dibaca bawaan; paket lain memuat font dan variabel", () => {
   assert.strictEqual(tema.head("bawaan"), "");
-  assert.strictEqual(tema.head("<script>"), "");
-  assert.strictEqual(tema.id("x"), "bawaan");
+  assert.strictEqual(tema.head("<script>"), tema.head(tema.DEFAULT));
+  assert.strictEqual(tema.id("x"), tema.DEFAULT);
   const h = tema.head("premium");
   assert.match(h, /family=Merriweather/); assert.match(h, /Source\+Sans\+3/); assert.match(h, /--acc:#78350F/); assert.match(h, /--acc:#E0A458/);
   assert.strictEqual(tema.inject("<head></head>", "klasik").includes("tema-klasik"), true);
-  assert.strictEqual(tema.inject("<head></head>", ""), "<head></head>");
+  assert.strictEqual(tema.inject("<head></head>", "bawaan"), "<head></head>"); assert.ok(tema.inject("<head></head>", "").includes("tema-amber"));
 });

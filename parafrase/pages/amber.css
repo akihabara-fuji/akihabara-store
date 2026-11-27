@@ -1,0 +1,23 @@
+/* Tema "Amber Dark" (21st.dev amber-dark2): zinc hampir hitam, aksen amber #ffcc00, radius .875rem, garis putih 8%. Dimuat hanya bila paket tema = amber. */
+[data-theme=dark]{--bg:#09090b;--surface:#101013;--surface2:#17171b;--border:rgba(255,255,255,.08);--dash:rgba(255,255,255,.16);--text:#fafafa;--muted:#a1a1aa;--acc:#ffcc00;--acc2:#ffd84d;--on-accent:#09090b;--btn:#ffcc00;--btn-h:#ffd84d;--link:#ffcc00;--tint1:rgba(255,204,0,.10);--halo:rgba(255,204,0,.22)}
+:root[data-theme=light],[data-theme=light]{--surface:#ffffff;--surface2:#f4f4f0;--border:#e4e4df;--text:#18181b;--muted:#5f5f68;--btn:#b45309;--btn-h:#92400e;--link:#b45309;--acc:#b45309;--on-accent:#ffffff}
+::selection{background:rgba(255,204,0,.35);color:inherit}
+:focus-visible{outline:2px solid #ffc905;outline-offset:2px}
+input,textarea,select{caret-color:#ffc905}
+.card,.card.mini,.pc,.rc,.tx-cd{border-radius:14px}
+.btn,.btn-pri,.btn-ghost{border-radius:10px}
+header.nav{background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:saturate(1.4) blur(10px);border-bottom:1px solid var(--border)}
+.btn,.btn-pri,.btn-ghost{border-radius:10px;font-weight:700;transition:transform .2s,box-shadow .2s,background .2s}
+.btn-pri:hover,.btn:not(.btn-ghost):hover{transform:translateY(-2px);box-shadow:0 10px 26px color-mix(in srgb,var(--btn) 35%,transparent)}
+.card,.card.mini,.pc,.rc,.tx-cd{border-radius:16px;transition:transform .25s,box-shadow .25s,border-color .25s}
+.card.mini:hover,.pc:hover,.rc:hover{transform:translateY(-6px);box-shadow:0 14px 40px color-mix(in srgb,var(--btn) 22%,transparent);border-color:var(--btn)}
+h1,h2{letter-spacing:-.02em}
+.sh h2{font-size:clamp(26px,3.4vw,38px);line-height:1.15}
+.hero.hx{position:relative;overflow:hidden}
+.hero.hx:before,.hero.hx:after{content:"";position:absolute;z-index:0;border-radius:50%;filter:blur(80px);opacity:.38;pointer-events:none;animation:bbFloat 10s ease-in-out infinite}
+.hero.hx:before{width:380px;height:380px;background:var(--btn);left:-90px;top:-110px}.hero.hx:after{width:320px;height:320px;background:var(--acc);right:-70px;bottom:-130px;animation-delay:-5s}
+@keyframes bbFloat{50%{transform:translate(40px,30px) scale(1.12)}}
+.nx-strip{overflow:hidden}
+.stats3 b{background:linear-gradient(135deg,var(--btn),var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hk-chip{backdrop-filter:blur(4px)}
+@media(prefers-reduced-motion:reduce){.hero.hx:before,.hero.hx:after{animation:none}.card,.card.mini,.pc,.rc,.btn{transition:none}.card.mini:hover,.pc:hover,.rc:hover,.btn:hover{transform:none}}
