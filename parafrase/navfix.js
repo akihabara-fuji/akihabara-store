@@ -14,12 +14,12 @@ function navLinks({ active = "", cek = false } = {}) {
     + '<a href="/ruangakademikut/panduan-maba" class="' + on("maba").trim() + '">Panduan Maba</a>'
     + dd
     + ALAT.replace("{ON}", on("alat"))
+    + '<a href="/kisi-kisi/">Kisi-kisi</a>'
     + '<a href="/ruangakademikut/komunitas" class="' + on("komunitas").trim() + '">Komunitas</a>'
     + '<a href="/ruangakademikut/blog-ut" class="' + on("blog").trim() + '">Blog</a>'
-    + '<a href="/ruangakademikut/kisi-kisi" class="' + on("kisi").trim() + '">Kisi-kisi</a>'
     + (cek ? '<a href="/ruangakademikut/pesanan" class="only-m">Cek Pesanan</a>' : "") + "</nav>";
 }
-const FILE_ACTIVE = { "tutorial-online.html": "tuton", "komunitas.html": "komunitas", "kegiatan.html": "komunitas", "panduan-maba.html": "maba", "blog-ut.html": "blog", "bedah.html": "alat", "portal-ut.html": "alat", "alat-nilai.html": "alat", "alat-sampul.html": "alat", "alat-tracker.html": "alat", "alat-kalender.html": "alat", "sitasi.html": "alat", "kisi.html": "kisi" };
+const FILE_ACTIVE = { "tutorial-online.html": "tuton", "komunitas.html": "komunitas", "kegiatan.html": "komunitas", "panduan-maba.html": "maba", "blog-ut.html": "blog", "bedah.html": "alat", "portal-ut.html": "alat", "alat-nilai.html": "alat", "alat-sampul.html": "alat", "alat-tracker.html": "alat", "alat-kalender.html": "alat", "sitasi.html": "alat" };
 const HIDE_PRICE = "<style>.price,.soon-p,[data-harga]{display:none!important}</style>";
 
 function fix(html, { file = "", active, cek = false, harga = false } = {}) {
@@ -38,6 +38,7 @@ function fix(html, { file = "", active, cek = false, harga = false } = {}) {
     .replace(/<a href="\/ms\/masuk">(?:Masuk)<\/a>/g, "");
   h = h.replace(/<small class="ft-dis">[^<]*<\/small>/, '<small class="ft-dis">Situs informasi independen, bukan situs resmi Universitas Terbuka (UT). Cocokkan informasi dengan ut.ac.id.</small>');
   if (!/ft-dis/.test(h)) h = h.replace(/(<small>© [^<]*<\/small>)(<\/div><nav class="ft-n")/, '$1<small class="ft-dis">Situs informasi independen, bukan situs resmi Universitas Terbuka (UT). Cocokkan informasi dengan ut.ac.id.</small>$2');
+  if (!/ft-soc/.test(h)) h = h.replace(/(<small class="ft-dis">[^<]*<\/small>)/, '$1<small class="ft-soc">Ikuti: <a href="https://www.instagram.com/catatanakademikut/" target="_blank" rel="noopener">Instagram</a> &middot; <a href="https://www.tiktok.com/@akihabara.fuzi" target="_blank" rel="noopener">TikTok</a></small>');
   if (!harga) h = h.replace("</head>", HIDE_PRICE + "</head>");
   return h;
 }
