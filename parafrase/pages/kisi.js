@@ -40,7 +40,7 @@
     /* bayar QRIS */
     $("kspay").addEventListener("click", function () {
       var disc = null;
-      var m = modal('<h3>Bayar via QRIS</h3><div style="font-size:14px;color:var(--muted);margin-top:6px">Kisi-kisi lengkap ' + esc(d.nama) + ', harga normal ' + rp(d.harga) + '. Punya voucher? Masukkan kodenya.</div>'
+      var m = modal('<h3>Bayar via QRIS</h3><div style="font-size:14px;color:var(--muted);margin-top:6px">Kisi-kisi lengkap ' + esc(d.nama) + ', harga normal ' + rp(d.harga) + '. Punya voucher? Masukkan kodenya.</div><div class="ks-sub sm" style="margin-top:6px">' + (d.ada_file ? 'Setelah pembayaran dikonfirmasi admin, file langsung bisa kamu unduh dari halaman pesanan.' : 'Setelah pembayaran dikonfirmasi, kamu chat admin lewat WhatsApp untuk menerima file.') + '</div>'
         + '<input type="tel" id="kswa" placeholder="Nomor WhatsApp, 08xxxxxxxxxx" inputmode="numeric" autocomplete="tel"><div class="ks-row"><input type="text" id="ksvc" placeholder="Kode voucher" autocapitalize="characters"><button class="ks-btn ghost sm" id="kspk" type="button">Pakai</button></div><div class="ks-msg" id="ksvm"></div>'
         + '<div class="ks-tot"><span>Total bayar</span><b id="kstt">' + rp(d.harga) + '</b></div><div class="ks-msg bad" id="ksem"></div><button class="ks-btn" id="ksgo" type="button" style="margin-top:10px">Lanjut ke QRIS</button> <button class="ks-btn ghost sm" id="kstutup" type="button">Tutup</button>');
       wire(m, "#kstutup", function () { m.remove(); });
@@ -82,7 +82,7 @@
   var ps = $("ksps");
   if (ps) {
     var token = location.pathname.split("/").pop();
-    var LB = { menunggu_bayar: "Menunggu pembayaran", menunggu_konfirmasi: "Menunggu konfirmasi admin", lunas: "Lunas, file segera dikirim", terkirim: "File sudah dikirim ke WhatsApp", dibatalkan: "Dibatalkan" };
+    var LB = { menunggu_bayar: "Menunggu pembayaran", menunggu_konfirmasi: "Menunggu konfirmasi admin", lunas: "Pembayaran dikonfirmasi", terkirim: "Selesai, file sudah diambil", dibatalkan: "Dibatalkan" };
     var load = function () {
       api("/ms/kisi/pesanan/" + encodeURIComponent(token), { cache: "no-store" }).then(function (o) {
         var h = '<p><span class="ks-st' + (o.status === "terkirim" || o.status === "lunas" ? " d" : "") + '">' + esc(LB[o.status] || o.status) + "</span></p><h2 style=\"margin:10px 0 4px\">" + esc(o.mk.nama) + '</h2><p class="ks-sub">' + esc(o.id) + " · WhatsApp " + esc(o.wa) + "</p>";
@@ -90,7 +90,11 @@
         if (o.potongan) h += '<p class="ks-sub sm">Harga ' + rp(o.harga) + ", potongan voucher " + rp(o.potongan) + (o.kode_unik ? ", kode unik " + o.kode_unik : "") + ".</p>"; else if (o.kode_unik) h += '<p class="ks-sub sm">Termasuk kode unik ' + o.kode_unik + ".</p>";
         if (o.status === "menunggu_bayar") {
           h += (o.hasQris ? '<img class="ks-qr" alt="QRIS pembayaran Catatan Akademik" src="/ms/parafrase/qris?v=' + Date.now() + '" style="margin-left:0">' : '<p class="ks-msg bad">QRIS belum dipasang. Hubungi admin untuk nomor tujuan pembayaran.</p>') + '<p class="ks-sub">Bayar tepat ' + rp(o.total) + ' lewat QRIS, lalu tekan tombol di bawah.</p><button class="ks-btn" id="ksbayar" type="button">Saya sudah bayar</button><div class="ks-msg bad" id="ksbm"></div>';
-        } else if (o.status === "menunggu_konfirmasi") h += '<p class="ks-sub">Admin sedang mengecek pembayaranmu. Setelah dikonfirmasi, file lengkap dikirim ke WhatsApp. Simpan halaman ini untuk memantau statusnya.</p>';
+        } else if (o.status === "menunggu_konfirmasi") h += '<p class="ks-sub">Admin sedang mengecek pembayaranmu. ' + (o.ada_file ? 'Setelah dikonfirmasi, tombol unduh muncul di halaman ini.' : 'Setelah dikonfirmasi, chat admin lewat WhatsApp untuk menerima file.') + ' Simpan halaman ini untuk memantau statusnya.</p>';
+        else if (o.status === "lunas" || o.status === "terkirim") {
+          if (o.ada_file) h += '<p class="ks-sub">Pembayaran sudah dikonfirmasi. File kisi-kisi lengkap siap diunduh.</p><a class="ks-btn" href="/ms/kisi/pesanan/' + encodeURIComponent(token) + '/file">Unduh kisi-kisi lengkap</a>';
+          else { var txt = "Halo admin, saya sudah bayar Kisi-kisi " + o.mk.nama + " (" + o.id + "). Mohon dikirim file lengkapnya."; h += '<p class="ks-sub">Pembayaran sudah dikonfirmasi. File untuk mata kuliah ini dikirim lewat chat admin.</p>' + (o.admin_wa ? '<a class="ks-btn" target="_blank" rel="noopener" href="https://wa.me/' + o.admin_wa + '?text=' + encodeURIComponent(txt) + '">Chat admin di WhatsApp</a>' : '<p class="ks-msg bad">Nomor admin belum diatur. Hubungi admin lewat kontak di situs.</p>'); }
+        }
         else if (o.status === "dibatalkan") h += '<p class="ks-sub">Pesanan ini sudah dibatalkan. Buat pesanan baru dari <a href="/ruangakademikut/kisi-kisi/' + esc(o.mk.slug) + '">halaman mata kuliahnya</a>.</p>';
         ps.innerHTML = h;
         var bb = $("ksbayar"); if (bb) bb.addEventListener("click", function () { bb.disabled = true; post("/ms/kisi/pesanan/" + encodeURIComponent(token) + "/bayar").then(load).catch(function (e) { bb.disabled = false; $("ksbm").textContent = e.message; }); });

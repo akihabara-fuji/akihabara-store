@@ -41,7 +41,7 @@ module.exports = function mountKisi({ app, express, db, settings, root, sameOrig
   const json = express.json({ limit: "64kb" });
 
   /* ---------- data ---------- */
-  const mkRow = r => r && ({ id: r.id, kode: r.kode, nama: r.nama, jenis: r.jenis, periode: r.periode, slug: r.slug, harga: r.harga, tampil: !!r.tampil });
+  const mkRow = r => r && ({ id: r.id, kode: r.kode, nama: r.nama, jenis: r.jenis, periode: r.periode, slug: r.slug, harga: r.harga, tampil: !!r.tampil, ada_file: !!r.file_path });
   const list = () => db.prepare("SELECT * FROM kisi_mk WHERE tampil=1 ORDER BY id").all().map(mkRow);
   const bySlug = slug => db.prepare("SELECT * FROM kisi_mk WHERE slug=? AND tampil=1").get(String(slug || ""));
   const soalOf = r => { try { return JSON.parse(r.soal || "[]"); } catch { return []; } };
@@ -119,12 +119,23 @@ module.exports = function mountKisi({ app, express, db, settings, root, sameOrig
     } catch (e) { fail(res, e); }
   });
 
-  const pubOrder = (o, mk, cfg) => ({ id: o.id, status: o.status, wa: "•••" + o.wa.slice(-4), mk: { kode: mk.kode, nama: mk.nama, slug: mk.slug }, harga: o.harga, potongan: o.potongan, kode_unik: o.unique_code, total: o.total, voucher: o.voucher_code || null, hasQris: !!cfg.qris_image_path, merchant: cfg.qris_merchant_name, dibuat: o.created_at });
+  const pubOrder = (o, mk, cfg) => ({ id: o.id, status: o.status, wa: "•••" + o.wa.slice(-4), mk: { kode: mk.kode, nama: mk.nama, slug: mk.slug }, harga: o.harga, potongan: o.potongan, kode_unik: o.unique_code, total: o.total, voucher: o.voucher_code || null, hasQris: !!cfg.qris_image_path, ada_file: !!mk.file_path, admin_wa: String(cfg.admin_wa_number || "").replace(/\D/g, "").replace(/^0/, "62"), merchant: cfg.qris_merchant_name, dibuat: o.created_at });
   app.get("/ms/kisi/pesanan/:token", (req, res) => {
     res.set({ "Cache-Control": "no-store", "X-Robots-Tag": "noindex" });
     const o = /^[\w-]{20,60}$/.test(req.params.token) ? db.prepare("SELECT * FROM kisi_pesanan WHERE token=?").get(req.params.token) : null;
     if (!o) return res.status(404).json({ error: "Pesanan tidak ditemukan." });
     res.json(pubOrder(o, db.prepare("SELECT * FROM kisi_mk WHERE id=?").get(o.mk_id), settings.getAll()));
+  });
+  /* Unduh file lengkap: hanya setelah admin mengonfirmasi pembayaran. Pertama kali diunduh, pesanan otomatis jadi Terkirim. */
+  app.get("/ms/kisi/pesanan/:token/file", (req, res) => {
+    res.set({ "Cache-Control": "no-store", "X-Robots-Tag": "noindex" });
+    const o = /^[\w-]{20,60}$/.test(req.params.token) ? db.prepare("SELECT * FROM kisi_pesanan WHERE token=?").get(req.params.token) : null;
+    if (!o) return res.status(404).json({ error: "Pesanan tidak ditemukan." });
+    if (!["lunas", "terkirim"].includes(o.status)) return res.status(403).json({ error: "File dibuka setelah pembayaran dikonfirmasi admin." });
+    const mk = db.prepare("SELECT * FROM kisi_mk WHERE id=?").get(o.mk_id);
+    if (!mk || !mk.file_path) return res.status(404).json({ error: "File belum tersedia. Hubungi admin lewat WhatsApp." });
+    if (o.status === "lunas") db.prepare("UPDATE kisi_pesanan SET status='terkirim', sent_at=? WHERE id=?").run(Date.now(), o.id);
+    res.download(priv("file", path.basename(mk.file_path)), mk.file_name || "kisi-kisi");
   });
   app.post("/ms/kisi/pesanan/:token/bayar", json, (req, res) => {
     if (!guardPost(req, res)) return;
@@ -270,7 +281,8 @@ module.exports = function mountKisi({ app, express, db, settings, root, sameOrig
       if (aksi === "konfirmasi") {
         if (!["menunggu_bayar", "menunggu_konfirmasi"].includes(o.status)) throw bad(409, "Status pesanan tidak bisa dikonfirmasi.");
         db.prepare("UPDATE kisi_pesanan SET status='lunas', confirmed_at=? WHERE id=?").run(now, o.id);
-        const mk = db.prepare("SELECT nama FROM kisi_mk WHERE id=?").get(o.mk_id);
+        const mk = db.prepare("SELECT nama, file_path FROM kisi_mk WHERE id=?").get(o.mk_id);
+        if (mk.file_path) return res.json({ ok: true, auto: true });
         return res.json({ ok: true, wa: `https://wa.me/${o.wa}?text=${encodeURIComponent(`Halo, pembayaran Kisi-kisi ${mk.nama} (${o.id}) sudah kami terima. File lengkap kami kirim di chat ini.`)}` });
       }
       if (aksi === "terkirim") { if (o.status !== "lunas") throw bad(409, "Konfirmasi pembayaran dulu."); db.prepare("UPDATE kisi_pesanan SET status='terkirim', sent_at=? WHERE id=?").run(now, o.id); return res.json({ ok: true }); }

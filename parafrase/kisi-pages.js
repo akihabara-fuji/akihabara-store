@@ -21,7 +21,7 @@ module.exports = function buildKisi(kisi) {
   function mk(slug) {
     const r = kisi.bySlug(slug); if (!r) return null;
     const soal = kisi.soalOf(r);
-    const data = { slug: r.slug, nama: r.nama, kode: r.kode, harga: r.harga, soal: soal.map(s => ({ k: s.k, b: s.b })) };
+    const data = { slug: r.slug, nama: r.nama, kode: r.kode, harga: r.harga, ada_file: !!r.file_path, soal: soal.map(s => ({ k: s.k, b: s.b })) };
     const qs = soal.map((s, i) => `<fieldset class="ks-q"><legend>${i + 1}. ${EH(s.q)}</legend>${s.o.map((o, j) => `<label><input type="radio" name="s${i}" value="${j}"> <span>${"ABCD"[j]}. ${EH(o)}</span></label>`).join("")}<p class="ks-pb" hidden></p></fieldset>`).join("");
     return {
       title: `Kisi-kisi ${r.nama} (${r.kode}) UT: Latihan 5 Soal Gratis | Catatan Akademik`,

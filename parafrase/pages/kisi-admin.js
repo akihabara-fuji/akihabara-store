@@ -9,7 +9,7 @@
     return fetch(url, o).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || "Gagal."); return j; }); });
   }
   function act(method, url, body, after) { say("Memproses…"); return call(method, url, body).then(function (j) { say("Tersimpan."); if (after) after(j); return load(); }).catch(function (e) { say(e.message, true); }); }
-  var ST = { menunggu_bayar: "Belum bayar", menunggu_konfirmasi: "Menunggu konfirmasi", lunas: "Lunas, menunggu file", terkirim: "Terkirim", dibatalkan: "Dibatalkan", baru: "Perlu dicek", valid: "Valid", ditolak: "Ditolak", kurang: "Diminta lengkapi" };
+  var ST = { menunggu_bayar: "Belum bayar", menunggu_konfirmasi: "Menunggu konfirmasi", lunas: "Lunas", terkirim: "Terkirim", dibatalkan: "Dibatalkan", baru: "Perlu dicek", valid: "Valid", ditolak: "Ditolak", kurang: "Diminta lengkapi" };
   var st = function (s, d) { return '<span class="st' + (d ? " d" : "") + '">' + esc(ST[s] || s) + "</span>"; };
 
   function soalForm(m) {
@@ -40,7 +40,7 @@
     h += "<h2>Pesanan</h2>" + (S.pesanan.length ? "<table><tr><th>Pesanan</th><th>MK</th><th>WA</th><th>Total</th><th>Status</th><th>Aksi</th></tr>" + S.pesanan.map(function (o) {
       var b = "";
       if (o.status === "menunggu_bayar" || o.status === "menunggu_konfirmasi") b = '<button data-p="konfirmasi" data-id="' + o.id + '">Konfirmasi bayar</button><button class="g" data-p="batal" data-id="' + o.id + '">Batalkan</button>';
-      if (o.status === "lunas") b = '<button class="g" data-p="terkirim" data-id="' + o.id + '">Tandai terkirim</button>' + (o.file_name ? "" : ' <span class="m">file MK belum diunggah</span>');
+      if (o.status === "lunas") b = '<button class="g" data-p="terkirim" data-id="' + o.id + '">Tandai terkirim</button>' + (o.file_name ? ' <span class="m">pelanggan bisa unduh sendiri</span>' : ' <span class="m">file MK belum ada: pelanggan chat admin, kirim file manual</span>');
       return "<tr><td>" + esc(o.id) + '<br><span class="m">' + dt(o.created_at) + "</span></td><td>" + esc(o.mk_nama) + "</td><td>" + esc(o.wa) + "</td><td>" + rp(o.total) + (o.voucher_code ? '<br><span class="m">voucher ' + esc(o.voucher_code) + "</span>" : "") + "</td><td>" + st(o.status, o.status === "terkirim") + "</td><td>" + b + "</td></tr>";
     }).join("") + "</table>" : '<p class="m">Belum ada pesanan.</p>');
     h += "<h2>Klaim voucher menunggu dicek</h2>" + (S.klaim.length ? "<table><tr><th>MK</th><th>WA</th><th>Bukti</th><th>Status</th><th>Aksi</th></tr>" + S.klaim.map(function (k) {
@@ -71,7 +71,7 @@
     if (b.dataset.a === "harga") { var h = parseInt(prompt("Harga baru untuk semua mata kuliah (angka, contoh 50000):", "50000"), 10); if (h) act("POST", "/ms/admin/kisi/harga", { harga: h }); return; }
     if (b.dataset.a === "voucher") { return act("POST", "/ms/admin/kisi/voucher", { code: document.getElementById("vc").value, pct: +document.getElementById("vp").value, kuota: +document.getElementById("vq").value, sampai: document.getElementById("vs").value }); }
     if (b.dataset.v) return act("POST", "/ms/admin/kisi/voucher/" + encodeURIComponent(b.dataset.v) + "/aktif", { aktif: b.dataset.on === "1" });
-    if (b.dataset.p) { if (b.dataset.p === "batal" && !confirm("Batalkan pesanan ini?")) return; return act("POST", "/ms/admin/kisi/pesanan/" + b.dataset.id + "/" + b.dataset.p, {}, function (j) { if (j.wa) window.open(j.wa, "_blank", "noopener"); }); }
+    if (b.dataset.p) { if (b.dataset.p === "batal" && !confirm("Batalkan pesanan ini?")) return; return act("POST", "/ms/admin/kisi/pesanan/" + b.dataset.id + "/" + b.dataset.p, {}, function (j) { if (j.wa) window.open(j.wa, "_blank", "noopener"); if (j.auto) say("Terkonfirmasi. File MK ini sudah ada, pelanggan bisa langsung mengunduh dari halaman pesanannya."); }); }
     if (b.dataset.k) { var note = b.dataset.k === "valid" ? "" : (prompt("Catatan untuk arsip (boleh kosong):", "") || ""); return act("POST", "/ms/admin/kisi/klaim/" + b.dataset.id + "/" + b.dataset.k, { note: note }, function (j) { if (j.wa) window.open(j.wa, "_blank", "noopener"); }); }
   });
   load();
