@@ -7,12 +7,13 @@ const { slugOf, cleanSoal } = require("../parafrase/kisi");
 
 test("migrasi mengisi seluruh MK (1.470): 16 awal bersoal, sisanya tanpa soal, slug unik", () => {
   const db = open(":memory:");
-  const rows = db.prepare("SELECT kode, slug, soal, jenis, periode FROM kisi_mk").all();
+  const rows = db.prepare("SELECT kode, slug, soal, jenis, periode, tampil FROM kisi_mk").all();
   assert.equal(rows.length, 1470);
   assert.equal(new Set(rows.map(r => r.slug)).size, 1470);
   assert.equal(new Set(rows.map(r => r.kode)).size, 1470);
   const bersoal = rows.filter(r => JSON.parse(r.soal).length);
-  assert.equal(bersoal.length, 16);
+  assert.equal(bersoal.length, 20); /* 16 awal + 4 draf EMBS */
+  assert.equal(rows.filter(r => r.tampil === 0).length, 4); assert.deepEqual(rows.filter(r => r.tampil === 0).map(r => r.kode).sort(), ["EMBS4211", "EMBS4316", "EMBS4429", "EMBS4430"]);
   for (const r of bersoal) { const s = JSON.parse(r.soal); assert.equal(s.length, 5, r.kode); assert.doesNotThrow(() => cleanSoal(s), r.kode); }
   assert.ok(rows.find(r => r.slug === "spin4401-filologi"));
   assert.ok(rows.every(r => ["Objektif", "Uraian", ""].includes(r.jenis)));
@@ -28,7 +29,7 @@ test("halaman MK tanpa soal tidak menampilkan form soal, dan katalog hanya meren
   const KS = require("../parafrase/kisi-pages")(kisi);
   const kat = KS.katalog();
   assert.equal((kat.body.match(/class="ks-card"/g) || []).length, 8);
-  assert.match(kat.body, /Lihat semua 1\.470 mata kuliah/);
+  assert.match(kat.body, /Lihat semua 1\.466 mata kuliah/);
   const tanpa = KS.mk(row("ADBI4130").slug);
   assert.ok(tanpa && !/id="ksform"|id="kscek"|5 soalnya/.test(tanpa.body));
   assert.match(tanpa.body, /id="kspay"/);

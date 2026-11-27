@@ -369,6 +369,12 @@ const MIGRATIONS = [
     const now = Date.now();
     db.transaction(() => { for (const r of rows) ins.run(r.kode, r.nama, r.j[0] === "O" ? "Objektif" : r.j[0] === "U" ? "Uraian" : "", r.j.endsWith("1") ? "20261" : "20262", slugOf(r.kode, r.nama), now); })();
   },
+  /* Kisi-kisi: draf 5 soal latihan untuk 4 MK EMBS. Disembunyikan (tampil=0) sampai admin memeriksa lalu mencentang "tampil". Hanya mengisi MK yang soalnya masih kosong. */
+  db => {
+    const { DRAF } = require("./kisi-draf");
+    const up = db.prepare("UPDATE kisi_mk SET soal=?, tampil=0 WHERE kode=? AND (soal IS NULL OR soal='[]')");
+    for (const [kode, soal] of DRAF) up.run(JSON.stringify(soal), kode);
+  },
 ];
 
 
