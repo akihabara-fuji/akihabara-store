@@ -25,7 +25,7 @@ module.exports = function buildKisi(kisi) {
 
   const FAQ = [
     ["Apa itu UAS UT?", "UAS adalah Ujian Akhir Semester di Universitas Terbuka. Ujian ini diikuti mahasiswa di akhir semester dan menjadi salah satu komponen nilai akhir mata kuliah. Bobot dan ketentuannya bisa berbeda tiap mata kuliah, jadi cek informasi resmi di ut.ac.id."],
-    ["Apakah soal latihan di sini sama dengan soal UAS UT yang asli?", "Tidak. Soal latihan di Catatan Akademik kami susun sendiri mengikuti topik mata kuliahnya, bukan salinan atau bocoran soal ujian. Fungsinya mengecek bagian mana yang belum kamu kuasai sebelum ujian."],
+    ["Apakah soal latihan di sini sama dengan soal UAS UT yang asli?", "Tidak. Soal di sini adalah latihan pembelajaran berbasis modul mata kuliahnya, bukan soal UAS yang asli dan bukan bocoran. Fungsinya mengecek bagian mana yang belum kamu kuasai sebelum ujian."],
     ["Apa bedanya ujian objektif dan uraian di UT?", "Ujian objektif berupa soal pilihan ganda, sedangkan ujian uraian meminta kamu menjawab dengan kalimat sendiri. Jenis ujian tiap mata kuliah tertera di kartu, kecuali yang belum disebut oleh sumbernya."],
     ["Bagaimana cara memakai kisi-kisi UAS UT biar efektif?", "Cari mata kuliahmu, kerjakan latihan soalnya dulu tanpa buka catatan, lalu catat topik yang salah. Fokuskan belajar ke topik itu, baru ulangi latihan menjelang hari ujian."],
     ["Apakah latihan soalnya gratis?", "Mata kuliah yang bertanda 5 soal gratis bisa dicoba tanpa daftar dan tanpa bayar. Kisi-kisi lengkap per mata kuliah tersedia berbayar, dengan pembayaran lewat QRIS dan konfirmasi admin."],
