@@ -34,14 +34,27 @@
       + soalForm(m) + '<p><button data-a="simpan">Simpan</button>' + (n ? "" : ' <span class="m">Unggah file lengkap (PDF/Word/ZIP):</span> <input type="file" data-f="file"> <button class="g" data-a="unggah">Unggah</button>' + (m.file ? ' <a href="/ms/admin/kisi/mk/' + m.id + '/file">Unduh file</a>' : "")) + "</p></details>";
   }
 
-  /* ribuan MK: tampilkan yang dicari (maks 30); tanpa kata kunci, yang sudah punya soal/file lalu sisanya sampai 30 */
+  /* ribuan MK: dikelompokkan per huruf awal nama (A-Z), bisa dicari, difilter, dan dimuat bertahap */
+  var HURUF = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+  var hOf = function (m) { var c = String(m.nama || "").trim().charAt(0).toUpperCase(); return /[A-Z]/.test(c) ? c : "Z"; };
   function mkList() {
-    var t = ((document.getElementById("mkq") || {}).value || "").trim().toLowerCase(), pool = S.mk;
+    var t = ((document.getElementById("mkq") || {}).value || "").trim().toLowerCase(), h = S.huruf || "", f = S.flt || "semua", lim = S.lim || 30;
+    var byH = {}; S.mk.forEach(function (m) { var k = hOf(m); byH[k] = (byH[k] || 0) + 1; });
+    var pool = S.mk.slice().sort(function (x, y) { return String(x.nama).localeCompare(String(y.nama), "id"); });
+    if (f === "soal") pool = pool.filter(function (m) { return m.soal.length; });
+    if (f === "draf") pool = pool.filter(function (m) { return m.soal.length && !m.tampil; });
+    if (f === "file") pool = pool.filter(function (m) { return m.file; });
     if (t) pool = pool.filter(function (m) { return (m.kode + " " + m.nama).toLowerCase().indexOf(t) >= 0; });
-    else pool = pool.filter(function (m) { return m.soal.length || m.file; }).concat(pool.filter(function (m) { return !m.soal.length && !m.file; }));
-    var cut = pool.slice(0, 30);
-    return '<p class="m">' + S.mk.length + " mata kuliah. Menampilkan " + cut.length + (pool.length > cut.length ? " dari " + pool.length : "") + ". " + S.mk.filter(function (m) { return m.soal.length; }).length + " punya soal latihan, " + S.mk.filter(function (m) { return m.file; }).length + " punya file lengkap.</p>" + cut.map(mkBox).join("") + (t ? "" : mkBox(null));
+    else if (h) pool = pool.filter(function (m) { return hOf(m) === h; });
+    var cut = pool.slice(0, lim);
+    var chip = function (k, label, on) { return '<button type="button" class="hz' + (on ? " on" : "") + '" data-h="' + k + '">' + label + "</button>"; };
+    var fch = function (k, label) { return '<button type="button" class="hz' + (f === k ? " on" : "") + '" data-flt="' + k + '">' + label + "</button>"; };
+    var bar = '<div class="hzb">' + chip("", "Semua", !h) + HURUF.filter(function (k) { return byH[k]; }).map(function (k) { return chip(k, k + " <small>" + byH[k] + "</small>", h === k); }).join("") + "</div>"
+      + '<div class="hzb">' + fch("semua", "Semua MK") + fch("soal", "Ada soal (" + S.mk.filter(function (m) { return m.soal.length; }).length + ")") + fch("draf", "Draf disembunyikan") + fch("file", "Ada file (" + S.mk.filter(function (m) { return m.file; }).length + ")") + "</div>";
+    return bar + '<p class="m">' + S.mk.length + " mata kuliah" + (h && !t ? ", huruf " + h : "") + ". Menampilkan " + cut.length + " dari " + pool.length + ". " + S.mk.filter(function (m) { return m.file; }).length + " punya file lengkap.</p>"
+      + cut.map(mkBox).join("") + (pool.length > cut.length ? '<p><button type="button" class="g" data-more="1">Tampilkan 30 lagi</button></p>' : "") + (t ? "" : mkBox(null));
   }
+  function mkRefresh() { var l = document.getElementById("mkl"); if (l) l.innerHTML = mkList(); }
   function render() {
     var q0 = (document.getElementById("mkq") || {}).value || "";
     var h = '<h2>Mata kuliah</h2><p><input id="mkq" type="search" size="40" placeholder="Cari kode atau nama mata kuliah" value="' + esc(q0) + '"></p><div id="mkl">' + mkList() + "</div>";
@@ -64,11 +77,14 @@
       }).join("") + "</table>" : '<p class="m">Belum ada voucher.</p>');
     A.innerHTML = h;
   }
-  function load() { return fetch("/ms/admin/kisi", { cache: "no-store" }).then(function (r) { if (r.status === 401 || r.status === 403) throw new Error("Masuk sebagai admin dulu."); return r.json(); }).then(function (j) { var open = [].slice.call(A.querySelectorAll("details[open]")).map(function (d) { return d.dataset.id; }); S = j; render(); A.querySelectorAll("details").forEach(function (d) { if (open.indexOf(d.dataset.id) >= 0) d.open = true; }); }).catch(function (e) { A.textContent = e.message; }); }
+  function load() { return fetch("/ms/admin/kisi", { cache: "no-store" }).then(function (r) { if (r.status === 401 || r.status === 403) throw new Error("Masuk sebagai admin dulu."); return r.json(); }).then(function (j) { var open = [].slice.call(A.querySelectorAll("details[open]")).map(function (d) { return d.dataset.id; }); var keep = S ? { huruf: S.huruf, flt: S.flt, lim: S.lim } : {}; S = j; S.huruf = keep.huruf; S.flt = keep.flt; S.lim = keep.lim; render(); A.querySelectorAll("details").forEach(function (d) { if (open.indexOf(d.dataset.id) >= 0) d.open = true; }); }).catch(function (e) { A.textContent = e.message; }); }
 
-  A.addEventListener("input", function (e) { if (e.target.id === "mkq" && S) { var l = document.getElementById("mkl"); if (l) l.innerHTML = mkList(); } });
+  A.addEventListener("input", function (e) { if (e.target.id === "mkq" && S) { S.lim = 30; mkRefresh(); } });
   A.addEventListener("click", function (e) {
     var b = e.target.closest("button"); if (!b) return;
+    if (b.dataset.h !== undefined) { S.huruf = b.dataset.h; S.lim = 30; var q = document.getElementById("mkq"); if (q) q.value = ""; return mkRefresh(); }
+    if (b.dataset.flt) { S.flt = b.dataset.flt; S.lim = 30; return mkRefresh(); }
+    if (b.dataset.more) { S.lim = (S.lim || 30) + 30; return mkRefresh(); }
     var d = b.closest("details"), g = function (f) { return d.querySelector('[data-f="' + f + '"]'); };
     if (b.dataset.a === "simpan") {
       var body = { kode: g("kode").value, nama: g("nama").value, jenis: g("jenis").value, periode: g("periode").value, harga: +g("harga").value, tampil: g("tampil").checked, soal: readSoal(d) };
