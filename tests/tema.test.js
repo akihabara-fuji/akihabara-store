@@ -20,5 +20,5 @@ test("bawaan tidak mengubah apa pun; ID asing dibaca bawaan; paket lain memuat f
   const h = tema.head("premium");
   assert.match(h, /family=Merriweather/); assert.match(h, /Source\+Sans\+3/); assert.match(h, /--acc:#78350F/); assert.match(h, /--acc:#E0A458/);
   assert.strictEqual(tema.inject("<head></head>", "klasik").includes("tema-klasik"), true);
-  assert.strictEqual(tema.inject("<head></head>", "bawaan"), "<head></head>"); assert.ok(tema.inject("<head></head>", "").includes("tema-amber"));
+  assert.ok(tema.inject("<head></head>", "bawaan").includes("adsbygoogle.js?client=ca-pub-9747225711392759")); assert.strictEqual(tema.inject("<head></head>", "bawaan", "nextaja.com"), "<head></head>"); assert.strictEqual(tema.inject("<head><meta name=robots content=noindex></head>", "bawaan", "catatanakademik.com"), "<head><meta name=robots content=noindex></head>"); assert.strictEqual((tema.inject(tema.inject("<head></head>", "bawaan"), "bawaan").match(/adsbygoogle/g) || []).length, 1); assert.ok(tema.inject("<head></head>", "").includes("tema-amber"));
 });

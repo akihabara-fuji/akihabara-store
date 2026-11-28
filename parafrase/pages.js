@@ -69,7 +69,7 @@ module.exports = function mountPages({ app, express, texts = null, settings = nu
     out = (TRACK.has(file) && !opts.preview ? out.replace("</head>", '<script async src="/t.js"></script></head>') : out).replaceAll("{{SITE}}", SITE);
     const on = k => !!(settings && settings.get(k));
     out = navfix.fix(out, { file, active: opts.vars ? (opts.vars.active || "") : undefined, cek: on("tampil_cek_pesanan"), harga: on("tampil_harga_pesan") || file === "cek.html" });
-    return tema.inject(shorten(out), settings ? settings.get("ca_tema") : "");
+    return tema.inject(shorten(out), settings ? settings.get("ca_tema") : "", req ? req.hostname : undefined);
   }
   const page = file => (req, res) => {
     let out; try { out = render(file, req); } catch { return res.status(500).type("text").send("Halaman tidak tersedia."); }

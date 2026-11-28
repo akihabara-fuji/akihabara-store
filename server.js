@@ -306,6 +306,8 @@ const isAcadHost = req => ACAD_HOSTS.includes(req.hostname);
 /* www dialihkan permanen ke host utama supaya Google tidak mengindeks dua versi situs yang sama. */
 app.use((req, res, next) => (ACAD_HOSTS.length && req.hostname === "www." + new URL(ACAD).hostname ? res.redirect(301, ACAD + req.originalUrl) : next()));
 const TEMPLATE = path.join(PUB, "index.html");
+/* ads.txt Google AdSense: hanya untuk domain akademik (catatanakademik.com). */
+app.get("/ads.txt", (req, res) => (isAcadHost(req) ? res.type("text/plain").send("google.com, pub-9747225711392759, DIRECT, f08c47fec0942fa0\n") : res.status(404).type("text").send("Not found")));
 app.get("/robots.txt", (req, res) => {
   const base = isAcadHost(req) ? ACAD : SITE;
   res.type("text/plain").send(`User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /ms/\nDisallow: /grup\nDisallow: /go/\n\nSitemap: ${base}/sitemap.xml\n`);

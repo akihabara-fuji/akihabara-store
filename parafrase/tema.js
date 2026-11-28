@@ -30,5 +30,8 @@ function head(v) {
   const css = `:root,[data-theme=light]{${light}}[data-theme=dark]{${dark}}body,input,button,textarea,select{font-family:'${p.bf}',${g}}h1,h2,h3,h4,.disp,.logo,.brand,.pt{font-family:'${p.hf}','${p.bf}',${g}!important}${over}`;
   return `<link rel="stylesheet" href="${url}"><style id="tema-${k}">${css}</style>${p.extra ? `<link rel="stylesheet" href="${U("/ruangakademikut/assets/" + p.extra)}?v=20262811">` : ""}${p.grid ? `<script defer src="${U("/ruangakademikut/assets/kgrid.js")}?v=1"></script>` : ""}`;
 }
-const inject = (html, v) => { const h = head(v); return h ? html.replace("</head>", h + "</head>") : html; };
+/* Google AdSense (Iklan Otomatis): satu skrip di <head>, hanya halaman publik catatanakademik.com; halaman admin/privat (noindex) tanpa iklan. */
+const ADS = '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9747225711392759" crossorigin="anonymous"></script>';
+const adsOk = (html, host) => (host === undefined || /(^|\.)catatanakademik\.com$/i.test(String(host))) && !/noindex/i.test(html) && !html.includes("adsbygoogle.js");
+const inject = (html, v, host) => { const h = head(v) + (adsOk(html, host) ? ADS : ""); return h ? html.replace("</head>", () => h + "</head>") : html; };
 module.exports = { PRESETS, DEFAULT, id, head, inject };
